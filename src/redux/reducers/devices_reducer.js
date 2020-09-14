@@ -20,10 +20,12 @@ import {
     DELETE_DEVICES_FAILURE,
 } from '../types/devices_types'
 
-import { clone_object, deepCopy } from '../../methods/utils/utils';
+import { deepCopy, isEquivalent } from '../../methods/utils/utils';
+import { convertRealToD3 } from '../../methods/utils/map_utils'
 
 const defaultState = {
     devices: {},
+    d3: null,
 }
 
 const devicesReducer = (state = defaultState, action) => {
@@ -31,6 +33,44 @@ const devicesReducer = (state = defaultState, action) => {
     let currentDevice = ''
     let updatedDeviceIndex = ''
     let index = ''
+
+    // ======================================== //
+    //                                          //
+    //         DEVICE UTILITY FUNCTIONS         //
+    //                                          //
+    // ======================================== //
+    const setDevices = (devices) => {
+
+        // What this does is update the devices X and Y positions based on the values in the backend.
+        // When the page loads, the devices X and Y is calculated in the map_view container, but those values aren't put to the backend.
+        // When a get call is made, the state.devices is overwritten with the backend data (data without X and Y coords). This removes the device from the map view, which we odnt want.
+        // This function takes care of that and adds new X and Y coordinates on every get call. state.d3 is add in mapview
+        if (!isEquivalent(devices, state.devices)) {
+            devicesClone = deepCopy(devices)
+            Object.keys(devicesClone).map((key, ind) => {
+                const updatedDevice = devices[key]
+                let [x, y] = convertRealToD3([updatedDevice.position.pos_x, updatedDevice.position.pos_y], state.d3)
+                devicesClone[key] = {
+                    ...devicesClone[key],
+                    position: {
+                        ...devicesClone[key].position,
+                        x: x,
+                        y: y,
+                    }
+                }
+
+                return devicesClone
+            })
+        } else {
+            return devices
+        }
+
+        return {
+            ...state,
+            devices: { ...devicesClone },
+            pending: false,
+        }
+    }
 
 
     switch (action.type) {
@@ -45,13 +85,8 @@ const devicesReducer = (state = defaultState, action) => {
 
         case GET_DEVICES_SUCCESS:
 
+            return setDevices(action.payload)
 
-            return {
-    
-                ...state,
-                devices: { ...action.payload },
-                pending: false,
-            }
 
 
         case GET_DEVICES_FAILURE:
@@ -170,7 +205,8 @@ const devicesReducer = (state = defaultState, action) => {
         case 'UPDATE_DEVICES':
             return {
                 ...state,
-                devices: deepCopy(action.payload.devices)
+                devices: deepCopy(action.payload.devices),
+                d3: action.payload.d3,
             }
 
         default:

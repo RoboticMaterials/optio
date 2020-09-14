@@ -128,6 +128,6 @@ export const deleteDevices = (ID) => {
     }
 }
 
-export const updateDevices = (devices) => {
-    return { type: 'UPDATE_DEVICES', payload: { devices } }
+export const updateDevices = (devices, d3) => {
+    return { type: 'UPDATE_DEVICES', payload: { devices, d3 } }
 }

@@ -204,7 +204,6 @@ const ApiContainer = (props) => {
         const status = await onGetStatus();
         const taskQueue = await onGetTaskQueue()
         const devices = await onGetDevices()
-
     }
 
     /*

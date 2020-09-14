@@ -176,7 +176,7 @@ export class MapView extends Component {
     bindZoomListener = () => {
         const { scaleExtent } = this.props
         const { resolution } = this.props.currentMap
-        const { translate, scale} = this.d3
+        const { translate, scale } = this.d3
 
         const svg = d3.select(`.${this.rd3tSvgClassName}`)
         const map = d3.selectAll(`.${this.rd3tMapClassName}`)
@@ -206,7 +206,7 @@ export class MapView extends Component {
                     //// Apply the event translation to each station
                     Object.values(stations).forEach(station => {
                         [x, y] = convertRealToD3([station.pos_x, station.pos_y], this.d3)
-                        Object.assign(station, {x, y})
+                        Object.assign(station, { x, y })
                         stations[station._id] = station
                     })
                     this.props.onUpdateStations(stations) // Bulk Update
@@ -214,7 +214,7 @@ export class MapView extends Component {
                     //// Apply the event translation to each position
                     Object.values(positions).forEach(position => {
                         [x, y] = convertRealToD3([position.pos_x, position.pos_y], this.d3)
-                        Object.assign(position, {x, y})
+                        Object.assign(position, { x, y })
                         positions[position._id] = position
                     })
                     this.props.onUpdatePositions(positions) // Bulk Update
@@ -222,10 +222,10 @@ export class MapView extends Component {
                     //// Apply the event translation to each mobile device
                     Object.values(devices).filter(device => device.device_model == 'MiR100').map(device => {
                         [x, y] = convertRealToD3([device.position.pos_x, device.position.pos_y], this.d3)
-                        Object.assign(device.position, {x, y})
+                        Object.assign(device.position, { x, y })
                         devices[device._id.$oid] = device
                     })
-                    this.props.onUpdateDevices(devices) // Bulk Update
+                    this.props.onUpdateDevices(devices, this.d3) // Bulk Update
 
                     // Once zoomed or dragged, stop initializing locations with transforms, instead now let the listener handle that. Otherwise zoom gets jumpy
                     if (this.initialRender) { this.initialRender = false }
@@ -330,7 +330,7 @@ export class MapView extends Component {
                 translate: [translate.x, translate.y],
                 scale: scale,
                 mapResolution: resolution,
-                imgResolution: iNatWidth/iWidth,
+                imgResolution: iNatWidth / iWidth,
                 actualDims: {
                     height: iHeight,
                     width: iWidth
@@ -341,13 +341,13 @@ export class MapView extends Component {
                 }
             }
 
-            
+
             let x, y
             let { stations, positions, devices } = this.props
             //// Apply the event translation to each station
             Object.values(stations).forEach(station => {
                 [x, y] = convertRealToD3([station.pos_x, station.pos_y], this.d3)
-                Object.assign(station, {x, y})
+                Object.assign(station, { x, y })
                 stations[station._id] = station
             })
             this.props.onUpdateStations(stations) // Bulk Update
@@ -355,7 +355,7 @@ export class MapView extends Component {
             //// Apply the event translation to each position
             Object.values(positions).forEach(position => {
                 [x, y] = convertRealToD3([position.pos_x, position.pos_y], this.d3)
-                Object.assign(position, {x, y})
+                Object.assign(position, { x, y })
                 positions[position._id] = position
             })
             this.props.onUpdatePositions(positions) // Bulk Update
@@ -363,10 +363,10 @@ export class MapView extends Component {
             //// Apply the event translation to each mobile device
             Object.values(devices).filter(device => device.device_model == 'MiR100').map(device => {
                 [x, y] = convertRealToD3([device.position.pos_x, device.position.pos_y], this.d3)
-                Object.assign(device.position, {x, y})
+                Object.assign(device.position, { x, y })
                 devices[device._id.$oid] = device
             })
-            this.props.onUpdateDevices(devices) // Bulk Update
+            this.props.onUpdateDevices(devices, this.d3) // Bulk Update
 
         } else {
             translate = this.props.translate
@@ -391,9 +391,9 @@ export class MapView extends Component {
 
         return (
             <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation}>
-                <styled.MapContainer ref={mc => (this.mapContainer = mc)} style={{pointerEvents: this.widgetDraggable ? 'default' : 'none' }}>
+                <styled.MapContainer ref={mc => (this.mapContainer = mc)} style={{ pointerEvents: this.widgetDraggable ? 'default' : 'none' }}>
 
-                    
+
 
                     {/* SVG element is the container for the whole view. This allows the view to be moved as one */}
                     <svg className={this.rd3tSvgClassName} width="100%" height="100%"> {/* Clears any unfinished drag events (ex: moving location) */}
@@ -404,11 +404,11 @@ export class MapView extends Component {
                             {/* Foreign object allows an image to be put in the SVG container */}
                             <foreignObject width='100%' height='100%'>
                                 {!!this.props.currentMap &&
-                                    <styled.MapImage ref={mi => (this.mapImage = mi)} 
+                                    <styled.MapImage ref={mi => (this.mapImage = mi)}
                                         tall={!!this.mapContainer && // Fixes the map sizing - cutoff issue
-                                            this.mapContainer.getBoundingClientRect().height/this.naturalImageDimensions.height 
-                                            > 
-                                            this.mapContainer.getBoundingClientRect().width/this.naturalImageDimensions.width}
+                                            this.mapContainer.getBoundingClientRect().height / this.naturalImageDimensions.height
+                                            >
+                                            this.mapContainer.getBoundingClientRect().width / this.naturalImageDimensions.width}
                                         src={'data:image/png;base64, ' + this.props.currentMap.map}
                                         onLoad={() => {
 
@@ -441,12 +441,11 @@ export class MapView extends Component {
                             </filter>
                         </defs>
 
-                        {!!this.state.resolution && !!this.mapImage && 
+                        {!!this.state.resolution && !!this.mapImage &&
                             <>
-                                
                                 <>{
                                     //// Render Locations
-                                    Object.values(locations).map((location, ind) => 
+                                    Object.values(locations).map((location, ind) =>
                                         <Location key={`loc-${ind}`}
                                             location={location}
                                             rd3tClassName={`${this.rd3tLocClassName}_${ind}`}
@@ -461,7 +460,7 @@ export class MapView extends Component {
                                     //// Render children positions if appropriate
                                     Object.values(positions)
                                         .filter(position => !!this.props.selectedTask || (this.props.selectedLocation !== null && position.parent == this.props.selectedLocation._id))
-                                        .map((position, ind) => 
+                                        .map((position, ind) =>
                                             <Location key={`pos-${ind}`}
                                                 location={position}
                                                 rd3tClassName={`${this.rd3tPosClassName}_${ind}`}
@@ -469,13 +468,13 @@ export class MapView extends Component {
                                                 onEnableDrag={this.onEnableDrag}
                                                 onDisableDrag={this.onDisableDrag}
                                             />
-                                    )
+                                        )
                                 }</>
 
                                 <>{
                                     //// Render mobile devices
-                                    Object.values(devices).filter(device => device.device_model == 'MiR100').map((device, ind) => 
-                                        <MiR100 key={`mir-${ind}`}
+                                    Object.values(devices).filter(device => device.device_model == 'MiR100').map((device, ind) =>
+                                        <MiR100 key={device._id.$oid}
                                             device={device}
                                             d3={this.d3}
                                         />
@@ -520,7 +519,7 @@ const mapDispatchToProps = dispatch => {
 
         onUpdateStations: (stations) => dispatch(stationActions.updateStations(stations)),
         onUpdatePositions: (positions) => dispatch(positionActions.updatePositions(positions)),
-        onUpdateDevices: (devices) => dispatch(deviceActions.updateDevices(devices)),
+        onUpdateDevices: (devices, d3) => dispatch(deviceActions.updateDevices(devices, d3)),
 
         onPostPosition: (position) => dispatch(positionActions.postPosition(position)),
         onSetLocationAttributes: (id, attr) => dispatch(locationActions.setLocationAttributes(id, attr)),

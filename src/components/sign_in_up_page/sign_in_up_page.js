@@ -34,8 +34,8 @@ const SignInUpPage = (props) => {
     const onRefreshToken = (token, expiration) => dispatch(postRefreshToken(token, expiration))
     const refreshToken = useSelector(state => state.authenticationReducer.refreshToken)
 
-    const [email, setEmail] = useState('kalervo@roboticmaterials.com')
-    const [password, setPassword] = useState('Qwerty1.')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
 
     // Handles submit to AWS cognito based on whether it's a sign in or sign up
     const handleSubmit = async (values) => {

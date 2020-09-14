@@ -14,7 +14,6 @@ export async function getDevices() {
             url: apiIPAddress() + operator,
         });
         // Success 🎉
-        // log.debug('QQQQ response',response);
         const data = response.data;
         const dataJson = JSON.parse(data)
         return dataJson;
@@ -139,9 +138,6 @@ export async function postDevices(devices) {
 }
 
 export async function putDevices(device, ID) {
-    // log.debug('QQQQ device Being Put API', device)
-    // log.debug('QQQQ ID Being Put API', ID)
-
     try {
         const response = await axios({
             method: 'PUT',

@@ -55,7 +55,7 @@ import {
 } from '../types/locations_types'
 
 
-import { deepCopy } from '../../methods/utils/utils';
+import { deepCopy, isEquivalent } from '../../methods/utils/utils';
 
 /**
  * This reducer is different than the rest of the common reducers. The way locations are formatted is that a location
@@ -95,9 +95,9 @@ export default function locationsReducer(state = defaultState, action) {
     const filterLocations = (stations, positions) => {
         const unfilteredLocationsArr = [...Object.values(stations), ...Object.values(positions)]
         const filterdLocationsArr = unfilteredLocationsArr.filter(loc => loc.schema == 'station' || (loc.schema == 'position' && loc.parent === null))
-        
+
         let locations = {}
-        filterdLocationsArr.forEach(location => 
+        filterdLocationsArr.forEach(location =>
             locations[location._id] = location
         )
 
@@ -174,7 +174,7 @@ export default function locationsReducer(state = defaultState, action) {
     }
 
     const setStationAttributes = (id, attr) => {
-        if (!(id in stationsCopy)) {return state}
+        if (!(id in stationsCopy)) { return state }
 
         Object.assign(stationsCopy[id], attr)
 
@@ -204,6 +204,22 @@ export default function locationsReducer(state = defaultState, action) {
 
     const setPositions = (positions) => {
         positionsCopy = deepCopy(positions)
+        const positionsStateCopy = deepCopy(state.positions)
+
+        // What this does is add the x and y coordinates of the states positions to the positions coming into this function
+        // The reason why this has to be done is that on page load, the X and Y coordinates for each postion are calulated but not added to the back end,
+        // when a get call for positions is made for the backend, the calculated X and Y coordinates are deleted (since the dont exist on the backend). 
+        // This takes the calculated X and Y coordinates calculated and adds them to the incoming positions if the positions copy doesn match. They wouldnt match because the backend does not have X and Y coordinates
+        if (!isEquivalent(positionsCopy, positionsStateCopy)) {
+
+            Object.keys(positionsStateCopy).map((key, ind) => {
+                return positionsCopy[key] = {
+                    ...positionsCopy[key],
+                    x: positionsStateCopy[key].x,
+                    y: positionsStateCopy[key].y,
+                }
+            })
+        }
 
         if (state.selectedLocation !== null) { // The updated position is the selected location
             return {
@@ -266,7 +282,7 @@ export default function locationsReducer(state = defaultState, action) {
     }
 
     const setPositionAttributes = (id, attr) => {
-        if (!(id in positionsCopy)) {return state}
+        if (!(id in positionsCopy)) { return state }
         Object.assign(positionsCopy[id], attr)
 
         if (state.selectedLocation !== null && state.selectedLocation._id === id) { // The updated position is the selected location
@@ -378,7 +394,7 @@ export default function locationsReducer(state = defaultState, action) {
                 hoverStationInfo: action.payload.info,
             }
 
-        
+
         // ======================================== //
         //                                          //
         //                 POSITIONS                //
@@ -462,7 +478,7 @@ export default function locationsReducer(state = defaultState, action) {
         case SET_POSITION_ATTRIBUTES:
             return setPositionAttributes(action.payload.id, action.payload.attr)
 
-        
+
         // ======================================== //
         //                                          //
         //                 LOCATIONS                //
@@ -487,7 +503,7 @@ export default function locationsReducer(state = defaultState, action) {
                 selectedLocation: null,
             }
 
-        
+
 
         default:
             return state;
