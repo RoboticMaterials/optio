@@ -42,9 +42,9 @@ const devicesReducer = (state = defaultState, action) => {
     const setDevices = (devices) => {
 
         // What this does is update the devices X and Y positions based on the values in the backend.
-        // When the page loads, the devices X and Y is calculated in the map_view container, but those values aren't put to the backend.
-        // When a get call is made, the state.devices is overwritten with the backend data (data without X and Y coords). This removes the device from the map view, which we odnt want.
-        // This function takes care of that and adds new X and Y coordinates on every get call. state.d3 is add in mapview
+        // When the RMStudio initially loads, the devices X and Y is calculated in the map_view container, but those values aren't put to the backend.
+        // When a get call is made, the state.devices is overwritten with the backend data (data without X and Y coords). This removes the device from the map view, which we dont want.
+        // This function takes care of that and adds new X and Y coordinates on every get call. state.d3 is added in mapview
         if (!isEquivalent(devices, state.devices)) {
             devicesClone = deepCopy(devices)
             Object.keys(devicesClone).map((key, ind) => {

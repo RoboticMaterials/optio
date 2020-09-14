@@ -41,15 +41,10 @@ const HILModals = (props) => {
     const [quantity, setQuantity] = useState(taskQuantity)
     const [hilLoadUnload, setHilLoadUnload] = useState('')
 
-    // console.log('QQQQ Item ', item)
-
     // If the qty goes below 0, then set to 0. You can never send negative parts
     if (quantity < 0) {
         setQuantity(0)
     }
-
-    // console.log('QQQQ QTY', quantity)
-    // console.log('QQQQ Props in Modals', props)
 
     // Use Effect for when page loads, handles wether the HIL is a load or unload
     useEffect(() => {
@@ -107,7 +102,7 @@ const HILModals = (props) => {
         const task = item.task_id
         const object = task.obj
         const station = item.hil_station_id
-        const quantity = quantity
+        const quantity = item.quantity
 
         let incoming = ''
         if (hilLoadUnload === 'load') {
