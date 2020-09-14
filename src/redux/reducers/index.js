@@ -1,0 +1,56 @@
+import { combineReducers } from 'redux'
+import schedulesReducer from './schedules_reducer_v2';
+import skillsReducer from './skills_reducer';
+import locationsReducer from './locations_reducer';
+import objectsReducer from './objects_reducer';
+import apiReducer from './api_reducer';
+import dashboardsReducer from './dashboards_reducer'
+import errorReducer from './error_reducer';
+import statusReducer from './status_reducer';
+import taskQueueReducer from './task_queue_reducer';
+import keyboardReducer from './keyboard_reducer';
+import tasksReducer from './tasks_reducer';
+import soundsReducer from './sounds_reducer';
+import settingsReducer from './settings_reducer';
+import localReducer from './local_reducer';
+import modelsReducer from './models_reducer'
+import skillTemplatesReducer from './skill_templates_reducer'
+import posesReducer from './poses_reducer';
+import requestStatusReducer from './request_status_reducer';
+import TaskAnalysisReducer from './task_analysis_reducer'
+import mapReducer from './map_reducer'
+import sidebarReducer from './sidebar_reducer'
+import widgetReducer from './widget_reducer'
+import devicesReducer from './devices_reducer'
+import notificationsReducer from './notifications_reducer'
+import eventsReducer from './events_reducer'
+import authenticationReducer from './authentication_reducer'
+
+export default combineReducers({
+    apiReducer,
+    schedulesReducer,
+    skillsReducer,
+    locationsReducer,
+    objectsReducer,
+    dashboardsReducer,
+    errorReducer,
+    statusReducer,
+    taskQueueReducer,
+    keyboardReducer,
+    soundsReducer,
+    tasksReducer,
+    settingsReducer,
+    localReducer,
+    modelsReducer,
+    skillTemplatesReducer,
+    posesReducer,
+    requestStatusReducer,
+    TaskAnalysisReducer,
+    mapReducer,
+    sidebarReducer,
+    widgetReducer,
+    devicesReducer,
+    notificationsReducer,
+    eventsReducer,
+    authenticationReducer,
+})

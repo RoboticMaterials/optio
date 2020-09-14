@@ -1,0 +1,186 @@
+import * as Yup from 'yup';
+
+import { notBrokenRegex, notTaskDeletedRegex } from "./regex_utils";
+
+export const scheduleSchema = Yup.object().shape({
+    name: Yup.string()
+        .min(1, '1 character minimum.')
+        .max(50, '50 character maximum.')
+        .required('Please enter a name.'),
+    task: Yup.array().of(
+        Yup.object().shape({
+            name: Yup.string()
+                // .min(1, '1 character minimum')
+                // .max(2, '50 character maximum')
+                .matches(notTaskDeletedRegex, "Task is deleted.")
+                .required('Please select a task.'),
+            status: Yup.string().matches(notBrokenRegex, "Task is broken."),
+        })
+    ).required('Required'),
+    days_on: Yup.array()
+        .min(1, 'Please select at least one day.')
+        .required('Required'),
+    start_time: Yup.string()
+        .required('Required'),
+    time_interval: Yup.string(), // not required
+    stop_time: Yup.string() // not required
+});
+
+export const objectSchema = Yup.object().shape({
+    name: Yup.string()
+        .min(1, '1 character minimum.')
+        .max(50, '50 character maximum.')
+        .required('Please enter a name.'),
+    description: Yup.string()
+        .max(1000, '1000 character maximum.'),
+    // width: Yup.number()
+    //     .positive("Please enter a positive number.")
+    //     .moreThan(0, "Must be greater than 0.")
+    //     .required("Please enter the object's width."),
+    // height: Yup.number()
+    //     .positive("Please enter a positive number.")
+    //     .moreThan(0, "Must be greater than 0.")
+    //     .required("Please enter the object's height."),
+    // length: Yup.number()
+    //     .positive("Please enter a positive number.")
+    //     .moreThan(0, "Must be greater than 0.")
+    //     .required("Please enter the object's length."),
+    // modelName: Yup.string()
+    //     .required("Please select a model."),
+});
+
+
+export const hilSchema = Yup.object().shape({
+    instruction: Yup.string()
+        .max(20, '20 character maximum.')
+        .required('Please enter instructions.'),
+    position: Yup.array().of(
+        Yup.object().shape({
+            name: Yup.string()
+                .required('Position is missing name.'),
+        })
+    )
+        .required('Please select a position.'),
+    dashboard: Yup.array().of(
+        Yup.object().shape({
+            name: Yup.string()
+                .required('Dashboard is missing name.'),
+        })
+    )
+        .required('Please select a dashboard.'),
+    sound: Yup.array().of(
+        Yup.object().shape({
+            name: Yup.string()
+                .required('Sound is missing name.'),
+        })
+    )
+        .required('Please select a sound.'),
+    timeout: Yup.string()
+        .nullable()
+        .required('Please select timeout.'),
+});
+
+export const moveSchema = Yup.object().shape({
+    location: Yup.array().of(
+        Yup.object().shape({
+            name: Yup.string()
+                .required('Location is missing name.'),
+            _id: Yup.string()
+                .required('Location is missing ID.'),
+        })
+    ).required('Please select a location.'),
+});
+
+
+
+export const nameSchema = Yup.object().shape({
+    name: Yup.string()
+        .min(1, '1 character minimum.')
+        .max(50, '50 character maximum.')
+        .required('Please enter a name.'),
+});
+
+export const hilGoalSchema = Yup.object().shape({
+    hil: Yup.array().of(
+        Yup.object().shape({
+            name: Yup.string()
+                .required('HIL is missing name.'),
+        })
+    ).required('Please select a HIL.')
+});
+
+export const objectAtLocationGoalSchema = Yup.object().shape({
+    quantity: Yup.array().of(
+        Yup.object().shape({
+            name: Yup.string()
+                .required('Quantity is missing name.'),
+        })
+    ).required('Please select a quantity.'),
+    object: Yup.array().of(
+        Yup.object().shape({
+            name: Yup.string()
+                .required('Object is missing name.'),
+        })
+    ).min(1, "Please select an object.").nullable(),
+    position: Yup.array().of(
+        Yup.object().shape({
+            name: Yup.string()
+                .required('Position is missing name.'),
+        })
+    ).required('Please select a position.'),
+});
+
+export const dashboardSchema = Yup.object().shape({
+    name: Yup.string()
+        .min(1, '1 character minimum.')
+        .max(50, '50 character maximum.')
+        .required('Please enter a name.'),
+    buttons: Yup.array().of(
+        Yup.object().shape({
+            name: Yup.string()
+                .required('Please enter a name.'),
+            // task: Yup.array().of(
+            //     Yup.object().shape({
+            //         Description: Yup.string()
+            //             .matches(notBrokenRegex, "Task is broken.")
+            //             .required('Task is missing description.'),
+            //         task_id: Yup.string()
+            //             .required('Task is missing ID.'),
+            //     })
+            // ).required('Please select a task.'),
+            // banana: Yup.string()
+            //     .required('Please enter a name.'),
+            color: Yup.string()
+                .required('Please select a color.'),
+
+        })
+    ),
+
+});
+
+export const signUpSchema = Yup.object().shape({
+    email: Yup.string()
+        .email()
+        .required('Please enter an email'),
+    password: Yup.string()
+        // .min(8, '8 character minimum')
+        // .matches(
+        //     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+        //     'Password must contain atleast 8 characters, One Uppercase, One Lowercase, and one specail character',
+        // )
+
+        .required('Please enter a password'),
+
+    confirmPassword: Yup.string()
+        .oneOf([Yup.ref('password'), null], 'Passwords must match')
+        .required('Password confirm is required'),
+})
+
+export const signInSchema = Yup.object().shape({
+    email: Yup.string()
+        .email()
+        .required('Please enter an email'),
+    password: Yup.string()
+        .required('Please enter a password'),
+
+})

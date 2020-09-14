@@ -1,0 +1,97 @@
+import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux'
+import { useHistory, useLocation } from 'react-router-dom'
+
+import SideBarButton from '../side_bar_buttons/side_bar_button';
+
+import * as styled from './side_bar_switcher.style'
+import { setMode } from '../../../redux/actions/sidebar_actions'
+
+import { deselectLocation } from '../../../redux/actions/locations_actions'
+import { deselectTask } from '../../../redux/actions/tasks_actions'
+
+const SideBarSwitcher = (props) => {
+
+    const dispatch = useDispatch()
+
+    const mode = useSelector(state => state.sidebarReducer.mode)
+    const wrapperRef = useRef(null)
+
+    const history = useHistory()
+    const url = useLocation().pathname.split('/')[1]
+
+    return (
+        <styled.SideBarContainer ref={wrapperRef}>
+            <SideBarButton
+                mode={'locations'}
+                setShowSideBarPage={(page) => {
+                    dispatch(setMode(page));
+                    history.push(`/${page}`)
+                    dispatch(deselectLocation())
+                    dispatch(deselectTask())
+                }}
+                currentMode={url}
+            />
+
+            <SideBarButton
+                mode={'tasks'}
+                setShowSideBarPage={(page) => {
+                    dispatch(setMode(page));
+                    history.push(`/${page}`)
+                    dispatch(deselectLocation())
+                    dispatch(deselectTask())
+                }}
+                currentMode={url}
+            />
+
+            <SideBarButton
+                mode={'objects'}
+                setShowSideBarPage={(page) => {
+                    dispatch(setMode(page));
+                    history.push(`/${page}`)
+                    dispatch(deselectLocation())
+                    dispatch(deselectTask())
+                }}
+                currentMode={url}
+            />
+
+            <SideBarButton
+                mode={'scheduler'}
+                setShowSideBarPage={(page) => {
+                    dispatch(setMode(page));
+                    history.push(`/${page}`)
+                    dispatch(deselectLocation())
+                    dispatch(deselectTask())
+                }}
+                currentMode={url}
+            />
+
+            <SideBarButton
+                mode={'devices'}
+                setShowSideBarPage={(page) => {
+                    dispatch(setMode(page));
+                    history.push(`/${page}`)
+                    dispatch(deselectLocation())
+                    dispatch(deselectTask())
+                }}
+                currentMode={url}
+            />
+
+            <SideBarButton
+                mode={'settings'}
+                setShowSideBarPage={(page) => {
+                    dispatch(setMode(page));
+                    history.push(`/${page}`)
+                    dispatch(deselectLocation())
+                    dispatch(deselectTask())
+                }}
+                currentMode={url}
+            />
+
+
+        </styled.SideBarContainer>
+    )
+
+}
+
+export default SideBarSwitcher
