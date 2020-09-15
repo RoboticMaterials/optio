@@ -5,7 +5,7 @@ import { useParams, useHistory } from 'react-router-dom'
 
 // import methods
 import { getBatteryClassName } from '../../methods/utils/class_name_utils';
-import { uuidv4, clone_object } from '../../methods/utils/utils';
+import { uuidv4, deepCopy } from '../../methods/utils/utils';
 import { parseCondition } from '../../methods/utils/skills_utils.js'
 import { hexToRGBA, LightenDarkenColor, RGB_Linear_Shade } from '../../methods/utils/color_utils';
 
@@ -147,12 +147,13 @@ const StatusHeader = (props) => {
 
     // Handles the play pause button
     const handleTogglePlayPause = async () => {
+
         //Flip the status to the opposite of the current value when the button is pressed
-        var status_clone = clone_object(status);
+        var status_clone = deepCopy(status);
         const pause_status = !status_clone.pause_status;
 
         //Post the status to the API
-        await dispatch(postStatus(pause_status));
+        await dispatch(postStatus({pause_status: pause_status}));
     }
 
     // Renders the left side of the header

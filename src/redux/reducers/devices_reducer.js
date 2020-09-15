@@ -84,7 +84,7 @@ const devicesReducer = (state = defaultState, action) => {
             break;
 
         case GET_DEVICES_SUCCESS:
-
+            console.log('QQQQ Devices Get', action.payload)
             return setDevices(action.payload)
 
 
