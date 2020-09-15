@@ -192,10 +192,11 @@ const DeviceItem = (props) => {
                 </g>
 
             </styled.BatterySvg>
+            
+            {/* Copy of Battery SVG just rotated 180 degrees */}
+            {/* Commented out for now since OEE is not implmented */}
+            {/* <styled.OEESvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 67.6 218.09">
 
-            <styled.OEESvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 67.6 218.09">
-
-                {/* Copy of Batter SVG just rotated 180 degrees */}
                 <g id="Layer_2" data-name="Layer 2" transform="rotate(180)">
                     <g id="Layer_1-2" data-name="Layer 1">
                         <rect fill={batteryRectFill[0]} stroke={OEERectStroke[0]} strokeWidth='.3rem' x="13.86" y="174.04" width={batteryRectWidth} height={batteryRectWidth} rx={batteryRectRx} transform="translate(-169.27 153.88) rotate(-69.46)" />
@@ -206,7 +207,7 @@ const DeviceItem = (props) => {
                     </g>
                 </g>
 
-            </styled.OEESvg>
+            </styled.OEESvg> */}
 
 
 

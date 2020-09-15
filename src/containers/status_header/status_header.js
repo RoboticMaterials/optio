@@ -147,6 +147,7 @@ const StatusHeader = (props) => {
 
     // Handles the play pause button
     const handleTogglePlayPause = async () => {
+        
         //Flip the status to the opposite of the current value when the button is pressed
         var status_clone = clone_object(status);
         const pause_status = !status_clone.pause_status;
