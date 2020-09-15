@@ -317,6 +317,11 @@ export class MapView extends Component {
             const iNatHeight = this.naturalImageDimensions.height
             const iNatWidth = this.naturalImageDimensions.width
 
+            console.log('')
+            console.log('cont', cHeight, cWidth)
+            console.log('act', iHeight, iWidth)
+            console.log('nat', iNatHeight, iNatWidth)
+
             // Apply translations to map.
             // The map is translated by half the container dims, and then back by 
             // half the image dims. This leaves it in the middle of the screen
@@ -338,7 +343,8 @@ export class MapView extends Component {
                 naturalDims: {
                     height: iNatHeight,
                     width: iNatWidth
-                }
+                },
+                foo: cWidth / iWidth
             }
 
 
@@ -411,6 +417,9 @@ export class MapView extends Component {
                                             this.mapContainer.getBoundingClientRect().width / this.naturalImageDimensions.width}
                                         src={'data:image/png;base64, ' + this.props.currentMap.map}
                                         onLoad={() => {
+
+                                            console.log(this.mapImage.getBoundingClientRect())
+                                            console.log(this.mapImage.naturalHeight, this.mapImage.naturalWidth)
 
                                             this.naturalImageDimensions = {
                                                 height: this.mapImage.naturalHeight,
