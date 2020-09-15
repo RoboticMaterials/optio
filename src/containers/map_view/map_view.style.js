@@ -29,8 +29,9 @@ export const MapImage = styled.img`
     height: 100%;
     width: auto;
 
-    ${props => props.tall && `
-        height: auto;
-        width: 100%;
-    `}
+    // ${props => props.tall && `
+    //     height: auto;
+    //     width: 100%;
+    // `}
+    
 `
