@@ -46,23 +46,18 @@ export default function statusReducer(state = defaultState, action) {
         // post
         // ***************
         case POST_STATUS_SUCCESS:
-            console.log('QQQQ')
             return Object.assign({}, state, {
                 pending: false,
                 status: { ...state.status, ...action.payload },
             });
 
         case POST_STATUS_FAILURE:
-            console.log('QQQQ')
-
             return Object.assign({}, state, {
                 error: action.payload,
                 pending: false
             });
 
         case POST_STATUS_STARTED:
-            console.log('QQQQ')
-
             return Object.assign({}, state, {
                 pending: true
             });

@@ -174,13 +174,11 @@ export default function locationsReducer(state = defaultState, action) {
     }
 
     const setStationAttributes = (id, attr) => {
-        console.log('QQQQ Setting Attributes in the reducer', attr)
         if (!(id in stationsCopy)) { return state }
 
         Object.assign(stationsCopy[id], attr)
 
         if (state.selectedLocation !== null && state.selectedLocation._id === id) { // The updated station is the selected location
-            console.log('QQQQ In IF', stationsCopy[id])
             return {
                 ...state,
                 stations: stationsCopy,
