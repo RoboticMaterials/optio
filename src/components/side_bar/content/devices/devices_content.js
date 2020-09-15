@@ -47,6 +47,7 @@ const DevicesContent = () => {
     const onGetDevices = () => dispatch(getDevices())
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
+    const taskQueue  = useSelector(state => state.taskQueueReducer.taskQueue)
 
     const width = useSelector(state => state.sidebarReducer.width)
     const isSmall = width < widthBreakPoint
@@ -83,6 +84,8 @@ const DevicesContent = () => {
                     device={device}
                     isSmall={isSmall}
                     ind={ind}
+                    tasks={tasks}
+                    taskQueue={taskQueue}
                     setOpenDeviceStats={(deviceID) => setOpenDeviceStats(deviceID)}
                 />
             )

@@ -135,6 +135,8 @@ export const StatusContainer = styled.div`
     height: 10%;
     text-align: center;
     position: absolute;
+    text-overflow: ellipsis;
+    overflow: hidden;
     
     bottom: 25%;
     transform: translateY(50%);
@@ -146,6 +148,7 @@ export const StatusText = styled.p`
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz3};
     color: ${props => props.theme.bg.octonary};
+    overflow: hidden;
     
     ${props => props.isSmall && {
 		fontSize: props.theme.fontSize.sz4

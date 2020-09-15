@@ -11,6 +11,8 @@ const DeviceItem = (props) => {
         isSmall,
         ind,
         setOpenDeviceStats,
+        tasks,
+        taskQueue,
     } = props
 
     const batteryRectWidth = isSmall ? 20 : 25
@@ -28,12 +30,29 @@ const DeviceItem = (props) => {
 
         let deviceStatus = ''
 
-        if (device.current_task_queue_id === null) {
-            deviceStatus = 'No Active Task'
-        } else {
-            // Map through the task q to find the current task and display the task
-            deviceStatus = 'Not set up yet........'
+        try {
+            if(device.state_text === 'EmergencyStop') {
+                deviceStatus = 'Emergency Stoped'
+            }
+            else if (device.current_task_queue_id === null) {
+                deviceStatus = 'No Active Task'
+            } 
+            else if (!!device.current_task_queue_id) {
+                try {
+                    deviceStatus = taskQueue[device.current_task_queue_id.$oid].mission_status
+                } catch (error) {
+                    deviceStatus = 'No Active Task'
+                }
+            }
+            
+            else {
+                // Map through the task q to find the current task and display the task
+                deviceStatus = 'This device status is not set up yet.'
+            }  
+        } catch (error) {
+            deviceStatus = 'There was an issue with device status'
         }
+
 
         return deviceStatus
     }
