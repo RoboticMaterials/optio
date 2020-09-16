@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
-import Workstation from './workstation/workstation'
-import ShelfPosition from './shelf_position/shelf_position.js'
-import CartPosition from './cart_position/cart_position'
+// Import locations
+import Workstation from './locations_types/workstation/workstation'
+import ShelfPosition from './locations_types/shelf_position/shelf_position.js'
+import CartPosition from './locations_types/cart_position/cart_position'
+import DeviceLocations from './locations_types/device_locations/device_locations'
 
 import * as d3 from 'd3'
 import uuid from 'uuid';
@@ -196,10 +198,10 @@ function Location(props) {
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
 
     // Is this location selected, or is it's parent selected
-    let isSelected = 
-        selectedTask === null && 
-        (!! selectedLocation && selectedLocation._id == location._id
-        || !!location.parent && selectedLocation._id == location.parent)
+    let isSelected =
+        selectedTask === null &&
+        (!!selectedLocation && selectedLocation._id == location._id
+            || !!location.parent && selectedLocation._id == location.parent)
 
     let pos
 
@@ -210,9 +212,9 @@ function Location(props) {
         }
     } else {
         if (selectedTask.load.station == location._id || selectedTask.load.position == location._id
-           || selectedTask.unload.station == location._id || selectedTask.unload.position == location._id) {
-               color = '#38eb87' // Green
-           }
+            || selectedTask.unload.station == location._id || selectedTask.unload.position == location._id) {
+            color = '#38eb87' // Green
+        }
     }
 
 
@@ -220,11 +222,11 @@ function Location(props) {
         case 'workstation':
             return (
                 <React.Fragment key={`frag-loc-${location._id}`}>
-                    <Workstation isSelected={isSelected} color={color} {...props}/>
+                    <Workstation isSelected={isSelected} color={color} {...props} />
                     <DragEntityProto isSelected={isSelected} {...props}
                         onRotate={rotation => dispatch(setLocationAttributes(location._id, { rotation }))}
-                        onTranslate={({x, y}) => dispatch(setLocationAttributes(location._id, {x, y}))}
-                        onTranslateEnd={({x, y}) => {
+                        onTranslate={({ x, y }) => dispatch(setLocationAttributes(location._id, { x, y }))}
+                        onTranslateEnd={({ x, y }) => {
                             pos = convertD3ToReal([x, y], props.d3)
                             dispatch(setLocationAttributes(location._id, { pos_x: pos[0], pos_y: pos[1] }))
                         }}
@@ -240,11 +242,11 @@ function Location(props) {
                             x2={`${stations[location.parent].x}`} y2={`${stations[location.parent].y}`}
                             stroke={color} strokeWidth="1.4" style={{ filter: "url(#glow)", opacity: '0.3' }} />
                     }
-                    <CartPosition isSelected={isSelected} color={color} {...props}/>
+                    <CartPosition isSelected={isSelected} color={color} {...props} />
                     <DragEntityProto isSelected={isSelected} {...props}
                         onRotate={rotation => dispatch(setLocationAttributes(location._id, { rotation }))}
-                        onTranslate={({x, y}) => dispatch(setLocationAttributes(location._id, {x, y}))}
-                        onTranslateEnd={({x, y}) => {
+                        onTranslate={({ x, y }) => dispatch(setLocationAttributes(location._id, { x, y }))}
+                        onTranslateEnd={({ x, y }) => {
                             pos = convertD3ToReal([x, y], props.d3)
                             dispatch(setLocationAttributes(location._id, { pos_x: pos[0], pos_y: pos[1] }))
                         }}
@@ -260,11 +262,31 @@ function Location(props) {
                             x2={`${stations[location.parent].x}`} y2={`${stations[location.parent].y}`}
                             stroke={color} strokeWidth="1.4" style={{ filter: "url(#glow)", opacity: '0.3' }} />
                     }
-                    <ShelfPosition isSelected={isSelected} color={color} {...props}/>
+                    <ShelfPosition isSelected={isSelected} color={color} {...props} />
                     <DragEntityProto isSelected={isSelected} {...props}
                         onRotate={rotation => dispatch(setLocationAttributes(location._id, { rotation }))}
-                        onTranslate={({x, y}) => dispatch(setLocationAttributes(location._id, {x, y}))}
-                        onTranslateEnd={({x, y}) => {
+                        onTranslate={({ x, y }) => dispatch(setLocationAttributes(location._id, { x, y }))}
+                        onTranslateEnd={({ x, y }) => {
+                            pos = convertD3ToReal([x, y], props.d3)
+                            dispatch(setLocationAttributes(location._id, { pos_x: pos[0], pos_y: pos[1] }))
+                        }}
+                    />
+                </React.Fragment>
+            )
+
+        case 'device':
+            return (
+                <React.Fragment key={`frag-loc-${location._id}`}>
+                    {/* {location.parent !== null &&
+                        <line x1={`${location.x}`} y1={`${location.y}`}
+                            x2={`${stations[location.parent].x}`} y2={`${stations[location.parent].y}`}
+                            stroke={color} strokeWidth="1.4" style={{ filter: "url(#glow)", opacity: '0.3' }} />
+                    } */}
+                    <DeviceLocations isSelected={isSelected} color={color} {...props} />
+                    <DragEntityProto isSelected={isSelected} {...props}
+                        onRotate={rotation => dispatch(setLocationAttributes(location._id, { rotation }))}
+                        onTranslate={({ x, y }) => dispatch(setLocationAttributes(location._id, { x, y }))}
+                        onTranslateEnd={({ x, y }) => {
                             pos = convertD3ToReal([x, y], props.d3)
                             dispatch(setLocationAttributes(location._id, { pos_x: pos[0], pos_y: pos[1] }))
                         }}

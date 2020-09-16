@@ -11,13 +11,14 @@ const DeviceItem = (props) => {
         isSmall,
         ind,
         setOpenDeviceStats,
+        setOpenDeviceSettings,
         tasks,
         taskQueue,
     } = props
 
     const batteryRectWidth = isSmall ? 20 : 25
     const batteryRectRx = batteryRectWidth / 5
-    const deviceID = device._id.$oid
+    const deviceID = device._id
     const deviceName = device.device_name
 
     let deviceType = ''
@@ -31,12 +32,12 @@ const DeviceItem = (props) => {
         let deviceStatus = ''
 
         try {
-            if(device.state_text === 'EmergencyStop') {
+            if (device.state_text === 'EmergencyStop') {
                 deviceStatus = 'Emergency Stoped'
             }
             else if (device.current_task_queue_id === null) {
                 deviceStatus = 'No Active Task'
-            } 
+            }
             else if (!!device.current_task_queue_id) {
                 try {
                     deviceStatus = taskQueue[device.current_task_queue_id.$oid].mission_status
@@ -44,17 +45,30 @@ const DeviceItem = (props) => {
                     deviceStatus = 'No Active Task'
                 }
             }
-            
+
             else {
                 // Map through the task q to find the current task and display the task
                 deviceStatus = 'This device status is not set up yet.'
-            }  
+            }
         } catch (error) {
             deviceStatus = 'There was an issue with device status'
         }
 
 
         return deviceStatus
+    }
+
+    const handleDeviceIcon = () => {
+        let deviceIcon = 'icon-rmLogo'
+
+        if(deviceType === 'arm' || deviceType === 'cart') {
+            deviceIcon = 'icon-' + deviceType
+        }
+
+
+        return (
+            <styled.DeviceIcon isSmall={isSmall} className={deviceIcon}/>
+        )
     }
 
     const handleDeviceBattery = () => {
@@ -191,13 +205,14 @@ const DeviceItem = (props) => {
                 <styled.DeviceTitle isSmall={isSmall}>{deviceName}</styled.DeviceTitle>
 
                 {/* Arm Icon is small so this increases it's size */}
-                {deviceType === 'arm' ?
+                {handleDeviceIcon()}
+                {/* {deviceType === 'arm' ?
                     <styled.ArmIcon isSmall={isSmall} className={'icon-' + deviceType} />
 
                     :
                     <styled.CartIcon isSmall={isSmall} className={'icon-' + deviceType} />
 
-                }
+                } */}
 
                 <styled.StatusContainer>
                     <styled.StatusText isSmall={isSmall}>
@@ -208,8 +223,8 @@ const DeviceItem = (props) => {
                 {/* Commented out for now, no need to edit device as of Sep 2, 2020 */}
                 <styled.EditDeviceIcon
                     isSmall={isSmall}
-                    className='icon-statistics'
-                    onClick={() => setOpenDeviceStats(deviceID)}
+                    className='fas fa-cog'
+                    onClick={() => setOpenDeviceSettings(deviceID)}
                 />
 
             </styled.BigCircle>
@@ -222,27 +237,35 @@ const DeviceItem = (props) => {
                         <stop offset="0.99" style={{ stopColor: '#005b97' }} />
                     </linearGradient>
                     <linearGradient id="linear-gradient2" y1="259" x2="518" y2="259" gradientUnits="userSpaceOnUse">
-                        <stop offset="0" style={{ stopColor: '#d71e3f' }} />
-                        <stop offset="0.99" style={{ stopColor: '#970010' }} />
+                        <stop offset="0" style={{ stopColor: '#03ffa3' }} />
+                        <stop offset="0.99" style={{ stopColor: '#00b673' }} />
+                    </linearGradient>
+                    <linearGradient id="linear-gradient3" y1="259" x2="518" y2="259" gradientUnits="userSpaceOnUse">
+                        <stop offset="0" style={{ stopColor: '#d7a31e' }} />
+                        <stop offset="0.99" style={{ stopColor: '#d7841e' }} />
                     </linearGradient>
                 </defs>
                 <g id="Layer_2" data-name="Layer 2">
                     <g id="Layer_1-2" data-name="Layer 1">
 
-                        {deviceType === 'arm' &&
+                        {deviceType === 'arm' ?
                             <circle className="cls-1" cx="259" cy="259" r="256.5" style={{ fill: 'none', strokeMiterlimit: '10', strokeWidth: '1rem', stroke: 'url(#linear-gradient)' }} />
-                        }
 
-                        {deviceType === 'cart' &&
-                            <circle className="cls-1" cx="259" cy="259" r="256.5" style={{ fill: 'none', strokeMiterlimit: '10', strokeWidth: '1rem', stroke: 'url(#linear-gradient2)' }} />
+                            :
+                            deviceType === 'cart' ?
+                                <circle className="cls-1" cx="259" cy="259" r="256.5" style={{ fill: 'none', strokeMiterlimit: '10', strokeWidth: '1rem', stroke: 'url(#linear-gradient2)' }} />
+                                :
+                                <circle className="cls-1" cx="259" cy="259" r="256.5" style={{ fill: 'none', strokeMiterlimit: '10', strokeWidth: '1rem', stroke: 'url(#linear-gradient3)' }} />
+
                         }
 
                     </g>
                 </g>
             </svg>
 
-
-            {handleDeviceBattery()}
+            {!!device.battery_percentage &&
+                handleDeviceBattery()
+            }
 
             {/* Commented out for now since OEE is not implmented */}
             {/* {handleDeviceOEE()} */}

@@ -43,14 +43,17 @@ export const getDevices = () => {
         try {
             onStart();
             const devices = await api.getDevices();
+
             devices.forEach((device, ind) => {
-                devices[ind].position.pos_x = device.position.x
-                devices[ind].position.pos_y = device.position.y
+                // console.log('QQQQ Device', device)
+                if (!(device.position === undefined)) {
+                    devices[ind].position.pos_x = device.position.x
+                    devices[ind].position.pos_y = device.position.y
+                }
             })
 
             // Uncomment when you want to make devices an object
             const normalizedDevices = normalize(devices, devicesSchema);
-
             return onSuccess(normalizedDevices.entities.devices)
             // return onSuccess(devices)
         } catch (error) {

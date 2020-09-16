@@ -49,16 +49,18 @@ const devicesReducer = (state = defaultState, action) => {
             devicesClone = deepCopy(devices)
             Object.keys(devicesClone).map((key, ind) => {
                 const updatedDevice = devices[key]
-                let [x, y] = convertRealToD3([updatedDevice.position.pos_x, updatedDevice.position.pos_y], state.d3)
-                devicesClone[key] = {
-                    ...devicesClone[key],
-                    position: {
-                        ...devicesClone[key].position,
-                        x: x,
-                        y: y,
+                if (!(updatedDevice.position === undefined)) {
+                    console.log('QQQQ Should be updating X and Y', updatedDevice)
+                    let [x, y] = convertRealToD3([updatedDevice.position.pos_x, updatedDevice.position.pos_y], state.d3)
+                    devicesClone[key] = {
+                        ...devicesClone[key],
+                        position: {
+                            ...devicesClone[key].position,
+                            x: x,
+                            y: y,
+                        }
                     }
                 }
-
                 return devicesClone
             })
         } else {
@@ -84,10 +86,7 @@ const devicesReducer = (state = defaultState, action) => {
             break;
 
         case GET_DEVICES_SUCCESS:
-            console.log('QQQQ Devices Get', action.payload)
             return setDevices(action.payload)
-
-
 
         case GET_DEVICES_FAILURE:
             return Object.assign({}, state, {
@@ -147,7 +146,7 @@ const devicesReducer = (state = defaultState, action) => {
 
             devicesClone = deepCopy(state.devices)
 
-            devicesClone[currentDevice._id.$oid] = currentDevice
+            devicesClone[currentDevice._id] = currentDevice
 
             return {
                 ...state,

@@ -23,6 +23,15 @@ export const ArmIcon = styled.i`
 	}};
 `
 
+export const DeviceIcon = styled.i`
+	${sharedDeviceCss};
+	font-size: 2.5rem;
+	
+	${props => props.isSmall && {
+		fontSize: "3.5rem"
+	}};
+`
+
 export const BatterySvg = styled.svg`
     position: absolute;
     overflow: visible;
@@ -120,10 +129,10 @@ export const EditDeviceIcon = styled.i`
         cursor: pointer;
     }
     
-    font-size: 1.5rem;
+    font-size: 2rem;
     
     ${props => props.isSmall && {
-		fontSize: "1rem"
+		fontSize: "1.5rem"
 	}};
 `
 

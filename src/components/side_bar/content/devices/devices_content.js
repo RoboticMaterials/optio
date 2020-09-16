@@ -36,8 +36,9 @@ const DevicesContent = () => {
     //                                          //
     // ======================================== //
 
-    const [editingDeviceID, setEditingDeviceID] = useState('')
+    // const [editingDeviceID, setEditingDeviceID] = useState('')
     const [openDeviceStats, setOpenDeviceStats] = useState('')
+    const [openDeviceSettings, setOpenDeviceSettings] = useState('')
 
     // Redux Set Up
     const dispatch = useDispatch()
@@ -68,12 +69,11 @@ const DevicesContent = () => {
 
     // Sets the editingDeviceID to new so that the save knows to post instead of put
     const handleAddDevice = () => {
-        setEditingDeviceID('new')
+        setOpenDeviceSettings('new')
     }
 
     // Renders Existing Devices
     const handleExistingDevices = () => {
-
         let devicesValue = Object.values(devices)
 
         // Maps through the existing devices
@@ -81,12 +81,14 @@ const DevicesContent = () => {
 
             return (
                 <DeviceItem
+                    key={ind}
                     device={device}
                     isSmall={isSmall}
                     ind={ind}
                     tasks={tasks}
                     taskQueue={taskQueue}
                     setOpenDeviceStats={(deviceID) => setOpenDeviceStats(deviceID)}
+                    setOpenDeviceSettings = {(deviceID) => setOpenDeviceSettings(deviceID)}
                 />
             )
 
@@ -104,9 +106,9 @@ const DevicesContent = () => {
             */}
             <ContentHeader
                 content={'devices'}
-                mode={!!editingDeviceID ? 'create' : !!openDeviceStats ? 'title' : 'list' }
+                mode={!!openDeviceSettings ? 'create' : !!openDeviceStats ? 'title' : 'list' }
                 onClickAdd={() => { handleAddDevice() }}
-                onClickBack={() => setEditingDeviceID('')}
+                onClickBack={() => setOpenDeviceSettings('')}
 
                 backEnabled={!!openDeviceStats ? true : false }
 
@@ -119,8 +121,8 @@ const DevicesContent = () => {
             />
 
 
-            {!!editingDeviceID ?
-                <DeviceEdit editingDeviceID={editingDeviceID} devices={devices} onDeviceDelete={(id) => onDeviceDelete(id)} setEditingDeviceID={(id) => setEditingDeviceID(id)}/>
+            {!!openDeviceSettings ?
+                <DeviceEdit editingDeviceID={openDeviceSettings} devices={devices} onDeviceDelete={(id) => onDeviceDelete(id)} setOpenDeviceSettings={(id) => setOpenDeviceSettings(id)}/>
                 :
                 !!openDeviceStats ?
                     <DeviceStatistics />

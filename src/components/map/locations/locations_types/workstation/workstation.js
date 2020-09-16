@@ -7,7 +7,7 @@ import * as d3 from 'd3'
 
 import * as styled from './workstation.style'
 
-import { hoverStationInfo } from '../../../../redux/actions/stations_actions'
+import { hoverStationInfo } from '../../../../../redux/actions/stations_actions'
 
 function Workstation(props) {
 
@@ -49,7 +49,6 @@ function Workstation(props) {
         widgetInfo.id = props.location._id
 
         widgetInfo.heightWidth = '1'
-        // widgetInfo.yPosition = props.location.y+10
 
         // Initial Ratios
         widgetInfo.yPosition = props.location.y + 140 * props.d3.scale
@@ -60,7 +59,7 @@ function Workstation(props) {
         const el = document.getElementById(`${props.rd3tClassName}-rectQ`)
         let bBox = null
 
-        // Try catch for when page refreshses when in a widget. When refreshing in a widget, the elements is unmounted and cant get the bounding becasue of an unmounted element
+        // Try catch for when page refreshses when in a widget. When refreshing in a widget, the elements is unmounted and cant get the bounding because of an unmounted element
         try {
             bBox = el.getBoundingClientRect()
         } catch (error) {

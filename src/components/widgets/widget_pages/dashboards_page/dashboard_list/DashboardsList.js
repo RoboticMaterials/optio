@@ -70,7 +70,6 @@ const DashboardsList = (props) => {
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 
 	const station = stations[stationID]
-	console.log(station)
 	const dashboardsArray = station.dashboards.map(dashboardID => dashboards[dashboardID])
 
 	logger.log("DashboardsList dashboards",dashboards)

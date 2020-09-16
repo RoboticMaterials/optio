@@ -54,6 +54,7 @@ function locationTypeGraphic(type, isSelected) {
     }
 }
 
+// This adds a location selected info to the reducer
 export default function LocationContent(props) {
 
     const dispatch = useDispatch()
@@ -84,6 +85,7 @@ export default function LocationContent(props) {
                 draggable={false}
     
                 onMouseDown={async e => {
+                    console.log('QQQQ Selected Location', selectedLocation)
                     if (selectedLocation.type !== null) { return }
                     await Object.assign(selectedLocation, {...template, temp: true})
                     await dispatch(locationActions.addLocation(selectedLocation))

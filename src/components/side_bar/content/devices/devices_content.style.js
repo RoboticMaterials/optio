@@ -55,6 +55,8 @@ export const SettingsContainer = styled.div`
 `
 
 export const SettingsSectionsContainer = styled.div`
+    display: flex;
+    flex-direction: column;
     width: 100%;
     max-width: 25rem;
     margin: .75rem 0rem;

@@ -223,7 +223,7 @@ export class MapView extends Component {
                     Object.values(devices).filter(device => device.device_model == 'MiR100').map(device => {
                         [x, y] = convertRealToD3([device.position.pos_x, device.position.pos_y], this.d3)
                         Object.assign(device.position, { x, y })
-                        devices[device._id.$oid] = device
+                        devices[device._id] = device
                     })
                     this.props.onUpdateDevices(devices, this.d3) // Bulk Update
 
@@ -366,7 +366,7 @@ export class MapView extends Component {
             Object.values(devices).filter(device => device.device_model == 'MiR100').map(device => {
                 [x, y] = convertRealToD3([device.position.pos_x, device.position.pos_y], this.d3)
                 Object.assign(device.position, { x, y })
-                devices[device._id.$oid] = device
+                devices[device._id] = device
             })
             this.props.onUpdateDevices(devices, this.d3) // Bulk Update
 
@@ -476,7 +476,7 @@ export class MapView extends Component {
                                 <>{
                                     //// Render mobile devices
                                     Object.values(devices).filter(device => device.device_model == 'MiR100').map((device, ind) =>
-                                        <MiR100 key={device._id.$oid}
+                                        <MiR100 key={device._id}
                                             device={device}
                                             d3={this.d3}
                                         />

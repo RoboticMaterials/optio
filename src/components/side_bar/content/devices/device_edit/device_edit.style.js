@@ -22,10 +22,12 @@ export const ConnectionIcon = styled(styles.ConnectionIcon)`
 `
 
 export const DeviceIcon = styled.i`
-	position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     color: ${props => props.theme.bg.octonary};
-	font-size: 7rem;
+	font-size: 3rem;
+`
+
+export const ConnectionText = styled.p`
+    color: ${props => props.theme.bg.octonary};
+    font-family: ${props => props.theme.font.primary};
+    font-size: ${props => props.theme.fontSize.sz3};
 `

@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+
+import uuid from 'uuid'
 
 // Import Style
 import * as styled from './device_edit.style'
@@ -9,32 +12,76 @@ import Textbox from '../../../../basic/textbox/textbox'
 import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
 import Button from '../../../../basic/button/button'
 
+// Import actions
+import * as locationActions from '../../../../../redux/actions/locations_actions'
+import * as stationActions from '../../../../../redux/actions/stations_actions'
+import * as positionActions from '../../../../../redux/actions/positions_actions'
+import * as dashboardActions from '../../../../../redux/actions/dashboards_actions'
+import * as taskActions from '../../../../../redux/actions/tasks_actions'
 
+// Import templates
+import * as templates from '../devices_templates/device_templates'
 
+/**
+ * This handles editing device informaton
+ * This also handles adding devices to the map
+ * Currently using 'location' vs 'device' nominclature to match adding a location to the map and because devices really are just locations to the map
+ * 
+ * @param {*} props 
+ */
 const DeviceEdit = (props) => {
 
     const {
         editingDeviceID,
         devices,
         onDeviceDelete,
-        setEditingDeviceID,
+        setOpenDeviceSettings,
     } = props
 
     const [device, setDevice] = useState({})
     const [connectionText, setConnectionText] = useState('Not Connected')
     const [connectionIcon, setConnectionIcon] = useState('fas fa-question')
 
+    const dispatch = useDispatch()
+    const onAddLocation = (selectedLocation) => dispatch(locationActions.addLocation(selectedLocation))
+    const onSetSelectedLocation = (selectedLocation) => dispatch(locationActions.setSelectedLocation(selectedLocation))
+
+    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
+
+
     // On page load, see if the device is a new device or existing device
+    // TODO: This is going to fundementally change with how devices 'connect'.
     useEffect(() => {
 
         // If it's a new device then create a device with no name, type or status. Else find the device in the redux store. 
         if (editingDeviceID === 'new') {
             setDevice({ type: '', name: '', status: { task: '', battery: 0 }, ip: '' })
-        } else {
+        } 
+        
+        else {
 
             // Deep copy so that edits don't have side effects
+
             setDevice(deepCopy(devices[editingDeviceID]))
+
+            console.log('QQQQ Device in edit', devices[editingDeviceID], device)
+
+            setConnectionText('Connected')
+
+            onSetSelectedLocation({
+                name: '',
+                schema: null,
+                type: null,
+                pos_x: 0,
+                pos_y: 0,
+                rotation: 0,
+                x: 0,
+                y: 0,
+                _id: uuid.v4(),
+                device_id: devices[editingDeviceID].device_name,
+            })
         }
+
 
     }, [])
 
@@ -78,13 +125,38 @@ const DeviceEdit = (props) => {
      */
     const handleExistingDevice = () => {
 
-        return (
-            <>
-                <p>Existing Device</p>
-                <styled.DeviceIcon className={'icon-' + device.type} />
+        let deviceType = ''
+        let template = null
+        if (device.device_model === 'MiR100') {
+            deviceType = 'cart'
+            template = templates.armAttriutes
+        }
 
-            </>
+        return (
+            <styled.SettingsSectionsContainer style={{ alignItems: 'center', textAlign: 'center', }}>
+
+                <styled.ConnectionText>To add the device to the screen, grab the device with your mouse and drag onto the screen</styled.ConnectionText>
+
+                <styled.DeviceIcon
+                    className={'icon-' + deviceType}
+                    onMouseDown={async e => {
+                        if (selectedLocation.type !== null) { return }
+                        await Object.assign(selectedLocation, {...template, temp: true})
+                        await onAddLocation(selectedLocation)
+                        await onSetSelectedLocation(selectedLocation)
+                    }
+
+                    }
+                />
+
+
+            </styled.SettingsSectionsContainer>
+
         )
+
+    }
+
+    const handleAddDeviceToMap = () => {
 
     }
 
@@ -117,13 +189,11 @@ const DeviceEdit = (props) => {
 
             {connectionText === 'Connected' &&
 
-                <styled.SettingsSectionsContainer>
-                    {editingDeviceID === 'new' ?
-                        handleDeviceAdd()
-                        :
-                        handleExistingDevice()
-                    }
-                </styled.SettingsSectionsContainer>
+                editingDeviceID === 'new' ?
+                handleDeviceAdd()
+                :
+                handleExistingDevice()
+
 
             }
 
@@ -154,7 +224,7 @@ const DeviceEdit = (props) => {
             <Button schema={'devices'} secondary style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: '2rem' }}
                 onClick={() => {
                     onDeviceDelete(editingDeviceID)
-                    setEditingDeviceID('')
+                    setOpenDeviceSettings('')
                 }}
             >
                 Delete
