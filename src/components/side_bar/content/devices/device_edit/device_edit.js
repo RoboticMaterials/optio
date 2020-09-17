@@ -48,6 +48,7 @@ const DeviceEdit = (props) => {
     // TODO: This is going to fundementally change with how devices 'connect'.
     useEffect(() => {
 
+        // If the selected device does not have a location, then give it a temp one
         if (!selectedLocation) {
             onSetSelectedLocation({
                 name: selectedDevice.device_name,
@@ -68,6 +69,7 @@ const DeviceEdit = (props) => {
 
     }, [])
 
+    // TODO: Not sure this is needed with IOT Implementation
     const handleDeviceConnection = () => {
 
         // Need to see how the device is connecting

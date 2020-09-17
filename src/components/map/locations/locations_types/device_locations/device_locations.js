@@ -68,21 +68,27 @@ const DeviceLocations = (props) => {
         widgetInfo.xPosition = location.x - 243
         widgetInfo.scale = d3.scale
 
+
         // Gets the height of the workstation
-        const el = document.getElementById(`${rd3tClassName}-rectQ`)
+        const el = document.getElementById(`${rd3tClassName}-device`)
         let bBox = null
 
+
         // Try catch for when page refreshses when in a widget. When refreshing in a widget, the elements is unmounted and cant get the bounding because of an unmounted element
+        // TODO: Not currently working with these svgs....
         try {
-            bBox = el.getBoundingClientRect()
+            bBox = el.getBBox()
         } catch (error) {
             return widgetInfo
         }
+
+        console.log('QQQQ Bbox height', bBox.height)
 
         // Stops the widget from getting to small and keeping the widget relative to the location size
         if (d3.scale < .8) {
             widgetInfo.scale = .8
             widgetInfo.yPosition = location.y + bBox.height / 2 + 100
+            // widgetInfo.yPosition = location.y + 100
 
         }
 
@@ -90,6 +96,7 @@ const DeviceLocations = (props) => {
         else if (d3.scale > 1.3) {
             widgetInfo.scale = 1.3
             widgetInfo.yPosition = location.y + bBox.height / 2 + 180
+            // widgetInfo.yPosition = location.y + 180
         }
         return widgetInfo
     }
@@ -181,7 +188,7 @@ const DeviceLocations = (props) => {
                 >
                     {/* <rect x="-7" y="-7" rx="0" ry="0" width="14" height="14" /> */}
                     {/* <rect id={`${rd3tClassName}-rectQ`} x="-8" y="-8" rx="0.2" ry="0.2" width="16" height="16" fill="transparent" strokeWidth="1" style={{ filter: hovering && !isSelected && selectedTask == null ? 'url(#glow2)' : 'none' }} /> */}
-                    <Arm id={`${rd3tClassName}-rectQ`}/>
+                    <Arm  customClassName={rd3tClassName}/>
                     {/* <RanpakTrident id={`${rd3tClassName}-rectQ`}/> */}
 
                 </g>

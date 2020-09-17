@@ -107,6 +107,7 @@ const DevicesContent = () => {
                             // If the device has a station Id, set the station ID. It wouldnt have a station ID because the device has not been placed on the map
                             if (!!devices[deviceID].station_id) {
                                 onSetSelectedLocation(deepCopy(locations[devices[deviceID].station_id]))
+                                dispatch(locationActions.selectLocation(locations[devices[deviceID].station_id]._id))
                             }
                         }
                         }

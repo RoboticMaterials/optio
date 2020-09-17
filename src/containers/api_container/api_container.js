@@ -98,7 +98,6 @@ const ApiContainer = (props) => {
             setCurrentPage(currentPageRouter)
 
             // update data interval to get data for new currentPage
-            // TODO: Commented out while RMStudio 2.0 is under construction
             setDataInterval(currentPageRouter);
         }
 
