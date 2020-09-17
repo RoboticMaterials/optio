@@ -27,6 +27,7 @@ export async function getDevices() {
              * The request was made and the server responded with a
              * status code that falls out of the range of 2xx
              */
+
             log.debug('error.response.data', error.response.data);
             log.debug('error.response.status', error.response.status);
             log.debug('error.response.headers', error.response.headers);
@@ -157,6 +158,7 @@ export async function putDevices(device, ID) {
 
 
     } catch (error) {
+
 
         // Error 😨
         if (error.response) {

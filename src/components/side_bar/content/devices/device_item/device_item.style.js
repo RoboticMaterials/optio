@@ -14,21 +14,12 @@ export const DeviceContainer = styled.div`
     margin-bottom: 2rem;
 `
 
-export const ArmIcon = styled.i`
-	${sharedDeviceCss};
-	font-size: 7rem;
-	
-	${props => props.isSmall && {
-		fontSize: "3.5rem"
-	}};
-`
-
 export const DeviceIcon = styled.i`
 	${sharedDeviceCss};
 	font-size: 2.5rem;
 	
 	${props => props.isSmall && {
-		fontSize: "3.5rem"
+		fontSize: "1.25rem"
 	}};
 `
 
@@ -56,6 +47,7 @@ export const BatteryText = styled.p`
     right: 10%;
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz3};
+    user-select: none;
     
     ${props => props.isSmall && {
 		fontSize: props.theme.fontSize.sz4
@@ -94,14 +86,6 @@ export const BigCircle = styled.div`
 	}};
 `
 
-export const CartIcon = styled.i`
-	${sharedDeviceCss};
-    font-size: 2.5rem;
-    
-    ${props => props.isSmall && {
-		fontSize: "1.25rem"
-	}};
-`
 
 export const DeviceTitle = styled.h2`
 
@@ -112,6 +96,9 @@ export const DeviceTitle = styled.h2`
     
     top: 25%;
     transform: translateY(-50%);
+
+    user-select: none;
+
     
     // small style
     ${props => props.isSmall && {
@@ -158,6 +145,7 @@ export const StatusText = styled.p`
     font-size: ${props => props.theme.fontSize.sz3};
     color: ${props => props.theme.bg.octonary};
     overflow: hidden;
+    user-select: none;
     
     ${props => props.isSmall && {
 		fontSize: props.theme.fontSize.sz4

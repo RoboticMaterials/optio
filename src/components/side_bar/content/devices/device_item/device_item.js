@@ -1,5 +1,5 @@
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 import * as styled from './device_item.style'
 
@@ -10,8 +10,7 @@ const DeviceItem = (props) => {
         device,
         isSmall,
         ind,
-        setOpenDeviceStats,
-        setOpenDeviceSettings,
+        setSelectedDevice,
         tasks,
         taskQueue,
     } = props
@@ -21,9 +20,15 @@ const DeviceItem = (props) => {
     const deviceID = device._id
     const deviceName = device.device_name
 
-    let deviceType = ''
-    if (device.device_model === 'MiR100') deviceType = 'cart'
+    const [deviceType, setDeviceType] = useState('')
 
+    // Sets the type of device on page laod
+    useEffect(() => {
+
+        if (device.device_model === 'MiR100') setDeviceType('cart')
+        else { setDeviceType('unknown') }
+
+    }, [])
 
     // Handles Device status, this might have to be tailord for each device
     const handleDeviceStatus = () => {
@@ -60,14 +65,25 @@ const DeviceItem = (props) => {
 
     const handleDeviceIcon = () => {
         let deviceIcon = 'icon-rmLogo'
+        let deviceFontSize = null
 
-        if(deviceType === 'arm' || deviceType === 'cart') {
+        // Sets the icon to be displayed
+        if (deviceType === 'arm' || deviceType === 'cart') {
             deviceIcon = 'icon-' + deviceType
         }
 
+        if (deviceType === 'arm' || deviceType === 'unknown') {
+            if (isSmall) {
+                deviceFontSize = '3rem';
+
+            } else {
+                deviceFontSize = '6rem';
+
+            }
+        }
 
         return (
-            <styled.DeviceIcon isSmall={isSmall} className={deviceIcon}/>
+            <styled.DeviceIcon isSmall={isSmall} className={deviceIcon} style={{ fontSize: !!deviceFontSize && deviceFontSize }} />
         )
     }
 
@@ -204,15 +220,7 @@ const DeviceItem = (props) => {
 
                 <styled.DeviceTitle isSmall={isSmall}>{deviceName}</styled.DeviceTitle>
 
-                {/* Arm Icon is small so this increases it's size */}
                 {handleDeviceIcon()}
-                {/* {deviceType === 'arm' ?
-                    <styled.ArmIcon isSmall={isSmall} className={'icon-' + deviceType} />
-
-                    :
-                    <styled.CartIcon isSmall={isSmall} className={'icon-' + deviceType} />
-
-                } */}
 
                 <styled.StatusContainer>
                     <styled.StatusText isSmall={isSmall}>
@@ -224,7 +232,7 @@ const DeviceItem = (props) => {
                 <styled.EditDeviceIcon
                     isSmall={isSmall}
                     className='fas fa-cog'
-                    onClick={() => setOpenDeviceSettings(deviceID)}
+                    onClick={() => setSelectedDevice(deviceID)}
                 />
 
             </styled.BigCircle>

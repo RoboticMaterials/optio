@@ -70,7 +70,7 @@ export default function LocationContent(props) {
     function LocationTypeButton({ type, selected }) {
 
         let template
-        switch(type) {
+        switch (type) {
             case 'workstation':
                 template = locationTemplates.workstationAttributes
                 break
@@ -83,15 +83,15 @@ export default function LocationContent(props) {
             <styled.LocationTypeButton
                 id={`location-type-button-${type}`}
                 draggable={false}
-    
+
                 onMouseDown={async e => {
                     console.log('QQQQ Selected Location', selectedLocation)
                     if (selectedLocation.type !== null) { return }
-                    await Object.assign(selectedLocation, {...template, temp: true})
+                    await Object.assign(selectedLocation, { ...template, temp: true })
                     await dispatch(locationActions.addLocation(selectedLocation))
                     await dispatch(locationActions.setSelectedLocation(selectedLocation))
                 }}
-    
+
                 isSelected={type == selected}
                 style={{ cursor: 'grab' }}
             >
@@ -126,7 +126,7 @@ export default function LocationContent(props) {
      * tieing it to this location. Each child position for a station is also either POSTED or PUT. 
      */
     const onSave = () => {
-        
+
         const saveChildren = (locationID) => {
             //// Function to save the children of a posted station
             // Since the child has a .parent attribute, this function needs to be given the station's id
@@ -166,7 +166,7 @@ export default function LocationContent(props) {
                     })
 
                     saveChildren(postedLocation._id)
-                    
+
                 }
             })
         } else { // If the location is not new, PUT it and update it's children
@@ -225,7 +225,7 @@ export default function LocationContent(props) {
             <styled.ContentContainer
                 // Delete any new positions that were never dragged onto the map
                 onMouseUp={e => {
-                    
+
                 }}
             >
                 <div style={{ marginBottom: '1rem' }}>
@@ -244,11 +244,11 @@ export default function LocationContent(props) {
                     defaultValue={!!selectedLocation && selectedLocation.name}
                     schema={'locations'}
                     focus={!!selectedLocation && selectedLocation.type == null}
-                    onChange={(e) => { 
+                    onChange={(e) => {
                         if (selectedLocation.type !== null) {
-                            dispatch(locationActions.setLocationAttributes(selectedLocation._id, {name: e.target.value}))
+                            dispatch(locationActions.setLocationAttributes(selectedLocation._id, { name: e.target.value }))
                         } else { // If the type has not been selected, this location does not exist in the reducer and needs to be changed directly
-                            Object.assign(selectedLocation, {name: e.target.value})
+                            Object.assign(selectedLocation, { name: e.target.value })
                             dispatch(locationActions.setSelectedLocation(selectedLocation))
                         }
                     }}
@@ -282,11 +282,15 @@ export default function LocationContent(props) {
         )
     }
 
+
     else {    // List Mode
+        // console.log('QQQQ Locations', locations)
         return (
             <ContentList
                 title={'Locations'}
                 schema={'locations'}
+                // Filters out devices from being displayed in locations
+                // elements={Object.values(locations).filter(location => location.type !== 'device' )}
                 elements={Object.values(locations)}
                 onMouseEnter={(location) => dispatch(locationActions.selectLocation(location._id))}
                 onMouseLeave={(location) => dispatch(locationActions.deselectLocation())}

@@ -26,6 +26,7 @@ import { convertRealToD3 } from '../../methods/utils/map_utils'
 const defaultState = {
     devices: {},
     d3: null,
+    selectedDevice: null,
 }
 
 const devicesReducer = (state = defaultState, action) => {
@@ -34,12 +35,16 @@ const devicesReducer = (state = defaultState, action) => {
     let updatedDeviceIndex = ''
     let index = ''
 
+    console.log('QQQY Device Reducer', state.devices)
+
     // ======================================== //
     //                                          //
     //         DEVICE UTILITY FUNCTIONS         //
     //                                          //
     // ======================================== //
     const setDevices = (devices) => {
+        console.log('QQQY Device Reducer', devices)
+
 
         // What this does is update the devices X and Y positions based on the values in the backend.
         // When the RMStudio initially loads, the devices X and Y is calculated in the map_view container, but those values aren't put to the backend.
@@ -50,7 +55,6 @@ const devicesReducer = (state = defaultState, action) => {
             Object.keys(devicesClone).map((key, ind) => {
                 const updatedDevice = devices[key]
                 if (!(updatedDevice.position === undefined)) {
-                    console.log('QQQQ Should be updating X and Y', updatedDevice)
                     let [x, y] = convertRealToD3([updatedDevice.position.pos_x, updatedDevice.position.pos_y], state.d3)
                     devicesClone[key] = {
                         ...devicesClone[key],
@@ -86,6 +90,8 @@ const devicesReducer = (state = defaultState, action) => {
             break;
 
         case GET_DEVICES_SUCCESS:
+            console.log('QQQY Device Reducer', action.payload)
+
             return setDevices(action.payload)
 
         case GET_DEVICES_FAILURE:
@@ -108,6 +114,7 @@ const devicesReducer = (state = defaultState, action) => {
             break;
 
         case POST_DEVICES_SUCCESS:
+            console.log('QQQY Device Reducer', action.payload)
 
             devicesClone = deepCopy(state.devices)
 
@@ -142,6 +149,8 @@ const devicesReducer = (state = defaultState, action) => {
 
         case PUT_DEVICES_SUCCESS:
             // Find the corresponding device and replace it with the new one
+            console.log('QQQY Device Reducer', action.payload)
+
             currentDevice = JSON.parse(action.payload)
 
             devicesClone = deepCopy(state.devices)
@@ -174,6 +183,7 @@ const devicesReducer = (state = defaultState, action) => {
             break;
 
         case DELETE_DEVICES_SUCCESS:
+            console.log('QQQY Device Reducer', action.payload)
 
             devicesClone = deepCopy(state.devices)
 
@@ -202,10 +212,19 @@ const devicesReducer = (state = defaultState, action) => {
         //                                          //
         // ======================================== //
         case 'UPDATE_DEVICES':
+            console.log('QQQY Device Reducer', action.payload)
+
             return {
                 ...state,
                 devices: deepCopy(action.payload.devices),
                 d3: action.payload.d3,
+            }
+
+        case 'SET_SELECTED_DEVICE':
+            return {
+                ...state,
+                selectedDevice: action.payload
+
             }
 
         default:

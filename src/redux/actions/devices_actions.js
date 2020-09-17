@@ -45,7 +45,6 @@ export const getDevices = () => {
             const devices = await api.getDevices();
 
             devices.forEach((device, ind) => {
-                // console.log('QQQQ Device', device)
                 if (!(device.position === undefined)) {
                     devices[ind].position.pos_x = device.position.x
                     devices[ind].position.pos_y = device.position.y
@@ -133,4 +132,8 @@ export const deleteDevices = (ID) => {
 
 export const updateDevices = (devices, d3) => {
     return { type: 'UPDATE_DEVICES', payload: { devices, d3 } }
+}
+
+export const setSelectedDevice = (device) => {
+    return { type: 'SET_SELECTED_DEVICE', payload: device }
 }
