@@ -10,7 +10,8 @@ import * as styled from './device_locations.style'
 import { hoverStationInfo } from '../../../../../redux/actions/stations_actions'
 
 // Import Types
-import Arm from './device_types/arm'
+import GenericDevice from './device_types/generic_device'
+import ArmDevice from './device_types/arm_device'
 import RanpakTrident from './device_types/ranpak_tident'
 
 const DeviceLocations = (props) => {
@@ -32,6 +33,7 @@ const DeviceLocations = (props) => {
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const hoveringID = useSelector(state => state.locationsReducer.hoverLocationID)
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
+    const devices = useSelector(state => state.devicesReducer.devices)
 
     // console.log('QQQQ props of workstaion', props)
 
@@ -82,7 +84,7 @@ const DeviceLocations = (props) => {
             return widgetInfo
         }
 
-        console.log('QQQQ Bbox height', bBox.height)
+        console.log('QQQQ BBOx',bBox.height)
 
         // Stops the widget from getting to small and keeping the widget relative to the location size
         if (d3.scale < .8) {
@@ -114,6 +116,19 @@ const DeviceLocations = (props) => {
         // If hovering is true but there's no hoverInfo in the reducer (see widgets for when hoverInfo is set to null), set hovering to false
         else if (!isSelected && hovering && hoveringInfo === null) {
             setHovering(false)
+        }
+    }
+
+    const handleDeviceSVG = () => {
+
+        try {
+
+            if (devices[location.device_id].device_model === 'MiR100') {
+                return <ArmDevice customClassName={rd3tClassName} />
+            }
+            else return <GenericDevice customClassName={rd3tClassName} />
+        } catch (error) {
+
         }
     }
 
@@ -184,14 +199,27 @@ const DeviceLocations = (props) => {
                         setHovering(true)
                     }}
                     onMouseDown={() => setTranslating(true)}
-                    transform="translate(-13.7,-92)"
+                    transform='scale(.07) translate(-180,-100)'
                 >
-                    {/* <rect x="-7" y="-7" rx="0" ry="0" width="14" height="14" /> */}
-                    {/* <rect id={`${rd3tClassName}-rectQ`} x="-8" y="-8" rx="0.2" ry="0.2" width="16" height="16" fill="transparent" strokeWidth="1" style={{ filter: hovering && !isSelected && selectedTask == null ? 'url(#glow2)' : 'none' }} /> */}
-                    <Arm  customClassName={rd3tClassName}/>
-                    {/* <RanpakTrident id={`${rd3tClassName}-rectQ`}/> */}
+
+                    {handleDeviceSVG()}
 
                 </g>
+
+                {/* TODO: Commented out, this is just for reference to make sure that the devices are showing up in the correct space */}
+                {/* <g
+                    className={`${rd3tClassName}-trans`}
+                    style={{ cursor: "pointer" }}
+                    onMouseEnter={() => {
+                        setHovering(true)
+                    }}
+                    onMouseDown={() => setTranslating(true)}
+                    // transform="translate(-13.7,-92)"
+                    // transform='scale(.07) translate(-13.7,-92)'
+                >
+                    <rect id={`${rd3tClassName}-rectQ`} x="-8" y="-8" rx="0.2" ry="0.2" width="16" height="16" fill="transparent" strokeWidth="1" style={{ filter: hovering && !isSelected && selectedTask == null ? 'url(#glow2)' : 'none' }} />
+
+                </g> */}
 
             </styled.WorkstationGroup>
             {handleWidgetPageOpen()}

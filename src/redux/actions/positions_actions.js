@@ -85,6 +85,7 @@ return async dispatch => {
   }
     delete position.temp
     delete position.new
+    position.change_key = 'new'
     const postedPosition = await api.postPosition(position);
     return onSuccess(postedPosition);
   } catch (error) {
@@ -146,6 +147,7 @@ return async dispatch => {
         onStart();
         // const removePosition = await api.deletePosition(ID);
 
+        // Putting with change_key as deleted instead of deleting because it was causing back end issues
         let positionCopy = deepCopy(position)
         delete positionCopy._id
         delete positionCopy.temp
