@@ -38,7 +38,7 @@ const App = (props) => {
     // Set to true for the time being, authentication is not 100% complete as of 09/14/2020
     const [authenticated, setAuthenticated] = useState(true)
     
-    const [loaded, setLoaded] = useState(false)
+    const [loaded, setLoaded] = useState(true)
     const [stateTheme, setStateTheme] = useState('main')
 
     const [showSideBar, setShowSideBar] = useState(false)

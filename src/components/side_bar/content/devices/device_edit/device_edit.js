@@ -11,6 +11,8 @@ import { deepCopy } from '../../../../../methods/utils/utils'
 import Textbox from '../../../../basic/textbox/textbox'
 import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
 import Button from '../../../../basic/button/button'
+import Positions from '../../locations/positions/positions'
+
 
 // Import actions
 import * as locationActions from '../../../../../redux/actions/locations_actions'
@@ -35,6 +37,7 @@ const DeviceEdit = (props) => {
     const [connectionText, setConnectionText] = useState('Not Connected')
     const [connectionIcon, setConnectionIcon] = useState('fas fa-question')
     const [deviceType, setDeviceType] = useState('')
+    const [showPositions, setShowPositions] = useState(false)
 
     const dispatch = useDispatch()
     const onAddLocation = (selectedLocation) => dispatch(locationActions.addLocation(selectedLocation))
@@ -45,7 +48,7 @@ const DeviceEdit = (props) => {
     const selectedDevice = useSelector(state => state.devicesReducer.selectedDevice)
 
     // On page load, see if the device is a new device or existing device
-    // TODO: This is going to fundementally change with how devices 'connect'.
+    // TODO: This is going to fundementally change with how devices 'connect' to the cloud.
     useEffect(() => {
 
         // If the selected device does not have a location, then give it a temp one
@@ -62,10 +65,19 @@ const DeviceEdit = (props) => {
                 y: 0,
                 _id: uuid.v4(),
             })
+        } else {
+            // If selected device has children then it has positions to show
+            console.log('QQQQ Selected device in edit', selectedLocation)
+            if (!!selectedLocation.children) {
+                setShowPositions(true)
+            }
+
         }
 
+        // Sets the type of device, unknown devic defaults to an RM logo while known devices use their own custom SVGs
         if (selectedDevice.device_model === 'MiR100') setDeviceType('cart')
         else { setDeviceType('unknown') }
+
 
     }, [])
 
@@ -146,6 +158,59 @@ const DeviceEdit = (props) => {
 
     }
 
+    const handlePositions = () => {
+
+        return(
+            <Positions/>
+        )
+
+        const type = 'cart_position'
+
+        const template = {
+            schema: 'position',
+            type: 'cart_position',
+            parent: null,
+            new: true,
+        }
+
+        const selected = true
+
+        const isSelected = selected
+
+        return (
+            <styled.SettingsSectionsContainer>
+
+                <p>Put this bitch on the map</p>
+                <styled.LocationTypeButton
+                    id={`location-type-button-${type}`}
+                    draggable={false}
+
+                    onMouseDown={async e => {
+                        console.log('QQQQ Selected Location', selectedLocation)
+                        if (selectedLocation.type !== null) { return }
+                        await Object.assign(selectedLocation, { ...template, temp: true })
+                        await onAddLocation(selectedLocation)
+                        await onSetSelectedLocation(selectedLocation)
+                    }}
+
+                    isSelected={type == selected}
+                    style={{ cursor: 'grab' }}
+                >
+
+                    <styled.LocationTypeGraphic isSelected={isSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                        <rect x="100" y="40" width="200" height="320" rx="30" transform="translate(400 0) rotate(90)" fill="none" stroke="#6283f0" strokeMiterlimit="10" strokeWidth="20" />
+                        <path d="M315.5,200.87l-64,36.95A1,1,0,0,1,250,237v-73.9a1,1,0,0,1,1.5-.87l64,36.95A1,1,0,0,1,315.5,200.87Z" fill="#6283f0" stroke="#6283f0" strokeMiterlimit="10" strokeWidth="10" />
+                        <circle cx="200" cy="200" r="15" fill="#6283f0" />
+                        <circle cx="150" cy="200" r="10" fill="#6283f0" />
+                        <circle cx="102.5" cy="200" r="7.5" fill="#6283f0" />
+                    </styled.LocationTypeGraphic>
+
+                </styled.LocationTypeButton>
+
+            </styled.SettingsSectionsContainer>
+        )
+    }
+
     // This sets both the device name and station name to the same name
     const handleSetDeviceName = (event) => {
         onSetSelectedLocation({
@@ -208,6 +273,10 @@ const DeviceEdit = (props) => {
 
             {handleExistingDevice()}
 
+            {!!showPositions &&
+
+                handlePositions()
+            }
 
             {/* <styled.SettingsSectionsContainer>
                 <styled.SettingsLabel schema={'devices'}>Device Type</styled.SettingsLabel>

@@ -115,6 +115,8 @@ return async dispatch => {
         let positionCopy = deepCopy(position)
         delete positionCopy._id
         delete positionCopy.temp
+        // Tells the backend that a position has changed
+        positionCopy.change_key = 'changed'
         const updatePosition = await api.putPosition(positionCopy, ID);
         return onSuccess(updatePosition)
     } catch(error) {
@@ -126,7 +128,7 @@ return async dispatch => {
 
 // delete
 // ******************************
-export const deletePosition = (ID) => {
+export const deletePosition = (position, ID) => {
 return async dispatch => {
     function onStart() {
         dispatch({ type: DELETE_POSITION_STARTED });
@@ -142,7 +144,14 @@ return async dispatch => {
 
     try {
         onStart();
-        const removePosition = await api.deletePosition(ID);
+        // const removePosition = await api.deletePosition(ID);
+
+        let positionCopy = deepCopy(position)
+        delete positionCopy._id
+        delete positionCopy.temp
+        // Tells the backend that a position has been deleted
+        positionCopy.change_key = 'deleted'
+        const updatePosition = await api.putPosition(positionCopy, ID);
         return onSuccess(ID)
     } catch(error) {
         return onError(error)

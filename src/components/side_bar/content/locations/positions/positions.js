@@ -44,7 +44,7 @@ export default function Positions() {
                     let locationPositionIDs = selectedLocation.positions
                     locationPositionIDs.splice(i, 1)
                     dispatch(locationActions.setLocationAttributes(selectedLocation._id, {positions: locationPositionIDs}))
-                    dispatch(positionActions.deletePosition(position._id))
+                    dispatch(positionActions.deletePosition(positions[position._id], position._id))
                 }}></MinusButton>
                 <Textbox style={{flex: '1'}} schema="locations" focus={i==editingIndex} defaultValue={position.name} onChange={(e) => {
                     setEditingIndex(i)

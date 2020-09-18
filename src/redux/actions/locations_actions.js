@@ -54,7 +54,8 @@ import {
   export const deleteLocation = (id) => {
     return async dispatch => {
         dispatch(stationActions.deleteStation(id))
-        dispatch(positionActions.deletePosition(id))
+        // TODO: Why is this here? Is this a catch because it may either be a position or location?
+        // dispatch(positionActions.deletePosition(id))
     }
   }
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

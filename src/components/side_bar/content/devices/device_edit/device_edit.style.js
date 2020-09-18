@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components'
 import * as style from '../devices_content.style'
 import * as styles from '../../settings/settings.style'
+import * as stylel from '../../locations/locations_content.style'
 
 export const SettingsContainer = styled(style.SettingsContainer)`
 `
@@ -19,6 +20,12 @@ export const ConnectionButton = styled(styles.ConnectionButton)`
 `
 
 export const ConnectionIcon = styled(styles.ConnectionIcon)`
+`
+
+export const LocationTypeGraphic = styled(stylel.LocationTypeGraphic)`
+`
+
+export const LocationTypeButton = styled(stylel.LocationTypeButton)`
 `
 
 export const DeviceIcon = styled.i`

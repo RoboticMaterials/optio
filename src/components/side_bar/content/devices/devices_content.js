@@ -239,7 +239,7 @@ const DevicesContent = () => {
 
             //// Delete children
             locationToDelete.children.forEach(childID => {
-                dispatch(positionActions.deletePosition(childID))
+                dispatch(positionActions.deletePosition(positions[childID], childID))
             })
 
             //// Delete dashboards
@@ -252,7 +252,9 @@ const DevicesContent = () => {
                 .filter(task => task.load.station == locationToDelete._id || task.unload.station == locationToDelete._id)
                 .forEach(task => dispatch(taskActions.deleteTask(task._id.$oid)))
         } else {
-            dispatch(positionActions.deletePosition(locationToDelete))
+            
+            // dispatch(positionActions.deletePosition(locationToDelete))
+            dispatch(positionActions.deletePosition(locationToDelete, locationToDelete._id))
 
             //// Delete Relevant tasks
             Object.values(tasks)
