@@ -33,7 +33,9 @@ const DeviceItem = (props) => {
     // Sets the type of device on page laod
     useEffect(() => {
 
+        // Set the type of device
         if (device.device_model === 'MiR100') setDeviceType('cart')
+        else if (device.device_model === 'trident') setDeviceType('trident')
         else { setDeviceType('unknown') }
 
         if(!!device.station_id && device.device_model !== 'MiR100') setStationId(device.station_id)
@@ -74,21 +76,22 @@ const DeviceItem = (props) => {
         return deviceStatus
     }
 
+    // Handles the icon type to be displayed
     const handleDeviceIcon = () => {
         let deviceIcon = 'icon-rmLogo'
         let deviceFontSize = null
 
         // Sets the icon to be displayed
-        if (deviceType === 'arm' || deviceType === 'cart') {
+        if (deviceType === 'arm' || deviceType === 'cart' || deviceType === 'trident') {
             deviceIcon = 'icon-' + deviceType
         }
 
-        if (deviceType === 'arm' || deviceType === 'unknown') {
+        if (deviceType === 'cart') {
             if (isSmall) {
-                deviceFontSize = '3rem';
+                deviceFontSize = '1.25rem';
 
             } else {
-                deviceFontSize = '6rem';
+                deviceFontSize = '2.5rem';
 
             }
         }

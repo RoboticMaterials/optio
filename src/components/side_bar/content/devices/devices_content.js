@@ -90,8 +90,19 @@ const DevicesContent = () => {
 
             let devicesValue = Object.values(devices)
 
+
             // Maps through the existing devices
             return devicesValue.map((device, ind) => {
+
+                // This handles devices that still have station ids but the station has been deleted
+                // Commented out for now because it may be causing other bugs
+                // if (!!device.station_id) {
+                //     if (!Object.keys(locations).includes(device.station_id)) {
+                //         delete device.station_id
+                //         onDeviceChange(device, device._id)
+                //         console.log('QQQQ Device has a station ID that does not exist')
+                //     }
+                // }
 
                 return (
                     <DeviceItem
@@ -252,7 +263,7 @@ const DevicesContent = () => {
                 .filter(task => task.load.station == locationToDelete._id || task.unload.station == locationToDelete._id)
                 .forEach(task => dispatch(taskActions.deleteTask(task._id.$oid)))
         } else {
-            
+
             // dispatch(positionActions.deletePosition(locationToDelete))
             dispatch(positionActions.deletePosition(locationToDelete, locationToDelete._id))
 
@@ -261,6 +272,10 @@ const DevicesContent = () => {
                 .filter(task => task.load.position == locationToDelete._id || task.unload.position == locationToDelete._id)
                 .forEach(task => dispatch(taskActions.deleteTask(task._id.$oid)))
         }
+
+        // Delete the station_id attatched to the device as well
+        const device = delete selectedDevice.station_id
+        onDeviceChange(device, selectedDevice._id)
 
         onSetSelectedDevice(null)
 

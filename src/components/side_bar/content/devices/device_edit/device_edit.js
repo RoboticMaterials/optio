@@ -125,7 +125,15 @@ const DeviceEdit = (props) => {
 
         if (selectedDevice.device_model === 'MiR100') {
             template = templates.armAttriutes
-        } else {
+        } 
+        
+        else if (selectedDevice.device_model === 'trident') {
+            deviceIcon ='icon-trident'
+            template = templates.armAttriutes
+
+        }
+        
+        else {
             template = templates.armAttriutes
         }
 

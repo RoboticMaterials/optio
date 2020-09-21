@@ -129,15 +129,17 @@ const DeviceLocations = (props) => {
         let selected = true
         if(!!selectedLocation && !!selectedLocation.device_id && location.device_id !== selectedLocation.device_id) selected = false
 
+
         try {
 
-            if (devices[location.device_id].device_model === 'MiR100') {
-                return <ArmDevice customClassName={rd3tClassName}/>
-            }
-            // else return <GenericDevice customClassName={rd3tClassName}/>
-            else return <GenericDevice customClassName={rd3tClassName} selected={selected}/>
-        } catch (error) {
+            if (devices[location.device_id].device_model === 'MiR100') return <ArmDevice customClassName={rd3tClassName}/>
+            
+            else if (devices[location.device_id].device_model === 'trident') return <RanpakTrident customClassName={rd3tClassName} selected={selected}/>
 
+            else return <GenericDevice customClassName={rd3tClassName} selected={selected}/>
+
+        } catch (error) {
+            console.log('QQQQ Catching error, please fix', error)
         }
     }
 

@@ -37,4 +37,5 @@ export const ConnectionText = styled.p`
     color: ${props => props.theme.bg.octonary};
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz3};
+    user-select: none;
 `

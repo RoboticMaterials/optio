@@ -16,10 +16,10 @@ export const DeviceContainer = styled.div`
 
 export const DeviceIcon = styled.i`
 	${sharedDeviceCss};
-	font-size: 2.5rem;
+	font-size: 6rem;
 	
 	${props => props.isSmall && {
-		fontSize: "1.25rem"
+		fontSize: "3rem"
 	}};
 `
 

@@ -10,7 +10,8 @@ const ArmDevice = (props) => {
         <svg xmlns="http://www.w3.org/2000/svg" id={`${customClassName}-device`}>
             <defs>
                 <linearGradient id="linear-gradient" x1="82.03" y1="119.98" x2="277.64" y2="119.98" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#1e9cd7" /><stop offset="1" stop-color="#005b97" />
+                    <stop offset="0" stop-color="#1e9cd7" />
+                    <stop offset="1" stop-color="#005b97" />
                 </linearGradient>
             </defs>
             <g id="Layer_2" data-name="Layer 2">
