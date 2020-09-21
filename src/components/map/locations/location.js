@@ -166,7 +166,6 @@ const DragEntityProto = (props) => {
         )
 
         // Attempt to raise SVG element using d3. BROKEN -Kh
-        // console.log('QQQQ Main Element', mainElement)
         // mainElement.on('mouseover', () => {
         //     mainElement.raise()
         // })

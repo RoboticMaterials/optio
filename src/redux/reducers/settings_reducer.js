@@ -42,7 +42,6 @@ export const mirUrl = (state = defaultState) => {
 }
 
 const settingsReducer = (state = defaultState, action) => {
-    // console.log('QQQQ Settings in Reducer', state.settings)
     switch(action.type) {
 
         case 'apiSim':

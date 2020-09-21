@@ -156,7 +156,6 @@ const HILModal = () => {
                                 
                                 //  Delete the timer in the state
                                 if (!!statusTimerIntervals[id]) {
-                                    console.log('QQQQ clearing Q', hilTimers)
                                     clearInterval(statusTimerIntervals[id])
                                     delete statusTimerIntervals[id]
                                     setStatusTimerIntervals({

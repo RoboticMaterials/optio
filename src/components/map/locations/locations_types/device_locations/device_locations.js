@@ -35,9 +35,6 @@ const DeviceLocations = (props) => {
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
     const devices = useSelector(state => state.devicesReducer.devices)
 
-    // console.log('QQQQ props of workstaion', props)
-
-
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
 
@@ -53,6 +50,17 @@ const DeviceLocations = (props) => {
         //     dispatchHoverStationInfo(handleWidgetHover())
         // }
     })
+
+    /**
+    * This runs on page load (thats mean location are mounted) and shows a widget page if it returns true. 
+    * If there is a station ID in the params (URL) and it matches this location,
+    * and the URL (params) container a widget page then the widget page should be showing
+    */
+    useEffect(() => {
+        if (params.stationID !== undefined && params.stationID === props.location._id && !!params.widgetPage) {
+            dispatchHoverStationInfo(handleWidgetHover())
+        }
+    }, [])
 
     /**
      * Passes the X, Y, scale and ID of location to redux which is then used in widgets
@@ -71,34 +79,29 @@ const DeviceLocations = (props) => {
         widgetInfo.scale = d3.scale
 
 
-        // Gets the height of the workstation
+        // Gets the height of the device
         const el = document.getElementById(`${rd3tClassName}-device`)
         let bBox = null
 
 
         // Try catch for when page refreshses when in a widget. When refreshing in a widget, the elements is unmounted and cant get the bounding because of an unmounted element
-        // TODO: Not currently working with these svgs....
         try {
-            bBox = el.getBBox()
+            bBox = el.getBoundingClientRect()
         } catch (error) {
             return widgetInfo
         }
 
-        console.log('QQQQ BBOx',bBox.height)
-
         // Stops the widget from getting to small and keeping the widget relative to the location size
         if (d3.scale < .8) {
             widgetInfo.scale = .8
-            widgetInfo.yPosition = location.y + bBox.height / 2 + 100
-            // widgetInfo.yPosition = location.y + 100
+            widgetInfo.yPosition = location.y + bBox.height / 2 + 105
 
         }
 
         // Stops the widget from getting to large and keeping the widget relatice to the location size
         else if (d3.scale > 1.3) {
             widgetInfo.scale = 1.3
-            widgetInfo.yPosition = location.y + bBox.height / 2 + 180
-            // widgetInfo.yPosition = location.y + 180
+            widgetInfo.yPosition = location.y + bBox.height / 2 + 185
         }
         return widgetInfo
     }
@@ -119,14 +122,20 @@ const DeviceLocations = (props) => {
         }
     }
 
+    // Handles what type of svg to return based on the device model
     const handleDeviceSVG = () => {
+
+        // This will gray out devices that arent selected. The device becomes selected either on hover in device side bar list or editing device
+        let selected = true
+        if(!!selectedLocation && !!selectedLocation.device_id && location.device_id !== selectedLocation.device_id) selected = false
 
         try {
 
             if (devices[location.device_id].device_model === 'MiR100') {
-                return <ArmDevice customClassName={rd3tClassName} />
+                return <ArmDevice customClassName={rd3tClassName}/>
             }
-            else return <GenericDevice customClassName={rd3tClassName} />
+            // else return <GenericDevice customClassName={rd3tClassName}/>
+            else return <GenericDevice customClassName={rd3tClassName} selected={selected}/>
         } catch (error) {
 
         }
@@ -199,7 +208,7 @@ const DeviceLocations = (props) => {
                         setHovering(true)
                     }}
                     onMouseDown={() => setTranslating(true)}
-                    transform='scale(.07) translate(-180,-100)'
+                    transform='scale(.07) translate(-180,-140)'
                 >
 
                     {handleDeviceSVG()}

@@ -14,7 +14,6 @@ export async function getEvents() {
             url: apiIPAddress() + operator,
         });
         // Success 🎉
-        // log.debug('QQQQ response',response);
         const data = response.data;
         const dataJson = JSON.parse(data)
         return dataJson;
@@ -139,8 +138,6 @@ export async function postEvents(events) {
 }
 
 export async function putEvents(event, ID) {
-    // log.debug('QQQQ event Being Put API', event)
-    // log.debug('QQQQ ID Being Put API', ID)
 
     try {
         const response = await axios({

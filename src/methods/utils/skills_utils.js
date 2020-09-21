@@ -176,9 +176,6 @@ export function methodLabel(method, verbose=false) {
 }
 
 export function skillName(skill, locations, skills) {
-    // console.log('QQQQ skill utils', skill)
-    // console.log('QQQQ skills utils', skills)
-
 
     let filteredSkills = skills.filter(skillz => skillz._id.$oid == skill.skill_id.$oid)
     let skillName = !!filteredSkills[0] && filteredSkills[0].name

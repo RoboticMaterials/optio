@@ -88,10 +88,6 @@ export default function locationsReducer(state = defaultState, action) {
     let index = ''
     let ID = ''
 
-    let locationsCopy = deepCopy(state.locations)
-    let stationsCopy = deepCopy(state.stations)
-    let positionsCopy = deepCopy(state.positions)
-
     const filterLocations = (stations, positions) => {
         const unfilteredLocationsArr = [...Object.values(stations), ...Object.values(positions)]
         const filterdLocationsArr = unfilteredLocationsArr.filter(loc => loc.schema == 'station' || (loc.schema == 'position' && loc.parent === null))
@@ -111,7 +107,9 @@ export default function locationsReducer(state = defaultState, action) {
     // ======================================== //
 
     const setStations = (stations) => {
-        stationsCopy = deepCopy(stations)
+        let stationsCopy = deepCopy(stations)
+        let positionsCopy = deepCopy(state.positions)
+
 
         if (state.selectedLocation !== null) { // The updated station is the selected location
             return {
@@ -132,6 +130,9 @@ export default function locationsReducer(state = defaultState, action) {
     }
 
     const setStation = (station) => {
+        let stationsCopy = deepCopy(state.stations)
+        let positionsCopy = deepCopy(state.positions)
+
         stationsCopy[station._id] = deepCopy(station)
 
         if (state.selectedLocation !== null && state.selectedLocation._id === station._id) { // The updated station is the selected location
@@ -153,6 +154,9 @@ export default function locationsReducer(state = defaultState, action) {
     }
 
     const removeStation = (id) => {
+        let stationsCopy = deepCopy(state.stations)
+        let positionsCopy = deepCopy(state.positions)
+
         delete stationsCopy[id]
 
         if (state.selectedLocation !== null && state.selectedLocation._id === id) { // The deleted station is the selected location
@@ -174,6 +178,9 @@ export default function locationsReducer(state = defaultState, action) {
     }
 
     const setStationAttributes = (id, attr) => {
+        let stationsCopy = deepCopy(state.stations)
+        let positionsCopy = deepCopy(state.positions)
+
         if (!(id in stationsCopy)) { return state }
 
         Object.assign(stationsCopy[id], attr)
@@ -202,9 +209,16 @@ export default function locationsReducer(state = defaultState, action) {
     //                                          //
     // ======================================== //
 
+    // TODO: Commented out Deep Copy's here for now (left selectedLocation with deepCopy though). 
     const setPositions = (positions) => {
-        positionsCopy = deepCopy(positions)
-        const positionsStateCopy = deepCopy(state.positions)
+        // let stationsCopy = deepCopy(state.stations)
+        // let positionsCopy = deepCopy(positions)
+
+        let stationsCopy = state.stations
+        let positionsCopy = positions
+
+        // const positionsStateCopy = deepCopy(state.positions)
+        const positionsStateCopy = state.positions
 
         // What this does is add the x and y coordinates of the states positions to the positions coming into this function
         // The reason why this has to be done is that on page load, the X and Y coordinates for each postion are calulated but not added to the back end,
@@ -226,6 +240,7 @@ export default function locationsReducer(state = defaultState, action) {
                 ...state,
                 positions: positionsCopy,
                 locations: filterLocations(stationsCopy, positionsCopy),
+                // selectedLocation: positionsCopy[state.selectedLocation._id],
                 selectedLocation: deepCopy(positionsCopy[state.selectedLocation._id]),
                 pending: false
             }
@@ -240,6 +255,10 @@ export default function locationsReducer(state = defaultState, action) {
     }
 
     const setPosition = (position) => {
+        let stationsCopy = deepCopy(state.stations)
+        let positionsCopy = deepCopy(state.positions)
+
+
         positionsCopy[position._id] = deepCopy(position)
 
         if (state.selectedLocation !== null && state.selectedLocation._id === position._id) { // The updated position is the selected location
@@ -261,6 +280,9 @@ export default function locationsReducer(state = defaultState, action) {
     }
 
     const removePosition = (id) => {
+        let stationsCopy = deepCopy(state.stations)
+        let positionsCopy = deepCopy(state.positions)
+
         delete positionsCopy[id]
 
         if (state.selectedLocation !== null && state.selectedLocation._id === id) { // The deleted position is the selected location
@@ -282,6 +304,10 @@ export default function locationsReducer(state = defaultState, action) {
     }
 
     const setPositionAttributes = (id, attr) => {
+        let stationsCopy = deepCopy(state.stations)
+        let positionsCopy = deepCopy(state.positions)
+
+
         if (!(id in positionsCopy)) { return state }
         Object.assign(positionsCopy[id], attr)
 
@@ -486,6 +512,8 @@ export default function locationsReducer(state = defaultState, action) {
         // ======================================== //
 
         case SELECT_LOCATION:
+            let locationsCopy = deepCopy(state.locations)
+
             return {
                 ...state,
                 selectedLocation: locationsCopy[action.payload.id]

@@ -68,19 +68,19 @@ export async function postSkillTemplate(condition) {
            * The request was made and the server responded with a
            * status code that falls out of the range of 2xx
            */
-          log.debug('QQQQ error.response.data', error.response.data);
-          log.debug('QQQQ error.response.status',error.response.status);
-          log.debug('QQQQ error.response.headers',error.response.headers);
+          log.debug('error.response.data', error.response.data);
+          log.debug('error.response.status',error.response.status);
+          log.debug('error.response.headers',error.response.headers);
       } else if (error.request) {
           /*
            * The request was made but no response was received, `error.request`
            * is an instance of XMLHttpRequest in the browser and an instance
            * of http.ClientRequest in Node.js
            */
-          log.debug('QQQQ error.request', error.request);
+          log.debug('error.request', error.request);
       } else {
           // Something happened in setting up the request and triggered an Error
-          log.debug('QQQQ error.message', error.message);
+          log.debug('error.message', error.message);
       }
       log.debug('error', error);
     }

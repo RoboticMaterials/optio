@@ -209,7 +209,6 @@ export async function putSchedule(scheduleId, schedule) {
     // log.debug('updateSchedule: response',response);
     const data = response.data;
     const dataJson = JSON.parse(data)
-    log.debug('QQQQ dataJson', dataJson)
     // log.debug('getSchedulesdataJson', dataJson._id.$oid)
     return dataJson;
 
@@ -223,7 +222,7 @@ export async function putSchedule(scheduleId, schedule) {
          * The request was made and the server responded with a
          * status code that falls out of the range of 2xx
          */
-        log.debug('QQQQ error.response.data', error.response.data);
+        log.debug('error.response.data', error.response.data);
         log.debug('error.response.status',error.response.status);
         log.debug('error.response.headers',error.response.headers);
     } else if (error.request) {

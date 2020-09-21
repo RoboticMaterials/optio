@@ -22,7 +22,6 @@ const Notification = (props) => {
     }
 
     // const handleNotificationClicked = () => {
-    //     // console.log("QQQQ ID", id)
     //     // history.push('/locations/' + id )
     // }
 

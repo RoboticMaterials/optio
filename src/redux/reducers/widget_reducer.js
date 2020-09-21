@@ -14,7 +14,6 @@ const widgetReducer = (state = defaultState, action) => {
             }
 
         case 'WIDGET_XY_COORDINATES':
-            // console.log('QQQQ XY Coordinates', action.payload)
             return {
                 ...state,
                 widgetXYCoordinates: action.payload

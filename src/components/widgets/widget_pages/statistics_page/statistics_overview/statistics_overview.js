@@ -14,7 +14,7 @@ import { ResponsiveLine } from '@nivo/line'
 import { getLocationAnalytics } from '../../../../../api/analytics_api'
 import theme from '../../../../../theme';
 
-
+// TODO: Commented out charts for the time being (See comments that start with TEMP)
 const StatisticsOverview = (props) => {
 
     const theme = useContext(ThemeContext);
@@ -22,6 +22,7 @@ const StatisticsOverview = (props) => {
     const [delayChartRender, setDelayChartRender] = useState('none')
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
     const locations = useSelector(state => state.locationsReducer.locations)
+    const devices = useSelector(state => state.devicesReducer.devices)
 
     const [data, setData] = useState(null)
     const [timeSpan, setTimeSpan] = useState('week')
@@ -30,10 +31,12 @@ const StatisticsOverview = (props) => {
     const [slice, setSlice] = useState(null)
     const [defaultTicks, setDefaultTicks] = useState([])
 
+    const [isDevice, setIsDevice] = useState(false)
+
     const params = useParams()
     let plotRef = useRef()
 
-    const locationName = locations[params.locationID].name
+    const locationName = locations[params.stationID].name
 
     const colors = {
         taktTime: '#42e395',
@@ -42,53 +45,75 @@ const StatisticsOverview = (props) => {
     }
 
     useEffect(() => {
+
+        if (locations[params.stationID].device_id !== undefined) {
+            setIsDevice(true)
+        }
+
+        // TEMP
         // If the page has been loaded in (see widget pages) then don't delay chart load, 
         // else delay chart load because it slows down the widget page opening animation.
-        if (widgetPageLoaded) {
-            setDelayChartRender('flex')
-        } else {
-            setTimeout(() => {
-                setDelayChartRender('flex')
-            }, 300);
-        }
+        // if (widgetPageLoaded) {
+        //     setDelayChartRender('flex')
+        // } else {
+        //     setTimeout(() => {
+        //         setDelayChartRender('flex')
+        //     }, 300);
+        // }
 
-        const dataPromise = getLocationAnalytics(params.locationID, 'day')
-        dataPromise.then(response => setData(response))
+        // TEMP
+        // const dataPromise = getLocationAnalytics(params.locationID, 'day')
+        // dataPromise.then(response => setData(response))
     }, [])
 
-    useEffect(() => {
-        const dataPromise = getLocationAnalytics(params.locationID, timeSpan)
-        dataPromise.then(response => setData(response))
+    const handleDeviceStatistics = () => {
+        
+        const device = devices[locations[params.stationID].device_id]
 
-        switch (timeSpan) {
-            case 'live':
-                setFormat('%I:%M:%S %p')
-                break
-            case 'day':
-                setFormat('%I:%M %p')
-                break
-            case 'week':
-                setFormat('%m-%d %I:%M %p')
-                break
-            case 'month':
-                setFormat('%m-%d')
-                break
-            case 'year':
-                setFormat('%Y-%m-%d')
-                break
-            case 'all':
-                setFormat('%Y-%m-%d')
-                break
-        }
-    }, [timeSpan])
+        if(device === undefined) return
+        return (
 
-    useEffect(() => {
-        if (data !== null) {
-            const N = Math.round(Math.max(data[selector].length, 80) / 6)
-            const ticks = everyN(data[selector], N).map(datapoint => datapoint.x)
-            setDefaultTicks(ticks)
-        }
-    }, [data])
+            <>
+                <p>{device.fake_data}</p>
+            </>
+        )
+    }
+
+    // TEMP
+    // useEffect(() => {
+    //     const dataPromise = getLocationAnalytics(params.locationID, timeSpan)
+    //     dataPromise.then(response => setData(response))
+
+    //     switch (timeSpan) {
+    //         case 'live':
+    //             setFormat('%I:%M:%S %p')
+    //             break
+    //         case 'day':
+    //             setFormat('%I:%M %p')
+    //             break
+    //         case 'week':
+    //             setFormat('%m-%d %I:%M %p')
+    //             break
+    //         case 'month':
+    //             setFormat('%m-%d')
+    //             break
+    //         case 'year':
+    //             setFormat('%Y-%m-%d')
+    //             break
+    //         case 'all':
+    //             setFormat('%Y-%m-%d')
+    //             break
+    //     }
+    // }, [timeSpan])
+
+    // TEMP
+    // useEffect(() => {
+    //     if (data !== null) {
+    //         const N = Math.round(Math.max(data[selector].length, 80) / 6)
+    //         const ticks = everyN(data[selector], N).map(datapoint => datapoint.x)
+    //         setDefaultTicks(ticks)
+    //     }
+    // }, [data])
 
     const findSlice = e => {
         // console.log(e.clientX, plotRef.getBoundingClientRect())
@@ -189,7 +214,12 @@ const StatisticsOverview = (props) => {
 
         <styled.OverviewContainer>
             <styled.StationName>{locationName}</styled.StationName>
-            {!!data &&
+
+            {isDevice &&
+                handleDeviceStatistics()
+            }
+
+            {/* {!!data &&
                 <>
                     <TimeSpans color={colors[selector]} setTimeSpan={(ts) => setTimeSpan(ts)} timeSpan={timeSpan}></TimeSpans>
 
@@ -212,18 +242,18 @@ const StatisticsOverview = (props) => {
                             name='Throughput' color={colors.throughPut} onClick={() => setSelector('throughPut')} selected={selector == 'throughPut'} />
                     </styled.StatsSection>
                 </>
-            }
+            } */}
 
             {/* <DataSelector selector={selector} setSelector={setSelector}/> */}
 
-            <styled.PlotContainer
+            {/* <styled.PlotContainer
                 ref={pc => plotRef = pc}
                 // onMouseMove={findSlice}
                 onMouseLeave={() => { setSlice(null) }}
             >
                 {plot()}
 
-            </styled.PlotContainer>
+            </styled.PlotContainer> */}
 
 
         </styled.OverviewContainer>

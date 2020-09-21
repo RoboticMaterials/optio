@@ -20,9 +20,6 @@ function Workstation(props) {
     const hoveringID = useSelector(state => state.locationsReducer.hoverLocationID)
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
 
-    // console.log('QQQQ props of workstaion', props)
-
-
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
 
@@ -32,12 +29,24 @@ function Workstation(props) {
     const color = (!!props.isSelected && props.isSelected) || (hovering && selectedTask == null) ? '#6283f0' : '#afb5c9'
 
     useEffect(() => {
+
         window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
 
         // if (hovering) {
         //     dispatchHoverStationInfo(handleWidgetHover())
         // }
     })
+
+    /**
+     * This runs on page load (thats mean location are mounted) and shows a widget page if it returns true. 
+     * If there is a station ID in the params (URL) and it matches this location,
+     * and the URL (params) container a widget page then the widget page should be showing
+     */
+    useEffect(() => {
+        if(params.stationID !== undefined && params.stationID === props.location._id && !!params.widgetPage) {
+            dispatchHoverStationInfo(handleWidgetHover())
+        }
+    }, [])
 
     /**
      * Passes the X, Y, scale and ID of location to redux which is then used in widgets

@@ -94,7 +94,6 @@ export async function getTask(id) {
 
 export async function postTask(task) {
   // log.debug('postTask task:',task, JSON.stringify(task));
-  // console.log('QQQQ Posting this task in API', task)
 
   try {
     const response = await axios({

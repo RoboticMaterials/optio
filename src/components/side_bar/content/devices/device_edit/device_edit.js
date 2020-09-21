@@ -67,7 +67,6 @@ const DeviceEdit = (props) => {
             })
         } else {
             // If selected device has children then it has positions to show
-            console.log('QQQQ Selected device in edit', selectedLocation)
             if (!!selectedLocation.children) {
                 setShowPositions(true)
             }
@@ -142,9 +141,12 @@ const DeviceEdit = (props) => {
                         await Object.assign(selectedLocation, { ...template, temp: true })
                         await onAddLocation(selectedLocation)
                         await onSetSelectedLocation(selectedLocation)
+                        setShowPositions(true)
+                    }
                     }
 
-                    }
+
+
                 />
 
 
@@ -160,53 +162,11 @@ const DeviceEdit = (props) => {
 
     const handlePositions = () => {
 
-        return(
-            <Positions/>
-        )
-
-        const type = 'cart_position'
-
-        const template = {
-            schema: 'position',
-            type: 'cart_position',
-            parent: null,
-            new: true,
-        }
-
-        const selected = true
-
-        const isSelected = selected
-
         return (
-            <styled.SettingsSectionsContainer>
+            <styled.SettingsSectionsContainer style={{ alignItems: 'center', textAlign: 'center', }}>
 
-                <p>Put this bitch on the map</p>
-                <styled.LocationTypeButton
-                    id={`location-type-button-${type}`}
-                    draggable={false}
-
-                    onMouseDown={async e => {
-                        console.log('QQQQ Selected Location', selectedLocation)
-                        if (selectedLocation.type !== null) { return }
-                        await Object.assign(selectedLocation, { ...template, temp: true })
-                        await onAddLocation(selectedLocation)
-                        await onSetSelectedLocation(selectedLocation)
-                    }}
-
-                    isSelected={type == selected}
-                    style={{ cursor: 'grab' }}
-                >
-
-                    <styled.LocationTypeGraphic isSelected={isSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                        <rect x="100" y="40" width="200" height="320" rx="30" transform="translate(400 0) rotate(90)" fill="none" stroke="#6283f0" strokeMiterlimit="10" strokeWidth="20" />
-                        <path d="M315.5,200.87l-64,36.95A1,1,0,0,1,250,237v-73.9a1,1,0,0,1,1.5-.87l64,36.95A1,1,0,0,1,315.5,200.87Z" fill="#6283f0" stroke="#6283f0" strokeMiterlimit="10" strokeWidth="10" />
-                        <circle cx="200" cy="200" r="15" fill="#6283f0" />
-                        <circle cx="150" cy="200" r="10" fill="#6283f0" />
-                        <circle cx="102.5" cy="200" r="7.5" fill="#6283f0" />
-                    </styled.LocationTypeGraphic>
-
-                </styled.LocationTypeButton>
-
+                <styled.ConnectionText>Add Cart Position associated with this device</styled.ConnectionText>
+                <Positions />
             </styled.SettingsSectionsContainer>
         )
     }

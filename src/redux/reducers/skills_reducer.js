@@ -47,7 +47,6 @@ export default function skillsReducer(state = defaultState, action) {
             }
 
         case 'ALL_FIELDS_FILLED':
-            // console.log('QQQQ All Fields Filled', action.payload)
             return{
                 ...state,
                 allFieldsFilled: action.payload

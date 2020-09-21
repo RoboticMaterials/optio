@@ -58,8 +58,6 @@ const ApiContainer = (props) => {
 
     const params = useParams()
 
-
-
     useEffect(() => {
         loadInitialData() // initial call to load data when app opens
 

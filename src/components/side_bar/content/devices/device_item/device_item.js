@@ -1,6 +1,11 @@
 
 import React, { useState, useEffect } from 'react'
 
+import { useDispatch, useSelector } from 'react-redux'
+
+// Import actions
+import * as locationActions from '../../../../../redux/actions/locations_actions'
+
 import * as styled from './device_item.style'
 
 
@@ -20,13 +25,19 @@ const DeviceItem = (props) => {
     const deviceID = device._id
     const deviceName = device.device_name
 
+    const dispatch = useDispatch()
+
     const [deviceType, setDeviceType] = useState('')
+    const [stationId, setStationId] = useState(false)
 
     // Sets the type of device on page laod
     useEffect(() => {
 
         if (device.device_model === 'MiR100') setDeviceType('cart')
         else { setDeviceType('unknown') }
+
+        if(!!device.station_id && device.device_model !== 'MiR100') setStationId(device.station_id)
+        
 
     }, [])
 
@@ -213,7 +224,9 @@ const DeviceItem = (props) => {
 
     return (
 
-        <styled.DeviceContainer key={ind}>
+        <styled.DeviceContainer key={ind}
+            onMouseEnter={() => { !!stationId && dispatch(locationActions.selectLocation(stationId))}}
+            onMouseLeave={() => { !!stationId && dispatch(locationActions.deselectLocation())}}>
             {/* <styled.SettingsIcon className='fas fa-cog'/> */}
 
             <styled.BigCircle isSmall={isSmall}>

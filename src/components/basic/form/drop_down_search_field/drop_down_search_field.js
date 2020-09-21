@@ -59,7 +59,6 @@ const DropDownSearchField = ({
 						// set this field to touched if not already
 						const isTouched = meta.touched;
 						if(!isTouched) {
-                            console.log('QQQQ Not touched')
 							setFieldTouched(field.name, true)
 						}
 

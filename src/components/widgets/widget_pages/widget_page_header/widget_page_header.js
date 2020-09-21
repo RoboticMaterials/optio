@@ -17,7 +17,6 @@ const WidgetPageHeader = (props) => {
     let locationName = ''
     try {
         locationName = locations[locationID].name
-        console.log('QQQQ Locations', locations[locationID].name)
         
     } catch (error) {
         

@@ -23,7 +23,6 @@ const CalendarChart = (props) => {
             //     year: 1,
             // }]}
             onClick={(day,event) => {
-                console.log('QQQQ Day and Event', day, event)
             }}
             legends={[
                 {

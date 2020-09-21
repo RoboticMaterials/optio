@@ -22,7 +22,6 @@ const defaultState = {
         switch (action.type) {
   
           case 'SKILL_TEMPLATES_RETURNED':
-            //   console.log('QQQQ Skill Selected', action.payload)
               return {
                   ...state,
                   returnedSkillTemplates: action.payload

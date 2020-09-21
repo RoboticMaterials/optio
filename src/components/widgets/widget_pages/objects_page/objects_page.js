@@ -32,7 +32,6 @@ const ObjectsPage = () => {
      */
     const handleAssociatedObjects = () => {
         const parsedObjectsReturned = handleParseTaskBasedOnLoadUnload(tasks, locationID)
-        console.log('QQQQ Parsed Objects', parsedObjects)
 
         setParsedObjects(parsedObjectsReturned)
     }

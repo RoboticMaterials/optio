@@ -30,7 +30,7 @@ const Widgets = (props) => {
 
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
     const locations = useSelector(state => { return state.locationsReducer.locations })
-    // Info passed from workstations via redux
+    // Info passed from workstations/device_locations via redux
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
 
     const dispatch = useDispatch()
@@ -49,6 +49,7 @@ const Widgets = (props) => {
     // Renders the buttons under the location. useMemo is passed a blank array because the buttons only need to be rendered once
     const widgetButtons = useMemo(() => {
 
+        // TODO: Make this dynamic based on the station type. IE show certain buttons for different stations (live view button for an RM Vision)
         return (
             <styled.WidgetButtonContainer widgetPage={widgetPage}>
 

@@ -14,7 +14,6 @@ export async function getDashboards() {
       url: apiIPAddress() + operator,
     });
     // Success 🎉
-    // log.debug('QQQQ response',response);
     const data = response.data;
     const dataJson = JSON.parse(data)
     return dataJson;
@@ -139,8 +138,6 @@ export async function postDashboards(dashboards) {
 }
 
 export async function putDashboards(dashboard, ID) {
-  // log.debug('QQQQ dashboard Being Put API', dashboard)
-  // log.debug('QQQQ ID Being Put API', ID)
 
   try {
     const response = await axios({

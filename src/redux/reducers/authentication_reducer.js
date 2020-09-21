@@ -46,7 +46,6 @@ export default function authenticationReducer(state = defaultState, action) {
             });
 
         case GET_REFRESH_TOKEN_SUCCESS:
-            // console.log('QQQQ Got Refresh token', action.payload)
             return {
                 ...state,
                 refreshToken: action.payload,

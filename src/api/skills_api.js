@@ -78,10 +78,10 @@ export async function postSkill(skill) {
            * is an instance of XMLHttpRequest in the browser and an instance
            * of http.ClientRequest in Node.js
            */
-          log.debug('QQQQ error.request', error.request);
+          log.debug('error.request', error.request);
       } else {
           // Something happened in setting up the request and triggered an Error
-          log.debug('QQQQ error.message', error.message);
+          log.debug('error.message', error.message);
       }
       log.debug('error', error);
     }
