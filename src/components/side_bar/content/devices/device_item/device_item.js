@@ -6,8 +6,11 @@ import { useDispatch, useSelector } from 'react-redux'
 // Import actions
 import * as locationActions from '../../../../../redux/actions/locations_actions'
 
+// Import styles
 import * as styled from './device_item.style'
 
+// Import utils
+import { DeviceItemTypes } from '../../../../../methods/utils/device_utiles'
 
 const DeviceItem = (props) => {
 
