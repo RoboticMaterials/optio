@@ -317,7 +317,7 @@ export class MapView extends Component {
             const iNatHeight = this.naturalImageDimensions.height
             const iNatWidth = this.naturalImageDimensions.width
 
-            
+
 
             // Apply translations to map.
             // The map is translated by half the container dims, and then back by 

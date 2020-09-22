@@ -97,7 +97,7 @@ const DeviceItem = (props) => {
         }
 
         return (
-            <styled.DeviceIcon isSmall={isSmall} className={deviceIcon} style={{ fontSize: !!deviceFontSize && deviceFontSize }} />
+            <styled.DeviceIcon isSmall={isSmall} className={deviceIcon} style={{ fontSize: !!deviceFontSize && deviceFontSize, color: !device.location_id && 'white' }} />
         )
     }
 

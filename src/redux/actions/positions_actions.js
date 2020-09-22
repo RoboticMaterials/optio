@@ -146,8 +146,8 @@ return async dispatch => {
     try {
         onStart();
         // const removePosition = await api.deletePosition(ID);
-
-        // Putting with change_key as deleted instead of deleting because it was causing back end issues
+        
+        // IMPORTANT!: Putting with change_key as deleted instead of deleting because it was causing back end issues
         let positionCopy = deepCopy(position)
         delete positionCopy._id
         delete positionCopy.temp

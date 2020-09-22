@@ -216,7 +216,6 @@ function Location(props) {
         }
     }
 
-
     switch (location.type) {
         case 'workstation':
             return (
@@ -236,7 +235,7 @@ function Location(props) {
         case 'cart_position':
             return (
                 <React.Fragment key={`frag-loc-${location._id}`}>
-                    {location.parent !== null &&
+                    {location.parent !== null && location.parent !== undefined &&
                         <line x1={`${location.x}`} y1={`${location.y}`}
                             x2={`${stations[location.parent].x}`} y2={`${stations[location.parent].y}`}
                             stroke={color} strokeWidth="1.4" style={{ filter: "url(#glow)", opacity: '0.3' }} />
@@ -253,10 +252,11 @@ function Location(props) {
                 </React.Fragment>
             )
 
+
         case 'shelf_position':
             return (
                 <React.Fragment key={`frag-loc-${location._id}`}>
-                    {location.parent !== null &&
+                    {location.parent !== null && location.parent !== undefined &&
                         <line x1={`${location.x}`} y1={`${location.y}`}
                             x2={`${stations[location.parent].x}`} y2={`${stations[location.parent].y}`}
                             stroke={color} strokeWidth="1.4" style={{ filter: "url(#glow)", opacity: '0.3' }} />

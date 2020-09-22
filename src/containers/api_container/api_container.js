@@ -7,7 +7,7 @@ import { getMaps } from '../../redux/actions/map_actions'
 import { getTaskQueue } from '../../redux/actions/task_queue_actions'
 import { getLocations } from '../../redux/actions/locations_actions'
 import { getObjects } from '../../redux/actions/objects_actions'
-import { getTasks } from '../../redux/actions/tasks_actions'
+import { getTasks, deleteTask } from '../../redux/actions/tasks_actions'
 import { getDashboards } from '../../redux/actions/dashboards_actions'
 import { getSounds } from '../../redux/actions/sounds_actions'
 
@@ -19,6 +19,8 @@ import { getSettings } from '../../redux/actions/settings_actions'
 import { getLocalSettings } from '../../redux/actions/local_actions'
 import { getLoggers } from '../../redux/actions/local_actions';
 import { getRefreshToken } from '../../redux/actions/authentication_actions'
+
+import { deletePosition } from '../../redux/actions/positions_actions'
 
 // import utils
 import { getPageNameFromPath } from "../../methods/utils/router_utils";
@@ -49,6 +51,9 @@ const ApiContainer = (props) => {
     const onGetLocalSettings = () => dispatch(getLocalSettings())
     const onGetLoggers = () => dispatch(getLoggers())
     const onGetRefreshToken = () => dispatch(getRefreshToken())
+
+    const onDeleteTask = (ID) => dispatch(deleteTask(ID))
+    const onDeletePosition = (position, ID) => dispatch(deletePosition(position, ID))
 
     // Selectors
     const schedulerReducer = useSelector(state => state.schedulerReducer)
@@ -184,6 +189,9 @@ const ApiContainer = (props) => {
         const loggers = await onGetLoggers()
         const maps = await onGetMaps()
 
+        handleTasksWithBrokenPositions(tasks, locations)
+        handlePositionsWithBrokenParents(locations)
+
         props.onLoad()
 
     }
@@ -287,6 +295,79 @@ const ApiContainer = (props) => {
 
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  DATA LOADERS SECTION END
+
+
+    //  API DATA CLEAN UP (Ideally these functions should not exist... but it's no an ideal world...)
+    //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    /**
+     * This deletes tasks that have broken positions
+     * A broken position can be:
+     * a deleted position
+     * a position thats parent station has been deleted
+     *  */
+    const handleTasksWithBrokenPositions = async (tasks, locations) => {
+
+        const stations = locations.stations
+        const positions = locations.positions
+
+        Object.values(tasks).map(async (task) => {
+
+            // console.log('QQQQ Task', positions[task.load.position], positions[task.unload.position])
+
+            // Deletes the task if the load/unload position has been deleted from the positon list
+            if (!positions[task.load.position] || !positions[task.unload.position]) {
+                console.log('QQQQ Position doesnt exist in positions, DELETE TASK', task._id.$oid)
+                await onDeleteTask(task._id.$oid)
+                return
+            }
+
+            // Deletes the task if the load/unload position has a change_key 'deleted'. This means the back end has not deleted the position yet
+            if ((!!positions[task.load.position].change_key && positions[task.load.position].change_key === 'deleted') ||
+                (!!positions[task.unload.position].change_key && positions[task.unload.position].change_key === 'deleted')) {
+                console.log('QQQQ Position is deleted, waiting on back end, DELETE TASK')
+                await onDeleteTask(task._id.$oid)
+                return
+            }
+
+
+            // Deletes the task if the load/unload position has a parent, but that parent does not exist in stations (parent has been deleted)
+            // Also should delete the position as well
+            if ((!!positions[task.load.position].parent && !Object.keys(stations).includes(positions[task.load.position].parent)) ||
+                (!!positions[task.unload.position].parent && !Object.keys(stations).includes(positions[task.load.position].parent))) {
+                console.log('QQQQ Position parent has been deleted, DELETE TASK AND POSITION')
+                await onDeleteTask(task._id.$oid)
+                return
+            }
+
+            // if(!!positions[task.load.position].parent || !!positions[task.unload.position].parent){
+            //     console.log('QQQQ Position has a parent', positions[task.load.position])
+            // }
+
+        })
+    }
+
+    /**
+     * This deletes positions that have parents that are broken
+     * A broken parent is a parent that has been deleted
+     * @param {*} locations 
+     */
+    const handlePositionsWithBrokenParents = async (locations) => {
+
+        const stations = locations.stations
+        const positions = locations.positions
+
+        Object.values(positions).map(async (position) => {
+
+            if (!!position.parent && !Object.keys(stations).includes(position.parent)) {
+                console.log('QQQQ This position should be deleted', position)
+                onDeletePosition(position, position._id)
+            }
+
+        })
+    }
+    //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //  API DATA CLEAN UP
 
 
     return (

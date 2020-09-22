@@ -218,12 +218,22 @@ export default function locationsReducer(state = defaultState, action) {
         let positionsCopy = positions
 
         // const positionsStateCopy = deepCopy(state.positions)
-        const positionsStateCopy = state.positions
+        let positionsStateCopy = state.positions
+
+        Object.values(positionsCopy).map((position) => {
+            if(!!position.change_key && position.change_key === 'deleted'){
+                // console.log('QQQQ Position deleted in reducer', position)
+                // positionsCopy = deepCopy( delete positionsCopy[position])
+                delete positionsCopy[position._id]
+
+                // console.log('QQQQ Positions after delete', positionsCopy)
+            }
+        })
 
         // What this does is add the x and y coordinates of the states positions to the positions coming into this function
         // The reason why this has to be done is that on page load, the X and Y coordinates for each postion are calulated but not added to the back end,
-        // when a get call for positions is made for the backend, the calculated X and Y coordinates are deleted (since the dont exist on the backend). 
-        // This takes the calculated X and Y coordinates calculated and adds them to the incoming positions if the positions copy doesn match. They wouldnt match because the backend does not have X and Y coordinates
+        // when a get call for positions is made for the backend, the calculated X and Y coordinates are deleted (since they dont exist on the backend). 
+        // This takes the calculated X and Y coordinates already calculated in state and adds them to the incoming positions if the positions copy doesn match. They wouldnt match because the backend does not have X and Y coordinates
         if (!isEquivalent(positionsCopy, positionsStateCopy)) {
 
             Object.keys(positionsStateCopy).map((key, ind) => {

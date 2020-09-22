@@ -17,8 +17,9 @@ import {
   // ******************************
   export const getLocations = () => {
     return async dispatch => {
-        dispatch(stationActions.getStations())
-        dispatch(positionActions.getPositions())
+        const stations = await dispatch(stationActions.getStations())
+        const positions = await dispatch(positionActions.getPositions())
+        return ({stations:stations, positions:positions})
     }
   }
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
