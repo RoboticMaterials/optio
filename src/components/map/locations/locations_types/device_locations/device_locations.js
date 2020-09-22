@@ -128,6 +128,7 @@ const DeviceLocations = (props) => {
         // This will gray out devices that arent selected. The device becomes selected either on hover in device side bar list or editing device
         let selected = true
         if(!!selectedLocation && !!selectedLocation.device_id && location.device_id !== selectedLocation.device_id) selected = false
+        if(!!selectedLocation && !selectedLocation.device_id) selected = false
 
 
         try {

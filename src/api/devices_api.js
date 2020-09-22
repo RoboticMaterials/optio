@@ -152,9 +152,9 @@ export async function putDevices(device, ID) {
 
         // Success 🎉
         // log.debug('response',response);
-        // const data = response.data;
-        // const dataJson = JSON.parse(data)
-        return response;
+        const data = response.data;
+        const dataJson = JSON.parse(data)
+        return dataJson;
 
 
     } catch (error) {

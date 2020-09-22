@@ -48,16 +48,32 @@ const devicesReducer = (state = defaultState, action) => {
         // This function takes care of that and adds new X and Y coordinates on every get call. state.d3 is added in mapview
         if (!isEquivalent(devices, state.devices)) {
             devicesClone = deepCopy(devices)
+
             Object.keys(devicesClone).map((key, ind) => {
                 const updatedDevice = devices[key]
-                if (!(updatedDevice.position === undefined)) {
-                    let [x, y] = convertRealToD3([updatedDevice.position.pos_x, updatedDevice.position.pos_y], state.d3)
-                    devicesClone[key] = {
-                        ...devicesClone[key],
-                        position: {
-                            ...devicesClone[key].position,
-                            x: x,
-                            y: y,
+                if (updatedDevice.position !== undefined) {
+
+                    // On page load, the d3 state will be null. This is here so that devices wont be undifned on page load
+                    if (state.d3 === null) {
+                        devicesClone[key] = {
+                            ...devicesClone[key],
+                            position: {
+                                ...devicesClone[key].position,
+                                x: updatedDevice.position.pos_x,
+                                y: updatedDevice.position.pos_y,
+                            }
+                        }
+                    }
+
+                    else {
+                        let [x, y] = convertRealToD3([updatedDevice.position.pos_x, updatedDevice.position.pos_y], state.d3)
+                        devicesClone[key] = {
+                            ...devicesClone[key],
+                            position: {
+                                ...devicesClone[key].position,
+                                x: x,
+                                y: y,
+                            }
                         }
                     }
                 }
@@ -143,16 +159,13 @@ const devicesReducer = (state = defaultState, action) => {
         case PUT_DEVICES_SUCCESS:
             // Find the corresponding device and replace it with the new one
 
-            currentDevice = JSON.parse(action.payload)
+            currentDevice = action.payload
 
             devicesClone = deepCopy(state.devices)
 
             devicesClone[currentDevice._id] = currentDevice
 
-            return {
-                ...state,
-                devices: { ...devicesClone }
-            }
+            return setDevices(devicesClone)
 
         case PUT_DEVICES_FAILURE:
             return Object.assign({}, state, {

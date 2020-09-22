@@ -89,7 +89,7 @@ export const putDevices = (device, ID) => {
             dispatch({ type: PUT_DEVICES_STARTED });
         }
         function onSuccess(response) {
-            dispatch({ type: PUT_DEVICES_SUCCESS, payload: response.data });
+            dispatch({ type: PUT_DEVICES_SUCCESS, payload: response });
             return response;
         }
         function onError(error) {

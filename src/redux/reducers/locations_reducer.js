@@ -220,13 +220,12 @@ export default function locationsReducer(state = defaultState, action) {
         // const positionsStateCopy = deepCopy(state.positions)
         let positionsStateCopy = state.positions
 
+        // IMPORTANT: Removes 'deleted' positions from the reducer state. 
+        // These 'deleted' positions have been deleted on the front end, but since deleting a position on the backend causes a bug, the key 'change_key'
+        // is added to the position and set to 'delete' and the backend will delete it when it needs to be
         Object.values(positionsCopy).map((position) => {
             if(!!position.change_key && position.change_key === 'deleted'){
-                // console.log('QQQQ Position deleted in reducer', position)
-                // positionsCopy = deepCopy( delete positionsCopy[position])
                 delete positionsCopy[position._id]
-
-                // console.log('QQQQ Positions after delete', positionsCopy)
             }
         })
 

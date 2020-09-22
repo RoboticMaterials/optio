@@ -12,7 +12,7 @@ import { getDashboards } from '../../redux/actions/dashboards_actions'
 import { getSounds } from '../../redux/actions/sounds_actions'
 
 import { getSchedules } from '../../redux/actions/schedule_actions';
-import { getDevices } from '../../redux/actions/devices_actions'
+import { getDevices,putDevices } from '../../redux/actions/devices_actions'
 import { getStatus } from '../../redux/actions/status_actions'
 
 import { getSettings } from '../../redux/actions/settings_actions'
@@ -35,7 +35,7 @@ const ApiContainer = (props) => {
 
     // Dispatches
     const dispatch = useDispatch()
-    const onGetMaps = () => dispatch(getMaps())
+    const onGetMaps = async () => await dispatch(getMaps())
     const onGetLocations = () => dispatch(getLocations())
     const onGetDashboards = () => dispatch(getDashboards())
     const onGetObjects = () => dispatch(getObjects())
@@ -44,7 +44,7 @@ const ApiContainer = (props) => {
     const onGetTaskQueue = () => dispatch(getTaskQueue())
 
     const onGetSchedules = () => dispatch(getSchedules())
-    const onGetDevices = () => dispatch(getDevices())
+    const onGetDevices = async () => await dispatch(getDevices())
     const onGetStatus = () => dispatch(getStatus())
 
     const onGetSettings = () => dispatch(getSettings())
@@ -54,6 +54,7 @@ const ApiContainer = (props) => {
 
     const onDeleteTask = (ID) => dispatch(deleteTask(ID))
     const onDeletePosition = (position, ID) => dispatch(deletePosition(position, ID))
+    const onPutDevice = (device, ID) => dispatch(putDevices(device, ID))
 
     // Selectors
     const schedulerReducer = useSelector(state => state.schedulerReducer)
@@ -181,16 +182,18 @@ const ApiContainer = (props) => {
         const tasks = await onGetTasks()
         const taskQueue = await onGetTaskQueue()
 
-        const devices = await onGetDevices()
         const status = await onGetStatus()
         const getSchedules = await onGetSchedules()
 
         const settings = await onGetSettings()
         const loggers = await onGetLoggers()
         const maps = await onGetMaps()
+        const devices = await onGetDevices()
+
 
         handleTasksWithBrokenPositions(tasks, locations)
         handlePositionsWithBrokenParents(locations)
+        handleDevicesWithBrokenStations(devices, locations)
 
         props.onLoad()
 
@@ -339,11 +342,6 @@ const ApiContainer = (props) => {
                 await onDeleteTask(task._id.$oid)
                 return
             }
-
-            // if(!!positions[task.load.position].parent || !!positions[task.unload.position].parent){
-            //     console.log('QQQQ Position has a parent', positions[task.load.position])
-            // }
-
         })
     }
 
@@ -365,6 +363,26 @@ const ApiContainer = (props) => {
             }
 
         })
+    }
+
+    /**
+     * This deletes device station if the station is broken
+     * A broken station would happen when a station has been deleted
+     * @param {*} devices 
+     * @param {*} locations 
+     */
+    const handleDevicesWithBrokenStations = async (devices, locations) => {
+
+        const stations = locations.stations
+
+        Object.values(devices).map(async (device) => {
+            if(!!device.station_id && !Object.keys(stations).includes(device.station_id)) {
+                console.log('QQQQ Device has a station ID that needs to be deleted', device)
+                delete device.station_id
+                onPutDevice(device, device._id)
+            }
+        })
+
     }
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  API DATA CLEAN UP

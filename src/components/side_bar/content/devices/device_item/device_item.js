@@ -30,7 +30,7 @@ const DeviceItem = (props) => {
     const [deviceType, setDeviceType] = useState('')
     const [stationId, setStationId] = useState(false)
 
-    // Sets the type of device on page laod
+    // Sets the type of device
     useEffect(() => {
 
         // Set the type of device
@@ -38,10 +38,12 @@ const DeviceItem = (props) => {
         else if (device.device_model === 'trident') setDeviceType('trident')
         else { setDeviceType('unknown') }
 
-        if(!!device.station_id && device.device_model !== 'MiR100') setStationId(device.station_id)
-        
+        if(!!device.station_id && device.device_model !== 'MiR100' && !stationId) setStationId(device.station_id)
 
-    }, [])
+        // If the device does not have a station_id but there is one in state, then set the state to false (this happens when a devices location is deleted)
+        if(!!stationId && !device.station_id) setStationId(false)
+
+    }, [device])
 
     // Handles Device status, this might have to be tailord for each device
     const handleDeviceStatus = () => {
@@ -228,7 +230,9 @@ const DeviceItem = (props) => {
     return (
 
         <styled.DeviceContainer key={ind}
-            onMouseEnter={() => { !!stationId && dispatch(locationActions.selectLocation(stationId))}}
+            onMouseEnter={() => { 
+                !!stationId && dispatch(locationActions.selectLocation(stationId))
+            }}
             onMouseLeave={() => { !!stationId && dispatch(locationActions.deselectLocation())}}>
             {/* <styled.SettingsIcon className='fas fa-cog'/> */}
 

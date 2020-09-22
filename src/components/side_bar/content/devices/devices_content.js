@@ -90,7 +90,6 @@ const DevicesContent = () => {
 
             let devicesValue = Object.values(devices)
 
-
             // Maps through the existing devices
             return devicesValue.map((device, ind) => {
 
@@ -113,6 +112,8 @@ const DevicesContent = () => {
                         tasks={tasks}
                         taskQueue={taskQueue}
                         setSelectedDevice={(deviceID) => {
+
+                            console.log('QQQQ Selected Device', devices[deviceID])
                             onSetSelectedDevice(deepCopy(devices[deviceID]))
 
                             // If the device has a station Id, set the station ID. It wouldnt have a station ID because the device has not been placed on the map
@@ -274,8 +275,8 @@ const DevicesContent = () => {
         }
 
         // Delete the station_id attatched to the device as well
-        const device = delete selectedDevice.station_id
-        onDeviceChange(device, selectedDevice._id)
+        delete selectedDevice.station_id
+        onDeviceChange(selectedDevice, selectedDevice._id)
 
         onSetSelectedDevice(null)
 
