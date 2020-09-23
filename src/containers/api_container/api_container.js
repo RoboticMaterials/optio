@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from "react-router-dom";
 
+// Import Actions
 import { getMaps } from '../../redux/actions/map_actions'
 import { getTaskQueue } from '../../redux/actions/task_queue_actions'
 import { getLocations } from '../../redux/actions/locations_actions'
@@ -12,7 +13,7 @@ import { getDashboards } from '../../redux/actions/dashboards_actions'
 import { getSounds } from '../../redux/actions/sounds_actions'
 
 import { getSchedules } from '../../redux/actions/schedule_actions';
-import { getDevices,putDevices } from '../../redux/actions/devices_actions'
+import { getDevices, putDevices } from '../../redux/actions/devices_actions'
 import { getStatus } from '../../redux/actions/status_actions'
 
 import { getSettings } from '../../redux/actions/settings_actions'
@@ -21,6 +22,11 @@ import { getLoggers } from '../../redux/actions/local_actions';
 import { getRefreshToken } from '../../redux/actions/authentication_actions'
 
 import { deletePosition } from '../../redux/actions/positions_actions'
+
+import { postLocalSettings } from '../../redux/actions/local_actions'
+
+// Import components
+import Textbox from '../../components/basic/textbox/textbox'
 
 // import utils
 import { getPageNameFromPath } from "../../methods/utils/router_utils";
@@ -56,11 +62,15 @@ const ApiContainer = (props) => {
     const onDeletePosition = (position, ID) => dispatch(deletePosition(position, ID))
     const onPutDevice = (device, ID) => dispatch(putDevices(device, ID))
 
+    const onPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+
     // Selectors
     const schedulerReducer = useSelector(state => state.schedulerReducer)
 
     // States
     const [currentPage, setCurrentPage] = useState('')
+    const [apiIpAddress, setApiIpAddress] = useState('')
+    const [apiError, setApiError] = useState(false)
 
     const params = useParams()
 
@@ -175,6 +185,17 @@ const ApiContainer = (props) => {
         const localSettings = await onGetLocalSettings()
 
         const refreshToken = await onGetRefreshToken()
+        const maps = await onGetMaps()
+
+
+        if (maps.length === undefined) {
+            console.log('QQQQ maps', maps.length)
+            props.onLoad()
+            setApiError(true)
+
+            return
+        }
+
         const locations = await onGetLocations()
         const dashboards = await onGetDashboards()
         const objects = await onGetObjects()
@@ -187,14 +208,15 @@ const ApiContainer = (props) => {
 
         const settings = await onGetSettings()
         const loggers = await onGetLoggers()
-        const maps = await onGetMaps()
         const devices = await onGetDevices()
 
 
         handleTasksWithBrokenPositions(tasks, locations)
         handlePositionsWithBrokenParents(locations)
         handleDevicesWithBrokenStations(devices, locations)
+        handleStationsWithBrokenDevices(devices, locations)
 
+        props.apiLoaded()
         props.onLoad()
 
     }
@@ -376,10 +398,32 @@ const ApiContainer = (props) => {
         const stations = locations.stations
 
         Object.values(devices).map(async (device) => {
-            if(!!device.station_id && !Object.keys(stations).includes(device.station_id)) {
+            if (!!device.station_id && !Object.keys(stations).includes(device.station_id)) {
                 console.log('QQQQ Device has a station ID that needs to be deleted', device)
                 delete device.station_id
                 onPutDevice(device, device._id)
+            }
+        })
+
+    }
+
+    /**
+     * This adds station to device if the station has a device ID and the device does not have a station ID
+     * Why this happens is unkown atm, but this fixes when a device comes back without a station ID but should have one
+     * @param {*} devices 
+     * @param {*} locations 
+     */
+    const handleStationsWithBrokenDevices = (devices, locations) => {
+        const stations = locations.stations
+
+        Object.values(stations).map((station) => {
+
+            if (!!station.device_id && !devices[station.device_id].station_id) {
+
+                const device = devices[station.device_id]
+                device.station_id = station._id
+                onPutDevice(device, device._id)
+
             }
         })
 
@@ -388,8 +432,41 @@ const ApiContainer = (props) => {
     //  API DATA CLEAN UP
 
 
+    //  API LOGIN
+    //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    const handleSubmitApiIpAddress = async () => {
+        await onPostLocalSettings({ non_local_api: true, non_local_api_ip: apiIpAddress })
+        // location.reload();
+        window.location.reload(false);
+    }
+
+
     return (
         <>
+            {!props.isApiLoaded ? apiError ?
+                <div style={{ width: '100%', height: '100%', paddingTop: '30%', display: 'flex', justifyContent: 'center' }}>
+                    <div style={{ width: '50%', minWidth: '20rem' }}>
+                        < p > Please Enter API IP</p>
+                        <Textbox
+                            placeholder="API IP Address"
+                            onChange={(event) => {
+                                setApiIpAddress(event.target.value)
+                            }}
+                            style={{ width: '100%' }}
+                        // type = 'number'
+                        />
+                        <button onClick={handleSubmitApiIpAddress}>Submit</button>
+                    </div>
+                </div>
+
+                :
+                <div style={{ width: '100%', height: '100%', paddingTop: '30%', display: 'flex', justifyContent: 'center' }}>
+                    <i className={'icon-rmLogo'} style={{fontSize: '10rem'}}/>
+                </div>
+                :
+                <>
+                </>
+            }
         </>
     )
 }
