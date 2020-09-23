@@ -15,6 +15,7 @@ export const Label = styled.h1`
     font-weight: 500;
     color: ${props => props.theme.schema.locations.solid};
     text-align: center;
+    user-select: none;
 `
 
 export const LocationTypeGraphic = styled.svg`

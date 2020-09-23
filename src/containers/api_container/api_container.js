@@ -80,10 +80,12 @@ const ApiContainer = (props) => {
         // this interval is always on
         // loads essential info used on every page such as status and taskQueue
         const criticalDataInterval = setInterval(() => loadCriticalData(), 500);
+        // const mapDataInterval = setInterval(() => loadMapData(), 5000)
         return () => {
             // clear intervals
             clearInterval(pageDataInterval);
             clearInterval(criticalDataInterval);
+            // clearInterval(mapDataInterval)
         }
     }, [])
 
@@ -185,16 +187,16 @@ const ApiContainer = (props) => {
         const localSettings = await onGetLocalSettings()
 
         const refreshToken = await onGetRefreshToken()
+        const devices = await onGetDevices()
         const maps = await onGetMaps()
 
-
         if (maps.length === undefined) {
-            console.log('QQQQ maps', maps.length)
             props.onLoad()
             setApiError(true)
-
             return
         }
+
+
 
         const locations = await onGetLocations()
         const dashboards = await onGetDashboards()
@@ -206,9 +208,7 @@ const ApiContainer = (props) => {
         const status = await onGetStatus()
         const getSchedules = await onGetSchedules()
 
-        const settings = await onGetSettings()
         const loggers = await onGetLoggers()
-        const devices = await onGetDevices()
 
 
         handleTasksWithBrokenPositions(tasks, locations)
@@ -322,7 +322,7 @@ const ApiContainer = (props) => {
     //  DATA LOADERS SECTION END
 
 
-    //  API DATA CLEAN UP (Ideally these functions should not exist... but it's no an ideal world...)
+    //  API DATA CLEAN UP (Ideally these functions should not exist... but it's not an ideal world...)
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     /**
@@ -434,15 +434,19 @@ const ApiContainer = (props) => {
 
     //  API LOGIN
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    /**
+     * Submit API address to local storage
+     */
     const handleSubmitApiIpAddress = async () => {
         await onPostLocalSettings({ non_local_api: true, non_local_api_ip: apiIpAddress })
-        // location.reload();
         window.location.reload(false);
     }
 
 
     return (
         <>
+            {/* When loading show an RM logo, if no api info, then show input to enter */}
             {!props.isApiLoaded ? apiError ?
                 <div style={{ width: '100%', height: '100%', paddingTop: '30%', display: 'flex', justifyContent: 'center' }}>
                     <div style={{ width: '50%', minWidth: '20rem' }}>
@@ -461,7 +465,7 @@ const ApiContainer = (props) => {
 
                 :
                 <div style={{ width: '100%', height: '100%', paddingTop: '30%', display: 'flex', justifyContent: 'center' }}>
-                    <i className={'icon-rmLogo'} style={{fontSize: '10rem'}}/>
+                    <i className={'icon-rmLogo'} style={{ fontSize: '10rem' }} />
                 </div>
                 :
                 <>

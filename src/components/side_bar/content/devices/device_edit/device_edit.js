@@ -161,7 +161,7 @@ const DeviceEdit = (props) => {
     const handlePositions = () => {
 
         return (
-            <styled.SettingsSectionsContainer style={{ alignItems: 'center', textAlign: 'center', }}>
+            <styled.SettingsSectionsContainer style={{ alignItems: 'center', textAlign: 'center', userSelect: 'none'}}>
 
                 <styled.ConnectionText>Add Cart Position associated with this device</styled.ConnectionText>
                 <Positions />

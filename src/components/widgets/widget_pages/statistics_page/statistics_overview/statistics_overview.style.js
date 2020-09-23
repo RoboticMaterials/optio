@@ -96,7 +96,7 @@ export const Stat = styled.div`
 `
 
 export const StatLabel = styled.h3`
-    font-size: ${props => props.theme.fontSize.sz3};
+    font-size: ${props => props.theme.fontSize.sz2};
     font-family: ${props => props.theme.font.primary};
     color: ${props => props.theme.fg.primary};
 
@@ -104,7 +104,7 @@ export const StatLabel = styled.h3`
 `
 
 export const StatValue = styled.h4`
-    font-size: ${props => props.theme.fontSize.sz4};
+    font-size: ${props => props.theme.fontSize.sz3};
     font-family: ${props => props.theme.font.primary};
     color: white;
 `

@@ -283,7 +283,6 @@ export default function LocationContent(props) {
 
 
     else {    // List Mode
-        // console.log('QQQQ Locations', locations)
         return (
             <ContentList
                 title={'Locations'}

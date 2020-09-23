@@ -41,8 +41,6 @@ export default function Positions() {
                     }).forEach(relevantTask => {
                         dispatch(deleteTask(relevantTask._id.$oid))
                     })
-                    console.log('QQQQ Location in positions', selectedLocation)
-
                     let locationPositionIDs = selectedLocation.children
                     locationPositionIDs.splice(i, 1)
                     dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))

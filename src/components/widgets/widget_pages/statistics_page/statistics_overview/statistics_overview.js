@@ -69,13 +69,12 @@ const StatisticsOverview = (props) => {
     const handleDeviceStatistics = () => {
         
         const device = devices[locations[params.stationID].device_id]
-        // console.log('QQQQ Device Stats', device)
         if(device === undefined) return
         return (
 
             <>
-                <p>{device.fake_data}</p>
-                <p>{device.real_data}</p>
+                {/* <p>{Object.keys(device.real_data)}</p> */}
+                <styled.StatLabel>{device.real_data}</styled.StatLabel>
             </>
         )
     }
