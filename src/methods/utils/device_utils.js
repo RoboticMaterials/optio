@@ -17,7 +17,7 @@ export const DeviceItemTypes = {
     cart: {
         icon: 'icon-cart',
         deviceFontSize: '2.5rem',
-        primaryColor: '#00b673',
+        primaryColor: '#03ffa3',
         startGradientColor: '#03ffa3',
         stopGradientColor: '#00b673', 
     },
@@ -26,6 +26,7 @@ export const DeviceItemTypes = {
         primaryColor: '#d7841e',
         startGradientColor: '#d7a31e',
         stopGradientColor: '#d7841e', 
+        svgPath: 'M195.33,232.27c1.06,1.43.51,2.6-1.24,2.6H172a7.18,7.18,0,0,1-5.09-2.6l-58.8-79.35h35.12a29.27,29.27,0,1,0,0-58.53H96.36V234.87H73V71h70.24a52.68,52.68,0,0,1,10,104.4ZM263.64,71.13,214.18,120.6l-14-14a1.35,1.35,0,0,0-.83-.29l-.21,0a1.29,1.29,0,0,0-1.09,1.28,1.1,1.1,0,0,0,0,.26s0,.09,0,.13a57.16,57.16,0,0,1,.65,28.85l0,.13a1.1,1.1,0,0,0,0,.26,1.33,1.33,0,0,0,.29.83,1.45,1.45,0,0,0,.18.17l.6.6,8.15,8.16h0l6.27,6.27,16.32-16.31,33.15-33.15V235h23.41V71.13Z'
     }
 
 }

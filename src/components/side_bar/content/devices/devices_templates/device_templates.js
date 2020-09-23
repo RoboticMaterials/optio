@@ -1,4 +1,4 @@
-export const armAttriutes = {
+export const defaultAttriutes = {
     schema: 'station',
     type: 'device',
     children: [],

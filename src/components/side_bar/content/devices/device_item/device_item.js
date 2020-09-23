@@ -10,7 +10,7 @@ import * as locationActions from '../../../../../redux/actions/locations_actions
 import * as styled from './device_item.style'
 
 // Import utils
-import { DeviceItemTypes } from '../../../../../methods/utils/device_utiles'
+import { DeviceItemTypes } from '../../../../../methods/utils/device_utils'
 
 const DeviceItem = (props) => {
 
@@ -30,21 +30,20 @@ const DeviceItem = (props) => {
 
     const dispatch = useDispatch()
 
-    const [deviceType, setDeviceType] = useState('')
     const [stationId, setStationId] = useState(false)
+    
 
     // Sets the type of device
+    let deviceType = DeviceItemTypes['generic']
+    if (!!DeviceItemTypes[device.device_model]) deviceType = DeviceItemTypes[device.device_model]
+    else if (device.device_model === 'MiR100') deviceType = DeviceItemTypes['cart']
+
+    // Sets the location of the device
     useEffect(() => {
-
-        // Set the type of device
-        if (device.device_model === 'MiR100') setDeviceType('cart')
-        else if (device.device_model === 'trident') setDeviceType('trident')
-        else { setDeviceType('unknown') }
-
-        if(!!device.station_id && device.device_model !== 'MiR100' && !stationId) setStationId(device.station_id)
+        if (!!device.station_id && device.device_model !== 'MiR100' && !stationId) setStationId(device.station_id)
 
         // If the device does not have a station_id but there is one in state, then set the state to false (this happens when a devices location is deleted)
-        if(!!stationId && !device.station_id) setStationId(false)
+        if (!!stationId && !device.station_id) setStationId(false)
 
     }, [device])
 
@@ -79,31 +78,6 @@ const DeviceItem = (props) => {
 
 
         return deviceStatus
-    }
-
-    // Handles the icon type to be displayed
-    const handleDeviceIcon = () => {
-        let deviceIcon = 'icon-rmLogo'
-        let deviceFontSize = null
-
-        // Sets the icon to be displayed
-        if (deviceType === 'arm' || deviceType === 'cart' || deviceType === 'trident') {
-            deviceIcon = 'icon-' + deviceType
-        }
-
-        if (deviceType === 'cart') {
-            if (isSmall) {
-                deviceFontSize = '1.25rem';
-
-            } else {
-                deviceFontSize = '2.5rem';
-
-            }
-        }
-
-        return (
-            <styled.DeviceIcon isSmall={isSmall} className={deviceIcon} style={{ fontSize: !!deviceFontSize && deviceFontSize, color: !device.location_id && 'white' }} />
-        )
     }
 
     const handleDeviceBattery = () => {
@@ -233,17 +207,17 @@ const DeviceItem = (props) => {
     return (
 
         <styled.DeviceContainer key={ind}
-            onMouseEnter={() => { 
+            onMouseEnter={() => {
                 !!stationId && dispatch(locationActions.selectLocation(stationId))
             }}
-            onMouseLeave={() => { !!stationId && dispatch(locationActions.deselectLocation())}}>
-            {/* <styled.SettingsIcon className='fas fa-cog'/> */}
+            onMouseLeave={() => { !!stationId && dispatch(locationActions.deselectLocation()) }}>
 
             <styled.BigCircle isSmall={isSmall}>
 
                 <styled.DeviceTitle isSmall={isSmall}>{deviceName}</styled.DeviceTitle>
 
-                {handleDeviceIcon()}
+                {/* Sets attributes of device Icon based on what type of device has been selected */}
+                <styled.DeviceIcon isSmall={isSmall} className={deviceType.icon} style={{ fontSize: !!deviceType.deviceFontSize && deviceType.deviceFontSize, color: !!stationId || deviceType.icon === 'icon-cart' ? deviceType.primaryColor : 'white' }} />
 
                 <styled.StatusContainer>
                     <styled.StatusText isSmall={isSmall}>
@@ -251,7 +225,6 @@ const DeviceItem = (props) => {
                     </styled.StatusText>
                 </styled.StatusContainer>
 
-                {/* Commented out for now, no need to edit device as of Sep 2, 2020 */}
                 <styled.EditDeviceIcon
                     isSmall={isSmall}
                     className='fas fa-cog'
@@ -263,32 +236,16 @@ const DeviceItem = (props) => {
             {/* SVG for Gradient Circle. Has 2 linear gradients and conditional statements based on the deviceType. Had to use 2 gradient elements because they are global. Changing the stopColor just changes the global element making all gradients those colors */}
             <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 518 518" style={{ position: 'absolute', overflow: 'visible' }}>
                 <defs>
-                    <linearGradient id="linear-gradient" y1="259" x2="518" y2="259" gradientUnits="userSpaceOnUse">
-                        <stop offset="0" style={{ stopColor: '#1e9cd7' }} />
-                        <stop offset="0.99" style={{ stopColor: '#005b97' }} />
+                    <linearGradient id={device._id} y1="259" x2="518" y2="259" gradientUnits="userSpaceOnUse">
+                        <stop offset="0" style={{ stopColor: deviceType.startGradientColor }} />
+                        <stop offset="0.99" style={{ stopColor: deviceType.stopGradientColor }} />
                     </linearGradient>
-                    <linearGradient id="linear-gradient2" y1="259" x2="518" y2="259" gradientUnits="userSpaceOnUse">
-                        <stop offset="0" style={{ stopColor: '#03ffa3' }} />
-                        <stop offset="0.99" style={{ stopColor: '#00b673' }} />
-                    </linearGradient>
-                    <linearGradient id="linear-gradient3" y1="259" x2="518" y2="259" gradientUnits="userSpaceOnUse">
-                        <stop offset="0" style={{ stopColor: '#d7a31e' }} />
-                        <stop offset="0.99" style={{ stopColor: '#d7841e' }} />
-                    </linearGradient>
+
                 </defs>
                 <g id="Layer_2" data-name="Layer 2">
                     <g id="Layer_1-2" data-name="Layer 1">
 
-                        {deviceType === 'arm' ?
-                            <circle className="cls-1" cx="259" cy="259" r="256.5" style={{ fill: 'none', strokeMiterlimit: '10', strokeWidth: '1rem', stroke: 'url(#linear-gradient)' }} />
-
-                            :
-                            deviceType === 'cart' ?
-                                <circle className="cls-1" cx="259" cy="259" r="256.5" style={{ fill: 'none', strokeMiterlimit: '10', strokeWidth: '1rem', stroke: 'url(#linear-gradient2)' }} />
-                                :
-                                <circle className="cls-1" cx="259" cy="259" r="256.5" style={{ fill: 'none', strokeMiterlimit: '10', strokeWidth: '1rem', stroke: 'url(#linear-gradient3)' }} />
-
-                        }
+                        <circle className="cls-1" cx="259" cy="259" r="256.5" style={{ fill: 'none', strokeMiterlimit: '10', strokeWidth: '1rem', stroke: `url(#${device._id})` }} />
 
                     </g>
                 </g>
@@ -300,8 +257,6 @@ const DeviceItem = (props) => {
 
             {/* Commented out for now since OEE is not implmented */}
             {/* {handleDeviceOEE()} */}
-
-
 
 
         </styled.DeviceContainer>

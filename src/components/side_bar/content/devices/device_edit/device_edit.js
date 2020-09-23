@@ -13,13 +13,15 @@ import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_sear
 import Button from '../../../../basic/button/button'
 import Positions from '../../locations/positions/positions'
 
-
 // Import actions
 import * as locationActions from '../../../../../redux/actions/locations_actions'
 import * as deviceActions from '../../../../../redux/actions/devices_actions'
 
 // Import templates
 import * as templates from '../devices_templates/device_templates'
+
+// Import Utils
+import { DeviceItemTypes } from '../../../../../methods/utils/device_utils'
 
 /**
  * This handles editing device informaton
@@ -120,22 +122,12 @@ const DeviceEdit = (props) => {
      */
     const handleExistingDevice = () => {
 
-        let template = null
-        let deviceIcon = 'icon-rmLogo'
+        let template = templates.defaultAttriutes
 
-        if (selectedDevice.device_model === 'MiR100') {
-            template = templates.armAttriutes
-        } 
-        
-        else if (selectedDevice.device_model === 'trident') {
-            deviceIcon ='icon-trident'
-            template = templates.armAttriutes
+        let deviceType = DeviceItemTypes['generic']
+        if (!!DeviceItemTypes[selectedDevice.device_model]) deviceType = DeviceItemTypes[selectedDevice.device_model]
+        else if (selectedDevice.device_model === 'MiR100') deviceType = DeviceItemTypes['cart']
 
-        }
-        
-        else {
-            template = templates.armAttriutes
-        }
 
         return (
             <styled.SettingsSectionsContainer style={{ alignItems: 'center', textAlign: 'center', }}>
@@ -143,7 +135,8 @@ const DeviceEdit = (props) => {
                 <styled.ConnectionText>To add the device to the screen, grab the device with your mouse and drag onto the screen</styled.ConnectionText>
 
                 <styled.DeviceIcon
-                    className={deviceIcon}
+                    className={deviceType.icon}
+                    style ={{ color: !!showPositions ? deviceType.primaryColor : 'white' }}
                     onMouseDown={async e => {
                         if (selectedLocation.type !== null) { return }
                         await Object.assign(selectedLocation, { ...template, temp: true })
@@ -164,10 +157,7 @@ const DeviceEdit = (props) => {
 
     }
 
-    const handleAddDeviceToMap = () => {
-
-    }
-
+    // Handles adding positions to the device
     const handlePositions = () => {
 
         return (
@@ -245,28 +235,6 @@ const DeviceEdit = (props) => {
 
                 handlePositions()
             }
-
-            {/* <styled.SettingsSectionsContainer>
-                <styled.SettingsLabel schema={'devices'}>Device Type</styled.SettingsLabel>
-                <DropDownSearch
-                    options={availableDevices}
-                    valuefield={'type'}
-                    searchBy={'type'}
-                    labelField={'type'}
-                    style={{ width: '100%', fontSize: '1rem' }}
-                    values={!!device.type ? availableDevices.filter(d => d.type === device.type) : []}
-                    onChange={(values) => {
-                        device.type = values[0].type
-                    }}
-                    label='Select Device Type'
-                    key={2}
-                    closeOnSelect={true}
-                    dropdownGap={5}
-                    backspaceDelete={true}
-                    noDataLabel={"No matches found"}
-
-                />
-            </styled.SettingsSectionsContainer> */}
 
             <Button schema={'devices'} secondary style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: '2rem' }}
                 onClick={() => {

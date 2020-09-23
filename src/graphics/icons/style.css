@@ -27,7 +27,7 @@
 
 .icon-trident:before {
   content: "\e908";
-  color: #d7841e;
+  /* color: #d7841e; */
 
 }
 .icon-process:before {
