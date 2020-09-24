@@ -11,6 +11,9 @@ import useWindowSize from '../../hooks/useWindowSize'
 
 import { hoverStationInfo } from '../../redux/actions/stations_actions'
 
+// Import Utils
+import { DeviceItemTypes } from '../../methods/utils/device_utils'
+
 // TODO: DELETE ME, FOR PROTOTYPING ONLY
 import HILModals from '../hil_modals/hil_modals'
 
@@ -30,6 +33,7 @@ const Widgets = (props) => {
 
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
     const locations = useSelector(state => { return state.locationsReducer.locations })
+    const devices = useSelector(state => state.devicesReducer.devices)
     // Info passed from workstations/device_locations via redux
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
 
@@ -47,46 +51,89 @@ const Widgets = (props) => {
     }
 
     // Renders the buttons under the location. useMemo is passed a blank array because the buttons only need to be rendered once
-    const widgetButtons = useMemo(() => {
+    const handleWidgetButtons = useMemo(() => {
 
         // TODO: Make this dynamic based on the station type. IE show certain buttons for different stations (live view button for an RM Vision)
-        return (
-            <styled.WidgetButtonContainer widgetPage={widgetPage}>
+        const location = locations[hoveringInfo.id]
 
-                <WidgetButton
-                    id={stationID}
-                    type={'statistics'}
-                    currentPage={widgetPage}
-                />
+        if (!!location.device_id) {
+            const device = devices[location.device_id]
+            let deviceType = DeviceItemTypes['generic']
 
-                <WidgetButton
-                    id={stationID}
-                    type={'dashboards'}
-                    currentPage={widgetPage}
-                />
 
-                {/* Commented out for now, these widgets aren't working as of Sept. 1 2020. Once re-implemented make sure to update CSS */}
-                {/* <WidgetButton
+            if (!!DeviceItemTypes[device.device_model]) deviceType = DeviceItemTypes[device.device_model]
+
+
+            return deviceType.widgetPages.map((page) => {
+                switch (page) {
+                    case 'statistics':
+                        return (
+                            <WidgetButton
+                                id={stationID}
+                                type={'statistics'}
+                                currentPage={widgetPage}
+                            />
+                        )
+                    case 'dashboards':
+                        return (
+                            <WidgetButton
+                                id={stationID}
+                                type={'dashboards'}
+                                currentPage={widgetPage}
+                            />
+                        )
+                    case 'view':
+                        return (
+                            <WidgetButton
+                                id={stationID}
+                                type={'view'}
+                                currentPage={widgetPage}
+                            />
+                        )
+
+                    default:
+                        break;
+                }
+
+            })
+
+        } else {
+            return (
+                <>
+                    <WidgetButton
+                        id={stationID}
+                        type={'statistics'}
+                        currentPage={widgetPage}
+                    />
+
+                    <WidgetButton
+                        id={stationID}
+                        type={'dashboards'}
+                        currentPage={widgetPage}
+                    />
+
+                    {/* Commented out for now, these widgets aren't working as of Sept. 1 2020. Once re-implemented make sure to update CSS */}
+                    {/* <WidgetButton
                     id={locationID}
                     type={'tasks'}
                     currentPage={widgetPage}
                 /> */}
 
-                {/* <WidgetButton
+                    {/* <WidgetButton
                     id={locationID}
                     type={'objects'}
                     currentPage={widgetPage}
                 /> */}
 
-                {/* <WidgetButton
+                    {/* <WidgetButton
                     id={locationID}
                     type={'view'}
                     currentPage={widgetPage}
                 /> */}
+                </>
 
-            </styled.WidgetButtonContainer>
-
-        )
+            )
+        }
     }, [widgetPage])
 
     const statistics = useMemo(() => {
@@ -159,9 +206,15 @@ const Widgets = (props) => {
                         dashboardOpen ?
                             <></>
                             :
-                            widgetButtons
+                            <styled.WidgetButtonContainer widgetPage={widgetPage}>
+                                {handleWidgetButtons}
+                            </styled.WidgetButtonContainer>
+
                         :
-                        widgetButtons
+                        <styled.WidgetButtonContainer widgetPage={widgetPage}>
+                            {handleWidgetButtons}
+                        </styled.WidgetButtonContainer>
+
                     }
 
                     {/* Commented out for the time being, statistics have not been implemented as of Sept 1 */}

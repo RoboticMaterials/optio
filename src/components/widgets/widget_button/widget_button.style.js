@@ -7,6 +7,7 @@ export const WidgetButtonButton = styled.button`
     width: 4rem;
     height: 4rem;
     outline:none;
+    margin: 0rem .5rem;
 
     /* margin-top: 0.5rem; */
 

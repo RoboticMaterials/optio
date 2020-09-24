@@ -27,6 +27,7 @@ import { postLocalSettings } from '../../redux/actions/local_actions'
 
 // Import components
 import Textbox from '../../components/basic/textbox/textbox'
+import Button from '../../components/basic/button/button'
 
 // import utils
 import { getPageNameFromPath } from "../../methods/utils/router_utils";
@@ -195,8 +196,6 @@ const ApiContainer = (props) => {
             setApiError(true)
             return
         }
-
-
 
         const locations = await onGetLocations()
         const dashboards = await onGetDashboards()
@@ -448,8 +447,10 @@ const ApiContainer = (props) => {
         <>
             {/* When loading show an RM logo, if no api info, then show input to enter */}
             {!props.isApiLoaded ? apiError ?
-                <div style={{ width: '100%', height: '100%', paddingTop: '30%', display: 'flex', justifyContent: 'center' }}>
-                    <div style={{ width: '50%', minWidth: '20rem' }}>
+                <div style={{ width: '100%', height: '100%', paddingTop: '15%', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+                    <i className={'icon-rmLogo'} style={{ fontSize: '10rem', marginBottom: '5rem', color: '#FF4B4B' }} />
+
+                    <div style={{ width: '50%', minWidth: '20rem', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
                         < p > Please Enter API IP</p>
                         <Textbox
                             placeholder="API IP Address"
@@ -459,13 +460,13 @@ const ApiContainer = (props) => {
                             style={{ width: '100%' }}
                         // type = 'number'
                         />
-                        <button onClick={handleSubmitApiIpAddress}>Submit</button>
+                        <Button schema={'scheduler'} onClick={handleSubmitApiIpAddress} style={{ color: 'red', border: '0.1rem solid red' }}>Submit</Button>
                     </div>
                 </div>
 
                 :
                 <div style={{ width: '100%', height: '100%', paddingTop: '30%', display: 'flex', justifyContent: 'center' }}>
-                    <i className={'icon-rmLogo'} style={{ fontSize: '10rem' }} />
+                    <i className={'icon-rmLogo'} style={{ fontSize: '10rem', color: '#FF4B4B' }} />
                 </div>
                 :
                 <>

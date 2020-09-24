@@ -44,7 +44,7 @@ export const WidgetContainer = styled.div`
 
 
     /* width: ${props => !!props.widgetPage ? '32rem' : '30rem'}; */
-    width: ${props => !!props.widgetPage ? '15rem' : '13rem'};
+    width: ${props => !!props.widgetPage ? '15rem' : 'fit-content'};
     height: ${props => !!props.widgetPage ? 'auto' : '5rem'};
     
     box-shadow: ${props => !!props.widgetPage ? 'none' : '0 0.1rem 0.2rem 0rem #303030'};

@@ -9,6 +9,9 @@ import * as styled from './device_locations.style'
 // Import Actions
 import { hoverStationInfo } from '../../../../../redux/actions/stations_actions'
 
+// Import Utils
+import { DeviceItemTypes } from '../../../../../methods/utils/device_utils'
+
 // Import Types
 import GenericDevice from './device_types/generic_device'
 import ArmDevice from './device_types/arm_device'
@@ -91,17 +94,17 @@ const DeviceLocations = (props) => {
             return widgetInfo
         }
 
-        // Stops the widget from getting to small and keeping the widget relative to the location size
+        // Stops the widget from getting to0 small and keeping the widget relative to the location size
         if (d3.scale < .8) {
             widgetInfo.scale = .8
             widgetInfo.yPosition = location.y + bBox.height / 2 + 105
 
         }
 
-        // Stops the widget from getting to large and keeping the widget relatice to the location size
+        // Stops the widget from getting to0 large and keeping the widget relative to the location size
         else if (d3.scale > 1.3) {
             widgetInfo.scale = 1.3
-            widgetInfo.yPosition = location.y + bBox.height / 2 + 185
+            widgetInfo.yPosition = location.y + bBox.height / 2 + 150
         }
         return widgetInfo
     }
@@ -127,17 +130,34 @@ const DeviceLocations = (props) => {
 
         // This will gray out devices that arent selected. The device becomes selected either on hover in device side bar list or editing device
         let selected = true
-        if(!!selectedLocation && !!selectedLocation.device_id && location.device_id !== selectedLocation.device_id) selected = false
-        if(!!selectedLocation && !selectedLocation.device_id) selected = false
+        if (!!selectedLocation && !!selectedLocation.device_id && location.device_id !== selectedLocation.device_id) selected = false
+        if (!!selectedLocation && !selectedLocation.device_id) selected = false
 
+        const device = devices[location.device_id]
+
+        // Sets the device type, if the device does not exits in the list of device item types, then it uses the generic device
+        let deviceType = DeviceItemTypes['generic']
+        if (!!DeviceItemTypes[device.device_model]) deviceType = DeviceItemTypes[device.device_model]
+        else if (device.device_model === 'MiR100') deviceType = DeviceItemTypes['cart']
 
         try {
+            return (
 
-            if (devices[location.device_id].device_model === 'MiR100') return <ArmDevice customClassName={rd3tClassName}/>
-            
-            else if (devices[location.device_id].device_model === 'trident') return <RanpakTrident customClassName={rd3tClassName} selected={selected}/>
-
-            else return <GenericDevice customClassName={rd3tClassName} selected={selected}/>
+                <svg xmlns="http://www.w3.org/2000/svg" id={`${rd3tClassName}-device`}>
+                    <defs>
+                        <linearGradient id={device._id} x1="72.95" y1="153" x2="287.05" y2="153" gradientUnits="userSpaceOnUse">
+                            <stop offset="0" style={{ stopColor: deviceType.startGradientColor }} />
+                            <stop offset="1" style={{ stopColor: deviceType.stopGradientColor }} />
+                        </linearGradient>
+                    </defs>
+                    <g id="Layer_2" data-name="Layer 2">
+                        <g id="Layer_1-2" data-name="Layer 1">
+                            <rect fill='#4d4d4d' width="360" height="240" rx="30" />
+                            <path style={{ fill: `url(#${device._id})` }} d={deviceType.svgPath} />
+                        </g>
+                    </g>
+                </svg>
+            )
 
         } catch (error) {
             console.log('QQQQ Catching error, please fix', error)
