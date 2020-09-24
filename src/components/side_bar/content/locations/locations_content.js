@@ -288,8 +288,8 @@ export default function LocationContent(props) {
                 title={'Locations'}
                 schema={'locations'}
                 // Filters out devices from being displayed in locations
-                // elements={Object.values(locations).filter(location => location.type !== 'device' )}
-                elements={Object.values(locations)}
+                elements={Object.values(locations).filter(location => location.type !== 'device' )}
+                // elements={Object.values(locations)}
                 onMouseEnter={(location) => dispatch(locationActions.selectLocation(location._id))}
                 onMouseLeave={(location) => dispatch(locationActions.deselectLocation())}
                 onClick={(location) => {

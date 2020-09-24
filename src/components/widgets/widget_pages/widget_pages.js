@@ -78,7 +78,7 @@ const WidgetPages = (props) => {
                     component={TasksPage}
                 />
                 <Route
-                    path="/locations/:stationID/viewer"
+                    path="/locations/:stationID/view"
                     component={ViewerPage}
                 />
             </styled.WidgetPageContainer>

@@ -53,9 +53,9 @@ const Widgets = (props) => {
     // Renders the buttons under the location. useMemo is passed a blank array because the buttons only need to be rendered once
     const handleWidgetButtons = useMemo(() => {
 
-        // TODO: Make this dynamic based on the station type. IE show certain buttons for different stations (live view button for an RM Vision)
         const location = locations[hoveringInfo.id]
 
+        // If location has a device, then see what type of widget buttons need to be displayed, else just show statistics and dashboards
         if (!!location.device_id) {
             const device = devices[location.device_id]
             let deviceType = DeviceItemTypes['generic']

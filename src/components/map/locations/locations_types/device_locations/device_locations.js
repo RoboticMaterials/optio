@@ -12,11 +12,6 @@ import { hoverStationInfo } from '../../../../../redux/actions/stations_actions'
 // Import Utils
 import { DeviceItemTypes } from '../../../../../methods/utils/device_utils'
 
-// Import Types
-import GenericDevice from './device_types/generic_device'
-import ArmDevice from './device_types/arm_device'
-import RanpakTrident from './device_types/ranpak_tident'
-
 const DeviceLocations = (props) => {
 
     const {
@@ -153,7 +148,7 @@ const DeviceLocations = (props) => {
                     <g id="Layer_2" data-name="Layer 2">
                         <g id="Layer_1-2" data-name="Layer 1">
                             <rect fill='#4d4d4d' width="360" height="240" rx="30" />
-                            <path style={{ fill: `url(#${device._id})` }} d={deviceType.svgPath} />
+                            <path style={{ fill: !selected ? 'gray' : `url(#${device._id})` }} d={deviceType.svgPath} />
                         </g>
                     </g>
                 </svg>
