@@ -53,7 +53,7 @@ const devicesReducer = (state = defaultState, action) => {
                 const updatedDevice = devices[key]
                 if (updatedDevice.position !== undefined) {
 
-                    // On page load, the d3 state will be null. This is here so that devices wont be undifned on page load
+                    // On page load, the d3 state will be null. This is here so that devices wont be undifened on page load
                     if (state.d3 === null) {
                         devicesClone[key] = {
                             ...devicesClone[key],

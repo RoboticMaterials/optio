@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import * as styled from './positions.style'
+import * as styled from './shelves.style'
 
 import { sortableElement, sortableHandle } from 'react-sortable-hoc';
 
@@ -40,7 +40,7 @@ export default function Positions() {
 
     const SortableItem = SortableElement(({ position, i }) =>
         <li style={{ listStyle: 'none' }}>
-            <styled.PositionListItem>
+            <styled.ShelfListItem>
                 <MinusButton onClick={() => {
                     Object.values(tasks).filter(task => {
                         return task.load.position == position._id || task.unload.position == position._id
@@ -57,28 +57,28 @@ export default function Positions() {
                     dispatch(positionActions.setPositionAttributes(position._id, { name: e.target.value }))
                 }}></Textbox>
                 <DragHandle></DragHandle>
-            </styled.PositionListItem>
+            </styled.ShelfListItem>
         </li>
     );
 
     const SortableList = SortableContainer(({ positions }) => {
         return (
-            <styled.PositionList>
+            <styled.ShelfList>
                 {positions.map((position, index) => (
                     <SortableItem key={`position-item-${position._id}`} index={index} position={position} i={index} />
                 ))}
-            </styled.PositionList>
+            </styled.ShelfList>
         );
     });
 
     return (
-        <styled.PositionsContainer>
+        <styled.ShelvesContainer>
 
             {/* Cards for dragging a new position onto the map */}
             <styled.Cards>
-                <styled.NewPositionCard style={{ transform: 'translate(-0.4rem, 0.4rem)' }} />
-                <styled.NewPositionCard style={{ transform: 'translate(-0.2rem, 0.2rem)' }} />
-                <styled.NewPositionCard draggable={false}
+                <styled.NewShelfCard style={{ transform: 'translate(-0.4rem, 0.4rem)' }} />
+                <styled.NewShelfCard style={{ transform: 'translate(-0.2rem, 0.2rem)' }} />
+                <styled.NewShelfCard draggable={false}
                     onMouseDown={e => {
                         const newPositionID = uuid()
                         dispatch(positionActions.addPosition({
@@ -102,15 +102,15 @@ export default function Positions() {
                     }
                 >
                     <styled.LocationTypeGraphic id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                        {LocationTypes['cartPosition'].svgPath}
+                        {LocationTypes['shelfPosition'].svgPath}
                     </styled.LocationTypeGraphic>
 
-                </styled.NewPositionCard>
+                </styled.NewShelfCard>
 
             </styled.Cards>
 
             {selectedLocation.children.length > 0 &&
-                <styled.Label>Associated Positions</styled.Label>
+                <styled.Label>Associated Shelves</styled.Label>
             }
             <styled.ListContainer>
                 <SortableList positions={selectedLocation.children.map(id => positions[id])} onSortEnd={onSortEnd}
@@ -120,6 +120,6 @@ export default function Positions() {
                     useDragHandle={true}
                 />
             </styled.ListContainer>
-        </styled.PositionsContainer>
+        </styled.ShelvesContainer>
     )
 }

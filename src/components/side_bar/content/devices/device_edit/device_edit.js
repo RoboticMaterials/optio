@@ -11,7 +11,10 @@ import { deepCopy } from '../../../../../methods/utils/utils'
 import Textbox from '../../../../basic/textbox/textbox'
 import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
 import Button from '../../../../basic/button/button'
+
+// Import componenets
 import Positions from '../../locations/positions/positions'
+import Shelves from '../../locations/shelves/shelves'
 
 // Import actions
 import * as locationActions from '../../../../../redux/actions/locations_actions'
@@ -136,7 +139,7 @@ const DeviceEdit = (props) => {
 
                 <styled.DeviceIcon
                     className={deviceType.icon}
-                    style ={{ color: !!showPositions ? deviceType.primaryColor : 'white' }}
+                    style={{ color: !!showPositions ? deviceType.primaryColor : 'white' }}
                     onMouseDown={async e => {
                         if (selectedLocation.type !== null) { return }
                         await Object.assign(selectedLocation, { ...template, temp: true })
@@ -161,11 +164,19 @@ const DeviceEdit = (props) => {
     const handlePositions = () => {
 
         return (
-            <styled.SettingsSectionsContainer style={{ alignItems: 'center', textAlign: 'center', userSelect: 'none'}}>
+            <>
+                <styled.SettingsSectionsContainer style={{ alignItems: 'center', textAlign: 'center', userSelect: 'none' }}>
 
-                <styled.ConnectionText>Add Cart Position associated with this device</styled.ConnectionText>
-                <Positions />
-            </styled.SettingsSectionsContainer>
+                    <styled.ConnectionText>Add Cart Position associated with this device</styled.ConnectionText>
+                    <Positions />
+                </styled.SettingsSectionsContainer>
+
+                <styled.SettingsSectionsContainer style={{ alignItems: 'center', textAlign: 'center', userSelect: 'none' }}>
+
+                    <styled.ConnectionText>Add Shelf Positions associated with this device</styled.ConnectionText>
+                    <Shelves />
+                </styled.SettingsSectionsContainer>
+            </>
         )
     }
 

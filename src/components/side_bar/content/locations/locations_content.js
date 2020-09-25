@@ -3,6 +3,7 @@ import * as styled from './locations_content.style'
 import { useSelector, useDispatch } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom'
 
+// Import components
 import ContentHeader from '../content_header/content_header'
 import Textbox from '../../../basic/textbox/textbox.js'
 import Button from '../../../basic/button/button'
@@ -12,6 +13,7 @@ import Positions from './positions/positions'
 
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 
+// Import actions
 import * as locationActions from '../../../../redux/actions/locations_actions'
 import * as stationActions from '../../../../redux/actions/stations_actions'
 import * as positionActions from '../../../../redux/actions/positions_actions'
@@ -20,34 +22,34 @@ import * as taskActions from '../../../../redux/actions/tasks_actions'
 
 import * as locationTemplates from './location_templates'
 
+// Import Utils
 import { setAction } from '../../../../redux/actions/sidebar_actions'
 import { deepCopy } from '../../../../methods/utils/utils'
+import { LocationTypes } from '../../../../methods/utils/locations_utils'
 
 import uuid from 'uuid'
 
 function locationTypeGraphic(type, isSelected) {
+    console.log('QQQQ type', type)
     switch (type) {
         case 'shelf_position':
             return (
-                <styled.LocationTypeGraphic isSelected={isSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect x="90" y="40" width="15" height="320" rx="5" fill="#6283f0" /><rect x="295" y="40" width="15" height="320" rx="5" fill="#6283f0" /><rect x="80" y="40" width="240" height="20" rx="10" fill="#6283f0" /><rect x="80" y="160" width="240" height="20" rx="10" fill="#6283f0" /><rect x="80" y="280" width="240" height="20" rx="10" fill="#6283f0" /></styled.LocationTypeGraphic>
+                <styled.LocationTypeGraphic isSelected={isSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                    {LocationTypes['shelfPosition'].svgPath}
+                </styled.LocationTypeGraphic>
             )
 
         case 'workstation':
             return (
                 <styled.LocationTypeGraphic isSelected={isSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                    <rect x="100" y="40" width="200" height="320" rx="10" transform="translate(400) rotate(90)" fill="none" stroke="#6283f0" strokeMiterlimit="10" strokeWidth="20" />
-                    <rect x="120" y="60" width="160" height="280" rx="2" transform="translate(400) rotate(90)" fill="#6283f0" />
+                    {LocationTypes['workstation'].svgPath}
                 </styled.LocationTypeGraphic>
             )
 
         case 'cart_position':
             return (
                 <styled.LocationTypeGraphic isSelected={isSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                    <rect x="100" y="40" width="200" height="320" rx="30" transform="translate(400 0) rotate(90)" fill="none" stroke="#6283f0" strokeMiterlimit="10" strokeWidth="20" />
-                    <path d="M315.5,200.87l-64,36.95A1,1,0,0,1,250,237v-73.9a1,1,0,0,1,1.5-.87l64,36.95A1,1,0,0,1,315.5,200.87Z" fill="#6283f0" stroke="#6283f0" strokeMiterlimit="10" strokeWidth="10" />
-                    <circle cx="200" cy="200" r="15" fill="#6283f0" />
-                    <circle cx="150" cy="200" r="10" fill="#6283f0" />
-                    <circle cx="102.5" cy="200" r="7.5" fill="#6283f0" />
+                    {LocationTypes['cartPosition'].svgPath}
                 </styled.LocationTypeGraphic>
 
             )
@@ -288,7 +290,7 @@ export default function LocationContent(props) {
                 title={'Locations'}
                 schema={'locations'}
                 // Filters out devices from being displayed in locations
-                elements={Object.values(locations).filter(location => location.type !== 'device' )}
+                elements={Object.values(locations).filter(location => location.type !== 'device')}
                 // elements={Object.values(locations)}
                 onMouseEnter={(location) => dispatch(locationActions.selectLocation(location._id))}
                 onMouseLeave={(location) => dispatch(locationActions.deselectLocation())}

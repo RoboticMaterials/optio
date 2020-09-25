@@ -64,11 +64,12 @@ const Widgets = (props) => {
             if (!!DeviceItemTypes[device.device_model]) deviceType = DeviceItemTypes[device.device_model]
 
 
-            return deviceType.widgetPages.map((page) => {
+            return deviceType.widgetPages.map((page, ind) => {
                 switch (page) {
                     case 'statistics':
                         return (
                             <WidgetButton
+                                key={ind}
                                 id={stationID}
                                 type={'statistics'}
                                 currentPage={widgetPage}
@@ -77,6 +78,7 @@ const Widgets = (props) => {
                     case 'dashboards':
                         return (
                             <WidgetButton
+                                key={ind}
                                 id={stationID}
                                 type={'dashboards'}
                                 currentPage={widgetPage}
@@ -85,6 +87,7 @@ const Widgets = (props) => {
                     case 'view':
                         return (
                             <WidgetButton
+                                key={ind}
                                 id={stationID}
                                 type={'view'}
                                 currentPage={widgetPage}
