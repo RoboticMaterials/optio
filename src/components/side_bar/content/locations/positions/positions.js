@@ -64,9 +64,13 @@ export default function Positions() {
     const SortableList = SortableContainer(({ positions }) => {
         return (
             <styled.PositionList>
-                {positions.map((position, index) => (
-                    <SortableItem key={`position-item-${position._id}`} index={index} position={position} i={index} />
-                ))}
+                {positions.map((position, index) => {
+                    if (position.type === 'cart_position') {
+                        return (
+                            <SortableItem key={`position-item-${position._id}`} index={index} position={position} i={index} />
+                        )
+                    }
+                })}
             </styled.PositionList>
         );
     });
@@ -82,7 +86,7 @@ export default function Positions() {
                     onMouseDown={e => {
                         const newPositionID = uuid()
                         dispatch(positionActions.addPosition({
-                            name: 'Position ' + (selectedLocation.children.length + 1),
+                            name: 'Position ' + (selectedLocation.children.filter((position) => positions[position].type === 'cart_position').length + 1),
                             schema: 'positions',
                             type: 'cart_position',
                             temp: true,

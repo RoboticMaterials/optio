@@ -26,7 +26,9 @@ import uuid from 'uuid'
 export default function Positions() {
 
     const dispatch = useDispatch()
+
     const [editingIndex, setEditingIndex] = useState(null)
+
     const positions = useSelector(state => state.locationsReducer.positions)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const tasks = useSelector(state => state.tasksReducer.tasks)
@@ -64,9 +66,13 @@ export default function Positions() {
     const SortableList = SortableContainer(({ positions }) => {
         return (
             <styled.ShelfList>
-                {positions.map((position, index) => (
-                    <SortableItem key={`position-item-${position._id}`} index={index} position={position} i={index} />
-                ))}
+                {positions.map((position, index) => {
+                    if (position.type === 'shelf_position') {
+                        return (
+                            <SortableItem key={`position-item-${position._id}`} index={index} position={position} i={index} />
+                        )
+                    }
+                })}
             </styled.ShelfList>
         );
     });
@@ -82,9 +88,9 @@ export default function Positions() {
                     onMouseDown={e => {
                         const newPositionID = uuid()
                         dispatch(positionActions.addPosition({
-                            name: 'Position ' + (selectedLocation.children.length + 1),
+                            name: 'Station ' + (selectedLocation.children.filter((position) => positions[position].type === 'shelf_position').length + 1),
                             schema: 'positions',
-                            type: 'cart_position',
+                            type: 'shelf_position',
                             temp: true,
                             new: true,
                             pos_x: 0,
@@ -113,7 +119,9 @@ export default function Positions() {
                 <styled.Label>Associated Shelves</styled.Label>
             }
             <styled.ListContainer>
-                <SortableList positions={selectedLocation.children.map(id => positions[id])} onSortEnd={onSortEnd}
+                <SortableList
+                    positions={selectedLocation.children.map(id => positions[id])}
+                    onSortEnd={onSortEnd}
                     useDragHandle={true}
                     lockAxis={'y'}
                     axis={'y'}

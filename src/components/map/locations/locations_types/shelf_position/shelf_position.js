@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 
+import { LocationTypes } from '../../../../../methods/utils/locations_utils'
+
 function ShelfPosition(props) {
 
     const [hovering, setHovering] = useState(false)
@@ -18,7 +20,7 @@ function ShelfPosition(props) {
             style={{ fill: color, stroke: color, strokeWidth: '0', opacity: '0.8', cursor: "pointer" }}
             onMouseEnter={() => { setHovering(true) }}
             onMouseLeave={() => { setHovering(false) }}
-            transform={`translate(${props.position.x},${props.position.y}) rotate(${props.position.rotation}) scale(${props.d3.scale})`}
+            transform={`translate(${props.location.x},${props.location.y}) rotate(${props.location.rotation}) scale(${props.d3.scale})`}
         >
             <defs>
 
@@ -41,8 +43,14 @@ function ShelfPosition(props) {
                 }
             </g>
 
-            <g className={`${props.rd3tClassName}-trans`}>
-                <rect x="-4" y="-8" rx="0.2" ry="0.2" width="9" height="16" fill="transparent" strokeWidth="0.8" strokeDasharray="2 1" />
+            <g
+                className={`${props.rd3tClassName}-trans`}
+                // Special offset 
+                transform='scale(.05) translate(-195,-120)'
+                fill='#fb7c4e'
+                stroke='#fb7c4e'
+            >
+                {LocationTypes['shelfPosition'].svgPath}
             </g>
 
 
