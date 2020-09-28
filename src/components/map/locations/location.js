@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 // Import locations
-import Workstation from './locations_types/workstation/workstation'
-import CartPosition from './locations_types/cart_position/cart_position'
-import DeviceLocations from './locations_types/device_locations/device_locations'
+import Position from './locations_types/position/position'
+import Station from './locations_types/station/station'
 
 import * as d3 from 'd3'
 import uuid from 'uuid';
@@ -206,7 +205,7 @@ function Location(props) {
     let color = '#6283f0' // Blue
 
 
-    if(location.type === 'shelf_position') color = '#fb7c4e'
+    if (location.type === 'shelf_position') color = '#fb7c4e'
 
     if (selectedTask === null) {
         if (selectedLocation !== null && !isSelected && selectedTask === null) {
@@ -221,9 +220,10 @@ function Location(props) {
 
     switch (location.type) {
         case 'workstation':
+        case 'device':
             return (
                 <React.Fragment key={`frag-loc-${location._id}`}>
-                    <Workstation isSelected={isSelected} color={color} {...props} />
+                    <Station isSelected={isSelected} color={color} {...props} />
                     <DragEntityProto isSelected={isSelected} {...props}
                         onRotate={rotation => dispatch(setLocationAttributes(location._id, { rotation }))}
                         onTranslate={({ x, y }) => dispatch(setLocationAttributes(location._id, { x, y }))}
@@ -244,7 +244,7 @@ function Location(props) {
                             x2={`${stations[location.parent].x}`} y2={`${stations[location.parent].y}`}
                             stroke={color} strokeWidth="1.4" style={{ filter: "url(#glow)", opacity: '0.3' }} />
                     }
-                    <CartPosition isSelected={isSelected} color={color} {...props} />
+                    <Position isSelected={isSelected} color={color} {...props} />
                     <DragEntityProto isSelected={isSelected} {...props}
                         onRotate={rotation => dispatch(setLocationAttributes(location._id, { rotation }))}
                         onTranslate={({ x, y }) => dispatch(setLocationAttributes(location._id, { x, y }))}
@@ -256,25 +256,25 @@ function Location(props) {
                 </React.Fragment>
             )
 
-        case 'device':
-            return (
-                <React.Fragment key={`frag-loc-${location._id}`}>
-                    {/* {location.parent !== null &&
-                        <line x1={`${location.x}`} y1={`${location.y}`}
-                            x2={`${stations[location.parent].x}`} y2={`${stations[location.parent].y}`}
-                            stroke={color} strokeWidth="1.4" style={{ filter: "url(#glow)", opacity: '0.3' }} />
-                    } */}
-                    <DeviceLocations isSelected={isSelected} color={color} {...props} />
-                    <DragEntityProto isSelected={isSelected} {...props}
-                        onRotate={rotation => dispatch(setLocationAttributes(location._id, { rotation }))}
-                        onTranslate={({ x, y }) => dispatch(setLocationAttributes(location._id, { x, y }))}
-                        onTranslateEnd={({ x, y }) => {
-                            pos = convertD3ToReal([x, y], props.d3)
-                            dispatch(setLocationAttributes(location._id, { pos_x: pos[0], pos_y: pos[1] }))
-                        }}
-                    />
-                </React.Fragment>
-            )
+        // case 'device':
+        //     return (
+        //         <React.Fragment key={`frag-loc-${location._id}`}>
+        //             {/* {location.parent !== null &&
+        //                 <line x1={`${location.x}`} y1={`${location.y}`}
+        //                     x2={`${stations[location.parent].x}`} y2={`${stations[location.parent].y}`}
+        //                     stroke={color} strokeWidth="1.4" style={{ filter: "url(#glow)", opacity: '0.3' }} />
+        //             } */}
+        //             <DeviceLocations isSelected={isSelected} color={color} {...props} />
+        //             <DragEntityProto isSelected={isSelected} {...props}
+        //                 onRotate={rotation => dispatch(setLocationAttributes(location._id, { rotation }))}
+        //                 onTranslate={({ x, y }) => dispatch(setLocationAttributes(location._id, { x, y }))}
+        //                 onTranslateEnd={({ x, y }) => {
+        //                     pos = convertD3ToReal([x, y], props.d3)
+        //                     dispatch(setLocationAttributes(location._id, { pos_x: pos[0], pos_y: pos[1] }))
+        //                 }}
+        //             />
+        //         </React.Fragment>
+        //     )
 
         default:
             throw "Nothing is returned from render because a location has a 'type' that does not match the available types. Make sure all locations have valid types"

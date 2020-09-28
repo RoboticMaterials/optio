@@ -8,7 +8,7 @@ import { LocationTypes } from '../../../../../methods/utils/locations_utils'
 // Import Actions
 import { setTaskAttributes } from '../../../../../redux/actions/tasks_actions'
 
-const CartPosition = (props) => {
+const Position = (props) => {
 
     const {
         color,
@@ -141,4 +141,4 @@ const CartPosition = (props) => {
     )
 }
 
-export default CartPosition
+export default Position

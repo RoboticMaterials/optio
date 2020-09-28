@@ -127,7 +127,6 @@ function Workstation(props) {
                 onMouseLeave={() => {
                     // Nothing here because hovering is handled in handleWidgetPageOpen
                     dispatchHoverStationInfo(null)
-
                 }}
 
                 onMouseEnter={() => {
