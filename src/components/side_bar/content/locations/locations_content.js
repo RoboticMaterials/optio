@@ -8,8 +8,10 @@ import ContentHeader from '../content_header/content_header'
 import Textbox from '../../../basic/textbox/textbox.js'
 import Button from '../../../basic/button/button'
 
+// Import components
 import ContentList from '../content_list/content_list'
 import Positions from './positions/positions'
+import Shelves from './shelves/shelves'
 
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 
@@ -30,7 +32,6 @@ import { LocationTypes } from '../../../../methods/utils/locations_utils'
 import uuid from 'uuid'
 
 function locationTypeGraphic(type, isSelected) {
-    console.log('QQQQ type', type)
     switch (type) {
         case 'shelf_position':
             return (
@@ -269,7 +270,10 @@ export default function LocationContent(props) {
                 </styled.CustomTypesContainer>
 
                 {selectedLocation.schema == 'station' ?
-                    <Positions />
+                    <>
+                        <Positions />
+                        <Shelves />
+                    </>
                     :
                     <div style={{ height: "100%" }}></div>
                 }

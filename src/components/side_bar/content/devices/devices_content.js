@@ -240,9 +240,10 @@ const DevicesContent = () => {
 
         dispatch(locationActions.deselectLocation())
 
-        // If locationToDelete is undefined, that means it's not in the backend so it must not have been posted yet. So just remove location from front end and return 
+        // If locationToDelete is undefined, that means it's not in the backend so it must not have been posted yet. So just remove location from front end, set selected device to null and return 
         if (locationToDelete === undefined) {
             dispatch(locationActions.removeLocation(selectedLocation._id))
+            onSetSelectedDevice(null)
             return
         }
 

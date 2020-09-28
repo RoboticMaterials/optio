@@ -78,56 +78,62 @@ export default function Positions() {
     });
 
     return (
-        <styled.ShelvesContainer>
 
-            {/* Cards for dragging a new position onto the map */}
-            <styled.Cards>
-                <styled.NewShelfCard style={{ transform: 'translate(-0.4rem, 0.4rem)' }} />
-                <styled.NewShelfCard style={{ transform: 'translate(-0.2rem, 0.2rem)' }} />
-                <styled.NewShelfCard draggable={false}
-                    onMouseDown={e => {
-                        const newPositionID = uuid()
-                        dispatch(positionActions.addPosition({
-                            name: 'Station ' + (selectedLocation.children.filter((position) => positions[position].type === 'shelf_position').length + 1),
-                            schema: 'positions',
-                            type: 'shelf_position',
-                            temp: true,
-                            new: true,
-                            pos_x: 0,
-                            pos_y: 0,
-                            rotation: 0,
-                            x: e.clientX,
-                            y: e.clientY,
-                            parent: selectedLocation._id,
-                            _id: newPositionID
-                        }))
-                        let { children } = selectedLocation
-                        children.push(newPositionID)
-                        dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children }))
-                    }
-                    }
-                >
-                    <styled.LocationTypeGraphic id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                        {LocationTypes['shelfPosition'].svgPath}
-                    </styled.LocationTypeGraphic>
+        // Takes care of error when selectedLocation is null, but shelves are still being rendered
+        selectedLocation == null ?
+            <></>
+            :
+            <styled.ShelvesContainer>
+                {/* Cards for dragging a new position onto the map */}
+                <styled.Cards>
+                    <styled.NewShelfCard style={{ transform: 'translate(-0.4rem, 0.4rem)' }} />
+                    <styled.NewShelfCard style={{ transform: 'translate(-0.2rem, 0.2rem)' }} />
+                    <styled.NewShelfCard draggable={false}
+                        onMouseDown={e => {
+                            const newPositionID = uuid()
+                            dispatch(positionActions.addPosition({
+                                name: 'Station ' + (selectedLocation.children.filter((position) => positions[position].type === 'shelf_position').length + 1),
+                                schema: 'positions',
+                                type: 'shelf_position',
+                                temp: true,
+                                new: true,
+                                pos_x: 0,
+                                pos_y: 0,
+                                rotation: 0,
+                                x: e.clientX,
+                                y: e.clientY,
+                                parent: selectedLocation._id,
+                                _id: newPositionID
+                            }))
 
-                </styled.NewShelfCard>
+                            let { children } = selectedLocation
+                            children.push(newPositionID)
+                            dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children }))
+                        }
+                        }
+                    >
+                        <styled.LocationTypeGraphic id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                            {LocationTypes['shelfPosition'].svgPath}
+                        </styled.LocationTypeGraphic>
 
-            </styled.Cards>
+                    </styled.NewShelfCard>
 
-            {selectedLocation.children.length > 0 &&
-                <styled.Label>Associated Shelves</styled.Label>
-            }
-            <styled.ListContainer>
-                <SortableList
-                    positions={selectedLocation.children.map(id => positions[id])}
-                    onSortEnd={onSortEnd}
-                    useDragHandle={true}
-                    lockAxis={'y'}
-                    axis={'y'}
-                    useDragHandle={true}
-                />
-            </styled.ListContainer>
-        </styled.ShelvesContainer>
+                </styled.Cards>
+
+                {
+                    selectedLocation.children.length > 0 &&
+                    <styled.Label>Associated Shelves</styled.Label>
+                }
+                <styled.ListContainer>
+                    <SortableList
+                        positions={selectedLocation.children.map(id => positions[id])}
+                        onSortEnd={onSortEnd}
+                        useDragHandle={true}
+                        lockAxis={'y'}
+                        axis={'y'}
+                        useDragHandle={true}
+                    />
+                </styled.ListContainer>
+            </styled.ShelvesContainer >
     )
 }
