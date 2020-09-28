@@ -8,6 +8,7 @@ import * as styled from './devices_content.style'
 
 // Import Utils
 import { deepCopy } from '../../../../methods/utils/utils'
+import {} from '../../../../methods/utils/locations_utils'
 
 // Import basic components
 import ContentHeader from '../content_header/content_header'

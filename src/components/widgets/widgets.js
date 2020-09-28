@@ -9,7 +9,9 @@ import WidgetButton from './widget_button/widget_button'
 // import hooks
 import useWindowSize from '../../hooks/useWindowSize'
 
+// Import Actions
 import { hoverStationInfo } from '../../redux/actions/stations_actions'
+import { deselectLocation } from '../../redux/actions/locations_actions'
 
 // Import Utils
 import { DeviceItemTypes } from '../../methods/utils/device_utils'
@@ -39,6 +41,7 @@ const Widgets = (props) => {
 
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
+    const onDeselectLocation = () => dispatch(deselectLocation())
 
     // Location ID passed down through workstations via redux
     const stationID = hoveringInfo.id
@@ -47,6 +50,7 @@ const Widgets = (props) => {
     const HandleWidgetPageOpen = () => {
         if (!!widgetPage) {
             dispatchHoverStationInfo(hoveringInfo)
+            onDeselectLocation()
         }
     }
 
@@ -186,6 +190,7 @@ const Widgets = (props) => {
                 onMouseLeave={() => {
                     if (!widgetPage) {
                         dispatchHoverStationInfo(null)
+                        onDeselectLocation()
                     }
                 }}
 

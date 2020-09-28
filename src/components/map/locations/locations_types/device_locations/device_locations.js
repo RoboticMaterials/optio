@@ -8,6 +8,7 @@ import * as styled from './device_locations.style'
 
 // Import Actions
 import { hoverStationInfo } from '../../../../../redux/actions/stations_actions'
+import { selectLocation, deselectLocation } from '../../../../../redux/actions/locations_actions'
 
 // Import Utils
 import { DeviceItemTypes } from '../../../../../methods/utils/device_utils'
@@ -27,6 +28,7 @@ const DeviceLocations = (props) => {
     const [rotating, setRotating] = useState(false)
     // const [hoveringID, setHoveringID] = useState('')
     const [translating, setTranslating] = useState(false)
+
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const hoveringID = useSelector(state => state.locationsReducer.hoverLocationID)
@@ -35,6 +37,8 @@ const DeviceLocations = (props) => {
 
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
+    const onSelectLocation = (locationId) => dispatch(selectLocation(locationId))
+    const onDeselectLocation = () => dispatch(deselectLocation())
 
     // Used to see if a widget Page is opened
     let params = useParams()
@@ -177,6 +181,7 @@ const DeviceLocations = (props) => {
 
                         if (!rotating && !translating && selectedLocation == null && selectedTask == null) {
                             dispatchHoverStationInfo(handleWidgetHover())
+                            onSelectLocation(location._id)
                         }
                     }
 

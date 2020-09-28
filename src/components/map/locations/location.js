@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux'
 
 // Import locations
 import Workstation from './locations_types/workstation/workstation'
-import ShelfPosition from './locations_types/shelf_position/shelf_position.js'
 import CartPosition from './locations_types/cart_position/cart_position'
 import DeviceLocations from './locations_types/device_locations/device_locations'
 
@@ -205,6 +204,10 @@ function Location(props) {
     let pos
 
     let color = '#6283f0' // Blue
+
+
+    if(location.type === 'shelf_position') color = '#fb7c4e'
+
     if (selectedTask === null) {
         if (selectedLocation !== null && !isSelected && selectedTask === null) {
             color = '#afb5c9' // Grey
@@ -233,26 +236,6 @@ function Location(props) {
             )
 
         case 'cart_position':
-            return (
-                <React.Fragment key={`frag-loc-${location._id}`}>
-                    {location.parent !== null && location.parent !== undefined &&
-                        <line x1={`${location.x}`} y1={`${location.y}`}
-                            x2={`${stations[location.parent].x}`} y2={`${stations[location.parent].y}`}
-                            stroke={color} strokeWidth="1.4" style={{ filter: "url(#glow)", opacity: '0.3' }} />
-                    }
-                    <CartPosition isSelected={isSelected} color={color} {...props} />
-                    <DragEntityProto isSelected={isSelected} {...props}
-                        onRotate={rotation => dispatch(setLocationAttributes(location._id, { rotation }))}
-                        onTranslate={({ x, y }) => dispatch(setLocationAttributes(location._id, { x, y }))}
-                        onTranslateEnd={({ x, y }) => {
-                            pos = convertD3ToReal([x, y], props.d3)
-                            dispatch(setLocationAttributes(location._id, { pos_x: pos[0], pos_y: pos[1] }))
-                        }}
-                    />
-                </React.Fragment>
-            )
-
-
         case 'shelf_position':
             return (
                 <React.Fragment key={`frag-loc-${location._id}`}>
@@ -261,7 +244,7 @@ function Location(props) {
                             x2={`${stations[location.parent].x}`} y2={`${stations[location.parent].y}`}
                             stroke={color} strokeWidth="1.4" style={{ filter: "url(#glow)", opacity: '0.3' }} />
                     }
-                    <ShelfPosition isSelected={isSelected} color={color} {...props} />
+                    <CartPosition isSelected={isSelected} color={color} {...props} />
                     <DragEntityProto isSelected={isSelected} {...props}
                         onRotate={rotation => dispatch(setLocationAttributes(location._id, { rotation }))}
                         onTranslate={({ x, y }) => dispatch(setLocationAttributes(location._id, { x, y }))}

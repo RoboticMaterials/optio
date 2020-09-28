@@ -7,9 +7,19 @@ import * as d3 from 'd3'
 
 import * as styled from './workstation.style'
 
+// Import actions
 import { hoverStationInfo } from '../../../../../redux/actions/stations_actions'
+import { selectLocation, deselectLocation } from '../../../../../redux/actions/locations_actions'
+
 
 function Workstation(props) {
+
+    const {
+        rd3tClassName,
+        location,
+        isSelected,
+        d3,
+    } = props
 
     const [hovering, setHovering] = useState(false)
     const [rotating, setRotating] = useState(false)
@@ -22,6 +32,8 @@ function Workstation(props) {
 
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
+    const onSelectLocation = (locationId) => dispatch(selectLocation(locationId))
+    const onDeselectLocation = () => dispatch(deselectLocation())
 
     // Used to see if a widget Page is opened
     let params = useParams()
@@ -124,6 +136,7 @@ function Workstation(props) {
 
                         if (!rotating && !translating && selectedLocation == null && selectedTask == null) {
                             dispatchHoverStationInfo(handleWidgetHover())
+                            onSelectLocation(location._id)
                         }
                     }
 

@@ -1,10 +1,25 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
+// Import Utils
 import { deepCopy } from '../../../../../methods/utils/utils'
+import { LocationTypes } from '../../../../../methods/utils/locations_utils'
+
+// Import Actions
 import * as taskActions from '../../../../../redux/actions/tasks_actions'
 
+
 function CartPosition(props) {
+
+    const {
+        color,
+        d3,
+        isSelected,
+        location,
+        onDisableDrag,
+        onEnableDrag,
+        rd3tClassName,
+    } = props
 
     const [hovering, setHovering] = useState(false)
     const [dragging, setDragging] = useState(false)
@@ -104,12 +119,12 @@ function CartPosition(props) {
 
 
                 <svg x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400" >
-                    <rect x="100" y="40" width="200" height="320" rx="30" transform="translate(400 0) rotate(90)" fill={selectedTask == null ? "transparent" : "rgba(255,255,255,0.95)"} strokeMiterlimit="10" strokeWidth="20" />
 
-                    <path d="M315.5,200.87l-64,36.95A1,1,0,0,1,250,237v-73.9a1,1,0,0,1,1.5-.87l64,36.95A1,1,0,0,1,315.5,200.87Z" strokeMiterlimit="10" strokeWidth="10" />
-                    <circle cx="200" cy="200" r="15" />
-                    <circle cx="150" cy="200" r="10" />
-                    <circle cx="102.5" cy="200" r="7.5" />
+                    {location.type === 'cart_position' ?
+                        LocationTypes['cartPosition'].svgPath
+                        :
+                        LocationTypes['shelfPosition'].svgPath
+                    }
 
 
                 </svg>

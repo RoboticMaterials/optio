@@ -10,7 +10,7 @@ export const Label = styled(stylep.Label)`
 `
 
 export const LocationTypeGraphic = styled(stylep.LocationTypeGraphic)`
-    transform: translate(-50%, -30%);
+    transform: translate(-50%, -50%);
     stroke: #fb7c4e;
     fill: #fb7c4e;
 `
