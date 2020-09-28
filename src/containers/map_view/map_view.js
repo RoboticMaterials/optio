@@ -462,14 +462,28 @@ export class MapView extends Component {
                                     //// Render children positions if appropriate
                                     Object.values(positions)
                                         .filter(position => !!this.props.selectedTask || (this.props.selectedLocation !== null && position.parent == this.props.selectedLocation._id))
+                                        // This filter turns on when there's a selected task that has a load position but no unload position
+                                        // If that's the case (happens when a new task exist and the load location has been selected) then filter out the other type of positions
+                                        // IE, if the load positions type is a cart position, then only cart positions should be selectable
+                                        .filter(position => {
+                                            if (!!this.props.selectedTask && !!this.props.selectedTask.load.position && !this.props.selectedTask.unload.position) {
+                                                const positionType = this.props.positions[this.props.selectedTask.load.position].type
+                                                return position.type === positionType
+                                            }
+                                            else {
+                                                return true
+                                            }
+                                        })
                                         .map((position, ind) =>
-                                            <Location key={`pos-${ind}`}
-                                                location={position}
-                                                rd3tClassName={`${this.rd3tPosClassName}_${ind}`}
-                                                d3={this.d3}
-                                                onEnableDrag={this.onEnableDrag}
-                                                onDisableDrag={this.onDisableDrag}
-                                            />
+                                            <>
+                                                <Location key={`pos-${ind}`}
+                                                    location={position}
+                                                    rd3tClassName={`${this.rd3tPosClassName}_${ind}`}
+                                                    d3={this.d3}
+                                                    onEnableDrag={this.onEnableDrag}
+                                                    onDisableDrag={this.onDisableDrag}
+                                                />
+                                            </>
                                         )
                                 }</>
 

@@ -6,10 +6,9 @@ import { deepCopy } from '../../../../../methods/utils/utils'
 import { LocationTypes } from '../../../../../methods/utils/locations_utils'
 
 // Import Actions
-import * as taskActions from '../../../../../redux/actions/tasks_actions'
+import { setTaskAttributes } from '../../../../../redux/actions/tasks_actions'
 
-
-function CartPosition(props) {
+const CartPosition = (props) => {
 
     const {
         color,
@@ -26,6 +25,8 @@ function CartPosition(props) {
     const [disableDrag] = useState(() => setDragging(false))
 
     const dispatch = useDispatch()
+    const onSetTaskAttributes = (id, load) => dispatch(setTaskAttributes(id, load))
+
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
 
 
@@ -38,15 +39,15 @@ function CartPosition(props) {
     })
 
     const shouldGlow = selectedTask !== null &&
-        ((selectedTask.load.position == props.location._id && selectedTask.type == 'push') ||
-            (selectedTask.unload.position == props.location._id && selectedTask.type == 'pull') ||
-            (selectedTask.load.position == props.location._id && selectedTask.type == 'both') ||
-            (selectedTask.unload.position == props.location._id && selectedTask.type == 'both'))
+        ((selectedTask.load.position == location._id && selectedTask.type == 'push') ||
+            (selectedTask.unload.position == location._id && selectedTask.type == 'pull') ||
+            (selectedTask.load.position == location._id && selectedTask.type == 'both') ||
+            (selectedTask.unload.position == location._id && selectedTask.type == 'both'))
 
     return (
         <g
-            className={props.rd3tClassName}
-            style={{ fill: props.color, stroke: props.color, strokeWidth: '0', opacity: '0.8', cursor: "pointer" }}
+            className={rd3tClassName}
+            style={{ fill: color, stroke: color, strokeWidth: '0', opacity: '0.8', cursor: "pointer" }}
             onMouseEnter={() => { setHovering(true) }}
             onMouseLeave={() => { setHovering(false) }}
             onClick={() => {
@@ -55,30 +56,30 @@ function CartPosition(props) {
                     if (selectedTask.load.position !== null && selectedTask.unload.position === null) {
                         let unload = deepCopy(selectedTask.unload)
                         let type = selectedTask.type
-                        unload.position = props.location._id
-                        if (props.location.parent !== null) {
-                            unload.station = props.location.parent
+                        unload.position = location._id
+                        if (location.parent !== null) {
+                            unload.station = location.parent
                         } else {
                             type = 'push'
                         }
-                        dispatch(taskActions.setTaskAttributes(selectedTask._id.$oid, { unload, type }))
+                        onSetTaskAttributes(selectedTask._id.$oid, { unload, type })
                     } else { // Otherwise assign the load position and clear the unload position (to define a new unload)
                         let load = deepCopy(selectedTask.load)
                         let unload = deepCopy(selectedTask.unload)
                         let type = selectedTask.type
-                        load.position = props.location._id
-                        if (props.location.parent !== null) {
-                            load.station = props.location.parent
+                        load.position = location._id
+                        if (location.parent !== null) {
+                            load.station = location.parent
                         } else {
                             type = 'pull'
                         }
                         unload.position = null
                         unload.station = null
-                        dispatch(taskActions.setTaskAttributes(selectedTask._id.$oid, { load, unload, type }))
+                        onSetTaskAttributes(selectedTask._id.$oid, { load, unload, type })
                     }
                 }
             }}
-            transform={`translate(${props.location.x},${props.location.y}) rotate(${360 - props.location.rotation}) scale(${props.d3.scale / props.d3.imgResolution})`}
+            transform={`translate(${location.x},${location.y}) rotate(${360 - location.rotation}) scale(${d3.scale / d3.imgResolution})`}
         >
             <defs>
 
@@ -91,10 +92,10 @@ function CartPosition(props) {
                     </feMerge>
                 </filter>
 
-                <filter id={`glow-${props.rd3tClassName}`} height="300%" width="300%" x="-75%" y="-75%">
+                <filter id={`glow-${rd3tClassName}`} height="300%" width="300%" x="-75%" y="-75%">
                     <feMorphology operator="dilate" radius="2" in="SourceAlpha" result="thicken" />
                     <feGaussianBlur in="thicken" stdDeviation="3" result="blurred" />
-                    <feFlood floodColor={props.color} result="glowColor" />
+                    <feFlood floodColor={color} result="glowColor" />
                     <feComposite in="glowColor" in2="blurred" operator="in" result="softGlow_colored" />
                     <feMerge>
                         <feMergeNode in="softGlow_colored" />
@@ -105,8 +106,8 @@ function CartPosition(props) {
             </defs>
 
 
-            <g className={`${props.rd3tClassName}-rot`}>
-                {props.isSelected && (hovering || dragging) &&
+            <g className={`${rd3tClassName}-rot`}>
+                {isSelected && (hovering || dragging) &&
                     <>
                         <circle x="-16" y="-16" r="16" strokeWidth="0" fill="transparent" style={{ cursor: dragging ? "pointer" : "default" }}></circle>
                         <circle x="-18" y="-18" r="14" fill="none" strokeWidth="4" stroke="transparent" style={{ cursor: "pointer" }} onMouseDown={() => setDragging(true)}></circle>
@@ -115,10 +116,10 @@ function CartPosition(props) {
                 }
             </g>
 
-            <g className={`${props.rd3tClassName}-trans`} transform="scale(1, 1)">
+            <g className={`${rd3tClassName}-trans`} transform="scale(1, 1)">
 
 
-                <svg x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400" >
+                <svg x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400" style={{ filter: shouldGlow && `url(#glow-${rd3tClassName})`}}>
 
                     {location.type === 'cart_position' ?
                         LocationTypes['cartPosition'].svgPath
@@ -130,9 +131,10 @@ function CartPosition(props) {
                 </svg>
             </g>
 
-            {shouldGlow &&
-                <rect x="-8" y="-5" height="10" width="16" rx="1.5" style={{ filter: `url(#glow-${props.rd3tClassName})` }} fill="none" strokeMiterlimit="0.5" strokeWidth="1"></rect>
-            }
+            {/* Commented out for now, glowing just adds a rando rectangle that no one wants arround. But we're all too awkward to say anything about this rectangle. Rectangle's life is hard. */}
+            {/* {shouldGlow &&
+                <rect x="-8" y="-5" height="10" width="16" rx="1.5" style={{ filter: `url(#glow-${rd3tClassName})` }} fill="none" strokeMiterlimit="0.5" strokeWidth="1"></rect>
+            } */}
 
 
         </g>
