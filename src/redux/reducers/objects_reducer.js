@@ -95,7 +95,7 @@ import {
             });
   
         case POST_OBJECT_SUCCESS:
-            objectsCopy = deepCopy(action.payload)
+            objectsCopy = deepCopy(state.objects)
             objectsCopy[action.payload._id.$oid] = action.payload
             return {
                 ...state,
@@ -125,7 +125,7 @@ import {
             });
   
         case PUT_OBJECT_SUCCESS:
-            objectsCopy = deepCopy(action.payload)
+            objectsCopy = deepCopy(state.objects)
             objectsCopy[action.payload._id.$oid] = action.payload
   
             return {
@@ -148,7 +148,7 @@ import {
             });
   
         case DELETE_OBJECT_SUCCESS:
-            objectsCopy = deepCopy(action.payload)
+            objectsCopy = deepCopy(state.objects)
             delete objectsCopy[action.payload]
   
             return {
@@ -171,7 +171,7 @@ import {
     // ======================================== //
   
         case ADD_OBJECT:
-            objectsCopy = deepCopy(action.payload)
+            objectsCopy = deepCopy(state.objects)
             objectsCopy[action.payload.object._id.$oid] = action.payload.object
             return {
                 ...state,
@@ -179,7 +179,7 @@ import {
             }
   
         case UPDATE_OBJECT:
-            objectsCopy = deepCopy(action.payload)
+            objectsCopy = deepCopy(state.objects)
             objectsCopy[action.payload.object._id.$oid] = action.payload.object
   
             if (state.selectedObject !== null) {
@@ -212,7 +212,7 @@ import {
             }
   
         case REMOVE_OBJECT:
-            objectsCopy = deepCopy(action.payload)
+            objectsCopy = deepCopy(state.objects)
             delete objectsCopy[action.payload.id]
   
             return {
@@ -222,7 +222,7 @@ import {
             
   
         case SET_OBJECT_ATTRIBUTES:
-            objectsCopy = deepCopy(action.payload)
+            objectsCopy = deepCopy(state.objects)
             Object.assign(objectsCopy[action.payload.id], action.payload.attr)
   
             if (state.selectedObject !== null) {
@@ -240,7 +240,7 @@ import {
   
   
         case SELECT_OBJECT:
-            objectsCopy = deepCopy(action.payload)
+            objectsCopy = deepCopy(state.objects)
             return {
                 ...state,
                 selectedObject: objectsCopy[action.payload.id]
