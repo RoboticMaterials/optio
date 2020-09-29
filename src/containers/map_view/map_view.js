@@ -181,8 +181,6 @@ export class MapView extends Component {
         const svg = d3.select(`.${this.rd3tSvgClassName}`)
         const map = d3.selectAll(`.${this.rd3tMapClassName}`)
 
-        let devices = deepCopy(this.props.devices)
-
         let x, y
         svg.call(
             d3.behavior

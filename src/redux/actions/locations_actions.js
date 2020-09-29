@@ -145,8 +145,6 @@ export const sideBarBack = (props) => {
 
     return async dispatch => {
 
-        console.log('QQQQ selected location', selectedLocation, selectedLocationCopy, )
-
         if (!!selectedLocation.type && selectedLocation.type === 'device') {
             //// Revert location
             if (selectedLocation.new == true) { // If the location was new, simply delete it 
