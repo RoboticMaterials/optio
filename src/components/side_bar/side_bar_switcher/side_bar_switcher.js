@@ -7,12 +7,18 @@ import SideBarButton from '../side_bar_buttons/side_bar_button';
 import * as styled from './side_bar_switcher.style'
 import { setMode } from '../../../redux/actions/sidebar_actions'
 
-import { deselectLocation } from '../../../redux/actions/locations_actions'
+import { deselectLocation, sideBarBack } from '../../../redux/actions/locations_actions'
 import { deselectTask } from '../../../redux/actions/tasks_actions'
+import { setSelectedDevice } from '../../../redux/actions/devices_actions'
 
 const SideBarSwitcher = (props) => {
 
     const dispatch = useDispatch()
+    const onSetSelectedDevice = (selectedDevice) => dispatch(setSelectedDevice(selectedDevice))
+    const onSideBarBack = (props) => dispatch(sideBarBack(props))
+    const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
+    const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
+    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
 
     const mode = useSelector(state => state.sidebarReducer.mode)
     const wrapperRef = useRef(null)
@@ -27,8 +33,8 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    dispatch(deselectLocation())
-                    dispatch(deselectTask())
+                    onSideBarBack({selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy})
+
                 }}
                 currentMode={url}
             />
@@ -71,8 +77,7 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    dispatch(deselectLocation())
-                    dispatch(deselectTask())
+                    onSideBarBack({selectedLocation})
                 }}
                 currentMode={url}
             />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import * as styled from './locations_content.style'
 import { useSelector, useDispatch } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom'
@@ -16,6 +16,7 @@ import Shelves from './shelves/shelves'
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 
 // Import actions
+import { setSelectedLocationCopy, setSelectedLocationChildrenCopy, sideBarBack } from '../../../../redux/actions/locations_actions'
 import * as locationActions from '../../../../redux/actions/locations_actions'
 import * as stationActions from '../../../../redux/actions/stations_actions'
 import * as positionActions from '../../../../redux/actions/positions_actions'
@@ -61,14 +62,18 @@ function locationTypeGraphic(type, isSelected) {
 export default function LocationContent(props) {
 
     const dispatch = useDispatch()
+    const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
+    const onSetSelectedLocationChildrenCopy = (locationChildren) => dispatch(setSelectedLocationChildrenCopy(locationChildren))
+    const onSideBarBack = (props) => dispatch(sideBarBack(props))
+
     const locations = useSelector(state => state.locationsReducer.locations)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const positions = useSelector(state => state.locationsReducer.positions)
     const tasks = useSelector(state => state.tasksReducer.tasks)
+    const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
+    const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
 
     const [editing, toggleEditing] = useState(false)
-    const [selectedLocationCopy, setSelectedLocationCopy] = useState(null)
-    const [selectedLocationChildrenCopy, setSelectedLocationChildrenCopy] = useState(null)
 
     function LocationTypeButton({ type, selected }) {
 
@@ -102,24 +107,29 @@ export default function LocationContent(props) {
         )
     }
 
+    useEffect(() => {
+        if (selectedLocationCopy === null) {
+            toggleEditing(false)
+
+            onSetSelectedLocationCopy(null)                   // Reset the local copy to null
+            onSetSelectedLocationChildrenCopy(null)
+        }
+
+    }, [selectedLocationCopy])
+
     /**
      * This function is called when the back button is pressed. If the location is new, it is deleted;
      * otherwise, it is reverted to the state it was when editing begun.
      */
     const onBack = () => {
+
         toggleEditing(false)
 
-        //// Revert location
-        if (selectedLocation.new == true) { // If the location was new, simply delete it 
-            dispatch(locationActions.removeLocation(selectedLocation._id))
-        } else { // If the location is not new, revert it to the old copy, and do the same to its children
-            dispatch(locationActions.updateLocation(selectedLocationCopy))
-            selectedLocationChildrenCopy.forEach(child => dispatch(positionActions.updatePosition(child)))
-        }
+        onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy })
 
-        dispatch(locationActions.deselectLocation())    // Deselect
-        setSelectedLocationCopy(null)                   // Reset the local copy to null
-        setSelectedLocationChildrenCopy(null)           // Reset the local children copy to null
+        // Deselect
+        onSetSelectedLocationCopy(null)                   // Reset the local copy to null
+        onSetSelectedLocationChildrenCopy(null)           // Reset the local children copy to null
     }
 
     /**
@@ -179,8 +189,8 @@ export default function LocationContent(props) {
         }
 
         dispatch(locationActions.deselectLocation())    // Deselect
-        setSelectedLocationCopy(null)                   // Reset the local copy to null
-        setSelectedLocationChildrenCopy(null)           // Reset the local children copy to null
+        onSetSelectedLocationCopy(null)                   // Reset the local copy to null
+        onSetSelectedLocationChildrenCopy(null)           // Reset the local children copy to null
         toggleEditing(false)                            // No longer editing
 
     }
@@ -222,7 +232,8 @@ export default function LocationContent(props) {
         }
     }
 
-    if (editing) { // Editing Mode
+    // TODO: Probably can get rid of editing state, just see if there's a selectedLocation, if there is, you're editing
+    if (editing && !!selectedLocation) { // Editing Mode
         return (
             <styled.ContentContainer
                 // Delete any new positions that were never dragged onto the map
@@ -300,9 +311,9 @@ export default function LocationContent(props) {
                 onMouseLeave={(location) => dispatch(locationActions.deselectLocation())}
                 onClick={(location) => {
                     // If location button is clicked, start editing it
-                    setSelectedLocationCopy(deepCopy(selectedLocation))
+                    onSetSelectedLocationCopy(deepCopy(selectedLocation))
                     if (!!selectedLocation.children) {
-                        setSelectedLocationChildrenCopy(selectedLocation.children.map(positionID => deepCopy(positions[positionID])))
+                        onSetSelectedLocationChildrenCopy(selectedLocation.children.map(positionID => deepCopy(positions[positionID])))
                     }
                     toggleEditing(true)
                 }}

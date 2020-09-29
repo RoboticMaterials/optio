@@ -51,6 +51,8 @@ import {
 import {
     SELECT_LOCATION,
     SET_SELECTED_LOCATION,
+    SET_SELECTED_LOCATION_COPY,
+    SET_SELECTED_LOCATION_CHILDREN_COPY,
     DESELECT_LOCATION,
 } from '../types/locations_types'
 
@@ -78,6 +80,9 @@ const defaultState = {
     locations: {},
 
     selectedLocation: null,
+    selectedLocationCopy: null,
+    selectedLocationChildrenCopy: null,
+
     hoverStationInfo: null,
 
     error: {},
@@ -537,6 +542,18 @@ export default function locationsReducer(state = defaultState, action) {
             return {
                 ...state,
                 selectedLocation: null,
+            }
+
+        case SET_SELECTED_LOCATION_COPY:
+            return {
+                ...state,
+                selectedLocationCopy: action.payload
+            }
+
+        case SET_SELECTED_LOCATION_CHILDREN_COPY:
+            return {
+                ...state,
+                selectedLocationChildrenCopy: action.payload
             }
 
 

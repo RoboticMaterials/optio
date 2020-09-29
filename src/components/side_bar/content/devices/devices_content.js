@@ -24,7 +24,7 @@ import DeviceStatistics from './device_statistics/device_statistics'
 import DeviceItem from './device_item/device_item'
 
 // Import Actions
-import { putDevices, postDevices, getDevices, deleteDevices } from '../../../../redux/actions/devices_actions'
+import { putDevices, postDevices, getDevices, deleteDevices, setSelectedDevice } from '../../../../redux/actions/devices_actions'
 import * as locationActions from '../../../../redux/actions/locations_actions'
 import * as positionActions from '../../../../redux/actions/positions_actions'
 import * as dashboardActions from '../../../../redux/actions/dashboards_actions'
@@ -54,7 +54,7 @@ const DevicesContent = () => {
     const onGetDevices = () => dispatch(getDevices())
     const onAddLocation = (selectedLocation) => dispatch(locationActions.addLocation(selectedLocation))
     const onSetSelectedLocation = (selectedLocation) => dispatch(locationActions.setSelectedLocation(selectedLocation))
-    const onSetSelectedDevice = (selectedDevice) => dispatch(deviceActions.setSelectedDevice(selectedDevice))
+    const onSetSelectedDevice = (selectedDevice) => dispatch(setSelectedDevice(selectedDevice))
 
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const locations = useSelector(state => state.locationsReducer.locations)

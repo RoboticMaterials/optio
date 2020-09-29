@@ -42,14 +42,8 @@ function Station(props) {
     // Used to see if a widget Page is opened
     let params = useParams()
 
-    // const color = (!!isSelected && isSelected) || (hovering && selectedTask == null) ? '#6283f0' : '#afb5c9'
-
     useEffect(() => {
         window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
-
-        // if (hovering) {
-        //     dispatchHoverStationInfo(handleWidgetHover())
-        // }
     })
 
     /**
@@ -65,7 +59,6 @@ function Station(props) {
 
     /**
      * Passes the X, Y, scale and ID of location to redux which is then used in widgets
-     * The calculations for X and Y aren't 100% working
      */
     const handleWidgetHover = () => {
         let widgetInfo = {}
