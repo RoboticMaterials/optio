@@ -43,7 +43,6 @@ export const getDevices = () => {
         try {
             onStart();
             const devices = await api.getDevices();
-
             devices.forEach((device, ind) => {
                 if (!(device.position === undefined)) {
                     devices[ind].position.pos_x = device.position.x

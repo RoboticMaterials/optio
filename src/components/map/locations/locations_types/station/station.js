@@ -156,7 +156,14 @@ function Station(props) {
         if (!!selectedLocation && !!selectedLocation.device_id && location.device_id !== selectedLocation.device_id) selected = false
         if (!!selectedLocation && !selectedLocation.device_id) selected = false
 
-        const device = devices[location.device_id]
+        let device = {}
+        try {
+            device = devices[location.device_id]
+
+        } catch (error) {
+            console.log('QQQQ Device is undefined and I dont know why...')
+            return (<></>)
+        }
 
         // Sets the device type, if the device does not exits in the list of device item types, then it uses the generic device
         let deviceType = DeviceItemTypes['generic']

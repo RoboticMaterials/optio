@@ -82,7 +82,6 @@ const devicesReducer = (state = defaultState, action) => {
         } else {
             return devices
         }
-
         return {
             ...state,
             devices: { ...devicesClone },
@@ -102,7 +101,6 @@ const devicesReducer = (state = defaultState, action) => {
             break;
 
         case GET_DEVICES_SUCCESS:
-
             return setDevices(action.payload)
 
         case GET_DEVICES_FAILURE:
@@ -126,7 +124,6 @@ const devicesReducer = (state = defaultState, action) => {
 
         case POST_DEVICES_SUCCESS:
             devicesClone = deepCopy(state.devices)
-
             devicesClone[action.payload._id.$oid] = action.payload
 
             return {
@@ -158,7 +155,6 @@ const devicesReducer = (state = defaultState, action) => {
 
         case PUT_DEVICES_SUCCESS:
             // Find the corresponding device and replace it with the new one
-
             currentDevice = action.payload
 
             devicesClone = deepCopy(state.devices)
@@ -192,7 +188,6 @@ const devicesReducer = (state = defaultState, action) => {
             devicesClone = deepCopy(state.devices)
 
             delete devicesClone[action.payload]
-
             return {
                 ...state,
                 devices: devicesClone
@@ -216,7 +211,6 @@ const devicesReducer = (state = defaultState, action) => {
         //                                          //
         // ======================================== //
         case 'UPDATE_DEVICES':
-
             return {
                 ...state,
                 devices: deepCopy(action.payload.devices),

@@ -48,6 +48,7 @@ export default function ObjectsContent(props) {
                         }}
 
                         onClickSave={() => {
+                            console.log('QQQQ Selected Object', deepCopy(selectedObject))
                             if (selectedObject._id.$oid == '__NEW') {
                                 delete selectedObject._id
                                 dispatch(objectActions.postObject(selectedObject))
@@ -67,7 +68,7 @@ export default function ObjectsContent(props) {
                     defaultValue={!!selectedObject && selectedObject.name}
                     schema={'objects'}
                     focus={selectedObject.type == null}
-                    onChange={(e) => { dispatch(objectActions.setObjectAttributes(selectedObject._id.$oid, { name: e.target.value })) }}
+                    onChange={(e) => { dispatch(objectActions.setObjectAttributes(!!selectedObject._id ? selectedObject._id.$oid : selectedObject.id, { name: e.target.value })) }}
                     style={{ fontSize: '1.2rem', fontWeight: '600' }}>
                 </Textbox>
 

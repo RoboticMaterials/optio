@@ -222,18 +222,20 @@ import {
             
   
         case SET_OBJECT_ATTRIBUTES:
-            
+
+
             objectsCopy = deepCopy(state.objects)
-
-            console.log('QQQQ', objectsCopy, action.payload)
-
             objectsCopy = {
                 ...objectsCopy,
-                [objectsCopy[action.payload.id]]: action.payload.attr
+                [action.payload.id]: {
+                    ...action.payload.attr,
+                    _id: {$iod: action.payload.id}
+                }
             }
 
+            // console.log('QQQQ Object Copy', deepCopy(objectsCopy))
+
             // Object.assign(objectsCopy[action.payload.id], action.payload.attr)
-            console.log('QQQQ HERE!!!')
             if (state.selectedObject !== null) {
                 return {
                     ...state,
