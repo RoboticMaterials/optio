@@ -25,7 +25,7 @@ const defaultState = {
 };
 
 export default function mapReducer(state=defaultState, action) {
-    let currentMapCopy = deepCopy(state.currentMap)
+    let currentMapCopy = {}
 
     switch (action.type) {
 
@@ -97,6 +97,7 @@ export default function mapReducer(state=defaultState, action) {
     // ======================================== //
 
         case SET_MAP_ATTRIBUTES:
+            currentMapCopy = deepCopy(state.currentMap)
             Object.assign(currentMapCopy, {...action.payload.attr})
 
             return {

@@ -49,7 +49,7 @@ const defaultState = {
 export default function tasksReducer(state = defaultState, action) {
     let index = ''
     let taskID = ''
-    let tasksCopy = deepCopy(state.tasks)
+    let tasksCopy = {}
 
     switch (action.type) {
 
@@ -95,6 +95,8 @@ export default function tasksReducer(state = defaultState, action) {
             });
 
         case POST_TASK_SUCCESS:
+            tasksCopy = deepCopy(action.payload)
+
             tasksCopy[action.payload._id.$oid] = action.payload
             return {
                 ...state,
@@ -124,6 +126,8 @@ export default function tasksReducer(state = defaultState, action) {
             });
 
         case PUT_TASK_SUCCESS:
+            tasksCopy = deepCopy(action.payload)
+
             tasksCopy[action.payload._id.$oid] = action.payload
 
             return {
@@ -146,6 +150,7 @@ export default function tasksReducer(state = defaultState, action) {
             });
 
         case DELETE_TASK_SUCCESS:
+            tasksCopy = deepCopy(action.payload)
 
             delete tasksCopy[action.payload]
 
@@ -169,6 +174,8 @@ export default function tasksReducer(state = defaultState, action) {
         // ======================================== //
 
         case ADD_TASK:
+            tasksCopy = deepCopy(action.payload)
+
             tasksCopy[action.payload.task._id.$oid] = action.payload.task
             return {
                 ...state,
@@ -176,6 +183,7 @@ export default function tasksReducer(state = defaultState, action) {
             }
 
         case UPDATE_TASK:
+            tasksCopy = deepCopy(action.payload)
 
             tasksCopy[action.payload.task._id.$oid] = action.payload.task
 
@@ -209,6 +217,8 @@ export default function tasksReducer(state = defaultState, action) {
             }
 
         case REMOVE_TASK:
+            tasksCopy = deepCopy(action.payload)
+
             delete tasksCopy[action.payload.id]
 
             return {
@@ -218,6 +228,7 @@ export default function tasksReducer(state = defaultState, action) {
 
 
         case SET_TASK_ATTRIBUTES:
+            tasksCopy = deepCopy(action.payload)
 
             Object.assign(tasksCopy[action.payload.id], action.payload.attr)
 
@@ -241,6 +252,8 @@ export default function tasksReducer(state = defaultState, action) {
 
 
         case SELECT_TASK:
+            tasksCopy = deepCopy(action.payload)
+
             return {
                 ...state,
                 selectedTask: tasksCopy[action.payload.id]

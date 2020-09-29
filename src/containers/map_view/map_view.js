@@ -10,7 +10,7 @@ import uuid from 'uuid';
 import * as d3 from 'd3'
 
 import { convertD3ToReal, convertRealToD3, getRelativeOffset } from '../../methods/utils/map_utils'
-import { isEquivalent, deepCopy, randomHash } from '../../methods/utils/utils.js'
+import { isEquivalent, } from '../../methods/utils/utils.js'
 import * as mapActions from '../../redux/actions/map_actions'
 import * as stationActions from '../../redux/actions/stations_actions'
 import * as positionActions from '../../redux/actions/positions_actions'
@@ -487,12 +487,15 @@ export class MapView extends Component {
 
                                 <>{
                                     //// Render mobile devices
-                                    Object.values(devices).filter(device => device.device_model == 'MiR100').map((device, ind) =>
-                                        <MiR100 key={device._id}
-                                            device={device}
-                                            d3={this.d3}
-                                        />
-                                    )
+                                    devices === undefined ?
+                                        <></>
+                                        :
+                                        Object.values(devices).filter(device => device.device_model == 'MiR100').map((device, ind) =>
+                                            <MiR100 key={device._id}
+                                                device={device}
+                                                d3={this.d3}
+                                            />
+                                        )
                                 }</>
                             </>
                         }

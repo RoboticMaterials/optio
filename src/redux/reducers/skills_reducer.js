@@ -35,8 +35,7 @@ const defaultState = {
 let index;
 
 export default function skillsReducer(state = defaultState, action) {
-    // let skillsClone = state.skills.map(skill => deepCopy(skill));
-    let skillsClone = deepCopy(state.skills);
+    let skillsClone = {}
 
     switch (action.type) {
 
@@ -87,6 +86,7 @@ export default function skillsReducer(state = defaultState, action) {
             });
 
         case POST_SKILLS_SUCCESS:
+            skillsClone = deepCopy(state.skills);
             return  Object.assign({}, state, {
                 skills: [...skillsClone, action.payload],
                 pending: false
@@ -107,7 +107,7 @@ export default function skillsReducer(state = defaultState, action) {
             });
 
         case PUT_SKILLS_SUCCESS:
-            console.log('HERE\n\n\n\n',action);
+            skillsClone = deepCopy(state.skills);
             index = skillsClone.findIndex(s => {
                 return s._id.$oid === action.payload._id.$oid;
             });
@@ -132,7 +132,7 @@ export default function skillsReducer(state = defaultState, action) {
             });
 
         case DELETE_SKILLS_SUCCESS:
-            console.log('REDUCER PAYLOAD\n\n\n\n\n\n\n\n\n', action);
+            skillsClone = deepCopy(state.skills);
             index = skillsClone.findIndex(s => {
                 return s._id.$oid === action.payload.skillId;
             })

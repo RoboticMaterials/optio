@@ -9,7 +9,7 @@ import { getTaskQueue } from '../../redux/actions/task_queue_actions'
 import { getLocations } from '../../redux/actions/locations_actions'
 import { getObjects } from '../../redux/actions/objects_actions'
 import { getTasks, deleteTask } from '../../redux/actions/tasks_actions'
-import { getDashboards } from '../../redux/actions/dashboards_actions'
+import { getDashboards, deleteDashboard } from '../../redux/actions/dashboards_actions'
 import { getSounds } from '../../redux/actions/sounds_actions'
 
 import { getSchedules } from '../../redux/actions/schedule_actions';
@@ -60,6 +60,7 @@ const ApiContainer = (props) => {
     const onGetRefreshToken = () => dispatch(getRefreshToken())
 
     const onDeleteTask = (ID) => dispatch(deleteTask(ID))
+    const onDeleteDashboard = (ID) => dispatch(deleteDashboard(ID))
     const onDeletePosition = (position, ID) => dispatch(deletePosition(position, ID))
     const onPutDevice = (device, ID) => dispatch(putDevices(device, ID))
 
@@ -214,6 +215,7 @@ const ApiContainer = (props) => {
         handlePositionsWithBrokenParents(locations)
         handleDevicesWithBrokenStations(devices, locations)
         handleStationsWithBrokenDevices(devices, locations)
+        handleDashboardsWithBrokenStations(dashboards, locations)
 
         props.apiLoaded()
         props.onLoad()
@@ -427,6 +429,25 @@ const ApiContainer = (props) => {
         })
 
     }
+
+    /**
+     * This deletes dashboards that belong to stations that don't exist
+     * @param {*} dashboards 
+     * @param {*} locations 
+     */
+    const handleDashboardsWithBrokenStations = (dashboards, locations) => {
+        const stations = locations.stations
+
+        Object.values(dashboards).map((dashboard) => {
+            if(!!dashboard.location && !stations[dashboard.location]){
+                console.log('QQQQ dashboard belongs to a station that does not exist', dashboard)
+                onDeleteDashboard(dashboard._id.$oid)
+            }
+        })
+
+        
+    }
+
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  API DATA CLEAN UP
 

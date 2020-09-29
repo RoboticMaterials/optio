@@ -51,9 +51,7 @@ const defaultState = {
 };
 
 export default function dashboardsReducer(state = defaultState, action) {
-    let index = ''
-    let dashboardID = ''
-    let dashboardsCopy = deepCopy(state.dashboards)
+    let dashboardsCopy = {}
 
     switch (action.type) {
 
@@ -105,6 +103,7 @@ export default function dashboardsReducer(state = defaultState, action) {
             });
 
         case POST_DASHBOARD_SUCCESS:
+            dashboardsCopy = deepCopy(action.payload)
             dashboardsCopy[action.payload._id.$oid] = action.payload
             return {
                 ...state,
@@ -134,6 +133,8 @@ export default function dashboardsReducer(state = defaultState, action) {
             });
 
         case PUT_DASHBOARD_SUCCESS:
+            dashboardsCopy = deepCopy(action.payload)
+
             dashboardsCopy[action.payload._id.$oid] = action.payload
 
             return {
@@ -156,6 +157,7 @@ export default function dashboardsReducer(state = defaultState, action) {
             });
 
         case DELETE_DASHBOARD_SUCCESS:
+            dashboardsCopy = deepCopy(action.payload)
 
             delete dashboardsCopy[action.payload]
 
