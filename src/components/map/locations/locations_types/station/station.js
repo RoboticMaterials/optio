@@ -200,12 +200,6 @@ function Station(props) {
                 id={rd3tClassName}
                 className={rd3tClassName}
                 style={{ fill: color, stroke: color }}
-                onMouseLeave={() => {
-                    // Nothing here because hovering is handled in handleWidgetPageOpen
-                    dispatchHoverStationInfo(null)
-
-                }}
-
                 onMouseEnter={() => {
                     if (!hoveringID) {
                         setHovering(true)

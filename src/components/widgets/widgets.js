@@ -191,6 +191,7 @@ const Widgets = (props) => {
                     if (!widgetPage) {
                         dispatchHoverStationInfo(null)
                         onDeselectLocation()
+
                     }
                 }}
 
@@ -239,14 +240,6 @@ const Widgets = (props) => {
 
             {!!widgetPage &&
                 <>
-                    {/* <styled.CloseButton
-                        onClick={() => {
-                            history.push('/locations')
-                            dispatchHoverStationInfo(null)
-                        }}
-                        className='fas fa-times'
-                    /> */}
-
                     <WidgetPages />
                 </>
             }

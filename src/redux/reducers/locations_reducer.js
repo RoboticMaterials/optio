@@ -224,7 +224,7 @@ export default function locationsReducer(state = defaultState, action) {
         // These 'deleted' positions have been deleted on the front end, but since deleting a position on the backend causes a bug, the key 'change_key'
         // is added to the position and set to 'delete' and the backend will delete it when it needs to be
         Object.values(positionsCopy).map((position) => {
-            if(!!position.change_key && position.change_key === 'deleted'){
+            if (!!position.change_key && position.change_key === 'deleted') {
                 delete positionsCopy[position._id]
             }
         })
@@ -428,7 +428,6 @@ export default function locationsReducer(state = defaultState, action) {
                 ...state,
                 hoverStationInfo: action.payload.info,
             }
-
 
         // ======================================== //
         //                                          //
