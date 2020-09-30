@@ -134,6 +134,12 @@ export const setSelectedLocationChildrenCopy = (locationChildren) => {
     return { type: SET_SELECTED_LOCATION_CHILDREN_COPY, payload: locationChildren }
 }
 
+// ======================================== //
+//                                          //
+//  Back, Delete, Save Location Functions   //
+//                                          //
+// ======================================== //
+
 
 /**
  * This handles when the back button is pressed on either devices or locations

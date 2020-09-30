@@ -48,8 +48,7 @@ export default function ObjectsContent(props) {
                         }}
 
                         onClickSave={() => {
-                            console.log('QQQQ Selected Object', deepCopy(selectedObject))
-                            if (selectedObject._id.$oid == '__NEW') {
+                            if (selectedObject._id.$oid == '__NEW_OBJECT') {
                                 delete selectedObject._id
                                 dispatch(objectActions.postObject(selectedObject))
                             } else {
@@ -68,7 +67,9 @@ export default function ObjectsContent(props) {
                     defaultValue={!!selectedObject && selectedObject.name}
                     schema={'objects'}
                     focus={selectedObject.type == null}
-                    onChange={(e) => { dispatch(objectActions.setObjectAttributes(!!selectedObject._id ? selectedObject._id.$oid : selectedObject.id, { name: e.target.value })) }}
+                    onChange={(e) => {
+                        dispatch(objectActions.setObjectAttributes({ name: e.target.value }))
+                    }}
                     style={{ fontSize: '1.2rem', fontWeight: '600' }}>
                 </Textbox>
 
@@ -96,12 +97,7 @@ export default function ObjectsContent(props) {
                 onPlus={() => {
                     dispatch(objectActions.addObject({
                         name: "",
-                        type: null,
                         _id: { $oid: '__NEW_OBJECT' },
-                        x: 0,
-                        y: 0,
-                        rotation: 90,
-                        positions: [],
                     }))
                     dispatch(setAction('NEW'))
                     dispatch(objectActions.selectObject('__NEW_OBJECT'))
