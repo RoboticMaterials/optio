@@ -107,11 +107,11 @@ const Widgets = (props) => {
         } else {
             return (
                 <>
-                    <WidgetButton
+                    {/* <WidgetButton
                         id={stationID}
                         type={'statistics'}
                         currentPage={widgetPage}
-                    />
+                    /> */}
 
                     <WidgetButton
                         id={stationID}

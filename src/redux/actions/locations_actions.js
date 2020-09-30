@@ -149,8 +149,6 @@ export const setSelectedLocationChildrenCopy = (locationChildren) => {
  */
 export const sideBarBack = (props) => {
 
-    console.log('QQQQ back props', props)
-
     // Does a quick check to make sure there is a location, if not then just return an arbitrary dispatch
     // Redux requires a dispatch here (I think...) so I just use setselectedDevice since it wont have nay side effects (again... I think...)
     if (props.selectedLocation === null) return async dispatch => dispatch(setSelectedDevice(null))
@@ -185,8 +183,6 @@ export const sideBarBack = (props) => {
 * and any tasks associated with the location
 */
 export const deleteLocationProcess = (props) => {
-
-    console.log('QQQQ Deleting location', props)
 
     const {
         selectedLocation,
@@ -254,3 +250,72 @@ export const deleteLocationProcess = (props) => {
         dispatch(setSelectedDevice(null))
     }
 }
+
+
+// export const saveLocationProcess = (props) => {
+
+//     const saveChildren = (locationID) => {
+
+//         //// Function to save the children of a posted station
+//         // Since the child has a .parent attribute, this function needs to be given the station's id
+//         let postPositionPromise, child
+//         selectedLocation.children.forEach((childID, ind) => {
+//             child = positions[childID]
+//             child.parent = locationID
+//             if (child.new) { // If the position is new, post it and update its id in the location.children array
+//                 postPositionPromise = dispatch(positionActions.postPosition(child))
+//                 postPositionPromise.then(postedPosition => {
+//                     selectedLocation.children[ind] = postedPosition._id
+//                     dispatch(putLocation(selectedLocation, selectedLocation._id))
+//                 })
+//             } else { //  If the position is not new, just update it
+//                 dispatch(positionActions.putPosition(child, child._id))
+//             }
+//         })
+//     }
+
+//     //// Post the location
+//     if (selectedLocation.new == true) {
+//         const locationPostPromise = dispatch(postLocation(selectedLocation))
+//         locationPostPromise.then(postedLocation => {
+//             //// On return of the posted location, if it is a station we also need to assign it a default dashboard
+//             // TODO: Aren't devices always stations??
+//             // TODO: Should devices have dashboards?? Yes?
+//             if (postedLocation.schema == 'station') {
+//                 let defaultDashboard = {
+//                     name: postedLocation.name + ' Dashboard',
+//                     buttons: [],
+//                     station: postedLocation._id
+//                 }
+
+//                 //// Now post the dashboard, and on return tie that dashboard to location.dashboards and put the location
+//                 const postDashboardPromise = dispatch(dashboardActions.postDashboard(defaultDashboard))
+//                 postDashboardPromise.then(postedDashboard => {
+//                     postedLocation.dashboards = [postedDashboard._id.$oid]
+//                     dispatch(stationActions.putStation(postedLocation, postedLocation._id))
+//                 })
+
+//                 const device = {
+//                     ...selectedDevice,
+//                     station_id: postedLocation._id
+//                 }
+//                 onDeviceChange(device, selectedDevice._id)
+
+
+
+//                 saveChildren(postedLocation._id)
+
+//             }
+//         })
+//     } else { // If the location is not new, PUT it and update it's children
+//         dispatch(putLocation(selectedLocation, selectedLocation._id))
+//         if (selectedLocation.schema == 'station') {
+//             saveChildren(selectedLocation._id)
+//         }
+//     }
+
+//     dispatch(deselectLocation())    // Deselect
+//     // setSelectedLocationCopy(null)                   // Reset the local copy to null
+//     // setSelectedLocationChildrenCopy(null)           // Reset the local children copy to null
+//     onSetSelectedDevice(null)
+// }

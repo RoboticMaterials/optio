@@ -5,7 +5,7 @@ import {apiIPAddress} from '../settings/settings';
 import log from '../logger';
 const logger = log.getLogger('Analytics_Api', "Map");
 
-const operator = 'locations';
+const operator = 'stations';
 
 export async function getLocationAnalytics(location_id, timeSpan) {
     try {

@@ -34,6 +34,7 @@ const StatisticsOverview = (props) => {
     const [isDevice, setIsDevice] = useState(false)
 
     const params = useParams()
+    const stationID = params.stationID
     let plotRef = useRef()
 
     const locationName = locations[params.stationID].name
@@ -53,23 +54,23 @@ const StatisticsOverview = (props) => {
         // TEMP
         // If the page has been loaded in (see widget pages) then don't delay chart load, 
         // else delay chart load because it slows down the widget page opening animation.
-        // if (widgetPageLoaded) {
-        //     setDelayChartRender('flex')
-        // } else {
-        //     setTimeout(() => {
-        //         setDelayChartRender('flex')
-        //     }, 300);
-        // }
+        if (widgetPageLoaded) {
+            setDelayChartRender('flex')
+        } else {
+            setTimeout(() => {
+                setDelayChartRender('flex')
+            }, 300);
+        }
 
         // TEMP
-        // const dataPromise = getLocationAnalytics(params.locationID, 'day')
-        // dataPromise.then(response => setData(response))
+        const dataPromise = getLocationAnalytics(params.locationID, 'day')
+        dataPromise.then(response => setData(response))
     }, [])
 
     const handleDeviceStatistics = () => {
-        
+
         const device = devices[locations[params.stationID].device_id]
-        if(device === undefined) return
+        if (device === undefined) return
         return (
 
             <>
@@ -80,40 +81,40 @@ const StatisticsOverview = (props) => {
     }
 
     // TEMP
-    // useEffect(() => {
-    //     const dataPromise = getLocationAnalytics(params.locationID, timeSpan)
-    //     dataPromise.then(response => setData(response))
+    useEffect(() => {
+        const dataPromise = getLocationAnalytics(params.locationID, timeSpan)
+        dataPromise.then(response => setData(response))
 
-    //     switch (timeSpan) {
-    //         case 'live':
-    //             setFormat('%I:%M:%S %p')
-    //             break
-    //         case 'day':
-    //             setFormat('%I:%M %p')
-    //             break
-    //         case 'week':
-    //             setFormat('%m-%d %I:%M %p')
-    //             break
-    //         case 'month':
-    //             setFormat('%m-%d')
-    //             break
-    //         case 'year':
-    //             setFormat('%Y-%m-%d')
-    //             break
-    //         case 'all':
-    //             setFormat('%Y-%m-%d')
-    //             break
-    //     }
-    // }, [timeSpan])
+        switch (timeSpan) {
+            case 'live':
+                setFormat('%I:%M:%S %p')
+                break
+            case 'day':
+                setFormat('%I:%M %p')
+                break
+            case 'week':
+                setFormat('%m-%d %I:%M %p')
+                break
+            case 'month':
+                setFormat('%m-%d')
+                break
+            case 'year':
+                setFormat('%Y-%m-%d')
+                break
+            case 'all':
+                setFormat('%Y-%m-%d')
+                break
+        }
+    }, [timeSpan])
 
     // TEMP
-    // useEffect(() => {
-    //     if (data !== null) {
-    //         const N = Math.round(Math.max(data[selector].length, 80) / 6)
-    //         const ticks = everyN(data[selector], N).map(datapoint => datapoint.x)
-    //         setDefaultTicks(ticks)
-    //     }
-    // }, [data])
+    useEffect(() => {
+        if (data !== null) {
+            const N = Math.round(Math.max(data[selector].length, 80) / 6)
+            const ticks = everyN(data[selector], N).map(datapoint => datapoint.x)
+            setDefaultTicks(ticks)
+        }
+    }, [data])
 
     const findSlice = e => {
         // console.log(e.clientX, plotRef.getBoundingClientRect())
@@ -215,11 +216,11 @@ const StatisticsOverview = (props) => {
         <styled.OverviewContainer>
             <styled.StationName>{locationName}</styled.StationName>
 
-            {isDevice &&
+            {/* {isDevice &&
                 handleDeviceStatistics()
-            }
+            } */}
 
-            {/* {!!data &&
+            {!!data &&
                 <>
                     <TimeSpans color={colors[selector]} setTimeSpan={(ts) => setTimeSpan(ts)} timeSpan={timeSpan}></TimeSpans>
 
@@ -229,12 +230,12 @@ const StatisticsOverview = (props) => {
                                 const val = data.taktTime[data.taktTime.length - 1].y
                                 return String(Math.floor(val)) + ':' + String(Math.round((val % 1) * 60))
                             }}
-                            name='Takt Time' color={colors.taktTime} onClick={() => setSelector('taktTime')} selected={selector == 'taktTime'} />
+                            name='Availabilty' color={colors.taktTime} onClick={() => setSelector('taktTime')} selected={selector == 'taktTime'} />
                         <ApexGaugeChart min={Math.min(...data.pYield.map(point => point.y))} max={Math.max(...data.pYield.map(point => point.y))} value={data.pYield[data.pYield.length - 1].y}
                             formatValue={() =>
                                 Math.round(10 * data.pYield[data.pYield.length - 1].y) / 10
                             }
-                            name='% Yield' color={colors.pYield} onClick={() => setSelector('pYield')} selected={selector == 'pYield'} />
+                            name='Quality' color={colors.pYield} onClick={() => setSelector('pYield')} selected={selector == 'pYield'} />
                         <ApexGaugeChart min={Math.min(...data.throughPut.map(point => point.y))} max={Math.max(...data.throughPut.map(point => point.y))} value={data.throughPut[data.throughPut.length - 1].y}
                             formatValue={() =>
                                 data.throughPut[data.throughPut.length - 1].y
@@ -242,18 +243,18 @@ const StatisticsOverview = (props) => {
                             name='Throughput' color={colors.throughPut} onClick={() => setSelector('throughPut')} selected={selector == 'throughPut'} />
                     </styled.StatsSection>
                 </>
-            } */}
+            }
 
-            {/* <DataSelector selector={selector} setSelector={setSelector}/> */}
+            <DataSelector selector={selector} setSelector={setSelector}/>
 
-            {/* <styled.PlotContainer
+            <styled.PlotContainer
                 ref={pc => plotRef = pc}
                 // onMouseMove={findSlice}
                 onMouseLeave={() => { setSlice(null) }}
             >
                 {plot()}
 
-            </styled.PlotContainer> */}
+            </styled.PlotContainer>
 
 
         </styled.OverviewContainer>
