@@ -8,7 +8,7 @@ import * as styled from './devices_content.style'
 
 // Import Utils
 import { deepCopy } from '../../../../methods/utils/utils'
-import {} from '../../../../methods/utils/locations_utils'
+import { } from '../../../../methods/utils/locations_utils'
 
 // Import basic components
 import ContentHeader from '../content_header/content_header'
@@ -25,12 +25,11 @@ import DeviceItem from './device_item/device_item'
 
 // Import Actions
 import { putDevices, postDevices, getDevices, deleteDevices, setSelectedDevice } from '../../../../redux/actions/devices_actions'
-import * as locationActions from '../../../../redux/actions/locations_actions'
+import { selectLocation, putLocation, postLocation, deselectLocation, sideBarBack, deleteLocationProcess, setSelectedLocation, setSelectedLocationCopy, setSelectedLocationChildrenCopy } from '../../../../redux/actions/locations_actions'
 import * as positionActions from '../../../../redux/actions/positions_actions'
 import * as dashboardActions from '../../../../redux/actions/dashboards_actions'
 import * as stationActions from '../../../../redux/actions/stations_actions'
 import * as taskActions from '../../../../redux/actions/tasks_actions'
-import * as deviceActions from '../../../../redux/actions/devices_actions'
 
 
 const widthBreakPoint = 450
@@ -51,12 +50,16 @@ const DevicesContent = () => {
     const onDeviceAdd = (device) => dispatch(postDevices(device))
     const onDeviceChange = (device, ID) => dispatch(putDevices(device, ID))
     const onDeviceDelete = (ID) => dispatch(deleteDevices(ID))
-    const onGetDevices = () => dispatch(getDevices())
-    const onAddLocation = (selectedLocation) => dispatch(locationActions.addLocation(selectedLocation))
-    const onSetSelectedLocation = (selectedLocation) => dispatch(locationActions.setSelectedLocation(selectedLocation))
+    const onSetSelectedLocation = (selectedLocation) => dispatch(setSelectedLocation(selectedLocation))
     const onSetSelectedDevice = (selectedDevice) => dispatch(setSelectedDevice(selectedDevice))
+    const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
+    const onSetSelectedLocationChildrenCopy = (locationChildren) => dispatch(setSelectedLocationChildrenCopy(locationChildren))
+    const onSideBarBack = (props) => dispatch(sideBarBack(props))
+    const onDeleteLocationProcess = (props) => dispatch(deleteLocationProcess(props))
 
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
+    const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
+    const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
     const locations = useSelector(state => state.locationsReducer.locations)
     const positions = useSelector(state => state.locationsReducer.positions)
     const tasks = useSelector(state => state.tasksReducer.tasks)
@@ -119,8 +122,16 @@ const DevicesContent = () => {
 
                             // If the device has a station Id, set the station ID. It wouldnt have a station ID because the device has not been placed on the map
                             if (!!devices[deviceID].station_id) {
+
                                 onSetSelectedLocation(deepCopy(locations[devices[deviceID].station_id]))
-                                dispatch(locationActions.selectLocation(locations[devices[deviceID].station_id]._id))
+                                onSetSelectedLocationCopy(deepCopy(locations[devices[deviceID].station_id]))
+
+                                if (!!locations[devices[deviceID].station_id].children) {
+                                    onSetSelectedLocationChildrenCopy(locations[devices[deviceID].station_id].children.map(positionID => deepCopy(positions[positionID])))
+                                }
+
+                                dispatch(selectLocation(locations[devices[deviceID].station_id]._id))
+
                             }
                         }
                         }
@@ -154,7 +165,7 @@ const DevicesContent = () => {
                     postPositionPromise = dispatch(positionActions.postPosition(child))
                     postPositionPromise.then(postedPosition => {
                         selectedLocation.children[ind] = postedPosition._id
-                        dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
+                        dispatch(putLocation(selectedLocation, selectedLocation._id))
                     })
                 } else { //  If the position is not new, just update it
                     dispatch(positionActions.putPosition(child, child._id))
@@ -164,7 +175,7 @@ const DevicesContent = () => {
 
         //// Post the location
         if (selectedLocation.new == true) {
-            const locationPostPromise = dispatch(locationActions.postLocation(selectedLocation))
+            const locationPostPromise = dispatch(postLocation(selectedLocation))
             locationPostPromise.then(postedLocation => {
                 //// On return of the posted location, if it is a station we also need to assign it a default dashboard
                 // TODO: Aren't devices always stations??
@@ -196,37 +207,20 @@ const DevicesContent = () => {
                 }
             })
         } else { // If the location is not new, PUT it and update it's children
-            dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
+            dispatch(putLocation(selectedLocation, selectedLocation._id))
             if (selectedLocation.schema == 'station') {
                 saveChildren(selectedLocation._id)
             }
         }
 
-        dispatch(locationActions.deselectLocation())    // Deselect
+        dispatch(deselectLocation())    // Deselect
         // setSelectedLocationCopy(null)                   // Reset the local copy to null
         // setSelectedLocationChildrenCopy(null)           // Reset the local children copy to null
         onSetSelectedDevice(null)
     }
 
-    /**
-    * This function is called when the back button is pressed. If the location is new, it is deleted;
-    * otherwise, it is reverted to the state it was when editing begun.
-    */
     const onBack = () => {
-
-        //// Revert location
-        if (selectedLocation.new == true) { // If the location was new, simply delete it 
-            dispatch(locationActions.removeLocation(selectedLocation._id))
-        } else { // If the location is not new, revert it to the old copy, and do the same to its children
-            // dispatch(locationActions.updateLocation(selectedLocationCopy))
-            // selectedLocationChildrenCopy.forEach(child => dispatch(positionActions.updatePosition(child)))
-        }
-
-        dispatch(locationActions.deselectLocation())    // Deselect
-        // setSelectedLocationCopy(null)                   // Reset the local copy to null
-        // setSelectedLocationChildrenCopy(null)           // Reset the local children copy to null
-
-        onSetSelectedDevice(null)
+        onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy })
 
     }
 
@@ -236,51 +230,7 @@ const DevicesContent = () => {
     */
     const onDeleteDeviceLocation = () => {
 
-        // Grabs location to delete by finding the station_id corresponding with the device
-        const locationToDelete = locations[selectedDevice.station_id]
-
-        dispatch(locationActions.deselectLocation())
-
-        // If locationToDelete is undefined, that means it's not in the backend so it must not have been posted yet. So just remove location from front end, set selected device to null and return 
-        if (locationToDelete === undefined) {
-            dispatch(locationActions.removeLocation(selectedLocation._id))
-            onSetSelectedDevice(null)
-            return
-        }
-
-        if (locationToDelete.schema == 'station') {
-            dispatch(stationActions.deleteStation(locationToDelete._id))
-
-            //// Delete children
-            locationToDelete.children.forEach(childID => {
-                dispatch(positionActions.deletePosition(positions[childID], childID))
-            })
-
-            //// Delete dashboards
-            locationToDelete.dashboards.forEach(dashboardID => {
-                dispatch(dashboardActions.deleteDashboard(dashboardID))
-            })
-
-            //// Delete relevant tasks
-            Object.values(tasks)
-                .filter(task => task.load.station == locationToDelete._id || task.unload.station == locationToDelete._id)
-                .forEach(task => dispatch(taskActions.deleteTask(task._id.$oid)))
-        } else {
-
-            // dispatch(positionActions.deletePosition(locationToDelete))
-            dispatch(positionActions.deletePosition(locationToDelete, locationToDelete._id))
-
-            //// Delete Relevant tasks
-            Object.values(tasks)
-                .filter(task => task.load.position == locationToDelete._id || task.unload.position == locationToDelete._id)
-                .forEach(task => dispatch(taskActions.deleteTask(task._id.$oid)))
-        }
-
-        // Delete the station_id attatched to the device as well
-        delete selectedDevice.station_id
-        onDeviceChange(selectedDevice, selectedDevice._id)
-
-        onSetSelectedDevice(null)
+        onDeleteLocationProcess({selectedLocation, locations, selectedDevice, positions, tasks})
 
     }
 

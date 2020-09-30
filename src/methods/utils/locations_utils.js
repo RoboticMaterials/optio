@@ -21,7 +21,7 @@ export const LocationTypes = {
                 <circle cx="255.44" cy="181.56" r="7.5" />
                 <circle stroke='none' cx="134.44" cy="146.56" r="12.5" />
                 <circle cx="134.44" cy="181.56" r="7.5" />
-                <rect fill='transparent' strokeMiterLimit='10' strokeWidth='20px' x="10" y="10" width="378" height="236" rx="30" />
+                <rect fill='transparent' strokeMiterlimit='10' strokeWidth='20px' x="10" y="10" width="378" height="236" rx="30" />
             </svg>,
 
     },

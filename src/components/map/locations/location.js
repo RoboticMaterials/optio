@@ -8,6 +8,7 @@ import Station from './locations_types/station/station'
 import * as d3 from 'd3'
 import uuid from 'uuid';
 
+// Import Utils
 import { setLocationAttributes } from '../../../redux/actions/locations_actions'
 import { setPositionAttributes } from '../../../redux/actions/positions_actions'
 import { convertD3ToReal, convertRealToD3, getRelativeD3, getRelativeOffset } from '../../../methods/utils/map_utils'

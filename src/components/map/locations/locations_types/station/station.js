@@ -241,7 +241,7 @@ function Station(props) {
 
                 <g className={`${rd3tClassName}-rot`} onMouseLeave={() => { if (isSelected == true) { setHovering(false) } }}>
                     <circle x="-20" y="-20" r="20" strokeWidth="0" fill="transparent" style={{ cursor: rotating ? "pointer" : "grab" }}></circle>
-                    {isSelected && (hovering || rotating) &&
+                    {isSelected && (hovering || rotating) && hoveringInfo === null &&
                         <>
                             <circle x="-20" y="-20" r="18" fill="none" strokeWidth="4" stroke="transparent" style={{ cursor: "pointer" }} onMouseDown={() => setRotating(true)}></circle>
                             <circle x="-18" y="-18" r="18" fill="none" strokeWidth="0.8" style={{ filter: "url(#glow)", cursor: "pointer" }}></circle>

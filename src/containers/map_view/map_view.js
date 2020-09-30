@@ -1,26 +1,31 @@
 import React, { Component } from 'react'
+
 import ReactDOM from 'react-dom'
 import { connect } from 'react-redux';
 import moduleName from 'react'
-
+import { withRouter } from "react-router-dom";
 
 import * as styled from './map_view.style'
 
 import uuid from 'uuid';
 import * as d3 from 'd3'
 
+// Import Utils
 import { convertD3ToReal, convertRealToD3, getRelativeOffset } from '../../methods/utils/map_utils'
 import { isEquivalent, } from '../../methods/utils/utils.js'
+
+// Import Actions
 import * as mapActions from '../../redux/actions/map_actions'
 import * as stationActions from '../../redux/actions/stations_actions'
 import * as positionActions from '../../redux/actions/positions_actions'
 import * as locationActions from '../../redux/actions/locations_actions'
 import * as deviceActions from '../../redux/actions/devices_actions'
 
+// Import Components
 import TaskPaths from '../../components/map/task_paths/task_paths.js'
 import Location from '../../components/map/locations/location.js'
 import MiR100 from '../../components/map/amrs/mir100/mir100.js'
-import { withRouter } from "react-router-dom";
+import Zones from '../../components/map/zones/zones'
 
 // logging
 import log from "../../logger"
@@ -392,7 +397,9 @@ export class MapView extends Component {
         return (
             <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation}>
                 <styled.MapContainer ref={mc => (this.mapContainer = mc)} style={{ pointerEvents: this.widgetDraggable ? 'default' : 'none' }}>
-
+                    
+                    {/* Commented out for now */}
+                    {/* <Zones/> */}
 
 
                     {/* SVG element is the container for the whole view. This allows the view to be moved as one */}

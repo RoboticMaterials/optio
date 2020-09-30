@@ -16,7 +16,7 @@ import Shelves from './shelves/shelves'
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 
 // Import actions
-import { setSelectedLocationCopy, setSelectedLocationChildrenCopy, sideBarBack } from '../../../../redux/actions/locations_actions'
+import { setSelectedLocationCopy, setSelectedLocationChildrenCopy, sideBarBack, deleteLocationProcess } from '../../../../redux/actions/locations_actions'
 import * as locationActions from '../../../../redux/actions/locations_actions'
 import * as stationActions from '../../../../redux/actions/stations_actions'
 import * as positionActions from '../../../../redux/actions/positions_actions'
@@ -65,6 +65,7 @@ export default function LocationContent(props) {
     const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
     const onSetSelectedLocationChildrenCopy = (locationChildren) => dispatch(setSelectedLocationChildrenCopy(locationChildren))
     const onSideBarBack = (props) => dispatch(sideBarBack(props))
+    const onDeleteLocationProcess = (props) => dispatch(deleteLocationProcess(props))
 
     const locations = useSelector(state => state.locationsReducer.locations)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
@@ -126,10 +127,6 @@ export default function LocationContent(props) {
         toggleEditing(false)
 
         onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy })
-
-        // Deselect
-        onSetSelectedLocationCopy(null)                   // Reset the local copy to null
-        onSetSelectedLocationChildrenCopy(null)           // Reset the local children copy to null
     }
 
     /**
@@ -195,41 +192,11 @@ export default function LocationContent(props) {
 
     }
 
-    /**
-     * Called when the delete button is pressed. Deletes the location, its children, its dashboards, 
-     * and any tasks associated with the location
-     */
     const onDelete = () => {
-        const locationToDelete = JSON.parse(JSON.stringify(selectedLocation))
 
+        onDeleteLocationProcess({ selectedLocation, locations, positions, tasks })
         toggleEditing(false)
-        dispatch(locationActions.deselectLocation())
 
-        if (locationToDelete.schema == 'station') {
-            dispatch(stationActions.deleteStation(locationToDelete._id))
-
-            //// Delete children
-            locationToDelete.children.forEach(childID => {
-                dispatch(positionActions.deletePosition(positions[childID], childID))
-            })
-
-            //// Delete dashboards
-            locationToDelete.dashboards.forEach(dashboardID => {
-                dispatch(dashboardActions.deleteDashboard(dashboardID))
-            })
-
-            //// Delete relevant tasks
-            Object.values(tasks)
-                .filter(task => task.load.station == locationToDelete._id || task.unload.station == locationToDelete._id)
-                .forEach(task => dispatch(taskActions.deleteTask(task._id.$oid)))
-        } else {
-            dispatch(positionActions.deletePosition(locationToDelete, locationToDelete._id))
-
-            //// Delete Relevant tasks
-            Object.values(tasks)
-                .filter(task => task.load.position == locationToDelete._id || task.unload.position == locationToDelete._id)
-                .forEach(task => dispatch(taskActions.deleteTask(task._id.$oid)))
-        }
     }
 
     // TODO: Probably can get rid of editing state, just see if there's a selectedLocation, if there is, you're editing
