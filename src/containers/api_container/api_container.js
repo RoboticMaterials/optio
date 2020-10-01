@@ -468,7 +468,7 @@ const ApiContainer = (props) => {
         Object.values(stations).map((station) => {
 
             if (!!station.device_id && !devices[station.device_id].station_id) {
-
+                console.log('QQQQ Station has a broken device')
                 const device = devices[station.device_id]
                 device.station_id = station._id
                 onPutDevice(device, device._id)

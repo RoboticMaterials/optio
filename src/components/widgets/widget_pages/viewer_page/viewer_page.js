@@ -15,7 +15,7 @@ const ViewerPage = () => {
     const locaitons = useSelector(state => state.locationsReducer.locations)
     const devices = useSelector(state => state.devicesReducer.devices)
 
-    const [streamConnected, setStreamConnected] = useState(false)
+    const [streamConnected, setStreamConnected] = useState(true)
 
     const params = useParams()
 
