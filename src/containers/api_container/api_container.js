@@ -22,6 +22,7 @@ import { getLoggers } from '../../redux/actions/local_actions';
 import { getRefreshToken } from '../../redux/actions/authentication_actions'
 
 import { deletePosition, putPosition } from '../../redux/actions/positions_actions'
+import { putStation } from '../../redux/actions/stations_actions'
 
 import { postLocalSettings } from '../../redux/actions/local_actions'
 
@@ -31,7 +32,7 @@ import Button from '../../components/basic/button/button'
 
 // import utils
 import { getPageNameFromPath } from "../../methods/utils/router_utils";
-import { isEquivalent } from '../../methods/utils/utils'
+import { isEquivalent, deepCopy } from '../../methods/utils/utils'
 
 // import logger
 import logger from '../../logger.js';
@@ -64,6 +65,7 @@ const ApiContainer = (props) => {
     const onDeletePosition = (position, ID) => dispatch(deletePosition(position, ID))
     const onPutDevice = (device, ID) => dispatch(putDevices(device, ID))
     const onPutPosition = (position, ID) => dispatch(putPosition(position, ID))
+    const onPutStation = async (station, ID) => await dispatch(putStation(station, ID))
 
     const onPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
 
@@ -409,13 +411,20 @@ const ApiContainer = (props) => {
 
         Object.values(stations).map((station) => {
 
-            station.children.map((position) => {
+            station.children.map(async (position, ind) => {
                 if(!!positions[position] && positions[position].parent === null){
+
                     const brokenPosition = positions[position]
                     console.log('QQQQ Stations with broken position', brokenPosition)
                     brokenPosition.parent = station._id
 
                     onPutPosition(brokenPosition, brokenPosition._id)
+
+                } else if(!positions[position]) {
+                    let brokenStation = deepCopy(station)
+                    console.log('QQQQ Stations with broken position', brokenStation)
+                    brokenStation.children.splice(ind, 1)
+                    await onPutStation(brokenStation, brokenStation._id)
                 }
             })
         })
