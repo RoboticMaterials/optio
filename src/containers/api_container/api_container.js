@@ -21,7 +21,7 @@ import { getLocalSettings } from '../../redux/actions/local_actions'
 import { getLoggers } from '../../redux/actions/local_actions';
 import { getRefreshToken } from '../../redux/actions/authentication_actions'
 
-import { deletePosition } from '../../redux/actions/positions_actions'
+import { deletePosition, putPosition } from '../../redux/actions/positions_actions'
 
 import { postLocalSettings } from '../../redux/actions/local_actions'
 
@@ -63,6 +63,7 @@ const ApiContainer = (props) => {
     const onDeleteDashboard = (ID) => dispatch(deleteDashboard(ID))
     const onDeletePosition = (position, ID) => dispatch(deletePosition(position, ID))
     const onPutDevice = (device, ID) => dispatch(putDevices(device, ID))
+    const onPutPosition = (position, ID) => dispatch(putPosition(position, ID))
 
     const onPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
 
@@ -216,6 +217,7 @@ const ApiContainer = (props) => {
         handleDevicesWithBrokenStations(devices, locations)
         handleStationsWithBrokenDevices(devices, locations)
         handleDashboardsWithBrokenStations(dashboards, locations)
+        handleStationsWithBrokenChildren(locations)
 
         props.apiLoaded()
         props.onLoad()
@@ -334,6 +336,8 @@ const ApiContainer = (props) => {
      *  */
     const handleTasksWithBrokenPositions = async (tasks, locations) => {
 
+        if(tasks === undefined || locations === undefined) return
+
         const stations = locations.stations
         const positions = locations.positions
 
@@ -375,6 +379,8 @@ const ApiContainer = (props) => {
      */
     const handlePositionsWithBrokenParents = async (locations) => {
 
+        if(locations === undefined) return
+
         const stations = locations.stations
         const positions = locations.positions
 
@@ -389,12 +395,42 @@ const ApiContainer = (props) => {
     }
 
     /**
+     * 1) This finds positions that have become disassociated with their parent stations and reassociates them
+     * 2) Also finds stations that have children positions that have been deleted. Deletes those positions from the stations
+     * This happens because it happens... I have no idea why this happens....
+     * @param {*} locations 
+     */
+    const handleStationsWithBrokenChildren = (locations) => {
+        
+        if(locations === undefined) return
+        
+        const stations = locations.stations
+        const positions = locations.positions
+
+        Object.values(stations).map((station) => {
+
+            station.children.map((position) => {
+                if(!!positions[position] && positions[position].parent === null){
+                    const brokenPosition = positions[position]
+                    console.log('QQQQ Stations with broken position', brokenPosition)
+                    brokenPosition.parent = station._id
+
+                    onPutPosition(brokenPosition, brokenPosition._id)
+                }
+            })
+        })
+
+    }
+
+    /**
      * This deletes device station if the station is broken
      * A broken station would happen when a station has been deleted
      * @param {*} devices 
      * @param {*} locations 
      */
     const handleDevicesWithBrokenStations = async (devices, locations) => {
+        
+        if(devices === undefined || locations === undefined) return
 
         const stations = locations.stations
 
@@ -415,6 +451,9 @@ const ApiContainer = (props) => {
      * @param {*} locations 
      */
     const handleStationsWithBrokenDevices = (devices, locations) => {
+
+        if(devices === undefined || locations === undefined) return
+
         const stations = locations.stations
 
         Object.values(stations).map((station) => {
@@ -436,6 +475,9 @@ const ApiContainer = (props) => {
      * @param {*} locations 
      */
     const handleDashboardsWithBrokenStations = (dashboards, locations) => {
+
+        if(dashboards === undefined || locations === undefined) return
+
         const stations = locations.stations
 
         Object.values(dashboards).map((dashboard) => {

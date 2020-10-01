@@ -90,12 +90,19 @@ export const BigCircle = styled.div`
 export const DeviceTitle = styled.h2`
 
     font-family: ${props => props.theme.font.primary};
-    font-size: ${props => props.theme.fontSize.sz1};
+    /* font-size: ${props => props.theme.fontSize.sz2}; */
+    font-size: 2rem;
     color: ${props => props.theme.bg.octonary};
     position: absolute;
-    
-    top: 25%;
+    text-align:center;
+
+    max-height: 5rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    top: 22%;
     transform: translateY(-50%);
+    max-width: 13.5rem;
 
     user-select: none;
 

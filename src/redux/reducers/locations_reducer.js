@@ -361,6 +361,8 @@ export default function locationsReducer(state = defaultState, action) {
             });
 
         case GET_STATIONS_SUCCESS:
+            console.log('QQQQ Action payload stations', action.payload)
+
             return setStations(action.payload.stations)
 
         case GET_STATIONS_FAILURE:
@@ -450,6 +452,7 @@ export default function locationsReducer(state = defaultState, action) {
             });
 
         case GET_POSITIONS_SUCCESS:
+            console.log('QQQQ Action payload positions', action.payload)
             return setPositions(action.payload.positions)
 
         case GET_POSITIONS_FAILURE:
