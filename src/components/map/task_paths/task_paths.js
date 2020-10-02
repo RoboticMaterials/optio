@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
+// Import Actions
 import { setTaskAttributes } from '../../../redux/actions/tasks_actions'
 
 export default function TaskPaths(props) {
@@ -9,10 +10,11 @@ export default function TaskPaths(props) {
     const positions = useSelector(state => state.locationsReducer.positions)
     const dispatch = useDispatch()
 
+    // console.log('QQQQ Positions in task path', positions)
     const stateRef = useRef()
     stateRef.current = selectedTask
 
-    const [mousePos] = useState({x: 0, y: 0})
+    const [mousePos] = useState({ x: 0, y: 0 })
 
     const [x1, setX1] = useState(0)
     const [y1, setY1] = useState(0)
@@ -31,7 +33,7 @@ export default function TaskPaths(props) {
         if (e.key == 'Escape') {
             let load = stateRef.current.load
             load.position = null
-            dispatch(setTaskAttributes(stateRef.current._id.$oid, {load}))
+            dispatch(setTaskAttributes(stateRef.current._id.$oid, { load }))
         }
     })
 
@@ -50,7 +52,7 @@ export default function TaskPaths(props) {
             }
         }
     })
-    
+
     // If there is a load position but not an unload, set a listener to set the endpoint to the mouse position
     useEffect(() => {
         if (selectedTask !== null && selectedTask.load.position !== null && selectedTask.unload.position === null) {
@@ -74,49 +76,51 @@ export default function TaskPaths(props) {
             endPos = mousePos
         }
 
-        const lineLen = Math.sqrt(Math.pow((x2-x1),2) + Math.pow((y2-y1),2))
-        const lineRot = Math.atan2((y2-y1), (x2-x1))
-        const arrowRot = lineRot*180/Math.PI
+        const lineLen = Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
+        const lineRot = Math.atan2((y2 - y1), (x2 - x1))
+        const arrowRot = lineRot * 180 / Math.PI
 
         // console.log(lineLen, (10*props.d3.scale), Math.ceil(lineLen/(10*props.d3.scale)))
 
-        const dashes = [...Array(Math.ceil(lineLen/(10*props.d3.scale))).keys()]
+        const dashes = [...Array(Math.ceil(lineLen / (10 * props.d3.scale))).keys()]
 
         return (
-            <g>
-                <defs>
-                        
-                    {/* a transparent glow that takes on the colour of the object it's applied to */}
-                    <filter id="glow">
-                        <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
-                        <feMerge>
-                            <feMergeNode in="coloredBlur"/>
-                            <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                    </filter>
-                    
-                </defs>
+            <>
+                <g>
+                    <defs>
 
-                <line x1={`${x1}`} y1={`${y1}`} 
-                      x2={`${x2}`} y2={`${y2}`}
-                      strokeWidth={`${props.d3.scale*8}`} stroke='rgba(56, 235, 135, 0.95)'
-                      strokeLinecap="round"
-                />
-                <line x1={`${x1}`} y1={`${y1}`} 
-                      x2={`${x2}`} y2={`${y2}`}
-                      strokeWidth={`${props.d3.scale*6}`} stroke='rgba(184, 255, 215, 0.7)'
-                      strokeLinecap="round"
-                />
+                        {/* a transparent glow that takes on the colour of the object it's applied to */}
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="1" result="coloredBlur" />
+                            <feMerge>
+                                <feMergeNode in="coloredBlur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
 
-                {dashes.map(delta => 
-                    <g key={`arrow-${delta}`}
-                        transform={`translate(${x1 + delta*props.d3.scale*10*Math.cos(lineRot)} ${y1 + delta*props.d3.scale*10*Math.sin(lineRot)})`}>
-                        <g viewBox="-50 -50 50 50" transform={`rotate(${arrowRot}) scale(${0.05*props.d3.scale})`}>
-                            <polygon points="-40,-50 -40,50 40,0" fill="rgba(56, 235, 135, 0.95)"/>
+                    </defs>
+
+                    <line x1={`${x1}`} y1={`${y1}`}
+                        x2={`${x2}`} y2={`${y2}`}
+                        strokeWidth={`${props.d3.scale * 8}`} stroke='rgba(56, 235, 135, 0.95)'
+                        strokeLinecap="round"
+                    />
+                    <line x1={`${x1}`} y1={`${y1}`}
+                        x2={`${x2}`} y2={`${y2}`}
+                        strokeWidth={`${props.d3.scale * 6}`} stroke='rgba(184, 255, 215, 0.7)'
+                        strokeLinecap="round"
+                    />
+
+                    {dashes.map(delta =>
+                        <g key={`arrow-${delta}`}
+                            transform={`translate(${x1 + delta * props.d3.scale * 10 * Math.cos(lineRot)} ${y1 + delta * props.d3.scale * 10 * Math.sin(lineRot)})`}>
+                            <g viewBox="-50 -50 50 50" transform={`rotate(${arrowRot}) scale(${0.05 * props.d3.scale})`}>
+                                <polygon points="-40,-50 -40,50 40,0" fill="rgba(56, 235, 135, 0.95)" />
+                            </g>
                         </g>
-                    </g>
-                )}
-            </g>
+                    )}
+                </g>
+            </>
         )
     }
 

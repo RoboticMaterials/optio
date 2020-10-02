@@ -26,6 +26,8 @@ import TaskPaths from '../../components/map/task_paths/task_paths.js'
 import Location from '../../components/map/locations/location.js'
 import MiR100 from '../../components/map/amrs/mir100/mir100.js'
 import Zones from '../../components/map/zones/zones'
+import TaskStatistics from '../../components/map/task_statistics/task_statistics'
+import Widgets from '../../components/widgets/widgets'
 
 // logging
 import log from "../../logger"
@@ -397,7 +399,7 @@ export class MapView extends Component {
         return (
             <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation}>
                 <styled.MapContainer ref={mc => (this.mapContainer = mc)} style={{ pointerEvents: this.widgetDraggable ? 'default' : 'none' }}>
-                    
+
                     {/* Commented out for now */}
                     {/* <Zones/> */}
 
@@ -437,6 +439,7 @@ export class MapView extends Component {
                         </styled.MapGroup>
 
                         <TaskPaths d3={this.d3} />
+
                         <defs>
                             {/* a transparent glow that takes on the colour of the object it's applied to */}
                             <filter id="glow">
@@ -507,6 +510,16 @@ export class MapView extends Component {
                             </>
                         }
                     </svg>
+
+                    {!!this.props.selectedTask &&
+                        <TaskStatistics d3={this.d3}/>
+                    }
+
+                    {this.props.hoveringInfo !== null &&
+                        <Widgets />
+                    }
+
+
                 </styled.MapContainer>
 
             </div>
@@ -533,7 +546,9 @@ const mapStateToProps = function (state) {
         stations: state.locationsReducer.stations,
 
         selectedLocation: state.locationsReducer.selectedLocation,
-        selectedTask: state.tasksReducer.selectedTask
+        selectedTask: state.tasksReducer.selectedTask,
+
+        hoveringInfo: state.locationsReducer.hoverStationInfo,
     };
 }
 

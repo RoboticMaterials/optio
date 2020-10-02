@@ -15,7 +15,9 @@ const ObjectColumns = (props) => {
     const objects = useSelector(state => state.objectsReducer.objects)
 
     // const [parsedObjects, setParsedObjects] = useState({parsedObjectsProps})
+    console.log('QQQQ Parsed Objecst', parsedObjects)
 
+    if(Object.keys(parsedObjects).length === 0) return null
 
     /**
      * Handles all the objects arriving at the stating (unloaded objects). These objects will appear in the left column

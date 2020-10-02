@@ -121,19 +121,19 @@ const Widgets = (props) => {
 
                     {/* Commented out for now, these widgets aren't working as of Sept. 1 2020. Once re-implemented make sure to update CSS */}
                     {/* <WidgetButton
-                    id={locationID}
+                    id={stationID}
                     type={'tasks'}
                     currentPage={widgetPage}
                 /> */}
 
                     {/* <WidgetButton
-                    id={locationID}
-                    type={'objects'}
-                    currentPage={widgetPage}
-                /> */}
+                        id={stationID}
+                        type={'objects'}
+                        currentPage={widgetPage}
+                    /> */}
 
                     {/* <WidgetButton
-                    id={locationID}
+                    id={stationID}
                     type={'view'}
                     currentPage={widgetPage}
                 /> */}

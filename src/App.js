@@ -20,9 +20,9 @@ import PageErrorBoundary from './containers/page_error_boundary/page_error_bound
 import Logger from './containers/logger/logger';
 import SideBar from './containers/side_bar/side_bar'
 import MapView from './containers/map_view/map_view'
-import Widgets from './components/widgets/widgets'
 import HILModal from './containers/hil_modal/hil_modal'
 import Authentication from './containers/authentication/authentication'
+import Widgets from './components/widgets/widgets'
 
 const widthBreakPoint = 1000;
 
@@ -32,12 +32,14 @@ const App = (props) => {
 
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
+    const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const maps = useSelector(state => state.mapReducer.maps)
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
+    const positions = useSelector(state => state.locationsReducer.positions)
 
     // Set to true for the time being, authentication is not 100% complete as of 09/14/2020
     const [authenticated, setAuthenticated] = useState(true)
-    
+
     const [loaded, setLoaded] = useState(false)
     const [apiLoaded, setApiLoaded] = useState(false)
     const [stateTheme, setStateTheme] = useState('main')
@@ -69,7 +71,6 @@ const App = (props) => {
         }
 
     }
-
     return (
         <>
             <Logger />
@@ -83,12 +84,12 @@ const App = (props) => {
                         <Route
                             path={["/locations/:stationID?/:widgetPage?", '/:sidebar?', '/']}
                         >
-                            <ApiContainer styleMode={null} apiMode={null} mode={null} logMode={"DEV"} onLoad={() => setLoaded(true)} apiLoaded={() => setApiLoaded(true)} isApiLoaded={apiLoaded}/>
+                            <ApiContainer styleMode={null} apiMode={null} mode={null} logMode={"DEV"} onLoad={() => setLoaded(true)} apiLoaded={() => setApiLoaded(true)} isApiLoaded={apiLoaded} />
                         </Route>
 
                         {/* If all the API's have been loaded, but the user has not been authenticate then show the Authentication Screen */}
                         {loaded && !authenticated &&
-                            <Authentication authenticated={() => setAuthenticated(true)}/>
+                            <Authentication authenticated={() => setAuthenticated(true)} />
                         }
 
 
@@ -162,12 +163,12 @@ const App = (props) => {
                                         component={WidgetPages}
                                     /> */}
 
-                                    {hoveringInfo !== null &&
+                                    {/* {hoveringInfo !== null &&
                                         <Route
                                             path={["/locations/:stationID?/:widgetPage?", '/']}
                                             component={Widgets}
                                         />
-                                    }
+                                    } */}
 
                                 </styled.BodyContainer>
 
