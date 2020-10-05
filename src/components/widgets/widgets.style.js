@@ -81,9 +81,15 @@ export const WidgetContainer = styled.div`
 
 export const WidgetHoverArea = styled.div`
     margin-top: -12.7rem;
-    width: 30rem;
-    height:5rem;
+    width: 3rem;
+    height:1.5rem;
     /* z-index: -1; */
+    /* background: red; */
+    /* stroke: 1rem solid red; */
+
+    margin: 0rem auto;
+
+    transform: scale(${props => props.hoverScale});
 
     &:hover{
         cursor:pointer;

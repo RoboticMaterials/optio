@@ -59,86 +59,97 @@ const Widgets = (props) => {
 
         const location = locations[hoveringInfo.id]
 
-        // If location has a device, then see what type of widget buttons need to be displayed, else just show statistics and dashboards
-        if (!!location.device_id) {
-            const device = devices[location.device_id]
-            let deviceType = DeviceItemTypes['generic']
+        // If the schema is a station then show these buttons, else it's a position
+        if (location.schema === 'station') {
+            // If location has a device, then see what type of widget buttons need to be displayed, else just show statistics and dashboards
+            if (!!location.device_id) {
+                const device = devices[location.device_id]
+                let deviceType = DeviceItemTypes['generic']
 
+                if (!!DeviceItemTypes[device.device_model]) deviceType = DeviceItemTypes[device.device_model]
 
-            if (!!DeviceItemTypes[device.device_model]) deviceType = DeviceItemTypes[device.device_model]
+                return deviceType.widgetPages.map((page, ind) => {
+                    switch (page) {
+                        case 'statistics':
+                            return (
+                                <WidgetButton
+                                    key={ind}
+                                    id={stationID}
+                                    type={'statistics'}
+                                    currentPage={widgetPage}
+                                />
+                            )
+                        case 'dashboards':
+                            return (
+                                <WidgetButton
+                                    key={ind}
+                                    id={stationID}
+                                    type={'dashboards'}
+                                    currentPage={widgetPage}
+                                />
+                            )
+                        case 'view':
+                            return (
+                                <WidgetButton
+                                    key={ind}
+                                    id={stationID}
+                                    type={'view'}
+                                    currentPage={widgetPage}
+                                />
+                            )
 
+                        default:
+                            break;
+                    }
 
-            return deviceType.widgetPages.map((page, ind) => {
-                switch (page) {
-                    case 'statistics':
-                        return (
-                            <WidgetButton
-                                key={ind}
-                                id={stationID}
-                                type={'statistics'}
-                                currentPage={widgetPage}
-                            />
-                        )
-                    case 'dashboards':
-                        return (
-                            <WidgetButton
-                                key={ind}
-                                id={stationID}
-                                type={'dashboards'}
-                                currentPage={widgetPage}
-                            />
-                        )
-                    case 'view':
-                        return (
-                            <WidgetButton
-                                key={ind}
-                                id={stationID}
-                                type={'view'}
-                                currentPage={widgetPage}
-                            />
-                        )
+                })
 
-                    default:
-                        break;
-                }
-
-            })
-
-        } else {
-            return (
-                <>
-                    {/* <WidgetButton
+            }
+            else {
+                return (
+                    <>
+                        {/* <WidgetButton
                         id={stationID}
                         type={'statistics'}
                         currentPage={widgetPage}
                     /> */}
 
-                    <WidgetButton
-                        id={stationID}
-                        type={'dashboards'}
-                        currentPage={widgetPage}
-                    />
+                        <WidgetButton
+                            id={stationID}
+                            type={'dashboards'}
+                            currentPage={widgetPage}
+                        />
 
-                    {/* Commented out for now, these widgets aren't working as of Sept. 1 2020. Once re-implemented make sure to update CSS */}
-                    {/* <WidgetButton
+                        {/* Commented out for now, these widgets aren't working as of Sept. 1 2020. Once re-implemented make sure to update CSS */}
+                        {/* <WidgetButton
                     id={stationID}
                     type={'tasks'}
                     currentPage={widgetPage}
                 /> */}
 
-                    <WidgetButton
-                        id={stationID}
-                        type={'objects'}
-                        currentPage={widgetPage}
-                    />
+                        <WidgetButton
+                            id={stationID}
+                            type={'objects'}
+                            currentPage={widgetPage}
+                        />
 
-                    {/* <WidgetButton
+                        {/* <WidgetButton
                     id={stationID}
                     type={'view'}
                     currentPage={widgetPage}
                 /> */}
-                </>
+                    </>
 
+                )
+            }
+        }
+        else {
+            return (
+                <WidgetButton
+                    id={stationID}
+                    type={'cart'}
+                    currentPage={widgetPage}
+                />
             )
         }
     }, [widgetPage])
@@ -174,6 +185,45 @@ const Widgets = (props) => {
         )
     }, [locations])
 
+    /**
+     * This handles the x and y position of the widget.
+     * It centers the x and y position to the middle of the widget by using the element height and width
+     * This takes care issue with widgets that are different sizes 
+     * @param {} coord 
+     */
+    // Left outside of function so that otherplaces can access it
+    const element = document.getElementById(hoveringInfo.id)
+
+    const handleWidgetPosition = (coord) => {
+
+
+        if (element === null) {
+            if (coord === 'x') {
+                return hoveringInfo.xPosition + 'px'
+
+            } else {
+                return hoveringInfo.yPosition + 'px'
+            }
+        }
+
+        const elementHeight = element.getBoundingClientRect().height
+        const elementWidth = element.getBoundingClientRect().width
+
+
+        let widgetPosition = {}
+
+        widgetPosition.x = hoveringInfo.xPosition - elementWidth / 2 + 'px'
+        widgetPosition.y = hoveringInfo.yPosition + elementHeight / 2 + 'px'
+
+        if (coord === 'x') {
+            return widgetPosition.x
+
+        } else {
+            return widgetPosition.y
+        }
+
+    }
+
     return (
         <>
             {!!widgetPage &&
@@ -185,6 +235,7 @@ const Widgets = (props) => {
                 id={hoveringInfo.id}
                 onMouseEnter={() => {
                     dispatchHoverStationInfo(hoveringInfo)
+                    handleWidgetPosition()
                 }}
 
                 onMouseLeave={() => {
@@ -195,14 +246,18 @@ const Widgets = (props) => {
                     }
                 }}
 
-                xPosition={hoveringInfo.xPosition + 'px'}
-                yPosition={hoveringInfo.yPosition + 'px'}
+                // xPosition={hoveringInfo.xPosition + 'px'}
+                xPosition={handleWidgetPosition('x')}
+                yPosition={handleWidgetPosition('y')}
                 scale={hoveringInfo.scale}
                 widgetPage={widgetPage}
+                // TODO: Was going to use this to hide element while its null so you dont see that 'snapping'
+                hide={!widgetPage && element === null ? true : false}
             >
 
                 {!widgetPage &&
                     <styled.WidgetHoverArea
+                        hoverScale={hoveringInfo.realScale}
                         onMouseEnter={() => {
                             dispatchHoverStationInfo(hoveringInfo)
                         }}

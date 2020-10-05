@@ -11,6 +11,7 @@ import { selectLocation, deselectLocation } from '../../../../../redux/actions/l
 
 // Import Utils
 import { DeviceItemTypes } from '../../../../../methods/utils/device_utils'
+import { handleWidgetHoverCoord } from '../../../../../methods/utils/locations_utils'
 
 function Station(props) {
 
@@ -27,6 +28,9 @@ function Station(props) {
     const [hovering, setHovering] = useState(false)
     const [rotating, setRotating] = useState(false)
     const [translating, setTranslating] = useState(false)
+    const [dragging, setDragging] = useState(false)
+    const [disableDrag] = useState(() => setDragging(false))
+
 
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -43,7 +47,11 @@ function Station(props) {
     let params = useParams()
 
     useEffect(() => {
-        window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
+        window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) }, disableDrag)
+        return () => {
+            window.removeEventListener("mousup", disableDrag)
+        }
+        
     })
 
     /**
@@ -61,74 +69,8 @@ function Station(props) {
      * Passes the X, Y, scale and ID of location to redux which is then used in widgets
      */
     const handleWidgetHover = () => {
-        let widgetInfo = {}
 
-        widgetInfo.id = location._id
-
-        widgetInfo.heightWidth = '1'
-
-        // Initial Ratios
-        widgetInfo.yPosition = location.y + 140 * d3.scale
-        widgetInfo.xPosition = location.x - 243
-        widgetInfo.scale = d3.scale
-
-        // If the type is a device
-        if (location.type === 'device') {
-            // Gets the height of the device
-            const el = document.getElementById(`${rd3tClassName}-device`)
-            let bBox = null
-
-
-            // Try catch for when page refreshses when in a widget. When refreshing in a widget, the elements is unmounted and cant get the bounding because of an unmounted element
-            try {
-                bBox = el.getBoundingClientRect()
-            } catch (error) {
-                return widgetInfo
-            }
-
-            // Stops the widget from getting to0 small and keeping the widget relative to the location size
-            if (d3.scale < .8) {
-                widgetInfo.scale = .8
-                widgetInfo.yPosition = location.y + bBox.height / 2 + 105
-
-            }
-
-            // Stops the widget from getting to0 large and keeping the widget relative to the location size
-            else if (d3.scale > 1.3) {
-                widgetInfo.scale = 1.3
-                widgetInfo.yPosition = location.y + bBox.height / 2 + 150
-            }
-            return widgetInfo
-        }
-
-        // If the type is not a device it's a workstation.
-        else {
-            // Gets the height of the workstation
-            const el = document.getElementById(`${props.rd3tClassName}-rectQ`)
-            let bBox = null
-
-            // Try catch for when page refreshses when in a widget. When refreshing in a widget, the elements is unmounted and cant get the bounding because of an unmounted element
-            try {
-                bBox = el.getBoundingClientRect()
-            } catch (error) {
-                return widgetInfo
-            }
-
-            // Stops the widget from getting to small and keeping the widget relative to the location size
-            if (props.d3.scale < .8) {
-                widgetInfo.scale = .8
-                widgetInfo.yPosition = props.location.y + bBox.height / 2 + 100
-
-            }
-
-            // Stops the widget from getting to large and keeping the widget relatice to the location size
-            else if (props.d3.scale > 1.3) {
-                widgetInfo.scale = 1.3
-                widgetInfo.yPosition = props.location.y + bBox.height / 2 + 180
-            }
-            return widgetInfo
-        }
-
+        return handleWidgetHoverCoord(location, rd3tClassName, d3)
 
     }
 

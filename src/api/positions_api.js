@@ -15,7 +15,6 @@ export async function getPositions() {
     // Success 🎉
     const data = response.data;
     const dataJson = JSON.parse(data)
-    console.log('QQQQ API get positions', dataJson)
     return dataJson;
 
 

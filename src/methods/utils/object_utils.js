@@ -5,9 +5,6 @@
  * */ 
 export const handleParseTaskBasedOnLoadUnload = (tasks, stationID) => {
 
-    console.log('QQQQ Tasks', tasks)
-    console.log('QQQQ station ID', stationID)
-
     let parsedTasks = { load: {}, unload: {} }
 
     Object.values(tasks).forEach(task => {

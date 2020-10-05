@@ -7,6 +7,13 @@ import { LocationTypes } from '../../../../../methods/utils/locations_utils'
 
 // Import Actions
 import { setTaskAttributes } from '../../../../../redux/actions/tasks_actions'
+import { hoverStationInfo } from '../../../../../redux/actions/stations_actions'
+import { selectLocation, deselectLocation } from '../../../../../redux/actions/locations_actions'
+
+
+// Import Utils
+import { handleWidgetHoverCoord } from '../../../../../methods/utils/locations_utils'
+
 
 const Position = (props) => {
 
@@ -23,20 +30,37 @@ const Position = (props) => {
     const [hovering, setHovering] = useState(false)
     const [dragging, setDragging] = useState(false)
     const [disableDrag] = useState(() => setDragging(false))
+    const [rotating, setRotating] = useState(false)
+    const [translating, setTranslating] = useState(false)
 
     const dispatch = useDispatch()
     const onSetTaskAttributes = (id, load) => dispatch(setTaskAttributes(id, load))
+    const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
+    const onSelectLocation = (locationId) => dispatch(selectLocation(locationId))
 
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
+    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
+    const hoveringID = useSelector(state => state.locationsReducer.hoverLocationID)
+    const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
 
 
     useEffect(() => {
-        window.addEventListener("mouseup", disableDrag)
+        window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) }, disableDrag)
 
         return function cleanup() {
             window.removeEventListener("mousup", disableDrag)
         }
     })
+
+    /**
+    * Passes the X, Y, scale and ID of location to redux which is then used in widgets
+    */
+    const handleWidgetHover = () => {
+
+        return handleWidgetHoverCoord(location, rd3tClassName, d3)
+
+    }
+
 
     const shouldGlow = selectedTask !== null &&
         ((selectedTask.load.position == location._id && selectedTask.type == 'push') ||
@@ -48,7 +72,13 @@ const Position = (props) => {
         <g
             className={rd3tClassName}
             style={{ fill: color, stroke: color, strokeWidth: '0', opacity: '0.8', cursor: "pointer" }}
-            onMouseEnter={() => { setHovering(true) }}
+            onMouseEnter={() => {
+                setHovering(true)
+                if (!rotating && !translating && selectedLocation == null && selectedTask == null) {
+                    dispatchHoverStationInfo(handleWidgetHover())
+                    onSelectLocation(location._id)
+                }
+            }}
             onMouseLeave={() => { setHovering(false) }}
             onClick={() => {
                 if (selectedTask !== null) {
@@ -107,19 +137,19 @@ const Position = (props) => {
 
 
             <g className={`${rd3tClassName}-rot`}>
-                {isSelected && (hovering || dragging) &&
+                {isSelected && (hovering || dragging) && hoveringInfo === null &&
                     <>
                         <circle x="-16" y="-16" r="16" strokeWidth="0" fill="transparent" style={{ cursor: dragging ? "pointer" : "default" }}></circle>
-                        <circle x="-18" y="-18" r="14" fill="none" strokeWidth="4" stroke="transparent" style={{ cursor: "pointer" }} onMouseDown={() => setDragging(true)}></circle>
+                        <circle x="-18" y="-18" r="14" fill="none" strokeWidth="4" stroke="transparent" style={{ cursor: "pointer" }} onMouseDown={() => setDragging(true), setRotating(true)}></circle>
                         <circle x="-14" y="-14" r="14" fill="none" strokeWidth="0.6" style={{ filter: "url(#glow)", cursor: "pointer" }}></circle>
                     </>
                 }
             </g>
 
-            <g className={`${rd3tClassName}-trans`} transform="scale(1, 1)">
+            <g className={`${rd3tClassName}-trans`} id={`${rd3tClassName}-trans`} transform={"scale(1, 1)", location.type === 'shelf_position' && "rotate(90)"} onMouseDown={() => setTranslating(true)}>
 
 
-                <svg x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400" style={{ filter: shouldGlow && `url(#glow-${rd3tClassName})`}}>
+                <svg x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400" style={{ filter: shouldGlow && `url(#glow-${rd3tClassName})` }}>
 
                     {location.type === 'cart_position' ?
                         LocationTypes['cartPosition'].svgPath

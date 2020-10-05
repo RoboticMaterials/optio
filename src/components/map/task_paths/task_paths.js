@@ -10,7 +10,6 @@ export default function TaskPaths(props) {
     const positions = useSelector(state => state.locationsReducer.positions)
     const dispatch = useDispatch()
 
-    // console.log('QQQQ Positions in task path', positions)
     const stateRef = useRef()
     stateRef.current = selectedTask
 
