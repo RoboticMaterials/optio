@@ -14,7 +14,7 @@ import { handleParseTaskBasedOnLoadUnload } from '../../../../methods/utils/obje
 const ObjectsPage = () => {
 
     const params = useParams()
-    const locationID = params.locationID
+    const stationID = params.stationID
     const tasks = useSelector(state => state.tasksReducer.tasks)
 
     const [parsedObjects, setParsedObjects] = useState({})
@@ -31,7 +31,7 @@ const ObjectsPage = () => {
      * Finds all asociated objects for the location
      */
     const handleAssociatedObjects = () => {
-        const parsedObjectsReturned = handleParseTaskBasedOnLoadUnload(tasks, locationID)
+        const parsedObjectsReturned = handleParseTaskBasedOnLoadUnload(tasks, stationID)
 
         setParsedObjects(parsedObjectsReturned)
     }

@@ -95,7 +95,7 @@ export default function locationsReducer(state = defaultState, action) {
 
     const filterLocations = (stations, positions) => {
         const unfilteredLocationsArr = [...Object.values(stations), ...Object.values(positions)]
-        const filterdLocationsArr = unfilteredLocationsArr.filter(loc => loc.schema == 'station' || (loc.schema == 'position' && loc.parent === null))
+        const filterdLocationsArr = unfilteredLocationsArr.filter(loc => loc.schema == 'station' || (loc.schema == 'position' && (loc.parent === null || !loc.parent)))
 
         let locations = {}
         filterdLocationsArr.forEach(location =>
