@@ -163,11 +163,6 @@ const DragEntityProto = (props) => {
                     }
                 })
         )
-
-        // Attempt to raise SVG element using d3. BROKEN -Kh
-        // mainElement.on('mouseover', () => {
-        //     mainElement.raise()
-        // })
     }
 
     return (null)
@@ -207,6 +202,7 @@ function Location(props) {
 
 
     if (location.type === 'shelf_position') color = '#fb7c4e'
+    if (location.type === 'charger_position') color = '#fbd34e'
 
     if (selectedTask === null) {
         if (selectedLocation !== null && !isSelected && selectedTask === null) {
@@ -238,6 +234,7 @@ function Location(props) {
 
         case 'cart_position':
         case 'shelf_position':
+        case 'charger_position':
             return (
                 <React.Fragment key={`frag-loc-${location._id}`}>
                     {location.parent !== null && location.parent !== undefined &&
@@ -257,25 +254,14 @@ function Location(props) {
                 </React.Fragment>
             )
 
-        // case 'device':
-        //     return (
-        //         <React.Fragment key={`frag-loc-${location._id}`}>
-        //             {/* {location.parent !== null &&
-        //                 <line x1={`${location.x}`} y1={`${location.y}`}
-        //                     x2={`${stations[location.parent].x}`} y2={`${stations[location.parent].y}`}
-        //                     stroke={color} strokeWidth="1.4" style={{ filter: "url(#glow)", opacity: '0.3' }} />
-        //             } */}
-        //             <DeviceLocations isSelected={isSelected} color={color} {...props} />
-        //             <DragEntityProto isSelected={isSelected} {...props}
-        //                 onRotate={rotation => dispatch(setLocationAttributes(location._id, { rotation }))}
-        //                 onTranslate={({ x, y }) => dispatch(setLocationAttributes(location._id, { x, y }))}
-        //                 onTranslateEnd={({ x, y }) => {
-        //                     pos = convertD3ToReal([x, y], props.d3)
-        //                     dispatch(setLocationAttributes(location._id, { pos_x: pos[0], pos_y: pos[1] }))
-        //                 }}
-        //             />
-        //         </React.Fragment>
-        //     )
+        case 'cart_entry_position':
+        case 'shelf_entry_position':
+        case 'charger_entry_position':
+            // TODO: Currently returning nothing for entry positions, eventually entry positions should be editable
+            return (
+                <>
+                </>
+            )
 
         default:
             throw "Nothing is returned from render because a location has a 'type' that does not match the available types. Make sure all locations have valid types"

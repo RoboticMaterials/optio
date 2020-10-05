@@ -61,6 +61,7 @@ const Position = (props) => {
 
     }
 
+    console.log('QQQQ Location Type', location.type)
 
     const shouldGlow = selectedTask !== null &&
         ((selectedTask.load.position == location._id && selectedTask.type == 'push') ||
@@ -154,7 +155,10 @@ const Position = (props) => {
                     {location.type === 'cart_position' ?
                         LocationTypes['cartPosition'].svgPath
                         :
-                        LocationTypes['shelfPosition'].svgPath
+                        location.type === 'charger_position' ?
+                            LocationTypes['chargePosition'].svgPath
+                            :
+                            LocationTypes['shelfPosition'].svgPath
                     }
 
 
