@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
 
-import * as style from './objects_page.style'
+import * as styled from './objects_page.style'
 
 // Import Components
 import ObjectColumns from './object_columns/object_columns'
@@ -40,10 +40,10 @@ const ObjectsPage = () => {
 
     return (
 
-        <>
+        <styled.PageContainer>
             <ObjectColumns parsedObjects={parsedObjects}/>
             <p>This'll Be the Objects Page</p>
-        </>
+        </styled.PageContainer>
     )
 }
 

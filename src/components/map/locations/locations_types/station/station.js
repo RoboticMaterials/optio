@@ -28,8 +28,6 @@ function Station(props) {
     const [hovering, setHovering] = useState(false)
     const [rotating, setRotating] = useState(false)
     const [translating, setTranslating] = useState(false)
-    const [dragging, setDragging] = useState(false)
-    const [disableDrag] = useState(() => setDragging(false))
 
 
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
@@ -47,9 +45,9 @@ function Station(props) {
     let params = useParams()
 
     useEffect(() => {
-        window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) }, disableDrag)
+        window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         return () => {
-            window.removeEventListener("mousup", disableDrag)
+            // window.removeEventListener("mousup")
         }
         
     })

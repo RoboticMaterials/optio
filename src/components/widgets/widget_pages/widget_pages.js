@@ -56,7 +56,7 @@ const WidgetPages = (props) => {
 
 
     return(
-        <styled.Container showWidgetPage={showWidgetPage} dashboardOpen={dashboardOpen} mobileMode={mobileMode}>
+        <styled.Container showWidgetPage={showWidgetPage} dashboardOpen={dashboardOpen} mobileMode={mobileMode} id={'widgetPage'}>
 
             <styled.WidgetPageContainer
                 showWidgetPage={showWidgetPage}

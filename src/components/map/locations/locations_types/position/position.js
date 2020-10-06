@@ -28,8 +28,6 @@ const Position = (props) => {
     } = props
 
     const [hovering, setHovering] = useState(false)
-    const [dragging, setDragging] = useState(false)
-    const [disableDrag] = useState(() => setDragging(false))
     const [rotating, setRotating] = useState(false)
     const [translating, setTranslating] = useState(false)
 
@@ -45,10 +43,10 @@ const Position = (props) => {
 
 
     useEffect(() => {
-        window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) }, disableDrag)
+        window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
 
-        return function cleanup() {
-            window.removeEventListener("mousup", disableDrag)
+        return () => {
+            // window.removeEventListener("mousup", disableDrag)
         }
     })
 
@@ -60,8 +58,6 @@ const Position = (props) => {
         return handleWidgetHoverCoord(location, rd3tClassName, d3)
 
     }
-
-    console.log('QQQQ Location Type', location.type)
 
     const shouldGlow = selectedTask !== null &&
         ((selectedTask.load.position == location._id && selectedTask.type == 'push') ||
@@ -138,10 +134,10 @@ const Position = (props) => {
 
 
             <g className={`${rd3tClassName}-rot`}>
-                {isSelected && (hovering || dragging) && hoveringInfo === null &&
+                {isSelected && (hovering || rotating) && hoveringInfo === null &&
                     <>
-                        <circle x="-16" y="-16" r="16" strokeWidth="0" fill="transparent" style={{ cursor: dragging ? "pointer" : "default" }}></circle>
-                        <circle x="-18" y="-18" r="14" fill="none" strokeWidth="4" stroke="transparent" style={{ cursor: "pointer" }} onMouseDown={() => setDragging(true), setRotating(true)}></circle>
+                        <circle x="-16" y="-16" r="16" strokeWidth="0" fill="transparent" style={{ cursor:  "pointer"  }}></circle>
+                        <circle x="-18" y="-18" r="14" fill="none" strokeWidth="4" stroke="transparent" style={{ cursor: "pointer" }} onMouseDown={() => setRotating(true)}></circle>
                         <circle x="-14" y="-14" r="14" fill="none" strokeWidth="0.6" style={{ filter: "url(#glow)", cursor: "pointer" }}></circle>
                     </>
                 }
