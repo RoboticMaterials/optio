@@ -123,6 +123,10 @@ const ObjectColumns = (props) => {
         })
     }
 
+    const handleObjectLinks = () => {
+        
+    }
+
     /**
      * This handles link points.
      * If the selected object is loading from the station, then its an end point (on the right side of the screen)

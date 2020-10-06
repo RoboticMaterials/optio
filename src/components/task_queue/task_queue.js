@@ -37,7 +37,17 @@ const TaskQueueMenu = (props) => {
         if (taskQueue) {
             Object.values(taskQueue).forEach((queueItem, index) => {
                 let queueItemClone = clone_object(queueItem);
-                let task = tasks ? tasks[queueItem.task_id] : {};
+                // Sees if task is a custom task 
+                let task = {}
+                if (queueItem.task_id == 'custom_task') {
+                    task = {
+                        name: 'Simple Move',
+                        mission_status: 'Austin, Please Add Mission Status',
+                    }
+                } else {
+                    task = tasks ? tasks[queueItem.task_id] : {}
+
+                }
 
                 // skip if associated task isn't found
                 if (task) {
@@ -92,7 +102,7 @@ const TaskQueueMenu = (props) => {
                     itemRenderer={itemRenderer}
                     length={taskQueue.length}
                     type='uniform'
-                    style={{width: '100%'}}
+                    style={{ width: '100%' }}
                 />
             </style.ListContainer>
         </style.Container>
