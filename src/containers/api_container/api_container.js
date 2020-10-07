@@ -86,7 +86,7 @@ const ApiContainer = (props) => {
         // loads essential info used on every page such as status and taskQueue
 
         const criticalDataInterval = setInterval(() => loadCriticalData(), 500);
-        // const mapDataInterval = setInterval(() => loadMapData(), 5000)
+        // const mapDataInterval = setInterval(() => loadMapData(), 1000)
         return () => {
             // clear intervals
             clearInterval(pageDataInterval);
@@ -421,9 +421,11 @@ const ApiContainer = (props) => {
 
                     onPutPosition(brokenPosition, brokenPosition._id)
 
-                } else if(!positions[position]) {
+                } 
+                
+                else if(!positions[position]) {
                     let brokenStation = deepCopy(station)
-                    console.log('QQQQ Stations with broken position', brokenStation)
+                    console.log('QQQQ Stations with deleted position', deepCopy(brokenStation), deepCopy(positions))
                     brokenStation.children.splice(ind, 1)
                     await onPutStation(brokenStation, brokenStation._id)
                 }

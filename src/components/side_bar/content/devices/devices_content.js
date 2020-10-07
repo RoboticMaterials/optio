@@ -141,7 +141,7 @@ const DevicesContent = () => {
             })
 
         } catch (error) {
-            console.log('QQQQ Device is undefined', devices)
+            console.log('Device is undefined', devices)
         }
 
     }

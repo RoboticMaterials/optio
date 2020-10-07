@@ -75,7 +75,6 @@ export const getTaskQueue = () => {
 // create
 // ******************************
 export const postTaskQueue = (queueItem) => {
-    console.log('QQQQ Q Item in actions', queueItem)
     return async dispatch => {
 
         function onStart() {

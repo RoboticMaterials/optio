@@ -101,7 +101,7 @@ function Station(props) {
             device = devices[location.device_id]
 
         } catch (error) {
-            console.log('QQQQ Device is undefined and I dont know why...')
+            console.log('Device is undefined and I dont know why...')
             return (<></>)
         }
 
@@ -130,7 +130,7 @@ function Station(props) {
             )
 
         } catch (error) {
-            console.log('QQQQ Catching error, please fix', error)
+            console.log('Catching error, please fix', error)
         }
     }
 

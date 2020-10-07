@@ -36,7 +36,7 @@ function locationTypeGraphic(type, isSelected) {
     switch (type) {
         case 'shelf_position':
             return (
-                <styled.LocationTypeGraphic isSelected={isSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                <styled.LocationTypeGraphic fill={LocationTypes['shelfPosition'].color} stroke={LocationTypes['shelfPosition'].color} isSelected={isSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
                     {LocationTypes['shelfPosition'].svgPath}
                 </styled.LocationTypeGraphic>
             )
@@ -50,7 +50,7 @@ function locationTypeGraphic(type, isSelected) {
 
         case 'cart_position':
             return (
-                <styled.LocationTypeGraphic isSelected={isSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                <styled.LocationTypeGraphic fill={LocationTypes['cartPosition'].color} stroke={LocationTypes['cartPosition'].color} isSelected={isSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
                     {LocationTypes['cartPosition'].svgPath}
                 </styled.LocationTypeGraphic>
 
@@ -86,6 +86,10 @@ export default function LocationContent(props) {
             case 'cart_position':
                 template = locationTemplates.cartPositionAttributes
                 break
+            case 'shelf_position':
+                template = locationTemplates.shelfPositionAttributes
+                break
+
         }
 
         return (
@@ -238,6 +242,7 @@ export default function LocationContent(props) {
                 <styled.DefaultTypesContainer>
                     <LocationTypeButton type='workstation' selected={selectedLocation.type}></LocationTypeButton>
                     <LocationTypeButton type='cart_position' selected={selectedLocation.type}></LocationTypeButton>
+                    <LocationTypeButton type='shelf_position' selected={selectedLocation.type}></LocationTypeButton>
                 </styled.DefaultTypesContainer>
                 {/* Will be used later for custom types (Lathe, Cut'it, etc.) */}
                 <styled.CustomTypesContainer>

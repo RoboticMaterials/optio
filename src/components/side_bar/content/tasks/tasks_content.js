@@ -339,7 +339,6 @@ export default function TaskContent(props) {
                     toggleEditing(true)
                 }}
                 executeTask={() => {
-                    console.log('QQQQ Executing this task', selectedTask)
                     onPostTaskQueue({task_id: selectedTask._id.$oid})
                 }}
                 onPlus={() => {

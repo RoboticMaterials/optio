@@ -97,6 +97,13 @@ export class MapView extends Component {
             this.bindZoomListener()
         }
 
+        // If the map has been changed, recalculate the geometry and bind the zoom
+        // listener to default to the correct translation
+        // if (!isEquivalent(prevProps.locations, this.props.locations)) {
+        //     this.calculateD3Geometry()
+        //     this.bindZoomListener()
+        // }
+
 
         // if a widget page is open, disable window event listeners so events work normally within the widget page
         const { widgetPage } = this.props.match.params    // contains url params from route.
@@ -291,8 +298,9 @@ export class MapView extends Component {
 
     }
 
-    /**                            x: 0,
-                            y: 0property, instead of going
+    /**                            
+     * x: 0,
+     * y: 0property, instead of going
      * through D3's scaling mechanism, which would have picked up both properties.
      *
      * @return {object} {translate: {x: number, y: number}, zoom: number}
@@ -512,7 +520,7 @@ export class MapView extends Component {
                     </svg>
 
                     {!!this.props.selectedTask &&
-                        <TaskStatistics d3={this.d3}/>
+                        <TaskStatistics d3={this.d3} />
                     }
 
                     {this.props.hoveringInfo !== null &&

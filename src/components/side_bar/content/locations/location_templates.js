@@ -12,3 +12,10 @@ export const cartPositionAttributes = {
     parent: null,
     new: true,
 }
+
+export const shelfPositionAttributes = {
+    schema: 'position',
+    type: 'shelf_position',
+    parent: null,
+    new: true,
+}

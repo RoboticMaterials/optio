@@ -92,6 +92,8 @@ const defaultState = {
 export default function locationsReducer(state = defaultState, action) {
     let index = ''
     let ID = ''
+    let stationsCopy = {}
+    let positionsCopy = {}
 
     const filterLocations = (stations, positions) => {
         const unfilteredLocationsArr = [...Object.values(stations), ...Object.values(positions)]
@@ -115,8 +117,8 @@ export default function locationsReducer(state = defaultState, action) {
         // let stationsCopy = deepCopy(stations)
         // let positionsCopy = deepCopy(state.positions)
 
-        let stationsCopy = stations
-        let positionsCopy = state.positions
+        stationsCopy = stations
+        positionsCopy = state.positions
 
 
         if (state.selectedLocation !== null) { // The updated station is the selected location
@@ -134,6 +136,16 @@ export default function locationsReducer(state = defaultState, action) {
                 locations: filterLocations(stationsCopy, positionsCopy),
                 pending: false
             }
+        }
+    }
+
+    const setStationsNew = (stations) => {
+
+        if(!isEquivalent(stations, state.locations)) {
+            stationsCopy = deepCopy(stations)
+            positionsCopy = state.positions
+
+            Object.keys()
         }
     }
 
