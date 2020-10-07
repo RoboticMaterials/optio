@@ -14,6 +14,8 @@ import ContentList from '../content_list/content_list'
 import * as taskActions from '../../../../redux/actions/tasks_actions'
 import * as dashboardActions from '../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../redux/actions/objects_actions'
+import { postTaskQueue } from '../../../../redux/actions/task_queue_actions'
+
 import { deepCopy } from '../../../../methods/utils/utils'
 
 
@@ -21,6 +23,8 @@ export default function TaskContent(props) {
 
     // Connect redux reducers
     const dispatch = useDispatch()
+    const onPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
+
     let tasks = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
@@ -333,6 +337,10 @@ export default function TaskContent(props) {
                     // If task button is clicked, start editing it
                     setSelectedTaskCopy(deepCopy(selectedTask))
                     toggleEditing(true)
+                }}
+                executeTask={() => {
+                    console.log('QQQQ Executing this task', selectedTask)
+                    onPostTaskQueue({task_id: selectedTask._id.$oid})
                 }}
                 onPlus={() => {
                     const newTask = {

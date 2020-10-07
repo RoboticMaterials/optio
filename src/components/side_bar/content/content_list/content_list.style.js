@@ -37,6 +37,8 @@ export const List = styled.ul`
 `
 
 export const ListItem = styled.div`
+    display: flex;
+    align-items: center;
     width: auto;
     height: 2.4rem;
 
@@ -88,5 +90,15 @@ export const ListItemTitle = styled.div`
         -webkit-text-fill-color: transparent;
         -webkit-background-clip: text;
         display:block;
+    }
+`
+
+export const ListItemIcon = styled.i`
+    margin-left: 1rem;
+    font-size: 1.25rem;
+    color: lightgreen;
+
+    &:hover {
+        cursor: pointer;
     }
 `

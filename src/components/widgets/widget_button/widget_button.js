@@ -26,7 +26,6 @@ const WidgetButton = (props) => {
             onClick={() => {
                 // If the button is for cart, then submit simple move task to task q
                 if (props.type === 'cart') {
-                    console.log('QQQQ Cart Pushed')
                     onPostTaskQueue({
                         task_id: 'custom_task',
                         custom_task: {
