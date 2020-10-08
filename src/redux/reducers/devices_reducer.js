@@ -147,7 +147,7 @@ const devicesReducer = (state = defaultState, action) => {
 
         // ======================================== //
         //                                          //
-        //              Put Devices              //
+        //              Put Devices                 //
         //                                          //
         // ======================================== //
         case PUT_DEVICES:

@@ -298,6 +298,7 @@ const ApiContainer = (props) => {
         // const skills = await getSkills(this.skillsApi);
         const objects = await onGetObjects();
         const locations = await onGetLocations();
+        // const positions = await onGetP
         const dashboards = await onGetDashboards();
         const sounds = await onGetSounds();
         // const skillTemplates = this.props.getSkillTemplates(this.skillTemplatesApi);
