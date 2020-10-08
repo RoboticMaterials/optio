@@ -99,10 +99,25 @@ export class MapView extends Component {
 
         // If the map has been changed, recalculate the geometry and bind the zoom
         // listener to default to the correct translation
-        // if (!isEquivalent(prevProps.locations, this.props.locations)) {
-        //     this.calculateD3Geometry()
-        //     this.bindZoomListener()
-        // }
+        if (!isEquivalent(prevProps.locations, this.props.locations)) {
+            let x, y
+            let { stations, positions, devices } = this.props
+            //// Apply the event translation to each station
+            Object.values(stations).forEach(station => {
+                [x, y] = convertRealToD3([station.pos_x, station.pos_y], this.d3)
+                Object.assign(station, { x, y })
+                stations[station._id] = station
+            })
+            // this.props.onUpdateStations(stations) // Bulk Update
+
+            //// Apply the event translation to each position
+            Object.values(positions).forEach(position => {
+                [x, y] = convertRealToD3([position.pos_x, position.pos_y], this.d3)
+                Object.assign(position, { x, y })
+                positions[position._id] = position
+            })
+            this.props.onUpdatePositions(positions) // Bulk Update
+        }
 
 
         // if a widget page is open, disable window event listeners so events work normally within the widget page
