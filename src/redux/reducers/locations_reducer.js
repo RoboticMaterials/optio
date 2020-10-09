@@ -92,6 +92,14 @@ const defaultState = {
 export default function locationsReducer(state = defaultState, action) {
     let index = ''
     let ID = ''
+    let stationsCopy = {}
+    let positionsCopy = {}
+
+    let oldStations = {}
+    let oldPositions = {}
+
+    let newStations = {}
+    let newPositions = {}
 
     const filterLocations = (stations, positions) => {
         const unfilteredLocationsArr = [...Object.values(stations), ...Object.values(positions)]
@@ -115,31 +123,54 @@ export default function locationsReducer(state = defaultState, action) {
         // let stationsCopy = deepCopy(stations)
         // let positionsCopy = deepCopy(state.positions)
 
-        let stationsCopy = stations
-        let positionsCopy = state.positions
+        oldStations = state.stations
+        newStations = stations
+
+        positionsCopy = state.positions
+
+        Object.values(oldStations).forEach(oldStation => {
+            // If the station exists in the backend and frontend, take the new stations, but assign local x and y
+            if (oldStation._id in newStations) {
+                Object.assign(newStations[oldStation._id], {x: oldStation.x, y: oldStation.y})
+            } else { // If the station is not in the backend, it is either deleted or new
+                if (oldStation.new == true) { // If new, add it to the pulled stations
+                    newStations[oldStation._id] = oldStation
+                }
+            }
+        })
 
 
-        if (state.selectedLocation !== null) { // The updated station is the selected location
+        if (state.selectedLocation !== null && state.selectedLocation.schema == 'station') { // The updated station is the selected location
             return {
                 ...state,
-                stations: stationsCopy,
-                locations: filterLocations(stationsCopy, positionsCopy),
-                selectedLocation: stationsCopy[state.selectedLocation._id],
+                stations: newStations,
+                locations: filterLocations(newStations, positionsCopy),
+                selectedLocation: newStations[state.selectedLocation._id],
                 pending: false
             }
         } else {
             return {
                 ...state,
-                stations: stationsCopy,
-                locations: filterLocations(stationsCopy, positionsCopy),
+                stations: newStations,
+                locations: filterLocations(newStations, positionsCopy),
                 pending: false
             }
         }
     }
 
+    const setStationsNew = (stations) => {
+
+        if(!isEquivalent(stations, state.locations)) {
+            stationsCopy = deepCopy(stations)
+            positionsCopy = state.positions
+
+            Object.keys()
+        }
+    }
+
     const setStation = (station) => {
-        let stationsCopy = deepCopy(state.stations)
-        let positionsCopy = deepCopy(state.positions)
+        stationsCopy = deepCopy(state.stations)
+        positionsCopy = deepCopy(state.positions)
 
         stationsCopy[station._id] = deepCopy(station)
 
@@ -162,8 +193,8 @@ export default function locationsReducer(state = defaultState, action) {
     }
 
     const removeStation = (id) => {
-        let stationsCopy = deepCopy(state.stations)
-        let positionsCopy = deepCopy(state.positions)
+        stationsCopy = deepCopy(state.stations)
+        positionsCopy = deepCopy(state.positions)
 
         delete stationsCopy[id]
 
@@ -186,8 +217,8 @@ export default function locationsReducer(state = defaultState, action) {
     }
 
     const setStationAttributes = (id, attr) => {
-        let stationsCopy = deepCopy(state.stations)
-        let positionsCopy = deepCopy(state.positions)
+        stationsCopy = deepCopy(state.stations)
+        positionsCopy = deepCopy(state.positions)
 
         if (!(id in stationsCopy)) { return state }
 
@@ -222,18 +253,17 @@ export default function locationsReducer(state = defaultState, action) {
         // let stationsCopy = deepCopy(state.stations)
         // let positionsCopy = deepCopy(positions)
 
-        let stationsCopy = state.stations
-        let positionsCopy = positions
+        oldPositions = state.positions
 
-        // const positionsStateCopy = deepCopy(state.positions)
-        let positionsStateCopy = state.positions
+        stationsCopy = state.stations
+        newPositions = positions
 
         // IMPORTANT: Removes 'deleted' positions from the reducer state. 
         // These 'deleted' positions have been deleted on the front end, but since deleting a position on the backend causes a bug, the key 'change_key'
         // is added to the position and set to 'delete' and the backend will delete it when it needs to be
-        Object.values(positionsCopy).map((position) => {
+        Object.values(newPositions).map((position) => {
             if (!!position.change_key && position.change_key === 'deleted') {
-                delete positionsCopy[position._id]
+                delete newPositions[position._id]
             }
         })
 
@@ -241,39 +271,48 @@ export default function locationsReducer(state = defaultState, action) {
         // The reason why this has to be done is that on page load, the X and Y coordinates for each postion are calulated but not added to the back end,
         // when a get call for positions is made for the backend, the calculated X and Y coordinates are deleted (since they dont exist on the backend). 
         // This takes the calculated X and Y coordinates already calculated in state and adds them to the incoming positions if the positions copy doesn match. They wouldnt match because the backend does not have X and Y coordinates
-        if (!isEquivalent(positionsCopy, positionsStateCopy)) {
+        // if (!isEquivalent(positionsCopy, positionsStateCopy)) {
 
-            Object.keys(positionsStateCopy).map((key, ind) => {
-                return positionsCopy[key] = {
-                    ...positionsCopy[key],
-                    x: positionsStateCopy[key].x,
-                    y: positionsStateCopy[key].y,
+        //     Object.keys(positionsStateCopy).map((key, ind) => {
+        //         return positionsCopy[key] = {
+        //             ...positionsCopy[key],
+        //             x: positionsStateCopy[key].x,
+        //             y: positionsStateCopy[key].y,
+        //         }
+        //     })
+        // }
+        Object.values(oldPositions).forEach(oldPosition => {
+            // If the position exists in frontend and backend, take the new position but assign the local x and y
+            if (oldPosition._id in newPositions) {
+                Object.assign(newPositions[oldPosition._id], {x: oldPosition.x, y: oldPosition.y})
+            } else { // If the position is not in the backend, it is either deleted or new. 
+                if (oldPosition.new == true) { // If new, add it to the pulled positions
+                    newPositions[oldPosition._id] = oldPosition
                 }
-            })
-        }
+            }
+        })
 
-        if (state.selectedLocation !== null) { // The updated position is the selected location
+        if (state.selectedLocation !== null && state.selectedLocation.schema == 'position') { // The updated position is the selected location
             return {
                 ...state,
-                positions: positionsCopy,
-                locations: filterLocations(stationsCopy, positionsCopy),
-                // selectedLocation: deepCopy(positionsCopy[state.selectedLocation._id]),
-                selectedLocation: stationsCopy[state.selectedLocation._id],
+                positions: newPositions,
+                locations: filterLocations(stationsCopy, newPositions),
+                selectedLocation: newPositions[state.selectedLocation._id],
                 pending: false
             }
         } else {
             return {
                 ...state,
-                positions: positionsCopy,
-                locations: filterLocations(stationsCopy, positionsCopy),
+                positions: newPositions,
+                locations: filterLocations(stationsCopy, newPositions),
                 pending: false
             }
         }
     }
 
     const setPosition = (position) => {
-        let stationsCopy = deepCopy(state.stations)
-        let positionsCopy = deepCopy(state.positions)
+        stationsCopy = deepCopy(state.stations)
+        positionsCopy = deepCopy(state.positions)
 
 
         positionsCopy[position._id] = deepCopy(position)
@@ -297,8 +336,8 @@ export default function locationsReducer(state = defaultState, action) {
     }
 
     const removePosition = (id) => {
-        let stationsCopy = deepCopy(state.stations)
-        let positionsCopy = deepCopy(state.positions)
+        stationsCopy = deepCopy(state.stations)
+        positionsCopy = deepCopy(state.positions)
 
         delete positionsCopy[id]
 
@@ -321,8 +360,8 @@ export default function locationsReducer(state = defaultState, action) {
     }
 
     const setPositionAttributes = (id, attr) => {
-        let stationsCopy = deepCopy(state.stations)
-        let positionsCopy = deepCopy(state.positions)
+        stationsCopy = deepCopy(state.stations)
+        positionsCopy = deepCopy(state.positions)
 
 
         if (!(id in positionsCopy)) { return state }
@@ -361,7 +400,6 @@ export default function locationsReducer(state = defaultState, action) {
             });
 
         case GET_STATIONS_SUCCESS:
-
             return setStations(action.payload.stations)
 
         case GET_STATIONS_FAILURE:

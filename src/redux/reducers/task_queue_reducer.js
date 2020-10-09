@@ -49,6 +49,9 @@ export default function taskQueueReducer(state = defaultState, action) {
 
     switch (action.type) {
 
+        /**
+         * HILs?
+         */
         case 'TASK_QUEUE_ITEM_CLICKED':
             return {
                 ...state,

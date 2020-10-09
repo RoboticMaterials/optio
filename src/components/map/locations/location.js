@@ -257,11 +257,14 @@ function Location(props) {
         case 'cart_entry_position':
         case 'shelf_entry_position':
         case 'charger_entry_position':
+        case 'other':
             // TODO: Currently returning nothing for entry positions, eventually entry positions should be editable
             return (
                 <>
                 </>
             )
+
+        
 
         default:
             throw "Nothing is returned from render because a location has a 'type' that does not match the available types. Make sure all locations have valid types"

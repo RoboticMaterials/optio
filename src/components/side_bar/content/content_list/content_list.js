@@ -9,10 +9,14 @@ import { deepCopy } from '../../../../methods/utils/utils'
 
 
 export default function ContentList(props) {
+
+    const {
+        executeTask
+    } = props
     return (
         <styled.Container>
 
-            <ContentHeader content={props.schema} onClickAdd={props.onPlus}/>
+            <ContentHeader content={props.schema} onClickAdd={props.onPlus} />
 
             <styled.List>
                 {props.elements.map((element, ind) =>
@@ -20,11 +24,20 @@ export default function ContentList(props) {
                         key={`li-${ind}`}
                         onMouseEnter={() => props.onMouseEnter(element)}
                         onMouseLeave={() => props.onMouseLeave(element)}
-                        onClick={() => props.onClick(element)}
                     >
                         <styled.ListItemRect>
-                            <styled.ListItemTitle schema={props.schema}>{element.name}</styled.ListItemTitle>
+                            <styled.ListItemTitle schema={props.schema} onClick={() => props.onClick(element)}>{element.name}</styled.ListItemTitle>
                         </styled.ListItemRect>
+
+                        {props.schema === 'tasks' &&
+                            <styled.ListItemIcon
+                                className='fas fa-play'
+                                onClick={() => {
+                                    executeTask()
+                                }}
+                            />
+                        }
+
                     </styled.ListItem>
                 )}
             </styled.List>

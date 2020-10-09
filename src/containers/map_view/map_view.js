@@ -97,6 +97,13 @@ export class MapView extends Component {
             this.bindZoomListener()
         }
 
+        // If the map has been changed, recalculate the geometry and bind the zoom
+        // listener to default to the correct translation
+        // if (!isEquivalent(prevProps.locations, this.props.locations)) {
+        //     this.calculateD3Geometry()
+        //     this.bindZoomListener()
+        // }
+
 
         // if a widget page is open, disable window event listeners so events work normally within the widget page
         const { widgetPage } = this.props.match.params    // contains url params from route.
@@ -291,8 +298,9 @@ export class MapView extends Component {
 
     }
 
-    /**                            x: 0,
-                            y: 0property, instead of going
+    /**                            
+     * x: 0,
+     * y: 0property, instead of going
      * through D3's scaling mechanism, which would have picked up both properties.
      *
      * @return {object} {translate: {x: number, y: number}, zoom: number}
@@ -392,6 +400,7 @@ export class MapView extends Component {
         if (this.props.currentMap == null) { return (<></>) }
         const { translate, scale } = this.d3;
 
+        // console.log(this.props.stations)
         // console.log(this.props.locations)
         // console.log(this.props.locations)
         // console.log(this.props.selectedLocation)
@@ -469,7 +478,7 @@ export class MapView extends Component {
                                 <>{
                                     //// Render children positions if appropriate
                                     Object.values(positions)
-                                        .filter(position => !!this.props.selectedTask || (this.props.selectedLocation !== null && position.parent == this.props.selectedLocation._id))
+                                        .filter(position => !!this.props.selectedTask || (!!this.props.selectedLocation && position.parent == this.props.selectedLocation._id))
                                         // This filter turns on when there's a selected task that has a load position but no unload position
                                         // If that's the case (happens when a new task exist and the load location has been selected) then filter out the other type of positions
                                         // IE, if the load positions type is a cart position, then only cart positions should be selectable
@@ -512,7 +521,7 @@ export class MapView extends Component {
                     </svg>
 
                     {!!this.props.selectedTask &&
-                        <TaskStatistics d3={this.d3}/>
+                        <TaskStatistics d3={this.d3} />
                     }
 
                     {this.props.hoveringInfo !== null &&

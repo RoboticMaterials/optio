@@ -36,7 +36,7 @@ function locationTypeGraphic(type, isSelected) {
     switch (type) {
         case 'shelf_position':
             return (
-                <styled.LocationTypeGraphic isSelected={isSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                <styled.LocationTypeGraphic fill={LocationTypes['shelfPosition'].color} stroke={LocationTypes['shelfPosition'].color} isSelected={isSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
                     {LocationTypes['shelfPosition'].svgPath}
                 </styled.LocationTypeGraphic>
             )
@@ -50,7 +50,7 @@ function locationTypeGraphic(type, isSelected) {
 
         case 'cart_position':
             return (
-                <styled.LocationTypeGraphic isSelected={isSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                <styled.LocationTypeGraphic fill={LocationTypes['cartPosition'].color} stroke={LocationTypes['cartPosition'].color} isSelected={isSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
                     {LocationTypes['cartPosition'].svgPath}
                 </styled.LocationTypeGraphic>
 
@@ -86,6 +86,10 @@ export default function LocationContent(props) {
             case 'cart_position':
                 template = locationTemplates.cartPositionAttributes
                 break
+            case 'shelf_position':
+                template = locationTemplates.shelfPositionAttributes
+                break
+
         }
 
         return (
@@ -186,8 +190,8 @@ export default function LocationContent(props) {
         }
 
         dispatch(locationActions.deselectLocation())    // Deselect
-        onSetSelectedLocationCopy(null)                   // Reset the local copy to null
-        onSetSelectedLocationChildrenCopy(null)           // Reset the local children copy to null
+        onSetSelectedLocationCopy(null)                 // Reset the local copy to null
+        onSetSelectedLocationChildrenCopy(null)         // Reset the local children copy to null
         toggleEditing(false)                            // No longer editing
 
     }
@@ -238,6 +242,7 @@ export default function LocationContent(props) {
                 <styled.DefaultTypesContainer>
                     <LocationTypeButton type='workstation' selected={selectedLocation.type}></LocationTypeButton>
                     <LocationTypeButton type='cart_position' selected={selectedLocation.type}></LocationTypeButton>
+                    <LocationTypeButton type='shelf_position' selected={selectedLocation.type}></LocationTypeButton>
                 </styled.DefaultTypesContainer>
                 {/* Will be used later for custom types (Lathe, Cut'it, etc.) */}
                 <styled.CustomTypesContainer>
@@ -247,14 +252,30 @@ export default function LocationContent(props) {
                     <LocationTypeButton></LocationTypeButton> */}
                 </styled.CustomTypesContainer>
 
-                {selectedLocation.schema == 'station' ?
+                {selectedLocation.schema === 'station' ?
                     <>
                         <Positions />
                         <Shelves />
                     </>
                     :
-                    <div style={{ height: "100%" }}></div>
+                    selectedLocation.type === 'cart_position' ?
+                        <>
+                            <Button
+                                schema={'locations'}
+                                secondary
+                                onClick={() => {
+                                    alert('Sick, you found this button, thats great! I just dont have it set up yet... Bummer really... Ill get to it on Moday, dont worry')
+                                }}
+                            >
+                                Use Cart Location
+                            </Button>
+                            <div style={{ height: "100%" }}></div>
+                        </>
+
+                        :
+                        <div style={{ height: "100%" }}></div>
                 }
+
                 {/* Delete Location Button */}
                 <Button schema={'locations'} secondary onClick={onDelete}>Delete</Button>
             </styled.ContentContainer>
@@ -272,7 +293,7 @@ export default function LocationContent(props) {
                 title={'Locations'}
                 schema={'locations'}
                 // Filters out devices from being displayed in locations
-                elements={Object.values(locations).filter(location => location.type !== 'device')}
+                elements={Object.values(locations).filter(location => location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other')}
                 // elements={Object.values(locations)}
                 onMouseEnter={(location) => dispatch(locationActions.selectLocation(location._id))}
                 onMouseLeave={(location) => dispatch(locationActions.deselectLocation())}

@@ -35,12 +35,16 @@ const TaskQueueListItem = (props) => {
 		dispatch(getStatus(props.statusApi))
     }
 
+    /**
+     * This is probably being used to display HILs
+     */
     const handleTaskItemClicked = () => {
+        console.log('QQQQ Task Item Clicked', id)
         dispatch({type: 'TASK_QUEUE_ITEM_CLICKED', payload: id})
     }
     
 	return (
-		<div>
+		<style.ItemDiv>
 			<BasicListItem
                 {...rest}
                 onClick={handleTaskItemClicked}
@@ -63,7 +67,7 @@ const TaskQueueListItem = (props) => {
 			{/*CANT USE MARGIN FOR SPACING ITEMS IN REACT LIST - IT CAUSES A WEIRD FLICKERING ISSUE AND PREVENTS REACT-LIST METHODS FROM WORKING CORRECTLY*/}
 			{/*USER EMPTY DIV INSTEAD FOR NOW*/}
 			<style.Spacer/>
-		</div>
+		</style.ItemDiv>
 	)
 }
 

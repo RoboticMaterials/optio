@@ -86,7 +86,7 @@ const ApiContainer = (props) => {
         // loads essential info used on every page such as status and taskQueue
 
         const criticalDataInterval = setInterval(() => loadCriticalData(), 500);
-        // const mapDataInterval = setInterval(() => loadMapData(), 5000)
+        // const mapDataInterval = setInterval(() => loadMapData(), 1000)
         return () => {
             // clear intervals
             clearInterval(pageDataInterval);
@@ -293,15 +293,7 @@ const ApiContainer = (props) => {
       tasks, skills, objects, locations, dashboards, sounds
     */
     const loadMapData = async () => {
-        const maps = await onGetMaps()
-        const tasks = await onGetTasks();
-        // const skills = await getSkills(this.skillsApi);
-        const objects = await onGetObjects();
         const locations = await onGetLocations();
-        const dashboards = await onGetDashboards();
-        const sounds = await onGetSounds();
-        // const skillTemplates = this.props.getSkillTemplates(this.skillTemplatesApi);
-
     }
 
     /*
@@ -339,7 +331,7 @@ const ApiContainer = (props) => {
      *  */
     const handleTasksWithBrokenPositions = async (tasks, locations) => {
 
-        if(tasks === undefined || locations === undefined) return
+        if (tasks === undefined || locations === undefined) return
 
         const stations = locations.stations
         const positions = locations.positions
@@ -382,7 +374,7 @@ const ApiContainer = (props) => {
      */
     const handlePositionsWithBrokenParents = async (locations) => {
 
-        if(locations === undefined) return
+        if (locations === undefined) return
 
         const stations = locations.stations
         const positions = locations.positions
@@ -404,16 +396,16 @@ const ApiContainer = (props) => {
      * @param {*} locations 
      */
     const handleStationsWithBrokenChildren = (locations) => {
-        
-        if(locations === undefined) return
-        
+
+        if (locations === undefined) return
+
         const stations = locations.stations
         const positions = locations.positions
 
         Object.values(stations).map((station) => {
 
             station.children.map(async (position, ind) => {
-                if(!!positions[position] && positions[position].parent === null){
+                if (!!positions[position] && positions[position].parent === null) {
 
                     const brokenPosition = positions[position]
                     console.log('QQQQ Stations with broken position', brokenPosition)
@@ -421,9 +413,11 @@ const ApiContainer = (props) => {
 
                     onPutPosition(brokenPosition, brokenPosition._id)
 
-                } else if(!positions[position]) {
+                }
+
+                else if (!positions[position]) {
                     let brokenStation = deepCopy(station)
-                    console.log('QQQQ Stations with broken position', brokenStation)
+                    console.log('QQQQ Stations with deleted position', deepCopy(brokenStation), deepCopy(positions))
                     brokenStation.children.splice(ind, 1)
                     await onPutStation(brokenStation, brokenStation._id)
                 }
@@ -439,8 +433,8 @@ const ApiContainer = (props) => {
      * @param {*} locations 
      */
     const handleDevicesWithBrokenStations = async (devices, locations) => {
-        
-        if(devices === undefined || locations === undefined) return
+
+        if (devices === undefined || locations === undefined) return
 
         const stations = locations.stations
 
@@ -462,7 +456,7 @@ const ApiContainer = (props) => {
      */
     const handleStationsWithBrokenDevices = (devices, locations) => {
 
-        if(devices === undefined || locations === undefined) return
+        if (devices === undefined || locations === undefined) return
 
         const stations = locations.stations
 
@@ -486,18 +480,18 @@ const ApiContainer = (props) => {
      */
     const handleDashboardsWithBrokenStations = (dashboards, locations) => {
 
-        if(dashboards === undefined || locations === undefined) return
+        if (dashboards === undefined || locations === undefined) return
 
         const stations = locations.stations
 
         Object.values(dashboards).map((dashboard) => {
-            if(!!dashboard.location && !stations[dashboard.location]){
+            if (!!dashboard.location && !stations[dashboard.location]) {
                 console.log('QQQQ dashboard belongs to a station that does not exist', dashboard)
                 onDeleteDashboard(dashboard._id.$oid)
             }
         })
 
-        
+
     }
 
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

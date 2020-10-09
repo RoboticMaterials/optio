@@ -42,3 +42,9 @@ export const Spacer = styled.div`
 	height: 0.4rem;
 	width: 100%;
 `
+
+export const ItemDiv = styled.div`
+    &:hover{
+        cursor: pointer;
+    }
+`
