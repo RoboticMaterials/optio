@@ -48,6 +48,7 @@ const devicesReducer = (state = defaultState, action) => {
         // This function takes care of that and adds new X and Y coordinates on every get call. state.d3 is added in mapview
         if (!isEquivalent(devices, state.devices)) {
             devicesClone = deepCopy(devices)
+            // devicesClone = devices
 
             Object.keys(devicesClone).map((key, ind) => {
                 const updatedDevice = devices[key]
@@ -214,6 +215,7 @@ const devicesReducer = (state = defaultState, action) => {
             return {
                 ...state,
                 devices: deepCopy(action.payload.devices),
+                // devices: action.payload.devices,
                 d3: action.payload.d3,
             }
 

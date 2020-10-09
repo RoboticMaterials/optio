@@ -190,8 +190,8 @@ export default function LocationContent(props) {
         }
 
         dispatch(locationActions.deselectLocation())    // Deselect
-        onSetSelectedLocationCopy(null)                   // Reset the local copy to null
-        onSetSelectedLocationChildrenCopy(null)           // Reset the local children copy to null
+        onSetSelectedLocationCopy(null)                 // Reset the local copy to null
+        onSetSelectedLocationChildrenCopy(null)         // Reset the local children copy to null
         toggleEditing(false)                            // No longer editing
 
     }
@@ -252,14 +252,30 @@ export default function LocationContent(props) {
                     <LocationTypeButton></LocationTypeButton> */}
                 </styled.CustomTypesContainer>
 
-                {selectedLocation.schema == 'station' ?
+                {selectedLocation.schema === 'station' ?
                     <>
                         <Positions />
                         <Shelves />
                     </>
                     :
-                    <div style={{ height: "100%" }}></div>
+                    selectedLocation.type === 'cart_position' ?
+                        <>
+                            <Button
+                                schema={'locations'}
+                                secondary
+                                onClick={() => {
+                                    alert('Sick, you found this button, thats great! I just dont have it set up yet... Bummer really... Ill get to it on Moday, dont worry')
+                                }}
+                            >
+                                Use Cart Location
+                            </Button>
+                            <div style={{ height: "100%" }}></div>
+                        </>
+
+                        :
+                        <div style={{ height: "100%" }}></div>
                 }
+
                 {/* Delete Location Button */}
                 <Button schema={'locations'} secondary onClick={onDelete}>Delete</Button>
             </styled.ContentContainer>

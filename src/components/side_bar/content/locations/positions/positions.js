@@ -110,7 +110,7 @@ export default function Positions() {
                         }
                         }
                     >
-                        <styled.LocationTypeGraphic id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                        <styled.LocationTypeGraphic fill={LocationTypes['cartPosition'].color} stroke={LocationTypes['cartPosition'].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
                             {LocationTypes['cartPosition'].svgPath}
                         </styled.LocationTypeGraphic>
 
