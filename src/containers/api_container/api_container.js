@@ -293,14 +293,7 @@ const ApiContainer = (props) => {
       tasks, skills, objects, locations, dashboards, sounds
     */
     const loadMapData = async () => {
-        const maps = await onGetMaps()
-        const tasks = await onGetTasks();
-
-        const objects = await onGetObjects();
         const locations = await onGetLocations();
-
-        const dashboards = await onGetDashboards();
-        const sounds = await onGetSounds();
     }
 
     /*
