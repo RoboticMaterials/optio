@@ -39,7 +39,6 @@ const DragEntityProto = (props) => {
     let originalTranslation = []    // Original coordinates of location
     let deltaTranslation = []       // Change in coordinates (over course of the drag event)
 
-
     /** Callback on continuous rotate event */
     const rotate = (event, element) => {
 
@@ -52,9 +51,21 @@ const DragEntityProto = (props) => {
         // is layered. 
         let angle
         if (event.sourceEvent.type == "mousemove") {    // Computer
-            angle = Math.atan2(event.sourceEvent.clientY - props.location.y, event.sourceEvent.clientX - props.location.x) * 180 / Math.PI
+
+            // For some reason, position rotation is mapped backwards
+            if (props.location.schema === 'position') {
+                angle = - Math.atan2(event.sourceEvent.clientY - props.location.y, event.sourceEvent.clientX - props.location.x) * 180 / Math.PI
+            }
+            else {
+                angle = Math.atan2(event.sourceEvent.clientY - props.location.y, event.sourceEvent.clientX - props.location.x) * 180 / Math.PI
+            }
         } else if (event.sourceEvent.type == "touchmove") { // Tablet
-            angle = Math.atan2(event.sourceEvent.touches[0].clientY - props.location.y, event.sourceEvent.touches[0].clientX - props.location.x) * 180 / Math.PI
+            if (props.location.schema === 'position') {
+                angle = - Math.atan2(event.sourceEvent.touches[0].clientY - props.location.y, event.sourceEvent.touches[0].clientX - props.location.x) * 180 / Math.PI
+            }
+            else {
+                angle = Math.atan2(event.sourceEvent.touches[0].clientY - props.location.y, event.sourceEvent.touches[0].clientX - props.location.x) * 180 / Math.PI
+            }
         }
 
         // Keep track of BOTH the initial rotation of the position, and the start angle of the drag
@@ -264,7 +275,7 @@ function Location(props) {
                 </>
             )
 
-        
+
 
         default:
             throw "Nothing is returned from render because a location has a 'type' that does not match the available types. Make sure all locations have valid types"

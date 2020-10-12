@@ -155,10 +155,10 @@ export const widgetLoaded = (bool) => {
  */
 export const sideBarBack = (props) => {
     // Does a quick check to make sure there is a location, if not then just return an arbitrary dispatch
-    // Redux requires a dispatch here (I think...) so I just use setselectedDevice since it wont have nay side effects (again... I think...)
+    // Redux requires a dispatch here (I think...) so I just use setselectedDevice since it wont have any side effects (again... I think...)
     if (props.selectedLocation === null || props.selectedLocation.schema === null) {
         return async dispatch => {
-            dispatch(setSelectedDevice(null))
+            dispatch(deselectLocation()) 
             dispatch(setSelectedDevice(null))
         }
     }
