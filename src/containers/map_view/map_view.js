@@ -21,6 +21,10 @@ import * as positionActions from '../../redux/actions/positions_actions'
 import * as locationActions from '../../redux/actions/locations_actions'
 import * as deviceActions from '../../redux/actions/devices_actions'
 
+import { hoverStationInfo } from '../../redux/actions/stations_actions'
+import { deselectLocation, widgetLoaded } from '../../redux/actions/locations_actions'
+
+
 // Import Components
 import TaskPaths from '../../components/map/task_paths/task_paths.js'
 import Location from '../../components/map/locations/location.js'
@@ -202,6 +206,10 @@ export class MapView extends Component {
                 .scaleExtent([-100, 100])
                 // .scaleExtent([scaleExtent.min, scaleExtent.max])
                 .on('zoom', () => {
+
+                    // Disables the abolity to hoover over location on mouse drag
+                    this.props.onHoverStationInfo(null)
+                    this.props.onDeselectLocation()
 
                     //// Saving the last event is usefull for saving d3 state when draggable is toggled (when moving locations)
                     this.lastEvent = d3.event
@@ -414,7 +422,28 @@ export class MapView extends Component {
 
 
                     {/* SVG element is the container for the whole view. This allows the view to be moved as one */}
-                    <svg className={this.rd3tSvgClassName} width="100%" height="100%"> {/* Clears any unfinished drag events (ex: moving location) */}
+                    <svg
+                        className={this.rd3tSvgClassName}
+                        width="100%"
+                        height="100%"
+
+                        // These 2 mouse events are used to remove the issue when moving the mouse too fast over a location causing a widget to load, but not fast enough for the onmouselave to execute
+                        onMouseEnter={() => {
+                            if (!!this.props.widgetLoaded) {
+                                // console.log('QQQQ This one ')
+                                this.props.onHoverStationInfo(null)
+                                this.props.onDeselectLocation()
+                            }
+                        }}
+                        onMouseOver={() => {
+                            if(!!this.props.widgetLoaded){
+                                // console.log('QQQQ This one two')
+                                this.props.onHoverStationInfo(null)
+                                this.props.onDeselectLocation()
+                            }
+                        }}
+
+                    > {/* Clears any unfinished drag events (ex: moving location) */}
                         <styled.MapGroup
                             className={this.rd3tMapClassName}
 
@@ -558,6 +587,7 @@ const mapStateToProps = function (state) {
         selectedTask: state.tasksReducer.selectedTask,
 
         hoveringInfo: state.locationsReducer.hoverStationInfo,
+        widgetLoaded: state.locationsReducer.widgetLoaded,
     };
 }
 
@@ -573,6 +603,12 @@ const mapDispatchToProps = dispatch => {
         onSetLocationAttributes: (id, attr) => dispatch(locationActions.setLocationAttributes(id, attr)),
         onSetPositionAttributes: (id, attr) => dispatch(positionActions.setPositionAttributes(id, attr)),
         onRemovePosition: (id) => dispatch(positionActions.removePosition(id)),
+
+        onDeselectLocation: () => dispatch(deselectLocation()),
+        onHoverStationInfo: (info) => dispatch(hoverStationInfo(info)),
+        onWidgetLoaded: (bool) => dispatch(widgetLoaded(bool)),
+
+
     };
 }
 

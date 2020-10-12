@@ -11,7 +11,7 @@ import useWindowSize from '../../hooks/useWindowSize'
 
 // Import Actions
 import { hoverStationInfo } from '../../redux/actions/stations_actions'
-import { deselectLocation } from '../../redux/actions/locations_actions'
+import { deselectLocation, widgetLoaded } from '../../redux/actions/locations_actions'
 
 // Import Utils
 import { DeviceItemTypes } from '../../methods/utils/device_utils'
@@ -41,10 +41,27 @@ const Widgets = (props) => {
 
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
+    const onWidgetLoaded = (bool) => dispatch(widgetLoaded(bool))
     const onDeselectLocation = () => dispatch(deselectLocation())
+
+    const [hoverX, setHoverX] = useState(null)
+    const [hoverY, setHoverY] = useState(null)
 
     // Location ID passed down through workstations via redux
     const stationID = hoveringInfo.id
+
+    // This tells redux that the widget has mounted. Used in map view to handle if widget is still open but shoulnt be
+    // This happens when moving the mouse too fast over a location causing a widget to load, but not fast enough for the onmouselave to execute
+    useEffect(() => {
+
+        // setTimeout(() => onWidgetLoaded(true), 100)
+        onWidgetLoaded(true)
+        return () => {
+            dispatchHoverStationInfo(null)
+            onDeselectLocation()
+            onWidgetLoaded(false)
+        }
+    }, [])
 
     // If widgetPage exists in URL params, then the widget pages are open
     const HandleWidgetPageOpen = () => {
@@ -196,7 +213,6 @@ const Widgets = (props) => {
 
     const handleWidgetPosition = (coord) => {
 
-
         if (element === null) {
             if (coord === 'x') {
                 return hoveringInfo.xPosition + 'px'
@@ -242,7 +258,6 @@ const Widgets = (props) => {
                     if (!widgetPage) {
                         dispatchHoverStationInfo(null)
                         onDeselectLocation()
-
                     }
                 }}
 
@@ -251,8 +266,9 @@ const Widgets = (props) => {
                 yPosition={handleWidgetPosition('y')}
                 scale={hoveringInfo.scale}
                 widgetPage={widgetPage}
-                // TODO: Was going to use this to hide element while its null so you dont see that 'snapping'
-                hide={!widgetPage && element === null ? true : false}
+
+                // This sets the opacity to 0 if the element has not been mounted yet. Eliminates the 'snapping'
+                style={{opacity: !widgetPage && element === null ? '0' : '1'}}
             >
 
                 {!widgetPage &&
@@ -261,6 +277,7 @@ const Widgets = (props) => {
                         onMouseEnter={() => {
                             dispatchHoverStationInfo(hoveringInfo)
                         }}
+                        
                     />
                 }
 

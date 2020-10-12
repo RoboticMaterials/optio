@@ -102,7 +102,6 @@ export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
 
     // Sets real scale to be used with the widget hover area
     widgetInfo.realScale = d3.scale
-
     // If schema is a station, else it's a position
     if (location.schema === 'station') {
         // If the type is a device
@@ -132,7 +131,7 @@ export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
             else if (d3.scale > 1.3) {
                 widgetInfo.scale = 1.3
                 widgetInfo.yPosition = location.y + bBox.height / 2 - 86
-                widgetInfo.xPosition = location.x + 15
+                widgetInfo.xPosition = location.x + 30
 
             }
         }

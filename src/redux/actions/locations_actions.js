@@ -6,6 +6,7 @@ import {
     SET_SELECTED_LOCATION_COPY,
     SET_SELECTED_LOCATION_CHILDREN_COPY,
     DESELECT_LOCATION,
+    WIDGET_LOADED,
 } from '../types/locations_types'
 
 import * as stationActions from './stations_actions.js'
@@ -134,6 +135,11 @@ export const setSelectedLocationChildrenCopy = (locationChildren) => {
     return { type: SET_SELECTED_LOCATION_CHILDREN_COPY, payload: locationChildren }
 }
 
+export const widgetLoaded = (bool) => {
+    return { type: WIDGET_LOADED, payload: bool }
+}
+
+
 // ======================================== //
 //                                          //
 //  Back, Delete, Save Location Functions   //
@@ -148,10 +154,14 @@ export const setSelectedLocationChildrenCopy = (locationChildren) => {
  * @param {*} props 
  */
 export const sideBarBack = (props) => {
-
     // Does a quick check to make sure there is a location, if not then just return an arbitrary dispatch
     // Redux requires a dispatch here (I think...) so I just use setselectedDevice since it wont have nay side effects (again... I think...)
-    if (props.selectedLocation === null) return async dispatch => dispatch(setSelectedDevice(null))
+    if (props.selectedLocation === null || props.selectedLocation.schema === null) {
+        return async dispatch => {
+            dispatch(setSelectedDevice(null))
+            dispatch(setSelectedDevice(null))
+        }
+    }
 
     const {
         selectedLocation,
