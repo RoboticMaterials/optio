@@ -20,6 +20,11 @@ function useWindowSize() {
         height: undefined,
     });
 
+    // let windowSize = {
+    //     width: undefined,
+    //     height: undefined,
+    // }
+
     useEffect(() => {
         // Handler to call on window resize
         function handleResize() {
@@ -28,6 +33,11 @@ function useWindowSize() {
                 width: window.innerWidth,
                 height: window.innerHeight,
             });
+
+            // windowSize = {
+            //     width: window.innerWidth,
+            //     height: window.innerHeight,
+            // }
         }
 
         // Add event listener

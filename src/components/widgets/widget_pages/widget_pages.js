@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
-import {useHistory, withRouter, Route} from 'react-router-dom'
+import { useHistory, withRouter, Route } from 'react-router-dom'
 
 import * as styled from './widget_pages.style'
 
@@ -45,17 +45,18 @@ const WidgetPages = (props) => {
         // So the chart loads after the widget animation, but if widget page is already open and then a statistic page is selected,
         // there should not be a delayed chart opening. See statistics_page/statistics_overview/statistics_overview.js
         // setTimeout(() => {
-            onWidgetPageLoaded(true)
+        onWidgetPageLoaded(true)
         // }, 300);
 
         // On Unmount tell the reducer the widget pages aren't loaded anymore
         return () => {
             onWidgetPageLoaded(false)
+
         }
     }, [])
 
 
-    return(
+    return (
         <styled.Container showWidgetPage={showWidgetPage} dashboardOpen={dashboardOpen} mobileMode={mobileMode} id={'widgetPage'}>
 
             <styled.WidgetPageContainer

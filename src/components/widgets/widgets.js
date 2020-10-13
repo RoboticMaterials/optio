@@ -29,7 +29,6 @@ const Widgets = (props) => {
     const mobileMode = windowWidth < widthBreakPoint;
 
     let params = useParams()
-
     // Grabs what widget page is in the URL
     const widgetPage = params.widgetPage
 
@@ -40,7 +39,7 @@ const Widgets = (props) => {
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
 
     const dispatch = useDispatch()
-    const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
+    const onHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const onWidgetLoaded = (bool) => dispatch(widgetLoaded(bool))
     const onDeselectLocation = () => dispatch(deselectLocation())
 
@@ -57,7 +56,7 @@ const Widgets = (props) => {
         // setTimeout(() => onWidgetLoaded(true), 100)
         onWidgetLoaded(true)
         return () => {
-            dispatchHoverStationInfo(null)
+            onHoverStationInfo(null)
             onDeselectLocation()
             onWidgetLoaded(false)
         }
@@ -66,7 +65,7 @@ const Widgets = (props) => {
     // If widgetPage exists in URL params, then the widget pages are open
     const HandleWidgetPageOpen = () => {
         if (!!widgetPage) {
-            dispatchHoverStationInfo(hoveringInfo)
+            onHoverStationInfo(hoveringInfo)
             onDeselectLocation()
         }
     }
@@ -250,13 +249,13 @@ const Widgets = (props) => {
             <styled.WidgetLocationContainer
                 id={hoveringInfo.id}
                 onMouseEnter={() => {
-                    dispatchHoverStationInfo(hoveringInfo)
+                    onHoverStationInfo(hoveringInfo)
                     handleWidgetPosition()
                 }}
 
                 onMouseLeave={() => {
                     if (!widgetPage) {
-                        dispatchHoverStationInfo(null)
+                        onHoverStationInfo(null)
                         onDeselectLocation()
                     }
                 }}
@@ -275,7 +274,7 @@ const Widgets = (props) => {
                     <styled.WidgetHoverArea
                         hoverScale={hoveringInfo.realScale}
                         onMouseEnter={() => {
-                            dispatchHoverStationInfo(hoveringInfo)
+                            onHoverStationInfo(hoveringInfo)
                         }}
                         
                     />

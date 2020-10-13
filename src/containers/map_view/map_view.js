@@ -42,6 +42,8 @@ export class MapView extends Component {
     constructor(props) {
         super(props)
 
+        this.mobileMode = this.props.mobileMode
+
         this.state = {}
 
         this.rd3tSvgClassName = `__SVG`     // Gives uniqe className to map components to reference for d3 events
@@ -402,7 +404,6 @@ export class MapView extends Component {
     }
 
 
-
     render() {
         let { locations, positions, devices } = this.props
         if (this.props.currentMap == null) { return (<></>) }
@@ -430,7 +431,7 @@ export class MapView extends Component {
                         // These 2 mouse events are used to remove the issue when moving the mouse too fast over a location causing a widget to load, but not fast enough for the onmouselave to execute
                         onMouseEnter={() => {
                             if (!!this.props.widgetLoaded) {
-                                // console.log('QQQQ This one ')
+                                // console.log('QQQQ This one')
                                 this.props.onHoverStationInfo(null)
                                 this.props.onDeselectLocation()
                             }
@@ -553,7 +554,9 @@ export class MapView extends Component {
                         <TaskStatistics d3={this.d3} />
                     }
 
-                    {this.props.hoveringInfo !== null &&
+                    {/* Widgets are here when not in mobile mode. If mobile mode, then they are in App.js. 
+                    The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons). */}
+                    {this.props.hoveringInfo !== null && !this.mobileMode &&
                         <Widgets />
                     }
 
