@@ -25,6 +25,7 @@ import Textbox from '../../../../basic/textbox/textbox'
 // Import Utils
 import { deepCopy } from '../../../../../methods/utils/utils'
 import { handleAvailableTasks, handleCurrentDashboard } from '../../../../../methods/utils/dashboards_utils'
+import { randomHash } from "../../../../../methods/utils/utils";
 
 // Import Actions
 import { putDashboard, deleteDashboard, postDashboard } from '../../../../../redux/actions/dashboards_actions'
@@ -187,8 +188,9 @@ const DashboardEditor = (props) => {
                 const allTouched = Object.values(touched).every((val) => val === true)
                 const submitDisabled = !(Object.values(errors).length === 0)
 
-                // adds a button to buttons key in Formik values                
+                // adds a button to buttons key in Formik values
                 const handleDrop = (dropResult) => {
+                  console.log("dropResult",dropResult)
                     console.log('QQQQ Mic dropped')
                     const { removedIndex, addedIndex, payload, element } = dropResult;
                     console.log(removedIndex, addedIndex, payload, element)
@@ -198,8 +200,12 @@ const DashboardEditor = (props) => {
                         const shiftedButtonsCopy = arrayMove(buttonsCopy, removedIndex, addedIndex)
                         formikProps.setFieldValue("buttons", shiftedButtonsCopy)
                     } else { // New button
-                        buttonsCopy.splice(addedIndex, 0, payload)
-                        formikProps.setFieldValue("buttons", buttonsCopy)
+                        if(addedIndex !== null) {
+                          payload.id = randomHash()
+                          buttonsCopy.splice(addedIndex, 0, payload)
+                          formikProps.setFieldValue("buttons", buttonsCopy)
+                        }
+
                     }
 
                 }

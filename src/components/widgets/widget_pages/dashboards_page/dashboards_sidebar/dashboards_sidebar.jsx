@@ -36,9 +36,9 @@ const tempColors = ['#FF4B4B', '#56d5f5', '#50de76', '#f2ae41', '#c7a0fa']
 const DashboardsSidebar = (props) => {
 
     const {
-        width, 
-        setWidth, 
-        minWidth, 
+        width,
+        setWidth,
+        minWidth,
         showSideBar,
         stationID,
         clickable
@@ -96,7 +96,7 @@ const DashboardsSidebar = (props) => {
                         message: "'" + name + "' not added"
                     })
                 }
-    
+
             }catch {
                 // display alert notifying user that task was successfully added
                 setAddTaskAlert({
@@ -105,14 +105,14 @@ const DashboardsSidebar = (props) => {
                     message: name
                 })
             }
-    
+
             // clear alert after timeout
             setTimeout(() => setAddTaskAlert(null), 1800)
         })
 
-		
+
     }
-    
+
     const station = stations[stationID]
 
     var availableTasks = []
@@ -129,7 +129,7 @@ const DashboardsSidebar = (props) => {
             name: task.name,
             color: tempColors[index % tempColors.length],
             task_id: task._id.$oid,
-            id: randomHash(),
+            id: task._id.$oid,
         }
     })
 
@@ -148,13 +148,13 @@ const DashboardsSidebar = (props) => {
             >
                 <style.Container>
                     <style.ListContainer>
-                        <Container 
+                        <Container
                             groupName="dashboard-buttons"
                             getChildPayload={index =>
                                 availableButtons[index]
                             }
                         >
-                            {availableButtons.map((button, index) => 
+                            {availableButtons.map((button, index) =>
                                 <DashboardSidebarButton
                                     key={`dashboard-sidebar-button-${index}`}
                                     name={button.name}
@@ -182,7 +182,7 @@ const DashboardsSidebar = (props) => {
 				{...addTaskAlert}
 				visible={!!addTaskAlert}
 			/>
-            
+
         </style.SidebarWrapper>
     )
 }
