@@ -41,12 +41,11 @@ const RightClickMenu = (props) => {
 
 
     const handleSendCartToLocation = async() => {
-        console.log('QQQQ Sending cart to location')
 
         const tempSelectedLocation = {
             name: 'TempRightClickMoveLocation',
-            schema: null,
-            type: null,
+            schema: 'position',
+            type: 'cart_position',
             pos_x: 0,
             pos_y: 0,
             rotation: 0,

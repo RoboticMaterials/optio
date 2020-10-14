@@ -6,7 +6,7 @@ import * as styled from './widget_button.style'
 
 // Import Actions
 import { postTaskQueue } from '../../../redux/actions/task_queue_actions'
-import { addLocation, setSelectedLocation, deselectLocation, widgetLoaded} from '../../../redux/actions/locations_actions'
+import { widgetLoaded, sideBarBack} from '../../../redux/actions/locations_actions'
 import { hoverStationInfo } from '../../../redux/actions/stations_actions'
 
 
@@ -24,9 +24,9 @@ const WidgetButton = (props) => {
     const history = useHistory()
     const dispatch = useDispatch()
     const onPostTaskQueue = (q) => dispatch(postTaskQueue(q))
-    const onDeselectLocation = () => dispatch(deselectLocation())
     const onWidgetLoaded = (bol) => dispatch(widgetLoaded(bol))
     const onHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
+    const onSideBarBack = (props) => dispatch(sideBarBack(props))
 
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
 
@@ -39,7 +39,6 @@ const WidgetButton = (props) => {
                 if (props.type === 'cart') {
 
                     if (!!coordinateMove) {
-                        console.log('QQQQ coord move', selectedLocation)
                         onPostTaskQueue({
                             task_id: 'custom_task',
                             custom_task: {
@@ -51,6 +50,9 @@ const WidgetButton = (props) => {
                                 },
                             }
                         })
+                        onWidgetLoaded(false)
+                        onHoverStationInfo(null)
+                        onSideBarBack({selectedLocation})
                     }
                     else {
                         onPostTaskQueue({
@@ -64,10 +66,9 @@ const WidgetButton = (props) => {
                 }
 
                 else if (props.type === 'cancel') {
-                    console.log('QQQQ Cancel')
                     onWidgetLoaded(false)
                     onHoverStationInfo(null)
-                    onDeselectLocation()
+                    onSideBarBack({selectedLocation})
                 }
 
                 else {
