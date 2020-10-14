@@ -40,8 +40,9 @@ const ObjectColumns = (props) => {
 
         // A list of all the unload objects ids
         const unloadObjects = Object.values(parsedObjects.unload)
-
+        
         return unloadObjects.map((object, ind) => {
+            if(object === undefined) return
 
             const currentObject = objects[object]
 
@@ -88,7 +89,7 @@ const ObjectColumns = (props) => {
         const loadObjects = Object.values(parsedObjects.load)
 
         return loadObjects.map((object, ind) => {
-
+            if(object === undefined) return
             const currentObject = objects[object]
 
             const currentObjectName = currentObject.name

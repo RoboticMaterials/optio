@@ -44,7 +44,9 @@ export class MapView extends Component {
 
         this.mobileMode = this.props.mobileMode
 
-        this.state = {}
+        this.state = {
+            showRightClickMenu: false,
+        }
 
         this.rd3tSvgClassName = `__SVG`     // Gives uniqe className to map components to reference for d3 events
         this.rd3tMapClassName = `__MAP`
@@ -403,6 +405,17 @@ export class MapView extends Component {
 
     }
 
+    // window.oncontextmenu= () => {
+
+    // }
+
+    handleRightClickMenu = (e) => {
+        console.log('QQQQ Right Click', e)
+        e.preventDefault()
+
+        this.setState({showRightClickMenu: true});
+    }
+
 
     render() {
         let { locations, positions, devices } = this.props
@@ -415,12 +428,18 @@ export class MapView extends Component {
         // console.log(this.props.selectedLocation)
 
         return (
-            <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation}>
+            <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation} onMouseDown={(e) => {console.log('QQQQ ', e)}} onContextMenu={(e) => { this.handleRightClickMenu(e) }}>
                 <styled.MapContainer ref={mc => (this.mapContainer = mc)} style={{ pointerEvents: this.widgetDraggable ? 'default' : 'none' }}>
 
                     {/* Commented out for now */}
                     {/* <Zones/> */}
-
+                    {!!this.state.showRightClickMenu &&
+                        < foreignObject >
+                            <div style={{ position: 'absolute', zIndex: '10000' }}>
+                                <h1>Test</h1>
+                            </div>
+                        </foreignObject>
+                    }
 
                     {/* SVG element is the container for the whole view. This allows the view to be moved as one */}
                     <svg
@@ -437,7 +456,7 @@ export class MapView extends Component {
                             }
                         }}
                         onMouseOver={() => {
-                            if(!!this.props.widgetLoaded){
+                            if (!!this.props.widgetLoaded) {
                                 // console.log('QQQQ This one two')
                                 this.props.onHoverStationInfo(null)
                                 this.props.onDeselectLocation()
@@ -563,7 +582,7 @@ export class MapView extends Component {
 
                 </styled.MapContainer>
 
-            </div>
+            </div >
         )
     }
 }
