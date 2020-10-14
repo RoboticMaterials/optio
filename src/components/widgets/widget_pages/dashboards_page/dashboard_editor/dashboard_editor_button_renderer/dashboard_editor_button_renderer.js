@@ -25,12 +25,6 @@ const DashboardEditorButtonRenderer = SortableContainer((props) => {
     return (
         <Container
             onDrop={onDrop}
-            onDragStart={() => {
-                console.log('QQQQ Drag start')
-            }}
-            onDragEnd={() => {
-                console.log('QQQQ Drag end')
-            }}
             groupName="dashboard-buttons"
             getChildPayload={() => null}
             style={{ width: '100%', height: '100%' }}

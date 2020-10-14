@@ -30,6 +30,7 @@ import TaskPaths from '../../components/map/task_paths/task_paths.js'
 import Location from '../../components/map/locations/location.js'
 import MiR100 from '../../components/map/amrs/mir100/mir100.js'
 import Zones from '../../components/map/zones/zones'
+import RightClickMenu from '../../components/map/right_click_menu/right_click_menu'
 import TaskStatistics from '../../components/map/task_statistics/task_statistics'
 import Widgets from '../../components/widgets/widgets'
 
@@ -45,7 +46,7 @@ export class MapView extends Component {
         this.mobileMode = this.props.mobileMode
 
         this.state = {
-            showRightClickMenu: false,
+            showRightClickMenu: {},
         }
 
         this.rd3tSvgClassName = `__SVG`     // Gives uniqe className to map components to reference for d3 events
@@ -212,8 +213,10 @@ export class MapView extends Component {
                 .on('zoom', () => {
 
                     // Disables the abolity to hoover over location on mouse drag
-                    this.props.onHoverStationInfo(null)
-                    this.props.onDeselectLocation()
+                    if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation') {
+                        this.props.onHoverStationInfo(null)
+                        this.props.onDeselectLocation()
+                    }
 
                     //// Saving the last event is usefull for saving d3 state when draggable is toggled (when moving locations)
                     this.lastEvent = d3.event
@@ -405,15 +408,13 @@ export class MapView extends Component {
 
     }
 
-    // window.oncontextmenu= () => {
-
-    // }
-
+    // This handles the event when an onContextMenu is triggered in the svg containing the map
+    // It prevents the defaul menu for appearing and sets the state for the custom menu to appear
+    // Passes along x and y for the cusotm menu
+    // Go to right_click_menu to follow how the click logic works
     handleRightClickMenu = (e) => {
-        console.log('QQQQ Right Click', e)
         e.preventDefault()
-
-        this.setState({showRightClickMenu: true});
+        this.setState({ showRightClickMenu: { x: e.clientX, y: e.clientY } });
     }
 
 
@@ -428,16 +429,16 @@ export class MapView extends Component {
         // console.log(this.props.selectedLocation)
 
         return (
-            <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation} onMouseDown={(e) => {console.log('QQQQ ', e)}} onContextMenu={(e) => { this.handleRightClickMenu(e) }}>
+            <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation} >
                 <styled.MapContainer ref={mc => (this.mapContainer = mc)} style={{ pointerEvents: this.widgetDraggable ? 'default' : 'none' }}>
 
                     {/* Commented out for now */}
                     {/* <Zones/> */}
-                    {!!this.state.showRightClickMenu &&
+
+                    {/* Right menu */}
+                    {Object.keys(this.state.showRightClickMenu).length > 0 &&
                         < foreignObject >
-                            <div style={{ position: 'absolute', zIndex: '10000' }}>
-                                <h1>Test</h1>
-                            </div>
+                            <RightClickMenu coords={this.state.showRightClickMenu} buttonClicked={() => { this.setState({ showRightClickMenu: {} }) }} />
                         </foreignObject>
                     }
 
@@ -447,19 +448,29 @@ export class MapView extends Component {
                         width="100%"
                         height="100%"
 
+                        // onClick only registers on left click so this works as a way to hide the menu
+                        onClick={() => { this.setState({ showRightClickMenu: {} }) }}
+                        onContextMenu={(e) => { this.handleRightClickMenu(e) }}
+
                         // These 2 mouse events are used to remove the issue when moving the mouse too fast over a location causing a widget to load, but not fast enough for the onmouselave to execute
                         onMouseEnter={() => {
                             if (!!this.props.widgetLoaded) {
-                                // console.log('QQQQ This one')
-                                this.props.onHoverStationInfo(null)
-                                this.props.onDeselectLocation()
+                                // If there is a selected location and its not the right click menu location then hide
+                                // should always show widget if its the right click menu
+                                if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation') {
+                                    this.props.onHoverStationInfo(null)
+                                    this.props.onDeselectLocation()
+                                }
                             }
                         }}
                         onMouseOver={() => {
                             if (!!this.props.widgetLoaded) {
-                                // console.log('QQQQ This one two')
-                                this.props.onHoverStationInfo(null)
-                                this.props.onDeselectLocation()
+                                // If there is a selected location and its not the right click menu location then hide
+                                // should always show widget if its the right click menu
+                                if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation') {
+                                    this.props.onHoverStationInfo(null)
+                                    this.props.onDeselectLocation()
+                                }
                             }
                         }}
 
@@ -469,7 +480,7 @@ export class MapView extends Component {
 
                         >
                             {/* Foreign object allows an image to be put in the SVG container */}
-                            <foreignObject width='100%' height='100%'>
+                            <foreignObject width='100%' height='100%' >
                                 {!!this.props.currentMap &&
                                     <styled.MapImage ref={mi => (this.mapImage = mi)}
                                         tall={!!this.mapContainer && // Fixes the map sizing - cutoff issue

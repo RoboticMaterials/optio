@@ -35,6 +35,8 @@ const Widgets = (props) => {
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
     const locations = useSelector(state => { return state.locationsReducer.locations })
     const devices = useSelector(state => state.devicesReducer.devices)
+    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
+
     // Info passed from workstations/device_locations via redux
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
 
@@ -45,6 +47,8 @@ const Widgets = (props) => {
 
     const [hoverX, setHoverX] = useState(null)
     const [hoverY, setHoverY] = useState(null)
+
+    // console.log('QQQQ Selected location', selectedLocation)
 
     // Location ID passed down through workstations via redux
     const stationID = hoveringInfo.id
@@ -159,6 +163,25 @@ const Widgets = (props) => {
                 )
             }
         }
+        // If right menu position, have send cart and cancel (times)
+        else if (selectedLocation.name === 'TempRightClickMoveLocation') {
+            return (
+                <>
+                    <WidgetButton
+                        id={stationID}
+                        type={'cart'}
+                        coordinateMove={true}
+                        currentPage={widgetPage}
+                    />
+                    <WidgetButton
+                        id={stationID}
+                        type={'cancel'}
+                        currentPage={widgetPage}
+                    />
+                </>
+            )
+        }
+
         else {
             return (
                 <WidgetButton
@@ -212,11 +235,12 @@ const Widgets = (props) => {
 
     const handleWidgetPosition = (coord) => {
 
+        // When first hovering over, the widget has not mounted so the element is null, but once its mounted, you can use the bounding box
         if (element === null) {
             if (coord === 'x') {
                 return hoveringInfo.xPosition + 'px'
-
             } else {
+
                 return hoveringInfo.yPosition + 'px'
             }
         }
@@ -227,8 +251,21 @@ const Widgets = (props) => {
 
         let widgetPosition = {}
 
-        widgetPosition.x = hoveringInfo.xPosition - elementWidth / 2 + 'px'
-        widgetPosition.y = hoveringInfo.yPosition + elementHeight / 2 + 'px'
+        // Handles the x, use location x if right click menu so it can also move
+        if (selectedLocation.name === 'TempRightClickMoveLocation') {
+            widgetPosition.x = selectedLocation.x - elementWidth / 2 + 'px'
+        }
+        else {
+            widgetPosition.x = hoveringInfo.xPosition - elementWidth / 2 + 'px'
+        }
+
+        // Handles the y, use location y if right click menu so it can also move
+        if (selectedLocation.name === 'TempRightClickMoveLocation') {
+            widgetPosition.y = selectedLocation.y + elementHeight / 2 + 'px'
+        }
+        else {
+            widgetPosition.y = hoveringInfo.yPosition + elementHeight / 2 + 'px'
+        }
 
         if (coord === 'x') {
             return widgetPosition.x
@@ -244,7 +281,6 @@ const Widgets = (props) => {
             {!!widgetPage &&
                 <styled.WidgetBlurContainer />
             }
-
             {/* WidgetLocationContainer is an absolute div used for locating the widget over the hovered location */}
             <styled.WidgetLocationContainer
                 id={hoveringInfo.id}
@@ -254,7 +290,7 @@ const Widgets = (props) => {
                 }}
 
                 onMouseLeave={() => {
-                    if (!widgetPage) {
+                    if (!widgetPage && selectedLocation.name !== 'TempRightClickMoveLocation') {
                         onHoverStationInfo(null)
                         onDeselectLocation()
                     }
@@ -267,7 +303,7 @@ const Widgets = (props) => {
                 widgetPage={widgetPage}
 
                 // This sets the opacity to 0 if the element has not been mounted yet. Eliminates the 'snapping'
-                style={{opacity: !widgetPage && element === null ? '0' : '1'}}
+                style={{ opacity: !widgetPage && element === null ? '0' : '1' }}
             >
 
                 {!widgetPage &&
@@ -276,7 +312,7 @@ const Widgets = (props) => {
                         onMouseEnter={() => {
                             onHoverStationInfo(hoveringInfo)
                         }}
-                        
+
                     />
                 }
 

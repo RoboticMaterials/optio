@@ -116,3 +116,17 @@ export const LocationTypeGraphic = styled.svg`
     left: 50%;
     transform: translate(-50%, -50%);
 `
+
+export const LocationTypeLabel = styled.p`
+    font-family: ${props => props.theme.font.primary};
+    font-size: ${props => props.theme.fontSize.sz3};
+    color: ${props => props.theme.bg.octonary};
+    margin-bottom: auto;
+`
+
+export const LocationTypeContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 9rem;
+`

@@ -50,6 +50,14 @@ const Position = (props) => {
         }
     })
 
+    useEffect(() => {
+        if(location !== null && location.name === 'TempRightClickMoveLocation'){
+            setHovering(true)
+            dispatchHoverStationInfo(handleWidgetHover())
+            onSelectLocation(location._id)
+        }
+    }, [])
+
     /**
     * Passes the X, Y, scale and ID of location to redux which is then used in widgets
     */
@@ -76,7 +84,7 @@ const Position = (props) => {
                     onSelectLocation(location._id)
                 }
             }}
-            onMouseLeave={() => { setHovering(false) }}
+            onMouseLeave={() => { location.name !== 'TempRightClickMoveLocation' && setHovering(false) }}
             onClick={() => {
                 if (selectedTask !== null) {
                     // If the load location has been defined but the unload position hasnt, assign the unload position
@@ -134,7 +142,8 @@ const Position = (props) => {
 
 
             <g className={`${rd3tClassName}-rot`}>
-                {isSelected && (hovering || rotating) && hoveringInfo === null &&
+                {/* Only show rotating when editing or its a right click location */}
+                {isSelected && (hovering || rotating) && (hoveringInfo === null || location.name === 'TempRightClickMoveLocation') &&
                     <>
                         <circle x="-16" y="-16" r="16" strokeWidth="0" fill="transparent" style={{ cursor:  "pointer"  }}></circle>
                         <circle x="-18" y="-18" r="14" fill="none" strokeWidth="4" stroke="transparent" style={{ cursor: "pointer" }} onMouseDown={() => setRotating(true)}></circle>
