@@ -253,7 +253,7 @@ const Widgets = (props) => {
 
         // Handles the x, use location x if right click menu so it can also move
         if (selectedLocation.name === 'TempRightClickMoveLocation') {
-            widgetPosition.x = selectedLocation.x - elementWidth / 2 + 'px'
+            widgetPosition.x = selectedLocation.x - elementWidth / 2 + 30 + 'px'
         }
         else {
             widgetPosition.x = hoveringInfo.xPosition - elementWidth / 2 + 'px'
@@ -261,7 +261,7 @@ const Widgets = (props) => {
 
         // Handles the y, use location y if right click menu so it can also move
         if (selectedLocation.name === 'TempRightClickMoveLocation') {
-            widgetPosition.y = selectedLocation.y + elementHeight / 2 + 'px'
+            widgetPosition.y = selectedLocation.y + elementHeight / 2 + 20 + 'px'
         }
         else {
             widgetPosition.y = hoveringInfo.yPosition + elementHeight / 2 + 'px'
@@ -306,7 +306,8 @@ const Widgets = (props) => {
                 style={{ opacity: !widgetPage && element === null ? '0' : '1' }}
             >
 
-                {!widgetPage &&
+                {/* If not widget page and not a right click widget then add an invisable hover area */}
+                {!widgetPage && selectedLocation.name !== 'TempRightClickMoveLocation' &&
                     <styled.WidgetHoverArea
                         hoverScale={hoveringInfo.realScale}
                         onMouseEnter={() => {

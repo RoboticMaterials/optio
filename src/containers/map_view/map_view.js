@@ -437,9 +437,9 @@ export class MapView extends Component {
 
                     {/* Right menu */}
                     {Object.keys(this.state.showRightClickMenu).length > 0 &&
-                        < foreignObject >
+                        // < foreignObject >
                             <RightClickMenu coords={this.state.showRightClickMenu} buttonClicked={() => { this.setState({ showRightClickMenu: {} }) }} />
-                        </foreignObject>
+                        // </foreignObject>
                     }
 
                     {/* SVG element is the container for the whole view. This allows the view to be moved as one */}
