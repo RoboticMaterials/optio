@@ -23,7 +23,11 @@ import { LocationTypes } from '../../../../../methods/utils/locations_utils'
 
 import uuid from 'uuid'
 
-export default function Positions() {
+export default function Shelves(props) {
+
+    const {
+        handleSetChildPositionToCartCoords
+    } = props
 
     const dispatch = useDispatch()
 
@@ -58,7 +62,10 @@ export default function Positions() {
                     setEditingIndex(i)
                     dispatch(positionActions.setPositionAttributes(position._id, { name: e.target.value }))
                 }}></Textbox>
-                <DragHandle></DragHandle>
+                <styled.CartIcon className='icon-cart' onClick={() => handleSetChildPositionToCartCoords(position)} />
+
+                {/* Commenting out for now, not working with constent updating */}
+                {/* <DragHandle></DragHandle> */}
             </styled.ShelfListItem>
         </li>
     );

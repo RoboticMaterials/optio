@@ -32,3 +32,5 @@ export const ShelfListItem = styled(stylep.PositionListItem)`
 
 export const SortIcon = styled(stylep.SortIcon)`
 `
+export const CartIcon = styled(stylep.CartIcon)`
+`

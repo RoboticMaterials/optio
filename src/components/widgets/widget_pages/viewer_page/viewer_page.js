@@ -68,7 +68,12 @@ const ViewerPage = () => {
     }, [])
 
     const websocketServerConnect = () => {
-        console.log("setTimeout(start, 3000); called")
+        // console.log("setTimeout(start, 3000); called")
+
+        // YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+        // OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+        // Just adding this for now so the function does cause a ton of erros
+        return null
 
         connect_attempts++;
         if (connect_attempts > CONNECTION_MAX_ATTEMPTS) {
@@ -135,7 +140,7 @@ const ViewerPage = () => {
 
       // Local description was set, send it to peer
       const onLocalDescription = (desc) => {
-          console.log("Got local description: " + JSON.stringify(desc));
+        //   console.log("Got local description: " + JSON.stringify(desc));
 
           peer_connection.setLocalDescription(desc).then(function() {
               setStatus("Sending SDP " + desc.type);
@@ -155,7 +160,7 @@ const ViewerPage = () => {
       }
 
       const onServerMessage = (event) => {
-          console.log("Received " + event.data);
+        //   console.log("Received " + event.data);
 
           let msg;
 
@@ -221,7 +226,7 @@ const ViewerPage = () => {
 
       function onServerError(event) {
           setError("Unable to connect to server, did you add an exception for the certificate?")
-          console.log("onServerError", event)
+        //   console.log("onServerError", event)
           // Retry after 3 seconds
           window.setTimeout(websocketServerConnect, 3000);
       }
@@ -235,7 +240,7 @@ const ViewerPage = () => {
       }
 
       const onRemoteTrack = (event) => {
-          console.log("onRemoteTrack event", event)
+        //   console.log("onRemoteTrack event", event)
           setStreams(event.streams)
           setError(null)
           setStreamConnected(true)

@@ -64,6 +64,7 @@ export const PositionListItem = styled.div`
     flex-direction: row;
     flex-grow: 1;
     padding-bottom: 0.4rem;
+    align-items:center;
 
 `
 
@@ -85,5 +86,20 @@ export const SortIcon = styled.i`
     &:active{
         cursor: grabbing;
     }
+
+`
+
+
+export const CartIcon = styled.i`
+    font-size: .8rem;
+    color: ${props => props.theme.bg.octonary};
+
+    margin: 0.4rem;
+    margin-left: 0.6rem;
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    text-align: center;
+    box-sizing: border-box;
 
 `
