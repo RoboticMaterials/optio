@@ -2,9 +2,7 @@ import styled, { css } from 'styled-components';
 
 
 export const VideoContainer = styled.video`
-    //z-index: 500;
-    //background: red;
-
+    z-index: 500;
     width: 100%;
     height: 100%;
     position: absolute;
@@ -13,6 +11,7 @@ export const VideoContainer = styled.video`
 `
 
 export const PlayerWrapper = styled.div`
+z-index:500;
   position: relative;
   width: 100%;
   height: 100%;

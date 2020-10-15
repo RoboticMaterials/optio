@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
+import { reconnectingSocket, useMessages } from "../../../../methods/utils/websocket_utils";
 
 import * as styled from './viewer_page.style'
 
@@ -20,14 +21,14 @@ var ws_port;
 const CONNECTION_MAX_ATTEMPTS = 1000
 
 var rtc_configuration = {
-  iceServers: [
-    {
-      urls: "stun:stun.services.mozilla.com"
-    },
-    {
-      urls: "stun:stun.l.google.com:19302"
-    }
-  ]
+  // iceServers: [
+  //   {
+  //     urls: "stun:stun.services.mozilla.com"
+  //   },
+  //   {
+  //     urls: "stun:stun.l.google.com:19302"
+  //   }
+  // ]
 };
 
 var connect_attempts = 0;
@@ -46,35 +47,53 @@ const ViewerPage = () => {
     const devices = useSelector(state => state.devicesReducer.devices)
 
     const [streamConnected, setStreamConnected] = useState(false)
+
     const [myPeerId, setMyPeerId] = useState(null);
     const [error, setError] = useState(null);
     const [status, setStatus] = useState(null);
-    const [disconnect, setDisconnect] = useState(false); // determined whether or not to attempt to reconnect websocket on close
     const [streams, setStreams] = useState(null)
-
-
-    const params = useParams()
-
-    // Set the station and device if there is a associated device
-    const station = locaitons[params.stationID]
-    let device = {}
-    if(!!station.device_id) device = devices[station.device_id]
-
+    const [reconnectOnClose, setReconnectOnClose] = useState(true)
 
     useEffect(() => {
-        // code to run on component
+        // componenet did mount
+
+        // connect to websocket
+        // websocketServerConnect returns our peer id
         setMyPeerId(websocketServerConnect())
 
         return () => {
             // Disconnect Stream on unmount
-            setDisconnect(true)
             ws_conn.close()
         }
     }, [])
 
-    useEffect(() => {
-      if(disconnect) ws_conn.close();
-    }, [disconnect])
+    const websocketServerConnect = () => {
+        console.log("setTimeout(start, 3000); called")
+
+        connect_attempts++;
+        if (connect_attempts > CONNECTION_MAX_ATTEMPTS) {
+            setError("Too many connection attempts, aborting. Refresh page to try again");
+            return;
+        }
+
+        // Fetch the peer id to use
+        our_id = our_default_id || getOurId()
+
+        ws_port = ws_port || '8443';
+
+        var ws_url = 'ws://' + ws_server + ':' + ws_port
+
+        setStatus("Connecting to server " + ws_url);
+        ws_conn = new WebSocket(ws_url);
+
+        /* When connected, immediately register with the server */
+        ws_conn.addEventListener('open', onServerOpen);
+        ws_conn.addEventListener('error', onServerError);
+        ws_conn.addEventListener('message', onServerMessage);
+        ws_conn.addEventListener('close', onServerClose);
+
+        return our_id
+    }
 
 
       const resetState = () => {
@@ -83,7 +102,7 @@ const ViewerPage = () => {
       }
 
       const handleIncomingError = (error) => {
-          setError("ERROR: " + error);
+          setError(error);
           resetState();
       }
 
@@ -188,7 +207,6 @@ const ViewerPage = () => {
       function onServerClose(event) {
           setStatus('Disconnected from server');
           resetVideo();
-          console.log("onServerClose disconnect",disconnect)
 
           if (peer_connection) {
               peer_connection.close();
@@ -196,8 +214,8 @@ const ViewerPage = () => {
           }
 
           // Reset after a second
-          if(!disconnect) {
-            //setTimeout(websocketServerConnect, 1000)
+          if(reconnectOnClose) {
+              setTimeout(websocketServerConnect, 3000);
           }
       }
 
@@ -208,35 +226,7 @@ const ViewerPage = () => {
           window.setTimeout(websocketServerConnect, 3000);
       }
 
-      const websocketServerConnect = () => {
-          connect_attempts++;
-          if (connect_attempts > CONNECTION_MAX_ATTEMPTS) {
-              setError("Too many connection attempts, aborting. Refresh page to try again");
-              return;
-          }
 
-          // Fetch the peer id to use
-          our_id = our_default_id || getOurId()
-
-          ws_port = ws_port || '8443';
-
-          var ws_url = 'ws://' + ws_server + ':' + ws_port
-
-          setStatus("Connecting to server " + ws_url);
-          ws_conn = new WebSocket(ws_url);
-
-          /* When connected, immediately register with the server */
-          ws_conn.addEventListener('open', (event) => {
-              // document.getElementById("peer-id").textContent = peer_id;
-              onServerOpen()
-          });
-
-          ws_conn.addEventListener('error', onServerError);
-          ws_conn.addEventListener('message', onServerMessage);
-          ws_conn.addEventListener('close', onServerClose);
-
-          return our_id
-      }
 
       const onServerOpen = () => {
           ws_conn.send('HELLO ' + our_id);
@@ -246,18 +236,9 @@ const ViewerPage = () => {
 
       const onRemoteTrack = (event) => {
           console.log("onRemoteTrack event", event)
-          console.log("onRemoteTrack getVideoElement().srcObject", getVideoElement().srcObject)
           setStreams(event.streams)
-
-          if (getVideoElement().srcObject !== event.streams[0]) {
-              console.log('Incoming stream');
-              getVideoElement().srcObject = event.streams[0];
-
-              setError(null)
-              setStreamConnected(true)
-              // getVideoElement().src = event.streams[0];
-
-          }
+          setError(null)
+          setStreamConnected(true)
           resetVideo();
       }
 
@@ -331,6 +312,18 @@ const ViewerPage = () => {
 
       }
 
+
+    const params = useParams()
+
+    // Set the station and device if there is a associated device
+    // const station = locaitons[params.stationID]
+    // let device = {}
+    // if(!!station.device_id) device = devices[station.device_id]
+
+    const device = {
+        device_name: "My RM Vision Device"
+    }
+
     return (
         <styled.PageContainer>
           <styled.TitleContainer>
@@ -348,6 +341,7 @@ const ViewerPage = () => {
                   streams={streams}
 
                 />
+                <button onClick={()=>resetVideo()}/>
 
 
             <styled.ConnectContainer>

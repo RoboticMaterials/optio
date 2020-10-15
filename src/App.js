@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux'
 import { ThemeProvider } from "styled-components";
 import theme from './theme';
 import './App.css';
+import ViewerPage from "./components/widgets/widget_pages/viewer_page/viewer_page";
 
 import useWindowSize from './hooks/useWindowSize'
 
@@ -81,6 +82,7 @@ const App = (props) => {
                 <styled.Container>
                     <BrowserRouter>
 
+
                         <Route
                             path={["/locations/:stationID?/:widgetPage?", '/:sidebar?', '/']}
                         >
@@ -117,6 +119,7 @@ const App = (props) => {
 
 
                                 <styled.BodyContainer>
+                                    <ViewerPage/>
                                     {/* Hides Side bar when in a dashboard in mobile mode */}
                                     {mobileMode ?
                                         dashboardOpen ?
