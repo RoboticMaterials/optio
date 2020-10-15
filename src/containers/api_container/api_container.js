@@ -22,7 +22,7 @@ import { getLoggers } from '../../redux/actions/local_actions';
 import { getRefreshToken } from '../../redux/actions/authentication_actions'
 
 import { deletePosition, putPosition } from '../../redux/actions/positions_actions'
-import { putStation } from '../../redux/actions/stations_actions'
+import { putStation, deleteStation } from '../../redux/actions/stations_actions'
 
 import { postLocalSettings } from '../../redux/actions/local_actions'
 
@@ -65,7 +65,9 @@ const ApiContainer = (props) => {
     const onDeletePosition = (position, ID) => dispatch(deletePosition(position, ID))
     const onPutDevice = (device, ID) => dispatch(putDevices(device, ID))
     const onPutPosition = (position, ID) => dispatch(putPosition(position, ID))
+
     const onPutStation = async (station, ID) => await dispatch(putStation(station, ID))
+    const onDeleteStation = async (ID) => await dispatch(deleteStation(ID))
 
     const onPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
 
@@ -86,7 +88,7 @@ const ApiContainer = (props) => {
         // loads essential info used on every page such as status and taskQueue
 
         const criticalDataInterval = setInterval(() => loadCriticalData(), 500);
-        // const mapDataInterval = setInterval(() => loadMapData(), 1000)
+        const mapDataInterval = setInterval(() => loadMapData(), 1000)
         return () => {
             // clear intervals
             clearInterval(pageDataInterval);
@@ -451,6 +453,9 @@ const ApiContainer = (props) => {
     /**
      * This adds station to device if the station has a device ID and the device does not have a station ID
      * Why this happens is unkown atm, but this fixes when a device comes back without a station ID but should have one
+     * 
+     * It also deletes stations that should be associated with a device, but the device either does not exist or ID has changed
+     * 
      * @param {*} devices 
      * @param {*} locations 
      */
@@ -462,7 +467,14 @@ const ApiContainer = (props) => {
 
         Object.values(stations).map((station) => {
 
-            if (!!station.device_id && !devices[station.device_id].station_id) {
+            // Delete station
+            if (!!station.device_id && devices[station.device_id] === undefined) {
+                console.log('QQQQ Station has a device that is deleted')
+                onDeleteStation(station._id)
+            }
+
+            // Add station to device
+            else if (!!station.device_id && !devices[station.device_id].station_id) {
                 console.log('QQQQ Station has a broken device')
                 const device = devices[station.device_id]
                 device.station_id = station._id

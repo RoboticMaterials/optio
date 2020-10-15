@@ -11,7 +11,7 @@ import useWindowSize from '../../hooks/useWindowSize'
 
 // Import Actions
 import { hoverStationInfo } from '../../redux/actions/stations_actions'
-import { deselectLocation } from '../../redux/actions/locations_actions'
+import { deselectLocation, widgetLoaded } from '../../redux/actions/locations_actions'
 
 // Import Utils
 import { DeviceItemTypes } from '../../methods/utils/device_utils'
@@ -29,27 +29,47 @@ const Widgets = (props) => {
     const mobileMode = windowWidth < widthBreakPoint;
 
     let params = useParams()
-
     // Grabs what widget page is in the URL
     const widgetPage = params.widgetPage
 
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
     const locations = useSelector(state => { return state.locationsReducer.locations })
     const devices = useSelector(state => state.devicesReducer.devices)
+    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
+
     // Info passed from workstations/device_locations via redux
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
 
     const dispatch = useDispatch()
-    const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
+    const onHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
+    const onWidgetLoaded = (bool) => dispatch(widgetLoaded(bool))
     const onDeselectLocation = () => dispatch(deselectLocation())
+
+    const [hoverX, setHoverX] = useState(null)
+    const [hoverY, setHoverY] = useState(null)
+
+    // console.log('QQQQ Selected location', selectedLocation)
 
     // Location ID passed down through workstations via redux
     const stationID = hoveringInfo.id
 
+    // This tells redux that the widget has mounted. Used in map view to handle if widget is still open but shoulnt be
+    // This happens when moving the mouse too fast over a location causing a widget to load, but not fast enough for the onmouselave to execute
+    useEffect(() => {
+
+        // setTimeout(() => onWidgetLoaded(true), 100)
+        onWidgetLoaded(true)
+        return () => {
+            onHoverStationInfo(null)
+            onDeselectLocation()
+            onWidgetLoaded(false)
+        }
+    }, [])
+
     // If widgetPage exists in URL params, then the widget pages are open
     const HandleWidgetPageOpen = () => {
         if (!!widgetPage) {
-            dispatchHoverStationInfo(hoveringInfo)
+            onHoverStationInfo(hoveringInfo)
             onDeselectLocation()
         }
     }
@@ -143,6 +163,25 @@ const Widgets = (props) => {
                 )
             }
         }
+        // If right menu position, have send cart and cancel (times)
+        else if (selectedLocation.name === 'TempRightClickMoveLocation') {
+            return (
+                <>
+                    <WidgetButton
+                        id={stationID}
+                        type={'cart'}
+                        coordinateMove={true}
+                        currentPage={widgetPage}
+                    />
+                    <WidgetButton
+                        id={stationID}
+                        type={'cancel'}
+                        currentPage={widgetPage}
+                    />
+                </>
+            )
+        }
+
         else {
             return (
                 <WidgetButton
@@ -196,12 +235,12 @@ const Widgets = (props) => {
 
     const handleWidgetPosition = (coord) => {
 
-
+        // When first hovering over, the widget has not mounted so the element is null, but once its mounted, you can use the bounding box
         if (element === null) {
             if (coord === 'x') {
                 return hoveringInfo.xPosition + 'px'
-
             } else {
+
                 return hoveringInfo.yPosition + 'px'
             }
         }
@@ -212,8 +251,21 @@ const Widgets = (props) => {
 
         let widgetPosition = {}
 
-        widgetPosition.x = hoveringInfo.xPosition - elementWidth / 2 + 'px'
-        widgetPosition.y = hoveringInfo.yPosition + elementHeight / 2 + 'px'
+        // Handles the x, use location x if right click menu so it can also move
+        if (selectedLocation.name === 'TempRightClickMoveLocation') {
+            widgetPosition.x = selectedLocation.x - elementWidth / 2 + 30 + 'px'
+        }
+        else {
+            widgetPosition.x = hoveringInfo.xPosition - elementWidth / 2 + 'px'
+        }
+
+        // Handles the y, use location y if right click menu so it can also move
+        if (selectedLocation.name === 'TempRightClickMoveLocation') {
+            widgetPosition.y = selectedLocation.y + elementHeight / 2 + 20 + 'px'
+        }
+        else {
+            widgetPosition.y = hoveringInfo.yPosition + elementHeight / 2 + 'px'
+        }
 
         if (coord === 'x') {
             return widgetPosition.x
@@ -229,20 +281,18 @@ const Widgets = (props) => {
             {!!widgetPage &&
                 <styled.WidgetBlurContainer />
             }
-
             {/* WidgetLocationContainer is an absolute div used for locating the widget over the hovered location */}
             <styled.WidgetLocationContainer
                 id={hoveringInfo.id}
                 onMouseEnter={() => {
-                    dispatchHoverStationInfo(hoveringInfo)
+                    onHoverStationInfo(hoveringInfo)
                     handleWidgetPosition()
                 }}
 
                 onMouseLeave={() => {
-                    if (!widgetPage) {
-                        dispatchHoverStationInfo(null)
+                    if (!widgetPage && selectedLocation.name !== 'TempRightClickMoveLocation') {
+                        onHoverStationInfo(null)
                         onDeselectLocation()
-
                     }
                 }}
 
@@ -251,16 +301,19 @@ const Widgets = (props) => {
                 yPosition={handleWidgetPosition('y')}
                 scale={hoveringInfo.scale}
                 widgetPage={widgetPage}
-                // TODO: Was going to use this to hide element while its null so you dont see that 'snapping'
-                hide={!widgetPage && element === null ? true : false}
+
+                // This sets the opacity to 0 if the element has not been mounted yet. Eliminates the 'snapping'
+                style={{ opacity: !widgetPage && element === null ? '0' : '1' }}
             >
 
-                {!widgetPage &&
+                {/* If not widget page and not a right click widget then add an invisable hover area */}
+                {!widgetPage && selectedLocation.name !== 'TempRightClickMoveLocation' &&
                     <styled.WidgetHoverArea
                         hoverScale={hoveringInfo.realScale}
                         onMouseEnter={() => {
-                            dispatchHoverStationInfo(hoveringInfo)
+                            onHoverStationInfo(hoveringInfo)
                         }}
+
                     />
                 }
 

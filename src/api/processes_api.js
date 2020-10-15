@@ -4,10 +4,10 @@ import axios from 'axios';
 import logger from '../logger'
 
 import { apiIPAddress } from '../settings/settings'
-const operator = 'dashboards'
+const operator = 'processes'
 const log = logger.getLogger('Api')
 
-export async function getDashboards() {
+export async function getProcesses() {
     try {
         const response = await axios({
             method: 'get',
@@ -27,6 +27,7 @@ export async function getDashboards() {
              * The request was made and the server responded with a
              * status code that falls out of the range of 2xx
              */
+
             log.debug('error.response.data', error.response.data);
             log.debug('error.response.status', error.response.status);
             log.debug('error.response.headers', error.response.headers);
@@ -46,7 +47,7 @@ export async function getDashboards() {
 
 }
 
-export async function deleteDashboards(ID) {
+export async function deleteProcesses(ID) {
     try {
         const response = await axios({
             method: 'DELETE',
@@ -89,7 +90,7 @@ export async function deleteDashboards(ID) {
     }
 }
 
-export async function postDashboards(dashboards) {
+export async function postProcesses(processes) {
     try {
         const response = await axios({
             method: 'POST',
@@ -98,7 +99,7 @@ export async function postDashboards(dashboards) {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
-            data: dashboards
+            data: processes
         });
 
         // Success 🎉
@@ -137,8 +138,7 @@ export async function postDashboards(dashboards) {
     }
 }
 
-export async function putDashboards(dashboard, ID) {
-
+export async function putProcesses(process, ID) {
     try {
         const response = await axios({
             method: 'PUT',
@@ -147,17 +147,18 @@ export async function putDashboards(dashboard, ID) {
                 'Content-Type': 'application/json',
                 'Accept': 'text/html'
             },
-            data: dashboard
+            data: process
         });
 
         // Success 🎉
+        // log.debug('response',response);
         const data = response.data;
         const dataJson = JSON.parse(data)
-
         return dataJson;
 
 
     } catch (error) {
+
 
         // Error 😨
         if (error.response) {

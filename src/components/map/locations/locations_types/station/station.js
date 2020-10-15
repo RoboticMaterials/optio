@@ -51,7 +51,7 @@ function Station(props) {
         }
         
     })
-
+    
     /**
     * This runs on page load (thats mean location are mounted) and shows a widget page if it returns true. 
     * If there is a station ID in the params (URL) and it matches this location,

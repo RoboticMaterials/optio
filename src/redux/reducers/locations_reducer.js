@@ -54,6 +54,7 @@ import {
     SET_SELECTED_LOCATION_COPY,
     SET_SELECTED_LOCATION_CHILDREN_COPY,
     DESELECT_LOCATION,
+    WIDGET_LOADED,
 } from '../types/locations_types'
 
 
@@ -84,6 +85,7 @@ const defaultState = {
     selectedLocationChildrenCopy: null,
 
     hoverStationInfo: null,
+    widgetLoaded: false,
 
     error: {},
     pending: false
@@ -131,7 +133,7 @@ export default function locationsReducer(state = defaultState, action) {
         Object.values(oldStations).forEach(oldStation => {
             // If the station exists in the backend and frontend, take the new stations, but assign local x and y
             if (oldStation._id in newStations) {
-                Object.assign(newStations[oldStation._id], {x: oldStation.x, y: oldStation.y})
+                Object.assign(newStations[oldStation._id], { x: oldStation.x, y: oldStation.y })
             } else { // If the station is not in the backend, it is either deleted or new
                 if (oldStation.new == true) { // If new, add it to the pulled stations
                     newStations[oldStation._id] = oldStation
@@ -160,7 +162,7 @@ export default function locationsReducer(state = defaultState, action) {
 
     const setStationsNew = (stations) => {
 
-        if(!isEquivalent(stations, state.locations)) {
+        if (!isEquivalent(stations, state.locations)) {
             stationsCopy = deepCopy(stations)
             positionsCopy = state.positions
 
@@ -284,7 +286,7 @@ export default function locationsReducer(state = defaultState, action) {
         Object.values(oldPositions).forEach(oldPosition => {
             // If the position exists in frontend and backend, take the new position but assign the local x and y
             if (oldPosition._id in newPositions) {
-                Object.assign(newPositions[oldPosition._id], {x: oldPosition.x, y: oldPosition.y})
+                Object.assign(newPositions[oldPosition._id], { x: oldPosition.x, y: oldPosition.y })
             } else { // If the position is not in the backend, it is either deleted or new. 
                 if (oldPosition.new == true) { // If new, add it to the pulled positions
                     newPositions[oldPosition._id] = oldPosition
@@ -470,12 +472,6 @@ export default function locationsReducer(state = defaultState, action) {
         case SET_STATION_ATTRIBUTES:
             return setStationAttributes(action.payload.id, action.payload.attr)
 
-        case HOVER_STATION_INFO:
-            return {
-                ...state,
-                hoverStationInfo: action.payload.info,
-            }
-
         // ======================================== //
         //                                          //
         //                 POSITIONS                //
@@ -596,6 +592,25 @@ export default function locationsReducer(state = defaultState, action) {
             return {
                 ...state,
                 selectedLocationChildrenCopy: action.payload
+            }
+
+        // ======================================== //
+        //                                          //
+        //                 WIDGETS                  //
+        //                                          //
+        // ======================================== //
+
+        case HOVER_STATION_INFO:
+            return {
+                ...state,
+                hoverStationInfo: action.payload.info,
+            }
+
+        case WIDGET_LOADED:
+            // console.log('QQQQ action payload', action.payload)
+            return {
+                ...state,
+                widgetLoaded: action.payload,
             }
 
 

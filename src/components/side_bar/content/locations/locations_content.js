@@ -240,9 +240,22 @@ export default function LocationContent(props) {
                 </Textbox>
                 {/* Location Type */}
                 <styled.DefaultTypesContainer>
-                    <LocationTypeButton type='workstation' selected={selectedLocation.type}></LocationTypeButton>
-                    <LocationTypeButton type='cart_position' selected={selectedLocation.type}></LocationTypeButton>
-                    <LocationTypeButton type='shelf_position' selected={selectedLocation.type}></LocationTypeButton>
+
+                    <styled.LocationTypeContainer>
+                        <LocationTypeButton type='workstation' selected={selectedLocation.type} />
+                        <styled.LocationTypeLabel>Station</styled.LocationTypeLabel>
+                    </styled.LocationTypeContainer>
+
+                    <styled.LocationTypeContainer>
+                        <LocationTypeButton type='cart_position' selected={selectedLocation.type} />
+                        <styled.LocationTypeLabel>Cart Position</styled.LocationTypeLabel>
+                    </styled.LocationTypeContainer>
+
+                    <styled.LocationTypeContainer>
+                        <LocationTypeButton type='shelf_position' selected={selectedLocation.type} />
+                        <styled.LocationTypeLabel>Shelf Position</styled.LocationTypeLabel>
+                    </styled.LocationTypeContainer>
+
                 </styled.DefaultTypesContainer>
                 {/* Will be used later for custom types (Lathe, Cut'it, etc.) */}
                 <styled.CustomTypesContainer>
@@ -293,7 +306,7 @@ export default function LocationContent(props) {
                 title={'Locations'}
                 schema={'locations'}
                 // Filters out devices from being displayed in locations
-                elements={Object.values(locations).filter(location => location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other')}
+                elements={Object.values(locations).filter(location => location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.name !== 'TempRightClickMoveLocation')}
                 // elements={Object.values(locations)}
                 onMouseEnter={(location) => dispatch(locationActions.selectLocation(location._id))}
                 onMouseLeave={(location) => dispatch(locationActions.deselectLocation())}

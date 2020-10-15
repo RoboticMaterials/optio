@@ -214,8 +214,6 @@ const DevicesContent = () => {
         }
 
         dispatch(deselectLocation())    // Deselect
-        // setSelectedLocationCopy(null)                   // Reset the local copy to null
-        // setSelectedLocationChildrenCopy(null)           // Reset the local children copy to null
         onSetSelectedDevice(null)
     }
 

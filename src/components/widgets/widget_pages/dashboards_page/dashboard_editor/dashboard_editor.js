@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 
 // import external functions
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,12 +25,13 @@ import Textbox from '../../../../basic/textbox/textbox'
 // Import Utils
 import { deepCopy } from '../../../../../methods/utils/utils'
 import { handleAvailableTasks, handleCurrentDashboard } from '../../../../../methods/utils/dashboards_utils'
+import { randomHash } from "../../../../../methods/utils/utils";
 
 // Import Actions
 import { putDashboard, deleteDashboard, postDashboard } from '../../../../../redux/actions/dashboards_actions'
-import { postTaskQueue} from '../../../../../redux/actions/task_queue_actions'
+import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 
-import {dashboardSchema} from "../../../../../methods/utils/form_schemas";
+import { dashboardSchema } from "../../../../../methods/utils/form_schemas";
 
 // Import styles
 import * as style from './dashboard_editor.style'
@@ -39,8 +40,8 @@ import * as pageStyle from '../dashboards_page.style'
 // Import logger
 import log from '../../../../../logger.js';
 import DashboardAddButton from "./dashboard_add_button/dashboard_add_button";
-import {useChanged} from "../../../../basic/form/useChange";
-import {PAGES} from "../../../../../constants/dashboard_contants";
+import { useChanged } from "../../../../basic/form/useChange";
+import { PAGES } from "../../../../../constants/dashboard_contants";
 
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
@@ -76,7 +77,7 @@ const DashboardEditor = (props) => {
                 name: dashboard.name,
                 buttons: initialButtons
             }
-        } catch(e) {
+        } catch (e) {
 
         }
 
@@ -90,7 +91,7 @@ const DashboardEditor = (props) => {
         let initialErrors = {} // initialize error object to empty
 
         // check name
-        if(!dashboard.name) initialErrors.name = "Please enter a name."
+        if (!dashboard.name) initialErrors.name = "Please enter a name."
 
         // check button errors
         let buttonErrors = [] // stores button errors
@@ -99,12 +100,12 @@ const DashboardEditor = (props) => {
 
             for (const button of buttons) {
                 let buttonError = {} // errors for current button - initialize to empty
-                if(!button.name) buttonError.name = "Please enter name." // button must have name
-                if(!isEmpty(buttonError)) buttonErrors.push(buttonError) // only add the error if it isn't empty
+                if (!button.name) buttonError.name = "Please enter name." // button must have name
+                if (!isEmpty(buttonError)) buttonErrors.push(buttonError) // only add the error if it isn't empty
             }
         }
-        catch(e) {}
-        if(buttonErrors.length > 0) initialErrors.buttons = buttonErrors // only add to error object if errors were found
+        catch (e) { }
+        if (buttonErrors.length > 0) initialErrors.buttons = buttonErrors // only add to error object if errors were found
 
 
         return initialErrors
@@ -124,7 +125,7 @@ const DashboardEditor = (props) => {
 
         // clone dashboard
         const dashboardCopy = deepCopy(dashboard)
-        logger.log("DashboardEditor: handleSubmit: dashboardCopy",dashboardCopy)
+        logger.log("DashboardEditor: handleSubmit: dashboardCopy", dashboardCopy)
 
         // save id then delete (api doesn't want id in object)
         // get dashboard id
@@ -135,9 +136,9 @@ const DashboardEditor = (props) => {
             dashboardId = dashboardCopy._id.$oid
             delete dashboardCopy._id
         }
-        catch(e) {}
+        catch (e) { }
 
-        logger.log("DashboardEditor: handleSubmit: dashboardId",dashboardId)
+        logger.log("DashboardEditor: handleSubmit: dashboardId", dashboardId)
 
         // update dashboard objects properties with submit values
         dashboardCopy.buttons = buttons
@@ -145,7 +146,7 @@ const DashboardEditor = (props) => {
         console.log(buttons)
 
         // if dashboard has id, it must already exist, so update with put
-        if(dashboardId) {
+        if (dashboardId) {
             // update
             dispatch(putDashboard(dashboardCopy, dashboardId))
         }
@@ -160,20 +161,20 @@ const DashboardEditor = (props) => {
 
     }
 
-    return(
+    return (
         <Formik
             initialValues={getInitialValues()}
-            initialTouched = {{
+            initialTouched={{
                 name: false,
                 buttons: [false]
-            } }
+            }}
             initialErrors={getInitialErrors()}
             enableReinitialize={false}
             validateOnChange={true}
             validateOnMount={true}
             validateOnBlur={true}
             validationSchema={dashboardSchema}
-            onSubmit={ async(values, { setSubmitting }) => {
+            onSubmit={async (values, { setSubmitting }) => {
                 logger.log("onSubmit called")
                 setSubmitting(true);    // set submitting to true on start
                 await handleSubmit(values)        // perform submission logic
@@ -184,11 +185,12 @@ const DashboardEditor = (props) => {
                 const { errors, values, touched, initialValues } = formikProps; // extract formik props
 
                 // disabled submission if there are any errors or not all fields have been touched
-                const allTouched = Object.values(touched).every((val)=> val===true )
+                const allTouched = Object.values(touched).every((val) => val === true)
                 const submitDisabled = !(Object.values(errors).length === 0)
 
-                // adds a button to buttons key in Formik values                
-                const handleDrop=(dropResult)=>{
+                // adds a button to buttons key in Formik values
+                const handleDrop = (dropResult) => {
+                  console.log("dropResult",dropResult)
                     const { removedIndex, addedIndex, payload, element } = dropResult;
                     console.log(removedIndex, addedIndex, payload, element)
                     const buttonsCopy = (values.buttons)
@@ -197,8 +199,12 @@ const DashboardEditor = (props) => {
                         const shiftedButtonsCopy = arrayMove(buttonsCopy, removedIndex, addedIndex)
                         formikProps.setFieldValue("buttons", shiftedButtonsCopy)
                     } else { // New button
-                        buttonsCopy.splice(addedIndex, 0, payload)
-                        formikProps.setFieldValue("buttons", buttonsCopy)
+                        if(addedIndex !== null) {
+                          payload.id = randomHash()
+                          buttonsCopy.splice(addedIndex, 0, payload)
+                          formikProps.setFieldValue("buttons", buttonsCopy)
+                        }
+
                     }
 
                 }
@@ -234,17 +240,20 @@ const DashboardEditor = (props) => {
                         >
                             <TextField
                                 name={"name"}
-                                disabled = {dashboard.name === 'Robot Screen'}
-                                textStyle={{fontWeight :'Bold'}}
-                                placeholder = 'Enter Dashboard Name'
+                                disabled={dashboard.name === 'Robot Screen'}
+                                textStyle={{ fontWeight: 'Bold' }}
+                                placeholder='Enter Dashboard Name'
                                 type='text'
                                 InputComponent={Textbox}
-                                inputProps={{style: {
-                                    fontSize: '1.2rem', 
-                                    fontWeight: '600', 
-                                    textAlign: 'center', 
-                                    padding: '0 2rem 0 4rem',
-                                    marginTop: '0'}}}
+                                inputProps={{
+                                    style: {
+                                        fontSize: '1.2rem',
+                                        fontWeight: '600',
+                                        textAlign: 'center',
+                                        padding: '0 2rem 0 4rem',
+                                        marginTop: '0'
+                                    }
+                                }}
                             />
                         </DashboardsHeader>
                         <style.BodyContainer>
@@ -258,7 +267,8 @@ const DashboardEditor = (props) => {
                         </style.BodyContainer>
                     </style.StyledForm>
 
-                )}
+                )
+            }
             }
         </Formik>
 

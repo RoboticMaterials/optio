@@ -61,9 +61,9 @@ const App = (props) => {
         if (!widgetPageLoaded) {
             return (
                 <Route
-                    path={["/locations/:stationID?/:widgetPage?", '/']}
-                    component={MapView}
-                />
+                    path={["/locations/:stationID?/:widgetPage?", '/']}>
+                    <MapView mobileMode={mobileMode} />
+                </Route>
             )
         }
 
@@ -166,12 +166,15 @@ const App = (props) => {
                                         component={WidgetPages}
                                     /> */}
 
-                                    {/* {hoveringInfo !== null &&
+                                    {/* Widgets are here in mobile mode. If not in mobile mode, then they are in map_view. 
+                                    The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons). 
+                                    So they need to be here. */}
+                                    {hoveringInfo !== null && mobileMode &&
                                         <Route
                                             path={["/locations/:stationID?/:widgetPage?", '/']}
                                             component={Widgets}
                                         />
-                                    } */}
+                                    }
 
                                 </styled.BodyContainer>
 
