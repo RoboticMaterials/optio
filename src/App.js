@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux'
 import { ThemeProvider } from "styled-components";
 import theme from './theme';
 import './App.css';
-import ViewerPage from "./components/widgets/widget_pages/viewer_page/viewer_page";
 
 import useWindowSize from './hooks/useWindowSize'
 
@@ -119,7 +118,6 @@ const App = (props) => {
 
 
                                 <styled.BodyContainer>
-                                    <ViewerPage/>
                                     {/* Hides Side bar when in a dashboard in mobile mode */}
                                     {mobileMode ?
                                         dashboardOpen ?
@@ -166,8 +164,8 @@ const App = (props) => {
                                         component={WidgetPages}
                                     /> */}
 
-                                    {/* Widgets are here in mobile mode. If not in mobile mode, then they are in map_view. 
-                                    The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons). 
+                                    {/* Widgets are here in mobile mode. If not in mobile mode, then they are in map_view.
+                                    The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons).
                                     So they need to be here. */}
                                     {hoveringInfo !== null && mobileMode &&
                                         <Route
