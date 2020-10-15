@@ -212,8 +212,8 @@ export class MapView extends Component {
                 // .scaleExtent([scaleExtent.min, scaleExtent.max])
                 .on('zoom', () => {
 
-                    // Disables the abolity to hoover over location on mouse drag
-                    if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation') {
+                    // Disables the ability to hover over location on mouse drag when a loction is selected that is not new or a right click
+                    if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation' && this.props.selectedLocation.type !== null) {
                         this.props.onHoverStationInfo(null)
                         this.props.onDeselectLocation()
                     }

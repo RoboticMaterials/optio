@@ -120,10 +120,8 @@ export default function Positions() {
 
                 </styled.Cards>
 
-                {
-                    selectedLocation.children.length > 0 &&
-                    <styled.Label>Associated Shelves</styled.Label>
-                }
+                <styled.Label>Associated Shelves</styled.Label>
+
                 <styled.ListContainer>
                     <SortableList
                         positions={selectedLocation.children.map(id => positions[id])}

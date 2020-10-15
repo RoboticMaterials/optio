@@ -100,7 +100,7 @@ export const LocationTypeButton = styled.div`
     width: 6rem;
     border-radius: 0.5rem;
 
-    background: ${props => props.isSelected ? `rgba(0,0,0,0.2)` :  props.theme.bg.octonary};
+    background: ${props => props.isSelected ? `rgba(0,0,0,0.2)` : props.isNotSelected ? 'lightgray' :  props.theme.bg.octonary};
 
     margin: 0.5rem;
     position: relative;
@@ -115,6 +115,9 @@ export const LocationTypeGraphic = styled.svg`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+
+    fill: ${ props=> props.isNotSelected && 'gray'};
+    stroke: ${ props=> props.isNotSelected && 'gray'};
 `
 
 export const LocationTypeLabel = styled.p`
@@ -122,6 +125,7 @@ export const LocationTypeLabel = styled.p`
     font-size: ${props => props.theme.fontSize.sz3};
     color: ${props => props.theme.bg.octonary};
     margin-bottom: auto;
+    user-select: none;
 `
 
 export const LocationTypeContainer = styled.div`

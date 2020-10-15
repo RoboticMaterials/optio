@@ -118,9 +118,8 @@ export default function Positions() {
 
                 </styled.Cards>
 
-                {selectedLocation.children.length > 0 &&
-                    <styled.Label>Associated Positions</styled.Label>
-                }
+                <styled.Label>Associated Positions</styled.Label>
+                
                 <styled.ListContainer>
                     <SortableList positions={selectedLocation.children.map(id => positions[id])} onSortEnd={onSortEnd}
                         useDragHandle={true}

@@ -49,8 +49,8 @@ export const LocationTypes = {
     workstation: {
         svgPath:
             <>
-                <rect x="100" y="40" width="200" height="320" rx="10" transform="translate(400) rotate(90)" fill="none" stroke="#6283f0" strokeMiterlimit="10" strokeWidth="20" />
-                <rect x="120" y="60" width="160" height="280" rx="2" transform="translate(400) rotate(90)" fill="#6283f0" />
+                <rect x="100" y="40" width="200" height="320" rx="10" transform="translate(400) rotate(90)" fill="none" strokeMiterlimit="10" strokeWidth="20" />
+                <rect x="120" y="60" width="160" height="280" rx="2" transform="translate(400) rotate(90)" />
             </>,
         attributes:
         {
@@ -60,6 +60,7 @@ export const LocationTypes = {
             dashboards: [],
             new: true,
         },
+        color: '#6283f0'
     },
 
     cartPosition: {

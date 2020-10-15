@@ -32,25 +32,25 @@ import { LocationTypes } from '../../../../methods/utils/locations_utils'
 
 import uuid from 'uuid'
 
-function locationTypeGraphic(type, isSelected) {
+function locationTypeGraphic(type, isNotSelected) {
     switch (type) {
         case 'shelf_position':
             return (
-                <styled.LocationTypeGraphic fill={LocationTypes['shelfPosition'].color} stroke={LocationTypes['shelfPosition'].color} isSelected={isSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                <styled.LocationTypeGraphic fill={LocationTypes['shelfPosition'].color} stroke={LocationTypes['shelfPosition'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
                     {LocationTypes['shelfPosition'].svgPath}
                 </styled.LocationTypeGraphic>
             )
 
         case 'workstation':
             return (
-                <styled.LocationTypeGraphic isSelected={isSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                <styled.LocationTypeGraphic fill={LocationTypes['workstation'].color} stroke={LocationTypes['workstation'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
                     {LocationTypes['workstation'].svgPath}
                 </styled.LocationTypeGraphic>
             )
 
         case 'cart_position':
             return (
-                <styled.LocationTypeGraphic fill={LocationTypes['cartPosition'].color} stroke={LocationTypes['cartPosition'].color} isSelected={isSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                <styled.LocationTypeGraphic fill={LocationTypes['cartPosition'].color} stroke={LocationTypes['cartPosition'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
                     {LocationTypes['cartPosition'].svgPath}
                 </styled.LocationTypeGraphic>
 
@@ -92,8 +92,12 @@ export default function LocationContent(props) {
 
         }
 
+        // If there is a type selected and its not the button type, that means this type has not been selected so gray everything out
+        const isNotSelected = selectedLocation.type !== null && selectedLocation.type !== type ? true : false;
+
         return (
             <styled.LocationTypeButton
+                isNotSelected = {isNotSelected}
                 id={`location-type-button-${type}`}
                 draggable={false}
 
@@ -104,10 +108,10 @@ export default function LocationContent(props) {
                     await dispatch(locationActions.setSelectedLocation(selectedLocation))
                 }}
 
-                isSelected={type == selected}
+                isSelected={type === selected}
                 style={{ cursor: 'grab' }}
             >
-                {locationTypeGraphic(type, type == selected)}
+                {locationTypeGraphic(type, isNotSelected)}
             </styled.LocationTypeButton>
         )
     }

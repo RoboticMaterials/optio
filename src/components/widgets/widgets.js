@@ -252,7 +252,7 @@ const Widgets = (props) => {
         let widgetPosition = {}
 
         // Handles the x, use location x if right click menu so it can also move
-        if (selectedLocation.name === 'TempRightClickMoveLocation') {
+        if (!!selectedLocation && selectedLocation.name === 'TempRightClickMoveLocation') {
             widgetPosition.x = selectedLocation.x - elementWidth / 2 + 30 + 'px'
         }
         else {
@@ -260,7 +260,7 @@ const Widgets = (props) => {
         }
 
         // Handles the y, use location y if right click menu so it can also move
-        if (selectedLocation.name === 'TempRightClickMoveLocation') {
+        if (!!selectedLocation && selectedLocation.name === 'TempRightClickMoveLocation') {
             widgetPosition.y = selectedLocation.y + elementHeight / 2 + 20 + 'px'
         }
         else {
