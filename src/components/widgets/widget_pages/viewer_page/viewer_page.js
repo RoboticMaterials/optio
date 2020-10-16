@@ -11,6 +11,11 @@ import BounceButton from '../../../basic/bounce_button/bounce_button'
 
 import StreamContainer from './stream_container/stream_container'
 import StreamInfo from "./stream_info/stream_info";
+import log from "../../../../logger"
+
+const logger = log.getLogger("ViewerPage")
+
+logger.setLevel("silent")
 
 // some hard coded values for now
 // Set this to use a specific peer id instead of a random one
@@ -78,21 +83,19 @@ const ViewerPage = () => {
         }
     }, []);
 
-    console.log("streans",streams)
+    logger.log("streans",streams)
 
-    console.log("isConnected",isConnected)
+    logger.log("isConnected",isConnected)
 
 
-    // const params = useParams()
+     const params = useParams()
 
     // Set the station and device if there is a associated device
-    // const station = locaitons[params.stationID]
-    // let device = {}
-    // if(!!station.device_id) device = devices[station.device_id]
+     const station = locaitons[params.stationID]
+     let device = {}
+     if(!!station.device_id) device = devices[station.device_id]
 
-    const device = {
-        device_name: "My RM Vision Device"
-    }
+
 
     const getVideoElement = () => {
         return document.getElementById("stream");
