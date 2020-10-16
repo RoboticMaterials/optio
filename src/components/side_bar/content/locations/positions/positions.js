@@ -23,7 +23,11 @@ import { LocationTypes } from '../../../../../methods/utils/locations_utils'
 
 import uuid from 'uuid'
 
-export default function Positions() {
+export default function Positions(props) {
+
+    const {
+        handleSetChildPositionToCartCoords
+    } = props
 
     const dispatch = useDispatch()
     const [editingIndex, setEditingIndex] = useState(null)
@@ -56,7 +60,11 @@ export default function Positions() {
                     setEditingIndex(i)
                     dispatch(positionActions.setPositionAttributes(position._id, { name: e.target.value }))
                 }}></Textbox>
-                <DragHandle></DragHandle>
+                <styled.CartIcon className='icon-cart' onClick={() => handleSetChildPositionToCartCoords(position)} />
+
+                {/* Commenting out for now, not working with constent updating */}
+                {/* <DragHandle></DragHandle> */}
+
             </styled.PositionListItem>
         </li>
     );
@@ -119,7 +127,7 @@ export default function Positions() {
                 </styled.Cards>
 
                 <styled.Label>Associated Positions</styled.Label>
-                
+
                 <styled.ListContainer>
                     <SortableList positions={selectedLocation.children.map(id => positions[id])} onSortEnd={onSortEnd}
                         useDragHandle={true}

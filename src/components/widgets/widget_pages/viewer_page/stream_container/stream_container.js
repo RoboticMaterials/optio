@@ -15,8 +15,8 @@ const StreamContainer = (props) => {
     loading, streams
   } = props
 
-    console.log("StreamContainer loading",loading)
-    console.log("StreamContainer streams",streams)
+    // console.log("StreamContainer loading",loading)
+    // console.log("StreamContainer streams",streams)
 
     const getVideoElement = () => {
         return document.getElementById("stream");

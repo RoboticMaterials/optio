@@ -102,7 +102,6 @@ export async function postPosition(position) {
         // Success 🎉
         const data = response.data;
         const dataJson = JSON.parse(data)
-        console.log('QQQQ Pust possition was a success!', dataJson)
 
         return dataJson;
 
@@ -149,7 +148,6 @@ export async function putPosition(position, ID) {
         // Success 🎉
         const data = response.data;
         const dataJson = JSON.parse(data)
-        console.log('QQQQ Putting position!', dataJson)
         return dataJson;
 
 

@@ -607,7 +607,6 @@ export default function locationsReducer(state = defaultState, action) {
             }
 
         case WIDGET_LOADED:
-            // console.log('QQQQ action payload', action.payload)
             return {
                 ...state,
                 widgetLoaded: action.payload,

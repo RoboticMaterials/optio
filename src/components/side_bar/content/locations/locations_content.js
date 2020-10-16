@@ -16,7 +16,9 @@ import Shelves from './shelves/shelves'
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 
 // Import actions
-import { setSelectedLocationCopy, setSelectedLocationChildrenCopy, sideBarBack, deleteLocationProcess } from '../../../../redux/actions/locations_actions'
+import { setSelectedLocation, setSelectedLocationCopy, setSelectedLocationChildrenCopy, sideBarBack, deleteLocationProcess } from '../../../../redux/actions/locations_actions'
+import { addPosition } from '../../../../redux/actions/positions_actions'
+
 import * as locationActions from '../../../../redux/actions/locations_actions'
 import * as stationActions from '../../../../redux/actions/stations_actions'
 import * as positionActions from '../../../../redux/actions/positions_actions'
@@ -64,8 +66,10 @@ export default function LocationContent(props) {
     const dispatch = useDispatch()
     const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
     const onSetSelectedLocationChildrenCopy = (locationChildren) => dispatch(setSelectedLocationChildrenCopy(locationChildren))
+    const onSetSelectedLocation = (loc) => dispatch(setSelectedLocation(loc))
     const onSideBarBack = (props) => dispatch(sideBarBack(props))
     const onDeleteLocationProcess = (props) => dispatch(deleteLocationProcess(props))
+    const onAddPosition = (pos) => dispatch(addPosition(pos))
 
     const locations = useSelector(state => state.locationsReducer.locations)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
@@ -73,6 +77,7 @@ export default function LocationContent(props) {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
     const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
+    const devices = useSelector(state => state.devicesReducer.devices)
 
     const [editing, toggleEditing] = useState(false)
 
@@ -97,7 +102,7 @@ export default function LocationContent(props) {
 
         return (
             <styled.LocationTypeButton
-                isNotSelected = {isNotSelected}
+                isNotSelected={isNotSelected}
                 id={`location-type-button-${type}`}
                 draggable={false}
 
@@ -207,6 +212,50 @@ export default function LocationContent(props) {
 
     }
 
+    const handleSetPositionToCartCoords = async () => {
+
+        Object.values(devices).map(async (device, ind) => {
+            if (device.device_model === 'MiR100') {
+                const devicePosition = device.position
+
+                const updatedSelectedLocation = {
+                    ...selectedLocation,
+                    pos_x: devicePosition.pos_x,
+                    pos_y: devicePosition.pos_y,
+                    x: devicePosition.x,
+                    y: devicePosition.y,
+                    rotation: devicePosition.orientation,
+                }
+
+                // Not sure why onSetSelectedLocation is not working, should be the same as a normal dispatch...
+                // onSetSelectedLocation({newSelectedLocation})
+                await dispatch(locationActions.addLocation(updatedSelectedLocation))
+                await dispatch(locationActions.setSelectedLocation(updatedSelectedLocation))
+            }
+        })
+    }
+
+    const handleSetChildPositionToCartCoords = (position) => {
+        Object.values(devices).map(async (device, ind) => {
+            if (device.device_model === 'MiR100') {
+
+                const devicePosition = device.position
+
+                const updatedPosition = {
+                    ...position,
+                    pos_x: devicePosition.pos_x,
+                    pos_y: devicePosition.pos_y,
+                    x: devicePosition.x,
+                    y: devicePosition.y,
+                    rotation: devicePosition.orientation,
+                }
+
+                dispatch(positionActions.addPosition(updatedPosition))
+
+            }
+        })
+    }
+
     // TODO: Probably can get rid of editing state, just see if there's a selectedLocation, if there is, you're editing
     if (editing && !!selectedLocation) { // Editing Mode
         return (
@@ -271,17 +320,17 @@ export default function LocationContent(props) {
 
                 {selectedLocation.schema === 'station' ?
                     <>
-                        <Positions />
-                        <Shelves />
+                        <Positions handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+                        <Shelves handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
                     </>
                     :
-                    selectedLocation.type === 'cart_position' ?
+                    selectedLocation.type === 'cart_position' || selectedLocation.type === 'shelf_position' ?
                         <>
                             <Button
                                 schema={'locations'}
                                 secondary
                                 onClick={() => {
-                                    alert('Sick, you found this button, thats great! I just dont have it set up yet... Bummer really... Ill get to it on Moday, dont worry')
+                                    handleSetPositionToCartCoords()
                                 }}
                             >
                                 Use Cart Location

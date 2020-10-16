@@ -51,7 +51,6 @@ const DragEntityProto = (props) => {
         // is layered. 
         let angle
         if (event.sourceEvent.type == "mousemove") {    // Computer
-
             // For some reason, position rotation is mapped backwards
             if (props.location.schema === 'position') {
                 angle = - Math.atan2(event.sourceEvent.clientY - props.location.y, event.sourceEvent.clientX - props.location.x) * 180 / Math.PI

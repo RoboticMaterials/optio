@@ -48,8 +48,6 @@ const Widgets = (props) => {
     const [hoverX, setHoverX] = useState(null)
     const [hoverY, setHoverY] = useState(null)
 
-    // console.log('QQQQ Selected location', selectedLocation)
-
     // Location ID passed down through workstations via redux
     const stationID = hoveringInfo.id
 
