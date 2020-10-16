@@ -26,7 +26,8 @@ import uuid from 'uuid'
 export default function Positions(props) {
 
     const {
-        handleSetChildPositionToCartCoords
+        handleSetChildPositionToCartCoords,
+        type
     } = props
 
     const dispatch = useDispatch()
@@ -34,6 +35,21 @@ export default function Positions(props) {
     const positions = useSelector(state => state.locationsReducer.positions)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const tasks = useSelector(state => state.tasksReducer.tasks)
+
+    const positionType = type
+    let positionTypeCamel = ''
+    let positionName = ''
+
+    // Sets of vairables based on position type
+    if (positionType === 'cart_position') {
+        positionTypeCamel = 'cartPosition'
+        positionName = 'Position'
+    }
+    if (positionType === 'shelf_position') {
+        positionTypeCamel = 'shelfPosition'
+        positionName = 'Shelf'
+
+    }
 
     const onSortEnd = ({ oldIndex, newIndex }) => {
         dispatch(locationActions.setLocationAttributes(selectedLocation._id, { positions: arrayMove(selectedLocation.positions, oldIndex, newIndex) }))
@@ -46,15 +62,22 @@ export default function Positions(props) {
         <li style={{ listStyle: 'none' }}>
             <styled.PositionListItem>
                 <MinusButton onClick={() => {
+                    console.log('QQQQ Minus clicked', position)
+                    // Sees if any tasks are associated with the position
                     Object.values(tasks).filter(task => {
                         return task.load.position == position._id || task.unload.position == position._id
                     }).forEach(relevantTask => {
                         dispatch(deleteTask(relevantTask._id.$oid))
                     })
-                    let locationPositionIDs = selectedLocation.children
+
+                    // TODO: Get rid of deep copy
+                    let locationPositionIDs = deepCopy(selectedLocation.children)
                     locationPositionIDs.splice(i, 1)
+                    console.log('QQQQ Splicing these ids', locationPositionIDs)
                     dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
+
                     dispatch(positionActions.deletePosition(positions[position._id], position._id))
+
                 }}></MinusButton>
                 <Textbox style={{ flex: '1' }} schema="locations" focus={i == editingIndex} defaultValue={position.name} onChange={(e) => {
                     setEditingIndex(i)
@@ -70,10 +93,11 @@ export default function Positions(props) {
     );
 
     const SortableList = SortableContainer(({ positions }) => {
+        // if (positions[0] === undefined) return null
         return (
             <styled.PositionList>
                 {positions.map((position, index) => {
-                    if (position.type === 'cart_position') {
+                    if (position.type === positionType) {
                         return (
                             <SortableItem key={`position-item-${position._id}`} index={index} position={position} i={index} />
                         )
@@ -98,9 +122,9 @@ export default function Positions(props) {
                         onMouseDown={e => {
                             const newPositionID = uuid()
                             dispatch(positionActions.addPosition({
-                                name: 'Position ' + (selectedLocation.children.filter((position) => positions[position].type === 'cart_position').length + 1),
+                                name: positionName + ' ' + (selectedLocation.children.filter((position) => positions[position].type === positionType).length + 1),
                                 schema: 'positions',
-                                type: 'cart_position',
+                                type: positionType,
                                 temp: true,
                                 new: true,
                                 pos_x: 0,
@@ -118,18 +142,19 @@ export default function Positions(props) {
                         }
                         }
                     >
-                        <styled.LocationTypeGraphic fill={LocationTypes['cartPosition'].color} stroke={LocationTypes['cartPosition'].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                            {LocationTypes['cartPosition'].svgPath}
+                        <styled.LocationTypeGraphic fill={LocationTypes[positionTypeCamel].color} stroke={LocationTypes[positionTypeCamel].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                            {LocationTypes[positionTypeCamel].svgPath}
                         </styled.LocationTypeGraphic>
 
                     </styled.NewPositionCard>
 
                 </styled.Cards>
 
-                <styled.Label>Associated Positions</styled.Label>
+                <styled.Label>{'Associated ' + positionName} </styled.Label>
 
                 <styled.ListContainer>
-                    <SortableList positions={selectedLocation.children.map(id => positions[id])} onSortEnd={onSortEnd}
+                    <SortableList positions={selectedLocation.children.map(id => positions[id])}
+                        onSortEnd={onSortEnd}
                         useDragHandle={true}
                         lockAxis={'y'}
                         axis={'y'}

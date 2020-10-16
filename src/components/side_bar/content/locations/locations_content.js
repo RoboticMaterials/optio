@@ -11,7 +11,6 @@ import Button from '../../../basic/button/button'
 // Import components
 import ContentList from '../content_list/content_list'
 import Positions from './positions/positions'
-import Shelves from './shelves/shelves'
 
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 
@@ -24,8 +23,6 @@ import * as stationActions from '../../../../redux/actions/stations_actions'
 import * as positionActions from '../../../../redux/actions/positions_actions'
 import * as dashboardActions from '../../../../redux/actions/dashboards_actions'
 import * as taskActions from '../../../../redux/actions/tasks_actions'
-
-import * as locationTemplates from './location_templates'
 
 // Import Utils
 import { setAction } from '../../../../redux/actions/sidebar_actions'
@@ -78,6 +75,7 @@ export default function LocationContent(props) {
     const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
     const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
     const devices = useSelector(state => state.devicesReducer.devices)
+    const currentMap = useSelector(state => state.mapReducer.currentMap)
 
     const [editing, toggleEditing] = useState(false)
 
@@ -86,13 +84,16 @@ export default function LocationContent(props) {
         let template
         switch (type) {
             case 'workstation':
-                template = locationTemplates.workstationAttributes
+                template = LocationTypes['workstation'].attributes
+
                 break
             case 'cart_position':
-                template = locationTemplates.cartPositionAttributes
+                template = LocationTypes['cartPosition'].attributes
+
                 break
             case 'shelf_position':
-                template = locationTemplates.shelfPositionAttributes
+                template = LocationTypes['shelfPosition'].attributes
+                
                 break
 
         }
@@ -108,7 +109,7 @@ export default function LocationContent(props) {
 
                 onMouseDown={async e => {
                     if (selectedLocation.type !== null) { return }
-                    await Object.assign(selectedLocation, { ...template, temp: true })
+                    await Object.assign(selectedLocation, { ...template, temp: true, map_id: currentMap._id })
                     await dispatch(locationActions.addLocation(selectedLocation))
                     await dispatch(locationActions.setSelectedLocation(selectedLocation))
                 }}
@@ -320,8 +321,8 @@ export default function LocationContent(props) {
 
                 {selectedLocation.schema === 'station' ?
                     <>
-                        <Positions handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
-                        <Shelves handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+                        <Positions type='cart_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+                        <Positions type='shelf_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
                     </>
                     :
                     selectedLocation.type === 'cart_position' || selectedLocation.type === 'shelf_position' ?

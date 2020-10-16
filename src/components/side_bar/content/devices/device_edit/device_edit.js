@@ -14,11 +14,11 @@ import Button from '../../../../basic/button/button'
 
 // Import componenets
 import Positions from '../../locations/positions/positions'
-import Shelves from '../../locations/shelves/shelves'
 
 // Import actions
 import * as locationActions from '../../../../../redux/actions/locations_actions'
 import * as deviceActions from '../../../../../redux/actions/devices_actions'
+import * as positionActions from '../../../../../redux/actions/positions_actions'
 
 // Import templates
 import * as templates from '../devices_templates/device_templates'
@@ -51,6 +51,7 @@ const DeviceEdit = (props) => {
 
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const selectedDevice = useSelector(state => state.devicesReducer.selectedDevice)
+    const devices = useSelector(state => state.devicesReducer.devices)
 
     // On page load, see if the device is a new device or existing device
     // TODO: This is going to fundementally change with how devices 'connect' to the cloud.
@@ -160,6 +161,27 @@ const DeviceEdit = (props) => {
 
     }
 
+    const handleSetChildPositionToCartCoords = (position) => {
+        Object.values(devices).map(async (device, ind) => {
+            if (device.device_model === 'MiR100') {
+
+                const devicePosition = device.position
+
+                const updatedPosition = {
+                    ...position,
+                    pos_x: devicePosition.pos_x,
+                    pos_y: devicePosition.pos_y,
+                    x: devicePosition.x,
+                    y: devicePosition.y,
+                    rotation: devicePosition.orientation,
+                }
+
+                dispatch(positionActions.addPosition(updatedPosition))
+
+            }
+        })
+    }
+
     // Handles adding positions to the device
     const handlePositions = () => {
 
@@ -168,13 +190,14 @@ const DeviceEdit = (props) => {
                 <styled.SettingsSectionsContainer style={{ alignItems: 'center', textAlign: 'center', userSelect: 'none' }}>
 
                     <styled.ConnectionText>Add Cart Position associated with this device</styled.ConnectionText>
-                    <Positions />
+                    <Positions type='cart_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+
                 </styled.SettingsSectionsContainer>
 
                 <styled.SettingsSectionsContainer style={{ alignItems: 'center', textAlign: 'center', userSelect: 'none' }}>
 
                     <styled.ConnectionText>Add Shelf Positions associated with this device</styled.ConnectionText>
-                    <Shelves />
+                    <Positions type='shelf_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
                 </styled.SettingsSectionsContainer>
             </>
         )

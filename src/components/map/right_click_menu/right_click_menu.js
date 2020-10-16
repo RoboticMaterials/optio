@@ -5,8 +5,8 @@ import { useSelector, useDispatch } from 'react-redux'
 // Import actions
 import { addLocation, setSelectedLocation} from '../../../redux/actions/locations_actions'
 
-// Import templates
-import { cartPositionAttributes } from '../../side_bar/content/locations/location_templates'
+// Import utils
+import { LocationTypes } from '../../../methods/utils/locations_utils'
 
 // import styling
 import * as styled from './right_click_menu.style'
@@ -54,7 +54,7 @@ const RightClickMenu = (props) => {
             _id: uuid.v4()
         }
 
-        await Object.assign(tempSelectedLocation, { ...cartPositionAttributes, temp: true })
+        await Object.assign(tempSelectedLocation, { ...LocationTypes['cartPosition'].attributes, temp: true })
 
         await onAddLocation(tempSelectedLocation)
 
