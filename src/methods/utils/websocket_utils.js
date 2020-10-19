@@ -1,3 +1,9 @@
+import log from "../../logger"
+
+const logger = log.getLogger("reconnectingWebRTCSocket")
+
+logger.setLevel("SILENT")
+
 var default_rtc_configuration = {
 	iceServers: [
 		{
@@ -140,20 +146,20 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 			}
 		}
 
-		client.onerror = (e) => console.error(e);
+		client.onerror = (e) => logger.error(e);
 
 		client.onclose = () => {
-			console.log("client.onclose")
+			logger.log("client.onclose")
 
 			isConnected = false;
 			stateChangeListeners.forEach(fn => fn(false));
 
 			if (!reconnectOnClose) {
-				console.log('ws closed by app');
+				logger.log('ws closed by app');
 				return;
 			}
 
-			console.log('ws closed by server');
+			logger.log('ws closed by server');
 
 			// attempt reconnect
 			setTimeout(start, 3000);
@@ -175,11 +181,11 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 
 
 	function createCall(msg) {
-		console.log("createCall: msg", msg)
+		logger.log("createCall: msg", msg)
 		// Reset connection attempts because we connected successfully
 		// connect_attempts = 0;
 
-		console.log('Creating RTCPeerConnection');
+		logger.log('Creating RTCPeerConnection');
 
 		peer_connection = new RTCPeerConnection(rtc_configuration);
 		// send_channel = peer_connection.createDataChannel('label', null);
@@ -221,14 +227,14 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 		};
 
 		if (msg != null && !msg.sdp) {
-			console.log("WARNING: First message wasn't an SDP message!?");
+			logger.log("WARNING: First message wasn't an SDP message!?");
 		}
 
 		peer_connection.onicecandidate = (event) => {
 			// We have a candidate, send it to the remote party with the
 			// same uuid
 			if (event.candidate == null) {
-				console.log("ICE Candidate was null, done");
+				logger.log("ICE Candidate was null, done");
 				return;
 			}
 			client.send(JSON.stringify({'ice': event.candidate}));
@@ -241,7 +247,7 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 
 	// SDP offer received from peer, set remote description and create an answer
 	const onIncomingSDP = (sdp) => {
-		console.log("onIncomingSDP", sdp)
+		logger.log("onIncomingSDP", sdp)
 		peer_connection.setRemoteDescription(sdp).then(() => {
 			setStatus("Remote SDP set");
 			if (sdp.type !== "offer")
@@ -254,8 +260,8 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 
 	// Local description was set, send it to peer
 	const onLocalDescription = (desc) => {
-		console.log("Got local description: ", JSON.stringify(desc));
-		console.log("Got local description: ", desc);
+		logger.log("Got local description: ", JSON.stringify(desc));
+		logger.log("Got local description: ", desc);
 
 		peer_connection.setLocalDescription(desc).then(function() {
 			setStatus("Sending SDP " + desc.type);
@@ -282,9 +288,9 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 	}
 
 	const onRemoteTrack = (event) => {
-		console.log("onRemoteTrack event", event)
+		logger.log("onRemoteTrack event", event)
 		var identity = peer_connection.peerIdentity
-		console.log("identity",identity)
+		logger.log("identity",identity)
 		setError(null)
 		setStatus("Received track.")
 
@@ -292,29 +298,29 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 	}
 
 	const handleDataChannelOpen = (event) =>{
-		console.log("dataChannel.OnOpen", event);
+		logger.log("dataChannel.OnOpen", event);
 	};
 
 	const handleDataChannelMessageReceived = (event) =>{
-		console.log("dataChannel.OnMessage:", event, event.data.type);
+		logger.log("dataChannel.OnMessage:", event, event.data.type);
 
 		setStatus("Received data channel message");
 		if (typeof event.data === 'string' || event.data instanceof String) {
-			console.log('Incoming string message: ' + event.data);
+			logger.log('Incoming string message: ' + event.data);
 			let textarea = document.getElementById("text")
 			textarea.value = textarea.value + '\n' + event.data
 		} else {
-			console.log('Incoming data message');
+			logger.log('Incoming data message');
 		}
 		send_channel.send("Hi! (from browser)");
 	};
 
 	const handleDataChannelError = (error) =>{
-		console.log("dataChannel.OnError:", error);
+		logger.log("dataChannel.OnError:", error);
 	};
 
 	const handleDataChannelClose = (event) =>{
-		console.log("dataChannel.OnClose", event);
+		logger.log("dataChannel.OnClose", event);
 	};
 
 	function onDataChannel(event) {
@@ -328,7 +334,7 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 
 	const reconnectToPeer = () => {
 		if(isConnected) {
-			console.log("reconnectToPeer peer_connection", peer_connection)
+			logger.log("reconnectToPeer peer_connection", peer_connection)
 			// close current connection
 			if (peer_connection) {
 				peer_connection.close();
@@ -352,7 +358,7 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 			if(!reconnectInterval) {
 				reconnectInterval = setInterval(() => {
 					let msg = 'SESSION ' + peer_id
-					console.log(`sending msg: ${msg}`)
+					logger.log(`sending msg: ${msg}`)
 					client.send(msg)
 				}, 3000);
 			}
@@ -394,6 +400,3 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 	};
 
 }
-
-
-
