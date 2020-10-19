@@ -7,6 +7,7 @@ import { addLocation, setSelectedLocation} from '../../../redux/actions/location
 
 // Import utils
 import { LocationTypes } from '../../../methods/utils/locations_utils'
+import { convertD3ToReal } from '../../../methods/utils/map_utils'
 
 // import styling
 import * as styled from './right_click_menu.style'
@@ -14,7 +15,7 @@ import * as styled from './right_click_menu.style'
 import uuid from 'uuid'
 
 /**
- * This the menu that opens on right click
+ * This is the menu that opens on right click
  * It does some funky things that will be explained here
  * 
  * Send cart to location
@@ -22,14 +23,15 @@ import uuid from 'uuid'
  * That name is used in locations, widgets, map view and positions to tell if its a right click menu
  * If it is a right click menu position then the widgets should always be displayed for send or cancel, and not disappear on mouse leave. (see map_view and widgets)
  * 
- * 
+ * The widget buttons have custom actions, and those actions can be found inside of widget_button is widgets
  * @param {*} props 
  */
 const RightClickMenu = (props) => {
 
     const {
         coords,
-        buttonClicked
+        buttonClicked,
+        d3,
     } = props
 
     const dispath = useDispatch()
@@ -42,12 +44,14 @@ const RightClickMenu = (props) => {
 
     const handleSendCartToLocation = async() => {
 
+        const pos = convertD3ToReal([coords.x, coords.y], d3)
+
         const tempSelectedLocation = {
             name: 'TempRightClickMoveLocation',
             schema: 'position',
             type: 'cart_position',
-            pos_x: 0,
-            pos_y: 0,
+            pos_x: pos[0],
+            pos_y: pos[1],
             rotation: 0,
             x: coords.x,
             y: coords.y,

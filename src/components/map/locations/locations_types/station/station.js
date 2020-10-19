@@ -107,7 +107,7 @@ function Station(props) {
 
         // Sets the device type, if the device does not exits in the list of device item types, then it uses the generic device
         let deviceType = DeviceItemTypes['generic']
-        if (!!DeviceItemTypes[device.device_model]) deviceType = DeviceItemTypes[device.device_model]
+        if (!!device && !!DeviceItemTypes[device.device_model]) deviceType = DeviceItemTypes[device.device_model]
         else if (device.device_model === 'MiR100') deviceType = DeviceItemTypes['cart']
 
         try {

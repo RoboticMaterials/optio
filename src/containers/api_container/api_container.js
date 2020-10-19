@@ -118,7 +118,6 @@ const ApiContainer = (props) => {
             // page changed
 
             // update state
-            // this.setState({ currentPage: currentPageRouter });
             setCurrentPage(currentPageRouter)
 
             // update data interval to get data for new currentPage
@@ -139,7 +138,7 @@ const ApiContainer = (props) => {
         if (Object.keys(pageParams)[0] === 'sidebar') {
             pageName = pageParams.sidebar
 
-        } else if (Object.keys(pageParams)[0] === 'locationID') {
+        } else if (Object.keys(pageParams)[0] === 'stationID') {
 
             // Not the best way to do this, but if the params have a locationId and it's undefined
             // then it's url is just locations and not a widget page
@@ -161,11 +160,11 @@ const ApiContainer = (props) => {
         switch (pageName) {
 
             case 'objects':
-                pageDataInterval = setInterval(() => loadObjectsData(), 1000);
+                pageDataInterval = setInterval(() => loadObjectsData(), 10000);
                 break;
 
             case 'scheduler':
-                pageDataInterval = setInterval(() => loadSchedulerData(), 100000);
+                pageDataInterval = setInterval(() => loadSchedulerData(), 10000);
                 break;
 
             case 'dashboards':
@@ -173,15 +172,15 @@ const ApiContainer = (props) => {
                 break;
 
             case 'tasks':
-                pageDataInterval = setInterval(() => loadTasksData(), 1000);
+                pageDataInterval = setInterval(() => loadTasksData(), 10000);
                 break;
 
             case 'settings':
-                pageDataInterval = setInterval(() => loadSettingsData(), 1000);
+                pageDataInterval = setInterval(() => loadSettingsData(), 10000);
                 break;
 
             case 'more':
-                pageDataInterval = setInterval(() => loadMoreData(), 1000);
+                pageDataInterval = setInterval(() => loadMoreData(), 10000);
                 break;
 
             default:
