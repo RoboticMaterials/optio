@@ -62,7 +62,6 @@ export default function Positions(props) {
         <li style={{ listStyle: 'none' }}>
             <styled.PositionListItem>
                 <MinusButton onClick={() => {
-                    console.log('QQQQ Minus clicked', position)
                     // Sees if any tasks are associated with the position
                     Object.values(tasks).filter(task => {
                         return task.load.position == position._id || task.unload.position == position._id
@@ -73,7 +72,6 @@ export default function Positions(props) {
                     // TODO: Get rid of deep copy
                     let locationPositionIDs = deepCopy(selectedLocation.children)
                     locationPositionIDs.splice(i, 1)
-                    console.log('QQQQ Splicing these ids', locationPositionIDs)
                     dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
 
                     dispatch(positionActions.deletePosition(positions[position._id], position._id))

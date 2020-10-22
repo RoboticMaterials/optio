@@ -11,17 +11,20 @@ const MiR100 = (props) => {
 
     const shouldGlow = false
 
-    // console.log('QQQQ Device', device)
 
     let type = 'cart'
 
+    if (device['shelf_attached'] > 0) {
+        type = 'shelf'
+    }
+
     let color = DeviceItemTypes[type].primaryColor
 
-    if(device.state_text === 'EmergencyStop'){
+    if (device.state_text === 'EmergencyStop') {
         color = 'red'
-    } 
+    }
 
-    
+
 
     return (
         <g
