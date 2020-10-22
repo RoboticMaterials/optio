@@ -9,8 +9,8 @@ export const PageContainer = styled.div`
     max-width: 100%;
     width: 100%;
     align-items: center;
+    position: relative;
 
-    background: ${props => props.theme.bg.octonary};
 
     flex: 1;
 `
@@ -24,8 +24,6 @@ export const ConnectContainer = styled.div`
 `
 
 export const DeviceName = styled.p`
-    font: ${props => props.theme.font.primary};
-    font-size: ${props => props.theme.fontSize.sz2};
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -33,8 +31,6 @@ export const DeviceName = styled.p`
 `
 
 export const LiveText = styled.span`
-    font: ${props => props.theme.font.primary};
-    font-size: ${props => props.theme.fontSize.sz3};
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -43,6 +39,12 @@ export const LiveText = styled.span`
 
     position: absolute;
     right: 1rem;
+`
+
+export const Icon = styled.i`
+	margin: 1rem;
+	color: black;
+	font-size: 1.5rem;
 `
 
 export const TitleContainer = styled.div`
