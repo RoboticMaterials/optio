@@ -15,7 +15,7 @@ z-index:500;
   position: relative;
   width: 100%;
   height: 100%;
-  background: black;
+  background: grey;
    /* Player ratio: 100 / (1280 / 720) */
   //padding-top: 56.25%;
   //max-height: 20rem;

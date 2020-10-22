@@ -1,19 +1,27 @@
-import log from "../../logger"
+import log from 'loglevel';
 
 const logger = log.getLogger("reconnectingWebRTCSocket")
 
-logger.setLevel("SILENT")
+logger.setLevel("debug")
+
+const googleSTUN = "stun:stun.l.google.com:19302"
+const mozillaSTUN = "stun:stun.services.mozilla.com"
 
 var default_rtc_configuration = {
 	iceServers: [
 		{
-			urls: "stun:stun.l.google.com:19302"
+			urls: mozillaSTUN
+		},
+		{
+			urls: googleSTUN
 		}
-	]
+	],
+	iceCandidatePoolSize: 1
 };
 
 
-export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
+
+export default function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 	let client;
 	let isConnected = false;
 	let reconnectOnClose = true;
@@ -26,9 +34,11 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 	var statusListeners = [];
 	var status = null;
 	var error = null;
-	var reconnectInterval;
+	var roomReconnectInterval;
+	var peerReconnectInterval;
 	var helloInterval;
 	var rtc_configuration = rtc_config || default_rtc_configuration
+	var streams = []
 
 	function addMessageListener(fn) {
 		messageListeners.push(fn);
@@ -39,6 +49,7 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 	}
 
 	function addErrorListener(fn) {
+
 		errorListeners.push(fn);
 		return () => {
 			errorListeners = errorListeners.filter(l => l !== fn);
@@ -46,6 +57,7 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 	}
 
 	const setError = (message) => {
+		logger.error("setError: message",message)
 		error = message;
 		errorListeners.forEach(fn => fn(message));
 	}
@@ -88,6 +100,8 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 		}
 
 		client.onmessage = (event) => {
+			logger.log("onmessage event.dataa", event.data)
+
 			messageListeners.forEach(fn => fn(event));
 			let msg;
 
@@ -95,14 +109,14 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 				case "HELLO":
 					setStatus("Registered with server.");
 					clearHelloInterval()
-					setReconnectInerval()
+					setRoomReconnectInterval()
 					return;
 
 				case "SESSION_OK":
 					// successfully connected, clear interval
-					clearReconnectInterval()
+					clearRoomReconnectInterval()
 
-					setStatus("Successfuly started P2P session with " + peer_id);
+					setStatus("Successfuly started session with " + peer_id);
 					return
 
 				default:
@@ -111,12 +125,32 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 						return;
 					}
 					else if (event.data.startsWith("SESSION_PEER_LEFT")) {
-						reconnectToPeer()
+						// reconnectToPeer()
+					}
+					else if (event.data.startsWith("ROOM_OK")) {
+						clearRoomReconnectInterval()
+						setStatus("Successfuly joined room " + peer_id);
+						setPeerReconnectInterval(1000)
+						return
+					}
+					else if (event.data.startsWith("ROOM_PEER_LEFT")) {
+						logger.log("ROOM_PEER_LEFT")
+						return
+					}
+					else if (event.data.startsWith("ROOM_PEER_MSG")) {
+						logger.log("ROOM_PEER_MSG ROOM_PEER_MSG ROOM_PEER_MSG")
+						var splitted = event.data.split(" ");
+						logger.log("splitted",splitted)
+
+						return
+					}
+					else if (event.data.startsWith("ping")) {
+						return
 					}
 					if (event.data.startsWith("OFFER_REQUEST")) {
 						// The peer wants us to set up and then send an offer
 						if (!peer_connection)
-						createCall(null).then (generateOffer);
+							createCall(null).then (generateOffer);
 					}
 					else {
 						// Handle incoming JSON SDP and ICE messages
@@ -132,14 +166,22 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 						}
 
 						// Incoming JSON signals the beginning of a call
-						if (!peer_connection)
+						msg = msg.content
+						if (!peer_connection) {
 							createCall(msg);
+						}
 
 						if (msg.sdp != null) {
 							onIncomingSDP(msg.sdp);
 						} else if (msg.ice != null) {
 							onIncomingICE(msg.ice);
-						} else {
+						}  else if (msg === "PIPELINE_STOPPED") {
+							reconnectToPeer(100)
+							// closePeerConnection()
+							logger.log("PIPELINE_STOPPED")
+
+						}
+						else {
 							setError("Unknown incoming JSON: " + msg);
 						}
 					}
@@ -154,6 +196,8 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 			isConnected = false;
 			stateChangeListeners.forEach(fn => fn(false));
 
+			closePeerConnection()
+
 			if (!reconnectOnClose) {
 				logger.log('ws closed by app');
 				return;
@@ -167,12 +211,9 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 
 			setStatus('Disconnected from server');
 
-			if (peer_connection) {
-				peer_connection.close();
-				peer_connection = null;
-			}
 
-			clearReconnectInterval()
+			clearPeerReconnectInterval()
+			clearRoomReconnectInterval()
 			clearHelloInterval()
 		}
 	}
@@ -181,13 +222,16 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 
 
 	function createCall(msg) {
+		logger.warn("*** createCall ***");
 		logger.log("createCall: msg", msg)
 		// Reset connection attempts because we connected successfully
 		// connect_attempts = 0;
 
 		logger.log('Creating RTCPeerConnection');
 
-		peer_connection = new RTCPeerConnection(rtc_configuration);
+		// peer_connection = new RTCPeerConnection(rtc_configuration);
+		peer_connection = new RTCPeerConnection();
+
 		// send_channel = peer_connection.createDataChannel('label', null);
 		// send_channel.onopen = handleDataChannelOpen;
 		// send_channel.onmessage = handleDataChannelMessageReceived;
@@ -196,16 +240,48 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 		peer_connection.ondatachannel = onDataChannel;
 		peer_connection.ontrack = onRemoteTrack;
 
-		peer_connection.onsignalingstatechange = (args)=>{
+
+
+		peer_connection.onicecandidateerror = (event)=>{
+
+			logger.log("onicecandidateerror event", event)
+			if (event.errorCode >= 300 && event.errorCode <= 699) {
+				// STUN errors are in the range 300-699. See RFC 5389, section 15.6
+				// for a list of codes. TURN adds a few more error codes; see
+				// RFC 5766, section 15 for details.
+			} else if (event.errorCode >= 700 && event.errorCode <= 799) {
+				// Server could not be reached; a specific error number is
+				// provided but these are not yet specified.
+			}
 		};
 
-		peer_connection.onicegatheringstatechange = (args)=>{
+		peer_connection.onremovestream = (event)=>{
+			logger.log("onremovestream event", event)
 		};
 
-		peer_connection.oniceconnectionstatechange = (args)=>{
+
+
+		peer_connection.onsignalingstatechange = (event)=>{
+			logger.log("onsignalingstatechange event", event)
+			logger.log("onsignalingstatechange peer_connection.signalingState", peer_connection.signalingState)
+
 		};
 
-		peer_connection.onconnectionstatechange = (args)=>{
+		peer_connection.onicegatheringstatechange = (event)=>{
+			logger.log("onicegatheringstatechange event", event)
+			logger.log("peer_connection.iceGatheringState", peer_connection.iceGatheringState)
+		};
+
+		peer_connection.oniceconnectionstatechange = (event)=>{
+			logger.log("oniceconnectionstatechange event", event)
+			logger.log("oniceconnectionstatechange pc.iceConnectionState", peer_connection.iceConnectionState)
+
+		};
+
+		peer_connection.onconnectionstatechange = (event)=>{
+			console.log("peer_connection onconnectionstatechange event", event)
+			console.log("peer_connection onconnectionstatechange peer_connection", peer_connection)
+			console.log("peer_connection onconnectionstatechange peer_connection.connectionState", peer_connection.connectionState)
 
 			switch(peer_connection.connectionState) {
 				case "connected":
@@ -231,13 +307,20 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 		}
 
 		peer_connection.onicecandidate = (event) => {
+			logger.warn("*** onicecandidate *** - sending candidate", event)
 			// We have a candidate, send it to the remote party with the
 			// same uuid
 			if (event.candidate == null) {
-				logger.log("ICE Candidate was null, done");
+				logger.log("ICE Candidate was null, done    ");
 				return;
 			}
-			client.send(JSON.stringify({'ice': event.candidate}));
+
+
+			client.send(JSON.stringify({
+				type: "ROOM_PEER_MSG",
+				to: peer_id.toString(),
+				content: {'ice': event.candidate}
+			}));
 		};
 
 		if (msg != null)
@@ -247,7 +330,7 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 
 	// SDP offer received from peer, set remote description and create an answer
 	const onIncomingSDP = (sdp) => {
-		logger.log("onIncomingSDP", sdp)
+		logger.warn("*** onIncomingSDP ***", sdp)
 		peer_connection.setRemoteDescription(sdp).then(() => {
 			setStatus("Remote SDP set");
 			if (sdp.type !== "offer")
@@ -260,48 +343,72 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 
 	// Local description was set, send it to peer
 	const onLocalDescription = (desc) => {
+		logger.warn("*** onLocalDescription ***");
 		logger.log("Got local description: ", JSON.stringify(desc));
 		logger.log("Got local description: ", desc);
 
 		peer_connection.setLocalDescription(desc).then(function() {
 			setStatus("Sending SDP " + desc.type);
-			let sdp = {'sdp': peer_connection.localDescription}
+			let sdp = {
+				content: {'sdp': peer_connection.localDescription},
+				type: "ROOM_PEER_MSG",
+				to: peer_id.toString()
+			}
 			client.send(JSON.stringify(sdp));
 		});
 	}
 
 	const generateOffer = () => {
+		logger.warn("*** generateOffer ***");
 		peer_connection.createOffer().then(onLocalDescription).catch(setError);
 	}
 
 	// ICE candidate received from peer, add it to the peer connection
 	const onIncomingICE = (ice) => {
+
 		var candidate = new RTCIceCandidate(ice);
+		logger.warn("*** onIncomingICE ***", candidate);
 		peer_connection.addIceCandidate(candidate).catch(setError);
 	}
 
 	function addRemoteTrackListener(fn) {
+		logger.warn("*** addRemoteTrackListener ***");
 		remoteTrackListeners.push(fn);
 		return () => {
 			remoteTrackListeners = remoteTrackListeners.filter(l => l !== fn);
 		};
 	}
 
+	const closePeerConnection = () => {
+		logger.warn("*** closePeerConnection ***");
+
+		if(peer_connection) {
+			// peer_connection.restartIce()
+			peer_connection.close()
+		}
+		peer_connection = null
+	}
+
 	const onRemoteTrack = (event) => {
-		logger.log("onRemoteTrack event", event)
+
+		logger.warn("*** onRemoteTrack *** event", event)
 		var identity = peer_connection.peerIdentity
 		logger.log("identity",identity)
 		setError(null)
 		setStatus("Received track.")
 
+		// streams = streams.concat(event.streams)
+		console.log("onRemoteTrack streams", streams)
+
 		remoteTrackListeners.forEach(fn => fn(event.streams));
 	}
 
 	const handleDataChannelOpen = (event) =>{
-		logger.log("dataChannel.OnOpen", event);
+		logger.warn("*** handleDataChannelOpen ***", event);
 	};
 
 	const handleDataChannelMessageReceived = (event) =>{
+		logger.warn("*** handleDataChannelMessageReceived ***");
 		logger.log("dataChannel.OnMessage:", event, event.data.type);
 
 		setStatus("Received data channel message");
@@ -316,14 +423,17 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 	};
 
 	const handleDataChannelError = (error) =>{
+		logger.warn("*** handleDataChannelError ***");
 		logger.log("dataChannel.OnError:", error);
 	};
 
 	const handleDataChannelClose = (event) =>{
+		logger.warn("*** handleDataChannelClose ***");
 		logger.log("dataChannel.OnClose", event);
 	};
 
 	function onDataChannel(event) {
+		logger.warn("*** onDataChannel ***");
 		setStatus("Data channel created");
 		let receiveChannel = event.channel;
 		receiveChannel.onopen = handleDataChannelOpen;
@@ -332,45 +442,82 @@ export function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_config) {
 		receiveChannel.onclose = handleDataChannelClose;
 	}
 
-	const reconnectToPeer = () => {
+	const reconnectToPeer = (interval) => {
+		logger.warn("*** reconnectToPeer ***: interval", interval);
+		if(peer_connection) peer_connection.restartIce()
+
 		if(isConnected) {
 			logger.log("reconnectToPeer peer_connection", peer_connection)
 			// close current connection
-			if (peer_connection) {
-				peer_connection.close();
-				peer_connection = null;
-			}
+			closePeerConnection()
 			peer_connection = null;
-
-			setReconnectInerval()
+			setPeerReconnectInterval(3000)
 		}
 	}
 
-	const clearReconnectInterval = () => {
-		clearInterval(reconnectInterval)
-		reconnectInterval = null
+	const clearPeerReconnectInterval = () => {
+		clearInterval(peerReconnectInterval)
+		peerReconnectInterval = null
 	}
 
-	const setReconnectInerval = () => {
+	const setPeerReconnectInterval = (interval) => {
+
+		logger.warn("*** setPeerReconnectInterval a***");
+
 		if(isConnected) {
 			setStatus(`Attempting to connect to peer ${peer_id}.`);
-			client.send('SESSION ' + peer_id)
-			if(!reconnectInterval) {
-				reconnectInterval = setInterval(() => {
-					let msg = 'SESSION ' + peer_id
+
+			let msg = 'CONNECT ' + peer_id
+
+			client.send(msg)
+			if(!peerReconnectInterval) {
+				peerReconnectInterval = setInterval(() => {
+					if(peer_connection) {
+						clearPeerReconnectInterval()
+					}
+
 					logger.log(`sending msg: ${msg}`)
 					client.send(msg)
-				}, 3000);
+				}, interval);
+			}
+		}
+	}
+
+
+	const clearRoomReconnectInterval = () => {
+		logger.warn("*** clearRoomReconnectInterval ***");
+		clearInterval(roomReconnectInterval)
+		roomReconnectInterval = null
+	}
+
+	const setRoomReconnectInterval = (interval) => {
+
+		logger.warn("*** setRoomReconnectInterval ***");
+
+		if(isConnected) {
+			setStatus(`Attempting to connect to peer ${peer_id}.`);
+
+			let msg = 'ROOM ' + peer_id
+
+			client.send(msg)
+			if(!roomReconnectInterval) {
+				roomReconnectInterval = setInterval(() => {
+
+					logger.log(`sending msg: ${msg}`)
+					client.send(msg)
+				}, interval);
 			}
 		}
 	}
 
 	const clearHelloInterval = () => {
+		logger.warn("*** clearHelloInterval ***");
 		clearInterval(helloInterval)
 		helloInterval = null
 	}
 
 	const setHelloInterval = () => {
+		logger.warn("*** setHelloInterval ***");
 		if(isConnected) {
 			client.send('HELLO ' + our_id);
 			if(!helloInterval) {
