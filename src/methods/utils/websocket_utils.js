@@ -229,8 +229,8 @@ export default function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_confi
 
 		logger.log('Creating RTCPeerConnection');
 
-		// peer_connection = new RTCPeerConnection(rtc_configuration);
-		peer_connection = new RTCPeerConnection();
+		peer_connection = new RTCPeerConnection(rtc_configuration);
+		//peer_connection = new RTCPeerConnection();
 
 		// send_channel = peer_connection.createDataChannel('label', null);
 		// send_channel.onopen = handleDataChannelOpen;
