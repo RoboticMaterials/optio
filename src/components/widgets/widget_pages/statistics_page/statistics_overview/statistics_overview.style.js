@@ -40,7 +40,7 @@ export const PlotContainer = styled.div`
     max-width: 90rem;
     width: 100%;
     margin: 0rem auto;
-    margin-top: 2rem;
+    margin-top: 4rem;
 
     overflow: visible;
 
@@ -53,6 +53,8 @@ export const PlotContainer = styled.div`
 export const StatsSection = styled.div`
     /* background: ${props => LightenDarkenColor(props.theme.bg.quaternary, -10)}; */
     border-radius: 0.5rem;
+
+    /* margin-bottom: 1rem; */
 
     max-width: 60rem;
     width: 100%;

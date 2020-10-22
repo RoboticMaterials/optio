@@ -181,12 +181,15 @@ export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
             return widgetInfo
         }
 
+        widgetInfo.scale = 1.3
+        widgetInfo.yPosition = location.y + bBox.height / 2 - 75
+        widgetInfo.xPosition = location.x + 12
+
         // Stops the widget from getting to small and keeping the widget relative to the location size
         if (d3.scale < .8) {
             widgetInfo.scale = .8
             widgetInfo.yPosition = location.y + bBox.height / 2 - 68
             widgetInfo.xPosition = location.x - 15
-
         }
 
         // Stops the widget from getting to large and keeping the widget relatice to the location size

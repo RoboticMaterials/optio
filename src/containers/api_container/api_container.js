@@ -356,15 +356,15 @@ const ApiContainer = (props) => {
                 return
             }
 
-
+            // Commented out for the AMR demo
             // Deletes the task if the load/unload position has a parent, but that parent does not exist in stations (parent has been deleted)
             // Also should delete the position as well
-            if ((!!positions[task.load.position].parent && !Object.keys(stations).includes(positions[task.load.position].parent)) ||
-                (!!positions[task.unload.position].parent && !Object.keys(stations).includes(positions[task.load.position].parent))) {
-                console.log('QQQQ Position parent has been deleted, DELETE TASK AND POSITION')
-                await onDeleteTask(task._id.$oid)
-                return
-            }
+            // if ((!!positions[task.load.position].parent && !Object.keys(stations).includes(positions[task.load.position].parent)) ||
+            //     (!!positions[task.unload.position].parent && !Object.keys(stations).includes(positions[task.load.position].parent))) {
+            //     console.log('QQQQ Position parent has been deleted, DELETE TASK AND POSITION')
+            //     await onDeleteTask(task._id.$oid)
+            //     return
+            // }
         })
     }
 
