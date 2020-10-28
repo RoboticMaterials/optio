@@ -114,12 +114,9 @@ const DashboardsList = (props) => {
 			newDash.buttons.push(button)
 		}
 		const postDashboardPromise = dispatch(dashboardActions.postDashboard(newDash))
-		console.log("postDashboardPromise",postDashboardPromise)
 
 		// Add this new dashboard to the station
 		postDashboardPromise.then(async postedDashboard => {
-			console.log("postedDashboard",postedDashboard)
-			console.log("newDash",newDash)
 
 			let stationDashboards = station.dashboards
 			stationDashboards.push(postedDashboard._id.$oid)
@@ -152,18 +149,11 @@ const DashboardsList = (props) => {
 			const currDashboard = dashboardsArray[index]
 
 
-			console.log("itemRenderer: dashboardsArray",dashboardsArray)
-			console.log("itemRenderer: currDashboard",currDashboard)
-			console.log("itemRenderer: dashboardsArray",dashboardsArray)
-			console.log("itemRenderer: index",index)
-
 			// get dashboard properties
 			let name = currDashboard.name
 			let ID = currDashboard._id.$oid
 			let buttons = currDashboard.buttons
 			let deleted = false
-
-			logger.log("itemRenderer: buttons",buttons)
 
 			logger.log("rednering dashboard")
 			return (
@@ -205,7 +195,7 @@ const DashboardsList = (props) => {
 					itemsRenderer={(items, ref)=> {
 						return(
 							<style.DashboardList ref={ref}
-												 onScroll={()=>console.log("DashboardList scroll")}
+												 onScroll={()=>logger.log("DashboardList scroll")}
 							>
 								{items}
 							</style.DashboardList>
