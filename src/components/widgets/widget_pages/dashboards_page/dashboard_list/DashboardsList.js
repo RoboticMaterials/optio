@@ -55,7 +55,7 @@ const DashboardsList = (props) => {
 
 	// dispatch
 	const dispatch = useDispatch()
-	
+
 	// Drop reference for new dashboard
 	const [{}, newDashDropRef] = useDrop({
 		accept:  "DashboardSidebarButton",
@@ -90,7 +90,7 @@ const DashboardsList = (props) => {
 	}
 
 	const handleNew = (button) => {
-		// This block iterates through 'i' to find 'Untitled Dashboard i' that 
+		// This block iterates through 'i' to find 'Untitled Dashboard i' that
 		// that does not exists at this station
 		var i = 0
 		var exists = true
@@ -114,9 +114,13 @@ const DashboardsList = (props) => {
 			newDash.buttons.push(button)
 		}
 		const postDashboardPromise = dispatch(dashboardActions.postDashboard(newDash))
+		console.log("postDashboardPromise",postDashboardPromise)
 
 		// Add this new dashboard to the station
 		postDashboardPromise.then(async postedDashboard => {
+			console.log("postedDashboard",postedDashboard)
+			console.log("newDash",newDash)
+
 			let stationDashboards = station.dashboards
 			stationDashboards.push(postedDashboard._id.$oid)
 			await dispatch(stationActions.setStationAttributes(station._id, {dashboards: stationDashboards}))
@@ -148,8 +152,10 @@ const DashboardsList = (props) => {
 			const currDashboard = dashboardsArray[index]
 
 
-			logger.log("itemRenderer: dashboardsArray",dashboardsArray)
-			logger.log("itemRenderer: currDashboard",currDashboard)
+			console.log("itemRenderer: dashboardsArray",dashboardsArray)
+			console.log("itemRenderer: currDashboard",currDashboard)
+			console.log("itemRenderer: dashboardsArray",dashboardsArray)
+			console.log("itemRenderer: index",index)
 
 			// get dashboard properties
 			let name = currDashboard.name
@@ -158,10 +164,6 @@ const DashboardsList = (props) => {
 			let deleted = false
 
 			logger.log("itemRenderer: buttons",buttons)
-
-			buttons.forEach(button => {
-				button.name = tasks[button.task_id].name
-			})
 
 			logger.log("rednering dashboard")
 			return (
