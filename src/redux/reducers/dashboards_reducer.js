@@ -103,8 +103,11 @@ export default function dashboardsReducer(state = defaultState, action) {
             });
 
         case POST_DASHBOARD_SUCCESS:
-            dashboardsCopy = deepCopy(action.payload)
+            dashboardsCopy = deepCopy(state.dashboards)
+            console.log("dashboardsCopy",dashboardsCopy)
             dashboardsCopy[action.payload._id.$oid] = action.payload
+            console.log("action.payload",action.payload)
+            console.log("dashboardsCopy",dashboardsCopy)
             return {
                 ...state,
                 dashboards: dashboardsCopy,
