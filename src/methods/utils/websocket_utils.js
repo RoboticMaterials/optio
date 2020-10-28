@@ -289,9 +289,9 @@ export default function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_confi
         };
 
         peer_connection.onconnectionstatechange = (event)=>{
-            console.log("peer_connection onconnectionstatechange event", event)
-            console.log("peer_connection onconnectionstatechange peer_connection", peer_connection)
-            console.log("peer_connection onconnectionstatechange peer_connection.connectionState", peer_connection.connectionState)
+            logger.log("peer_connection onconnectionstatechange event", event)
+            logger.log("peer_connection onconnectionstatechange peer_connection", peer_connection)
+            logger.log("peer_connection onconnectionstatechange peer_connection.connectionState", peer_connection.connectionState)
 
             switch(peer_connection.connectionState) {
                 case "connected":
@@ -408,7 +408,7 @@ export default function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_confi
         setStatus("Received track.")
 
         // streams = streams.concat(event.streams)
-        console.log("onRemoteTrack streams", streams)
+        logger.log("onRemoteTrack streams", streams)
 
         remoteTrackListeners.forEach(fn => fn(event.streams));
     }
