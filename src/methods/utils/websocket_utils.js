@@ -2,10 +2,15 @@ import log from 'loglevel';
 
 const logger = log.getLogger("reconnectingWebRTCSocket")
 
-logger.setLevel("error")
-
+logger.setLevel("silent")
+// RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection
 const googleSTUN = "stun:stun.l.google.com:19302"
 const mozillaSTUN = "stun:stun.services.mozilla.com"
+
+// RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
+
+RTCSessionDescription = window.RTCSessionDescription || window.RTCSessionDescription
+RTCIceCandidate = window.RTCIceCandidate || window.RTCIceCandidate
 
 var default_rtc_configuration = {
     iceServers: [
@@ -16,7 +21,8 @@ var default_rtc_configuration = {
             urls: googleSTUN
         }
     ],
-    iceCandidatePoolSize: 1
+    iceCandidatePoolSize: 10,
+		asdasdsa: 2322
 };
 
 
@@ -231,6 +237,7 @@ export default function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_confi
         // connect_attempts = 0;
 
         logger.log('Creating RTCPeerConnection');
+
 
         peer_connection = new RTCPeerConnection(rtc_configuration);
         // peer_connection = new RTCPeerConnection();
