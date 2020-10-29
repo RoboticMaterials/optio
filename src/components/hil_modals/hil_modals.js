@@ -35,13 +35,15 @@ const HILModals = (props) => {
     const dispatch = useDispatch()
     const onPostTaskQueue = (response) => dispatch(postTaskQueue(response))
     const onTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
-    const onHILResponse = (response) => dispatch({type: 'HIL_RESPONSE', payload: response})
+    const onHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
     const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
+    const onSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
     const onPostEvents = (event) => dispatch(postEvents)
 
     const hilTimers = useSelector(state => { return state.taskQueueReducer.hilTimers })
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
+    const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
 
     const [quantity, setQuantity] = useState(taskQuantity)
     const [hilLoadUnload, setHilLoadUnload] = useState('')
@@ -74,16 +76,18 @@ const HILModals = (props) => {
             hil_response: true
         }
 
+        // Deletes the dashboard id from active list for the hil that has been responded too
+        onSetActiveHilDashboards(delete (activeHilDashboards[item.hil_station_id]))
+
         const ID = deepCopy(taskQueueID)
 
         delete newItem._id
 
         // This is used to make the tap of the HIL button respond quickly 
         onHILResponse('success')
-        setTimeout(() => onHILResponse(''), 1000) 
+        setTimeout(() => onHILResponse(''), 2000)
 
         await onPutTaskQueue(newItem, ID)
-        
 
         handleLogEvent()
     }

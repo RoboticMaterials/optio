@@ -48,6 +48,7 @@ const defaultState = {
     taskQueueItemClicked: '',
     hilTimers: {},
     hilResponse: '',
+    activeHilDashboards: {},
 };
 
 export default function taskQueueReducer(state = defaultState, action) {
@@ -69,12 +70,22 @@ export default function taskQueueReducer(state = defaultState, action) {
                 ...state,
                 hilTimers: action.payload,
             }
-        
+
+        // Used for immediate HIL response input 
         case 'HIL_RESPONSE':
             return {
                 ...state,
                 hilResponse: action.payload,
             }
+
+        // Used to set first in, first out dashboard HILs
+        // Not 100% tested, but in theory should work
+        case 'ACTIVE_HIL_DASHBOARDS':
+            return {
+                ...state,
+                activeHilDashboards: action.payload,
+            }
+
 
         // get
         // ***************

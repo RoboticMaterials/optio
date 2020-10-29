@@ -13,6 +13,7 @@ const HILModal = () => {
 
     // Adds HIL timer to taskQueueReducer so it can be used in other areas such as status_header
     const onSetHilTimers = (timers) => dispatch({ type: 'HIL_TIMERS', payload: timers })
+    const onSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active})
 
     let status = useSelector(state => { return state.statusReducer.status })
     const dashboards = useSelector(state => { return state.dashboardsReducer.dashboards })
@@ -22,8 +23,8 @@ const HILModal = () => {
     const hilTimers = useSelector(state => state.taskQueueReducer.hilTimers)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
+    const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
 
-    const [activeHilDashboards, setActiveHilDashboards] = useState({})
     const [statusTimerIntervals, setStatusTimerIntervals] = useState({})
 
     /**
@@ -58,7 +59,7 @@ const HILModal = () => {
                     // if the list of active hil dashboards does not include the dashboard then add
                     if (!Object.keys(activeHilDashboards).includes(dashboard)) {
                         // activeHilDashboards.push(dashboard)
-                        setActiveHilDashboards({
+                        onSetActiveHilDashboards({
                             ...activeHilDashboards,
                             [dashboard]: id,
                         })
