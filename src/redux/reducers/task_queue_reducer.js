@@ -17,6 +17,11 @@ import {
     POST_TASK_QUEUE_SUCCESS,
     POST_TASK_QUEUE_FAILURE,
 
+    PUT_TASK_QUEUE,
+    PUT_TASK_QUEUE_STARTED,
+    PUT_TASK_QUEUE_SUCCESS,
+    PUT_TASK_QUEUE_FAILURE,
+
     DELETE_TASK_QUEUE,
     DELETE_TASK_QUEUE_STARTED,
     DELETE_TASK_QUEUE_SUCCESS,
@@ -34,7 +39,7 @@ import {
     _FAILURE,
 } from '../types/api_types';
 
-import { clone_object } from '../../methods/utils/utils';
+import { clone_object, deepCopy } from '../../methods/utils/utils';
 
 const defaultState = {
     taskQueue: {},
@@ -42,6 +47,8 @@ const defaultState = {
     error: '',
     taskQueueItemClicked: '',
     hilTimers: {},
+    hilResponse: '',
+    activeHilDashboards: {},
 };
 
 export default function taskQueueReducer(state = defaultState, action) {
@@ -64,10 +71,26 @@ export default function taskQueueReducer(state = defaultState, action) {
                 hilTimers: action.payload,
             }
 
+        // Used for immediate HIL response input 
+        case 'HIL_RESPONSE':
+            return {
+                ...state,
+                hilResponse: action.payload,
+            }
+
+        // Used to set first in, first out dashboard HILs
+        // Not 100% tested, but in theory should work
+        case 'ACTIVE_HIL_DASHBOARDS':
+            return {
+                ...state,
+                activeHilDashboards: action.payload,
+            }
+
+
         // get
         // ***************
         case GET_TASK_QUEUE_SUCCESS:
-            if(action.payload === undefined){
+            if (action.payload === undefined) {
                 action.payload = {}
             }
             return Object.assign({}, state, {
@@ -92,12 +115,15 @@ export default function taskQueueReducer(state = defaultState, action) {
         // post
         // ***************
         case POST_TASK_QUEUE_SUCCESS:
-
-            return Object.assign({}, state, {
-                taskQueue: { ...state.taskQueue, [action.payload.createdTaskQueueItem._id.$oid]: action.payload.createdTaskQueueItem },
+            return {
+                ...state,
+                taskQueue: {
+                    ...state.taskQueue,
+                    [action.payload.createdTaskQueueItem._id.$oid]: action.payload.createdTaskQueueItem
+                },
                 error: '',
-                pending: false
-            });
+                pending: false,
+            }
 
         case POST_TASK_QUEUE_FAILURE:
             return Object.assign({}, state, {
@@ -106,6 +132,42 @@ export default function taskQueueReducer(state = defaultState, action) {
             });
 
         case POST_TASK_QUEUE_STARTED:
+            return Object.assign({}, state, {
+                pending: true
+            });
+        // ~~~~~~~~~~~~~~~
+
+        // put
+        // ***************
+        case PUT_TASK_QUEUE_SUCCESS:
+
+            const updatedTaskQ = deepCopy({
+                ...action.payload.item,
+                _id: { $oid: action.payload.ID }
+
+            })
+
+            let forceUpdate = {}
+
+            forceUpdate = Object.assign(forceUpdate, updatedTaskQ)
+
+            return {
+                ...state,
+                taskQueue: {
+                    ...state.taskQueue,
+                    [action.payload.ID]: forceUpdate,
+                },
+                error: '',
+                pending: false,
+            }
+
+        case PUT_TASK_QUEUE_FAILURE:
+            return Object.assign({}, state, {
+                error: action.payload,
+                pending: false
+            });
+
+        case PUT_TASK_QUEUE_STARTED:
             return Object.assign({}, state, {
                 pending: true
             });

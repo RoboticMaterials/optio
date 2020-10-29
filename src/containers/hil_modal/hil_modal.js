@@ -13,6 +13,7 @@ const HILModal = () => {
 
     // Adds HIL timer to taskQueueReducer so it can be used in other areas such as status_header
     const onSetHilTimers = (timers) => dispatch({ type: 'HIL_TIMERS', payload: timers })
+    const onSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active})
 
     let status = useSelector(state => { return state.statusReducer.status })
     const dashboards = useSelector(state => { return state.dashboardsReducer.dashboards })
@@ -21,8 +22,9 @@ const HILModal = () => {
     const locations = useSelector(state => state.locationsReducer.locations)
     const hilTimers = useSelector(state => state.taskQueueReducer.hilTimers)
     const tasks = useSelector(state => state.tasksReducer.tasks)
+    const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
+    const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
 
-    const [activeHilDashboards, setActiveHilDashboards] = useState({})
     const [statusTimerIntervals, setStatusTimerIntervals] = useState({})
 
     /**
@@ -39,6 +41,8 @@ const HILModal = () => {
             return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item} />
         }
 
+        // Used to hide the HIL if success was clicked. (See HIL_Modals)
+        if(hilResponse === 'success') return
 
         return Object.keys(taskQueue).map((id, ind) => {
 
@@ -55,7 +59,7 @@ const HILModal = () => {
                     // if the list of active hil dashboards does not include the dashboard then add
                     if (!Object.keys(activeHilDashboards).includes(dashboard)) {
                         // activeHilDashboards.push(dashboard)
-                        setActiveHilDashboards({
+                        onSetActiveHilDashboards({
                             ...activeHilDashboards,
                             [dashboard]: id,
                         })
@@ -69,7 +73,7 @@ const HILModal = () => {
 
                     const hilType = tasks[item.task_id].type
 
-                    return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={id} item={item} key={id}/>
+                    return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={id} item={item} key={id} />
                 }
                 else {
                     return null
@@ -79,7 +83,7 @@ const HILModal = () => {
 
         })
 
-    }, [taskQueue, params.dashboardID, taskQueueItemClicked])
+    }, [taskQueue, params.dashboardID, taskQueueItemClicked, hilResponse])
 
 
     /**
@@ -153,7 +157,7 @@ const HILModal = () => {
                                 onSetHilTimers({
                                     ...hilTimers,
                                 })
-                                
+
                                 //  Delete the timer in the state
                                 if (!!statusTimerIntervals[id]) {
                                     clearInterval(statusTimerIntervals[id])
@@ -194,12 +198,12 @@ const HILModal = () => {
         })
 
         // If the length of intervals is greater then 0 check to make sure the ascoiated task q item is still in task q
-        if(Object.keys(statusTimerIntervals).length > 0){
+        if (Object.keys(statusTimerIntervals).length > 0) {
 
             Object.keys(statusTimerIntervals).map((id, ind) => {
 
                 // If Item is not in task q, end the interval
-                if(!taskQueue[id]){
+                if (!taskQueue[id]) {
                     clearInterval(statusTimerIntervals[id])
                     delete statusTimerIntervals[id]
                     setStatusTimerIntervals({

@@ -49,9 +49,9 @@ function Station(props) {
         return () => {
             // window.removeEventListener("mousup")
         }
-        
+
     })
-    
+
     /**
     * This runs on page load (thats mean location are mounted) and shows a widget page if it returns true. 
     * If there is a station ID in the params (URL) and it matches this location,
@@ -107,8 +107,16 @@ function Station(props) {
 
         // Sets the device type, if the device does not exits in the list of device item types, then it uses the generic device
         let deviceType = DeviceItemTypes['generic']
-        if (!!device && !!DeviceItemTypes[device.device_model]) deviceType = DeviceItemTypes[device.device_model]
-        else if (device.device_model === 'MiR100') deviceType = DeviceItemTypes['cart']
+        try {
+
+            if (!!device && !!device.device_model && !!DeviceItemTypes[device.device_model]) deviceType = DeviceItemTypes[device.device_model]
+            else if (device.device_model === 'MiR100') deviceType = DeviceItemTypes['cart']
+
+        } catch (error) {
+            console.log('QQQQ error', device)
+            throw 'Get Kalervo and show him the console logs'
+
+        }
 
         try {
             return (

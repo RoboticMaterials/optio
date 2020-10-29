@@ -39,7 +39,6 @@ const TaskQueueListItem = (props) => {
      * This is probably being used to display HILs
      */
     const handleTaskItemClicked = () => {
-        console.log('QQQQ Task Item Clicked', id)
         dispatch({type: 'TASK_QUEUE_ITEM_CLICKED', payload: id})
     }
     
