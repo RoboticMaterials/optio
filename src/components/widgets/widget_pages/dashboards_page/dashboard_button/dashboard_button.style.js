@@ -48,7 +48,7 @@ export const Container = styled.button`
     }
   }
 
-  ${props => props.clickable &&
+  ${props => props.clickable && !props.disabled &&
     `&:active {
       background: ${`linear-gradient(180deg, 
           ${LightenDarkenColor(props.background, -20)} 0%, 
@@ -72,6 +72,16 @@ export const Container = styled.button`
 
 `
 
+export const ErrorContainerComponent = styled.div`
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    margin: 0;
+    padding: 0;
+`;
 
 export const ConditionText = styled.span`
 

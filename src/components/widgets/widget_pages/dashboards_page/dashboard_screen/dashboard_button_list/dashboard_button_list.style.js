@@ -3,16 +3,18 @@ import {css} from 'styled-components'
 
 export const Container = styled.ul`
 	// fill entire container
-	width: 100%;
-	max-width: 100%;
+	width: 90%;
+	max-width: 90%;
 	max-height: 100%;
 	height: 100%;
+	z-index: 15;
+	align-self: center;
+	align-items: center;
+	margin: 0;
+	padding: 0;
 	
 	// allow scroll
 	overflow: auto;
-	
-	padding-left: 1rem;
-	padding-right: 1rem;
 	
 	// hide scroll bar
 	::-webkit-scrollbar {
@@ -27,12 +29,9 @@ export const Container = styled.ul`
 
 export const ListContainer = styled.div`
 	// full entire container
-	width: calc(100% - 8rem);
-	max-width: calc(100% - 8rem);
+    width: 100%;
 	max-height: calc(100% - 8rem);
 
-	margin-right: 4rem;
-	margin-left: 4rem;
 	
 	// flex layout
 	display: flex;

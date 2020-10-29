@@ -26,7 +26,7 @@ const DashboardButtonList = ((props) => {
 
 	const { buttons, addedTaskAlert, onTaskClick } = props
 	const dispatch = useDispatch()
-	
+
 	// ref for list of buttons
 	const listRef = useRef(null);
 
@@ -41,8 +41,8 @@ const DashboardButtonList = ((props) => {
 		let broken = false
 		let name = currentButton.name
 
-		// TODO: Uncomment when task is implemented
 		let taskID = currentButton.task_id
+		const taskExists = tasks[taskID]
 
 		return (
 			<DashboardButton
@@ -56,8 +56,9 @@ const DashboardButtonList = ((props) => {
 				hoverable={false}
 				taskID = {taskID}
 				color = {currentButton.color}
-				disabled = {addedTaskAlert || currentButton.deleted || broken}
+				disabled = {addedTaskAlert || currentButton.deleted || broken || !taskExists}
 				containerCss={style.ButtonContainerCss}
+				error={!taskExists ? "This buttons task has been deleted." : null}
 			>
 			</DashboardButton>
 		)
