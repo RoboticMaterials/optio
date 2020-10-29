@@ -360,7 +360,12 @@ export class MapView extends Component {
                 translate: [translate.x, translate.y],
                 scale: scale,
                 mapResolution: resolution,
-                imgResolution: iNatWidth / iWidth,
+
+                // Commented out ratio for the time being. Does not seem to be needed TODO: Probably delete the ratio
+                // imgResolution: iNatWidth / iWidth,
+
+                imgResolution: 1,
+
                 actualDims: {
                     height: iHeight,
                     width: iWidth

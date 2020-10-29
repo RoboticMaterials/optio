@@ -49,6 +49,8 @@ const HILModal = () => {
             // most recent in the list 
             if (!!item.hil_station_id) {
 
+                // console.log('QQQQ Item', item)
+
                 // Loops through all ascociated dashboards at that location
                 locations[item.hil_station_id].dashboards.map((dashboard, ind) => {
 
@@ -69,7 +71,7 @@ const HILModal = () => {
 
                     const hilType = tasks[item.task_id].type
 
-                    return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={id} item={item} key={id}/>
+                    return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={id} item={item} key={id} />
                 }
                 else {
                     return null
@@ -153,7 +155,7 @@ const HILModal = () => {
                                 onSetHilTimers({
                                     ...hilTimers,
                                 })
-                                
+
                                 //  Delete the timer in the state
                                 if (!!statusTimerIntervals[id]) {
                                     clearInterval(statusTimerIntervals[id])
@@ -194,12 +196,12 @@ const HILModal = () => {
         })
 
         // If the length of intervals is greater then 0 check to make sure the ascoiated task q item is still in task q
-        if(Object.keys(statusTimerIntervals).length > 0){
+        if (Object.keys(statusTimerIntervals).length > 0) {
 
             Object.keys(statusTimerIntervals).map((id, ind) => {
 
                 // If Item is not in task q, end the interval
-                if(!taskQueue[id]){
+                if (!taskQueue[id]) {
                     clearInterval(statusTimerIntervals[id])
                     delete statusTimerIntervals[id]
                     setStatusTimerIntervals({

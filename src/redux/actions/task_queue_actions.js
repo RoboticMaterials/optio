@@ -103,6 +103,37 @@ export const postTaskQueue = (queueItem) => {
 };
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// update
+// ******************************
+export const putTaskQueue = (item, ID) => {
+    console.log('QQQQ action', item, ID)
+    return async dispatch => {
+
+        function onStart() {
+            dispatch({ type: PUT_ + TASK_QUEUE + _STARTED });
+        }
+        function onSuccess(item, ID) {
+            const payload = { item, ID };
+            dispatch({ type: PUT_ + TASK_QUEUE + _SUCCESS, payload });
+            return payload
+
+        }
+        function onError(error) {
+            dispatch({ type: PUT_ + TASK_QUEUE + _FAILURE, payload: error });
+            return error;
+        }
+
+        try {
+            onStart();
+            const taskQueueItem = await api.putTaskQueueItem(item, ID);
+            return onSuccess(item, ID);
+        } catch (error) {
+            return onError(error);
+        }
+    };
+};
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 // delete all
 // ******************************
 export const deleteTaskQueueAll = () => {

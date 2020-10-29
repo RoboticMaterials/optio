@@ -2,7 +2,7 @@ import log from 'loglevel';
 
 const logger = log.getLogger("reconnectingWebRTCSocket")
 
-logger.setLevel("error")
+logger.setLevel("debug")
 
 const googleSTUN = "stun:stun.l.google.com:19302"
 const mozillaSTUN = "stun:stun.services.mozilla.com"

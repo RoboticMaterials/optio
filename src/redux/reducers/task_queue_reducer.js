@@ -17,6 +17,11 @@ import {
     POST_TASK_QUEUE_SUCCESS,
     POST_TASK_QUEUE_FAILURE,
 
+    PUT_TASK_QUEUE,
+    PUT_TASK_QUEUE_STARTED,
+    PUT_TASK_QUEUE_SUCCESS,
+    PUT_TASK_QUEUE_FAILURE,
+
     DELETE_TASK_QUEUE,
     DELETE_TASK_QUEUE_STARTED,
     DELETE_TASK_QUEUE_SUCCESS,
@@ -67,7 +72,7 @@ export default function taskQueueReducer(state = defaultState, action) {
         // get
         // ***************
         case GET_TASK_QUEUE_SUCCESS:
-            if(action.payload === undefined){
+            if (action.payload === undefined) {
                 action.payload = {}
             }
             return Object.assign({}, state, {
@@ -92,12 +97,15 @@ export default function taskQueueReducer(state = defaultState, action) {
         // post
         // ***************
         case POST_TASK_QUEUE_SUCCESS:
-
-            return Object.assign({}, state, {
-                taskQueue: { ...state.taskQueue, [action.payload.createdTaskQueueItem._id.$oid]: action.payload.createdTaskQueueItem },
+            return {
+                ...state,
+                taskQueue: {
+                    ...state.taskQueue,
+                    [action.payload.createdTaskQueueItem._id.$oid]: action.payload.createdTaskQueueItem
+                },
                 error: '',
-                pending: false
-            });
+                pending: false,
+            }
 
         case POST_TASK_QUEUE_FAILURE:
             return Object.assign({}, state, {
@@ -106,6 +114,32 @@ export default function taskQueueReducer(state = defaultState, action) {
             });
 
         case POST_TASK_QUEUE_STARTED:
+            return Object.assign({}, state, {
+                pending: true
+            });
+        // ~~~~~~~~~~~~~~~
+
+        // put
+        // ***************
+        case PUT_TASK_QUEUE_SUCCESS:
+            console.log('QQQQ action', action.payload)
+            return {
+                ...state,
+                taskQueue: {
+                    ...state.taskQueue,
+                    // [action.payload.createdTaskQueueItem._id.$oid]: action.payload.createdTaskQueueItem
+                },
+                error: '',
+                pending: false,
+            }
+
+        case PUT_TASK_QUEUE_FAILURE:
+            return Object.assign({}, state, {
+                error: action.payload,
+                pending: false
+            });
+
+        case PUT_TASK_QUEUE_STARTED:
             return Object.assign({}, state, {
                 pending: true
             });
