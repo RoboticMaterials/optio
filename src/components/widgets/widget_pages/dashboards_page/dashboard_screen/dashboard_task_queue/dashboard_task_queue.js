@@ -38,7 +38,7 @@ const DashboardTaskQueue = () => {
             </styled.ExpandContainer>
 
             {showTaskQ &&
-                <styled.TaskQContatiner ref={ref}>
+                <styled.TaskQContatiner showTaskQ={showTaskQ} ref={ref}>
                     <styled.Title schema={'taskQueue'}>Task Queue</styled.Title>
 
                     <TaskQueue />

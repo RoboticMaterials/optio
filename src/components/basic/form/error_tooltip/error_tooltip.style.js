@@ -3,6 +3,7 @@ import styled from "styled-components";
 export const WarningIcon = styled.i`
     color: ${props => props.theme.bad};
     z-index: 10;
+    pointer-events:all;
     
     // position: absolute;
     // top: 50%;

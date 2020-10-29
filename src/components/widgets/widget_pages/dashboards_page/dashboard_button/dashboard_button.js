@@ -2,6 +2,9 @@ import React, {useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import PropTypes from 'prop-types';
 
+// import components
+import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
+
 // Import Styles
 import * as style from './dashboard_button.style';
 
@@ -28,10 +31,11 @@ const DashboardButton = (props => {
         titleStyle,
         containerStyle,
         containerCss,
+        error
     } = props
 
     return(
-        
+
             <style.Container
                 disabled={disabled}
                 width={width}
@@ -45,6 +49,11 @@ const DashboardButton = (props => {
             >
                 <style.ConditionText style={titleStyle}>{title}</style.ConditionText>
                 {children && children}
+                <ErrorTooltip
+                    visible={error}
+                    text={error}
+                    ContainerComponent={style.ErrorContainerComponent}
+                />
             </style.Container>
     )
 
