@@ -185,9 +185,6 @@ export const sideBarBack = (props) => {
         if (selectedLocation.new == true) { // If the location was new, simply delete it
             dispatch(removeLocation(selectedLocation))
 
-            // also clean up any positions that were added
-            console.log("sideBarBack REMOVING LOCATION")
-
         } else { // If the location is not new, revert it to the old copy, and do the same to its children
             dispatch(updateLocation(selectedLocationCopy))
             selectedLocationChildrenCopy.forEach(child => dispatch(positionActions.updatePosition(child)))
