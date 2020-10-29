@@ -101,10 +101,20 @@ export const updateLocations = (locations) => {
     }
 }
 
-export const removeLocation = (id) => {
+export const removeLocation = (location) => {
+
+    const {
+        _id,
+        children
+    } = location
+
     return async dispatch => {
-        dispatch(stationActions.removeStation(id))
-        dispatch(positionActions.removePosition(id))
+        dispatch(stationActions.removeStation(_id))
+
+        children.forEach((child)=> {
+          dispatch(positionActions.removePosition(child))
+        })
+
     }
 }
 
@@ -151,14 +161,14 @@ export const widgetLoaded = (bool) => {
  * This handles when the back button is pressed on either devices or locations
  * If the location is new, it is deleted;
  * otherwise, it is reverted to the state it was when editing begun.
- * @param {*} props 
+ * @param {*} props
  */
 export const sideBarBack = (props) => {
     // Does a quick check to make sure there is a location, if not then just return an arbitrary dispatch
     // Redux requires a dispatch here (I think...) so I just use setselectedDevice since it wont have any side effects (again... I think...)
     if (props.selectedLocation === null || props.selectedLocation.schema === null) {
         return async dispatch => {
-            dispatch(deselectLocation()) 
+            dispatch(deselectLocation())
             dispatch(setSelectedDevice(null))
         }
     }
@@ -172,8 +182,12 @@ export const sideBarBack = (props) => {
     return async dispatch => {
 
         //// Revert location
-        if (selectedLocation.new == true) { // If the location was new, simply delete it 
-            dispatch(removeLocation(selectedLocation._id))
+        if (selectedLocation.new == true) { // If the location was new, simply delete it
+            dispatch(removeLocation(selectedLocation))
+
+            // also clean up any positions that were added
+            console.log("sideBarBack REMOVING LOCATION")
+
         } else { // If the location is not new, revert it to the old copy, and do the same to its children
             dispatch(updateLocation(selectedLocationCopy))
             selectedLocationChildrenCopy.forEach(child => dispatch(positionActions.updatePosition(child)))
@@ -189,7 +203,7 @@ export const sideBarBack = (props) => {
 }
 
 /**
-* Called when the delete button is pressed. Deletes the location, its children, its dashboards, 
+* Called when the delete button is pressed. Deletes the location, its children, its dashboards,
 * and any tasks associated with the location
 */
 export const deleteLocationProcess = (props) => {
@@ -216,9 +230,9 @@ export const deleteLocationProcess = (props) => {
 
         dispatch(deselectLocation())
 
-        // If locationToDelete is undefined, that means it's not in the backend so it must not have been posted yet. So just remove location from front end, set selected device to null and return 
+        // If locationToDelete is undefined, that means it's not in the backend so it must not have been posted yet. So just remove location from front end, set selected device to null and return
         if (locationToDelete === undefined) {
-            dispatch(removeLocation(selectedLocation._id))
+            dispatch(removeLocation(selectedLocation))
             dispatch(setSelectedDevice(null))
             return
         }
