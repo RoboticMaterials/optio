@@ -43,6 +43,7 @@ import * as ButtonGroupComponents from './button_group.style'
 import log from '../../../../../logger'
 
 const logger = log.getLogger("CreateScheduleForm", "Scheduler")
+logger.setLevel("silent")
 
 const widthBreakPoint =  525
 
