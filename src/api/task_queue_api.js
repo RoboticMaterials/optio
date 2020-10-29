@@ -190,7 +190,6 @@ export async function deleteTaskQueueItem(id) {
 }
 
 export async function putTaskQueueItem(item, ID) {
-    console.log('QQQQ taskQ api', item, ID)
     try {
         const response = await axios({
             method: 'PUT',

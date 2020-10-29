@@ -106,7 +106,6 @@ export const postTaskQueue = (queueItem) => {
 // update
 // ******************************
 export const putTaskQueue = (item, ID) => {
-    console.log('QQQQ action', item, ID)
     return async dispatch => {
 
         function onStart() {

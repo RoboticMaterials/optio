@@ -35,7 +35,8 @@ const HILModals = (props) => {
     const dispatch = useDispatch()
     const onPostTaskQueue = (response) => dispatch(postTaskQueue(response))
     const onTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
-    const onPutTaskQueue = (item, id) => dispatch(putTaskQueue(item, id))
+    const onHILResponse = (response) => dispatch({type: 'HIL_RESPONSE', payload: response})
+    const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
     const onPostEvents = (event) => dispatch(postEvents)
 
     const hilTimers = useSelector(state => { return state.taskQueueReducer.hilTimers })
@@ -77,7 +78,12 @@ const HILModals = (props) => {
 
         delete newItem._id
 
+        // This is used to make the tap of the HIL button respond quickly 
+        onHILResponse('success')
+        setTimeout(() => onHILResponse(''), 1000) 
+
         await onPutTaskQueue(newItem, ID)
+        
 
         handleLogEvent()
     }

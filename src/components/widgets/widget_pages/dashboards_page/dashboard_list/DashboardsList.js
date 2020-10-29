@@ -90,7 +90,7 @@ const DashboardsList = (props) => {
     }
 
     const handleNew = (button) => {
-        // This block iterates through 'i' to find 'Untitled Dashboard i' that 
+        // This block iterates through 'i' to find 'Untitled Dashboard i' that
         // that does not exists at this station
         var i = 0
         var exists = true
@@ -117,6 +117,7 @@ const DashboardsList = (props) => {
 
         // Add this new dashboard to the station
         postDashboardPromise.then(async postedDashboard => {
+
             let stationDashboards = station.dashboards
             stationDashboards.push(postedDashboard._id.$oid)
             await dispatch(stationActions.setStationAttributes(station._id, { dashboards: stationDashboards }))
@@ -148,26 +149,11 @@ const DashboardsList = (props) => {
             const currDashboard = dashboardsArray[index]
 
 
-            logger.log("itemRenderer: dashboardsArray", dashboardsArray)
-            logger.log("itemRenderer: currDashboard", currDashboard)
-
             // get dashboard properties
             let name = currDashboard.name
             let ID = currDashboard._id.$oid
             let buttons = currDashboard.buttons
             let deleted = false
-
-            logger.log("itemRenderer: buttons", buttons)
-
-            buttons.forEach(button => {
-
-                if (!tasks[button.task_id]) {
-                    // TODO: Temporary fix for buttons associated with broken tasks
-                    return
-                }
-
-                button.name = tasks[button.task_id].name
-            })
 
             logger.log("rednering dashboard")
             return (
@@ -209,7 +195,7 @@ const DashboardsList = (props) => {
                     itemsRenderer={(items, ref) => {
                         return (
                             <style.DashboardList ref={ref}
-                                onScroll={() => console.log("DashboardList scroll")}
+                                onScroll={() => logger.log("DashboardList scroll")}
                             >
                                 {items}
                             </style.DashboardList>

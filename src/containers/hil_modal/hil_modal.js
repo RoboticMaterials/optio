@@ -21,6 +21,7 @@ const HILModal = () => {
     const locations = useSelector(state => state.locationsReducer.locations)
     const hilTimers = useSelector(state => state.taskQueueReducer.hilTimers)
     const tasks = useSelector(state => state.tasksReducer.tasks)
+    const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
 
     const [activeHilDashboards, setActiveHilDashboards] = useState({})
     const [statusTimerIntervals, setStatusTimerIntervals] = useState({})
@@ -39,6 +40,8 @@ const HILModal = () => {
             return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item} />
         }
 
+        // Used to hide the HIL if success was clicked. (See HIL_Modals)
+        if(hilResponse === 'success') return
 
         return Object.keys(taskQueue).map((id, ind) => {
 
@@ -48,8 +51,6 @@ const HILModal = () => {
             // Dashboards can only have 1 HIL at a time, if the task queue has 2 HILS for the same dashboards, then only read the 
             // most recent in the list 
             if (!!item.hil_station_id) {
-
-                // console.log('QQQQ Item', item)
 
                 // Loops through all ascociated dashboards at that location
                 locations[item.hil_station_id].dashboards.map((dashboard, ind) => {
@@ -81,7 +82,7 @@ const HILModal = () => {
 
         })
 
-    }, [taskQueue, params.dashboardID, taskQueueItemClicked])
+    }, [taskQueue, params.dashboardID, taskQueueItemClicked, hilResponse])
 
 
     /**

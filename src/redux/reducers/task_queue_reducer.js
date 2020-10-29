@@ -39,7 +39,7 @@ import {
     _FAILURE,
 } from '../types/api_types';
 
-import { clone_object } from '../../methods/utils/utils';
+import { clone_object, deepCopy } from '../../methods/utils/utils';
 
 const defaultState = {
     taskQueue: {},
@@ -47,6 +47,7 @@ const defaultState = {
     error: '',
     taskQueueItemClicked: '',
     hilTimers: {},
+    hilResponse: '',
 };
 
 export default function taskQueueReducer(state = defaultState, action) {
@@ -67,6 +68,12 @@ export default function taskQueueReducer(state = defaultState, action) {
             return {
                 ...state,
                 hilTimers: action.payload,
+            }
+        
+        case 'HIL_RESPONSE':
+            return {
+                ...state,
+                hilResponse: action.payload,
             }
 
         // get
@@ -122,12 +129,22 @@ export default function taskQueueReducer(state = defaultState, action) {
         // put
         // ***************
         case PUT_TASK_QUEUE_SUCCESS:
-            console.log('QQQQ action', action.payload)
+
+            const updatedTaskQ = deepCopy({
+                ...action.payload.item,
+                _id: { $oid: action.payload.ID }
+
+            })
+
+            let forceUpdate = {}
+
+            forceUpdate = Object.assign(forceUpdate, updatedTaskQ)
+
             return {
                 ...state,
                 taskQueue: {
                     ...state.taskQueue,
-                    // [action.payload.createdTaskQueueItem._id.$oid]: action.payload.createdTaskQueueItem
+                    [action.payload.ID]: forceUpdate,
                 },
                 error: '',
                 pending: false,

@@ -2,10 +2,15 @@ import log from 'loglevel';
 
 const logger = log.getLogger("reconnectingWebRTCSocket")
 
-logger.setLevel("debug")
-
+logger.setLevel("silent")
+// RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection
 const googleSTUN = "stun:stun.l.google.com:19302"
 const mozillaSTUN = "stun:stun.services.mozilla.com"
+
+// RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
+
+RTCSessionDescription = window.RTCSessionDescription || window.RTCSessionDescription
+RTCIceCandidate = window.RTCIceCandidate || window.RTCIceCandidate
 
 var default_rtc_configuration = {
     iceServers: [
@@ -16,7 +21,8 @@ var default_rtc_configuration = {
             urls: googleSTUN
         }
     ],
-    iceCandidatePoolSize: 1
+    iceCandidatePoolSize: 10,
+		asdasdsa: 2322
 };
 
 
@@ -232,6 +238,7 @@ export default function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_confi
 
         logger.log('Creating RTCPeerConnection');
 
+
         peer_connection = new RTCPeerConnection(rtc_configuration);
         // peer_connection = new RTCPeerConnection();
 
@@ -282,9 +289,9 @@ export default function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_confi
         };
 
         peer_connection.onconnectionstatechange = (event)=>{
-            console.log("peer_connection onconnectionstatechange event", event)
-            console.log("peer_connection onconnectionstatechange peer_connection", peer_connection)
-            console.log("peer_connection onconnectionstatechange peer_connection.connectionState", peer_connection.connectionState)
+            logger.log("peer_connection onconnectionstatechange event", event)
+            logger.log("peer_connection onconnectionstatechange peer_connection", peer_connection)
+            logger.log("peer_connection onconnectionstatechange peer_connection.connectionState", peer_connection.connectionState)
 
             switch(peer_connection.connectionState) {
                 case "connected":
@@ -401,7 +408,7 @@ export default function reconnectingWebRTCSocket(URL, our_id, peer_id, rtc_confi
         setStatus("Received track.")
 
         // streams = streams.concat(event.streams)
-        console.log("onRemoteTrack streams", streams)
+        logger.log("onRemoteTrack streams", streams)
 
         remoteTrackListeners.forEach(fn => fn(event.streams));
     }
