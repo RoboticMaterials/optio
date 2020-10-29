@@ -541,7 +541,10 @@ export class MapView extends Component {
                                 <>{
                                     //// Render children positions if appropriate
                                     Object.values(positions)
-                                        .filter(position => !!this.props.selectedTask || (!!this.props.selectedLocation && position.parent == this.props.selectedLocation._id))
+                                        // .filter(position => !!this.props.selectedTask || (!!this.props.selectedLocation && position.parent == this.props.selectedLocation._id))
+
+                                        // Commented out for now because we wanted to send the cart with a shelf to normal car positions
+                                        // 
                                         // This filter turns on when there's a selected task that has a load position but no unload position
                                         // If that's the case (happens when a new task exist and the load location has been selected) then filter out the other type of positions
                                         // IE, if the load positions type is a cart position, then only cart positions should be selectable
@@ -554,6 +557,7 @@ export class MapView extends Component {
                                         //         return true
                                         //     }
                                         // })
+
                                         .map((position, ind) =>
                                             <>
                                                 <Location key={`pos-${ind}`}

@@ -530,15 +530,17 @@ const ApiContainer = (props) => {
 
                     <div style={{ width: '50%', minWidth: '20rem', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
                         < p > Please Enter API IP</p>
-                        <Textbox
-                            placeholder="API IP Address"
-                            onChange={(event) => {
-                                setApiIpAddress(event.target.value)
-                            }}
-                            style={{ width: '100%' }}
-                        // type = 'number'
-                        />
-                        <Button schema={'scheduler'} onClick={handleSubmitApiIpAddress} style={{ color: 'red', border: '0.1rem solid red' }}>Submit</Button>
+                        <form onSubmit={handleSubmitApiIpAddress}>
+                            <Textbox
+                                placeholder="API IP Address"
+                                onChange={(event) => {
+                                    setApiIpAddress(event.target.value)
+                                }}
+                                style={{ width: '100%' }}
+                            // type = 'submit'
+                            />
+                        </form>
+                        <Button schema={'scheduler'} style={{ color: 'red', border: '0.1rem solid red' }} type='submit'>Submit</Button>
                     </div>
                 </div>
 

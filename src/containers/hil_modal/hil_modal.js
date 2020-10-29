@@ -215,6 +215,17 @@ const HILModal = () => {
 
     }, [taskQueue, hilTimers])
 
+    const handleActiveHilDashboardRemoved = () => {
+
+        let hilRemoved = true
+
+        Object.keys(taskQueue).map((id, ind) => {
+            const item = taskQueue[id]
+
+        })
+
+    }
+
     return (
         <>
             {/* <HILModals status={status.hil}/> */}

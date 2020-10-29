@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 // Import locations
@@ -184,7 +184,7 @@ const DragEntityProto = (props) => {
  * 
  * @param {object} props 
  */
-function Location(props) {
+const Location = (props) => {
 
     let {
         location,
@@ -203,8 +203,13 @@ function Location(props) {
     // Is this location selected, or is it's parent selected
     let isSelected =
         selectedTask === null &&
-        (!!selectedLocation && selectedLocation._id == location._id
-            || !!location.parent && selectedLocation._id == location.parent)
+        (
+            !!selectedLocation && selectedLocation._id == location._id
+            ||
+            !!location.parent && !!selectedLocation && selectedLocation._id == location._id
+            ||
+            !!location.parent && !!selectedLocation && selectedLocation._id == location.parent
+        )
 
     let pos
 
