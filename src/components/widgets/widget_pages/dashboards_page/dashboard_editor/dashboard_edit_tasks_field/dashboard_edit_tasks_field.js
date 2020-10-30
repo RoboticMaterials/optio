@@ -39,7 +39,7 @@ const DashboardEditTasksField = props => {
 
 	return(
 		// set zindex to make sure the dropdown from buttons above display on top of the buttons below it
-		<styled.DashboardEditButton color={button.color} style={{position: 'relative', zIndex: `${100-ind}`}}> 
+		<styled.DashboardEditButton color={button.color} style={{position: 'relative', zIndex: `${100-ind}`}}>
 
 			<ColorField
 				name={`buttons[${ind}].color`}
@@ -55,7 +55,7 @@ const DashboardEditTasksField = props => {
 					type='text'
 					label={null}
 				/>
-				<styled.TaskName>{tasks[button.task_id].name}</styled.TaskName>
+				<styled.TaskName>{button.name}</styled.TaskName>
 			</styled.CenterContainer>
 
 			<DeleteFieldButton

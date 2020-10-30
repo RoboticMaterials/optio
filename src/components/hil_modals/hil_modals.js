@@ -9,11 +9,14 @@ import * as styled from './hil_modals.style';
 import Textbox from '../basic/textbox/textbox'
 
 // Import Actions
-import { postTaskQueue } from '../../redux/actions/task_queue_actions'
+import { postTaskQueue, putTaskQueue } from '../../redux/actions/task_queue_actions'
 import { postEvents } from '../../redux/actions/events_actions'
 
 // Import API
 import { putTaskQueueItem } from '../../api/task_queue_api'
+
+// Import Utils
+import { deepCopy } from '../../methods/utils/utils'
 
 
 /**
@@ -32,11 +35,15 @@ const HILModals = (props) => {
     const dispatch = useDispatch()
     const onPostTaskQueue = (response) => dispatch(postTaskQueue(response))
     const onTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
+    const onHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
+    const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
+    const onSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
     const onPostEvents = (event) => dispatch(postEvents)
 
     const hilTimers = useSelector(state => { return state.taskQueueReducer.hilTimers })
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
+    const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
 
     const [quantity, setQuantity] = useState(taskQuantity)
     const [hilLoadUnload, setHilLoadUnload] = useState('')
@@ -62,15 +69,27 @@ const HILModals = (props) => {
     // Posts HIL Success to API 
     const handleHilSuccess = async () => {
 
+        onTaskQueueItemClicked('')
+
         let newItem = {
             ...item,
             hil_response: true
         }
+
+        // Deletes the dashboard id from active list for the hil that has been responded too
+        onSetActiveHilDashboards(delete (activeHilDashboards[item.hil_station_id]))
+
+        const ID = deepCopy(taskQueueID)
+
         delete newItem._id
-        await putTaskQueueItem(newItem, taskQueueID)
+
+        // This is used to make the tap of the HIL button respond quickly 
+        onHILResponse('success')
+        setTimeout(() => onHILResponse(''), 2000)
+
+        await onPutTaskQueue(newItem, ID)
 
         handleLogEvent()
-        onTaskQueueItemClicked('')
     }
 
     // Posts HIL Postpone to API
@@ -148,6 +167,7 @@ const HILModals = (props) => {
      * The purpose of a HIL check is to make sure the operator is ready to deliver parts. 
      * HIL Check will only show on a pull request
      */
+
     return (
         <styled.HilContainer >
             <styled.HilBorderContainer >
@@ -184,22 +204,41 @@ const HILModals = (props) => {
 
                 <styled.HilButtonContainer>
 
-                    <styled.HilButton color={'#90eaa8'}>
-                        <styled.HilIcon onClick={() => handleHilSuccess()} className='fas fa-check' color={'#1c933c'} />
+                    <styled.HilButton color={'#90eaa8'}
+                        onClick={() => {
+                            handleHilSuccess()
+                        }}
+                    >
+                        <styled.HilIcon
+                            // onClick={() => {
+                            //     handleHilSuccess()
+                            // }}
+                            className='fas fa-check'
+                            color={'#1c933c'}
+                        />
                         <styled.HilButtonText color={'#1c933c'}>Confirm</styled.HilButtonText>
                     </styled.HilButton>
 
                     {((hilType === 'pull' && hilLoadUnload === 'load') || hilType === 'check') &&
-                        <styled.HilButton color={'#f7cd89'}>
-                            <styled.HilIcon onClick={handleHilPostpone} className='icon-postpone' color={'#ff7700'} styled={{ marginTop: '.5rem' }} />
+                        <styled.HilButton color={'#f7cd89'} onClick={handleHilPostpone}>
+                            <styled.HilIcon
+                                // onClick={handleHilPostpone}
+                                className='icon-postpone'
+                                color={'#ff7700'}
+                                styled={{ marginTop: '.5rem' }}
+                            />
                             <styled.HilButtonText color={'#ff7700'}>Postpone</styled.HilButtonText>
                         </styled.HilButton>
                     }
 
                     {(hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
 
-                        <styled.HilButton color={'#ff9898'}>
-                            <styled.HilIcon onClick={handleHilFailure} className='fas fa-times' color={'#ff1818'} />
+                        <styled.HilButton color={'#ff9898'} onClick={handleHilFailure}>
+                            <styled.HilIcon
+                                // onClick={handleHilFailure} 
+                                className='fas fa-times'
+                                color={'#ff1818'}
+                            />
                             <styled.HilButtonText color={'#ff1818'}>Cancel</styled.HilButtonText>
                         </styled.HilButton>
                     }

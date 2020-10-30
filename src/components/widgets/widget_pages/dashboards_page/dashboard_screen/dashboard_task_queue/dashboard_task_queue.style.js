@@ -8,7 +8,7 @@ export const ExpandContainer = styled.div`
     margin: auto;
     height: 15rem;
     width: 10rem;
-    z-index: 10;
+    z-index: ${props => props.showTaskQ ? 20 : 10};
     /* border-radius: 1rem 0rem 0rem 1rem; */
 
     display: flex;
@@ -53,6 +53,7 @@ export const TaskQContatiner = styled.div`
     flex-direction: column;
     align-items: center;
     padding-top: 1rem;
+    z-index: ${props => props.showTaskQ ? 20 : 10};
 
     position: absolute;
     top: 0rem;

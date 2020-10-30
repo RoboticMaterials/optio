@@ -5,7 +5,3 @@ export const Container = styled.div`
 	width: 100%;
 	padding: .5rem 1rem .5rem 1rem;
 `
-
-export const Item = styled.div`
-
-`

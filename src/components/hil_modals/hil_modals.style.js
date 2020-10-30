@@ -7,7 +7,7 @@ export const HilContainer = styled.div`
     left: 1rem;
     bottom: 2rem;
 
-    z-index: 100;
+    z-index: 1000;
     border-radius: 1rem;
     box-shadow: 0 0.2rem 0.4rem 0rem #303030;
     display: column;

@@ -112,7 +112,12 @@ export default function locationsReducer(state = defaultState, action) {
 
     const filterLocations = (stations, positions) => {
         const unfilteredLocationsArr = [...Object.values(stations), ...Object.values(positions)]
-        const filterdLocationsArr = unfilteredLocationsArr.filter(loc => loc.schema == 'station' || (loc.schema == 'position' && (loc.parent === null || !loc.parent)))
+
+        // Commented out for now because this Filters out locations with parents causing issues when hovering over a location with a parent
+        // This bug happened when all position are being displayed, even if the have a parent
+        // const filterdLocationsArr = unfilteredLocationsArr.filter(loc => loc.schema == 'station' || (loc.schema == 'position' && (loc.parent === null || !loc.parent)))
+        const filterdLocationsArr = unfilteredLocationsArr
+
 
         let locations = {}
         filterdLocationsArr.forEach(location =>

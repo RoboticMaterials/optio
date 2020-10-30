@@ -227,10 +227,11 @@ const StatisticsOverview = (props) => {
                     <styled.StatsSection>
                         <ApexGaugeChart max={Math.min(...data.taktTime.map(point => point.y))} min={Math.max(...data.taktTime.map(point => point.y))} value={data.taktTime[data.taktTime.length - 1].y}
                             formatValue={() => {
-                                const val = data.taktTime[data.taktTime.length - 1].y
-                                return String(Math.floor(val)) + ':' + String(Math.round((val % 1) * 60))
+                                // const val = data.taktTime[data.taktTime.length - 1].y
+                                // return String(Math.floor(val)) + ':' + String(Math.round((val % 1) * 60))
+                                return '1:23'
                             }}
-                            name='Availabilty' color={colors.taktTime} onClick={() => setSelector('taktTime')} selected={selector == 'taktTime'} />
+                            name='Takt Time' color={colors.taktTime} onClick={() => setSelector('taktTime')} selected={selector == 'taktTime'} />
                         <ApexGaugeChart min={Math.min(...data.pYield.map(point => point.y))} max={Math.max(...data.pYield.map(point => point.y))} value={data.pYield[data.pYield.length - 1].y}
                             formatValue={() =>
                                 Math.round(10 * data.pYield[data.pYield.length - 1].y) / 10

@@ -36,6 +36,9 @@ export default function Positions(props) {
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const tasks = useSelector(state => state.tasksReducer.tasks)
 
+    const selectedPositions = Object.values(positions).filter(position =>  position.parent == selectedLocation._id)
+
+
     const positionType = type
     let positionTypeCamel = ''
     let positionName = ''
@@ -151,7 +154,7 @@ export default function Positions(props) {
                 <styled.Label>{'Associated ' + positionName} </styled.Label>
 
                 <styled.ListContainer>
-                    <SortableList positions={selectedLocation.children.map(id => positions[id])}
+                    <SortableList positions={selectedPositions}
                         onSortEnd={onSortEnd}
                         useDragHandle={true}
                         lockAxis={'y'}

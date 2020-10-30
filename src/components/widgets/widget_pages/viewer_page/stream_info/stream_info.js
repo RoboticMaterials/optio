@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import * as styled from "./stream_info.style"
 
 const StreamInfo = (props) => {
 
@@ -13,13 +13,13 @@ const StreamInfo = (props) => {
 	} = props
 
 	return(
-		<div>
-			<div>loading: {loading}</div>
-			<div>status: {status}</div>
-			<div>error: {error}</div>
-			<div>my ID: {outID}</div>
-			<div>peer ID: {peerID}</div>
-		</div>
+		<styled.Container>
+			<styled.Item>loading: {loading}</styled.Item>
+			<styled.Item>status: {status}</styled.Item>
+			<styled.Item>error: {error}</styled.Item>
+			<styled.Item>my ID: {outID}</styled.Item>
+			<styled.Item>peer ID: {peerID}</styled.Item>
+		</styled.Container>
 
 	)
 }

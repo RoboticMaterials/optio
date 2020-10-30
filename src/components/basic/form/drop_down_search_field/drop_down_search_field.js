@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import { useField, useFormikContext } from "formik";
 import DropDownSearch from '../../drop_down_search_v2/drop_down_search';
@@ -30,14 +30,36 @@ const DropDownSearchField = ({
 	const [field, meta] = useField(props);
 	const hasError = meta.touched && meta.error;
 
+	const [value, setValue] = useState(field.value)
+	const [touched, setTouched] = useState(field.touched)
+	const [updatingValue, setUpdatingValue] = useState(false)
+
+	/*
+	* This is kindy funky
+	* The first time you select a value, both onChange and onDropdownClose get called since the dropdown closes when you select a value
+	* onChange is called first, and updates the values and performs validation
+	* THEN onDropdownClose is called, updates field.touched and performs validation
+	* however, onDropdownClose gets called AFTER onChange but still has the old values
+	* This means a second validation would be performed with the old values, which can result in a validation error for the old values, even if the new values don't have an error
+	* by managing it in a hook this way, validation for field.touched can be controlled directly
+	*
+	* */
+	useEffect(() => {
+
+		if(touched) {
+			// update touched
+			// only perform validation if value is not being updated, otherwise validate will be called twice unnecessarily
+			setFieldTouched(field.name, touched, !updatingValue)
+		}
+		// set
+		if(updatingValue) setUpdatingValue(false)
+
+	}, [touched])
+
 	let ReactDropdownSelectStyle = {
 		borderColor: hasError && 'red',
 		boxShadow: hasError && `0 0 5px red`,
 	}
-
-	// console.log("DropDownSearchField Container", Container)
-	// console.log("DropDownSearchField props", props)
-
 
 	const errorMessage = getMessageFromError(meta.error);
 
@@ -59,9 +81,8 @@ const DropDownSearchField = ({
 						// set this field to touched if not already
 						const isTouched = meta.touched;
 						if(!isTouched) {
-							setFieldTouched(field.name, true)
+							setTouched(true)
 						}
-
 						// call any additional function that was passed as prop
 						onDropdownClose && onDropdownClose();
 					}}
@@ -69,7 +90,9 @@ const DropDownSearchField = ({
 					{...field}
 					{...props}
 					onChange={values => {
+						// update field value and set updating to true for use in the hook
 						setFieldValue(field.name, values);
+						setUpdatingValue(true)
 						onChange && onChange(values)
 					}}
 					onRemoveItem={
@@ -77,7 +100,7 @@ const DropDownSearchField = ({
 							// set this field to touched if not already
 							const isTouched = meta.touched;
 							if(!isTouched) {
-								setFieldTouched(field.name, true)
+								setTouched(true)
 							}
 							setFieldValue(field.name, "");
 
