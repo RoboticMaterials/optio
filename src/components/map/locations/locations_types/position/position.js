@@ -46,7 +46,7 @@ const Position = (props) => {
         window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
 
         return () => {
-            // window.removeEventListener("mousup", disableDrag)
+             window.removeEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         }
     })
 

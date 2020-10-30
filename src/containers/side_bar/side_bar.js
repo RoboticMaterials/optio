@@ -48,10 +48,10 @@ const SideBar = (props) => {
         dispatch(sidebarActions.setWidth(newWidth));
     }
     useEffect(() => {
-        window.addEventListener('resize', boundToWindowSize)
+        window.addEventListener('resize', boundToWindowSize, {passive:true})
 
         return () => {
-            window.removeEventListener('resize', boundToWindowSize)
+            window.removeEventListener('resize', boundToWindowSize, {passive:true})
         }
     }, [])
 

@@ -77,19 +77,19 @@ export class MapView extends Component {
 
     componentDidMount() {
 
-        // Refresh the map on initial mount. This will only likely give you back the list of 
+        // Refresh the map on initial mount. This will only likely give you back the list of
         // maps, but componentDidUpdate will catch that and set the current map to the first map
         // in the returned list (which will be the active map)
         this.refreshMap()
 
-        window.addEventListener('mousedown', () => this.mouseDown = true)
+        window.addEventListener('mousedown', () => this.mouseDown = true,)
         window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() })
 
         // Event listener that will recalculate the map geometry when the screen size changes
         window.addEventListener('resize', () => {
             this.calculateD3Geometry()
             this.bindZoomListener()
-        })
+        }, {passive:true})
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -120,7 +120,7 @@ export class MapView extends Component {
             document.removeEventListener("dragend", this.validateNewLocation)
         } else {
             // reattach event listeners if necessary
-            document.addEventListener('dragend', this.validateNewLocation, false);
+            document.addEventListener('dragend', this.validateNewLocation, false, {passive:true});
         }
 
         // if (this.props.currentMap != null && !isEquivalent(prevProps.locations, this.props.locations)) {
@@ -193,7 +193,7 @@ export class MapView extends Component {
     /* ========== D3 Functions ========== */
 
     /***
-     * Binds the d3 listener that listens for zoom events. Conveniently it also listens to 
+     * Binds the d3 listener that listens for zoom events. Conveniently it also listens to
      * drag events, so this will take care of both
      */
     bindZoomListener = () => {
@@ -313,7 +313,7 @@ export class MapView extends Component {
 
     }
 
-    /**                            
+    /**
      * x: 0,
      * y: 0property, instead of going
      * through D3's scaling mechanism, which would have picked up both properties.
@@ -348,7 +348,7 @@ export class MapView extends Component {
 
 
             // Apply translations to map.
-            // The map is translated by half the container dims, and then back by 
+            // The map is translated by half the container dims, and then back by
             // half the image dims. This leaves it in the middle of the screen
             translate = {
                 x: this.props.translate.x + cWidth / 2 - iWidth / 2,
@@ -582,7 +582,7 @@ export class MapView extends Component {
                         <TaskStatistics d3={this.d3} />
                     }
 
-                    {/* Widgets are here when not in mobile mode. If mobile mode, then they are in App.js. 
+                    {/* Widgets are here when not in mobile mode. If mobile mode, then they are in App.js.
                     The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons). */}
                     {this.props.hoveringInfo !== null && !this.mobileMode &&
                         <Widgets />

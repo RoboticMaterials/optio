@@ -112,8 +112,8 @@ export class TextBoxSearch extends Component {
   componentDidMount() {
 
     this.props.portal && this.props.portal.appendChild(this.textboxRoot);
-    window.addEventListener('resize', debounce(this.updateSelectBounds));
-    window.addEventListener('scroll', debounce(this.onScroll));
+    window.addEventListener('resize', debounce(this.updateSelectBounds), {passive:true});
+    window.addEventListener('scroll', debounce(this.onScroll), {passive:true});
 
     this.dropDown('close');
 
