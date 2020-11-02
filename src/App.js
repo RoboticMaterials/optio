@@ -23,6 +23,7 @@ import MapView from './containers/map_view/map_view'
 import HILModal from './containers/hil_modal/hil_modal'
 import Authentication from './containers/authentication/authentication'
 import Widgets from './components/widgets/widgets'
+import ListView from "./components/list_view/list_view";
 
 const widthBreakPoint = 1000;
 
@@ -38,9 +39,7 @@ const App = (props) => {
     const positions = useSelector(state => state.locationsReducer.positions)
 
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
-
     console.log("mapViewEnabled",mapViewEnabled)
-
     // Set to true for the time being, authentication is not 100% complete as of 09/14/2020
     const [authenticated, setAuthenticated] = useState(true)
 
@@ -148,7 +147,9 @@ const App = (props) => {
                                     */}
                                     {maps.length > 0 &&
                                         <>
-                                            {mobileMode ?
+                                            {mapViewEnabled ?
+
+                                                (mobileMode ?
                                                 <Route
                                                     path={["/locations/:stationID?/:widgetPage?", '/']}
                                                 >
@@ -158,7 +159,11 @@ const App = (props) => {
                                                 <Route
                                                     path={["/locations/:stationID?/:widgetPage?", '/']}
                                                     component={MapView}
-                                                />
+                                                />)
+
+                                                :
+
+                                                <ListView/>
                                             }
                                         </>
                                     }

@@ -79,8 +79,6 @@ const ApiContainer = (props) => {
 
     const localSettings = useSelector(state => state.localReducer)
 
-    console.log("localSettings",localSettings)
-
     // States
     const [currentPage, setCurrentPage] = useState('')
     const [apiIpAddress, setApiIpAddress] = useState('')
