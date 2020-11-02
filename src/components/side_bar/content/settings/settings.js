@@ -232,11 +232,37 @@ const Settings = () => {
         )
     }
 
+    const MapViewEnabled = () => {
+        return (
+            <styled.SettingContainer>
+
+
+                <styled.Header>Show Map View</styled.Header>
+
+
+                <styled.RowContainer>
+                        <styled.SwitchContainerLabel>Show List View</styled.SwitchContainerLabel>
+                        <Switch
+                            onColor='red'
+                            checked={localSettingsState.mapViewEnabled}
+                            onChange={() => {
+                                handleUpdateLocalSettings({ mapViewEnabled: !localSettingsState.mapViewEnabled })
+                            }}
+                            style={{margin: "0 2rem 0 2rem"}}
+                        />
+                        <styled.SwitchContainerLabel>Show Map View</styled.SwitchContainerLabel>
+                </styled.RowContainer>
+
+            </styled.SettingContainer>
+        )
+    }
+
     return (
         <styled.SettingsContainer>
             <ContentHeader content={'settings'} mode={'title'} saveEnabled={true} onClickSave={handleSumbitSettings} />
             {MirIp()}
             {APIAddress()}
+            {MapViewEnabled()}
             {/* {TimeZone()} */}
         </styled.SettingsContainer>
     )

@@ -37,6 +37,10 @@ const App = (props) => {
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
     const positions = useSelector(state => state.locationsReducer.positions)
 
+    const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
+
+    console.log("mapViewEnabled",mapViewEnabled)
+
     // Set to true for the time being, authentication is not 100% complete as of 09/14/2020
     const [authenticated, setAuthenticated] = useState(true)
 

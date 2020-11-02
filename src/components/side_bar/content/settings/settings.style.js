@@ -74,3 +74,12 @@ export const ConnectionButton = styled.button`
     }
 
 `
+
+export const SwitchContainerLabel = styled.span`
+    padding: 0;
+    margin: 0;
+    align-self: center;
+    font-family: ${props => props.theme.font.primary};
+    font-size: ${props => props.theme.fontSize.sz4};
+    color: ${props => props.theme.bg.octonary};
+`
