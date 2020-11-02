@@ -32,6 +32,8 @@ export const Container = styled(Modal)`
   border-style: solid;
   padding: 2rem;
   z-index: 50;
+  
+  color: ${props => props.theme.bg.octonary};
 `;
 
 export const HeaderContainer = styled.div`
