@@ -1,6 +1,7 @@
 // import external dependencies
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom'
 
 // components
 
@@ -25,11 +26,17 @@ const LocationList = (props) => {
     const {
         onMouseEnter,
         onMouseLeave,
-        onClick
+
     } = props
 
     const locations = useSelector(state => state.locationsReducer.locations)
     const locationsArr = Object.values(locations)
+    const history = useHistory()
+
+    const onClick = (item) => {
+        console.log("item", item)
+        history.push('/locations/' + item._id + '/' + "dashboards")
+    }
 
     return(
         <styled.ListContainer>
@@ -96,20 +103,6 @@ const ListView = (props) => {
     } = props
 
     const dispatch = useDispatch()
-    const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
-    const onSetSelectedLocationChildrenCopy = (locationChildren) => dispatch(setSelectedLocationChildrenCopy(locationChildren))
-    const onSetSelectedLocation = (loc) => dispatch(setSelectedLocation(loc))
-    const onSideBarBack = (props) => dispatch(sideBarBack(props))
-    const onDeleteLocationProcess = (props) => dispatch(deleteLocationProcess(props))
-    const onAddPosition = (pos) => dispatch(addPosition(pos))
-
-
-    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
-    const positions = useSelector(state => state.locationsReducer.positions)
-    const tasks = useSelector(state => state.tasksReducer.tasks)
-    const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
-    const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
-
 
     return (
         <styled.Container>
