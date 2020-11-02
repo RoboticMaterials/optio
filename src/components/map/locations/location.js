@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 // Import locations
@@ -184,7 +184,7 @@ const DragEntityProto = (props) => {
  * 
  * @param {object} props 
  */
-function Location(props) {
+const Location = (props) => {
 
     let {
         location,
@@ -198,13 +198,20 @@ function Location(props) {
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const stations = useSelector(state => state.locationsReducer.stations)
     const positions = useSelector(state => state.locationsReducer.positions)
+    const locations = useSelector(state => state.locationsReducer.locations)
+
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
 
     // Is this location selected, or is it's parent selected
     let isSelected =
         selectedTask === null &&
-        (!!selectedLocation && selectedLocation._id == location._id
-            || !!location.parent && selectedLocation._id == location.parent)
+        (
+            !!selectedLocation && selectedLocation._id == location._id
+            ||
+            !!location.parent && !!selectedLocation && selectedLocation._id == location._id
+            ||
+            !!location.parent && !!selectedLocation && selectedLocation._id == location.parent
+        )
 
     let pos
 
@@ -225,60 +232,69 @@ function Location(props) {
         }
     }
 
-    switch (location.type) {
-        case 'workstation':
-        case 'device':
-            return (
-                <React.Fragment key={`frag-loc-${location._id}`}>
-                    <Station isSelected={isSelected} color={color} {...props} />
-                    <DragEntityProto isSelected={isSelected} {...props}
-                        onRotate={rotation => dispatch(setLocationAttributes(location._id, { rotation }))}
-                        onTranslate={({ x, y }) => dispatch(setLocationAttributes(location._id, { x, y }))}
-                        onTranslateEnd={({ x, y }) => {
-                            pos = convertD3ToReal([x, y], props.d3)
-                            dispatch(setLocationAttributes(location._id, { pos_x: pos[0], pos_y: pos[1] }))
-                        }}
-                    />
-                </React.Fragment>
-            )
+    const handleRenderedLocations = useMemo(() => {
+        switch (location.type) {
+            case 'workstation':
+            case 'device':
+                return (
+                    <React.Fragment key={`frag-loc-${location._id}`}>
+                        <Station isSelected={isSelected} color={color} {...props} />
+                        <DragEntityProto isSelected={isSelected} {...props}
+                            onRotate={rotation => dispatch(setLocationAttributes(location._id, { rotation }))}
+                            onTranslate={({ x, y }) => dispatch(setLocationAttributes(location._id, { x, y }))}
+                            onTranslateEnd={({ x, y }) => {
+                                pos = convertD3ToReal([x, y], props.d3)
+                                dispatch(setLocationAttributes(location._id, { pos_x: pos[0], pos_y: pos[1] }))
+                            }}
+                        />
+                    </React.Fragment>
+                )
 
-        case 'cart_position':
-        case 'shelf_position':
-        case 'charger_position':
-            return (
-                <React.Fragment key={`frag-loc-${location._id}`}>
-                    {location.parent !== null && location.parent !== undefined &&
-                        <line x1={`${location.x}`} y1={`${location.y}`}
-                            x2={`${stations[location.parent].x}`} y2={`${stations[location.parent].y}`}
-                            stroke={color} strokeWidth="1.4" style={{ filter: "url(#glow)", opacity: '0.3' }} />
-                    }
-                    <Position isSelected={isSelected} color={color} {...props} />
-                    <DragEntityProto isSelected={isSelected} {...props}
-                        onRotate={rotation => dispatch(setLocationAttributes(location._id, { rotation }))}
-                        onTranslate={({ x, y }) => dispatch(setLocationAttributes(location._id, { x, y }))}
-                        onTranslateEnd={({ x, y }) => {
-                            pos = convertD3ToReal([x, y], props.d3)
-                            dispatch(setLocationAttributes(location._id, { pos_x: pos[0], pos_y: pos[1] }))
-                        }}
-                    />
-                </React.Fragment>
-            )
+            case 'cart_position':
+            case 'shelf_position':
+            case 'charger_position':
+                return (
+                    <React.Fragment key={`frag-loc-${location._id}`}>
+                        {location.parent !== null && location.parent !== undefined &&
+                            <line x1={`${location.x}`} y1={`${location.y}`}
+                                x2={`${stations[location.parent].x}`} y2={`${stations[location.parent].y}`}
+                                stroke={color} strokeWidth="1.4" style={{ filter: "url(#glow)", opacity: '0.3' }} />
+                        }
+                        <Position isSelected={isSelected} color={color} {...props} />
+                        <DragEntityProto isSelected={isSelected} {...props}
+                            onRotate={rotation => dispatch(setLocationAttributes(location._id, { rotation }))}
+                            onTranslate={({ x, y }) => dispatch(setLocationAttributes(location._id, { x, y }))}
+                            onTranslateEnd={({ x, y }) => {
+                                pos = convertD3ToReal([x, y], props.d3)
+                                dispatch(setLocationAttributes(location._id, { pos_x: pos[0], pos_y: pos[1] }))
+                            }}
+                        />
+                    </React.Fragment>
+                )
 
-        case 'cart_entry_position':
-        case 'shelf_entry_position':
-        case 'charger_entry_position':
-        case 'other':
-            // TODO: Currently returning nothing for entry positions, eventually entry positions should be editable
-            return (
-                <>
-                </>
-            )
+            case 'cart_entry_position':
+            case 'shelf_entry_position':
+            case 'charger_entry_position':
+            case 'other':
+                // TODO: Currently returning nothing for entry positions, eventually entry positions should be editable
+                return (
+                    <>
+                    </>
+                )
 
 
 
-        default:
-            throw "Nothing is returned from render because a location has a 'type' that does not match the available types. Make sure all locations have valid types"
-    }
+            default:
+                throw "Nothing is returned from render because a location has a 'type' that does not match the available types. Make sure all locations have valid types"
+        }
+
+    }, [locations])
+
+    return (
+        <>
+            {handleRenderedLocations}
+        </>
+    )
 }
 
 export default Location

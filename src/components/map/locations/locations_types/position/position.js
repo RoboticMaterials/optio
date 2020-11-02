@@ -50,6 +50,7 @@ const Position = (props) => {
         }
     })
 
+    // Automatically opens widget pages and sets hovering to true in the location is a temp right click
     useEffect(() => {
         if(location !== null && location.name === 'TempRightClickMoveLocation'){
             setHovering(true)

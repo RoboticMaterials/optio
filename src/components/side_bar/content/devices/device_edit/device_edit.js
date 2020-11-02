@@ -136,23 +136,27 @@ const DeviceEdit = (props) => {
         return (
             <styled.SettingsSectionsContainer style={{ alignItems: 'center', textAlign: 'center', }}>
 
-                <styled.ConnectionText>To add the device to the screen, grab the device with your mouse and drag onto the screen</styled.ConnectionText>
+                {selectedDevice.device_model !== 'MiR100' &&
+                    <>
+                        <styled.ConnectionText>To add the device to the screen, grab the device with your mouse and drag onto the screen</styled.ConnectionText>
 
-                <styled.DeviceIcon
-                    className={deviceType.icon}
-                    style={{ color: !!showPositions ? deviceType.primaryColor : 'white' }}
-                    onMouseDown={async e => {
-                        if (selectedLocation.type !== null) { return }
-                        await Object.assign(selectedLocation, { ...template, temp: true })
-                        await onAddLocation(selectedLocation)
-                        await onSetSelectedLocation(selectedLocation)
-                        setShowPositions(true)
-                    }
-                    }
+                        <styled.DeviceIcon
+                            className={deviceType.icon}
+                            style={{ color: !!showPositions ? deviceType.primaryColor : 'white' }}
+                            onMouseDown={async e => {
+                                if (selectedLocation.type !== null) { return }
+                                await Object.assign(selectedLocation, { ...template, temp: true })
+                                await onAddLocation(selectedLocation)
+                                await onSetSelectedLocation(selectedLocation)
+                                setShowPositions(true)
+                            }
+                            }
 
 
 
-                />
+                        />
+                    </>
+                }
 
 
             </styled.SettingsSectionsContainer>
