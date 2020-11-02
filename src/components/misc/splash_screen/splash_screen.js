@@ -79,10 +79,13 @@ const SplashScreen = (props) => {
                                 // type = 'submit'
                             />
                         </form>
+                        {/*
                         <ToggleMapViewSwitch
                             checked={localSettings.localSettings.mapViewEnabled}
                             onChange={toggleMapViewEnabled}
                         />
+                        */}
+
                         <Button schema={'scheduler'} style={{ color: 'red', border: '0.1rem solid red' }} type='submit'>Submit</Button>
                     </div>
                 </div>
