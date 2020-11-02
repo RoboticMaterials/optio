@@ -77,8 +77,6 @@ const ApiContainer = (props) => {
     // Selectors
     const schedulerReducer = useSelector(state => state.schedulerReducer)
 
-    const localSettings = useSelector(state => state.localReducer)
-
     // States
     const [currentPage, setCurrentPage] = useState('')
     const [apiIpAddress, setApiIpAddress] = useState('')
@@ -516,22 +514,6 @@ const ApiContainer = (props) => {
 
     //  API LOGIN
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    /**
-     * Submit API address to local storage
-     */
-    const handleSubmitApiIpAddress = async () => {
-        await onPostLocalSettings({ non_local_api: true, non_local_api_ip: apiIpAddress })
-        window.location.reload(false);
-    }
-
-    /*
-    * toggle mapViewEnabled
-    * */
-    const toggleMapViewEnabled = async () => {
-        await onPostLocalSettings({ ...localSettings.localSettings, mapViewEnabled: !localSettings.localSettings.mapViewEnabled })
-    }
-
 
     return (
         <SplashScreen
