@@ -37,6 +37,10 @@ const ContentHeader = (props) => {
             return 'Task Queue'
         }
 
+        else if (content === 'tasks') {
+            return 'Routes'
+        }
+
         else {
             return upperCaseFirstLetterInString(content)
         }

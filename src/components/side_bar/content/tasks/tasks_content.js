@@ -328,7 +328,7 @@ export default function TaskContent(props) {
     } else {    // List Mode
         return (
             <ContentList
-                title={'Tasks'}
+                title={'Routes'}
                 schema={'tasks'}
                 elements={Object.values(tasks)}
                 onMouseEnter={(task) => dispatch(taskActions.selectTask(task._id.$oid))}

@@ -288,7 +288,7 @@ const Location = (props) => {
                 throw "Nothing is returned from render because a location has a 'type' that does not match the available types. Make sure all locations have valid types"
         }
 
-    }, [locations])
+    }, [locations, selectedLocation])
 
     return (
         <>

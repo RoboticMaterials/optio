@@ -527,7 +527,7 @@ export class MapView extends Component {
                             <>
                                 <>{
                                     //// Render Locations
-                                    Object.values(locations).map((location, ind) =>
+                                    Object.values(this.props.stations).map((location, ind) =>
                                         <Location key={`loc-${ind}`}
                                             location={location}
                                             rd3tClassName={`${this.rd3tLocClassName}_${ind}`}
@@ -558,6 +558,15 @@ export class MapView extends Component {
                                         //     }
                                         // })
 
+                                        .filter(position => {
+                                            if (!!this.props.selectedTask) {
+                                                return !!position.parent
+                                            }
+
+                                            else {
+                                                return true
+                                            }
+                                        })
                                         .map((position, ind) =>
                                             <>
                                                 <Location key={`pos-${ind}`}
