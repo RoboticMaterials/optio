@@ -102,7 +102,8 @@ const App = (props) => {
 
                                 {/* If in mobile mode and dashboard is open (set in dashboard screens), don't mount the header; dashboard screen should be in full screen on mobile devices. If not in mobile mode, always mount header. */}
                                 <styled.HeaderContainer>
-                                    {mobileMode ?
+                                    {mapViewEnabled ?
+                                        mobileMode ?
                                         dashboardOpen ?
                                             <></>
                                             :
@@ -115,6 +116,8 @@ const App = (props) => {
                                             path={["/locations/:stationID?/:widgetPage?", '/']}
                                             component={StatusHeader}
                                         />
+                                        :
+                                        <> </>
                                     }
                                 </styled.HeaderContainer>
 
@@ -122,7 +125,8 @@ const App = (props) => {
 
                                 <styled.BodyContainer>
                                     {/* Hides Side bar when in a dashboard in mobile mode */}
-                                    {mobileMode ?
+                                    {mapViewEnabled ?
+                                        mobileMode ?
                                         dashboardOpen ?
                                             <></>
                                             :
@@ -135,6 +139,8 @@ const App = (props) => {
                                             showSideBar={showSideBar}
                                             setShowSideBar={setShowSideBar}
                                         />
+                                        :
+                                        <></>
                                     }
 
                                     <Route
@@ -163,7 +169,12 @@ const App = (props) => {
 
                                                 :
 
-                                                <ListView/>
+                                                <Route
+                                                path={["/locations/:stationID?/:widgetPage?", '/']}
+                                                component={ListView}
+                                                />
+
+
                                             }
                                         </>
                                     }
