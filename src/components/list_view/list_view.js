@@ -45,8 +45,6 @@ const LocationList = (props) => {
     }
 
     return(
-        <styled.ListContainer>
-
             <styled.ListScrollContainer>
                 {locationsArr.length > 0 ?
                     locationsArr.map((item, index, arr) => {
@@ -63,17 +61,7 @@ const LocationList = (props) => {
                             >
                                 <styled.ListItemRect>
                                     <styled.ListItemTitle schema={"locations"} onClick={() => onClick(item)}>{name}</styled.ListItemTitle>
-                                    "
                                 </styled.ListItemRect>
-
-                                {props.schema === 'tasks' &&
-                                <styled.ListItemIcon
-                                    className='fas fa-play'
-                                    onClick={() => {
-
-                                    }}
-                                />
-                                }
 
                             </styled.ListItem>
                         );
@@ -83,8 +71,6 @@ const LocationList = (props) => {
                 }
 
             </styled.ListScrollContainer>
-        </styled.ListContainer>
-
     )
 }
 
@@ -148,7 +134,7 @@ const ListView = (props) => {
                             position: "relative"
                         }}
                     >
-                        <styled.Icon2
+                        <styled.Icon
                             className={"fa fa-times"}
                         />
                     </BounceButton>
@@ -165,7 +151,7 @@ const ListView = (props) => {
                             position: "relative"
                         }}
                     >
-                        <styled.Icon2
+                        <styled.Icon
                             className={!showSettings ? "fa fa-cog" : "fa fa-times"}
                         />
                     </BounceButton>

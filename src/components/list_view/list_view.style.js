@@ -7,10 +7,11 @@ export const Container = styled.div`
     flex: 1;
     flex-direction: column;
     max-height: 100%;
+    
     // padding-top: 4rem;
 `
 
-export const Icon2 = styled.i`
+export const Icon = styled.i`
 	padding: 0;
 	margin: 0;
 	font-size: 1.5rem;
@@ -20,90 +21,6 @@ export const Icon2 = styled.i`
 	transform: translate(-50%,-50%);
 `
 
-export const Button = styled.div`
-    height: 6rem;
-
-    display: flex;
-    flex-direction: row;
-        
-    background: ${props => `linear-gradient(180deg, 
-                                ${LightenDarkenColor(props.color, 20)} 0%, 
-                                ${props.color} 50%, 
-                                ${LightenDarkenColor(props.color, -20)} 100%)`};
-    border-radius: 0.6rem;
-    overflow: visible;
-        
-    // margins
-    margin: 0 2rem 0.5rem 2rem;
-        
-    // padding
-    padding: 0.5rem 1rem 0.5rem 1rem;
-    
-    outline: none;
-    &:focus {
-        outline: none;
-    }
-
-    letter-spacing: 1.5px;
-    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
-    
-    outline: none;
-    user-select: none;
-
-    transition: transform 0.2s ease;
-
-    cursor: grab;
-    &:active {
-        box-shadow: 2px 2px 2px rgba(0,0,0,0.5);
-        transform: translateY(-2px);
-        cursor: grabbing;
-    }
-
-}
-`
-
-
-
-
-
-export const Icon = styled.i`
-	margin: 0;
-	padding: 0;
-	margin-right: 1rem;
-	font-size: 2rem;
-	
-	
-	
-	
-	height: 3.2rem;
-    width: 3.2rem;
-	
-	border-radius: .5rem;
-
-    box-shadow: 0 0.1rem 0.2rem 0rem #303030;
-    /* background-color: ${props => props.showSideBar ? 'rgba(255,255,255,0.2)' : props.theme.bg.secondary} ; */
-    background: rgba(97, 98, 109, 0.97);
-    
-    transition: background-color 0.25s ease, box-shadow 0.1s ease;
-
-    &:focus{
-        outline: 0 !important;
-    }
-
-    &:active{
-        box-shadow: none;
-    }
-
-    &:hover{
-    }
-
-    // @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
-    //     width: 3.5rem;
-    //     height: 3.5rem;
-    //     margin-left: .5rem;
-        
-    // }
-`
 
 export const Header = styled.div`
 	background: ${props => props.theme.bg.septenary};
@@ -124,21 +41,14 @@ export const Title = styled.span`
     transform: translateX(-50%);
 `
 
-export const ListContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    max-height: 100%;
-    padding: 1rem;
-    
-    
-`
-
 export const ListScrollContainer = styled.ul`
     padding: 0;
     margin: 0;
     overflow-y: scroll;
+    flex: 1;
+    padding: 1rem;
+    
 `
-
 export const ListItem = styled.div`
     display: flex;
     align-items: center;
@@ -192,15 +102,5 @@ export const ListItemTitle = styled.div`
         -webkit-text-fill-color: transparent;
         -webkit-background-clip: text;
         display:block;
-    }
-`
-
-export const ListItemIcon = styled.i`
-    margin-left: 1rem;
-    font-size: 1.25rem;
-    color: lightgreen;
-
-    &:hover {
-        cursor: pointer;
     }
 `
