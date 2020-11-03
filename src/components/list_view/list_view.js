@@ -2,29 +2,20 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import {Route, useHistory} from 'react-router-dom'
+import PropTypes from "prop-types";
 
 // components
+import DashboardsPage from "../widgets/widget_pages/dashboards_page/dashboards_page";
+import Settings from "../side_bar/content/settings/settings";
+import BounceButton from "../basic/bounce_button/bounce_button";
 
 // styles
 import * as styled from "./list_view.style"
 
 // import logger
-import logger from '../../logger.js';
-import {
-    deleteLocationProcess,
-    setSelectedLocation,
-    setSelectedLocationChildrenCopy,
-    setSelectedLocationCopy, sideBarBack
-} from "../../redux/actions/locations_actions";
-import {addPosition} from "../../redux/actions/positions_actions";
-import {daysOfTheWeek} from "../../constants/scheduler_constants";
-import ScheduleListItem from "../side_bar/content/scheduler/schedule_list/schedule_list_item/schedule_list_item";
-import PropTypes from "prop-types";
-import CreateScheduleForm from "../side_bar/content/scheduler/create_schedule_form/create_schedule_form";
-import Widgets from "../widgets/widgets";
-import DashboardsPage from "../widgets/widget_pages/dashboards_page/dashboards_page";
-import Settings from "../side_bar/content/settings/settings";
-import BounceButton from "../basic/bounce_button/bounce_button";
+import log from '../../logger.js';
+
+const logger = log.getLogger("ListView")
 
 const LocationList = (props) => {
     const {
@@ -94,6 +85,8 @@ const ListView = (props) => {
 
     } = props
 
+    console.log("ListView ListView ListView")
+
     const dispatch = useDispatch()
     const history = useHistory()
     const [showDashboards, setShowDashboards] = useState(false)
@@ -115,8 +108,6 @@ const ListView = (props) => {
         }
 
     }, [widgetPage])
-
-
 
     return (
         <styled.Container>
@@ -166,7 +157,6 @@ const ListView = (props) => {
                 />
             }
 
-
             {(showDashboards && !showSettings) &&
 
                     <Route
@@ -179,10 +169,6 @@ const ListView = (props) => {
             {showSettings &&
                 <Settings/>
             }
-
-
-
-
         </styled.Container>
     )
 }

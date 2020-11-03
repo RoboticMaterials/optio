@@ -18,11 +18,12 @@ import {postLocalSettings} from "../../../redux/actions/local_actions";
 const ToggleMapViewSwitch = (props) => {
     const {
         checked,
-        onChange
+        onChange,
+        switchContainerStyle
     } = props
 
     return(
-        <styled.SwitchContainer>
+        <styled.SwitchContainer style={switchContainerStyle}>
             <styled.SwitchContainerLabel>Show List View</styled.SwitchContainerLabel>
             <Switch
                 checked={checked}
@@ -79,14 +80,18 @@ const SplashScreen = (props) => {
                                 // type = 'submit'
                             />
                         </form>
-                        {/*
+
+                        <Button schema={'scheduler'} style={{ color: 'red', border: '0.1rem solid red' }} type='submit'>Submit</Button>
+
                         <ToggleMapViewSwitch
+                            switchContainerStyle={{
+                                bottom: "1rem",
+                                transform: "translateY(-50%)",
+                                position: "absolute"
+                            }}
                             checked={localSettings.localSettings.mapViewEnabled}
                             onChange={toggleMapViewEnabled}
                         />
-                        */}
-
-                        <Button schema={'scheduler'} style={{ color: 'red', border: '0.1rem solid red' }} type='submit'>Submit</Button>
                     </div>
                 </div>
 
