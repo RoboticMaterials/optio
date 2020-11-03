@@ -24,6 +24,7 @@ import {
 
 import * as api from '../../api/processes_api'
 import { processesSchema } from '../../normalizr/schema';
+import { deepCopy } from '../../methods/utils/utils'
 
 
 export const getProcesses = () => {
@@ -46,6 +47,7 @@ export const getProcesses = () => {
 
             // Uncomment when you want to make processes an object
             const normalizedProcesses = normalize(processes, processesSchema);
+
             return onSuccess(normalizedProcesses.entities.processes)
             // return onSuccess(processes)
         } catch (error) {
@@ -53,7 +55,7 @@ export const getProcesses = () => {
         }
     }
 }
-export const postProcesses = (processes) => {
+export const postProcesses = (process) => {
     return async dispatch => {
         function onStart() {
             dispatch({ type: POST_PROCESSES_STARTED });
@@ -69,14 +71,16 @@ export const postProcesses = (processes) => {
 
         try {
             onStart();
-            const newProcesses = await api.postProcesses(processes);
+            delete process._id
+            const newProcesses = await api.postProcesses(process);
+            console.log('QQQQ Posting', newProcesses)
             return onSuccess(newProcesses)
         } catch (error) {
             return onError(error)
         }
     }
 }
-export const putProcesses = (process, ID) => {
+export const putProcesses = (process) => {
     return async dispatch => {
         function onStart() {
             dispatch({ type: PUT_PROCESSES_STARTED });
@@ -92,6 +96,8 @@ export const putProcesses = (process, ID) => {
 
         try {
             onStart();
+            const ID = deepCopy(process._id.$oid)
+            delete process._id
             const updateProcesses = await api.putProcesses(process, ID);
             return onSuccess(updateProcesses)
         } catch (error) {
@@ -128,5 +134,5 @@ export const updateProcesses = (processes, d3) => {
 }
 
 export const setSelectedProcess = (process) => {
-    return { type: 'SET_SELECTED_DEVICE', payload: process }
+    return { type: 'SET_SELECTED_PROCESS', payload: process }
 }

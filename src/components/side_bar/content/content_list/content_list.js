@@ -11,12 +11,15 @@ import { deepCopy } from '../../../../methods/utils/utils'
 export default function ContentList(props) {
 
     const {
-        executeTask
+        executeTask,
+        hideHeader
     } = props
     return (
         <styled.Container>
 
-            <ContentHeader content={props.schema} onClickAdd={props.onPlus} />
+            {!hideHeader &&
+                <ContentHeader content={props.schema} onClickAdd={props.onPlus} />
+            }
 
             <styled.List>
                 {props.elements.map((element, ind) =>

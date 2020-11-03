@@ -11,6 +11,7 @@ import { getObjects } from '../../redux/actions/objects_actions'
 import { getTasks, deleteTask } from '../../redux/actions/tasks_actions'
 import { getDashboards, deleteDashboard } from '../../redux/actions/dashboards_actions'
 import { getSounds } from '../../redux/actions/sounds_actions'
+import { getProcesses } from '../../redux/actions/processes_actions'
 
 import { getSchedules } from '../../redux/actions/schedule_actions';
 import { getDevices, putDevices } from '../../redux/actions/devices_actions'
@@ -50,6 +51,7 @@ const ApiContainer = (props) => {
     const onGetTasks = () => dispatch(getTasks())
     const onGetSounds = (api) => dispatch(getSounds(api))
     const onGetTaskQueue = () => dispatch(getTaskQueue())
+    const onGetProcesses = () => dispatch(getProcesses());
 
     const onGetSchedules = () => dispatch(getSchedules())
     const onGetDevices = async () => await dispatch(getDevices())
@@ -209,6 +211,7 @@ const ApiContainer = (props) => {
         const sounds = await onGetSounds()
         const tasks = await onGetTasks()
         const taskQueue = await onGetTaskQueue()
+        const processes = await onGetProcesses()
 
         const status = await onGetStatus()
         const getSchedules = await onGetSchedules()

@@ -23,8 +23,17 @@ import {
 import { deepCopy } from '../../methods/utils/utils';
 
 const defaultState = {
+    // processes: {'qqq':{
+    //     id: 'qqq',
+    //     name: 'Fakey McFake Fake',
+    //     routes: [
+    //         "5fa06a9dfacd1af9a74c1925",
+    //         "5fa06aa4facd1af9a74c1926",
+    //         "5fa06ac3facd1af9a74c1927",
+    //     ],
+    // },},
     processes: {},
-    selectedProcesse: null,
+    selectedProcess: null,
 }
 
 const processesReducer = (state = defaultState, action) => {
@@ -172,7 +181,7 @@ const processesReducer = (state = defaultState, action) => {
         case 'SET_SELECTED_PROCESS':
             return {
                 ...state,
-                selectedProcesse: action.payload
+                selectedProcess: action.payload
 
             }
 

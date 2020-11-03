@@ -27,6 +27,7 @@ import { deselectLocation, widgetLoaded } from '../../redux/actions/locations_ac
 
 // Import Components
 import TaskPaths from '../../components/map/task_paths/task_paths.js'
+import ProcessPaths from '../../components/map/process_paths/process_paths'
 import Location from '../../components/map/locations/location.js'
 import MiR100 from '../../components/map/amrs/mir100/mir100.js'
 import Zones from '../../components/map/zones/zones'
@@ -510,7 +511,13 @@ export class MapView extends Component {
                             </foreignObject>
                         </styled.MapGroup>
 
-                        <TaskPaths d3={this.d3} />
+                        {!!this.props.selectedTask &&
+                            <TaskPaths d3={this.d3} />
+                        }
+
+                        {!!this.props.selectedProcess &&
+                            <ProcessPaths d3={this.d3} />
+                        }
 
                         <defs>
                             {/* a transparent glow that takes on the colour of the object it's applied to */}
@@ -561,6 +568,11 @@ export class MapView extends Component {
                                         .filter(position => {
                                             if (!!this.props.selectedTask) {
                                                 return !!position.parent
+                                            }
+
+                                            else if (!!this.props.selectedProcess) {
+                                                // Need to check where you are at in the process building part and render positions based on that
+                                                return true
                                             }
 
                                             else {
@@ -634,6 +646,7 @@ const mapStateToProps = function (state) {
 
         selectedLocation: state.locationsReducer.selectedLocation,
         selectedTask: state.tasksReducer.selectedTask,
+        selectedProcess: state.processesReducer.selectedProcess,
 
         hoveringInfo: state.locationsReducer.hoverStationInfo,
         widgetLoaded: state.locationsReducer.widgetLoaded,

@@ -5,19 +5,19 @@ import { uuidv4 } from '../methods/utils/utils';
 
 // schedule schema
 export const dashboardSchema = new schema.Entity(
-  // key
-  'dashboards',
-  // definition
-  {
-    //condition: conditionSchema
-  },
-  // options
-  {
-    idAttribute: (value, parent, key) => {
-      return value._id.$oid
+    // key
+    'dashboards',
+    // definition
+    {
+        //condition: conditionSchema
     },
+    // options
+    {
+        idAttribute: (value, parent, key) => {
+            return value._id.$oid
+        },
 
-  },
+    },
 
 );
 
@@ -30,32 +30,32 @@ export const deviceSchema = new schema.Entity(
     'devices',
     // definition
     {
-      //condition: conditionSchema
+        //condition: conditionSchema
     },
     // options
     {
-      idAttribute: (value, parent, key) => {
-        return value._id
-      },
-  
+        idAttribute: (value, parent, key) => {
+            return value._id
+        },
+
     },
-  
-  );
-  
-  // schema for list of schedules
-  export const devicesSchema = [deviceSchema]
+
+);
+
+// schema for list of schedules
+export const devicesSchema = [deviceSchema]
 
 export const locationsSchema = new schema.Entity(
-  // key
-  'locations',
-  // definition
-  {},
-  // options
-  {
-    idAttribute: (value, parent, key) => {
-      return value._id.$oid
+    // key
+    'locations',
+    // definition
+    {},
+    // options
+    {
+        idAttribute: (value, parent, key) => {
+            return value._id.$oid
+        }
     }
-  }
 )
 
 // Schema for events
@@ -66,8 +66,29 @@ export const eventsSchema = new schema.Entity(
     {},
     // options
     {
-      idAttribute: (value, parent, key) => {
-        return value._id.$oid
-      }
+        idAttribute: (value, parent, key) => {
+            return value._id.$oid
+        }
     }
-  )
+)
+
+
+// schedule schema
+export const processSchema = new schema.Entity(
+    // key
+    'processes',
+    // definition
+    {
+        //condition: conditionSchema
+    },
+    // options
+    {
+        idAttribute: (value, parent, key) => {
+            return value._id.$oid
+        },
+
+    },
+
+);
+
+export const processesSchema = [processSchema]

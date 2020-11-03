@@ -90,7 +90,7 @@ export async function deleteProcesses(ID) {
     }
 }
 
-export async function postProcesses(processes) {
+export async function postProcesses(process) {
     try {
         const response = await axios({
             method: 'POST',
@@ -99,11 +99,12 @@ export async function postProcesses(processes) {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
-            data: processes
+            data: process
         });
 
         // Success 🎉
         // log.debug('response',response);
+        console.log('QQQQ API post response', response)
         const data = response.data;
         const dataJson = JSON.parse(data)
         // log.debug('response data json',dataJson);

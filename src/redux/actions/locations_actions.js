@@ -111,8 +111,8 @@ export const removeLocation = (location) => {
     return async dispatch => {
         dispatch(stationActions.removeStation(_id))
 
-        children.forEach((child)=> {
-          dispatch(positionActions.removePosition(child))
+        children.forEach((child) => {
+            dispatch(positionActions.removePosition(child))
         })
 
     }
@@ -235,22 +235,25 @@ export const deleteLocationProcess = (props) => {
         }
 
         if (locationToDelete.schema == 'station') {
-            dispatch(deleteStation(locationToDelete._id))
 
             //// Delete children
-            locationToDelete.children.forEach(childID => {
-                dispatch(deletePosition(positions[childID], childID))
+            locationToDelete.children.forEach(async childID => {
+                await dispatch(deletePosition(positions[childID], childID))
             })
 
             //// Delete dashboards
-            locationToDelete.dashboards.forEach(dashboardID => {
-                dispatch(deleteDashboard(dashboardID))
+            locationToDelete.dashboards.forEach(async dashboardID => {
+                await dispatch(deleteDashboard(dashboardID))
             })
 
             //// Delete relevant tasks
             Object.values(tasks)
                 .filter(task => task.load.station == locationToDelete._id || task.unload.station == locationToDelete._id)
-                .forEach(task => dispatch(deleteTask(task._id.$oid)))
+                .forEach(async task => await dispatch(deleteTask(task._id.$oid)))
+
+            // Delete Station
+            await dispatch(deleteStation(locationToDelete._id))
+
         } else {
 
             // dispatch(positionActions.deletePosition(locationToDelete))
