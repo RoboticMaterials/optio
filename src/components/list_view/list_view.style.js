@@ -32,13 +32,14 @@ export const Header = styled.div`
 `
 
 export const Title = styled.span`
-    font-family: ${props => props.theme.font.primary};
-    font-size: ${props => props.theme.fontSize.sz2};
-    font-weight: 700;
-    color: ${props => props.theme.bg.primary};
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+    
+    font-family: ${props => props.theme.font.primary};
+    font-size: ${props => props.theme.fontSize.sz1};
+    font-weight: 500;
+    color: ${props => props.theme.schema[props.schema].solid};
 `
 
 export const ListScrollContainer = styled.ul`

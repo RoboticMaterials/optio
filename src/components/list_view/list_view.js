@@ -17,6 +17,21 @@ import log from '../../logger.js';
 
 const logger = log.getLogger("ListView")
 
+const SCREENS = {
+    LOCATIONS: {
+        title: "Locations",
+        schema: "locations"
+    },
+    SETTINGS: {
+        title: "Settings",
+        schema: "settings"
+    },
+    DASHBOARDS: {
+        title: "Dashboards",
+        schema: "locations"
+    },
+}
+
 const LocationList = (props) => {
     const {
         onMouseEnter,
@@ -93,9 +108,10 @@ const ListView = (props) => {
     const [showSettings, setShowSettings] = useState(false)
     const { widgetPage } = props.match.params
 
+    const CURRENT_SCREEN = (showDashboards ) ? SCREENS.DASHBOARDS :
+        showSettings ? SCREENS.SETTINGS : SCREENS.LOCATIONS
 
-    const title = (showDashboards ) ? "Dashboards" :
-        showSettings ? "Settings" : "Locations"
+    const title = CURRENT_SCREEN.title
 
     useEffect(() => {
 
@@ -147,7 +163,7 @@ const ListView = (props) => {
                         />
                     </BounceButton>
                 }
-                <styled.Title>{title}</styled.Title>
+                <styled.Title schema={CURRENT_SCREEN.schema}>{title}</styled.Title>
             </styled.Header>
 
 
