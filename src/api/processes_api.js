@@ -90,7 +90,7 @@ export async function deleteProcesses(ID) {
     }
 }
 
-export async function postProcesses(processes) {
+export async function postProcesses(process) {
     try {
         const response = await axios({
             method: 'POST',
@@ -99,7 +99,7 @@ export async function postProcesses(processes) {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
-            data: processes
+            data: process
         });
 
         // Success 🎉
@@ -158,7 +158,6 @@ export async function putProcesses(process, ID) {
 
 
     } catch (error) {
-
 
         // Error 😨
         if (error.response) {

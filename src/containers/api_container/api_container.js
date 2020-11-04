@@ -11,6 +11,7 @@ import { getObjects } from '../../redux/actions/objects_actions'
 import { getTasks, deleteTask } from '../../redux/actions/tasks_actions'
 import { getDashboards, deleteDashboard } from '../../redux/actions/dashboards_actions'
 import { getSounds } from '../../redux/actions/sounds_actions'
+import { getProcesses, putProcesses } from '../../redux/actions/processes_actions'
 
 import { getSchedules } from '../../redux/actions/schedule_actions';
 import { getDevices, putDevices } from '../../redux/actions/devices_actions'
@@ -53,6 +54,9 @@ const ApiContainer = (props) => {
     const onGetTasks = () => dispatch(getTasks())
     const onGetSounds = (api) => dispatch(getSounds(api))
     const onGetTaskQueue = () => dispatch(getTaskQueue())
+
+    const onGetProcesses = () => dispatch(getProcesses());
+    const onPutProcess = (process) => dispatch(putProcesses(process))
 
     const onGetSchedules = () => dispatch(getSchedules())
     const onGetDevices = async () => await dispatch(getDevices())
@@ -212,6 +216,7 @@ const ApiContainer = (props) => {
         const sounds = await onGetSounds()
         const tasks = await onGetTasks()
         const taskQueue = await onGetTaskQueue()
+        const processes = await onGetProcesses()
 
         const status = await onGetStatus()
         const getSchedules = await onGetSchedules()
@@ -225,6 +230,7 @@ const ApiContainer = (props) => {
         handleStationsWithBrokenDevices(devices, locations)
         handleDashboardsWithBrokenStations(dashboards, locations)
         handleStationsWithBrokenChildren(locations)
+        handleProcessesWithBrokenRoutes(processes, tasks)
 
         props.apiLoaded()
         props.onLoad()
@@ -505,6 +511,45 @@ const ApiContainer = (props) => {
             }
         })
 
+
+    }
+
+    /**
+     * This handles broken Processes
+     * A broken process would happen if a route/task that has been deleted but the process has not been updated
+     * @param {*} processes 
+     * @param {*} tasks 
+     */
+    const handleProcessesWithBrokenRoutes = (processes, tasks) => {
+
+        Object.values(processes).map((process) => {
+
+            process.routes.map((route) => {
+                if (!tasks[route]) {
+                    // Removes the task from the array of routes
+                    let processRoutes = deepCopy(process.routes)
+                    const index = processRoutes.indexOf(route)
+                    processRoutes.splice(index, 1)
+                    const updatedProcess = {
+                        ...process,
+                        routes: [...processRoutes]
+                    }
+                    console.log('QQQQ route does not exist in anymore, delete from process', deepCopy(updatedProcess))
+
+                    onPutProcess(updatedProcess)
+                }
+            })
+        })
+    }
+
+    /**
+     * This handles tasks that belong to broken process
+     * This would happen because either the process has been deleted and the task have not
+     * or The task was created but the process was never saved
+     * @param {*} processes 
+     * @param {*} tasks 
+     */
+    const handleTasksWithBrokenProcess = (processes, tasks) => {
 
     }
 

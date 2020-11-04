@@ -195,6 +195,7 @@ const Location = (props) => {
 
     const dispatch = useDispatch()
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
+    const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const stations = useSelector(state => state.locationsReducer.stations)
     const positions = useSelector(state => state.locationsReducer.positions)
     const locations = useSelector(state => state.locationsReducer.locations)
@@ -287,7 +288,7 @@ const Location = (props) => {
                 throw "Nothing is returned from render because a location has a 'type' that does not match the available types. Make sure all locations have valid types"
         }
 
-    }, [locations, selectedLocation])
+    }, [locations, selectedLocation, selectedProcess, selectedTask])
 
     return (
         <>
