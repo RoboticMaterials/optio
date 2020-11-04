@@ -290,6 +290,12 @@ const Location = (props) => {
 
     }, [locations, selectedLocation, selectedProcess, selectedTask])
 
+    // TODO: Temp fix for now
+    // Hides locations that should have parents, but they're parents are deleted
+    if(!!location.parent && !stations[location.parent]){
+        return null
+    }
+
     return (
         <>
             {handleRenderedLocations}
