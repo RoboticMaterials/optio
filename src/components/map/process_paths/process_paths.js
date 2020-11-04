@@ -14,10 +14,10 @@ const ProcessPaths = (props) => {
 
     // Maps through all the associated routes with the process and displays them
     const handleTaskPaths = () => {
-        return selectedProcess.routes.map((route) => {
+        return selectedProcess.routes.map((route, ind) => {
 
             return (
-                <TaskPaths d3={d3} route={tasks[route]} />
+                <TaskPaths d3={d3} route={tasks[route]} key={ind}/>
             )
         })
     }

@@ -230,7 +230,8 @@ const ApiContainer = (props) => {
         handleStationsWithBrokenDevices(devices, locations)
         handleDashboardsWithBrokenStations(dashboards, locations)
         handleStationsWithBrokenChildren(locations)
-        handleProcessesWithBrokenRoutes(processes, tasks)
+        await handleTasksWithBrokenProcess(processes, tasks)
+        await handleProcessesWithBrokenRoutes(processes, tasks)
 
         props.apiLoaded()
         props.onLoad()
@@ -520,11 +521,11 @@ const ApiContainer = (props) => {
      * @param {*} processes 
      * @param {*} tasks 
      */
-    const handleProcessesWithBrokenRoutes = (processes, tasks) => {
+    const handleProcessesWithBrokenRoutes = async (processes, tasks) => {
 
         Object.values(processes).map((process) => {
 
-            process.routes.map((route) => {
+            process.routes.map(async (route) => {
                 if (!tasks[route]) {
                     // Removes the task from the array of routes
                     let processRoutes = deepCopy(process.routes)
@@ -536,7 +537,7 @@ const ApiContainer = (props) => {
                     }
                     console.log('QQQQ route does not exist in anymore, delete from process', deepCopy(updatedProcess))
 
-                    onPutProcess(updatedProcess)
+                    await onPutProcess(updatedProcess)
                 }
             })
         })
@@ -549,7 +550,27 @@ const ApiContainer = (props) => {
      * @param {*} processes 
      * @param {*} tasks 
      */
-    const handleTasksWithBrokenProcess = (processes, tasks) => {
+    const handleTasksWithBrokenProcess = async (processes, tasks) => {
+
+        Object.values(tasks).map(async (task) => {
+            if(!!task.process){
+
+                // If the task process is equal to true, then it should be deleted because it was never associated with a process
+                if(task.process === true){
+                    console.log('QQQQ task never associated with a process', task)
+                    await onDeleteTask(task._id.$oid)
+                    return
+                }
+
+                // If process does not contain the task process, that means the process must have been deleted
+                else if (!processes[task.process]){
+                    console.log('QQQQ tasks parent process has been deleted', task)
+                    await onDeleteTask(task._id.$oid)
+                    return
+                }
+                
+            }
+        })
 
     }
 
