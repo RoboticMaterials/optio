@@ -39,6 +39,7 @@ const EditTask = (props) => {
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const sounds = useSelector(state => state.soundsReducer.sounds)
     const objects = useSelector(state => state.objectsReducer.objects)
+    const currentMap = useSelector(state => state.mapReducer.currentMap)
 
     const stations = useSelector(state => state.locationsReducer.stations)
     const positions = useSelector(state => state.locationsReducer.positions)
@@ -301,7 +302,7 @@ const EditTask = (props) => {
                         label={obj._id == undefined ? "New object will be created" : null}
                         labelField="name"
                         valueField="name"
-                        options={Object.values(objects)}
+                        options={Object.values(objects).filter((obj)=>obj.map_id === currentMap._id)}
                         defaultValue={!!selectedTask && !!selectedTask.obj ? objects[selectedTask.obj] : null}
                         textboxGap={0}
                         closeOnSelect="true"
