@@ -231,6 +231,7 @@ const ApiContainer = (props) => {
         handleDashboardsWithBrokenStations(dashboards, locations)
         handleStationsWithBrokenChildren(locations)
         handleProcessesWithBrokenRoutes(processes, tasks)
+        handleTasksWithBrokenProcess(processes, tasks)
 
         props.apiLoaded()
         props.onLoad()
@@ -550,6 +551,26 @@ const ApiContainer = (props) => {
      * @param {*} tasks 
      */
     const handleTasksWithBrokenProcess = (processes, tasks) => {
+
+        Object.values(tasks).map((task) => {
+            if(!!task.process){
+
+                // If the task process is equal to true, then it should be deleted because it was never associated with a process
+                if(task.process === true){
+                    console.log('QQQQ task never associated with a process', task)
+                    onDeleteTask(task._id.$oid)
+                    return
+                }
+
+                // If process does not contain the task process, that means the process must have been deleted
+                else if (!processes[task.process]){
+                    console.log('QQQQ tasks parent process has been deleted', task)
+                    onDeleteTask(task._id.$oid)
+                    return
+                }
+                
+            }
+        })
 
     }
 

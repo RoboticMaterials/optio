@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 // Import basic components
 import Textbox from '../../../../basic/textbox/textbox.js'
+import Button from '../../../../basic/button/button'
 
 // Import components
 import EditTask from '../../tasks/edit_task/edit_task'
@@ -13,7 +14,7 @@ import ContentHeader from '../../content_header/content_header'
 
 // Import actions
 import { setSelectedTask, deselectTask, addTask, putTask } from '../../../../../redux/actions/tasks_actions'
-import { setSelectedProcess, postProcesses, putProcesses } from '../../../../../redux/actions/processes_actions'
+import { setSelectedProcess, postProcesses, putProcesses, deleteProcesses } from '../../../../../redux/actions/processes_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 
 // Import Utils
@@ -37,6 +38,7 @@ const EditProcess = (props) => {
 
     const onPostProcess = async (process) => await dispatch(postProcesses(process))
     const onPutProcess = async (process) => await dispatch(putProcesses(process))
+    const onDeleteProcess = async (ID) => await dispatch(deleteProcesses(ID))
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -229,6 +231,16 @@ const EditProcess = (props) => {
 
     }
 
+    const handleDelete = async () => {
+
+        await onDeleteProcess(selectedProcessCopy._id.$oid)
+
+        onDeselectTask()
+        onSetSelectedProcess(null)
+        setSelectedProcessCopy(null)
+        toggleEditingProcess(false)
+    }
+
     return (
         <styled.Container>
             <div style={{ marginBottom: '1rem' }}>
@@ -266,6 +278,21 @@ const EditProcess = (props) => {
             </styled.SectionContainer>
 
             {handleAddRoute()}
+
+            <div style={{ height: "100%", paddingTop: "1rem" }}/>
+
+            {/* Delete Task Button */}
+            <Button
+                schema={'processes'}
+                disabled={!!selectedProcess && !!selectedProcess._id && selectedProcess._id.$oid == '__NEW_TASK'}
+                style={{marginBottom: '0rem'}}
+                secondary
+                onClick={() => {
+                    handleDelete()
+                }}
+            >
+                Delete
+            </Button>
 
         </styled.Container>
 
