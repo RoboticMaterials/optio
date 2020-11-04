@@ -35,6 +35,7 @@ export default function Positions(props) {
     const positions = useSelector(state => state.locationsReducer.positions)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const tasks = useSelector(state => state.tasksReducer.tasks)
+    const currentMap = useSelector(state => state.mapReducer.currentMap)
 
     const selectedPositions = Object.values(positions).filter(position =>  position.parent == selectedLocation._id)
 
@@ -134,7 +135,8 @@ export default function Positions(props) {
                                 x: e.clientX,
                                 y: e.clientY,
                                 parent: selectedLocation._id,
-                                _id: newPositionID
+                                _id: newPositionID,
+                                map_id: currentMap._id
                             }))
 
                             let { children } = selectedLocation

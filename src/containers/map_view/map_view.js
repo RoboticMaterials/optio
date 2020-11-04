@@ -36,6 +36,7 @@ import Widgets from '../../components/widgets/widgets'
 
 // logging
 import log from "../../logger"
+import {setCurrentMap} from "../../redux/actions/map_actions";
 
 const logger = log.getLogger("MapView")
 
@@ -80,7 +81,8 @@ export class MapView extends Component {
         // Refresh the map on initial mount. This will only likely give you back the list of 
         // maps, but componentDidUpdate will catch that and set the current map to the first map
         // in the returned list (which will be the active map)
-        this.refreshMap()
+        // this.refreshMap()
+        this.checkForMapLoad()
 
         window.addEventListener('mousedown', () => this.mouseDown = true)
         window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() })
@@ -92,12 +94,38 @@ export class MapView extends Component {
         })
     }
 
+    checkForMapLoad = () => {
+        const defaultMap = this.props.maps.find((map) => map._id === this.props.currentMapId)
+        if(this.props.currentMapId && this.props.currentMap._id) {
+            if(this.props.currentMapId !== this.props.currentMap._id) {
+                console.log("loadMap 1")
+                this.props.onSetCurrentMap(defaultMap)
+            }
+
+        } else if(this.props.currentMapId) {
+            console.log("loadMap 2")
+            this.props.onSetCurrentMap(defaultMap)
+
+        } else if(this.props.currentMap && this.props.currentMap._id) {
+            // do nothing
+        } else {
+            console.log("loadMap 3")
+            this.props.onSetCurrentMap(this.props.maps[0])
+        }
+    }
+
     componentDidUpdate(prevProps, prevState) {
         // If new maps are available, refresh current map
         // NOTE: will be useless once we have a method to select map
-        if (prevProps.maps.length != this.props.maps.length) {
-            this.refreshMap()
-        }
+        // if (prevProps.maps.length != this.props.maps.length) {
+        //     this.refreshMap()
+        // }
+
+        this.checkForMapLoad()
+
+
+
+
 
         // If the map has been changed, recalculate the geometry and bind the zoom
         // listener to default to the correct translation
@@ -140,6 +168,7 @@ export class MapView extends Component {
      * Refreshes the map and all map entities
      */
     refreshMap = () => {
+
         if (!!this.props.maps[0]) {
             this.props.onGetMap(this.props.maps[0].guid)
         }
@@ -428,6 +457,11 @@ export class MapView extends Component {
         if (this.props.currentMap == null) { return (<></>) }
         const { translate, scale } = this.d3;
 
+        // locations.filter()
+
+        const locationsArr = Object.values(locations).filter(location => (location.map_id === this.props.currentMap._id))
+        // const positionsArr = Object.values(positions)
+
         // console.log(this.props.stations)
         // console.log(this.props.locations)
         // console.log(this.props.locations)
@@ -527,7 +561,7 @@ export class MapView extends Component {
                             <>
                                 <>{
                                     //// Render Locations
-                                    Object.values(locations).map((location, ind) =>
+                                    locationsArr.map((location, ind) =>
                                         <Location key={`loc-${ind}`}
                                             location={location}
                                             rd3tClassName={`${this.rd3tLocClassName}_${ind}`}
@@ -541,6 +575,7 @@ export class MapView extends Component {
                                 <>{
                                     //// Render children positions if appropriate
                                     Object.values(positions)
+                                        .filter(position => (position.map_id === this.props.currentMap._id))
                                         // .filter(position => !!this.props.selectedTask || (!!this.props.selectedLocation && position.parent == this.props.selectedLocation._id))
 
                                         // Commented out for now because we wanted to send the cart with a shelf to normal car positions
@@ -616,6 +651,7 @@ MapView.defaultProps = {
 const mapStateToProps = function (state) {
     return {
         maps: state.mapReducer.maps,
+        currentMapId: state.localReducer.localSettings.currentMapId,
         currentMap: state.mapReducer.currentMap,
 
         devices: state.devicesReducer.devices,
@@ -634,6 +670,7 @@ const mapStateToProps = function (state) {
 const mapDispatchToProps = dispatch => {
     return {
         onGetMap: (map_id) => dispatch(mapActions.getMap(map_id)),
+        onSetCurrentMap: (map) => dispatch(setCurrentMap(map)),
 
         onUpdateStations: (stations) => dispatch(stationActions.updateStations(stations)),
         onUpdatePositions: (positions) => dispatch(positionActions.updatePositions(positions)),

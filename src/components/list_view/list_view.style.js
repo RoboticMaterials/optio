@@ -57,8 +57,6 @@ export const ListItem = styled.div`
     height: 2.4rem;
     background: transparent;
     padding-bottom: 0.4rem;
-
- 
 `
 
 export const ListItemRect = styled.div`
