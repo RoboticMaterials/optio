@@ -574,7 +574,6 @@ export class MapView extends Component {
                                 <>{
                                     //// Render children positions if appropriate
                                     Object.values(positions)
-                                        .filter(position => (position.map_id === this.props.currentMap._id))
                                         // .filter(position => !!this.props.selectedTask || (!!this.props.selectedLocation && position.parent == this.props.selectedLocation._id))
                                         // This filter turns on when there's a selected task that has a load position but no unload position
                                         // If that's the case (happens when a new task exist and the load location has been selected) then filter out the other type of positions
@@ -591,6 +590,9 @@ export class MapView extends Component {
 
 
                                         .filter(position => {
+                                            // remove positions not associated with current map
+                                            if(position.map_id !== this.props.currentMap._id) return false
+
                                             // This filters positions when making a process
                                             // If the process has routes, and you're adding a new rout, you should only be able to add a route starting at the last station
                                             // This eliminates process with gaps between stations
