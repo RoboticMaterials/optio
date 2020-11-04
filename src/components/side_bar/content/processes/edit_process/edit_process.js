@@ -72,10 +72,21 @@ const EditProcess = (props) => {
                 <>
                     <styled.ListItem
                         key={`li-${ind}`}
-                        onMouseEnter={() => onSetSelectedTask(routeTask)}
-                    // onMouseLeave={() => onDeselectTask()}
                     >
-                        <styled.ListItemRect>
+                        <styled.ListItemRect
+                            onMouseEnter={() => {
+                                if (!selectedTask) {
+                                    console.log('QQQQ no task selected')
+                                    onSetSelectedTask(routeTask)
+                                }
+
+                            }}
+                            onMouseLeave={() => {
+                                if (selectedTask !== null && selectedTask._id.$oid !== '__NEW_TASK') {
+                                    onDeselectTask()
+                                }
+                            }}
+                        >
                             {/* <styled.ListItemTitle schema={props.schema} onClick={() => props.onClick(element)}>{element.name}</styled.ListItemTitle> */}
                             <styled.ListItemTitle
                                 schema={'processes'}

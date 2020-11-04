@@ -187,7 +187,9 @@ export const sideBarBack = (props) => {
 
         } else { // If the location is not new, revert it to the old copy, and do the same to its children
             dispatch(updateLocation(selectedLocationCopy))
-            selectedLocationChildrenCopy.forEach(child => dispatch(positionActions.updatePosition(child)))
+            if (selectedLocationChildrenCopy !== null) {
+                selectedLocationChildrenCopy.forEach(child => dispatch(positionActions.updatePosition(child)))
+            }
         }
 
         dispatch(setSelectedLocationCopy(null))
