@@ -29,6 +29,19 @@ const SideBarButton = (props) => {
         )
     }
 
+    else if (props.mode === 'processes') {
+        return (
+            <style.SideBarButtonIcon
+                className={'fas fa-route'}
+                onClick={() => {
+                    props.setShowSideBarPage(props.mode)
+                }}
+                currentMode={props.currentMode}
+                mode={props.mode}
+            />
+        )
+    }
+
     else if (props.mode === 'scheduler') {
         return (
             <style.SideBarButtonIcon

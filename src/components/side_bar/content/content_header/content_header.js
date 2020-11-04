@@ -92,6 +92,25 @@ const ContentHeader = (props) => {
         )
     }
 
+    // If the side bar is in add mode then have a back button and a add button
+    else if (mode === 'add') {
+        return (
+            <styled.Header>
+
+                <BackButton schema={content} style={{ display: 'inline-block' }}
+                    onClick={onClickBack}
+                />
+
+                <Button schema={content} style={{ display: 'inline-block', float: 'right' }}
+                    onClick={onClickSave} disabled={disabled}
+                >
+                    Add
+                    </Button>
+            </styled.Header>
+
+        )
+    }
+
     // If the side bar is in title mode then have a back button and if save is enabled then add a save button
     else if (mode === 'title') {
         return (

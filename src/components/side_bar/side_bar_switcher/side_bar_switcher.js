@@ -33,7 +33,7 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    onSideBarBack({selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy})
+                    onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy })
 
                 }}
                 currentMode={url}
@@ -41,6 +41,17 @@ const SideBarSwitcher = (props) => {
 
             <SideBarButton
                 mode={'tasks'}
+                setShowSideBarPage={(page) => {
+                    dispatch(setMode(page));
+                    history.push(`/${page}`)
+                    dispatch(deselectLocation())
+                    dispatch(deselectTask())
+                }}
+                currentMode={url}
+            />
+
+            <SideBarButton
+                mode={'processes'}
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
@@ -77,7 +88,7 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    onSideBarBack({selectedLocation})
+                    onSideBarBack({ selectedLocation })
                 }}
                 currentMode={url}
             />

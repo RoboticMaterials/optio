@@ -27,6 +27,7 @@ import { deselectLocation, widgetLoaded } from '../../redux/actions/locations_ac
 
 // Import Components
 import TaskPaths from '../../components/map/task_paths/task_paths.js'
+import ProcessPaths from '../../components/map/process_paths/process_paths'
 import Location from '../../components/map/locations/location.js'
 import MiR100 from '../../components/map/amrs/mir100/mir100.js'
 import Zones from '../../components/map/zones/zones'
@@ -510,7 +511,13 @@ export class MapView extends Component {
                             </foreignObject>
                         </styled.MapGroup>
 
-                        <TaskPaths d3={this.d3} />
+                        {!!this.props.selectedTask &&
+                            <TaskPaths d3={this.d3} />
+                        }
+
+                        {!!this.props.selectedProcess &&
+                            <ProcessPaths d3={this.d3} />
+                        }
 
                         <defs>
                             {/* a transparent glow that takes on the colour of the object it's applied to */}
@@ -558,8 +565,31 @@ export class MapView extends Component {
                                         //     }
                                         // })
 
+
                                         .filter(position => {
-                                            if (!!this.props.selectedTask) {
+                                            // This filters positions when making a process
+                                            // If the process has routes, and you're adding a new rout, you should only be able to add a route starting at the last station
+                                            // This eliminates process with gaps between stations
+                                            if (!!this.props.selectedTask && !!this.props.selectedProcess && this.props.selectedProcess.routes.length > 0 && this.props.selectedTask.load.position === null) {
+
+                                                // Gets the last route in the routes array
+                                                const previousRoute = this.props.selectedProcess.routes[this.props.selectedProcess.routes.length - 1]
+
+                                                const previousTask = this.props.tasks[previousRoute]
+
+                                                if (!!previousTask.unload) {
+                                                    const unloadStationID = previousTask.unload.station
+                                                    const unloadStation = this.props.locations[unloadStationID]
+
+                                                    if (unloadStation.children.includes(position._id)) return true
+                                                }
+
+                                                // return true
+                                            }
+
+                                            // This filters out positions that aren't apart of a station when making a task
+                                            // Should not be able to make a task for a random position
+                                            else if (!!this.props.selectedTask) {
                                                 return !!position.parent
                                             }
 
@@ -631,9 +661,11 @@ const mapStateToProps = function (state) {
         locations: state.locationsReducer.locations,
         positions: state.locationsReducer.positions,
         stations: state.locationsReducer.stations,
+        tasks: state.tasksReducer.tasks,
 
         selectedLocation: state.locationsReducer.selectedLocation,
         selectedTask: state.tasksReducer.selectedTask,
+        selectedProcess: state.processesReducer.selectedProcess,
 
         hoveringInfo: state.locationsReducer.hoverStationInfo,
         widgetLoaded: state.locationsReducer.widgetLoaded,
