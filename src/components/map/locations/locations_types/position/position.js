@@ -45,7 +45,7 @@ function Position(props) {
 
 
     useEffect(() => {
-        window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
+        //window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         return () => {
              window.removeEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         }
