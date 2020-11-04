@@ -2,7 +2,7 @@
 import React, {Component, useState} from "react";
 
 // external functions
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import moment from 'moment';
 
 // components
@@ -45,6 +45,8 @@ const ScheduleList = (props) => {
     const [timeToNextScheduledMinutes, setTimeToNextScheduledMinutes] = useState("10000000")
     const [nextScheduleName, setNextScheduleName] = useState("")
 
+    const currentMap = useSelector(state => state.mapReducer.currentMap)
+
     /*
     * handles switch press event of list items
     *
@@ -77,7 +79,7 @@ const ScheduleList = (props) => {
     * renders the task list
     * */
     const renderTasks = () => {
-        let fullSchedulesArr = Object.values(schedules)
+        let fullSchedulesArr = Object.values(schedules).filter((item) => item.map_id === currentMap._id)
 
         return (
             <styled.TaskListContainer>

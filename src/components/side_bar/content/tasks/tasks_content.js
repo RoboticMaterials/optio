@@ -32,6 +32,7 @@ export default function TaskContent(props) {
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const sounds = useSelector(state => state.soundsReducer.sounds)
     const objects = useSelector(state => state.objectsReducer.objects)
+    const currentMap = useSelector(state => state.mapReducer.currentMap)
 
     const stations = useSelector(state => state.locationsReducer.stations)
     const positions = useSelector(state => state.locationsReducer.positions)
@@ -98,8 +99,7 @@ export default function TaskContent(props) {
             <ContentList
                 title={'Routes'}
                 schema={'tasks'}
-                // Hides tasks/routes associated with a process
-                elements={Object.values(tasks).filter(task => !task.process)}
+                elements={Object.values(tasks).filter((task) => !task.process && (task.map_id === currentMap._id) )}
                 onMouseEnter={(task) => dispatch(taskActions.selectTask(task._id.$oid))}
                 onMouseLeave={(task) => dispatch(taskActions.deselectTask())}
                 onClick={(task) => {
@@ -116,6 +116,7 @@ export default function TaskContent(props) {
                         obj: null,
                         type: 'push',
                         quantity: 1,
+                        map_id: currentMap._id,
                         load: {
                             position: null,
                             station: null,

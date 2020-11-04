@@ -10,6 +10,7 @@ import {
     GET_MAP_FAILURE,
 
     SET_MAP_ATTRIBUTES,
+    SET_CURRENT_MAP
 } from '../types/map_types'
 
 
@@ -85,3 +86,19 @@ export const setMapAttributes = (attr) => {
     }
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// update map details
+// ******************************
+
+export const setCurrentMap = (map) => {
+    return dispatch => {
+        try {
+            dispatch({ type: SET_CURRENT_MAP, payload: map})
+            return true
+        } catch (error) {
+            return error
+        }
+    }
+}
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
