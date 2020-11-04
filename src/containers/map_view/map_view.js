@@ -99,18 +99,15 @@ export class MapView extends Component {
         const defaultMap = this.props.maps.find((map) => map._id === this.props.currentMapId)
         if(this.props.currentMapId && this.props.currentMap._id) {
             if(this.props.currentMapId !== this.props.currentMap._id) {
-                console.log("loadMap 1")
                 this.props.onSetCurrentMap(defaultMap)
             }
 
         } else if(this.props.currentMapId) {
-            console.log("loadMap 2")
             this.props.onSetCurrentMap(defaultMap)
 
         } else if(this.props.currentMap && this.props.currentMap._id) {
             // do nothing
         } else {
-            console.log("loadMap 3")
             this.props.onSetCurrentMap(this.props.maps[0])
         }
     }
