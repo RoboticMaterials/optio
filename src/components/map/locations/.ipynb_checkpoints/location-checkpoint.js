@@ -15,10 +15,10 @@ import { convertD3ToReal, convertRealToD3, getRelativeD3, getRelativeOffset } fr
 import { select } from 'd3'
 
 /**
- * This functional component binds the position functionality to a group of SVG elements.
+ * This functional component binds the position functionality to a group of SVG elements. 
  * This serves as a modular way to define these callbacks, making it easier to add new elements
- * to the map that have the same functionality as any other position.
- *
+ * to the map that have the same functionality as any other position. 
+ * 
  */
 const DragEntityProto = (props) => {
 
@@ -41,13 +41,14 @@ const DragEntityProto = (props) => {
 
     /** Callback on continuous rotate event */
     const rotate = (event, element) => {
+
         // Cant rotate if this location is not selected
         if (!props.isSelected) { return }
         if (!rotating) { setRotating(true) }
 
         // The angle is calculated between the current cursor location and the center of the location
         // NOTE: Im not sure why the 160 offset is neccessary. I think it might have to do with the way the menu/status bar
-        // is layered.
+        // is layered. 
         let angle
         if (event.sourceEvent.type == "mousemove") {    // Computer
             // For some reason, position rotation is mapped backwards
@@ -180,8 +181,8 @@ const DragEntityProto = (props) => {
 /**
  * Rendered location on the map. Each location is either a STATION or a POSITION (cart position).
  * If the location is a STATION then it can have POSTIONS associated with it (cart or shelf position)
- *
- * @param {object} props
+ * 
+ * @param {object} props 
  */
 const Location = (props) => {
 
@@ -195,7 +196,6 @@ const Location = (props) => {
 
     const dispatch = useDispatch()
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
-    const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const stations = useSelector(state => state.locationsReducer.stations)
     const positions = useSelector(state => state.locationsReducer.positions)
     const locations = useSelector(state => state.locationsReducer.locations)
@@ -288,7 +288,7 @@ const Location = (props) => {
                 throw "Nothing is returned from render because a location has a 'type' that does not match the available types. Make sure all locations have valid types"
         }
 
-    }, [locations, selectedLocation, selectedProcess, selectedTask])
+    }, [locations, selectedLocation])
 
     return (
         <>

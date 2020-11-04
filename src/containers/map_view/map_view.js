@@ -27,6 +27,7 @@ import { deselectLocation, widgetLoaded } from '../../redux/actions/locations_ac
 
 // Import Components
 import TaskPaths from '../../components/map/task_paths/task_paths.js'
+import ProcessPaths from '../../components/map/process_paths/process_paths'
 import Location from '../../components/map/locations/location.js'
 import MiR100 from '../../components/map/amrs/mir100/mir100.js'
 import Zones from '../../components/map/zones/zones'
@@ -78,20 +79,20 @@ export class MapView extends Component {
 
     componentDidMount() {
 
-        // Refresh the map on initial mount. This will only likely give you back the list of 
+        // Refresh the map on initial mount. This will only likely give you back the list of
         // maps, but componentDidUpdate will catch that and set the current map to the first map
         // in the returned list (which will be the active map)
         // this.refreshMap()
         this.checkForMapLoad()
 
-        window.addEventListener('mousedown', () => this.mouseDown = true)
-        window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() })
+        window.addEventListener('mousedown', () => this.mouseDown = true, {passive:false})
+        window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, {passive:false})
 
         // Event listener that will recalculate the map geometry when the screen size changes
         window.addEventListener('resize', () => {
             this.calculateD3Geometry()
             this.bindZoomListener()
-        })
+        }, {passive:false})
     }
 
     checkForMapLoad = () => {
@@ -148,7 +149,7 @@ export class MapView extends Component {
             document.removeEventListener("dragend", this.validateNewLocation)
         } else {
             // reattach event listeners if necessary
-            document.addEventListener('dragend', this.validateNewLocation, false);
+            document.addEventListener('dragend', this.validateNewLocation, {capture:false, passive:true});
         }
 
         // if (this.props.currentMap != null && !isEquivalent(prevProps.locations, this.props.locations)) {
@@ -168,7 +169,6 @@ export class MapView extends Component {
      * Refreshes the map and all map entities
      */
     refreshMap = () => {
-
         if (!!this.props.maps[0]) {
             this.props.onGetMap(this.props.maps[0].guid)
         }
@@ -222,7 +222,7 @@ export class MapView extends Component {
     /* ========== D3 Functions ========== */
 
     /***
-     * Binds the d3 listener that listens for zoom events. Conveniently it also listens to 
+     * Binds the d3 listener that listens for zoom events. Conveniently it also listens to
      * drag events, so this will take care of both
      */
     bindZoomListener = () => {
@@ -342,7 +342,7 @@ export class MapView extends Component {
 
     }
 
-    /**                            
+    /**
      * x: 0,
      * y: 0property, instead of going
      * through D3's scaling mechanism, which would have picked up both properties.
@@ -377,7 +377,7 @@ export class MapView extends Component {
 
 
             // Apply translations to map.
-            // The map is translated by half the container dims, and then back by 
+            // The map is translated by half the container dims, and then back by
             // half the image dims. This leaves it in the middle of the screen
             translate = {
                 x: this.props.translate.x + cWidth / 2 - iWidth / 2,
@@ -389,12 +389,7 @@ export class MapView extends Component {
                 translate: [translate.x, translate.y],
                 scale: scale,
                 mapResolution: resolution,
-
-                // Commented out ratio for the time being. Does not seem to be needed TODO: Probably delete the ratio
-                // imgResolution: iNatWidth / iWidth,
-
-                imgResolution: 1,
-
+                imgResolution: iNatWidth / iWidth,
                 actualDims: {
                     height: iHeight,
                     width: iWidth
@@ -459,8 +454,6 @@ export class MapView extends Component {
 
         // locations.filter()
 
-        const locationsArr = Object.values(locations).filter(location => (location.map_id === this.props.currentMap._id))
-        // const positionsArr = Object.values(positions)
 
         // console.log(this.props.stations)
         // console.log(this.props.locations)
@@ -544,7 +537,13 @@ export class MapView extends Component {
                             </foreignObject>
                         </styled.MapGroup>
 
-                        <TaskPaths d3={this.d3} />
+                        {!!this.props.selectedTask &&
+                            <TaskPaths d3={this.d3} />
+                        }
+
+                        {!!this.props.selectedProcess &&
+                            <ProcessPaths d3={this.d3} />
+                        }
 
                         <defs>
                             {/* a transparent glow that takes on the colour of the object it's applied to */}
@@ -561,7 +560,7 @@ export class MapView extends Component {
                             <>
                                 <>{
                                     //// Render Locations
-                                    locationsArr.map((location, ind) =>
+                                    Object.values(this.props.stations).filter(location => (location.map_id === this.props.currentMap._id)).map((location, ind) =>
                                         <Location key={`loc-${ind}`}
                                             location={location}
                                             rd3tClassName={`${this.rd3tLocClassName}_${ind}`}
@@ -577,9 +576,6 @@ export class MapView extends Component {
                                     Object.values(positions)
                                         .filter(position => (position.map_id === this.props.currentMap._id))
                                         // .filter(position => !!this.props.selectedTask || (!!this.props.selectedLocation && position.parent == this.props.selectedLocation._id))
-
-                                        // Commented out for now because we wanted to send the cart with a shelf to normal car positions
-                                        // 
                                         // This filter turns on when there's a selected task that has a load position but no unload position
                                         // If that's the case (happens when a new task exist and the load location has been selected) then filter out the other type of positions
                                         // IE, if the load positions type is a cart position, then only cart positions should be selectable
@@ -593,6 +589,38 @@ export class MapView extends Component {
                                         //     }
                                         // })
 
+
+                                        .filter(position => {
+                                            // This filters positions when making a process
+                                            // If the process has routes, and you're adding a new rout, you should only be able to add a route starting at the last station
+                                            // This eliminates process with gaps between stations
+                                            if (!!this.props.selectedTask && !!this.props.selectedProcess && this.props.selectedProcess.routes.length > 0 && this.props.selectedTask.load.position === null) {
+
+                                                // Gets the last route in the routes array
+                                                const previousRoute = this.props.selectedProcess.routes[this.props.selectedProcess.routes.length - 1]
+
+                                                const previousTask = this.props.tasks[previousRoute]
+
+                                                if (!!previousTask.unload) {
+                                                    const unloadStationID = previousTask.unload.station
+                                                    const unloadStation = this.props.locations[unloadStationID]
+
+                                                    if (unloadStation.children.includes(position._id)) return true
+                                                }
+
+                                                // return true
+                                            }
+
+                                            // This filters out positions that aren't apart of a station when making a task
+                                            // Should not be able to make a task for a random position
+                                            else if (!!this.props.selectedTask) {
+                                                return !!position.parent
+                                            }
+
+                                            else {
+                                                return true
+                                            }
+                                        })
                                         .map((position, ind) =>
                                             <>
                                                 <Location key={`pos-${ind}`}
@@ -622,11 +650,11 @@ export class MapView extends Component {
                         }
                     </svg>
 
-                    {/* {!!this.props.selectedTask &&
+                    {!!this.props.selectedTask &&
                         <TaskStatistics d3={this.d3} />
-                    } */}
+                    }
 
-                    {/* Widgets are here when not in mobile mode. If mobile mode, then they are in App.js. 
+                    {/* Widgets are here when not in mobile mode. If mobile mode, then they are in App.js.
                     The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons). */}
                     {this.props.hoveringInfo !== null && !this.mobileMode &&
                         <Widgets />
@@ -658,9 +686,11 @@ const mapStateToProps = function (state) {
         locations: state.locationsReducer.locations,
         positions: state.locationsReducer.positions,
         stations: state.locationsReducer.stations,
+        tasks: state.tasksReducer.tasks,
 
         selectedLocation: state.locationsReducer.selectedLocation,
         selectedTask: state.tasksReducer.selectedTask,
+        selectedProcess: state.processesReducer.selectedProcess,
 
         hoveringInfo: state.locationsReducer.hoverStationInfo,
         widgetLoaded: state.locationsReducer.widgetLoaded,

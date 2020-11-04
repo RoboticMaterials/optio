@@ -6,9 +6,24 @@ import { setTaskAttributes } from '../../../redux/actions/tasks_actions'
 
 export default function TaskPaths(props) {
 
-    const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
+    const {
+        route,
+    } = props
+
+    const selectedTaskReducer = useSelector(state => state.tasksReducer.selectedTask)
     const positions = useSelector(state => state.locationsReducer.positions)
     const dispatch = useDispatch()
+
+    let selectedTask = null
+
+    // This sets the selected task to either whats in the reducer or whats being passed in through props
+    // It would be using props because this task path is part of a process
+    if (!!route) {
+        selectedTask = route
+    } else {
+        selectedTask = selectedTaskReducer
+    }
+
 
     const stateRef = useRef()
     stateRef.current = selectedTask
@@ -20,7 +35,7 @@ export default function TaskPaths(props) {
     const [x2, setX2] = useState(0)
     const [y2, setY2] = useState(0)
 
-    // To be able to remove the event listener, we need to reference the same function. 
+    // To be able to remove the event listener, we need to reference the same function.
     // Therefore we save the function in the state
     const [lockToMouse] = useState(() => e => {
         setX2(e.clientX)
@@ -63,6 +78,11 @@ export default function TaskPaths(props) {
             window.removeEventListener('mousemove', lockToMouse, false)
             window.removeEventListener('keydown', exitTaskPath)
         }
+
+        return () => {
+          window.removeEventListener('mousemove', lockToMouse, false)
+          window.removeEventListener('keydown', exitTaskPath)
+        }
     }, [selectedTask])
 
     if (selectedTask !== null && selectedTask.load.position != null) {
@@ -83,6 +103,10 @@ export default function TaskPaths(props) {
 
         const dashes = [...Array(Math.ceil(lineLen / (10 * props.d3.scale))).keys()]
 
+        // Changes the color based on whether it's a selected task or part of a process
+        const primaryColor = !route ? 'rgba(56, 235, 135, 0.95)'  : 'rgb(56, 235, 225, 0.95)'
+        const secondaryColor = !route ? 'rgba(184, 255, 215, 0.7)'  : 'rgba(184, 255, 251, 0.7)'
+
         return (
             <>
                 <g>
@@ -101,12 +125,12 @@ export default function TaskPaths(props) {
 
                     <line x1={`${x1}`} y1={`${y1}`}
                         x2={`${x2}`} y2={`${y2}`}
-                        strokeWidth={`${props.d3.scale * 8}`} stroke='rgba(56, 235, 135, 0.95)'
+                        strokeWidth={`${props.d3.scale * 8}`} stroke={primaryColor}
                         strokeLinecap="round"
                     />
                     <line x1={`${x1}`} y1={`${y1}`}
                         x2={`${x2}`} y2={`${y2}`}
-                        strokeWidth={`${props.d3.scale * 6}`} stroke='rgba(184, 255, 215, 0.7)'
+                        strokeWidth={`${props.d3.scale * 6}`} stroke={secondaryColor}
                         strokeLinecap="round"
                     />
 

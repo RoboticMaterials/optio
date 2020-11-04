@@ -16,6 +16,7 @@ import ObjectsContent from '../../components/side_bar/content/objects/objects_co
 import TasksContent from '../../components/side_bar/content/tasks/tasks_content'
 import DevicesContent from '../../components/side_bar/content/devices/devices_content'
 import SchedulerContent from '../../components/side_bar/content/scheduler/scheduler_content'
+import ProcessesContent from '../../components/side_bar/content/processes/processes_content'
 import Settings from '../../components/side_bar/content/settings/settings'
 
 import { setWidth, setMode } from "../../redux/actions/sidebar_actions";
@@ -48,10 +49,10 @@ const SideBar = (props) => {
         dispatch(sidebarActions.setWidth(newWidth));
     }
     useEffect(() => {
-        window.addEventListener('resize', boundToWindowSize)
+        window.addEventListener('resize', boundToWindowSize, {passive:true})
 
         return () => {
-            window.removeEventListener('resize', boundToWindowSize)
+            window.removeEventListener('resize', boundToWindowSize, {passive:true})
         }
     }, [])
 
@@ -117,6 +118,10 @@ const SideBar = (props) => {
 
         case '/objects':
             content = <ObjectsContent />
+            break
+
+        case '/processes':
+            content = <ProcessesContent />
             break
 
         case '/tasks':

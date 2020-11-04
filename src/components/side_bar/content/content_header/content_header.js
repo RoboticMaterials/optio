@@ -37,6 +37,10 @@ const ContentHeader = (props) => {
             return 'Task Queue'
         }
 
+        else if (content === 'tasks') {
+            return 'Routes'
+        }
+
         else {
             return upperCaseFirstLetterInString(content)
         }
@@ -83,6 +87,25 @@ const ContentHeader = (props) => {
                 >
                     Save
                 </Button>
+            </styled.Header>
+
+        )
+    }
+
+    // If the side bar is in add mode then have a back button and a add button
+    else if (mode === 'add') {
+        return (
+            <styled.Header>
+
+                <BackButton schema={content} style={{ display: 'inline-block' }}
+                    onClick={onClickBack}
+                />
+
+                <Button schema={content} style={{ display: 'inline-block', float: 'right' }}
+                    onClick={onClickSave} disabled={disabled}
+                >
+                    Add
+                    </Button>
             </styled.Header>
 
         )
