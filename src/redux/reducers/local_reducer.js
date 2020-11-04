@@ -67,6 +67,7 @@ const defaultState = {
     localSettings: {
         non_local_api_ip: '',
         non_local_api: false,
+        mapViewEnabled: true,
     },
 
     disableAll: false,

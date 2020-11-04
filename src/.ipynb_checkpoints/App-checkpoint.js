@@ -23,7 +23,6 @@ import MapView from './containers/map_view/map_view'
 import HILModal from './containers/hil_modal/hil_modal'
 import Authentication from './containers/authentication/authentication'
 import Widgets from './components/widgets/widgets'
-import ListView from "./components/list_view/list_view";
 
 const widthBreakPoint = 1000;
 
@@ -37,8 +36,6 @@ const App = (props) => {
     const maps = useSelector(state => state.mapReducer.maps)
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
     const positions = useSelector(state => state.locationsReducer.positions)
-
-    const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
 
     // Set to true for the time being, authentication is not 100% complete as of 09/14/2020
     const [authenticated, setAuthenticated] = useState(true)
@@ -102,8 +99,7 @@ const App = (props) => {
 
                                 {/* If in mobile mode and dashboard is open (set in dashboard screens), don't mount the header; dashboard screen should be in full screen on mobile devices. If not in mobile mode, always mount header. */}
                                 <styled.HeaderContainer>
-                                    {mapViewEnabled ?
-                                        mobileMode ?
+                                    {mobileMode ?
                                         dashboardOpen ?
                                             <></>
                                             :
@@ -116,8 +112,6 @@ const App = (props) => {
                                             path={["/locations/:stationID?/:widgetPage?", '/']}
                                             component={StatusHeader}
                                         />
-                                        :
-                                        <> </>
                                     }
                                 </styled.HeaderContainer>
 
@@ -125,8 +119,7 @@ const App = (props) => {
 
                                 <styled.BodyContainer>
                                     {/* Hides Side bar when in a dashboard in mobile mode */}
-                                    {mapViewEnabled ?
-                                        mobileMode ?
+                                    {mobileMode ?
                                         dashboardOpen ?
                                             <></>
                                             :
@@ -139,8 +132,6 @@ const App = (props) => {
                                             showSideBar={showSideBar}
                                             setShowSideBar={setShowSideBar}
                                         />
-                                        :
-                                        <></>
                                     }
 
                                     <Route
@@ -153,9 +144,7 @@ const App = (props) => {
                                     */}
                                     {maps.length > 0 &&
                                         <>
-                                            {mapViewEnabled ?
-
-                                                (mobileMode ?
+                                            {mobileMode ?
                                                 <Route
                                                     path={["/locations/:stationID?/:widgetPage?", '/']}
                                                 >
@@ -165,16 +154,7 @@ const App = (props) => {
                                                 <Route
                                                     path={["/locations/:stationID?/:widgetPage?", '/']}
                                                     component={MapView}
-                                                />)
-
-                                                :
-
-                                                <Route
-                                                path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                component={ListView}
                                                 />
-
-
                                             }
                                         </>
                                     }

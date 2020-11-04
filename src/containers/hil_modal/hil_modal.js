@@ -13,7 +13,7 @@ const HILModal = () => {
 
     // Adds HIL timer to taskQueueReducer so it can be used in other areas such as status_header
     const onSetHilTimers = (timers) => dispatch({ type: 'HIL_TIMERS', payload: timers })
-    const onSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active})
+    const onSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
 
     let status = useSelector(state => { return state.statusReducer.status })
     const dashboards = useSelector(state => { return state.dashboardsReducer.dashboards })
@@ -42,7 +42,7 @@ const HILModal = () => {
         }
 
         // Used to hide the HIL if success was clicked. (See HIL_Modals)
-        if(hilResponse === 'success') return
+        if (hilResponse === 'success') return
 
         return Object.keys(taskQueue).map((id, ind) => {
 
@@ -178,6 +178,9 @@ const HILModal = () => {
             // If the task queue item does not have a station id but has a timer running, that means the timer should stop
             else if (!item.hil_station_id && !!statusTimerIntervals[id]) {
                 if (!!statusTimerIntervals[id]) {
+
+                    // Deletes the dashboard id from active list for the hil that has been responded too
+                    onSetActiveHilDashboards(delete (activeHilDashboards[item.hil_station_id]))
 
                     // Clear the interval which is stored in state and delete that ID from state
                     clearInterval(statusTimerIntervals[id])
