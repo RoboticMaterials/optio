@@ -35,7 +35,7 @@ export default function TaskPaths(props) {
     const [x2, setX2] = useState(0)
     const [y2, setY2] = useState(0)
 
-    // To be able to remove the event listener, we need to reference the same function. 
+    // To be able to remove the event listener, we need to reference the same function.
     // Therefore we save the function in the state
     const [lockToMouse] = useState(() => e => {
         setX2(e.clientX)
@@ -77,6 +77,11 @@ export default function TaskPaths(props) {
         } else {
             window.removeEventListener('mousemove', lockToMouse, false)
             window.removeEventListener('keydown', exitTaskPath)
+        }
+
+        return () => {
+          window.removeEventListener('mousemove', lockToMouse, false)
+          window.removeEventListener('keydown', exitTaskPath)
         }
     }, [selectedTask])
 

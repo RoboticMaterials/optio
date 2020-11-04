@@ -15,10 +15,10 @@ import { convertD3ToReal, convertRealToD3, getRelativeD3, getRelativeOffset } fr
 import { select } from 'd3'
 
 /**
- * This functional component binds the position functionality to a group of SVG elements. 
+ * This functional component binds the position functionality to a group of SVG elements.
  * This serves as a modular way to define these callbacks, making it easier to add new elements
- * to the map that have the same functionality as any other position. 
- * 
+ * to the map that have the same functionality as any other position.
+ *
  */
 const DragEntityProto = (props) => {
 
@@ -41,14 +41,13 @@ const DragEntityProto = (props) => {
 
     /** Callback on continuous rotate event */
     const rotate = (event, element) => {
-
         // Cant rotate if this location is not selected
         if (!props.isSelected) { return }
         if (!rotating) { setRotating(true) }
 
         // The angle is calculated between the current cursor location and the center of the location
         // NOTE: Im not sure why the 160 offset is neccessary. I think it might have to do with the way the menu/status bar
-        // is layered. 
+        // is layered.
         let angle
         if (event.sourceEvent.type == "mousemove") {    // Computer
             // For some reason, position rotation is mapped backwards
@@ -181,8 +180,8 @@ const DragEntityProto = (props) => {
 /**
  * Rendered location on the map. Each location is either a STATION or a POSITION (cart position).
  * If the location is a STATION then it can have POSTIONS associated with it (cart or shelf position)
- * 
- * @param {object} props 
+ *
+ * @param {object} props
  */
 const Location = (props) => {
 

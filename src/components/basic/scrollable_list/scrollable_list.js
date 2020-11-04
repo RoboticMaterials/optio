@@ -100,8 +100,8 @@ export class ScrollableList extends Component {
   componentDidMount() {
 
     this.props.portal && this.props.portal.appendChild(this.dropdownRoot);
-    window.addEventListener('resize', debounce(this.updateSelectBounds));
-    window.addEventListener('scroll', debounce(this.onScroll));
+    window.addEventListener('resize', debounce(this.updateSelectBounds), {passive:true});
+    window.addEventListener('scroll', debounce(this.onScroll), {passive:true});
 
     this.dropDown('close');
 
@@ -154,9 +154,9 @@ export class ScrollableList extends Component {
     this.props.portal && this.props.portal.removeChild(this.dropdownRoot);
     window.removeEventListener(
       'resize',
-      debounce(this.updateSelectBounds, this.props.debounceDelay)
+      debounce(this.updateSelectBounds, this.props.debounceDelay), {passive:true}
     );
-    window.removeEventListener('scroll', debounce(this.onScroll, this.props.debounceDelay));
+    window.removeEventListener('scroll', debounce(this.onScroll, this.props.debounceDelay), {passive:true});
   }
 
   onDropdownClose = () => {

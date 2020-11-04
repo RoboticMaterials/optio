@@ -177,10 +177,10 @@ const StatusHeader = (props) => {
 
     /**
      * Renders the right side of the header which contains:
-     * 
+     *
      * Play Pause Button: Used to start or stop the task queue
      * Notifications: Used for to display notifications such as device issues, HILs, etc...
-     * 
+     *
      */
     const renderRightContent = () => {
         let pause_status = ''

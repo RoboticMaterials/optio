@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { useParams } from 'react-router-dom'
+
 
 // Import Utils
 import { deepCopy } from '../../../../../methods/utils/utils'
@@ -15,7 +17,7 @@ import { selectLocation, deselectLocation } from '../../../../../redux/actions/l
 import { handleWidgetHoverCoord } from '../../../../../methods/utils/locations_utils'
 
 
-const Position = (props) => {
+function Position(props) {
 
     const {
         color,
@@ -43,12 +45,11 @@ const Position = (props) => {
 
 
     useEffect(() => {
-        window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
-
+        //window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         return () => {
-            // window.removeEventListener("mousup", disableDrag)
+             window.removeEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         }
-    })
+    },[])
 
     // Automatically opens widget pages and sets hovering to true in the location is a temp right click
     useEffect(() => {
@@ -58,6 +59,7 @@ const Position = (props) => {
             onSelectLocation(location._id)
         }
     }, [])
+
 
     /**
     * Passes the X, Y, scale and ID of location to redux which is then used in widgets

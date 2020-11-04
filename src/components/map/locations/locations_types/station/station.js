@@ -43,17 +43,16 @@ function Station(props) {
 
     // Used to see if a widget Page is opened
     let params = useParams()
-
     useEffect(() => {
         window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         return () => {
-            // window.removeEventListener("mousup")
+             window.removeEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         }
 
-    })
+    },[])
 
     /**
-    * This runs on page load (thats mean location are mounted) and shows a widget page if it returns true. 
+    * This runs on page load (thats mean location are mounted) and shows a widget page if it returns true.
     * If there is a station ID in the params (URL) and it matches this location,
     * and the URL (params) container a widget page then the widget page should be showing
     */
@@ -72,9 +71,9 @@ function Station(props) {
 
     }
 
-    // Handles if URL has widget page open 
+    // Handles if URL has widget page open
     const handleWidgetPageOpen = () => {
-        // If widget page is open, hovering is false and the open widget page locations id matches the location ID, set it to true so 
+        // If widget page is open, hovering is false and the open widget page locations id matches the location ID, set it to true so
         // that the widget page doesn't disappear when mouse goes out of page
         if (!!params.widgetPage && !hovering && params.locationID === location._id) {
             setHovering(true)

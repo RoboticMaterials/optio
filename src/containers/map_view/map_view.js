@@ -78,19 +78,19 @@ export class MapView extends Component {
 
     componentDidMount() {
 
-        // Refresh the map on initial mount. This will only likely give you back the list of 
+        // Refresh the map on initial mount. This will only likely give you back the list of
         // maps, but componentDidUpdate will catch that and set the current map to the first map
         // in the returned list (which will be the active map)
         this.refreshMap()
 
-        window.addEventListener('mousedown', () => this.mouseDown = true)
-        window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() })
+        window.addEventListener('mousedown', () => this.mouseDown = true, {passive:false})
+        window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, {passive:false})
 
         // Event listener that will recalculate the map geometry when the screen size changes
         window.addEventListener('resize', () => {
             this.calculateD3Geometry()
             this.bindZoomListener()
-        })
+        }, {passive:false})
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -121,7 +121,7 @@ export class MapView extends Component {
             document.removeEventListener("dragend", this.validateNewLocation)
         } else {
             // reattach event listeners if necessary
-            document.addEventListener('dragend', this.validateNewLocation, false);
+            document.addEventListener('dragend', this.validateNewLocation, {capture:false, passive:true});
         }
 
         // if (this.props.currentMap != null && !isEquivalent(prevProps.locations, this.props.locations)) {
@@ -194,7 +194,7 @@ export class MapView extends Component {
     /* ========== D3 Functions ========== */
 
     /***
-     * Binds the d3 listener that listens for zoom events. Conveniently it also listens to 
+     * Binds the d3 listener that listens for zoom events. Conveniently it also listens to
      * drag events, so this will take care of both
      */
     bindZoomListener = () => {
@@ -314,7 +314,7 @@ export class MapView extends Component {
 
     }
 
-    /**                            
+    /**
      * x: 0,
      * y: 0property, instead of going
      * through D3's scaling mechanism, which would have picked up both properties.
@@ -349,7 +349,7 @@ export class MapView extends Component {
 
 
             // Apply translations to map.
-            // The map is translated by half the container dims, and then back by 
+            // The map is translated by half the container dims, and then back by
             // half the image dims. This leaves it in the middle of the screen
             translate = {
                 x: this.props.translate.x + cWidth / 2 - iWidth / 2,
@@ -361,12 +361,7 @@ export class MapView extends Component {
                 translate: [translate.x, translate.y],
                 scale: scale,
                 mapResolution: resolution,
-
-                // Commented out ratio for the time being. Does not seem to be needed TODO: Probably delete the ratio
-                // imgResolution: iNatWidth / iWidth,
-
-                imgResolution: 1,
-
+                imgResolution: iNatWidth / iWidth,
                 actualDims: {
                     height: iHeight,
                     width: iWidth
@@ -548,10 +543,7 @@ export class MapView extends Component {
                                 <>{
                                     //// Render children positions if appropriate
                                     Object.values(positions)
-                                        // .filter(position => !!this.props.selectedTask || (!!this.props.selectedLocation && position.parent == this.props.selectedLocation._id))
-
-                                        // Commented out for now because we wanted to send the cart with a shelf to normal car positions
-                                        // 
+                                        .filter(position => !!this.props.selectedTask || (!!this.props.selectedLocation && position.parent == this.props.selectedLocation._id))
                                         // This filter turns on when there's a selected task that has a load position but no unload position
                                         // If that's the case (happens when a new task exist and the load location has been selected) then filter out the other type of positions
                                         // IE, if the load positions type is a cart position, then only cart positions should be selectable
@@ -626,11 +618,11 @@ export class MapView extends Component {
                         }
                     </svg>
 
-                    {/* {!!this.props.selectedTask &&
+                    {!!this.props.selectedTask &&
                         <TaskStatistics d3={this.d3} />
-                    } */}
+                    }
 
-                    {/* Widgets are here when not in mobile mode. If mobile mode, then they are in App.js. 
+                    {/* Widgets are here when not in mobile mode. If mobile mode, then they are in App.js.
                     The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons). */}
                     {this.props.hoveringInfo !== null && !this.mobileMode &&
                         <Widgets />

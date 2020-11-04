@@ -61,7 +61,7 @@ export default function TaskContent(props) {
     })
 
     useEffect(() => {
-        if (!selectedTask) { return }
+        if (!selectedTask) {return}
         if (selectedTask.load.position === null) {
             // No load position has been defined - ask user to define load (start) position
             setIsTransportTask(true)

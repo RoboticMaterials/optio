@@ -52,7 +52,7 @@ const ObjectLink = (props) => {
 
     /**
      * Locks line to cursor
-     * @param {*} e 
+     * @param {*} e
      */
     const lockToMouse = (e) => {
 
