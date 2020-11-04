@@ -82,14 +82,14 @@ export class MapView extends Component {
         // in the returned list (which will be the active map)
         this.refreshMap()
 
-        window.addEventListener('mousedown', () => this.mouseDown = true,)
-        window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() })
+        window.addEventListener('mousedown', () => this.mouseDown = true, {passive:false})
+        window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, {passive:false})
 
         // Event listener that will recalculate the map geometry when the screen size changes
         window.addEventListener('resize', () => {
             this.calculateD3Geometry()
             this.bindZoomListener()
-        }, {passive:true})
+        }, {passive:false})
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -120,7 +120,7 @@ export class MapView extends Component {
             document.removeEventListener("dragend", this.validateNewLocation)
         } else {
             // reattach event listeners if necessary
-            document.addEventListener('dragend', this.validateNewLocation, false, {passive:true});
+            document.addEventListener('dragend', this.validateNewLocation, {capture:false, passive:true});
         }
 
         // if (this.props.currentMap != null && !isEquivalent(prevProps.locations, this.props.locations)) {
@@ -360,12 +360,7 @@ export class MapView extends Component {
                 translate: [translate.x, translate.y],
                 scale: scale,
                 mapResolution: resolution,
-
-                // Commented out ratio for the time being. Does not seem to be needed TODO: Probably delete the ratio
-                // imgResolution: iNatWidth / iWidth,
-
-                imgResolution: 1,
-
+                imgResolution: iNatWidth / iWidth,
                 actualDims: {
                     height: iHeight,
                     width: iWidth
@@ -541,23 +536,19 @@ export class MapView extends Component {
                                 <>{
                                     //// Render children positions if appropriate
                                     Object.values(positions)
-                                        // .filter(position => !!this.props.selectedTask || (!!this.props.selectedLocation && position.parent == this.props.selectedLocation._id))
-
-                                        // Commented out for now because we wanted to send the cart with a shelf to normal car positions
-                                        // 
+                                        .filter(position => !!this.props.selectedTask || (!!this.props.selectedLocation && position.parent == this.props.selectedLocation._id))
                                         // This filter turns on when there's a selected task that has a load position but no unload position
                                         // If that's the case (happens when a new task exist and the load location has been selected) then filter out the other type of positions
                                         // IE, if the load positions type is a cart position, then only cart positions should be selectable
-                                        // .filter(position => {
-                                        //     if (!!this.props.selectedTask && !!this.props.selectedTask.load.position && !this.props.selectedTask.unload.position) {
-                                        //         const positionType = this.props.positions[this.props.selectedTask.load.position].type
-                                        //         return position.type === positionType
-                                        //     }
-                                        //     else {
-                                        //         return true
-                                        //     }
-                                        // })
-
+                                        .filter(position => {
+                                            if (!!this.props.selectedTask && !!this.props.selectedTask.load.position && !this.props.selectedTask.unload.position) {
+                                                const positionType = this.props.positions[this.props.selectedTask.load.position].type
+                                                return position.type === positionType
+                                            }
+                                            else {
+                                                return true
+                                            }
+                                        })
                                         .map((position, ind) =>
                                             <>
                                                 <Location key={`pos-${ind}`}
@@ -587,9 +578,9 @@ export class MapView extends Component {
                         }
                     </svg>
 
-                    {/* {!!this.props.selectedTask &&
+                    {!!this.props.selectedTask &&
                         <TaskStatistics d3={this.d3} />
-                    } */}
+                    }
 
                     {/* Widgets are here when not in mobile mode. If mobile mode, then they are in App.js.
                     The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons). */}

@@ -61,7 +61,7 @@ export default function TaskContent(props) {
 
     useEffect(() => {
         if (!selectedTask) {return}
-        if (selectedTask.load.position === null) { 
+        if (selectedTask.load.position === null) {
             // No load position has been defined - ask user to define load (start) position
             setIsTransportTask(true)
         } else if (selectedTask.load.station === null) {
@@ -155,7 +155,7 @@ export default function TaskContent(props) {
     }
 
     const handleLoadUnloadParameters = () => {
-        if (selectedTask.load.position === null) { 
+        if (selectedTask.load.position === null) {
             // No load position has been defined - ask user to define load (start) position
             return <styled.DirectionText>Click a position on the map to be the load (or start) postion.</styled.DirectionText>
         } else if (selectedTask.load.station === null) {
@@ -293,7 +293,7 @@ export default function TaskContent(props) {
                         disabled={!isTransportTask}
                         active={selectedTask.type == 'pull' || selectedTask.type == 'both'}>Pull</Button>
                 </div>
-                {isTransportTask && 
+                {isTransportTask &&
                     <styled.HelpText>
                         A push task will be called by the user at the load location; while a pull task will be called
                         by the user at the unload location. To have the task display at both stations <b>Shift-Click</b>.

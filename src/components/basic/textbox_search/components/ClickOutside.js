@@ -6,11 +6,11 @@ class ClickOutside extends React.Component {
   container = React.createRef();
 
   componentDidMount() {
-    document.addEventListener('click', this.handleClick, true, {passive:true});
+    document.addEventListener('click', this.handleClick, {capture:true, passive:true});
   }
 
   componentWillUnmount() {
-    document.removeEventListener('click', this.handleClick, true, {passive:true});
+    document.removeEventListener('click', this.handleClick, {capture:true, passive:true});
   }
 
   handleClick = (event) => {

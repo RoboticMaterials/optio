@@ -43,14 +43,13 @@ function Station(props) {
 
     // Used to see if a widget Page is opened
     let params = useParams()
-
     useEffect(() => {
         window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         return () => {
              window.removeEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         }
 
-    })
+    },[])
 
     /**
     * This runs on page load (thats mean location are mounted) and shows a widget page if it returns true.
