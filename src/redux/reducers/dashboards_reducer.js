@@ -131,13 +131,10 @@ export default function dashboardsReducer(state = defaultState, action) {
             });
 
         case PUT_DASHBOARD_SUCCESS:
-            dashboardsCopy = deepCopy(action.payload)
-
-            dashboardsCopy[action.payload._id.$oid] = action.payload
 
             return {
                 ...state,
-                dashboards: dashboardsCopy
+                dashboards: {...state.dashboards, [action.payload._id.$oid]: action.payload},
             }
 
         case PUT_DASHBOARD_FAILURE:
