@@ -110,16 +110,12 @@ const processesReducer = (state = defaultState, action) => {
             break;
 
         case PUT_PROCESSES_SUCCESS:
-            // Find the corresponding process and replace it with the new one
-            currentProcesse = action.payload
-
-            processesClone = deepCopy(state.processes)
-
-            processesClone[currentProcesse._id] = currentProcesse
-
             return {
                 ...state,
-                processes: processesClone,
+                processes: {
+                    ...state.processes,
+                    [action.payload._id.$oid]: action.payload
+                },
                 pending: false
             }
 

@@ -162,6 +162,22 @@ const EditTask = (props) => {
                 }
             }
             )
+
+        if (isProcessTask) {
+
+            // Removes the task from the array of routes
+            const index = selectedProcess.routes.indexOf(selectedTask._id.$oid)
+            const newRoutes = selectedProcess.routes.splice(index, 1)
+
+            onSetSelectedProcess({
+                ...selectedProcess,
+                routes: [...newRoutes]
+            })
+            onPutProcesses({
+                ...selectedProcess,
+                routes: [...newRoutes]
+            })
+        }
         dispatch(taskActions.deleteTask(selectedTask._id.$oid));
         dispatch(taskActions.deselectTask());
         toggleEditing(false)
@@ -195,29 +211,42 @@ const EditTask = (props) => {
 
             // Uses this promise to find the ID for processes
             postTaskPromise.then(postedTask => {
-                console.log('QQQQ posted task', postedTask)
                 taskId = postedTask._id.$oid
-                console.log('QQQQ task Id', taskId)
+
+                // If this task is part of a process, then add the task to the selected process
+                // Have to do this function twice because it seems that you cant await the promise
+                if (isProcessTask) {
+                    onSetSelectedProcess({
+                        ...selectedProcess,
+                        routes: [...selectedProcess.routes, taskId]
+                    })
+                    onPutProcesses({
+                        ...selectedProcess,
+                        routes: [...selectedProcess.routes, taskId]
+                    })
+                }
             })
 
             dispatch(taskActions.removeTask('__NEW_TASK')) // Remove the temporary task from the local copy of tasks
         } else {    // If task is not new, PUT
             taskId = selectedTask._id.$oid
-            console.log('QQQQ task Id', taskId)
             await dispatch(taskActions.putTask(selectedTask, selectedTask._id.$oid))
+
+            // If this task is part of a process, then add the task to the selected process
+            // Have to do this function twice because it seems that you cant await the promise
+            if (isProcessTask) {
+                onSetSelectedProcess({
+                    ...selectedProcess,
+                    routes: [...selectedProcess.routes, taskId]
+                })
+                onPutProcesses({
+                    ...selectedProcess,
+                    routes: [...selectedProcess.routes, taskId]
+                })
+            }
         }
 
-        // If this task is part of a process, then add the task to the selected process
-        if (isProcessTask) {
-            onSetSelectedProcess({
-                ...selectedProcess,
-                routes: [...selectedProcess.routes, taskId]
-            })
-            onPutProcesses({
-                ...selectedProcess,
-                routes: [...selectedProcess.routes, taskId]
-            })
-        }
+
 
         dispatch(taskActions.deselectTask())    // Deselect
         setSelectedTaskCopy(null)                   // Reset the local copy to null
@@ -243,7 +272,7 @@ const EditTask = (props) => {
             <div style={{ marginBottom: '1rem' }}>
                 <ContentHeader
                     content={'tasks'}
-                    mode={'create'}
+                    mode={!!isProcessTask ? 'add' : 'create'}
                     onClickSave={async () => {
                         await handleSave()
                     }}

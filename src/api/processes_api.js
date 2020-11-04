@@ -104,7 +104,6 @@ export async function postProcesses(process) {
 
         // Success 🎉
         // log.debug('response',response);
-        console.log('QQQQ API post response', response)
         const data = response.data;
         const dataJson = JSON.parse(data)
         // log.debug('response data json',dataJson);
@@ -159,7 +158,6 @@ export async function putProcesses(process, ID) {
 
 
     } catch (error) {
-
 
         // Error 😨
         if (error.response) {

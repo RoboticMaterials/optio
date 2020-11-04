@@ -98,7 +98,8 @@ export default function TaskContent(props) {
             <ContentList
                 title={'Routes'}
                 schema={'tasks'}
-                elements={Object.values(tasks)}
+                // Hides tasks/routes associated with a process
+                elements={Object.values(tasks).filter(task => !task.process)}
                 onMouseEnter={(task) => dispatch(taskActions.selectTask(task._id.$oid))}
                 onMouseLeave={(task) => dispatch(taskActions.deselectTask())}
                 onClick={(task) => {

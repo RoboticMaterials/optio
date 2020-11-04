@@ -12,7 +12,7 @@ import ContentHeader from '../../content_header/content_header'
 
 
 // Import actions
-import { setSelectedTask, deselectTask, addTask } from '../../../../../redux/actions/tasks_actions'
+import { setSelectedTask, deselectTask, addTask, putTask } from '../../../../../redux/actions/tasks_actions'
 import { setSelectedProcess, postProcesses, putProcesses } from '../../../../../redux/actions/processes_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 
@@ -33,6 +33,7 @@ const EditProcess = (props) => {
     const onAddTask = (task) => dispatch(addTask(task))
     const onDeselectTask = () => dispatch(deselectTask())
     const onSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
+    const onPutTask = (task) => dispatch(putTask(task))
 
     const onPostProcess = async (process) => await dispatch(postProcesses(process))
     const onPutProcess = async (process) => await dispatch(putProcesses(process))
@@ -49,10 +50,21 @@ const EditProcess = (props) => {
     const [editingTask, setEditingTask] = useState(false)
     const [newRoute, setNewRoute] = useState(null)
 
+    useEffect(() => {
+        console.log('QQQQ selected process', selectedProcessCopy)
+        return () => {
+
+        }
+    }, [])
+
+    const handleExecuteProcess = () => {
+        alert('Cool button eh? Well, its gonna be even cooler when we get it working!')
+    }
+
     // Maps through the list of existing routes
     const handleExistingRoutes = () => {
 
-        return selectedProcessCopy.routes.map((route, ind) => {
+        return selectedProcess.routes.map((route, ind) => {
 
             const routeTask = tasks[route]
 
@@ -79,7 +91,7 @@ const EditProcess = (props) => {
                         <styled.ListItemIcon
                             className='fas fa-play'
                             onClick={() => {
-                                // executeTask()
+                                handleExecuteProcess()
                             }}
                         />
 
@@ -116,7 +128,8 @@ const EditProcess = (props) => {
                                     obj: null,
                                     type: 'push',
                                     quantity: 1,
-                                    process: true,
+                                    // Makes the task/route a part of a 
+                                    process: selectedProcessCopy._id.$oid === '__NEW_PROCESS' ? true : selectedProcessCopy._id.$oid,
                                     load: {
                                         position: null,
                                         station: null,
@@ -143,17 +156,19 @@ const EditProcess = (props) => {
                 </styled.ListItem>
 
                 {!!newRoute &&
-                    <EditTask
-                        selectedTaskCopy={newRoute}
-                        setSelectedTaskCopy={props => {
-                            setSelectedTaskCopy(props)
-                            setNewRoute(props)
-                        }}
-                        shift={shift}
-                        isTransportTask={isTransportTask}
-                        toggleEditing={props => toggleEditing(props)}
-                        isProcessTask={true}
-                    />
+                    <styled.TaskContainer schema={'processes'}>
+                        <EditTask
+                            selectedTaskCopy={newRoute}
+                            setSelectedTaskCopy={props => {
+                                setSelectedTaskCopy(props)
+                                setNewRoute(props)
+                            }}
+                            shift={shift}
+                            isTransportTask={isTransportTask}
+                            toggleEditing={props => toggleEditing(props)}
+                            isProcessTask={true}
+                        />
+                    </styled.TaskContainer>
                 }
 
             </>
@@ -164,10 +179,25 @@ const EditProcess = (props) => {
 
         onDeselectTask()
 
+
         // If the id is new then post 
         if (selectedProcessCopy._id.$oid === '__NEW_PROCESS') {
-            console.log('QQQQ should be posting this process', selectedProcess)
-            await onPostProcess(selectedProcess)
+
+            // If it's a new process, need to post process and what for the new ID to come back, then add that ID to 
+            // the associated tasks
+            const newProcessPromise = await onPostProcess(selectedProcess)
+
+            newProcessPromise.then(postedProcess => {
+                // Map through each associated route and add the process id
+                postedProcess.routes.map((route) => {
+                    let updatedTask = tasks[route]
+
+                    updatedTask.process = postProcesses._id.$oid
+
+                    onPutTask(updatedTask)
+
+                })
+            })
         }
 
         // Else put
@@ -195,6 +225,7 @@ const EditProcess = (props) => {
                 <ContentHeader
                     content={'processes'}
                     mode={'create'}
+                    disabled={!!selectedTask}
                     onClickSave={() => {
                         handleSave()
                     }}
@@ -210,12 +241,13 @@ const EditProcess = (props) => {
                 placeholder='Process Name'
                 defaultValue={selectedProcessCopy.name}
                 schema={'processes'}
-                onChange={(e) => { 
+                onChange={(e) => {
                     onSetSelectedProcess({
                         ...selectedProcess,
                         name: e.target.value,
-                    }) 
+                    })
                 }}
+                style={{ fontSize: '1.2rem', fontWeight: '600', marginBottom: '1rem' }}
             />
             <styled.Title schema={'processes'}>Associated Routes</styled.Title>
             <styled.SectionContainer>

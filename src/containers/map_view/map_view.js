@@ -565,14 +565,32 @@ export class MapView extends Component {
                                         //     }
                                         // })
 
+
                                         .filter(position => {
-                                            if (!!this.props.selectedTask) {
-                                                return !!position.parent
+                                            // This filters positions when making a process
+                                            // If the process has routes, and you're adding a new rout, you should only be able to add a route starting at the last station
+                                            // This eliminates process with gaps between stations
+                                            if (!!this.props.selectedTask && !!this.props.selectedProcess && this.props.selectedProcess.routes.length > 0 && this.props.selectedTask.load.position === null) {
+
+                                                // Gets the last route in the routes array
+                                                const previousRoute = this.props.selectedProcess.routes[this.props.selectedProcess.routes.length - 1]
+
+                                                const previousTask = this.props.tasks[previousRoute]
+
+                                                if (!!previousTask.unload) {
+                                                    const unloadStationID = previousTask.unload.station
+                                                    const unloadStation = this.props.locations[unloadStationID]
+
+                                                    if (unloadStation.children.includes(position._id)) return true
+                                                }
+
+                                                // return true
                                             }
 
-                                            else if (!!this.props.selectedProcess) {
-                                                // Need to check where you are at in the process building part and render positions based on that
-                                                return true
+                                            // This filters out positions that aren't apart of a station when making a task
+                                            // Should not be able to make a task for a random position
+                                            else if (!!this.props.selectedTask) {
+                                                return !!position.parent
                                             }
 
                                             else {
@@ -643,6 +661,7 @@ const mapStateToProps = function (state) {
         locations: state.locationsReducer.locations,
         positions: state.locationsReducer.positions,
         stations: state.locationsReducer.stations,
+        tasks: state.tasksReducer.tasks,
 
         selectedLocation: state.locationsReducer.selectedLocation,
         selectedTask: state.tasksReducer.selectedTask,

@@ -44,12 +44,14 @@ export const getProcesses = () => {
         try {
             onStart();
             const processes = await api.getProcesses();
-
             // Uncomment when you want to make processes an object
             const normalizedProcesses = normalize(processes, processesSchema);
-
-            return onSuccess(normalizedProcesses.entities.processes)
-            // return onSuccess(processes)
+            if (normalizedProcesses.entities.processes === undefined) {
+                return onSuccess(normalizedProcesses.entities)
+            }
+            else{
+                return onSuccess(normalizedProcesses.entities.processes)
+            }
         } catch (error) {
             return onError(error)
         }
@@ -73,7 +75,6 @@ export const postProcesses = (process) => {
             onStart();
             delete process._id
             const newProcesses = await api.postProcesses(process);
-            console.log('QQQQ Posting', newProcesses)
             return onSuccess(newProcesses)
         } catch (error) {
             return onError(error)
