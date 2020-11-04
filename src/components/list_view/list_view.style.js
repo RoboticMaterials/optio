@@ -54,14 +54,17 @@ export const ListItem = styled.div`
     display: flex;
     align-items: center;
     width: auto;
-    height: 2.4rem;
+    height: 4rem;
     background: transparent;
-    padding-bottom: 0.4rem;
+    margin-bottom: 1rem;
+    
 `
 
 export const ListItemRect = styled.div`
     height: 100%;
     width: 100%;
+    align-items: center;
+    display: flex;
 
     border-radius: 0.5rem;
     text-align: center;
