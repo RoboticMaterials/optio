@@ -211,6 +211,7 @@ const EditTask = (props) => {
 
             // Uses this promise to find the ID for processes
             postTaskPromise.then(postedTask => {
+                console.log('QQQQ posted task',postedTask )
                 taskId = postedTask._id.$oid
 
                 // If this task is part of a process, then add the task to the selected process
@@ -220,10 +221,10 @@ const EditTask = (props) => {
                         ...selectedProcess,
                         routes: [...selectedProcess.routes, taskId]
                     })
-                    onPutProcesses({
-                        ...selectedProcess,
-                        routes: [...selectedProcess.routes, taskId]
-                    })
+                    // onPutProcesses({
+                    //     ...selectedProcess,
+                    //     routes: [...selectedProcess.routes, taskId]
+                    // })
                 }
             })
 
@@ -239,10 +240,10 @@ const EditTask = (props) => {
                     ...selectedProcess,
                     routes: [...selectedProcess.routes, taskId]
                 })
-                onPutProcesses({
-                    ...selectedProcess,
-                    routes: [...selectedProcess.routes, taskId]
-                })
+                // onPutProcesses({
+                //     ...selectedProcess,
+                //     routes: [...selectedProcess.routes, taskId]
+                // })
             }
         }
 
@@ -266,13 +267,14 @@ const EditTask = (props) => {
         toggleEditing(false)                            // No longer editing
     }
 
-
     return (
         <styled.ContentContainer>
             <div style={{ marginBottom: '1rem' }}>
                 <ContentHeader
                     content={'tasks'}
                     mode={!!isProcessTask ? 'add' : 'create'}
+                    // Disables the button if load and unloads have not been selected for a task/route in a process
+                    disabled={!!isProcessTask && (!selectedTask.load.position || selectedTask.unload.position === null)}
                     onClickSave={async () => {
                         await handleSave()
                     }}

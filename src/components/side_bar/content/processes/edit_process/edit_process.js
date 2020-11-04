@@ -11,14 +11,13 @@ import Button from '../../../../basic/button/button'
 import EditTask from '../../tasks/edit_task/edit_task'
 import ContentHeader from '../../content_header/content_header'
 
-
 // Import actions
 import { setSelectedTask, deselectTask, addTask, putTask } from '../../../../../redux/actions/tasks_actions'
 import { setSelectedProcess, postProcesses, putProcesses, deleteProcesses } from '../../../../../redux/actions/processes_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 
 // Import Utils
-import { isEquivalent } from '../../../../../methods/utils/utils'
+import { isEquivalent, deepCopy } from '../../../../../methods/utils/utils'
 
 const EditProcess = (props) => {
 
@@ -34,7 +33,7 @@ const EditProcess = (props) => {
     const onAddTask = (task) => dispatch(addTask(task))
     const onDeselectTask = () => dispatch(deselectTask())
     const onSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
-    const onPutTask = (task) => dispatch(putTask(task))
+    const onPutTask = (task, ID) => dispatch(putTask(task, ID))
 
     const onPostProcess = async (process) => await dispatch(postProcesses(process))
     const onPutProcess = async (process) => await dispatch(putProcesses(process))
@@ -69,16 +68,18 @@ const EditProcess = (props) => {
         return selectedProcess.routes.map((route, ind) => {
 
             const routeTask = tasks[route]
+            if(routeTask === undefined){
+                return
+            }
 
             return (
-                <>
+                <div key={`li-${ind}`}>
                     <styled.ListItem
                         key={`li-${ind}`}
                     >
                         <styled.ListItemRect
                             onMouseEnter={() => {
                                 if (!selectedTask) {
-                                    console.log('QQQQ no task selected')
                                     onSetSelectedTask(routeTask)
                                 }
 
@@ -119,7 +120,7 @@ const EditProcess = (props) => {
                             isProcessTask={true}
                         />
                     }
-                </>
+                </div>
             )
         })
     }
@@ -192,22 +193,20 @@ const EditProcess = (props) => {
 
         onDeselectTask()
 
-
         // If the id is new then post 
         if (selectedProcessCopy._id.$oid === '__NEW_PROCESS') {
 
             // If it's a new process, need to post process and what for the new ID to come back, then add that ID to 
             // the associated tasks
-            const newProcessPromise = await onPostProcess(selectedProcess)
+            const newProcessPromise = onPostProcess(selectedProcess)
 
             newProcessPromise.then(postedProcess => {
                 // Map through each associated route and add the process id
                 postedProcess.routes.map((route) => {
                     let updatedTask = tasks[route]
-
-                    updatedTask.process = postProcesses._id.$oid
-
-                    onPutTask(updatedTask)
+                    updatedTask.process = postedProcess._id.$oid
+                    const ID = deepCopy(updatedTask._id.$oid)
+                    onPutTask(updatedTask, ID)
 
                 })
             })
