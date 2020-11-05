@@ -108,14 +108,23 @@ export const removeLocation = (location) => {
         children
     } = location
 
-    return async dispatch => {
-        dispatch(stationActions.removeStation(_id))
+    if (location.schema === 'station') {
 
-        children.forEach((child) => {
-            dispatch(positionActions.removePosition(child))
-        })
+        return async dispatch => {
+            dispatch(stationActions.removeStation(_id))
 
+            children.forEach((child) => {
+                dispatch(positionActions.removePosition(child))
+            })
+        }
     }
+
+    else if (location.schema === 'position') {
+        return async dispatch => {
+            dispatch(positionActions.removePosition(_id))
+        }
+    }
+
 }
 
 export const setLocationAttributes = (id, attr) => {

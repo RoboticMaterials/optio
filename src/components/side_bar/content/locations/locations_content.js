@@ -7,6 +7,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 import ContentHeader from '../content_header/content_header'
 import Textbox from '../../../basic/textbox/textbox.js'
 import Button from '../../../basic/button/button'
+import DropDownSearch from '../../../basic/drop_down_search_v2/drop_down_search'
 
 // Import components
 import ContentList from '../content_list/content_list'
@@ -71,6 +72,7 @@ export default function LocationContent(props) {
     const locations = useSelector(state => state.locationsReducer.locations)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const positions = useSelector(state => state.locationsReducer.positions)
+    const stations = useSelector(state => state.locationsReducer.stations)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
     const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
@@ -78,6 +80,7 @@ export default function LocationContent(props) {
     const currentMap = useSelector(state => state.mapReducer.currentMap)
 
     const [editing, toggleEditing] = useState(false)
+    const [mergeStation, setMergeStation] = useState(false)
 
     function LocationTypeButton({ type, selected }) {
 
@@ -93,7 +96,7 @@ export default function LocationContent(props) {
                 break
             case 'shelf_position':
                 template = LocationTypes['shelfPosition'].attributes
-                
+
                 break
 
         }
@@ -257,6 +260,15 @@ export default function LocationContent(props) {
         })
     }
 
+    const handleMergeToStation = () => {
+
+        let station = stations[mergeStation]
+
+        station.children.push(selectedLocation._id)
+        selectedLocation.parent = mergeStation
+
+    }
+
     // TODO: Probably can get rid of editing state, just see if there's a selectedLocation, if there is, you're editing
     if (editing && !!selectedLocation) { // Editing Mode
         return (
@@ -333,9 +345,62 @@ export default function LocationContent(props) {
                                 onClick={() => {
                                     handleSetPositionToCartCoords()
                                 }}
+                                style={{ marginBottom: '1rem' }}
                             >
                                 Use Cart Location
                             </Button>
+
+                            {/* <Button
+                                schema={'locations'}
+                                secondary
+                                onClick={() => {
+                                    setMergeStation(true)
+                                }}
+                                style={{ marginBottom: '.5rem' }}
+
+                            >
+                                Merge Position to Station
+                            </Button> */}
+
+                            <styled.Label
+                                schema={'locations'}
+                            >
+                                Merge Position To Station
+                            </styled.Label>
+
+                            <DropDownSearch
+                                placeholder="Select Station"
+                                label="Merge Station"
+                                labelField="name"
+                                valueField="_id"
+                                options={Object.values(stations)}
+                                // values={locations ? [locations] : []}
+                                dropdownGap={5}
+                                noDataLabel="No matches found"
+                                closeOnSelect="true"
+                                onChange={values => {
+                                    setMergeStation(values[0]._id)
+                                }}
+                                className="w-100"
+                            />
+
+                            {!!mergeStation &&
+
+                                <Button
+                                    schema={'locations'}
+                                    secondary
+                                    onClick={() => {
+                                        handleMergeToStation()
+                                    }}
+                                    style={{ marginBottom: '.5rem' }}
+
+                                >
+                                    Merge
+                                </Button>
+
+                            }
+
+
                             <div style={{ height: "100%" }}></div>
                         </>
 

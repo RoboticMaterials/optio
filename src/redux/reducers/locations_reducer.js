@@ -350,6 +350,7 @@ export default function locationsReducer(state = defaultState, action) {
     }
 
     const removePosition = (id) => {
+
         stationsCopy = deepCopy(state.stations)
         positionsCopy = deepCopy(state.positions)
 
