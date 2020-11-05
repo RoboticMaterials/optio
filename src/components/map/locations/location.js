@@ -177,6 +177,9 @@ const DragEntityProto = (props) => {
     return (null)
 }
 
+
+
+
 /**
  * Rendered location on the map. Each location is either a STATION or a POSITION (cart position).
  * If the location is a STATION then it can have POSTIONS associated with it (cart or shelf position)
@@ -218,6 +221,8 @@ const Location = (props) => {
     let color = '#6283f0' // Blue
 
 
+
+
     if (location.type === 'shelf_position') color = '#fb7c4e'
     if (location.type === 'charger_position') color = '#fbd34e'
 
@@ -233,6 +238,13 @@ const Location = (props) => {
     }
 
     const handleRenderedLocations = useMemo(() => {
+
+        // TODO: Temp fix for now
+        // Hides locations that should have parents, but they're parents are deleted
+        if (!!location.parent && (stations[location.parent] === undefined || stations[location.parent].x === undefined)) {
+            return null
+        }
+        
         switch (location.type) {
             case 'workstation':
             case 'device':
@@ -290,11 +302,6 @@ const Location = (props) => {
 
     }, [locations, selectedLocation, selectedProcess, selectedTask])
 
-    // TODO: Temp fix for now
-    // Hides locations that should have parents, but they're parents are deleted
-    if(!!location.parent && !stations[location.parent]){
-        return null
-    }
 
     return (
         <>
