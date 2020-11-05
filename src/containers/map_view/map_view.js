@@ -386,7 +386,8 @@ export class MapView extends Component {
                 translate: [translate.x, translate.y],
                 scale: scale,
                 mapResolution: resolution,
-                imgResolution: iNatWidth / iWidth,
+                // imgResolution: iNatWidth / iWidth,
+                imgResolution: 1,
                 actualDims: {
                     height: iHeight,
                     width: iWidth
