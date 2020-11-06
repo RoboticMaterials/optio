@@ -260,7 +260,7 @@ export const deleteLocationProcess = (props) => {
             //// Delete relevant tasks
             Object.values(tasks)
                 .filter(task => task.load.station == locationToDelete._id || task.unload.station == locationToDelete._id)
-                .forEach(async task => await dispatch(deleteTask(task._id.$oid)))
+                .forEach(async task => await dispatch(deleteTask(task._id)))
 
             // Delete Station
             await dispatch(deleteStation(locationToDelete._id))
@@ -273,7 +273,7 @@ export const deleteLocationProcess = (props) => {
             //// Delete Relevant tasks
             Object.values(tasks)
                 .filter(task => task.load.position == locationToDelete._id || task.unload.position == locationToDelete._id)
-                .forEach(task => dispatch(deleteTask(task._id.$oid)))
+                .forEach(task => dispatch(deleteTask(task._id)))
         }
 
         // If Device, delete the station_id attatched to the device as well

@@ -61,7 +61,7 @@ export const getTasks = () => {
 
             const normalizedTasks = {}
             tasks.map((task) => {
-                normalizedTasks[task._id.$oid] = task
+                normalizedTasks[task._id] = task
             })
 
             return onSuccess(normalizedTasks);

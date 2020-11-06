@@ -96,7 +96,7 @@ export default function tasksReducer(state = defaultState, action) {
 
         case POST_TASK_SUCCESS:
             tasksCopy = deepCopy(state.tasks)
-            tasksCopy[action.payload._id.$oid] = action.payload
+            tasksCopy[action.payload._id] = action.payload
             return {
                 ...state,
                 tasks: tasksCopy,
@@ -126,7 +126,7 @@ export default function tasksReducer(state = defaultState, action) {
 
         case PUT_TASK_SUCCESS:
             tasksCopy = deepCopy(state.tasks)
-            tasksCopy[action.payload._id.$oid] = action.payload
+            tasksCopy[action.payload._id] = action.payload
 
             return {
                 ...state,
@@ -172,7 +172,7 @@ export default function tasksReducer(state = defaultState, action) {
 
         case ADD_TASK:
             tasksCopy = deepCopy(state.tasks)
-            tasksCopy[action.payload.task._id.$oid] = action.payload.task
+            tasksCopy[action.payload.task._id] = action.payload.task
             return {
                 ...state,
                 tasks: tasksCopy
@@ -180,7 +180,7 @@ export default function tasksReducer(state = defaultState, action) {
 
         case UPDATE_TASK:
             tasksCopy = deepCopy(state.tasks)
-            tasksCopy[action.payload.task._id.$oid] = action.payload.task
+            tasksCopy[action.payload.task._id] = action.payload.task
 
             if (state.selectedTask !== null) {
                 return {
@@ -223,6 +223,8 @@ export default function tasksReducer(state = defaultState, action) {
 
         case SET_TASK_ATTRIBUTES:
             tasksCopy = deepCopy(state.tasks)
+            console.log('QQQQ state tasks', deepCopy(tasksCopy))
+            console.log('QQQQ task att', deepCopy(action.payload))
             Object.assign(tasksCopy[action.payload.id], action.payload.attr)
 
             // tasksCopy = {

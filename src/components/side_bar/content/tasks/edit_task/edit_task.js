@@ -304,7 +304,11 @@ const EditTask = (props) => {
                 defaultValue={!!selectedTask && selectedTask.name}
                 schema={'tasks'}
                 focus={!!selectedTask && selectedTask.name == ''}
-                onChange={(e) => { dispatch(taskActions.setTaskAttributes(selectedTask._id, { name: e.target.value })) }}
+                onChange={(e) => { 
+                    console.log('QQQQ selected task', selectedTask)
+                    dispatch(taskActions.setTaskAttributes(selectedTask._id, { name: e.target.value })) 
+                
+                }}
                 style={{ fontSize: '1.2rem', fontWeight: '600' }}>
             </Textbox>
 

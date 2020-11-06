@@ -324,7 +324,8 @@ const CreateScheduleForm = (props) => {
                                         pattern={null}
                                         name="task"
                                         options={tasksArr}
-                                        valueField={tasksArr.length > 0 ? "_id.$oid" : 'id'}
+                                        // valueField={tasksArr.length > 0 ? "_id.$oid" : 'id'}
+                                        valueField={tasksArr.length > 0 ? "_id" : 'id'}
                                         label={'Choose Task'}
                                         onDropdownOpen={() => {
                                             dispatch(getTasks())
