@@ -36,19 +36,12 @@ const LocationList = (props) => {
     const {
         onMouseEnter,
         onMouseLeave,
-        setShowDashboards
+        onLocationClick
 
     } = props
 
     const locations = useSelector(state => state.locationsReducer.stations)
     const locationsArr = Object.values(locations)
-    const history = useHistory()
-
-    const onClick = (item) => {
-        console.log("item", item)
-        history.push('/locations/' + item._id + '/' + "dashboards")
-        setShowDashboards(true)
-    }
 
     return(
             <styled.ListScrollContainer>
@@ -56,6 +49,7 @@ const LocationList = (props) => {
                     locationsArr.map((item, index, arr) => {
                         const {
                             name,
+
 
                         } = item
 
@@ -66,7 +60,7 @@ const LocationList = (props) => {
                                 onMouseLeave={() => onMouseLeave(item)}
                             >
                                 <styled.ListItemRect>
-                                    <styled.ListItemTitle schema={"locations"} onClick={() => onClick(item)}>{name}</styled.ListItemTitle>
+                                    <styled.ListItemTitle schema={"locations"} onClick={() => onLocationClick(item)}>{name}</styled.ListItemTitle>
                                 </styled.ListItemRect>
 
                             </styled.ListItem>
@@ -83,6 +77,7 @@ const LocationList = (props) => {
 LocationList.propTypes = {
     onMouseEnter: PropTypes.func,
     onMouseLeave: PropTypes.func,
+    onLocationClick: PropTypes.func,
     onClick: PropTypes.func,
     name: PropTypes.string,
 
@@ -90,6 +85,7 @@ LocationList.propTypes = {
 
 LocationList.defaultProps = {
     onMouseEnter: () => { },
+    onLocationClick: () => { },
     onMouseLeave: () => { },
     onClick: () => { },
     name: ""
@@ -100,9 +96,6 @@ const ListView = (props) => {
 
     } = props
 
-    console.log("ListView ListView ListView")
-
-    const dispatch = useDispatch()
     const history = useHistory()
     const [showDashboards, setShowDashboards] = useState(false)
     const [showSettings, setShowSettings] = useState(false)
@@ -114,16 +107,22 @@ const ListView = (props) => {
     const title = CURRENT_SCREEN.title
 
     useEffect(() => {
-
+        // displays dashboards page if url is on widget page
         if(widgetPage) {
             setShowDashboards(true)
         }
 
+        // hides dashboards page if url is NOT on widget page
         else {
             setShowDashboards(false)
         }
 
     }, [widgetPage])
+
+    const onLocationClick = (item) => {
+        history.push('/locations/' + item._id + '/' + "dashboards")
+        setShowDashboards(true)
+    }
 
     return (
         <styled.Container>
@@ -169,17 +168,16 @@ const ListView = (props) => {
 
             {(!showDashboards && !showSettings) &&
                 <LocationList
-                    setShowDashboards={setShowDashboards}
+                    onLocationClick={onLocationClick}
                 />
             }
 
             {(showDashboards && !showSettings) &&
-
+                    // must be wrapped in route to give dashboards page the match params
                     <Route
                         path="/locations/:stationID/dashboards/:dashboardID?/:editing?"
                         component={DashboardsPage}
                     />
-
             }
 
             {showSettings &&
