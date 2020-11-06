@@ -12,9 +12,13 @@ import Switch from 'react-ios-switch';
 
 import ContentList from '../../content_list/content_list'
 
+// Import utils
 import uuid from 'uuid'
+import { deepCopy } from '../../../../../methods/utils/utils'
 
+// Import actions
 import * as taskActions from '../../../../../redux/actions/tasks_actions'
+import { setSelectedTask, deleteTask } from '../../../../../redux/actions/tasks_actions'
 import * as dashboardActions from '../../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../../redux/actions/objects_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
@@ -35,6 +39,8 @@ const EditTask = (props) => {
     const onPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
     const onPutProcesses = (process) => dispatch(putProcesses(process))
     const onSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
+    const onSetSelectedTask = (task) => dispatch(setSelectedTask(task))
+    const onDeleteTask = (ID) => dispatch(deleteTask(ID))
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -58,7 +64,19 @@ const EditTask = (props) => {
                 <styled.RowContainer>
                     <styled.Header>Robot Enabled</styled.Header>
                     <Switch
+                        checked={selectedTask.device_type !== 'human'}
+                        onChange={() => {
 
+                            const device_type = selectedTask.device_type !== 'human' ? 'human' : 'MiR_100'
+                            onSetSelectedTask({
+                                ...selectedTask,
+                                // Just setting this to MiR100 for now. Need to expand in the future for other devices
+                                device_type: device_type
+                            })
+                            // handleUpdateLocalSettings({ non_local_api: !localSettings.non_local_api })
+                        }}
+                        onColor='red'
+                        style={{ marginRight: '1rem' }}
                     />
 
                 </styled.RowContainer>
@@ -163,7 +181,7 @@ const EditTask = (props) => {
         }
     }
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
         // Delete all dashboard buttons associated with that task
         Object.values(dashboards)
             .filter(dashboard =>
@@ -192,7 +210,15 @@ const EditTask = (props) => {
                 routes: [...newRoutes]
             })
         }
-        dispatch(taskActions.deleteTask(selectedTask._id));
+
+        // If the selected task has an associated task, (usually and device and human task)
+        // Delete the associated task
+        if (!!selectedTask.associated_task) {
+            await dispatch(taskActions.deleteTask(selectedTask.associated_task));
+        }
+
+        await dispatch(taskActions.deleteTask(selectedTask._id));
+
         dispatch(taskActions.deselectTask());
         toggleEditing(false)
     }
@@ -220,48 +246,101 @@ const EditTask = (props) => {
 
         // Save Task
         if (!!selectedTask.new) { // If task is new, POST
-            delete selectedTask._id
-            const postTaskPromise = dispatch(taskActions.postTask(selectedTask))
 
-            // Uses this promise to find the ID for processes
-            postTaskPromise.then(postedTask => {
-                console.log('QQQQ posted task', postedTask)
-                taskId = postedTask._id
+            // If it's apart of a device, need to post 2 tasks and associate them with each other
+            // 1 robot task and 1 human task
+            // This allows for the ability for humans to do the task and seperates statistics between typs
+            if (selectedTask.device_type === 'MiR_100') {
 
-                // If this task is part of a process, then add the task to the selected process
-                // Have to do this function twice because it seems that you cant await the promise
-                if (isProcessTask) {
-                    onSetSelectedProcess({
-                        ...selectedProcess,
-                        routes: [...selectedProcess.routes, taskId]
-                    })
-                    // onPutProcesses({
-                    //     ...selectedProcess,
-                    //     routes: [...selectedProcess.routes, taskId]
-                    // })
+                const humanTask = {
+                    ...deepCopy(selectedTask),
+                    device_type: 'human',
+                    _id: uuid.v4(),
+                    associated_task: selectedTask._id,
                 }
-            })
+
+                const deviceTask = {
+                    ...deepCopy(selectedTask),
+                    associated_task: humanTask._id,
+                }
+
+                await dispatch(taskActions.postTask(deviceTask))
+                await dispatch(taskActions.postTask(humanTask))
+
+            }
+            else {
+                await dispatch(taskActions.postTask(selectedTask))
+
+            }
 
             dispatch(taskActions.removeTask(selectedTask._id)) // Remove the temporary task from the local copy of tasks
+
         } else {    // If task is not new, PUT
             taskId = selectedTask._id
-            await dispatch(taskActions.putTask(selectedTask, selectedTask._id))
 
-            // If this task is part of a process, then add the task to the selected process
-            // Have to do this function twice because it seems that you cant await the promise
-            if (isProcessTask) {
-                onSetSelectedProcess({
-                    ...selectedProcess,
-                    routes: [...selectedProcess.routes, taskId]
-                })
-                // onPutProcesses({
-                //     ...selectedProcess,
-                //     routes: [...selectedProcess.routes, taskId]
-                // })
+            // If the task device type is human and has an associated task, then this task must have gone from device to human based
+            // so delete the duplicate human task task and remove the associated task from the new human (old device) task
+            // If this doesn't make sense, look at the if statement above
+            // Hint, if there is a task that has 2 tasks because its a device task, only the device task is showed in the list
+            // So this means the human task must be deleted because the device task is now a human task
+            if (selectedTask.device_type === 'human' && !!selectedTask.associated_task) {
+                await onDeleteTask(selectedTask.associated_task)
+                delete selectedTask.associated_task
+                await dispatch(taskActions.putTask(selectedTask, selectedTask._id))
             }
+
+            // If the task as an associated task, also update the associated task
+            else if (!!selectedTask.associated_task) {
+
+                const updatedAssociatedTask = {
+                    ...deepCopy(selectedTask),
+                    device_type: tasks[selectedTask.associated_task].device_type,
+                    _id: selectedTask.associated_task
+                }
+
+                await dispatch(taskActions.putTask(selectedTask, selectedTask._id))
+                await dispatch(taskActions.putTask(updatedAssociatedTask, selectedTask.associated_task))
+
+            }
+
+            // If the task is not a human based task but it has no associated tasks
+            // that means it was a human based task that is now a device task
+            // So make a duplicate human task
+            else if (selectedTask.device_type !== 'human' && !selectedTask.associated_task) {
+
+                const newTask = {
+                    ...deepCopy(selectedTask),
+                    associated_task: selectedTask._id,
+                    device_type: 'human',
+                    _id: uuid.v4(),
+                }
+
+                const updatedTask = {
+                    ...deepCopy(selectedTask),
+                    associated_task: newTask._id,
+                }
+
+                await dispatch(taskActions.putTask(updatedTask, selectedTask._id))
+                await dispatch(taskActions.postTask(newTask))
+
+            }
+
+            
+
+            // Else its just a plain jane task
+            else {
+                await dispatch(taskActions.putTask(selectedTask, selectedTask._id))
+            }
+
         }
 
-
+        // If this task is part of a process, then add the task to the selected process
+        if (isProcessTask) {
+            onSetSelectedProcess({
+                ...selectedProcess,
+                routes: [...selectedProcess.routes, selectedTask._id]
+            })
+        }
 
         dispatch(taskActions.deselectTask())    // Deselect
         setSelectedTaskCopy(null)                   // Reset the local copy to null
@@ -304,10 +383,9 @@ const EditTask = (props) => {
                 defaultValue={!!selectedTask && selectedTask.name}
                 schema={'tasks'}
                 focus={!!selectedTask && selectedTask.name == ''}
-                onChange={(e) => { 
-                    console.log('QQQQ selected task', selectedTask)
-                    dispatch(taskActions.setTaskAttributes(selectedTask._id, { name: e.target.value })) 
-                
+                onChange={(e) => {
+                    dispatch(taskActions.setTaskAttributes(selectedTask._id, { name: e.target.value }))
+
                 }}
                 style={{ fontSize: '1.2rem', fontWeight: '600' }}>
             </Textbox>

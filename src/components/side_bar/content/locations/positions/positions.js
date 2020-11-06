@@ -70,7 +70,7 @@ export default function Positions(props) {
                     Object.values(tasks).filter(task => {
                         return task.load.position == position._id || task.unload.position == position._id
                     }).forEach(relevantTask => {
-                        dispatch(deleteTask(relevantTask._id.$oid))
+                        dispatch(deleteTask(relevantTask._id))
                     })
 
                     // TODO: Get rid of deep copy

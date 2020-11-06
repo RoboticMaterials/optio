@@ -13,14 +13,14 @@ export const handleParseTaskBasedOnLoadUnload = (tasks, stationID) => {
         if (task.load.station == stationID) {
             parsedTasks.load = {
                 ...parsedTasks.load,
-                [task._id.$oid]: task.obj
+                [task._id]: task.obj
             }
 
             // If station is unload
         } else if (task.unload.station == stationID) {
             parsedTasks.unload = {
                 ...parsedTasks.unload,
-                [task._id.$oid]: task.obj
+                [task._id]: task.obj
             }
         }
     })

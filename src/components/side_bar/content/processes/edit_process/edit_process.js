@@ -207,7 +207,7 @@ const EditProcess = (props) => {
                 postedProcess.routes.map((route) => {
                     let updatedTask = tasks[route]
                     updatedTask.process = postedProcess._id.$oid
-                    const ID = deepCopy(updatedTask._id.$oid)
+                    const ID = deepCopy(updatedTask._id)
                     onPutTask(updatedTask, ID)
 
                 })

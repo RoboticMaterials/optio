@@ -128,8 +128,8 @@ const DashboardsSidebar = (props) => {
         return {
             name: task.name,
             color: tempColors[index % tempColors.length],
-            task_id: task._id.$oid,
-            id: task._id.$oid,
+            task_id: task._id,
+            id: task._id,
         }
     })
 

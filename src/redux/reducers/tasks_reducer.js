@@ -97,6 +97,7 @@ export default function tasksReducer(state = defaultState, action) {
         case POST_TASK_SUCCESS:
             tasksCopy = deepCopy(state.tasks)
             tasksCopy[action.payload._id] = action.payload
+            console.log('QQQQ Success', tasksCopy)
             return {
                 ...state,
                 tasks: tasksCopy,
@@ -223,8 +224,6 @@ export default function tasksReducer(state = defaultState, action) {
 
         case SET_TASK_ATTRIBUTES:
             tasksCopy = deepCopy(state.tasks)
-            console.log('QQQQ state tasks', deepCopy(tasksCopy))
-            console.log('QQQQ task att', deepCopy(action.payload))
             Object.assign(tasksCopy[action.payload.id], action.payload.attr)
 
             // tasksCopy = {

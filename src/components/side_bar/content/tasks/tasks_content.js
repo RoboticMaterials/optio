@@ -51,6 +51,8 @@ export default function TaskContent(props) {
         setShift(e.shiftKey)
     })
 
+    console.log('QQQQ tasks', tasks)
+
     // Creates listeners for if the shift key is pressed
     useEffect(() => {
         window.addEventListener('keydown', shiftCallback)
@@ -64,7 +66,7 @@ export default function TaskContent(props) {
     })
 
     useEffect(() => {
-        if (!selectedTask) {return}
+        if (!selectedTask) { return }
         if (selectedTask.load.position === null) {
             // No load position has been defined - ask user to define load (start) position
             setIsTransportTask(true)
@@ -93,7 +95,7 @@ export default function TaskContent(props) {
                 setSelectedTaskCopy={props => setSelectedTaskCopy(props)}
                 shift={shift}
                 isTransportTask={isTransportTask}
-                toggleEditing={props=> toggleEditing(props)}
+                toggleEditing={props => toggleEditing(props)}
             />
         )
     } else {    // List Mode
@@ -101,7 +103,12 @@ export default function TaskContent(props) {
             <ContentList
                 title={'Routes'}
                 schema={'tasks'}
-                elements={Object.values(tasks).filter((task) => !task.process && (task.map_id === currentMap._id) )}
+                elements={Object.values(tasks)
+                    // Filters outs any tasks that don't belong to the current map or apart of a process
+                    .filter(task => !task.process && (task.map_id === currentMap._id))
+                    // Filter outs any human tasks that have associated tasks (AKA it only shows the associated device task)
+                    .filter(task => !task.associated_task || (!!task.associated_task && task.device_type !== 'human'))
+                }
                 onMouseEnter={(task) => dispatch(taskActions.selectTask(task._id))}
                 onMouseLeave={(task) => dispatch(taskActions.deselectTask())}
                 onClick={(task) => {
@@ -118,7 +125,7 @@ export default function TaskContent(props) {
                         obj: null,
                         type: 'push',
                         quantity: 1,
-                        device_type: null,
+                        device_type: 'human',
                         map_id: currentMap._id,
                         new: true,
                         load: {
