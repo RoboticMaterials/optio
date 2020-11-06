@@ -121,7 +121,7 @@ export const postTask = (task) => {
 
         try {
             onStart();
-            delete task._id
+            delete task.new
             const newTask = await api.postTask(task);
             return onSuccess(newTask);
         } catch (error) {

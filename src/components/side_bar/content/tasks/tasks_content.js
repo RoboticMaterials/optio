@@ -18,7 +18,9 @@ import * as dashboardActions from '../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../redux/actions/objects_actions'
 import { postTaskQueue } from '../../../../redux/actions/task_queue_actions'
 
+// Import Utils
 import { deepCopy } from '../../../../methods/utils/utils'
+import uuid from 'uuid'
 
 
 export default function TaskContent(props) {
@@ -100,7 +102,7 @@ export default function TaskContent(props) {
                 title={'Routes'}
                 schema={'tasks'}
                 elements={Object.values(tasks).filter((task) => !task.process && (task.map_id === currentMap._id) )}
-                onMouseEnter={(task) => dispatch(taskActions.selectTask(task._id.$oid))}
+                onMouseEnter={(task) => dispatch(taskActions.selectTask(task._id))}
                 onMouseLeave={(task) => dispatch(taskActions.deselectTask())}
                 onClick={(task) => {
                     // If task button is clicked, start editing it
@@ -108,7 +110,7 @@ export default function TaskContent(props) {
                     toggleEditing(true)
                 }}
                 executeTask={() => {
-                    onPostTaskQueue({ task_id: selectedTask._id.$oid })
+                    onPostTaskQueue({ task_id: selectedTask._id })
                 }}
                 onPlus={() => {
                     const newTask = {
@@ -116,7 +118,9 @@ export default function TaskContent(props) {
                         obj: null,
                         type: 'push',
                         quantity: 1,
+                        device_type: null,
                         map_id: currentMap._id,
+                        new: true,
                         load: {
                             position: null,
                             station: null,
@@ -129,7 +133,7 @@ export default function TaskContent(props) {
                             sound: null,
                             instructions: 'Unload'
                         },
-                        _id: { $oid: '__NEW_TASK' }
+                        _id: uuid.v4(),
                     }
                     dispatch(taskActions.addTask(newTask))
                     dispatch(taskActions.setSelectedTask(newTask))

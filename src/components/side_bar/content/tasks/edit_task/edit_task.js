@@ -2,14 +2,17 @@ import React, { useState, useEffect } from 'react'
 import * as styled from '../tasks_content.style'
 import { useSelector, useDispatch } from 'react-redux'
 
+// Import Basic Components
 import ContentHeader from '../../content_header/content_header'
 import Textbox from '../../../../basic/textbox/textbox.js'
 import Button from '../../../../basic/button/button'
 import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
 import TextBoxSearch from '../../../../basic/textbox_search/textbox_search'
+import Switch from 'react-ios-switch';
 
 import ContentList from '../../content_list/content_list'
 
+import uuid from 'uuid'
 
 import * as taskActions from '../../../../../redux/actions/tasks_actions'
 import * as dashboardActions from '../../../../../redux/actions/dashboards_actions'
@@ -52,6 +55,16 @@ const EditTask = (props) => {
     const loadUnloadFields = () => {
         return (
             <>
+                <styled.RowContainer>
+                    <styled.Header>Robot Enabled</styled.Header>
+                    <Switch
+
+                    />
+
+                </styled.RowContainer>
+                <styled.HelpText>Do you want a robot to perform this task? If selected, there will be an option for a person to take over the task when the button is placed onto the dashboard.</styled.HelpText>
+
+
                 <styled.Header>Load</styled.Header>
                 <Textbox
                     defaultValue={!!selectedTask && selectedTask.load.instructions}
@@ -60,7 +73,7 @@ const EditTask = (props) => {
                     onChange={e => {
                         let load = selectedTask.load
                         load.instructions = e.target.value
-                        dispatch(taskActions.setTaskAttributes(selectedTask._id.$oid, { load }))
+                        dispatch(taskActions.setTaskAttributes(selectedTask._id, { load }))
                     }}
                     lines={2}>
                 </Textbox>
@@ -79,7 +92,7 @@ const EditTask = (props) => {
                         onChange={values => {
                             let load = selectedTask.load
                             load.sound = values[0]._id
-                            dispatch(taskActions.setTaskAttributes(selectedTask._id.$oid, { load }))
+                            dispatch(taskActions.setTaskAttributes(selectedTask._id, { load }))
                         }}
                         className="w-100"
                         schema="tasks" />
@@ -93,7 +106,7 @@ const EditTask = (props) => {
                     onChange={e => {
                         let unload = selectedTask.unload
                         unload.instructions = e.target.value
-                        dispatch(taskActions.setTaskAttributes(selectedTask._id.$oid, { unload }))
+                        dispatch(taskActions.setTaskAttributes(selectedTask._id, { unload }))
                     }}
                     lines={2}>
                 </Textbox>
@@ -112,7 +125,7 @@ const EditTask = (props) => {
                         onChange={values => {
                             let unload = selectedTask.unload
                             unload.sound = values[0]._id
-                            dispatch(taskActions.setTaskAttributes(selectedTask._id.$oid, { unload }))
+                            dispatch(taskActions.setTaskAttributes(selectedTask._id, { unload }))
                         }}
                         className="w-100"
                         schema="tasks" />
@@ -156,7 +169,7 @@ const EditTask = (props) => {
             .filter(dashboard =>
                 dashboard.station == selectedTask.load.station || dashboard.station == selectedTask.unload.station
             ).forEach(dashboard => {
-                let ind = dashboard.buttons.findIndex(button => button.task_id == selectedTask._id.$oid)
+                let ind = dashboard.buttons.findIndex(button => button.task_id == selectedTask._id)
                 if (ind !== -1) {
                     dashboard.buttons.splice(ind, 1)
                     dispatch(dashboardActions.putDashboard(dashboard, dashboard._id.$oid))
@@ -167,7 +180,7 @@ const EditTask = (props) => {
         if (isProcessTask) {
 
             // Removes the task from the array of routes
-            const index = selectedProcess.routes.indexOf(selectedTask._id.$oid)
+            const index = selectedProcess.routes.indexOf(selectedTask._id)
             const newRoutes = selectedProcess.routes.splice(index, 1)
 
             onSetSelectedProcess({
@@ -179,7 +192,7 @@ const EditTask = (props) => {
                 routes: [...newRoutes]
             })
         }
-        dispatch(taskActions.deleteTask(selectedTask._id.$oid));
+        dispatch(taskActions.deleteTask(selectedTask._id));
         dispatch(taskActions.deselectTask());
         toggleEditing(false)
     }
@@ -206,14 +219,14 @@ const EditTask = (props) => {
         let taskId = ''
 
         // Save Task
-        if (selectedTask._id.$oid == '__NEW_TASK') { // If task is new, POST
+        if (!!selectedTask.new) { // If task is new, POST
             delete selectedTask._id
             const postTaskPromise = dispatch(taskActions.postTask(selectedTask))
 
             // Uses this promise to find the ID for processes
             postTaskPromise.then(postedTask => {
-                console.log('QQQQ posted task',postedTask )
-                taskId = postedTask._id.$oid
+                console.log('QQQQ posted task', postedTask)
+                taskId = postedTask._id
 
                 // If this task is part of a process, then add the task to the selected process
                 // Have to do this function twice because it seems that you cant await the promise
@@ -229,10 +242,10 @@ const EditTask = (props) => {
                 }
             })
 
-            dispatch(taskActions.removeTask('__NEW_TASK')) // Remove the temporary task from the local copy of tasks
+            dispatch(taskActions.removeTask(selectedTask._id)) // Remove the temporary task from the local copy of tasks
         } else {    // If task is not new, PUT
-            taskId = selectedTask._id.$oid
-            await dispatch(taskActions.putTask(selectedTask, selectedTask._id.$oid))
+            taskId = selectedTask._id
+            await dispatch(taskActions.putTask(selectedTask, selectedTask._id))
 
             // If this task is part of a process, then add the task to the selected process
             // Have to do this function twice because it seems that you cant await the promise
@@ -258,8 +271,8 @@ const EditTask = (props) => {
     const handleBack = () => {
         // Discard the task changes
 
-        if (selectedTask._id.$oid == '__NEW_TASK') {
-            dispatch(taskActions.removeTask('__NEW_TASK'))   // If the task is new, simply remove it from the local copy of tasks
+        if (!!selectedTask.new) {
+            dispatch(taskActions.removeTask(selectedTask._id))   // If the task is new, simply remove it from the local copy of tasks
         } else {
             dispatch(taskActions.updateTask(selectedTaskCopy))  // Else, revert the task back to the copy we saved when user started editing
         }
@@ -291,7 +304,7 @@ const EditTask = (props) => {
                 defaultValue={!!selectedTask && selectedTask.name}
                 schema={'tasks'}
                 focus={!!selectedTask && selectedTask.name == ''}
-                onChange={(e) => { dispatch(taskActions.setTaskAttributes(selectedTask._id.$oid, { name: e.target.value })) }}
+                onChange={(e) => { dispatch(taskActions.setTaskAttributes(selectedTask._id, { name: e.target.value })) }}
                 style={{ fontSize: '1.2rem', fontWeight: '600' }}>
             </Textbox>
 
@@ -302,7 +315,7 @@ const EditTask = (props) => {
                         label={obj._id == undefined ? "New object will be created" : null}
                         labelField="name"
                         valueField="name"
-                        options={Object.values(objects).filter((obj)=>obj.map_id === currentMap._id)}
+                        options={Object.values(objects).filter((obj) => obj.map_id === currentMap._id)}
                         defaultValue={!!selectedTask && !!selectedTask.obj ? objects[selectedTask.obj] : null}
                         textboxGap={0}
                         closeOnSelect="true"
@@ -323,9 +336,9 @@ const EditTask = (props) => {
                 <Button schema={'tasks'} style={{ height: '1.8rem', fontSize: '1rem', flexGrow: '1' }}
                     onClick={() => { // If the shift key is pressed and the other button is pressed, change type to 'both'
                         if (shift && selectedTask.type == 'pull') {
-                            dispatch(taskActions.setTaskAttributes(selectedTask._id.$oid, { type: 'both' }))
+                            dispatch(taskActions.setTaskAttributes(selectedTask._id, { type: 'both' }))
                         } else {
-                            dispatch(taskActions.setTaskAttributes(selectedTask._id.$oid, { type: 'push' }))
+                            dispatch(taskActions.setTaskAttributes(selectedTask._id, { type: 'push' }))
                         }
                     }}
                     disabled={!isTransportTask}
@@ -333,9 +346,9 @@ const EditTask = (props) => {
                 <Button schema={'tasks'} style={{ height: '1.8rem', fontSize: '1rem', flexGrow: '1' }}
                     onClick={() => { // If the shift key is pressed and the other button is pressed, change type to 'both'
                         if (shift && selectedTask.type == 'push') {
-                            dispatch(taskActions.setTaskAttributes(selectedTask._id.$oid, { type: 'both' }))
+                            dispatch(taskActions.setTaskAttributes(selectedTask._id, { type: 'both' }))
                         } else {
-                            dispatch(taskActions.setTaskAttributes(selectedTask._id.$oid, { type: 'pull' }))
+                            dispatch(taskActions.setTaskAttributes(selectedTask._id, { type: 'pull' }))
                         }
                     }}
                     disabled={!isTransportTask}
@@ -356,7 +369,7 @@ const EditTask = (props) => {
             {/* Delete Task Button */}
             <Button
                 schema={'tasks'}
-                disabled={!!selectedTask && !!selectedTask._id && selectedTask._id.$oid == '__NEW_TASK'}
+                disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
                 secondary
                 onClick={() => {
                     handleDelete()

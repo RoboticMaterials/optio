@@ -362,7 +362,8 @@ export default function LocationContent(props) {
                                 Merge Position to Station
                             </Button> */}
 
-                            <styled.Label
+                            {/* Commented out for now. Moving merging to inside stations vs inside of positions */}
+                            {/* <styled.Label
                                 schema={'locations'}
                             >
                                 Merge Position To Station
@@ -398,7 +399,7 @@ export default function LocationContent(props) {
                                     Merge
                                 </Button>
 
-                            }
+                            } */}
 
 
                             <div style={{ height: "100%" }}></div>

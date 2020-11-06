@@ -18,6 +18,7 @@ import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 
 // Import Utils
 import { isEquivalent, deepCopy } from '../../../../../methods/utils/utils'
+import uuid from 'uuid'
 
 const EditProcess = (props) => {
 
@@ -68,7 +69,7 @@ const EditProcess = (props) => {
         return selectedProcess.routes.map((route, ind) => {
 
             const routeTask = tasks[route]
-            if(routeTask === undefined){
+            if (routeTask === undefined) {
                 return
             }
 
@@ -85,7 +86,7 @@ const EditProcess = (props) => {
 
                             }}
                             onMouseLeave={() => {
-                                if (selectedTask !== null && selectedTask._id.$oid !== '__NEW_TASK') {
+                                if (selectedTask !== null && !selectedTask.new) {
                                     onDeselectTask()
                                 }
                             }}
@@ -142,6 +143,7 @@ const EditProcess = (props) => {
                                     obj: null,
                                     type: 'push',
                                     quantity: 1,
+                                    new: true,
                                     // Makes the task/route a part of a 
                                     process: selectedProcessCopy._id.$oid === '__NEW_PROCESS' ? true : selectedProcessCopy._id.$oid,
                                     load: {
@@ -156,7 +158,7 @@ const EditProcess = (props) => {
                                         sound: null,
                                         instructions: 'Unload'
                                     },
-                                    _id: { $oid: '__NEW_TASK' }
+                                    _id: uuid.v4(),
                                 }
                                 onAddTask(newTask)
                                 setNewRoute(newTask)
@@ -278,13 +280,13 @@ const EditProcess = (props) => {
 
             {handleAddRoute()}
 
-            <div style={{ height: "100%", paddingTop: "1rem" }}/>
+            <div style={{ height: "100%", paddingTop: "1rem" }} />
 
             {/* Delete Task Button */}
             <Button
                 schema={'processes'}
-                disabled={!!selectedProcess && !!selectedProcess._id && selectedProcess._id.$oid == '__NEW_TASK'}
-                style={{marginBottom: '0rem'}}
+                disabled={!!selectedProcess && !!selectedProcess._id && selectedProcess._id.$oid == '__NEW_PROCESS'}
+                style={{ marginBottom: '0rem' }}
                 secondary
                 onClick={() => {
                     handleDelete()

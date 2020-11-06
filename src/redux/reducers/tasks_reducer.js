@@ -186,7 +186,7 @@ export default function tasksReducer(state = defaultState, action) {
                 return {
                     ...state,
                     tasks: tasksCopy,
-                    selectedTask: tasksCopy[state.selectedTask._id.$oid]
+                    selectedTask: tasksCopy[state.selectedTask._id]
                 }
             } else {
                 return {
@@ -202,7 +202,7 @@ export default function tasksReducer(state = defaultState, action) {
                 return {
                     ...state,
                     tasks: deepCopy(action.payload.tasks),
-                    selectedTask: deepCopy(action.payload.tasks[state.selectedTask._id.$oid])
+                    selectedTask: deepCopy(action.payload.tasks[state.selectedTask._id])
                 }
             } else {
                 return {
@@ -234,7 +234,7 @@ export default function tasksReducer(state = defaultState, action) {
                 return {
                     ...state,
                     tasks: tasksCopy,
-                    selectedTask: deepCopy(tasksCopy[state.selectedTask._id.$oid])
+                    selectedTask: deepCopy(tasksCopy[state.selectedTask._id])
                 }
             } else {
                 return {
