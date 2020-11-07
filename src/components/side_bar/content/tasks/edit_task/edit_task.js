@@ -18,7 +18,7 @@ import { deepCopy } from '../../../../../methods/utils/utils'
 
 // Import actions
 import * as taskActions from '../../../../../redux/actions/tasks_actions'
-import { setSelectedTask, deleteTask } from '../../../../../redux/actions/tasks_actions'
+import { setSelectedTask, deleteTask, getTasks } from '../../../../../redux/actions/tasks_actions'
 import * as dashboardActions from '../../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../../redux/actions/objects_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
@@ -41,6 +41,7 @@ const EditTask = (props) => {
     const onSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
     const onSetSelectedTask = (task) => dispatch(setSelectedTask(task))
     const onDeleteTask = (ID) => dispatch(deleteTask(ID))
+    const onGetTasks = () => dispatch(getTasks())
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -251,11 +252,13 @@ const EditTask = (props) => {
             // 1 robot task and 1 human task
             // This allows for the ability for humans to do the task and seperates statistics between typs
             if (selectedTask.device_type === 'MiR_100') {
+                
+                const newID = uuid.v4()
 
                 const humanTask = {
                     ...deepCopy(selectedTask),
                     device_type: 'human',
-                    _id: uuid.v4(),
+                    _id: newID,
                     associated_task: selectedTask._id,
                 }
 
@@ -264,8 +267,14 @@ const EditTask = (props) => {
                     associated_task: humanTask._id,
                 }
 
+                console.log('QQQQ Human task', humanTask)
+                console.log('QQQQ Device task', deviceTask)
+
                 await dispatch(taskActions.postTask(deviceTask))
                 await dispatch(taskActions.postTask(humanTask))
+
+                // Temp fix for a weird issue with redux and posting tasks to fast
+                setTimeout(onGetTasks(), 500)
 
             }
             else {
@@ -279,17 +288,23 @@ const EditTask = (props) => {
             taskId = selectedTask._id
 
             // If the task device type is human and has an associated task, then this task must have gone from device to human based
-            // so delete the duplicate human task task and remove the associated task from the new human (old device) task
+            // so delete the robot task and keep the associated human task from the new human task, keeps previous human task data
             // If this doesn't make sense, look at the if statement above
             // Hint, if there is a task that has 2 tasks because its a device task, only the device task is showed in the list
-            // So this means the human task must be deleted because the device task is now a human task
             if (selectedTask.device_type === 'human' && !!selectedTask.associated_task) {
-                await onDeleteTask(selectedTask.associated_task)
-                delete selectedTask.associated_task
-                await dispatch(taskActions.putTask(selectedTask, selectedTask._id))
+
+                const updatedHumanTask = {
+                    ...deepCopy(tasks[selectedTask.associated_task])
+                }
+
+                delete updatedHumanTask.associated_task
+
+                await dispatch(taskActions.putTask(updatedHumanTask, updatedHumanTask._id))
+                await onDeleteTask(selectedTask._id)
+
             }
 
-            // If the task as an associated task, also update the associated task
+            // If the task is an associated task, also update the associated task
             else if (!!selectedTask.associated_task) {
 
                 const updatedAssociatedTask = {
@@ -305,18 +320,20 @@ const EditTask = (props) => {
 
             // If the task is not a human based task but it has no associated tasks
             // that means it was a human based task that is now a device task
-            // So make a duplicate human task
+            // So make a new device task
             else if (selectedTask.device_type !== 'human' && !selectedTask.associated_task) {
 
+                // New Device task
                 const newTask = {
                     ...deepCopy(selectedTask),
                     associated_task: selectedTask._id,
-                    device_type: 'human',
                     _id: uuid.v4(),
                 }
 
+                // Old human task
                 const updatedTask = {
                     ...deepCopy(selectedTask),
+                    device_type: 'human',
                     associated_task: newTask._id,
                 }
 

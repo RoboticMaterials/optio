@@ -14,6 +14,7 @@ export default function ContentList(props) {
         executeTask,
         hideHeader
     } = props
+
     return (
         <styled.Container>
 

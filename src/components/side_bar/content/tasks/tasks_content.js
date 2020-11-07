@@ -51,8 +51,6 @@ export default function TaskContent(props) {
         setShift(e.shiftKey)
     })
 
-    console.log('QQQQ tasks', tasks)
-
     // Creates listeners for if the shift key is pressed
     useEffect(() => {
         window.addEventListener('keydown', shiftCallback)
@@ -103,11 +101,14 @@ export default function TaskContent(props) {
             <ContentList
                 title={'Routes'}
                 schema={'tasks'}
-                elements={Object.values(tasks)
+                elements={
+                    
+                    Object.values(tasks)
                     // Filters outs any tasks that don't belong to the current map or apart of a process
                     .filter(task => !task.process && (task.map_id === currentMap._id))
                     // Filter outs any human tasks that have associated tasks (AKA it only shows the associated device task)
                     .filter(task => !task.associated_task || (!!task.associated_task && task.device_type !== 'human'))
+
                 }
                 onMouseEnter={(task) => dispatch(taskActions.selectTask(task._id))}
                 onMouseLeave={(task) => dispatch(taskActions.deselectTask())}

@@ -110,8 +110,8 @@ export const postTask = (task) => {
         function onStart() {
             dispatch({ type: POST_TASK_STARTED });
         }
-        function onSuccess(newTask) {
-            dispatch({ type: POST_TASK_SUCCESS, payload: newTask });
+        const onSuccess = async (newTask) => {
+            await dispatch({ type: POST_TASK_SUCCESS, payload: newTask });
             return newTask;
         }
         function onError(error) {
@@ -125,6 +125,7 @@ export const postTask = (task) => {
                 delete task.new
             }
             const newTask = await api.postTask(task);
+            console.log('QQQQ New Task', newTask)
             return onSuccess(newTask);
         } catch (error) {
             return onError(error);

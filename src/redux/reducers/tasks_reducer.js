@@ -95,12 +95,14 @@ export default function tasksReducer(state = defaultState, action) {
             });
 
         case POST_TASK_SUCCESS:
-            tasksCopy = deepCopy(state.tasks)
-            tasksCopy[action.payload._id] = action.payload
-            console.log('QQQQ Success', tasksCopy)
+            const ID = deepCopy(action.payload._id)
+            console.log('QQQQ Id', ID)
             return {
                 ...state,
-                tasks: tasksCopy,
+                tasks: {
+                    ...state.tasks,
+                    [ID]: action.payload,
+                },
                 pending: false,
 
             }
