@@ -111,7 +111,7 @@ const HILModals = (props) => {
 
         let newItem = {
             ...item,
-            hil_response: true
+            hil_response: false
         }
         delete newItem._id
         await putTaskQueueItem(newItem, taskQueueID)
@@ -186,7 +186,7 @@ const HILModals = (props) => {
         <styled.HilContainer >
             <styled.HilBorderContainer >
                 <styled.HilMessage>{hilMessage}</styled.HilMessage>
-                {!!hilTimers[item._id.$oid] &&
+                {!!hilTimers[item._id.$oid] && hilLoadUnload === 'load' &&
                     <styled.HilTimer>{hilTimers[item._id.$oid]}</styled.HilTimer>
                 }
 
@@ -201,7 +201,10 @@ const HILModals = (props) => {
 
                         <styled.HilInput
                             type="number"
-                            onChange={(qty) => setQuantity(qty)}
+                            onChange={(e) => {
+                                console.log('QQQQ Qty', e.target.value)
+                                setQuantity(e.target.value)
+                            }}
                             value={quantity}
                         />
 
