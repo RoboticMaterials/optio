@@ -52,6 +52,8 @@ const App = (props) => {
     const size = useWindowSize()
     const windowWidth = size.width
 
+    console.log("showSideBar",showSideBar)
+
     const mobileMode = windowWidth < widthBreakPoint;
 
     /**
@@ -132,7 +134,7 @@ const App = (props) => {
                                             :
 
                                             <Route
-                                                path={["/:type?/:id?", '/']}
+                                                path={["/:page?/:id?/:subpage?", '/']}
                                             >
                                                 <SideBar
                                                     showSideBar={showSideBar}

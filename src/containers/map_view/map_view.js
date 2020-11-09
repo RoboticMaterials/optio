@@ -601,7 +601,7 @@ export class MapView extends Component {
 
                                                 const previousTask = this.props.tasks[previousRoute]
 
-                                                if (!!previousTask.unload) {
+                                                if (!!previousTask && !!previousTask.unload) {
                                                     const unloadStationID = previousTask.unload.station
                                                     const unloadStation = this.props.locations[unloadStationID]
 

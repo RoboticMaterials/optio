@@ -37,8 +37,6 @@ const SideBar = (props) => {
         id
     } = params
 
-    console.log("params",params)
-
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
 
@@ -80,16 +78,12 @@ const SideBar = (props) => {
 
 
         const time = Date.now()
-        console.log("params",params,time)
-        console.log("prevParams",prevParams,time)
 
         if(page === "processes" && (subpage === "card")) {
-            console.log(1)
             setPrevWidth(width) // store previous width to restore when card page is left
             setWidth(window.innerWidth)
         }
         else if((prevSubpage === "card" && prevPage === "processes") && (subpage !== "card") ) {
-            console.log(2)
             setWidth(prevWidth)
         }
 
@@ -98,12 +92,13 @@ const SideBar = (props) => {
 
         return () => {}
 
-    }, [page, subpage, id])
+    }, [page, subpage, id, width])
 
     /**
      * Handles the hamburger icon transformation
      */
     const handleSideBarOpenCloseButtonClick = () => {
+        console.log("widgetPageLoaded",widgetPageLoaded)
         const hamburger = document.querySelector('.hamburger')
         hamburger.classList.toggle('is-active')
 
@@ -155,6 +150,7 @@ const SideBar = (props) => {
     }
 
     let content
+    console.log("page",page)
     switch (page) {
         case 'locations':
             content = <LocationsContent />
@@ -192,6 +188,7 @@ const SideBar = (props) => {
             break
 
         default:
+            console.log("DEFAULT")
             content = null
             if (showSideBar) {
                 handleSideBarOpenCloseButtonClick()

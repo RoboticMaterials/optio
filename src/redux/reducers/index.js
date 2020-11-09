@@ -26,9 +26,11 @@ import notificationsReducer from './notifications_reducer'
 import eventsReducer from './events_reducer'
 import authenticationReducer from './authentication_reducer'
 import processesReducer from './processes_reducer'
+import cardsReducer from './cards_reducer'
 
 export default combineReducers({
     apiReducer,
+    cardsReducer,
     schedulesReducer,
     skillsReducer,
     locationsReducer,
