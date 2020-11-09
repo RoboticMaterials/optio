@@ -74,7 +74,6 @@ const EditTask = (props) => {
                                 // Just setting this to MiR100 for now. Need to expand in the future for other devices
                                 device_type: device_type
                             })
-                            // handleUpdateLocalSettings({ non_local_api: !localSettings.non_local_api })
                         }}
                         onColor='red'
                         style={{ marginRight: '1rem' }}
@@ -351,15 +350,13 @@ const EditTask = (props) => {
 
             // Else its just a plain jane task
             else {
-                console.log('QQQQ plaine jane')
                 await dispatch(taskActions.putTask(selectedTask, selectedTask._id))
             }
 
         }
 
-        // If this task is part of a process, then add the task to the selected process
-        if (isProcessTask) {
-            console.log('QQQQ process task', deepCopy(selectedTask))
+        // If this task is part of a process and not already in the array of routes, then add the task to the selected process
+        if (isProcessTask && !selectedProcess.routes.includes(selectedTask._id)) {
             onSetSelectedProcess({
                 ...selectedProcess,
                 routes: [...selectedProcess.routes, selectedTask._id]
@@ -377,7 +374,7 @@ const EditTask = (props) => {
         if (!!selectedTask.new) {
             dispatch(taskActions.removeTask(selectedTask._id))   // If the task is new, simply remove it from the local copy of tasks
         } else {
-            dispatch(taskActions.updateTask(selectedTaskCopy))  // Else, revert the task back to the copy we saved when user started editing
+            dispatch(taskActions.updateTask(selectedTask))  // Else, revert the task back to the copy we saved when user started editing
         }
         dispatch(taskActions.deselectTask())    // Deselect
         setSelectedTaskCopy(null)                   // Reset the local copy to null
@@ -389,7 +386,7 @@ const EditTask = (props) => {
             <div style={{ marginBottom: '1rem' }}>
                 <ContentHeader
                     content={'tasks'}
-                    mode={!!isProcessTask ? 'add' : 'create'}
+                    mode={(!!isProcessTask && selectedTask.new) ?  'add' : 'create'}
                     // Disables the button if load and unloads have not been selected for a task/route in a process
                     disabled={selectedTask !== null && (!selectedTask.load.position || selectedTask.unload.position === null)}
                     onClickSave={async () => {

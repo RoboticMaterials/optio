@@ -119,7 +119,6 @@ const EditProcess = (props) => {
                             isTransportTask={isTransportTask}
                             isProcessTask={true}
                             toggleEditing={(props) => {
-                                console.log('QQQQ editing props', props)
                                 setEditingTask(props)
                             }}
                         />
@@ -189,7 +188,6 @@ const EditProcess = (props) => {
                             isTransportTask={isTransportTask}
                             isProcessTask={true}
                             toggleEditing={(props) => {
-                                console.log('QQQQ editing props', props)
                                 setEditingTask(props)
                             }}
 
