@@ -12,7 +12,7 @@ import EditTask from '../../tasks/edit_task/edit_task'
 import ContentHeader from '../../content_header/content_header'
 
 // Import actions
-import { setSelectedTask, deselectTask, addTask, putTask } from '../../../../../redux/actions/tasks_actions'
+import { setSelectedTask, deselectTask, addTask, putTask, deleteTask } from '../../../../../redux/actions/tasks_actions'
 import { setSelectedProcess, postProcesses, putProcesses, deleteProcesses } from '../../../../../redux/actions/processes_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 
@@ -35,6 +35,7 @@ const EditProcess = (props) => {
     const onDeselectTask = () => dispatch(deselectTask())
     const onSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
     const onPutTask = (task, ID) => dispatch(putTask(task, ID))
+    const onDeleteTask = (ID) => dispatch(deleteTask(ID))
 
     const onPostProcess = async (process) => await dispatch(postProcesses(process))
     const onPutProcess = async (process) => await dispatch(putProcesses(process))
@@ -229,6 +230,11 @@ const EditProcess = (props) => {
     }
 
     const handleDelete = async () => {
+
+        // If there's routes in this process, delete the routes
+        if(selectedProcess.routes.length > 0){
+            selectedProcess.routes.forEach(route => onDeleteTask(route))
+        }
 
         await onDeleteProcess(selectedProcessCopy._id)
 
