@@ -25,9 +25,9 @@ console.warn = () => {};
 */
 //
 
-// if(module.hot){
-//     module.hot.accept()
-// }
+if(module.hot){
+    module.hot.accept()
+}
 
 const rootElement = document.getElementById('root')
   ReactDOM.render(

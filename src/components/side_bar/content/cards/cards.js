@@ -9,7 +9,65 @@ const TEMP_STATIONS = {
 
 }
 
+const StationsColumn = (props) => {
+    const {
+        id
+    } = props
 
+    const station = useSelector(state => { return state.locationsReducer.stations[id] })
+    console.log("station",station)
+
+    const {
+        name
+    } = station
+
+    return(
+        <styled.RouteContainer>
+            <styled.RouteName>{name}</styled.RouteName>
+
+        </styled.RouteContainer>
+    )
+}
+
+const StationsList = (props) => {
+    const {
+        routes
+    } = props
+
+    let stations = []
+    routes.forEach((route) => {
+        const {
+            load: {station: loadStationId},
+            unload: {station: unloadStationId},
+        } = route
+
+        stations.push(loadStationId)
+        stations.push(unloadStationId)
+
+    })
+
+    const renderStations = () => {
+        return(
+            <styled.RoutesListContainer>
+                {
+                    stations.map((stationId) => {
+
+                        return (
+                            <StationsColumn
+                                id={stationId}
+                            />
+                        )
+                    })
+                }
+            </styled.RoutesListContainer>
+
+        )
+    }
+
+    return(
+        renderStations()
+    )
+}
 
 const Cards = (props) => {
 
@@ -18,17 +76,16 @@ const Cards = (props) => {
     } = props
 
     const currentProcess = useSelector(state => { return state.processesReducer.processes[id] })
-    const TEMP_STATIONS = useSelector(state => { return state.locationsReducer.stations })
-    const TEMP_STATIONS_ARR = Object.values(TEMP_STATIONS).slice(0,3)
+    const routes = useSelector(state => { return Object.values(state.tasksReducer.tasks).filter((route) => currentProcess.routes.includes(route._id)) })
+
     console.log("currentProcess",currentProcess)
-    console.log("TEMP_STATIONS",TEMP_STATIONS)
-    console.log("TEMP_STATIONS_ARR",TEMP_STATIONS_ARR)
+    console.log("routes",routes)
     console.log("id",id)
 
 
     return (
         <styled.Container>
-
+            <StationsList routes={routes}/>
         </styled.Container>
     )
 }
