@@ -36,6 +36,7 @@ const DashboardEditTasksField = props => {
 
 	const [showColorPicker, setShowColorPicker] = useState(false);
 	const tasks = useSelector(state => state.tasksReducer.tasks)
+	const taskName = tasks[button.task_id]?.name || "TASK NOT FOUND"
 
 	return(
 		// set zindex to make sure the dropdown from buttons above display on top of the buttons below it
@@ -55,7 +56,7 @@ const DashboardEditTasksField = props => {
 					type='text'
 					label={null}
 				/>
-				<styled.TaskName>{button.name}</styled.TaskName>
+				<styled.TaskName>{taskName}</styled.TaskName>
 			</styled.CenterContainer>
 
 			<DeleteFieldButton
