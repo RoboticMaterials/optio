@@ -150,6 +150,7 @@ const EditProcess = (props) => {
                                     new: true,
                                     device_type: 'human',
                                     map_id: currentMap._id,
+                                    idle_location: null,
                                     // Makes the task/route a part of a process
                                     process: selectedProcessCopy._id,
                                     load: {

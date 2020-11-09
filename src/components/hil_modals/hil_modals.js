@@ -55,7 +55,6 @@ const HILModals = (props) => {
 
     // Use Effect for when page loads, handles wether the HIL is a load or unload
     useEffect(() => {
-        console.log('QQQQ Item', item)
         // If the task's load location of the task q item matches the item's location then its a load hil, else its unload
         if (tasks[item.task_id].load.station === item.hil_station_id) {
             // load
@@ -186,6 +185,7 @@ const HILModals = (props) => {
         <styled.HilContainer >
             <styled.HilBorderContainer >
                 <styled.HilMessage>{hilMessage}</styled.HilMessage>
+                {/* Only Showing timers on load at the moment, will probably change in the future */}
                 {!!hilTimers[item._id.$oid] && hilLoadUnload === 'load' &&
                     <styled.HilTimer>{hilTimers[item._id.$oid]}</styled.HilTimer>
                 }
@@ -202,7 +202,6 @@ const HILModals = (props) => {
                         <styled.HilInput
                             type="number"
                             onChange={(e) => {
-                                console.log('QQQQ Qty', e.target.value)
                                 setQuantity(e.target.value)
                             }}
                             value={quantity}
