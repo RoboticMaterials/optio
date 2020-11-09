@@ -50,6 +50,7 @@ const SplashScreen = (props) => {
      * Submit API address to local storage
      */
     const handleSubmitApiIpAddress = async () => {
+        console.log("submitting")
         await onPostLocalSettings({ non_local_api: true, non_local_api_ip: apiIpAddress })
         window.location.reload(false);
     }
@@ -79,9 +80,10 @@ const SplashScreen = (props) => {
                                 style={{ width: '100%' }}
                                 // type = 'submit'
                             />
+                            <Button schema={'scheduler'} style={{ color: 'red', border: '0.1rem solid red' }} type='submit'>Submit</Button>
                         </form>
 
-                        <Button schema={'scheduler'} style={{ color: 'red', border: '0.1rem solid red' }} type='submit'>Submit</Button>
+
 
                         <ToggleMapViewSwitch
                             switchContainerStyle={{

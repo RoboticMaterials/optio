@@ -63,7 +63,7 @@ export const getObjects = () => {
 
             const normalizedObjects = {}
             objects.map((object) => {
-                normalizedObjects[object._id.$oid] = object
+                normalizedObjects[object._id] = object
             })
 
             return onSuccess(normalizedObjects);
@@ -151,7 +151,6 @@ export const putObject = (object, ID) => {
         try {
             onStart();
             let objectCopy = deepCopy(object)
-            delete objectCopy._id
             const updateObject = await api.putObject(objectCopy, ID);
             return onSuccess(updateObject)
         } catch (error) {

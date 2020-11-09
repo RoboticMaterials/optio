@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { DraggableCore } from "react-draggable";
@@ -19,10 +19,10 @@ import { randomHash } from "../../../../../methods/utils/utils";
 import { handleAvailableTasks } from "../../../../../methods/utils/dashboards_utils";
 
 // Import Utils
-import {ADD_TASK_ALERT_TYPE } from "../../../../../constants/dashboard_contants";
+import { ADD_TASK_ALERT_TYPE } from "../../../../../constants/dashboard_contants";
 
 // Import Actions
-import {postTaskQueue} from '../../../../../redux/actions/task_queue_actions'
+import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 
 import log from '../../../../../logger'
 // import { Container } from '@material-ui/core';
@@ -33,6 +33,7 @@ const logger = log.getLogger("Dashboards")
 // const tempColors = ["#b17de3", "#91a2db", "#92d6aa", "#ffc65c", "#92d6aa", "#fa6e64", "#cf5f7a"]
 // const tempColors = ['#99A9D7', '#8ED2CD', '#C1ED98', '#FED875', '#F59B7C']
 const tempColors = ['#FF4B4B', '#56d5f5', '#50de76', '#f2ae41', '#c7a0fa']
+
 const DashboardsSidebar = (props) => {
 
     const {
@@ -70,25 +71,25 @@ const DashboardsSidebar = (props) => {
     const dispatch = useDispatch()
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const stations = useSelector(state => state.locationsReducer.stations)
-    const code409 = useSelector(state => {return state.taskQueueReducer.error})
+    const code409 = useSelector(state => { return state.taskQueueReducer.error })
 
     // self contained state
-	const [addTaskAlert, setAddTaskAlert] = useState(null)
+    const [addTaskAlert, setAddTaskAlert] = useState(null)
 
     const handleTaskClick = (Id, name) => {
 
-		// add alert to notify task has been added
-		setAddTaskAlert({
-			type: ADD_TASK_ALERT_TYPE.ADDING,
-			message: "Adding to Queue..."
-		})
+        // add alert to notify task has been added
+        setAddTaskAlert({
+            type: ADD_TASK_ALERT_TYPE.ADDING,
+            message: "Adding to Queue..."
+        })
 
-		// dispatch action to add task to queue
-        const postPromise = dispatch(postTaskQueue({"task_id": Id}))
+        // dispatch action to add task to queue
+        const postPromise = dispatch(postTaskQueue({ "task_id": Id }))
         postPromise.then(() => {
-            try{
+            try {
                 // code409 is returned if task is already in the queue
-                if(code409.response.data.status === 409){
+                if (code409.response.data.status === 409) {
                     // display alert notifying user that task is already in queue
                     setAddTaskAlert({
                         type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
@@ -97,10 +98,10 @@ const DashboardsSidebar = (props) => {
                     })
                 }
 
-            }catch {
+            } catch {
                 // display alert notifying user that task was successfully added
                 setAddTaskAlert({
-                    type:ADD_TASK_ALERT_TYPE.TASK_ADDED,
+                    type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
                     label: "Task Added to Queue",
                     message: name
                 })
@@ -119,17 +120,17 @@ const DashboardsSidebar = (props) => {
     try {
         availableTasks = handleAvailableTasks(tasks, station)
     }
-    catch(e) {
+    catch (e) {
         logger.log("availableTasks availableTasks", availableTasks)
         logger.log("availableTasks e", e)
     }
 
-    var availableButtons = availableTasks.map((task,index) => {
+    var availableButtons = availableTasks.map((task, index) => {
         return {
             name: task.name,
             color: tempColors[index % tempColors.length],
-            task_id: task._id.$oid,
-            id: task._id.$oid,
+            task_id: task._id,
+            id: task._id,
         }
     })
 
@@ -138,13 +139,13 @@ const DashboardsSidebar = (props) => {
         setSmall(testSize(Math.max(minWidth, width + ui.deltaX)))  // check if width is less than styling breakpoint and update isSmall
     }
 
-    return(
+    return (
 
-        <style.SidebarWrapper onClick={()=>setAddTaskAlert(null)}>
+        <style.SidebarWrapper onClick={() => setAddTaskAlert(null)}>
 
             <style.SidebarContent
                 key="sidebar-content"
-                style={{width: width}}
+                style={{ width: width }}
             >
                 <style.Container>
                     <style.ListContainer>
@@ -154,17 +155,25 @@ const DashboardsSidebar = (props) => {
                                 availableButtons[index]
                             }
                         >
-                            {availableButtons.map((button, index) =>
-                                <DashboardSidebarButton
-                                    key={`dashboard-sidebar-button-${index}`}
-                                    name={button.name}
-                                    color={button.color}
-                                    task_id={button.task_id}
-                                    id={button.id}
-                                    clickable={clickable}
-                                    onTaskClick={handleTaskClick}
-                                    disabled = {!!addTaskAlert}
-                                />
+                            {availableButtons.map((button, index) => {
+
+                                // If the button has an associated task and the device is humn, then do not render button
+                                // This means there's an associated device task, and that task should be the only one displayed
+                                if(!!tasks[button.task_id].associated_task && tasks[button.task_id].device_type === 'human') return null
+
+                                return (
+                                    <DashboardSidebarButton
+                                        key={`dashboard-sidebar-button-${index}`}
+                                        name={button.name}
+                                        color={button.color}
+                                        task_id={button.task_id}
+                                        id={button.id}
+                                        clickable={clickable}
+                                        onTaskClick={handleTaskClick}
+                                        disabled={!!addTaskAlert}
+                                    />
+                                )
+                            }
                             )}
                         </Container>
                     </style.ListContainer>
@@ -179,9 +188,9 @@ const DashboardsSidebar = (props) => {
             </style.SidebarContent>
 
             <TaskAddedAlert
-				{...addTaskAlert}
-				visible={!!addTaskAlert}
-			/>
+                {...addTaskAlert}
+                visible={!!addTaskAlert}
+            />
 
         </style.SidebarWrapper>
     )

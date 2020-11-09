@@ -134,3 +134,12 @@ export const LocationTypeContainer = styled.div`
     align-items: center;
     width: 9rem;
 `
+
+export const Label = styled.h3`
+    font-family: ${props => props.theme.font.primary};
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: ${props => props.theme.schema[props.schema].solid};
+    user-select: none;
+    text-align: center;
+`

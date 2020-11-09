@@ -84,7 +84,7 @@ export const processSchema = new schema.Entity(
     // options
     {
         idAttribute: (value, parent, key) => {
-            return value._id.$oid
+            return value._id
         },
 
     },

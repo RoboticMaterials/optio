@@ -73,7 +73,8 @@ const HILModals = (props) => {
 
         let newItem = {
             ...item,
-            hil_response: true
+            hil_response: true,
+            
         }
 
         // Deletes the dashboard id from active list for the hil that has been responded too

@@ -18,7 +18,9 @@ import * as dashboardActions from '../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../redux/actions/objects_actions'
 import { postTaskQueue } from '../../../../redux/actions/task_queue_actions'
 
+// Import Utils
 import { deepCopy } from '../../../../methods/utils/utils'
+import uuid from 'uuid'
 
 
 export default function TaskContent(props) {
@@ -32,6 +34,7 @@ export default function TaskContent(props) {
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const sounds = useSelector(state => state.soundsReducer.sounds)
     const objects = useSelector(state => state.objectsReducer.objects)
+    const currentMap = useSelector(state => state.mapReducer.currentMap)
 
     const stations = useSelector(state => state.locationsReducer.stations)
     const positions = useSelector(state => state.locationsReducer.positions)
@@ -61,7 +64,7 @@ export default function TaskContent(props) {
     })
 
     useEffect(() => {
-        if (!selectedTask) {return}
+        if (!selectedTask) { return }
         if (selectedTask.load.position === null) {
             // No load position has been defined - ask user to define load (start) position
             setIsTransportTask(true)
@@ -90,7 +93,7 @@ export default function TaskContent(props) {
                 setSelectedTaskCopy={props => setSelectedTaskCopy(props)}
                 shift={shift}
                 isTransportTask={isTransportTask}
-                toggleEditing={props=> toggleEditing(props)}
+                toggleEditing={props => toggleEditing(props)}
             />
         )
     } else {    // List Mode
@@ -98,9 +101,16 @@ export default function TaskContent(props) {
             <ContentList
                 title={'Routes'}
                 schema={'tasks'}
-                // Hides tasks/routes associated with a process
-                elements={Object.values(tasks).filter(task => !task.process)}
-                onMouseEnter={(task) => dispatch(taskActions.selectTask(task._id.$oid))}
+                elements={
+                    
+                    Object.values(tasks)
+                    // Filters outs any tasks that don't belong to the current map or apart of a process
+                    .filter(task => !task.process && (task.map_id === currentMap._id))
+                    // Filter outs any human tasks that have associated tasks (AKA it only shows the associated device task)
+                    .filter(task => !task.associated_task || (!!task.associated_task && task.device_type !== 'human'))
+
+                }
+                onMouseEnter={(task) => dispatch(taskActions.selectTask(task._id))}
                 onMouseLeave={(task) => dispatch(taskActions.deselectTask())}
                 onClick={(task) => {
                     // If task button is clicked, start editing it
@@ -108,7 +118,7 @@ export default function TaskContent(props) {
                     toggleEditing(true)
                 }}
                 executeTask={() => {
-                    onPostTaskQueue({ task_id: selectedTask._id.$oid })
+                    onPostTaskQueue({ task_id: selectedTask._id })
                 }}
                 onPlus={() => {
                     const newTask = {
@@ -116,6 +126,9 @@ export default function TaskContent(props) {
                         obj: null,
                         type: 'push',
                         quantity: 1,
+                        device_type: 'human',
+                        map_id: currentMap._id,
+                        new: true,
                         load: {
                             position: null,
                             station: null,
@@ -128,7 +141,7 @@ export default function TaskContent(props) {
                             sound: null,
                             instructions: 'Unload'
                         },
-                        _id: { $oid: '__NEW_TASK' }
+                        _id: uuid.v4(),
                     }
                     dispatch(taskActions.addTask(newTask))
                     dispatch(taskActions.setSelectedTask(newTask))

@@ -36,6 +36,7 @@ export const scheduleSchema = new schema.Entity(
 
         interval_on:  value.interval_on ? value.interval_on : false,
         time_interval: value.time_interval ? value.time_interval : null,
+        map_id: value.map_id ? value.map_id : null,
 
         schedule_on: value.schedule_on ? value.schedule_on : false,
         start_time: value.start_time ? value.start_time : null,

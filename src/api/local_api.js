@@ -39,8 +39,12 @@ export const getLocalSettings = async () => {
         const settings = {
             non_local_api_ip: '',
             non_local_api: false,
+            mapViewEnabled: true,
+            currentMapId: null,
+
         }
         await postLocalSettings(settings)
         getLocalSettings()
+        return settings
     }
 }

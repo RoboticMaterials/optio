@@ -10,6 +10,13 @@ export const ContentContainer = styled.div`
 
 `
 
+export const RowContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+`
+
 export const Header = styled.h1`
     font-size: ${props => props.theme.fontSize.sz2};
     font-family: ${props => props.theme.font.primary};

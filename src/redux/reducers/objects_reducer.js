@@ -96,7 +96,7 @@ export default function objectsReducer(state = defaultState, action) {
 
         case POST_OBJECT_SUCCESS:
             objectsCopy = deepCopy(state.objects)
-            objectsCopy[action.payload._id.$oid] = action.payload
+            objectsCopy[action.payload._id] = action.payload
             return {
                 ...state,
                 objects: objectsCopy,
@@ -126,7 +126,7 @@ export default function objectsReducer(state = defaultState, action) {
 
         case PUT_OBJECT_SUCCESS:
             objectsCopy = deepCopy(state.objects)
-            objectsCopy[action.payload._id.$oid] = action.payload
+            objectsCopy[action.payload._id] = action.payload
 
             return {
                 ...state,
@@ -172,22 +172,22 @@ export default function objectsReducer(state = defaultState, action) {
 
         case ADD_OBJECT:
             objectsCopy = deepCopy(state.objects)
-            objectsCopy[action.payload.object._id.$oid] = action.payload.object
+            objectsCopy[action.payload.object._id] = action.payload.object
             return {
                 ...state,
                 objects: objectsCopy,
-                selectedObject: objectsCopy[action.payload.object._id.$oid],
+                selectedObject: objectsCopy[action.payload.object._id],
             }
 
         case UPDATE_OBJECT:
             objectsCopy = deepCopy(state.objects)
-            objectsCopy[action.payload.object._id.$oid] = action.payload.object
+            objectsCopy[action.payload.object._id] = action.payload.object
 
             if (state.selectedObject !== null) {
                 return {
                     ...state,
                     objects: objectsCopy,
-                    selectedObject: objectsCopy[state.selectedObject._id.$oid]
+                    selectedObject: objectsCopy[state.selectedObject._id]
                 }
             } else {
                 return {
@@ -203,7 +203,7 @@ export default function objectsReducer(state = defaultState, action) {
                 return {
                     ...state,
                     objects: deepCopy(action.payload.objects),
-                    selectedObject: deepCopy(action.payload.objects[state.selectedObject._id.$oid])
+                    selectedObject: deepCopy(action.payload.objects[state.selectedObject._id])
                 }
             } else {
                 return {
@@ -227,7 +227,7 @@ export default function objectsReducer(state = defaultState, action) {
             objectsCopy = deepCopy(state.objects)
             objectsCopy = {
                 ...objectsCopy,
-                [state.selectedObject._id.$oid]: {
+                [state.selectedObject._id]: {
                     ...state.selectedObject,
                     ...action.payload,
                 }
@@ -237,7 +237,7 @@ export default function objectsReducer(state = defaultState, action) {
             return {
                 ...state,
                 objects: objectsCopy,
-                selectedObject: deepCopy(objectsCopy[state.selectedObject._id.$oid])
+                selectedObject: deepCopy(objectsCopy[state.selectedObject._id])
             }
 
 

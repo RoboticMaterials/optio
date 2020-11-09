@@ -108,14 +108,23 @@ export const removeLocation = (location) => {
         children
     } = location
 
-    return async dispatch => {
-        dispatch(stationActions.removeStation(_id))
+    if (location.schema === 'station') {
 
-        children.forEach((child) => {
-            dispatch(positionActions.removePosition(child))
-        })
+        return async dispatch => {
+            dispatch(stationActions.removeStation(_id))
 
+            children.forEach((child) => {
+                dispatch(positionActions.removePosition(child))
+            })
+        }
     }
+
+    else if (location.schema === 'position') {
+        return async dispatch => {
+            dispatch(positionActions.removePosition(_id))
+        }
+    }
+
 }
 
 export const setLocationAttributes = (id, attr) => {
@@ -251,7 +260,7 @@ export const deleteLocationProcess = (props) => {
             //// Delete relevant tasks
             Object.values(tasks)
                 .filter(task => task.load.station == locationToDelete._id || task.unload.station == locationToDelete._id)
-                .forEach(async task => await dispatch(deleteTask(task._id.$oid)))
+                .forEach(async task => await dispatch(deleteTask(task._id)))
 
             // Delete Station
             await dispatch(deleteStation(locationToDelete._id))
@@ -264,7 +273,7 @@ export const deleteLocationProcess = (props) => {
             //// Delete Relevant tasks
             Object.values(tasks)
                 .filter(task => task.load.position == locationToDelete._id || task.unload.position == locationToDelete._id)
-                .forEach(task => dispatch(deleteTask(task._id.$oid)))
+                .forEach(task => dispatch(deleteTask(task._id)))
         }
 
         // If Device, delete the station_id attatched to the device as well

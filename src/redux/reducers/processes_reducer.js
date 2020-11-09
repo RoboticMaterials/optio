@@ -80,7 +80,7 @@ const processesReducer = (state = defaultState, action) => {
 
         case POST_PROCESSES_SUCCESS:
             processesClone = deepCopy(state.processes)
-            processesClone[action.payload._id.$oid] = action.payload
+            processesClone[action.payload._id] = action.payload
 
             return {
                 ...state,
@@ -114,7 +114,7 @@ const processesReducer = (state = defaultState, action) => {
                 ...state,
                 processes: {
                     ...state.processes,
-                    [action.payload._id.$oid]: action.payload
+                    [action.payload._id]: action.payload
                 },
                 pending: false
             }

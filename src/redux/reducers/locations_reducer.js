@@ -155,14 +155,21 @@ export default function locationsReducer(state = defaultState, action) {
 
 
         if (state.selectedLocation !== null && state.selectedLocation.schema == 'station') { // The updated station is the selected location
+
+            // This replaces the incoming station with the selected station
+            // This eliminates your edits being over written 
+            newStations[state.selectedLocation._id] = state.selectedLocation
+
             return {
                 ...state,
                 stations: newStations,
                 locations: filterLocations(newStations, positionsCopy),
-                selectedLocation: newStations[state.selectedLocation._id],
+                // selectedLocation: newStations[state.selectedLocation._id],
+                selectedLocation: state.selectedLocation,
                 pending: false
             }
         } else {
+
             return {
                 ...state,
                 stations: newStations,
@@ -307,11 +314,17 @@ export default function locationsReducer(state = defaultState, action) {
         })
 
         if (state.selectedLocation !== null && state.selectedLocation.schema == 'position') { // The updated position is the selected location
+
+            // This replaces the incoming position with the selected station
+            // This eliminates your edits being over written 
+            newPositions[state.selectedLocation._id] = state.selectedLocation
+
             return {
                 ...state,
                 positions: newPositions,
                 locations: filterLocations(stationsCopy, newPositions),
-                selectedLocation: newPositions[state.selectedLocation._id],
+                // selectedLocation: newPositions[state.selectedLocation._id],
+                selectedLocation: state.selectedLocation,
                 pending: false
             }
         } else {
@@ -350,6 +363,7 @@ export default function locationsReducer(state = defaultState, action) {
     }
 
     const removePosition = (id) => {
+
         stationsCopy = deepCopy(state.stations)
         positionsCopy = deepCopy(state.positions)
 

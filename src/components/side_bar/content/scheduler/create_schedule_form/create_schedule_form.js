@@ -61,9 +61,10 @@ const CreateScheduleForm = (props) => {
     const dispatch = useDispatch()
 
     const width = useSelector(state => state.sidebarReducer.width)
+    const currentMap = useSelector(state => state.mapReducer.currentMap)
     const isSmall = width < widthBreakPoint
 
-    const tasksArr = Object.values(tasks) // get copy of tasks as arr here instead of calling Object.values() multiple times
+    const tasksArr = Object.values(tasks).filter((task) => task.map_id === currentMap._id) // get copy of tasks as arr here instead of calling Object.values() multiple times
 
     const themeContext = useContext(ThemeContext)
 
@@ -83,8 +84,6 @@ const CreateScheduleForm = (props) => {
     * */
     const handleSubmit = async (values, formMode) => {
 
-        logger.log("Scheduler: handleSubmit called: values", values)
-
         // convert days_on from array of indices to object with the days as keys and values as either true or false
         const days_on = {}
         Object.values(daysOfTheWeek).forEach((day, ind, arr) => {
@@ -98,7 +97,8 @@ const CreateScheduleForm = (props) => {
             start_time,
             interval_on,
             time_interval,
-            stop_time
+            stop_time,
+            map_id
         } = values
 
         // eextract properties into new object for submission
@@ -111,6 +111,7 @@ const CreateScheduleForm = (props) => {
             interval_on: interval_on,
             time_interval: time_interval.format("HH:mm:ss"),
             stop_time: stop_time.format("HH:mm:ss"),
+            map_id: map_id,
         }
 
         // update existing object - PUT request
@@ -164,6 +165,7 @@ const CreateScheduleForm = (props) => {
                 schedule_on: selectedScheduleItem.schedule_on,
                 time_interval: selectedScheduleItem.time_interval ? moment(timeString24HrToDate(selectedScheduleItem.time_interval)) : nowTimeString,
                 interval_on: selectedScheduleItem.interval_on,
+                map_id: currentMap._id,
                 stop_time: selectedScheduleItem.stop_time ? moment(timeString24HrToDate(selectedScheduleItem.stop_time)) : nowTimeString,
                 name: selectedScheduleItem.name ? selectedScheduleItem.name : '',
                 selectedScheduleId: selectedScheduleItem.id,
@@ -193,7 +195,9 @@ const CreateScheduleForm = (props) => {
 
             // no schedule was found, return template
         } else {
-            return getScheduleItemTemplate()
+            let newScheduleTemplate = getScheduleItemTemplate()
+            newScheduleTemplate.map_id = currentMap._id
+            return newScheduleTemplate
         }
     }
 
@@ -320,7 +324,8 @@ const CreateScheduleForm = (props) => {
                                         pattern={null}
                                         name="task"
                                         options={tasksArr}
-                                        valueField={tasksArr.length > 0 ? "_id.$oid" : 'id'}
+                                        // valueField={tasksArr.length > 0 ? "_id.$oid" : 'id'}
+                                        valueField={tasksArr.length > 0 ? "_id" : 'id'}
                                         label={'Choose Task'}
                                         onDropdownOpen={() => {
                                             dispatch(getTasks())

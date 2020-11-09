@@ -100,7 +100,7 @@ function Position(props) {
                         } else {
                             type = 'push'
                         }
-                        onSetTaskAttributes(selectedTask._id.$oid, { unload, type })
+                        onSetTaskAttributes(selectedTask._id, { unload, type })
                     } else { // Otherwise assign the load position and clear the unload position (to define a new unload)
                         let load = deepCopy(selectedTask.load)
                         let unload = deepCopy(selectedTask.unload)
@@ -113,7 +113,7 @@ function Position(props) {
                         }
                         unload.position = null
                         unload.station = null
-                        onSetTaskAttributes(selectedTask._id.$oid, { load, unload, type })
+                        onSetTaskAttributes(selectedTask._id, { load, unload, type })
                     }
                 }
             }}

@@ -18,9 +18,12 @@ import { postSettings, getSettings } from '../../../../redux/actions/settings_ac
 import { postLocalSettings } from '../../../../redux/actions/local_actions'
 import { getStatus } from '../../../../redux/actions/status_actions'
 import { postStatus } from '../../../../api/status_api'
+import { setCurrentMap } from '../../../../redux/actions/map_actions'
 
 // Import Utils
 import { isEquivalent } from '../../../../methods/utils/utils'
+import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
+import * as taskActions from "../../../../redux/actions/tasks_actions";
 
 const Settings = () => {
 
@@ -28,14 +31,22 @@ const Settings = () => {
     const onPostSettings = (settings) => dispatch(postSettings(settings))
     const onGetSettings = () => dispatch(getSettings())
     const onPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const onSetCurrentMap = (map) => dispatch(setCurrentMap(map))
     const onGetStatus = () => dispatch(getStatus())
 
+    const mapReducer = useSelector(state => state.mapReducer)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
     const localSettings = useSelector(state => state.localReducer.localSettings)
     const status = useSelector(state => state.statusReducer.status)
 
+    const {
+        currentMap,
+        maps
+    } = mapReducer
+
     const [serverSettingsState, setServerSettingsState] = useState({})
     const [localSettingsState, setLocalSettingsState] = useState({})
+    const [mapSettingsState, setMapSettingsState] = useState(currentMap)
     const [mirUpdated, setMirUpdated] = useState(false)
 
     /**
@@ -102,6 +113,7 @@ const Settings = () => {
         // Sees if either settings have changed. If the state settigns and redux settings are different, then they've changed
         const localChange = isEquivalent(localSettingsState, localSettings)
         const serverChange = isEquivalent(serverSettingsState, serverSettings)
+        const mapChange = !isEquivalent(mapSettingsState, currentMap)
 
         if (!localChange) {
             await onPostLocalSettings(localSettingsState)
@@ -110,6 +122,11 @@ const Settings = () => {
         if (!serverChange) {
             delete serverSettingsState._id
             await onPostSettings(serverSettingsState)
+        }
+
+        if (mapChange) {
+            // await onPostLocalSettings(localSettingsState)
+            await onSetCurrentMap(mapSettingsState)
         }
 
         await onGetSettings()
@@ -257,12 +274,47 @@ const Settings = () => {
         )
     }
 
+    const CurrentMap = () => {
+        const selectedMap = maps.find((map) => map._id === localSettings.currentMapId)
+        return (
+            <styled.SettingContainer>
+
+
+                <styled.Header>Current Map</styled.Header>
+
+
+                <styled.RowContainer>
+                    <DropDownSearch
+                        placeholder="Select Map"
+                        label="Sound to be played upon arrival"
+                        labelField="name"
+                        valueField="_id"
+                        options={maps}
+                        values={selectedMap ? [selectedMap] : []}
+                        dropdownGap={5}
+                        noDataLabel="No matches found"
+                        closeOnSelect="true"
+                        onChange={values => {
+                            // update current map
+                            setMapSettingsState(values[0])
+                            // update current map in local storage
+                            handleUpdateLocalSettings({ currentMapId: values[0]._id })
+                        }}
+                        className="w-100"
+                    />
+                </styled.RowContainer>
+
+            </styled.SettingContainer>
+        )
+    }
+
     return (
         <styled.SettingsContainer>
             <ContentHeader content={'settings'} mode={'title'} saveEnabled={true} onClickSave={handleSumbitSettings} />
             {MirIp()}
             {APIAddress()}
             {MapViewEnabled()}
+            {CurrentMap()}
             {/* {TimeZone()} */}
         </styled.SettingsContainer>
     )

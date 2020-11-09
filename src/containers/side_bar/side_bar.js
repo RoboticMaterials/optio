@@ -116,9 +116,10 @@ const SideBar = (props) => {
             content = <LocationsContent />
             break
 
-        case '/objects':
-            content = <ObjectsContent />
-            break
+        // Commented out for now
+        // case '/objects':
+        //     content = <ObjectsContent />
+        //     break
 
         case '/processes':
             content = <ProcessesContent />
@@ -164,26 +165,29 @@ const SideBar = (props) => {
                 </span>
             </styled.SideBarOpenCloseButton>
 
-            <styled.SidebarWrapper mode={mode} style={{ width: showSideBar == true ? width : 0, display: "flex", }} open={showSideBar}>
+            {showSideBar &&
+                <styled.SidebarWrapper mode={mode} style={{ width: showSideBar == true ? width : 0, display: "flex", }} open={showSideBar}>
 
-                <SideBarSwitcher
-                    handleClickOutside={handleSideBarOpenCloseButtonClick}
-                    showSideBar={showSideBar}
-                />
+                    <SideBarSwitcher
+                        handleClickOutside={handleSideBarOpenCloseButtonClick}
+                        showSideBar={showSideBar}
+                    />
 
-                <styled.SidebarContent
-                    key="sidebar-content"
-                    style={{}}
-                >
-                    {content}
+                    <styled.SidebarContent
+                        key="sidebar-content"
+                        style={{}}
+                    >
+                        {content}
 
-                    <DraggableCore key="handle" onDrag={handleDrag} >
-                        <styled.ResizeBar>
-                            <styled.ResizeHandle content={mode}></styled.ResizeHandle>
-                        </styled.ResizeBar>
-                    </DraggableCore>
-                </styled.SidebarContent>
-            </styled.SidebarWrapper>
+                        <DraggableCore key="handle" onDrag={handleDrag} >
+                            <styled.ResizeBar>
+                                <styled.ResizeHandle content={mode}></styled.ResizeHandle>
+                            </styled.ResizeBar>
+                        </DraggableCore>
+                    </styled.SidebarContent>
+                </styled.SidebarWrapper>
+            }
+
 
             {handleActiveButton()}
         </>

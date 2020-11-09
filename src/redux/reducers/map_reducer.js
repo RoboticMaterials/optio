@@ -9,7 +9,8 @@ import {
     GET_MAP_SUCCESS,
     GET_MAP_FAILURE,
 
-    SET_MAP_ATTRIBUTES
+    SET_MAP_ATTRIBUTES,
+    SET_CURRENT_MAP
 } from '../types/map_types'
 
 import { object } from 'yup';
@@ -18,7 +19,7 @@ import { deepCopy } from '../../methods/utils/utils'
 
 const defaultState = {
     maps: [],
-    currentMap: null,
+    currentMap: {},
 
     error: {},
     pending: false
@@ -103,6 +104,12 @@ export default function mapReducer(state=defaultState, action) {
             return {
                 ...state,
                 currentMap: currentMapCopy
+            }
+
+        case SET_CURRENT_MAP:
+            return {
+                ...state,
+                currentMap: action.payload
             }
 
 
