@@ -148,6 +148,35 @@ const EditTask = (props) => {
                         className="w-100"
                         schema="tasks" />
                 </div>
+
+                {selectedTask.device_type === 'MiR_100' &&
+                    <>
+                        <styled.Header>Idle Location</styled.Header>
+                        <DropDownSearch
+                            placeholder="Select Location"
+                            label="Idle Location for MiR Cart"
+                            labelField="name"
+                            valueField="name"
+                            options={Object.values(positions)}
+                            values={Object.values(positions).filter(position => position.name == 'Select Location')}
+                            dropdownGap={5}
+                            noDataLabel="No matches found"
+                            closeOnSelect="true"
+                            onChange={values => {
+
+                                const idleLocation = values[0]._id
+
+                                onSetSelectedTask({
+                                    ...selectedTask,
+                                    idle_location: idleLocation,
+                                })
+                            }}
+                            className="w-100"
+                            schema="tasks" />
+                    </>
+                }
+
+
             </>
         )
     }
@@ -399,9 +428,11 @@ const EditTask = (props) => {
                 return objects[selectedTask.obj]
             }
 
+            // Else if its a process and the last route in that process has an object, use that object as the default
             else if (selectedProcess.routes.length > 0 && !!tasks[selectedProcess.routes[selectedProcess.routes.length - 1]].obj) {
                 return objects[tasks[selectedProcess.routes[selectedProcess.routes.length - 1]].obj]
             }
+
             else {
                 return null
             }
@@ -462,8 +493,9 @@ const EditTask = (props) => {
                 </>
             }
 
+            {/* Commented out for now, will posibly re-introduce later */}
             {/* Pull VS Push */}
-            <div style={{ display: 'flex', flexDirection: 'row', flexGrow: '1', marginTop: '1rem' }}>
+            {/* <div style={{ display: 'flex', flexDirection: 'row', flexGrow: '1', marginTop: '1rem' }}>
                 <Button schema={'tasks'} style={{ height: '1.8rem', fontSize: '1rem', flexGrow: '1' }}
                     onClick={() => { // If the shift key is pressed and the other button is pressed, change type to 'both'
                         if (shift && selectedTask.type == 'pull') {
@@ -490,13 +522,14 @@ const EditTask = (props) => {
                     A push task will be called by the user at the load location; while a pull task will be called
                 by the user at the unload location. To have the task display at both stations <b>Shift-Click</b>.
             </styled.HelpText>
-            }
+            } */}
 
             {/* Load and Unload Parameters */}
             <div style={{ height: "100%", paddingTop: "1rem" }}>
                 {handleLoadUnloadParameters()}
             </div>
 
+            <hr />
             {/* Delete Task Button */}
             <Button
                 schema={'tasks'}
