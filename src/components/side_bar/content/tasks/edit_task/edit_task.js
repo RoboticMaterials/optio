@@ -255,7 +255,7 @@ const EditTask = (props) => {
             // 1 robot task and 1 human task
             // This allows for the ability for humans to do the task and seperates statistics between typs
             if (selectedTask.device_type === 'MiR_100') {
-                
+
                 const newID = uuid.v4()
 
                 const humanTask = {
@@ -346,7 +346,7 @@ const EditTask = (props) => {
 
             }
 
-            
+
 
             // Else its just a plain jane task
             else {
@@ -381,12 +381,40 @@ const EditTask = (props) => {
         toggleEditing(false)                            // No longer editing
     }
 
+    const handleObject = () => {
+
+        // If not selected process, then set it to the selected task if the task has an object
+        if (!selectedProcess) {
+            if (!!selectedTask && !!selectedTask.obj) {
+                return objects[selectedTask.obj]
+            } else {
+                return null
+            }
+        }
+
+        // Else, it's part of a process
+        else {
+            // If the selected task already has a object, set it to that
+            if (!!selectedTask && !!selectedTask.obj) {
+                return objects[selectedTask.obj]
+            }
+
+            else if (selectedProcess.routes.length > 0 && !!tasks[selectedProcess.routes[selectedProcess.routes.length - 1]].obj) {
+                return objects[tasks[selectedProcess.routes[selectedProcess.routes.length - 1]].obj]
+            }
+            else {
+                return null
+            }
+        }
+
+    }
+
     return (
         <styled.ContentContainer>
             <div style={{ marginBottom: '1rem' }}>
                 <ContentHeader
                     content={'tasks'}
-                    mode={(!!isProcessTask && selectedTask.new) ?  'add' : 'create'}
+                    mode={(!!isProcessTask && selectedTask.new) ? 'add' : 'create'}
                     // Disables the button if load and unloads have not been selected for a task/route in a process
                     disabled={selectedTask !== null && (!selectedTask.load.position || selectedTask.unload.position === null)}
                     onClickSave={async () => {
@@ -415,11 +443,11 @@ const EditTask = (props) => {
                 <>
                     <TextBoxSearch
                         placeholder="Object"
-                        label={obj._id == undefined ? "New object will be created" : null}
+                        label={obj._id === undefined ? "New object will be created" : null}
                         labelField="name"
                         valueField="name"
                         options={Object.values(objects).filter((obj) => obj.map_id === currentMap._id)}
-                        defaultValue={!!selectedTask && !!selectedTask.obj ? objects[selectedTask.obj] : null}
+                        defaultValue={handleObject()}
                         textboxGap={0}
                         closeOnSelect="true"
                         onChange={(values) => setObject(values[0])}
