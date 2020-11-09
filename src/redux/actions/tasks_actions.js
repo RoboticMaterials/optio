@@ -125,7 +125,6 @@ export const postTask = (task) => {
                 delete task.new
             }
             const newTask = await api.postTask(task);
-            console.log('QQQQ New Task', newTask)
             return onSuccess(newTask);
         } catch (error) {
             return onError(error);

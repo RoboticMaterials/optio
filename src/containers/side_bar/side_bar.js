@@ -160,9 +160,10 @@ const SideBar = (props) => {
             content = <LocationsContent />
             break
 
-        case 'objects':
-            content = <ObjectsContent />
-            break
+        // Commented out for now
+        // case '/objects':
+        //     content = <ObjectsContent />
+        //     break
 
         case 'processes':
             if(subpage === "card")   {

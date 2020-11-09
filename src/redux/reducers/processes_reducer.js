@@ -114,7 +114,7 @@ const processesReducer = (state = defaultState, action) => {
                 ...state,
                 processes: {
                     ...state.processes,
-                    [action.payload._id.$oid]: action.payload
+                    [action.payload._id]: action.payload
                 },
                 pending: false
             }
