@@ -61,7 +61,8 @@ const SideBarSwitcher = (props) => {
                 currentMode={url}
             />
 
-            <SideBarButton
+            {/* Commented out for now, probably going to delete */}
+            {/* <SideBarButton
                 mode={'objects'}
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
@@ -70,7 +71,7 @@ const SideBarSwitcher = (props) => {
                     dispatch(deselectTask())
                 }}
                 currentMode={url}
-            />
+            /> */}
 
             <SideBarButton
                 mode={'scheduler'}

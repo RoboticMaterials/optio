@@ -229,15 +229,19 @@ const EditTask = (props) => {
         let objectId
         if ('name' in obj) {
             if (obj._id == undefined) { // If the object does not currently exist, make a new one
-                const postedObject = await dispatch(objectActions.postObject({
+                const newObject = {
                     name: obj.name,
                     description: "",
                     modelName: "",
-                    dimensions: null
-                }))
-                objectId = postedObject._id.$oid
+                    dimensions: null,
+                    map_id: currentMap._id,
+                    _id: uuid.v4(),
+                }
+                dispatch(objectActions.postObject(newObject))
+
+                objectId = newObject._id
             } else { //  Otherwise just set the task obj to the existing obj
-                objectId = obj._id.$oid
+                objectId = obj._id
             }
         }
 
@@ -270,19 +274,20 @@ const EditTask = (props) => {
                 console.log('QQQQ Human task', humanTask)
                 console.log('QQQQ Device task', deviceTask)
 
-                await dispatch(taskActions.postTask(deviceTask))
-                await dispatch(taskActions.postTask(humanTask))
+                dispatch(taskActions.postTask(deviceTask))
+                dispatch(taskActions.postTask(humanTask))
 
                 // Temp fix for a weird issue with redux and posting tasks to fast
-                setTimeout(onGetTasks(), 500)
+                // setTimeout(onGetTasks(), 500)
 
             }
             else {
-                await dispatch(taskActions.postTask(selectedTask))
+                console.log('QQQQ human task', deepCopy(selectedTask))
+                dispatch(taskActions.postTask(selectedTask))
 
             }
 
-            dispatch(taskActions.removeTask(selectedTask._id)) // Remove the temporary task from the local copy of tasks
+            // dispatch(taskActions.removeTask(selectedTask._id)) // Remove the temporary task from the local copy of tasks
 
         } else {    // If task is not new, PUT
             taskId = selectedTask._id
@@ -346,6 +351,7 @@ const EditTask = (props) => {
 
             // Else its just a plain jane task
             else {
+                console.log('QQQQ plaine jane')
                 await dispatch(taskActions.putTask(selectedTask, selectedTask._id))
             }
 
@@ -353,6 +359,7 @@ const EditTask = (props) => {
 
         // If this task is part of a process, then add the task to the selected process
         if (isProcessTask) {
+            console.log('QQQQ process task', deepCopy(selectedTask))
             onSetSelectedProcess({
                 ...selectedProcess,
                 routes: [...selectedProcess.routes, selectedTask._id]
@@ -384,7 +391,7 @@ const EditTask = (props) => {
                     content={'tasks'}
                     mode={!!isProcessTask ? 'add' : 'create'}
                     // Disables the button if load and unloads have not been selected for a task/route in a process
-                    disabled={!!isProcessTask && (!selectedTask.load.position || selectedTask.unload.position === null)}
+                    disabled={selectedTask !== null && (!selectedTask.load.position || selectedTask.unload.position === null)}
                     onClickSave={async () => {
                         await handleSave()
                     }}

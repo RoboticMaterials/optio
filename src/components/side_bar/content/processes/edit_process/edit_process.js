@@ -43,13 +43,13 @@ const EditProcess = (props) => {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
+    const currentMap = useSelector(state => state.mapReducer.currentMap)
 
     // State definitions
-    const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
     const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)  // Current task
     const [shift, setShift] = useState(false) // Is shift key pressed ?
     const [isTransportTask, setIsTransportTask] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
-    const [editingTask, setEditingTask] = useState(false)
+    const [editingTask, setEditingTask] = useState(false) // Used to tell if a task is being edited
     const [newRoute, setNewRoute] = useState(null)
 
     useEffect(() => {
@@ -59,7 +59,7 @@ const EditProcess = (props) => {
         }
     }, [])
 
-    const handleExecuteProcess = () => {
+    const handleExecuteProcessTask = () => {
         alert('Cool button eh? Well, its gonna be even cooler when we get it working!')
     }
 
@@ -80,13 +80,13 @@ const EditProcess = (props) => {
                     >
                         <styled.ListItemRect
                             onMouseEnter={() => {
-                                if (!selectedTask) {
+                                if (!selectedTask && !editingTask) {
                                     onSetSelectedTask(routeTask)
                                 }
 
                             }}
                             onMouseLeave={() => {
-                                if (selectedTask !== null && !selectedTask.new) {
+                                if (selectedTask !== null && !editingTask) {
                                     onDeselectTask()
                                 }
                             }}
@@ -106,7 +106,7 @@ const EditProcess = (props) => {
                         <styled.ListItemIcon
                             className='fas fa-play'
                             onClick={() => {
-                                handleExecuteProcess()
+                                handleExecuteProcessTask()
                             }}
                         />
 
@@ -117,8 +117,11 @@ const EditProcess = (props) => {
                             setSelectedTaskCopy={props => setSelectedTaskCopy(props)}
                             shift={shift}
                             isTransportTask={isTransportTask}
-                            toggleEditing={props => toggleEditing(props)}
                             isProcessTask={true}
+                            toggleEditing={(props) => {
+                                console.log('QQQQ editing props', props)
+                                setEditingTask(props)
+                            }}
                         />
                     }
                 </div>
@@ -144,8 +147,10 @@ const EditProcess = (props) => {
                                     type: 'push',
                                     quantity: 1,
                                     new: true,
-                                    // Makes the task/route a part of a 
-                                    process: selectedProcessCopy._id.$oid === '__NEW_PROCESS' ? true : selectedProcessCopy._id.$oid,
+                                    device_type: 'human',
+                                    map_id: currentMap._id,
+                                    // Makes the task/route a part of a process
+                                    process: selectedProcessCopy._id,
                                     load: {
                                         position: null,
                                         station: null,
@@ -163,6 +168,7 @@ const EditProcess = (props) => {
                                 onAddTask(newTask)
                                 setNewRoute(newTask)
                                 onSetSelectedTask(newTask)
+                                setEditingTask(true)
                             }}
                         >
                             Add Route
@@ -181,8 +187,12 @@ const EditProcess = (props) => {
                             }}
                             shift={shift}
                             isTransportTask={isTransportTask}
-                            toggleEditing={props => toggleEditing(props)}
                             isProcessTask={true}
+                            toggleEditing={(props) => {
+                                console.log('QQQQ editing props', props)
+                                setEditingTask(props)
+                            }}
+
                         />
                     </styled.TaskContainer>
                 }
@@ -196,22 +206,10 @@ const EditProcess = (props) => {
         onDeselectTask()
 
         // If the id is new then post 
-        if (selectedProcessCopy._id.$oid === '__NEW_PROCESS') {
+        if (selectedProcessCopy.new) {
 
-            // If it's a new process, need to post process and what for the new ID to come back, then add that ID to 
-            // the associated tasks
-            const newProcessPromise = onPostProcess(selectedProcess)
+            await onPostProcess(selectedProcess)
 
-            newProcessPromise.then(postedProcess => {
-                // Map through each associated route and add the process id
-                postedProcess.routes.map((route) => {
-                    let updatedTask = tasks[route]
-                    updatedTask.process = postedProcess._id.$oid
-                    const ID = deepCopy(updatedTask._id)
-                    onPutTask(updatedTask, ID)
-
-                })
-            })
         }
 
         // Else put
@@ -234,7 +232,7 @@ const EditProcess = (props) => {
 
     const handleDelete = async () => {
 
-        await onDeleteProcess(selectedProcessCopy._id.$oid)
+        await onDeleteProcess(selectedProcessCopy._id)
 
         onDeselectTask()
         onSetSelectedProcess(null)
@@ -249,7 +247,7 @@ const EditProcess = (props) => {
                 <ContentHeader
                     content={'processes'}
                     mode={'create'}
-                    disabled={!!selectedTask}
+                    disabled={!!selectedTask && !!editingTask}
                     onClickSave={() => {
                         handleSave()
                     }}
@@ -285,7 +283,7 @@ const EditProcess = (props) => {
             {/* Delete Task Button */}
             <Button
                 schema={'processes'}
-                disabled={!!selectedProcess && !!selectedProcess._id && selectedProcess._id.$oid == '__NEW_PROCESS'}
+                disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
                 style={{ marginBottom: '0rem' }}
                 secondary
                 onClick={() => {

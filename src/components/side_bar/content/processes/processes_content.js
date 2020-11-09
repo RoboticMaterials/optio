@@ -20,7 +20,9 @@ import * as dashboardActions from '../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../redux/actions/objects_actions'
 import { postTaskQueue } from '../../../../redux/actions/task_queue_actions'
 
+// Import Utils
 import { deepCopy } from '../../../../methods/utils/utils'
+import uuid from 'uuid'
 
 const ProcessesContent = () => {
 
@@ -72,7 +74,8 @@ const ProcessesContent = () => {
                 onPlus={() => {
                     const newProcess = {
                         name: '',
-                        _id: { $oid: '__NEW_PROCESS' },
+                        _id: uuid.v4(),
+                        new: true,
                         routes: [],
                     }
                     // TODO: May have to do this with processes

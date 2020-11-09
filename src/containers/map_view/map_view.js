@@ -592,7 +592,7 @@ export class MapView extends Component {
                                             if(position.map_id !== this.props.currentMap._id) return false
 
                                             // This filters positions when making a process
-                                            // If the process has routes, and you're adding a new rout, you should only be able to add a route starting at the last station
+                                            // If the process has routes, and you're adding a new route, you should only be able to add a route starting at the last station
                                             // This eliminates process with gaps between stations
                                             if (!!this.props.selectedTask && !!this.props.selectedProcess && this.props.selectedProcess.routes.length > 0 && this.props.selectedTask.load.position === null) {
 
