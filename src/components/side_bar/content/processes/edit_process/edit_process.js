@@ -19,6 +19,7 @@ import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 // Import Utils
 import { isEquivalent, deepCopy } from '../../../../../methods/utils/utils'
 import uuid from 'uuid'
+import {useHistory} from "react-router-dom";
 
 const EditProcess = (props) => {
 
@@ -29,6 +30,7 @@ const EditProcess = (props) => {
 
     } = props
 
+    const history = useHistory()
     const dispatch = useDispatch()
     const onSetSelectedTask = (task) => dispatch(setSelectedTask(task))
     const onAddTask = (task) => dispatch(addTask(task))
@@ -61,6 +63,11 @@ const EditProcess = (props) => {
 
     const handleExecuteProcess = () => {
         alert('Cool button eh? Well, its gonna be even cooler when we get it working!')
+    }
+
+    const goToCardPage = () => {
+        const currentPath = history.location.pathname
+        history.push(currentPath + '/' + selectedProcessCopy._id + "/card")
     }
 
     // Maps through the list of existing routes
@@ -293,6 +300,12 @@ const EditProcess = (props) => {
                 }}
             >
                 Delete
+            </Button>
+
+            <Button
+                onClick={goToCardPage}
+            >
+                View Card
             </Button>
 
         </styled.Container>

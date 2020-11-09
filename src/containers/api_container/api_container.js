@@ -94,8 +94,8 @@ const ApiContainer = (props) => {
         // this interval is always on
         // loads essential info used on every page such as status and taskQueue
 
-        const criticalDataInterval = setInterval(() => loadCriticalData(), 500);
-        const mapDataInterval = setInterval(() => loadMapData(), 3000)
+        const criticalDataInterval = setInterval(() => loadCriticalData(), 50000);
+        const mapDataInterval = setInterval(() => loadMapData(), 30000)
         return () => {
             // clear intervals
             clearInterval(pageDataInterval);
@@ -167,19 +167,19 @@ const ApiContainer = (props) => {
         switch (pageName) {
 
             case 'objects':
-                pageDataInterval = setInterval(() => loadObjectsData(), 10000);
+                pageDataInterval = setInterval(() => loadObjectsData(), 100000);
                 break;
 
             case 'scheduler':
-                pageDataInterval = setInterval(() => loadSchedulerData(), 10000);
+                pageDataInterval = setInterval(() => loadSchedulerData(), 100000);
                 break;
 
             case 'dashboards':
-                pageDataInterval = setInterval(() => loadDashboardsData(), 10000);
+                pageDataInterval = setInterval(() => loadDashboardsData(), 100000);
                 break;
 
             case 'tasks':
-                pageDataInterval = setInterval(() => loadTasksData(), 10000);
+                pageDataInterval = setInterval(() => loadTasksData(), 100000);
                 break;
 
             case 'settings':
@@ -187,7 +187,7 @@ const ApiContainer = (props) => {
                 break;
 
             case 'more':
-                pageDataInterval = setInterval(() => loadMoreData(), 10000);
+                pageDataInterval = setInterval(() => loadMoreData(), 100000);
                 break;
 
             default:

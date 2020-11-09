@@ -130,15 +130,24 @@ const App = (props) => {
                                         dashboardOpen ?
                                             <></>
                                             :
-                                            <SideBar
-                                                showSideBar={showSideBar}
-                                                setShowSideBar={setShowSideBar}
-                                            />
+
+                                            <Route
+                                                path={["/:type?/:id?", '/']}
+                                            >
+                                                <SideBar
+                                                    showSideBar={showSideBar}
+                                                    setShowSideBar={setShowSideBar}
+                                                />
+                                            </Route>
                                         :
-                                        <SideBar
-                                            showSideBar={showSideBar}
-                                            setShowSideBar={setShowSideBar}
-                                        />
+                                            <Route
+                                                path={["/:page?/:id?/:subpage?", '/']}
+                                            >
+                                                <SideBar
+                                                    showSideBar={showSideBar}
+                                                    setShowSideBar={setShowSideBar}
+                                                />
+                                            </Route>
                                         :
                                         <></>
                                     }

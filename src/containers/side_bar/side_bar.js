@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
-import { useLocation } from 'react-router-dom'
+import {useLocation, useParams} from 'react-router-dom'
 import { useHistory } from 'react-router-dom'
 
 import * as styled from './side_bar.style'
@@ -21,6 +21,7 @@ import Settings from '../../components/side_bar/content/settings/settings'
 
 import { setWidth, setMode } from "../../redux/actions/sidebar_actions";
 import * as sidebarActions from "../../redux/actions/sidebar_actions"
+import Cards from "../../components/side_bar/content/cards/cards";
 
 const SideBar = (props) => {
 
@@ -29,11 +30,22 @@ const SideBar = (props) => {
         setShowSideBar
     } = props
 
+    let params = useParams()
+    const {
+        page,
+        subpage,
+        id
+    } = params
+
+    console.log("params",params)
+
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
 
     const [width, setWidth] = useState(450)
+    const [prevWidth, setPrevWidth] = useState(width)
     const [buttonActive, setButtonActive] = useState(false)
+    const [prevParams, setPrevParams] = useState(params)
 
     const mode = useSelector(state => state.sidebarReducer.mode)
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
@@ -55,6 +67,38 @@ const SideBar = (props) => {
             window.removeEventListener('resize', boundToWindowSize, {passive:true})
         }
     }, [])
+
+    // sets width to full screen if card subpage is open in processes
+    useEffect(() => {
+        const {
+
+        } = prevParams
+
+        const prevPage = prevParams.page
+        const prevSubpage = prevParams.subpage
+        const prevId = prevParams.id
+
+
+        const time = Date.now()
+        console.log("params",params,time)
+        console.log("prevParams",prevParams,time)
+
+        if(page === "processes" && (subpage === "card")) {
+            console.log(1)
+            setPrevWidth(width) // store previous width to restore when card page is left
+            setWidth(window.innerWidth)
+        }
+        else if((prevSubpage === "card" && prevPage === "processes") && (subpage !== "card") ) {
+            console.log(2)
+            setWidth(prevWidth)
+        }
+
+        // update prev params
+        setPrevParams(params)
+
+        return () => {}
+
+    }, [page, subpage, id])
 
     /**
      * Handles the hamburger icon transformation
@@ -111,32 +155,38 @@ const SideBar = (props) => {
     }
 
     let content
-    switch (url) {
-        case '/locations':
+    switch (page) {
+        case 'locations':
             content = <LocationsContent />
             break
 
-        case '/objects':
+        case 'objects':
             content = <ObjectsContent />
             break
 
-        case '/processes':
-            content = <ProcessesContent />
+        case 'processes':
+            if(subpage === "card")   {
+                content = <Cards id={id}/>
+            }
+            else {
+                content = <ProcessesContent subpage={subpage} id={id} />
+            }
+
             break
 
-        case '/tasks':
+        case 'tasks':
             content = <TasksContent />
             break
 
-        case '/scheduler':
+        case 'scheduler':
             content = <SchedulerContent />
             break
 
-        case '/devices':
+        case 'devices':
             content = <DevicesContent />
             break
 
-        case '/settings':
+        case 'settings':
             content = <Settings />
             break
 
