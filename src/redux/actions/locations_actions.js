@@ -139,6 +139,7 @@ export const selectLocation = (id) => {
 }
 
 export const setSelectedLocation = (location) => {
+    console.log('QQQQ setting this location', location)
     return { type: SET_SELECTED_LOCATION, payload: { location } }
 }
 
