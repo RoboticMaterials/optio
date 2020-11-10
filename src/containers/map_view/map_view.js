@@ -37,7 +37,7 @@ import Widgets from '../../components/widgets/widgets'
 
 // logging
 import log from "../../logger"
-import {setCurrentMap} from "../../redux/actions/map_actions";
+import { setCurrentMap } from "../../redux/actions/map_actions";
 
 const logger = log.getLogger("MapView")
 
@@ -85,27 +85,27 @@ export class MapView extends Component {
         // this.refreshMap()
         this.checkForMapLoad()
 
-        window.addEventListener('mousedown', () => this.mouseDown = true, {passive:false})
-        window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, {passive:false})
+        window.addEventListener('mousedown', () => this.mouseDown = true, { passive: false })
+        window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, { passive: false })
 
         // Event listener that will recalculate the map geometry when the screen size changes
         window.addEventListener('resize', () => {
             this.calculateD3Geometry()
             this.bindZoomListener()
-        }, {passive:false})
+        }, { passive: false })
     }
 
     checkForMapLoad = () => {
         const defaultMap = this.props.maps.find((map) => map._id === this.props.currentMapId)
-        if(this.props.currentMapId && this.props.currentMap._id) {
-            if(this.props.currentMapId !== this.props.currentMap._id) {
+        if (this.props.currentMapId && this.props.currentMap._id) {
+            if (this.props.currentMapId !== this.props.currentMap._id) {
                 this.props.onSetCurrentMap(defaultMap)
             }
 
-        } else if(this.props.currentMapId) {
+        } else if (this.props.currentMapId) {
             this.props.onSetCurrentMap(defaultMap)
 
-        } else if(this.props.currentMap && this.props.currentMap._id) {
+        } else if (this.props.currentMap && this.props.currentMap._id) {
             // do nothing
         } else {
             this.props.onSetCurrentMap(this.props.maps[0])
@@ -146,7 +146,7 @@ export class MapView extends Component {
             document.removeEventListener("dragend", this.validateNewLocation)
         } else {
             // reattach event listeners if necessary
-            document.addEventListener('dragend', this.validateNewLocation, {capture:false, passive:true});
+            document.addEventListener('dragend', this.validateNewLocation, { capture: false, passive: true });
         }
 
         // if (this.props.currentMap != null && !isEquivalent(prevProps.locations, this.props.locations)) {
@@ -589,23 +589,27 @@ export class MapView extends Component {
 
                                         .filter(position => {
                                             // remove positions not associated with current map
-                                            if(position.map_id !== this.props.currentMap._id) return false
+                                            if (position.map_id !== this.props.currentMap._id) return false
 
                                             // This filters positions when making a process
                                             // If the process has routes, and you're adding a new route, you should only be able to add a route starting at the last station
                                             // This eliminates process with gaps between stations
                                             if (!!this.props.selectedTask && !!this.props.selectedProcess && this.props.selectedProcess.routes.length > 0 && this.props.selectedTask.load.position === null) {
-
                                                 // Gets the last route in the routes array
                                                 const previousRoute = this.props.selectedProcess.routes[this.props.selectedProcess.routes.length - 1]
 
                                                 const previousTask = this.props.tasks[previousRoute]
 
                                                 if (!!previousTask.unload) {
+
                                                     const unloadStationID = previousTask.unload.station
                                                     const unloadStation = this.props.locations[unloadStationID]
+                                                    console.log('QQQQ should be showing something', unloadStation)
 
-                                                    if (unloadStation.children.includes(position._id)) return true
+                                                    if (unloadStation.children.includes(position._id)) {
+                                                        return true
+
+                                                    }
                                                 }
 
                                                 // return true

@@ -323,7 +323,12 @@ const CreateScheduleForm = (props) => {
                                     <DropDownSearchField
                                         pattern={null}
                                         name="task"
-                                        options={tasksArr}
+                                        options={tasksArr
+                                            // Filters outs any tasks that don't belong to the current map
+                                            .filter(task => task.map_id === currentMap._id)
+                                            // Filter outs any human tasks that have associated tasks (AKA it only shows the associated device task)
+                                            .filter(task => !task.associated_task || (!!task.associated_task && task.device_type !== 'human'))
+                                        }
                                         // valueField={tasksArr.length > 0 ? "_id.$oid" : 'id'}
                                         valueField={tasksArr.length > 0 ? "_id" : 'id'}
                                         label={'Choose Task'}

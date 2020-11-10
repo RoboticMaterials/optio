@@ -9,8 +9,6 @@ const defaultState = {
     pending: false
 };
 
-let index;
-
 export default function soundsReducer(state = defaultState, action) {
 
     switch (action.type) {
