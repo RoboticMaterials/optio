@@ -36,6 +36,7 @@ const EditProcess = (props) => {
     const onSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
     const onPutTask = (task, ID) => dispatch(putTask(task, ID))
     const onDeleteTask = (ID) => dispatch(deleteTask(ID))
+    const onPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
 
     const onPostProcess = async (process) => await dispatch(postProcesses(process))
     const onPutProcess = async (process) => await dispatch(putProcesses(process))
@@ -60,8 +61,9 @@ const EditProcess = (props) => {
         }
     }, [])
 
-    const handleExecuteProcessTask = () => {
-        alert('Cool button eh? Well, its gonna be even cooler when we get it working!')
+    const handleExecuteProcessTask = (route) => {
+        onPostTaskQueue({ task_id: route })
+
     }
 
     // Maps through the list of existing routes
@@ -108,7 +110,7 @@ const EditProcess = (props) => {
                         <styled.ListItemIcon
                             className='fas fa-play'
                             onClick={() => {
-                                handleExecuteProcessTask()
+                                handleExecuteProcessTask(route)
                             }}
                         />
 
