@@ -146,9 +146,13 @@ const EditTask = (props) => {
                         noDataLabel="No matches found"
                         closeOnSelect="true"
                         onChange={values => {
-                            let load = selectedTask.load
-                            load.sound = values[0]._id
-                            dispatch(taskActions.setTaskAttributes(selectedTask._id, { load }))
+                            onSetSelectedTask({
+                                ...selectedTask,
+                                load: {
+                                    ...selectedTask.load,
+                                    sound: values[0]._id,
+                                }
+                            })
                         }}
                         className="w-100"
                         schema="tasks" />
@@ -179,9 +183,15 @@ const EditTask = (props) => {
                         noDataLabel="No matches found"
                         closeOnSelect="true"
                         onChange={values => {
-                            let unload = selectedTask.unload
-                            unload.sound = values[0]._id
-                            dispatch(taskActions.setTaskAttributes(selectedTask._id, { unload }))
+
+                            onSetSelectedTask({
+                                ...selectedTask,
+                                unload: {
+                                    ...selectedTask.unload,
+                                    sound: values[0]._id,
+                                }
+                            })
+
                         }}
                         className="w-100"
                         schema="tasks" />
@@ -262,19 +272,18 @@ const EditTask = (props) => {
             }
             )
 
-        if (isProcessTask) {
-
+        if (!!isProcessTask) {
+            
             // Removes the task from the array of routes
-            const index = selectedProcess.routes.indexOf(selectedTask._id)
-            const newRoutes = selectedProcess.routes.splice(index, 1)
+            const copyProcess = deepCopy(selectedProcess)
+            const index = copyProcess.routes.indexOf(selectedTask._id)
+            copyProcess.routes.splice(index, 1)
 
             onSetSelectedProcess({
-                ...selectedProcess,
-                routes: [...newRoutes]
+                ...copyProcess,
             })
             onPutProcesses({
-                ...selectedProcess,
-                routes: [...newRoutes]
+                ...copyProcess,
             })
         }
 
