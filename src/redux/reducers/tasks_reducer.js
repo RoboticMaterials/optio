@@ -127,12 +127,12 @@ export default function tasksReducer(state = defaultState, action) {
             });
 
         case PUT_TASK_SUCCESS:
-            tasksCopy = deepCopy(state.tasks)
-            tasksCopy[action.payload._id] = action.payload
-
             return {
                 ...state,
-                tasks: tasksCopy
+                tasks: {
+                    ...state.tasks,
+                    [action.payload._id]: action.payload,
+                }
             }
 
         case PUT_TASK_FAILURE:

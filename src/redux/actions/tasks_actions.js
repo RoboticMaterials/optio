@@ -152,7 +152,7 @@ export const putTask = (task, ID) => {
         try {
             onStart();
             let taskCopy = deepCopy(task)
-            delete taskCopy._id
+            // delete taskCopy._id
             const updateTask = await api.putTask(taskCopy, ID);
             return onSuccess(updateTask)
         } catch (error) {

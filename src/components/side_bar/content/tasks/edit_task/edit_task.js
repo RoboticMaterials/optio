@@ -74,7 +74,6 @@ const EditTask = (props) => {
                                 // Just setting this to MiR100 for now. Need to expand in the future for other devices
                                 device_type: device_type
                             })
-                            // handleUpdateLocalSettings({ non_local_api: !localSettings.non_local_api })
                         }}
                         onColor='red'
                         style={{ marginRight: '1rem' }}
@@ -149,6 +148,35 @@ const EditTask = (props) => {
                         className="w-100"
                         schema="tasks" />
                 </div>
+
+                {selectedTask.device_type === 'MiR_100' &&
+                    <>
+                        <styled.Header>Idle Location</styled.Header>
+                        <DropDownSearch
+                            placeholder="Select Location"
+                            label="Idle Location for MiR Cart"
+                            labelField="name"
+                            valueField="name"
+                            options={Object.values(positions)}
+                            values={Object.values(positions).filter(position => position.name == 'Select Location')}
+                            dropdownGap={5}
+                            noDataLabel="No matches found"
+                            closeOnSelect="true"
+                            onChange={values => {
+
+                                const idleLocation = values[0]._id
+
+                                onSetSelectedTask({
+                                    ...selectedTask,
+                                    idle_location: idleLocation,
+                                })
+                            }}
+                            className="w-100"
+                            schema="tasks" />
+                    </>
+                }
+
+
             </>
         )
     }
@@ -256,7 +284,7 @@ const EditTask = (props) => {
             // 1 robot task and 1 human task
             // This allows for the ability for humans to do the task and seperates statistics between typs
             if (selectedTask.device_type === 'MiR_100') {
-                
+
                 const newID = uuid.v4()
 
                 const humanTask = {
@@ -347,19 +375,17 @@ const EditTask = (props) => {
 
             }
 
-            
+
 
             // Else its just a plain jane task
             else {
-                console.log('QQQQ plaine jane')
                 await dispatch(taskActions.putTask(selectedTask, selectedTask._id))
             }
 
         }
 
-        // If this task is part of a process, then add the task to the selected process
-        if (isProcessTask) {
-            console.log('QQQQ process task', deepCopy(selectedTask))
+        // If this task is part of a process and not already in the array of routes, then add the task to the selected process
+        if (isProcessTask && !selectedProcess.routes.includes(selectedTask._id)) {
             onSetSelectedProcess({
                 ...selectedProcess,
                 routes: [...selectedProcess.routes, selectedTask._id]
@@ -377,11 +403,41 @@ const EditTask = (props) => {
         if (!!selectedTask.new) {
             dispatch(taskActions.removeTask(selectedTask._id))   // If the task is new, simply remove it from the local copy of tasks
         } else {
-            dispatch(taskActions.updateTask(selectedTaskCopy))  // Else, revert the task back to the copy we saved when user started editing
+            dispatch(taskActions.updateTask(selectedTask))  // Else, revert the task back to the copy we saved when user started editing
         }
         dispatch(taskActions.deselectTask())    // Deselect
         setSelectedTaskCopy(null)                   // Reset the local copy to null
         toggleEditing(false)                            // No longer editing
+    }
+
+    const handleObject = () => {
+
+        // If not selected process, then set it to the selected task if the task has an object
+        if (!selectedProcess) {
+            if (!!selectedTask && !!selectedTask.obj) {
+                return objects[selectedTask.obj]
+            } else {
+                return null
+            }
+        }
+
+        // Else, it's part of a process
+        else {
+            // If the selected task already has a object, set it to that
+            if (!!selectedTask && !!selectedTask.obj) {
+                return objects[selectedTask.obj]
+            }
+
+            // Else if its a process and the last route in that process has an object, use that object as the default
+            else if (selectedProcess.routes.length > 0 && !!tasks[selectedProcess.routes[selectedProcess.routes.length - 1]].obj) {
+                return objects[tasks[selectedProcess.routes[selectedProcess.routes.length - 1]].obj]
+            }
+
+            else {
+                return null
+            }
+        }
+
     }
 
     return (
@@ -389,7 +445,7 @@ const EditTask = (props) => {
             <div style={{ marginBottom: '1rem' }}>
                 <ContentHeader
                     content={'tasks'}
-                    mode={!!isProcessTask ? 'add' : 'create'}
+                    mode={(!!isProcessTask && selectedTask.new) ? 'add' : 'create'}
                     // Disables the button if load and unloads have not been selected for a task/route in a process
                     disabled={selectedTask !== null && (!selectedTask.load.position || selectedTask.unload.position === null)}
                     onClickSave={async () => {
@@ -418,11 +474,11 @@ const EditTask = (props) => {
                 <>
                     <TextBoxSearch
                         placeholder="Object"
-                        label={obj._id == undefined ? "New object will be created" : null}
+                        label={obj._id === undefined ? "New object will be created" : null}
                         labelField="name"
                         valueField="name"
                         options={Object.values(objects).filter((obj) => obj.map_id === currentMap._id)}
-                        defaultValue={!!selectedTask && !!selectedTask.obj ? objects[selectedTask.obj] : null}
+                        defaultValue={handleObject()}
                         textboxGap={0}
                         closeOnSelect="true"
                         onChange={(values) => setObject(values[0])}
@@ -437,8 +493,9 @@ const EditTask = (props) => {
                 </>
             }
 
+            {/* Commented out for now, will posibly re-introduce later */}
             {/* Pull VS Push */}
-            <div style={{ display: 'flex', flexDirection: 'row', flexGrow: '1', marginTop: '1rem' }}>
+            {/* <div style={{ display: 'flex', flexDirection: 'row', flexGrow: '1', marginTop: '1rem' }}>
                 <Button schema={'tasks'} style={{ height: '1.8rem', fontSize: '1rem', flexGrow: '1' }}
                     onClick={() => { // If the shift key is pressed and the other button is pressed, change type to 'both'
                         if (shift && selectedTask.type == 'pull') {
@@ -465,13 +522,14 @@ const EditTask = (props) => {
                     A push task will be called by the user at the load location; while a pull task will be called
                 by the user at the unload location. To have the task display at both stations <b>Shift-Click</b>.
             </styled.HelpText>
-            }
+            } */}
 
             {/* Load and Unload Parameters */}
             <div style={{ height: "100%", paddingTop: "1rem" }}>
                 {handleLoadUnloadParameters()}
             </div>
 
+            <hr />
             {/* Delete Task Button */}
             <Button
                 schema={'tasks'}
