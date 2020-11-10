@@ -35,8 +35,9 @@ const ScheduleListItem = (props) => {
 		time_interval,
 		interval_on,
 		stop_time,
-        start_time
-        
+    start_time,
+		next_time,
+
 	} = props
 
 

@@ -70,6 +70,7 @@ const ScheduleList = (props) => {
             start_time: scheduleItem.start_time,
             time_interval: scheduleItem.time_interval,
             stop_time: scheduleItem.stop_time,
+            next_time: scheduleItem.next_time,
         }
 
         dispatch(putSchedule(scheduleItem.id, submitItem))
@@ -80,7 +81,7 @@ const ScheduleList = (props) => {
     * */
     const renderTasks = () => {
         let fullSchedulesArr = Object.values(schedules).filter((item) => item.map_id === currentMap._id)
-
+        console.log(props)
         return (
             <styled.TaskListContainer>
                 {fullSchedulesArr.length > 0 ?
@@ -95,6 +96,7 @@ const ScheduleList = (props) => {
                             stop_time_on,
                             task_id,
                             time_interval,
+                            next_time,
                             _id: {$oid: id}
                         } = item
 
@@ -137,6 +139,7 @@ const ScheduleList = (props) => {
                                 onClick={openSchedule}
                                 disabled={taskIsDeleted || (item.task_id === 'TEMP_NEW_SCHEDULE_ID') || (item.task_id === 'DEFAULT_TASK_ID')}
                                 error={error}
+                                next_time={next_time}
                             />
                         );
                     })
