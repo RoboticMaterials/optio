@@ -56,12 +56,18 @@ const HILModals = (props) => {
     // Use Effect for when page loads, handles wether the HIL is a load or unload
     useEffect(() => {
         // If the task's load location of the task q item matches the item's location then its a load hil, else its unload
-        if (tasks[item.task_id].load.location === item.hil_station_id) {
+        if (tasks[item.task_id].load.station === item.hil_station_id) {
             // load
             setHilLoadUnload('load')
         } else {
             // unload
             setHilLoadUnload('unload')
+        }
+
+        if(item.quantity){
+            setQuantity(item.quantity)
+        } else {
+            setQuantity(0)
         }
 
     }, [])
@@ -74,7 +80,7 @@ const HILModals = (props) => {
         let newItem = {
             ...item,
             hil_response: true,
-            
+            quantity: quantity,
         }
 
         // Deletes the dashboard id from active list for the hil that has been responded too
@@ -90,7 +96,7 @@ const HILModals = (props) => {
 
         await onPutTaskQueue(newItem, ID)
 
-        handleLogEvent()
+        // handleLogEvent()
     }
 
     // Posts HIL Postpone to API
@@ -104,7 +110,7 @@ const HILModals = (props) => {
 
         let newItem = {
             ...item,
-            hil_response: true
+            hil_response: false
         }
         delete newItem._id
         await putTaskQueueItem(newItem, taskQueueID)
@@ -122,6 +128,12 @@ const HILModals = (props) => {
         const task = item.task_id
         const object = task.obj
         const station = item.hil_station_id
+
+        // let quantity = 0
+        // if(!!item.quantity){
+        //     quantity = item.quantity
+        // }
+
         const quantity = item.quantity
 
         let incoming = ''
@@ -173,7 +185,8 @@ const HILModals = (props) => {
         <styled.HilContainer >
             <styled.HilBorderContainer >
                 <styled.HilMessage>{hilMessage}</styled.HilMessage>
-                {!!hilTimers[item._id.$oid] &&
+                {/* Only Showing timers on load at the moment, will probably change in the future */}
+                {!!hilTimers[item._id.$oid] && hilLoadUnload === 'load' &&
                     <styled.HilTimer>{hilTimers[item._id.$oid]}</styled.HilTimer>
                 }
 
@@ -188,7 +201,9 @@ const HILModals = (props) => {
 
                         <styled.HilInput
                             type="number"
-                            onChange={(qty) => setQuantity(qty)}
+                            onChange={(e) => {
+                                setQuantity(e.target.value)
+                            }}
                             value={quantity}
                         />
 

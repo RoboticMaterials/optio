@@ -45,7 +45,7 @@ import log from '../../../../../logger'
 const logger = log.getLogger("CreateScheduleForm", "Scheduler")
 logger.setLevel("silent")
 
-const widthBreakPoint =  525
+const widthBreakPoint = 525
 
 const CreateScheduleForm = (props) => {
 
@@ -104,7 +104,7 @@ const CreateScheduleForm = (props) => {
 
         // eextract properties into new object for submission
         const submitItem = {
-            task_id: task[0]?._id?.$oid,
+            task_id: task[0]?._id,
             days_on,
             name: name,
             schedule_on: schedule_on,
@@ -146,7 +146,7 @@ const CreateScheduleForm = (props) => {
         logger.log("getInitialValues selectedScheduleId", selectedScheduleId)
 
         // get initial values from schedule
-        if(selectedScheduleItem) {
+        if (selectedScheduleItem) {
 
             // convert days_on from object to array of indices (required for button group)
             const days_on = []
@@ -179,17 +179,17 @@ const CreateScheduleForm = (props) => {
                     // set task property to reflect this
                     selectedScheduleItem.task_id == 'TASK DELETED' ?
                         [{
-                            _id: {
-                                $oid: "TASK DELETED"
-                            },
+                            _id:
+                                "TASK DELETED"
+                            ,
                             name: 'TASK DELETED'
                         }]
                         :
                         // NO task, and task id isn't deleted, set set to default value that will prevent the dropdownsearch from throwing an error
                         [{
-                            _id: {
-                                $oid: "TEMP_NEW_SCHEDULE_ID"
-                            },
+                            _id:
+                                "TEMP_NEW_SCHEDULE_ID"
+                            ,
                             name: ''
                         }],
             }
@@ -298,9 +298,9 @@ const CreateScheduleForm = (props) => {
                                 content={'scheduler'}
                                 mode={'create'}
                                 onClickBack={hideScheduleCreator}
-                                onClickSave={() => formikProps.submitForm() }
+                                onClickSave={() => formikProps.submitForm()}
                                 disabled={submitDisabled}
-                                // Need to figure out how to submit formik using this method. No internet atm so this'll have to wait
+                            // Need to figure out how to submit formik using this method. No internet atm so this'll have to wait
 
                             />
 

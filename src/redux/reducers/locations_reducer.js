@@ -146,15 +146,18 @@ export default function locationsReducer(state = defaultState, action) {
             // If the station exists in the backend and frontend, take the new stations, but assign local x and y
             if (oldStation._id in newStations) {
                 Object.assign(newStations[oldStation._id], { x: oldStation.x, y: oldStation.y })
-            } else { // If the station is not in the backend, it is either deleted or new
+            } 
+            else { // If the station is not in the backend, it is either deleted or new
                 if (oldStation.new == true) { // If new, add it to the pulled stations
                     newStations[oldStation._id] = oldStation
                 }
             }
+
+            
         })
 
 
-        if (state.selectedLocation !== null && state.selectedLocation.schema == 'station') { // The updated station is the selected location
+        if (state.selectedLocation !== null && state.selectedLocation.schema === 'station') { // The updated station is the selected location
 
             // This replaces the incoming station with the selected station
             // This eliminates your edits being over written 
@@ -176,16 +179,6 @@ export default function locationsReducer(state = defaultState, action) {
                 locations: filterLocations(newStations, positionsCopy),
                 pending: false
             }
-        }
-    }
-
-    const setStationsNew = (stations) => {
-
-        if (!isEquivalent(stations, state.locations)) {
-            stationsCopy = deepCopy(stations)
-            positionsCopy = state.positions
-
-            Object.keys()
         }
     }
 
@@ -313,7 +306,7 @@ export default function locationsReducer(state = defaultState, action) {
             }
         })
 
-        if (state.selectedLocation !== null && state.selectedLocation.schema == 'position') { // The updated position is the selected location
+        if (state.selectedLocation !== null && state.selectedLocation.schema === 'position') { // The updated position is the selected location
 
             // This replaces the incoming position with the selected station
             // This eliminates your edits being over written 
@@ -327,7 +320,27 @@ export default function locationsReducer(state = defaultState, action) {
                 selectedLocation: state.selectedLocation,
                 pending: false
             }
-        } else {
+        }
+
+        else if (state.selectedLocation !== null && state.selectedLocation.schema === 'station') {
+
+            Object.values(newPositions).forEach(position => {
+
+                if (state.selectedLocation.children.includes(position._id)) {
+                    newPositions[position._id] = state.positions[position._id]
+                }
+            })
+
+            return {
+                ...state,
+                positions: newPositions,
+                locations: filterLocations(stationsCopy, newPositions),
+                pending: false
+            }
+
+        }
+
+        else {
             return {
                 ...state,
                 positions: newPositions,

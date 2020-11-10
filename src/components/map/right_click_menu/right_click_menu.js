@@ -39,17 +39,18 @@ const RightClickMenu = (props) => {
     const onSetSelectedLocation = (loc) => dispath(setSelectedLocation(loc))
     
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
-
+    const currentMap = useSelector(state => state.mapReducer.currentMap)
 
 
     const handleSendCartToLocation = async() => {
-
+        console.log('QQQQ Here')
         const pos = convertD3ToReal([coords.x, coords.y], d3)
 
         const tempSelectedLocation = {
             name: 'TempRightClickMoveLocation',
             schema: 'position',
             type: 'cart_position',
+            map_id: currentMap._id,
             pos_x: pos[0],
             pos_y: pos[1],
             rotation: 0,

@@ -9,6 +9,12 @@ import Button from '../../../../basic/button/button'
 import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
 import TextBoxSearch from '../../../../basic/textbox_search/textbox_search'
 import Switch from 'react-ios-switch';
+// import TimePicker from '../../../../basic/time_picker/TimePicker'
+import moment from 'moment';
+
+// import TimePickerField from '../../../../basic/form/time_picker_field/time_picker_field';
+
+import TimePicker from 'rc-time-picker';
 
 import ContentList from '../../content_list/content_list'
 
@@ -58,6 +64,13 @@ const EditTask = (props) => {
 
     const [obj, setObject] = useState({}) // The current object (may or may not be on backend, but if not it will be posted when task is saved)
 
+    useEffect(() => {
+        console.log('QQQQ Selected Task', selectedTask)
+        return () => {
+
+        }
+    }, [])
+
 
     const loadUnloadFields = () => {
         return (
@@ -83,7 +96,32 @@ const EditTask = (props) => {
                 <styled.HelpText>Do you want a robot to perform this task? If selected, there will be an option for a person to take over the task when the button is placed onto the dashboard.</styled.HelpText>
 
 
-                <styled.Header>Load</styled.Header>
+                <styled.RowContainer>
+
+                    <styled.Header>Load</styled.Header>
+                    <TimePicker
+                        // format={'mm:ss'}
+                        style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                        showHour={false}
+                        className="xxx"
+                        allowEmpty={false}
+                        defaultOpenValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
+                        defaultValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
+                        onChange={(time) => {
+                            console.log('QQQQ Time', time.format("mm:ss"))
+                            onSetSelectedTask({
+                                ...selectedTask,
+                                load: {
+                                    ...selectedTask.load,
+                                    timeout: time.format("mm:ss")
+                                }
+                            })
+                        }}
+
+                    />
+
+                </styled.RowContainer>
+
                 <Textbox
                     defaultValue={!!selectedTask && selectedTask.load.instructions}
                     schema={'tasks'}
@@ -102,8 +140,8 @@ const EditTask = (props) => {
                         label="Sound to be played upon arrival"
                         labelField="name"
                         valueField="name"
-                        options={sounds}
-                        values={sounds.filter(sound => sound.name == 'None')}
+                        options={Object.values(sounds)}
+                        values={!!selectedTask.load.sound ? [sounds[selectedTask.load.sound]] : []}
                         dropdownGap={5}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
@@ -135,8 +173,8 @@ const EditTask = (props) => {
                         label="Sound to be played upon arrival"
                         labelField="name"
                         valueField="name"
-                        options={sounds}
-                        values={sounds.filter(sound => sound.name == 'None')}
+                        options={Object.values(sounds)}
+                        values={!!selectedTask.unload.sound ? [sounds[selectedTask.unload.sound]] : []}
                         dropdownGap={5}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
@@ -148,6 +186,35 @@ const EditTask = (props) => {
                         className="w-100"
                         schema="tasks" />
                 </div>
+
+                {selectedTask.device_type === 'MiR_100' &&
+                    <>
+                        <styled.Header>Idle Location</styled.Header>
+                        <DropDownSearch
+                            placeholder="Select Location"
+                            label="Idle Location for MiR Cart"
+                            labelField="name"
+                            valueField="name"
+                            options={Object.values(positions)}
+                            values={!!selectedTask.idle_location ? [positions[selectedTask.idle_location]] : []}
+                            dropdownGap={5}
+                            noDataLabel="No matches found"
+                            closeOnSelect="true"
+                            onChange={values => {
+
+                                const idleLocation = values[0]._id
+
+                                onSetSelectedTask({
+                                    ...selectedTask,
+                                    idle_location: idleLocation,
+                                })
+                            }}
+                            className="w-100"
+                            schema="tasks" />
+                    </>
+                }
+
+
             </>
         )
     }
@@ -303,8 +370,8 @@ const EditTask = (props) => {
 
                 delete updatedHumanTask.associated_task
 
-                await dispatch(taskActions.putTask(updatedHumanTask, updatedHumanTask._id))
-                await onDeleteTask(selectedTask._id)
+                dispatch(taskActions.putTask(updatedHumanTask, updatedHumanTask._id))
+                onDeleteTask(selectedTask._id)
 
             }
 
@@ -317,8 +384,8 @@ const EditTask = (props) => {
                     _id: selectedTask.associated_task
                 }
 
-                await dispatch(taskActions.putTask(selectedTask, selectedTask._id))
-                await dispatch(taskActions.putTask(updatedAssociatedTask, selectedTask.associated_task))
+                dispatch(taskActions.putTask(selectedTask, selectedTask._id))
+                dispatch(taskActions.putTask(updatedAssociatedTask, selectedTask.associated_task))
 
             }
 
@@ -341,8 +408,8 @@ const EditTask = (props) => {
                     associated_task: newTask._id,
                 }
 
-                await dispatch(taskActions.putTask(updatedTask, selectedTask._id))
-                await dispatch(taskActions.postTask(newTask))
+                dispatch(taskActions.putTask(updatedTask, selectedTask._id))
+                dispatch(taskActions.postTask(newTask))
 
             }
 
@@ -350,7 +417,7 @@ const EditTask = (props) => {
 
             // Else its just a plain jane task
             else {
-                await dispatch(taskActions.putTask(selectedTask, selectedTask._id))
+                dispatch(taskActions.putTask(selectedTask, selectedTask._id))
             }
 
         }
@@ -399,9 +466,11 @@ const EditTask = (props) => {
                 return objects[selectedTask.obj]
             }
 
+            // Else if its a process and the last route in that process has an object, use that object as the default
             else if (selectedProcess.routes.length > 0 && !!tasks[selectedProcess.routes[selectedProcess.routes.length - 1]].obj) {
                 return objects[tasks[selectedProcess.routes[selectedProcess.routes.length - 1]].obj]
             }
+
             else {
                 return null
             }
@@ -462,8 +531,9 @@ const EditTask = (props) => {
                 </>
             }
 
+            {/* Commented out for now, will posibly re-introduce later */}
             {/* Pull VS Push */}
-            <div style={{ display: 'flex', flexDirection: 'row', flexGrow: '1', marginTop: '1rem' }}>
+            {/* <div style={{ display: 'flex', flexDirection: 'row', flexGrow: '1', marginTop: '1rem' }}>
                 <Button schema={'tasks'} style={{ height: '1.8rem', fontSize: '1rem', flexGrow: '1' }}
                     onClick={() => { // If the shift key is pressed and the other button is pressed, change type to 'both'
                         if (shift && selectedTask.type == 'pull') {
@@ -490,13 +560,14 @@ const EditTask = (props) => {
                     A push task will be called by the user at the load location; while a pull task will be called
                 by the user at the unload location. To have the task display at both stations <b>Shift-Click</b>.
             </styled.HelpText>
-            }
+            } */}
 
             {/* Load and Unload Parameters */}
             <div style={{ height: "100%", paddingTop: "1rem" }}>
                 {handleLoadUnloadParameters()}
             </div>
 
+            <hr />
             {/* Delete Task Button */}
             <Button
                 schema={'tasks'}

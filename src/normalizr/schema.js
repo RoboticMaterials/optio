@@ -73,7 +73,7 @@ export const eventsSchema = new schema.Entity(
 )
 
 
-// schedule schema
+// process schema
 export const processSchema = new schema.Entity(
     // key
     'processes',
@@ -92,3 +92,24 @@ export const processSchema = new schema.Entity(
 );
 
 export const processesSchema = [processSchema]
+
+
+// sounds schema
+export const soundSchema = new schema.Entity(
+    // key
+    'sounds',
+    // definition
+    {
+        //condition: conditionSchema
+    },
+    // options
+    {
+        idAttribute: (value, parent, key) => {
+            return value._id
+        },
+
+    },
+
+);
+
+export const soundsSchema = [soundSchema]

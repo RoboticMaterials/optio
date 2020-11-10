@@ -71,6 +71,7 @@ const EditProcess = (props) => {
 
             const routeTask = tasks[route]
             if (routeTask === undefined) {
+                console.log('QQQQ undefined')
                 return
             }
 
@@ -112,7 +113,7 @@ const EditProcess = (props) => {
                         />
 
                     </styled.ListItem>
-                    {editingTask && isEquivalent(routeTask, selectedTask) &&
+                    {editingTask && selectedTask._id === route &&
                         <EditTask
                             selectedTaskCopy={selectedTaskCopy}
                             setSelectedTaskCopy={props => setSelectedTaskCopy(props)}
@@ -149,13 +150,15 @@ const EditProcess = (props) => {
                                     new: true,
                                     device_type: 'human',
                                     map_id: currentMap._id,
+                                    idle_location: null,
                                     // Makes the task/route a part of a process
                                     process: selectedProcessCopy._id,
                                     load: {
                                         position: null,
                                         station: null,
                                         sound: null,
-                                        instructions: 'Load'
+                                        instructions: 'Load',
+                                        timeout: '01:00'
                                     },
                                     unload: {
                                         position: null,

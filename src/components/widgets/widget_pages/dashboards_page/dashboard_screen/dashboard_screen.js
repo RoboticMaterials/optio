@@ -1,5 +1,7 @@
 import React, { Component, useState, useEffect } from 'react';
 
+import { useHistory, useParams } from 'react-router-dom'
+
 // import external functions
 import { connect, useDispatch, useSelector } from 'react-redux';
 
@@ -44,14 +46,14 @@ const DashboardScreen = (props) => {
     const taskQueueApi = useSelector(state => { return state.apiReducer.taskQueueApi })
     const code409 = useSelector(state => { return state.taskQueueReducer.error })
 
-    const { buttons } = currentDashboard	// extract buttons from dashboard
-
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
 
     // actions
     const dispatch = useDispatch()
     const onDashboardOpen = (bol) => dispatch(dashboardOpen(bol))
+
+    const history = useHistory()
 
     /**
      * When a dashboard screen is loaded, tell redux that its open
@@ -66,6 +68,17 @@ const DashboardScreen = (props) => {
             onDashboardOpen(false)
         }
     }, [])
+
+    // If current dashboard is undefined, it probably has been deleted. So go back to locations just incase the station has been deleted too
+    if (currentDashboard === undefined) {
+        history.push(`/locations`)
+        return (
+            <>
+            </>
+        )
+    }
+
+    const { buttons } = currentDashboard	// extract buttons from dashboard
 
     // handles event of task click
     // creates an alert on the screen, and dispatches an action to update the task queue
