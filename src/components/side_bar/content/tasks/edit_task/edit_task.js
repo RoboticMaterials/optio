@@ -66,7 +66,6 @@ const EditTask = (props) => {
 
     useEffect(() => {
         console.log('QQQQ Selected Task', selectedTask)
-        console.log('QQQQ Sounds', sounds)
         return () => {
 
         }

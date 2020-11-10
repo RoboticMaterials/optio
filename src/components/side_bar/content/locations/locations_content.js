@@ -161,6 +161,10 @@ export default function LocationContent(props) {
                 child = positions[childID]
                 child.parent = locationID
                 if (child.new) { // If the position is new, post it and update its id in the location.children array
+
+                    console.log('QQQQ Deep Copy child', deepCopy(child))
+                    console.log('QQQQ Deep copy location', deepCopy(selectedLocation))
+
                     postPositionPromise = dispatch(positionActions.postPosition(child))
                     postPositionPromise.then(postedPosition => {
                         selectedLocation.children[ind] = postedPosition._id

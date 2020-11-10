@@ -154,7 +154,7 @@ export default function locationsReducer(state = defaultState, action) {
         })
 
 
-        if (state.selectedLocation !== null && state.selectedLocation.schema == 'station') { // The updated station is the selected location
+        if (state.selectedLocation !== null && state.selectedLocation.schema === 'station') { // The updated station is the selected location
 
             // This replaces the incoming station with the selected station
             // This eliminates your edits being over written 
@@ -176,16 +176,6 @@ export default function locationsReducer(state = defaultState, action) {
                 locations: filterLocations(newStations, positionsCopy),
                 pending: false
             }
-        }
-    }
-
-    const setStationsNew = (stations) => {
-
-        if (!isEquivalent(stations, state.locations)) {
-            stationsCopy = deepCopy(stations)
-            positionsCopy = state.positions
-
-            Object.keys()
         }
     }
 
@@ -313,7 +303,7 @@ export default function locationsReducer(state = defaultState, action) {
             }
         })
 
-        if (state.selectedLocation !== null && state.selectedLocation.schema == 'position') { // The updated position is the selected location
+        if (state.selectedLocation !== null && state.selectedLocation.schema === 'position') { // The updated position is the selected location
 
             // This replaces the incoming position with the selected station
             // This eliminates your edits being over written 
@@ -327,7 +317,29 @@ export default function locationsReducer(state = defaultState, action) {
                 selectedLocation: state.selectedLocation,
                 pending: false
             }
-        } else {
+        }
+
+        else if (state.selectedLocation !== null && state.selectedLocation.schema === 'station') {
+
+            console.log('QQQQ editing station', newPositions)
+
+            Object.values(newPositions).forEach(position => {
+
+                if (state.selectedLocation.children.includes(position._id)) {
+                    newPositions[position._id] = state.positions[position._id]
+                }
+            })
+
+            return {
+                ...state,
+                positions: newPositions,
+                locations: filterLocations(stationsCopy, newPositions),
+                pending: false
+            }
+
+        }
+
+        else {
             return {
                 ...state,
                 positions: newPositions,
