@@ -9,6 +9,12 @@ import Button from '../../../../basic/button/button'
 import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
 import TextBoxSearch from '../../../../basic/textbox_search/textbox_search'
 import Switch from 'react-ios-switch';
+// import TimePicker from '../../../../basic/time_picker/TimePicker'
+import moment from 'moment';
+
+// import TimePickerField from '../../../../basic/form/time_picker_field/time_picker_field';
+
+import TimePicker from 'rc-time-picker';
 
 import ContentList from '../../content_list/content_list'
 
@@ -58,6 +64,13 @@ const EditTask = (props) => {
 
     const [obj, setObject] = useState({}) // The current object (may or may not be on backend, but if not it will be posted when task is saved)
 
+    useEffect(() => {
+        console.log('QQQQ Selected Task', selectedTask)
+        return () => {
+
+        }
+    }, [])
+
 
     const loadUnloadFields = () => {
         return (
@@ -83,7 +96,32 @@ const EditTask = (props) => {
                 <styled.HelpText>Do you want a robot to perform this task? If selected, there will be an option for a person to take over the task when the button is placed onto the dashboard.</styled.HelpText>
 
 
-                <styled.Header>Load</styled.Header>
+                <styled.RowContainer>
+
+                    <styled.Header>Load</styled.Header>
+                    <TimePicker
+                        // format={'mm:ss'}
+                        style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                        showHour={false}
+                        className="xxx"
+                        allowEmpty={false}
+                        defaultOpenValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
+                        defaultValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
+                        onChange={(time) => {
+                            console.log('QQQQ Time', time.format("mm:ss"))
+                            onSetSelectedTask({
+                                ...selectedTask,
+                                load: {
+                                    ...selectedTask.load,
+                                    timeout: time.format("mm:ss")
+                                }
+                            })
+                        }}
+
+                    />
+
+                </styled.RowContainer>
+
                 <Textbox
                     defaultValue={!!selectedTask && selectedTask.load.instructions}
                     schema={'tasks'}
@@ -332,8 +370,8 @@ const EditTask = (props) => {
 
                 delete updatedHumanTask.associated_task
 
-                await dispatch(taskActions.putTask(updatedHumanTask, updatedHumanTask._id))
-                await onDeleteTask(selectedTask._id)
+                dispatch(taskActions.putTask(updatedHumanTask, updatedHumanTask._id))
+                onDeleteTask(selectedTask._id)
 
             }
 
@@ -346,8 +384,8 @@ const EditTask = (props) => {
                     _id: selectedTask.associated_task
                 }
 
-                await dispatch(taskActions.putTask(selectedTask, selectedTask._id))
-                await dispatch(taskActions.putTask(updatedAssociatedTask, selectedTask.associated_task))
+                dispatch(taskActions.putTask(selectedTask, selectedTask._id))
+                dispatch(taskActions.putTask(updatedAssociatedTask, selectedTask.associated_task))
 
             }
 
@@ -370,8 +408,8 @@ const EditTask = (props) => {
                     associated_task: newTask._id,
                 }
 
-                await dispatch(taskActions.putTask(updatedTask, selectedTask._id))
-                await dispatch(taskActions.postTask(newTask))
+                dispatch(taskActions.putTask(updatedTask, selectedTask._id))
+                dispatch(taskActions.postTask(newTask))
 
             }
 
@@ -379,7 +417,7 @@ const EditTask = (props) => {
 
             // Else its just a plain jane task
             else {
-                await dispatch(taskActions.putTask(selectedTask, selectedTask._id))
+                dispatch(taskActions.putTask(selectedTask, selectedTask._id))
             }
 
         }

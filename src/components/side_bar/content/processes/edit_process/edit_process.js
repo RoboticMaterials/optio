@@ -113,7 +113,7 @@ const EditProcess = (props) => {
                         />
 
                     </styled.ListItem>
-                    {editingTask && isEquivalent(routeTask, selectedTask) &&
+                    {editingTask && selectedTask._id === route &&
                         <EditTask
                             selectedTaskCopy={selectedTaskCopy}
                             setSelectedTaskCopy={props => setSelectedTaskCopy(props)}
@@ -157,7 +157,8 @@ const EditProcess = (props) => {
                                         position: null,
                                         station: null,
                                         sound: null,
-                                        instructions: 'Load'
+                                        instructions: 'Load',
+                                        timeout: '01:00'
                                     },
                                     unload: {
                                         position: null,

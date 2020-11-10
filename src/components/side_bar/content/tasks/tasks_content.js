@@ -133,7 +133,8 @@ export default function TaskContent(props) {
                             position: null,
                             station: null,
                             sound: null,
-                            instructions: 'Load'
+                            instructions: 'Load',
+                            timeout: '01:00'
                         },
                         unload: {
                             position: null,

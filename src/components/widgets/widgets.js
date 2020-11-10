@@ -145,11 +145,11 @@ const Widgets = (props) => {
                     currentPage={widgetPage}
                 /> */}
 
-                        <WidgetButton
+                        {/* <WidgetButton
                             id={stationID}
                             type={'objects'}
                             currentPage={widgetPage}
-                        />
+                        /> */}
 
                         {/* <WidgetButton
                     id={stationID}
