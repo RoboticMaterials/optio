@@ -604,7 +604,6 @@ export class MapView extends Component {
 
                                                     const unloadStationID = previousTask.unload.station
                                                     const unloadStation = this.props.locations[unloadStationID]
-                                                    console.log('QQQQ should be showing something', unloadStation)
 
                                                     if (unloadStation.children.includes(position._id)) {
                                                         return true

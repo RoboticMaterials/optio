@@ -290,12 +290,13 @@ const EditTask = (props) => {
         // If the selected task has an associated task, (usually and device and human task)
         // Delete the associated task
         if (!!selectedTask.associated_task) {
-            await dispatch(taskActions.deleteTask(selectedTask.associated_task));
+            dispatch(taskActions.deleteTask(selectedTask.associated_task));
         }
 
-        await dispatch(taskActions.deleteTask(selectedTask._id));
+        dispatch(taskActions.deleteTask(selectedTask._id));
 
-        dispatch(taskActions.deselectTask());
+        // dispatch(taskActions.deselectTask());
+        onSetSelectedTask(null)
         toggleEditing(false)
     }
 
@@ -329,7 +330,7 @@ const EditTask = (props) => {
 
             // If it's apart of a device, need to post 2 tasks and associate them with each other
             // 1 robot task and 1 human task
-            // This allows for the ability for humans to do the task and seperates statistics between typs
+            // This allows for the ability for humans to do the task and seperates statistics between types
             if (selectedTask.device_type === 'MiR_100') {
 
                 const newID = uuid.v4()
