@@ -66,6 +66,7 @@ const EditTask = (props) => {
 
     useEffect(() => {
         console.log('QQQQ Selected Task', selectedTask)
+        console.log('QQQQ Sounds', sounds)
         return () => {
 
         }
@@ -140,8 +141,8 @@ const EditTask = (props) => {
                         label="Sound to be played upon arrival"
                         labelField="name"
                         valueField="name"
-                        options={sounds}
-                        values={sounds.filter(sound => sound.name == 'None')}
+                        options={Object.values(sounds)}
+                        values={!!selectedTask.load.sound ? [sounds[selectedTask.load.sound]] : []}
                         dropdownGap={5}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
@@ -173,8 +174,8 @@ const EditTask = (props) => {
                         label="Sound to be played upon arrival"
                         labelField="name"
                         valueField="name"
-                        options={sounds}
-                        values={sounds.filter(sound => sound.name == 'None')}
+                        options={Object.values(sounds)}
+                        values={!!selectedTask.unload.sound ? [sounds[selectedTask.unload.sound]] : []}
                         dropdownGap={5}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
@@ -196,7 +197,7 @@ const EditTask = (props) => {
                             labelField="name"
                             valueField="name"
                             options={Object.values(positions)}
-                            values={Object.values(positions).filter(position => position.name == 'Select Location')}
+                            values={!!selectedTask.idle_location ? [positions[selectedTask.idle_location]] : []}
                             dropdownGap={5}
                             noDataLabel="No matches found"
                             closeOnSelect="true"
