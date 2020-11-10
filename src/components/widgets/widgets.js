@@ -288,7 +288,7 @@ const Widgets = (props) => {
                 }}
 
                 onMouseLeave={() => {
-                    if (!widgetPage && selectedLocation.name !== 'TempRightClickMoveLocation') {
+                    if (!widgetPage && !!selectedLocation && selectedLocation.name !== 'TempRightClickMoveLocation') {
                         onHoverStationInfo(null)
                         onDeselectLocation()
                     }
@@ -305,7 +305,7 @@ const Widgets = (props) => {
             >
 
                 {/* If not widget page and not a right click widget then add an invisable hover area */}
-                {!widgetPage && selectedLocation.name !== 'TempRightClickMoveLocation' &&
+                {!widgetPage && !!selectedLocation && selectedLocation.name !== 'TempRightClickMoveLocation' &&
                     <styled.WidgetHoverArea
                         hoverScale={hoveringInfo.realScale}
                         onMouseEnter={() => {

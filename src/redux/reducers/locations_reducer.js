@@ -146,11 +146,14 @@ export default function locationsReducer(state = defaultState, action) {
             // If the station exists in the backend and frontend, take the new stations, but assign local x and y
             if (oldStation._id in newStations) {
                 Object.assign(newStations[oldStation._id], { x: oldStation.x, y: oldStation.y })
-            } else { // If the station is not in the backend, it is either deleted or new
+            } 
+            else { // If the station is not in the backend, it is either deleted or new
                 if (oldStation.new == true) { // If new, add it to the pulled stations
                     newStations[oldStation._id] = oldStation
                 }
             }
+
+            
         })
 
 

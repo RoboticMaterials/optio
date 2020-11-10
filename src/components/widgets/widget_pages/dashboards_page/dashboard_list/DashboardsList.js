@@ -147,7 +147,11 @@ const DashboardsList = (props) => {
             )
         } else {
             const currDashboard = dashboardsArray[index]
-
+            if(currDashboard === undefined){
+                console.log('QQQQ Current station', station)
+                // console.log('QQQQ dashboards', dashboards)
+                return null
+            }
 
             // get dashboard properties
             let name = currDashboard.name
