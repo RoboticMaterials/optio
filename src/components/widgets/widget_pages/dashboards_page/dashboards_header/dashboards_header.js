@@ -5,6 +5,8 @@ import BounceButton from "../../../../basic/bounce_button/bounce_button";
 import BackButton from '../../../../basic/back_button/back_button'
 import Button from '../../../../basic/button/button'
 
+// Import hooks
+import useWindowSize from '../../../../../hooks/useWindowSize'
 
 // import external funcations
 import { ThemeContext } from "styled-components";
@@ -14,6 +16,8 @@ import { withRouter } from "react-router-dom";
 import { PAGES } from "../../../../../constants/dashboard_contants";
 
 import * as style from "./dashboards_header.style";
+
+const widthBreakPoint = 1000;
 
 const DashboardsHeader = (props) => {
 
@@ -38,6 +42,11 @@ const DashboardsHeader = (props) => {
     // extract url params
     const { stationID, dashboardID, editing } = props.match.params
 
+    const size = useWindowSize()
+    const windowWidth = size.width
+
+    const mobileMode = windowWidth < widthBreakPoint;
+
     // goes to main dashboards page
     const goToMainPage = () => {
         props.history.push(`/locations/${stationID}/dashboards`)
@@ -56,7 +65,7 @@ const DashboardsHeader = (props) => {
                 <style.Title style={{ order: '2' }}>{page}</style.Title>
             }
 
-            {showEditButton &&
+            {showEditButton && !mobileMode && 
                 <Button style={{ order: '3', marginTop: '1.8rem' }}
                     onClick={setEditingDashboard}
                 >
