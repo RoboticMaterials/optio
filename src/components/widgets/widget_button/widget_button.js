@@ -49,7 +49,6 @@ const WidgetButton = (props) => {
                                     rotation: selectedLocation.rotation,
                                 },
                                 device_type: 'MiR_100',
-
                             }
                         })
                         onWidgetLoaded(false)
@@ -62,8 +61,8 @@ const WidgetButton = (props) => {
                             custom_task: {
                                 type: 'position_move',
                                 position: id,
+                                device_type: 'MiR_100',
                             },
-                            device_type: 'MiR_100',
                         })
                     }
                 }
