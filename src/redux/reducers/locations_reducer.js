@@ -321,8 +321,6 @@ export default function locationsReducer(state = defaultState, action) {
 
         else if (state.selectedLocation !== null && state.selectedLocation.schema === 'station') {
 
-            console.log('QQQQ editing station', newPositions)
-
             Object.values(newPositions).forEach(position => {
 
                 if (state.selectedLocation.children.includes(position._id)) {
