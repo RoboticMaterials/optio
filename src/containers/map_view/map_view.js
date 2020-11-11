@@ -508,13 +508,14 @@ export class MapView extends Component {
 
                         >
                             {/* Foreign object allows an image to be put in the SVG container */}
-                            <foreignObject width='100%' height='100%' >
+                            <foreignObject width='200%' height='200%' >
                                 {!!this.props.currentMap &&
                                     <styled.MapImage ref={mi => (this.mapImage = mi)}
                                         tall={!!this.mapContainer && // Fixes the map sizing - cutoff issue
                                             this.mapContainer.getBoundingClientRect().height / this.naturalImageDimensions.height
                                             >
                                             this.mapContainer.getBoundingClientRect().width / this.naturalImageDimensions.width}
+
                                         src={'data:image/png;base64, ' + this.props.currentMap.map}
                                         onLoad={() => {
 
