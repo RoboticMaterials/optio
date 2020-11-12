@@ -450,14 +450,6 @@ export class MapView extends Component {
         if (this.props.currentMap == null) { return (<></>) }
         const { translate, scale } = this.d3;
 
-        // locations.filter()
-
-
-        // console.log(this.props.stations)
-        // console.log(this.props.locations)
-        // console.log(this.props.locations)
-        // console.log(this.props.selectedLocation)
-
         return (
             <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation} >
                 <styled.MapContainer ref={mc => (this.mapContainer = mc)} style={{ pointerEvents: this.widgetDraggable ? 'default' : 'none' }}>
