@@ -43,7 +43,6 @@ const RightClickMenu = (props) => {
 
 
     const handleSendCartToLocation = async() => {
-        console.log('QQQQ Here')
         const pos = convertD3ToReal([coords.x, coords.y], d3)
 
         const tempSelectedLocation = {

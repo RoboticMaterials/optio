@@ -108,7 +108,6 @@ const EditTask = (props) => {
                         defaultOpenValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
                         defaultValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
                         onChange={(time) => {
-                            console.log('QQQQ Time', time.format("mm:ss"))
                             onSetSelectedTask({
                                 ...selectedTask,
                                 load: {

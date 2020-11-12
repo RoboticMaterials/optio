@@ -176,14 +176,15 @@ export class MapView extends Component {
     dragNewEntity = e => {
         if (this.mouseDown == false || !this.props.selectedLocation) { return }
 
-        if (this.props.selectedLocation.temp == true) { //  Dragging current location onto the map
+        // TempRightClick... should not be moved here, this creates a weird rotation bug
+        if (this.props.selectedLocation.temp == true && this.props.selectedLocation.name !== "TempRightClickMoveLocation") { //  Dragging current location onto the map
             this.props.onSetLocationAttributes(this.props.selectedLocation._id, {
                 x: e.clientX,
                 y: e.clientY
             })
         } else {
             const draggingChild = Object.values(this.props.positions).find(position => position.temp == true)
-            if (!!draggingChild) {
+            if (!!draggingChild && this.props.selectedLocation.name !== "TempRightClickMoveLocation") {
                 this.props.onSetPositionAttributes(draggingChild._id, {
                     x: e.clientX,
                     y: e.clientY
@@ -195,7 +196,7 @@ export class MapView extends Component {
     validateNewEntity = () => {
         if (!this.props.selectedLocation) { return }
 
-        if (this.props.selectedLocation.temp == true) {
+        if (this.props.selectedLocation.temp == true && this.props.selectedLocation.name !== "TempRightClickMoveLocation") {
             const pos = convertD3ToReal([this.props.selectedLocation.x, this.props.selectedLocation.y], this.d3)
             this.props.onSetLocationAttributes(this.props.selectedLocation._id, {
                 pos_x: pos[0],
