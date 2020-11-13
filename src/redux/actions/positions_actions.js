@@ -84,13 +84,14 @@ export const postPosition = (position) => {
                 position._id = uuid.v4()
             }
 
-            if (position.rotation > 180) {
-                position.rotation = position.rotation - 360
-            }
+            // Was used for a bug that didnt exit
+            // if (position.rotation > 180) {
+            //     position.rotation = position.rotation - 360
+            // }
 
-            else if (position.rotation < -180) {
-                position.rotation = position.rotation + 360
-            }
+            // else if (position.rotation < -180) {
+            //     position.rotation = position.rotation + 360
+            // }
 
             delete position.temp
             delete position.new
@@ -126,15 +127,15 @@ export const putPosition = (position, ID) => {
             delete positionCopy._id
             delete positionCopy.temp
 
-            if (position.rotation > 180) {
-                position.rotation = position.rotation - 360
-            }
+            // Was used for a bug that didnt exit
+            // if (position.rotation > 180) {
+            //     position.rotation = position.rotation - 360
+            // }
 
-            else if (position.rotation < -180) {
-                position.rotation = position.rotation + 360
-            }
+            // else if (position.rotation < -180) {
+            //     position.rotation = position.rotation + 360
+            // }
 
-            console.log('QQQQ changing position', position)
 
             // Tells the backend that a position has changed
             positionCopy.change_key = 'changed'

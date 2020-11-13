@@ -162,6 +162,7 @@ export default function locationsReducer(state = defaultState, action) {
             // This replaces the incoming station with the selected station
             // This eliminates your edits being over written 
             newStations[state.selectedLocation._id] = state.selectedLocation
+            console.log('QQQQ station')
 
             return {
                 ...state,
