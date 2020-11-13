@@ -206,3 +206,24 @@ export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
     return widgetInfo
 
 }
+
+export const locationsSortedAlphabetically = (locations) => {
+
+    let sortedLocations = []
+
+    locations.map((location, ind) => {
+
+        // If the index is 0 its the first element in the array so it cant be compared to the element for it
+        if(ind === 0) {
+            sortedLocations.push(location)
+        }
+
+        else if(location.name < locations[ind-1].name) {
+            
+        }
+    })
+
+
+    console.log('QQQQ locations', locations)
+    return locations
+}

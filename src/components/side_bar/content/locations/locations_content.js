@@ -28,7 +28,7 @@ import * as taskActions from '../../../../redux/actions/tasks_actions'
 // Import Utils
 import { setAction } from '../../../../redux/actions/sidebar_actions'
 import { deepCopy } from '../../../../methods/utils/utils'
-import { LocationTypes } from '../../../../methods/utils/locations_utils'
+import { LocationTypes, locationsSortedAlphabetically } from '../../../../methods/utils/locations_utils'
 
 import uuid from 'uuid'
 
@@ -428,7 +428,7 @@ export default function LocationContent(props) {
                 schema={'locations'}
                 // Filters out devices from being displayed in locations
                 elements={
-                    Object.values(locations)
+                    locationsSortedAlphabetically(Object.values(locations))
                     // Filters out devices, entry positions, other positions and right click to move positions
                     .filter(location => !location.parent && location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.name !== 'TempRightClickMoveLocation' && (location.map_id === currentMap._id))
                     .sort()
