@@ -128,6 +128,7 @@ export const removeLocation = (location) => {
 }
 
 export const setLocationAttributes = (id, attr) => {
+    console.log('QQQQ att', id, attr)
     return async dispatch => {
         dispatch(stationActions.setStationAttributes(id, attr))
         dispatch(positionActions.setPositionAttributes(id, attr))
@@ -139,7 +140,6 @@ export const selectLocation = (id) => {
 }
 
 export const setSelectedLocation = (location) => {
-    console.log('QQQQ setting this location', location)
     return { type: SET_SELECTED_LOCATION, payload: { location } }
 }
 

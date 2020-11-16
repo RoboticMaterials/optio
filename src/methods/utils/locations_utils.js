@@ -2,6 +2,9 @@ import React from 'react'
 
 import { useDispatch, useSelector } from 'react-redux'
 
+// Import utils
+import { deepCopy } from './utils'
+
 // Import Actions
 import { putDevices, postDevices, getDevices, deleteDevices } from '../../redux/actions/devices_actions'
 import * as locationActions from '../../redux/actions/locations_actions'
@@ -209,21 +212,16 @@ export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
 
 export const locationsSortedAlphabetically = (locations) => {
 
-    let sortedLocations = []
+    const locationsCopy = deepCopy(locations)
 
-    locations.map((location, ind) => {
+    locationsCopy.sort((a,b) => {
+        const aName = a.name
+        const bName = b.name
 
-        // If the index is 0 its the first element in the array so it cant be compared to the element for it
-        if(ind === 0) {
-            sortedLocations.push(location)
-        }
-
-        else if(location.name < locations[ind-1].name) {
-            
-        }
+        if(aName < bName) return -1
+        if(aName > bName) return 1
+        return 0
     })
 
-
-    console.log('QQQQ locations', locations)
-    return locations
+    return locationsCopy
 }

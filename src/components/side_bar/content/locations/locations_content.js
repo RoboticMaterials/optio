@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import * as styled from './locations_content.style'
 import { useSelector, useDispatch } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom'
@@ -59,7 +59,7 @@ function locationTypeGraphic(type, isNotSelected) {
 }
 
 // This adds a location selected info to the reducer
-export default function LocationContent(props) {
+export default function LocationContent() {
 
     const dispatch = useDispatch()
     const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
@@ -126,6 +126,13 @@ export default function LocationContent(props) {
     }
 
     useEffect(() => {
+        return () => {
+
+        }
+    }, [])
+
+    useEffect(() => {
+
         if (selectedLocationCopy === null) {
             toggleEditing(false)
 
@@ -164,7 +171,6 @@ export default function LocationContent(props) {
 
                     dispatch(positionActions.postPosition(child))
                     selectedLocation.children[ind] = child._id
-                    
                     dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
 
                 } else { //  If the position is not new, just update it
@@ -429,9 +435,8 @@ export default function LocationContent(props) {
                 // Filters out devices from being displayed in locations
                 elements={
                     locationsSortedAlphabetically(Object.values(locations))
-                    // Filters out devices, entry positions, other positions and right click to move positions
-                    .filter(location => !location.parent && location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.name !== 'TempRightClickMoveLocation' && (location.map_id === currentMap._id))
-                    .sort()
+                        // Filters out devices, entry positions, other positions and right click to move positions
+                        .filter(location => !location.parent && location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.name !== 'TempRightClickMoveLocation' && (location.map_id === currentMap._id))
                 }
                 // elements={Object.values(locations)}
                 onMouseEnter={(location) => dispatch(locationActions.selectLocation(location._id))}
