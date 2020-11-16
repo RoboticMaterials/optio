@@ -108,7 +108,6 @@ const EditTask = (props) => {
                         defaultOpenValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
                         defaultValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
                         onChange={(time) => {
-                            console.log('QQQQ Time', time.format("mm:ss"))
                             onSetSelectedTask({
                                 ...selectedTask,
                                 load: {
@@ -146,9 +145,13 @@ const EditTask = (props) => {
                         noDataLabel="No matches found"
                         closeOnSelect="true"
                         onChange={values => {
-                            let load = selectedTask.load
-                            load.sound = values[0]._id
-                            dispatch(taskActions.setTaskAttributes(selectedTask._id, { load }))
+                            onSetSelectedTask({
+                                ...selectedTask,
+                                load: {
+                                    ...selectedTask.load,
+                                    sound: values[0]._id,
+                                }
+                            })
                         }}
                         className="w-100"
                         schema="tasks" />
@@ -179,9 +182,15 @@ const EditTask = (props) => {
                         noDataLabel="No matches found"
                         closeOnSelect="true"
                         onChange={values => {
-                            let unload = selectedTask.unload
-                            unload.sound = values[0]._id
-                            dispatch(taskActions.setTaskAttributes(selectedTask._id, { unload }))
+
+                            onSetSelectedTask({
+                                ...selectedTask,
+                                unload: {
+                                    ...selectedTask.unload,
+                                    sound: values[0]._id,
+                                }
+                            })
+
                         }}
                         className="w-100"
                         schema="tasks" />
@@ -262,31 +271,31 @@ const EditTask = (props) => {
             }
             )
 
-        if (isProcessTask) {
-
+        if (!!isProcessTask) {
+            
             // Removes the task from the array of routes
-            const index = selectedProcess.routes.indexOf(selectedTask._id)
-            const newRoutes = selectedProcess.routes.splice(index, 1)
+            const copyProcess = deepCopy(selectedProcess)
+            const index = copyProcess.routes.indexOf(selectedTask._id)
+            copyProcess.routes.splice(index, 1)
 
             onSetSelectedProcess({
-                ...selectedProcess,
-                routes: [...newRoutes]
+                ...copyProcess,
             })
             onPutProcesses({
-                ...selectedProcess,
-                routes: [...newRoutes]
+                ...copyProcess,
             })
         }
 
         // If the selected task has an associated task, (usually and device and human task)
         // Delete the associated task
         if (!!selectedTask.associated_task) {
-            await dispatch(taskActions.deleteTask(selectedTask.associated_task));
+            dispatch(taskActions.deleteTask(selectedTask.associated_task));
         }
 
-        await dispatch(taskActions.deleteTask(selectedTask._id));
+        dispatch(taskActions.deleteTask(selectedTask._id));
 
-        dispatch(taskActions.deselectTask());
+        // dispatch(taskActions.deselectTask());
+        onSetSelectedTask(null)
         toggleEditing(false)
     }
 
@@ -320,7 +329,7 @@ const EditTask = (props) => {
 
             // If it's apart of a device, need to post 2 tasks and associate them with each other
             // 1 robot task and 1 human task
-            // This allows for the ability for humans to do the task and seperates statistics between typs
+            // This allows for the ability for humans to do the task and seperates statistics between types
             if (selectedTask.device_type === 'MiR_100') {
 
                 const newID = uuid.v4()

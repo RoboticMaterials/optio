@@ -19,7 +19,6 @@ export async function getMaps() {
 
     const data = response.data;
     const dataJson = JSON.parse(data);
-    logger.debug('getMaps: dataJson', dataJson);
 
     return dataJson;
 
