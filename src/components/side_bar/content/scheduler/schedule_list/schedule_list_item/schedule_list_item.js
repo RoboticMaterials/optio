@@ -46,7 +46,6 @@ const ScheduleListItem = (props) => {
 
 	const width = useSelector(state => state.sidebarReducer.width)
 	const isSmall = width < widthBreakPoint
-
 	const hasError = Object.keys(error).length > 0
 	const errorMessage = getMessageFromError(error)
 
