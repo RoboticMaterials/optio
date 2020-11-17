@@ -125,7 +125,7 @@ const DashboardScreen = (props) => {
         >
             <DashboardsHeader
                 showTitle={false}
-                showBackButton={true}
+                showBackButton={false}
                 showEditButton={true}
                 showSidebar={showSidebar}
                 setShowSidebar={setShowSidebar}

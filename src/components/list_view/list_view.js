@@ -2,11 +2,11 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import {Route, useHistory} from 'react-router-dom'
-import PropTypes from "prop-types";
 
 // components
 import DashboardsPage from "../widgets/widget_pages/dashboards_page/dashboards_page";
 import Settings from "../side_bar/content/settings/settings";
+import LocationList from './location_list/location_list'
 import BounceButton from "../basic/bounce_button/bounce_button";
 
 // styles
@@ -32,74 +32,19 @@ const SCREENS = {
     },
 }
 
-const LocationList = (props) => {
-    const {
-        onMouseEnter,
-        onMouseLeave,
-        onLocationClick
-
-    } = props
-
-    const locations = useSelector(state => state.locationsReducer.stations)
-    const locationsArr = Object.values(locations)
-
-    return(
-            <styled.ListScrollContainer>
-                {locationsArr.length > 0 ?
-                    locationsArr.map((item, index, arr) => {
-                        const {
-                            name,
-
-
-                        } = item
-
-                        return (
-                            <styled.ListItem
-                                key={`li-${index}`}
-                                onMouseEnter={() => onMouseEnter(item)}
-                                onMouseLeave={() => onMouseLeave(item)}
-                            >
-                                <styled.ListItemRect>
-                                    <styled.ListItemTitle schema={"locations"} onClick={() => onLocationClick(item)}>{name}</styled.ListItemTitle>
-                                </styled.ListItemRect>
-
-                            </styled.ListItem>
-                        );
-                    })
-                    :
-                    <div></div>
-                }
-
-            </styled.ListScrollContainer>
-    )
-}
-
-LocationList.propTypes = {
-    onMouseEnter: PropTypes.func,
-    onMouseLeave: PropTypes.func,
-    onLocationClick: PropTypes.func,
-    onClick: PropTypes.func,
-    name: PropTypes.string,
-
-}
-
-LocationList.defaultProps = {
-    onMouseEnter: () => { },
-    onLocationClick: () => { },
-    onMouseLeave: () => { },
-    onClick: () => { },
-    name: ""
-}
-
 const ListView = (props) => {
     const {
 
     } = props
 
     const history = useHistory()
+    const { widgetPage } = props.match.params
+
+    const locations = useSelector(state => state.locationsReducer.stations)
+    const devices = useSelector(state => state.devicesReducer.devices)
+    
     const [showDashboards, setShowDashboards] = useState(false)
     const [showSettings, setShowSettings] = useState(false)
-    const { widgetPage } = props.match.params
 
     const CURRENT_SCREEN = (showDashboards ) ? SCREENS.DASHBOARDS :
         showSettings ? SCREENS.SETTINGS : SCREENS.LOCATIONS

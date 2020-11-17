@@ -24,8 +24,14 @@ const HILModal = () => {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
     const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
+    const devices = useSelector(state => state.devicesReducer.devices)
 
     const [statusTimerIntervals, setStatusTimerIntervals] = useState({})
+
+    const dashboardID = params.dashboardID
+    const stationID = params.stationID
+
+    const deviceDashboard = !!devices ? !!devices[stationID] : false
 
     /**
      * Handles any task that should be displaying a HIL
@@ -68,12 +74,18 @@ const HILModal = () => {
                 })
 
                 // If active hils matches the dashboard selected (found in params) then display hil
-                // if (params.dashboardID === item.hil_station_id && !dashboards[params.dashboardID].unsubcribedHILS.includes(item.hil.taskID)) {
-                if (Object.keys(activeHilDashboards).includes(params.dashboardID)) {
+                // if (dashboardID === item.hil_station_id && !dashboards[dashboardID].unsubcribedHILS.includes(item.hil.taskID)) {
+                if (Object.keys(activeHilDashboards).includes(dashboardID)) {
 
                     const hilType = tasks[item.task_id].type
 
                     return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={id} item={item} key={id} />
+                }
+
+                // If a device dashboard, then show all associated HILs
+                else if (deviceDashboard) {
+                    const hilType = tasks[item.task_id].type
+                    return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item} />
                 }
                 else {
                     return null
@@ -83,7 +95,7 @@ const HILModal = () => {
 
         })
 
-    }, [taskQueue, params.dashboardID, taskQueueItemClicked, hilResponse])
+    }, [taskQueue, dashboardID, taskQueueItemClicked, hilResponse])
 
 
     /**

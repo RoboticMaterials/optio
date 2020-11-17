@@ -1,8 +1,9 @@
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useRef, useContext, useEffect } from 'react';
 
 // external functions
 import { ThemeContext } from "styled-components";
 import { useSelector, useDispatch } from 'react-redux'
+import { useParams, useHistory } from 'react-router-dom'
 
 // import external components
 import ReactList from "react-list";
@@ -68,12 +69,26 @@ const DashboardsList = (props) => {
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const stations = useSelector(state => state.locationsReducer.stations)
     const tasks = useSelector(state => state.tasksReducer.tasks)
+    const devices = useSelector(state => state.devicesReducer.devices)
 
     const station = stations[stationID]
-    const dashboardsArray = station.dashboards.map(dashboardID => dashboards[dashboardID])
+    const device = devices[stationID]
 
-    logger.log("DashboardsList dashboards", dashboards)
-    logger.log("DashboardsList dashboardsArray", dashboardsArray)
+    const selectedDashboardType = !!station ? station : device
+
+
+    const dashboardsArray = selectedDashboardType.dashboards.map(dashboardID => dashboards[dashboardID])
+
+    const params = useParams()
+
+    // logger.log("DashboardsList dashboards", dashboards)
+    // logger.log("DashboardsList dashboardsArray", dashboardsArray)
+
+    useEffect(() => {
+        return () => {
+
+        }
+    }, [])
 
     // handles event of button drag-and-drop onto a dashboard
     // adds the dropped button to the dashboard target
@@ -97,7 +112,7 @@ const DashboardsList = (props) => {
         while (exists) {
             exists = false
             i++
-            station.dashboards.forEach(dashboardID => {
+            selectedDashboardType.dashboards.forEach(dashboardID => {
                 if (dashboards[dashboardID].name == 'Untitled Dashboard ' + i) {
                     exists = true
                 }
@@ -118,7 +133,7 @@ const DashboardsList = (props) => {
         // Add this new dashboard to the station
         postDashboardPromise.then(async postedDashboard => {
 
-            let stationDashboards = station.dashboards
+            let stationDashboards = selectedDashboardType.dashboards
             stationDashboards.push(postedDashboard._id.$oid)
             await dispatch(stationActions.setStationAttributes(station._id, { dashboards: stationDashboards }))
             const stationID = station._id
@@ -147,7 +162,7 @@ const DashboardsList = (props) => {
             )
         } else {
             const currDashboard = dashboardsArray[index]
-            if(currDashboard === undefined){
+            if (currDashboard === undefined) {
                 console.log('QQQQ Current station', station)
                 // console.log('QQQQ dashboards', dashboards)
                 return null

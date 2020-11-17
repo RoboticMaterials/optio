@@ -9,7 +9,7 @@ import { getTaskQueue } from '../../redux/actions/task_queue_actions'
 import { getLocations } from '../../redux/actions/locations_actions'
 import { getObjects } from '../../redux/actions/objects_actions'
 import { getTasks, deleteTask } from '../../redux/actions/tasks_actions'
-import { getDashboards, deleteDashboard } from '../../redux/actions/dashboards_actions'
+import { getDashboards, deleteDashboard, postDashboard } from '../../redux/actions/dashboards_actions'
 import { getSounds } from '../../redux/actions/sounds_actions'
 import { getProcesses, putProcesses } from '../../redux/actions/processes_actions'
 
@@ -56,7 +56,6 @@ const ApiContainer = (props) => {
     const onGetTaskQueue = () => dispatch(getTaskQueue())
 
     const onGetProcesses = () => dispatch(getProcesses());
-    const onPutProcess = (process) => dispatch(putProcesses(process))
 
     const onGetSchedules = () => dispatch(getSchedules())
     const onGetDevices = async () => await dispatch(getDevices())
@@ -70,11 +69,14 @@ const ApiContainer = (props) => {
     const onDeleteTask = (ID) => dispatch(deleteTask(ID))
     const onDeleteDashboard = (ID) => dispatch(deleteDashboard(ID))
     const onDeletePosition = (position, ID) => dispatch(deletePosition(position, ID))
+    const onDeleteStation = async (ID) => await dispatch(deleteStation(ID))
+
     const onPutDevice = (device, ID) => dispatch(putDevices(device, ID))
     const onPutPosition = (position, ID) => dispatch(putPosition(position, ID))
-
+    const onPutProcess = (process) => dispatch(putProcesses(process))
     const onPutStation = async (station, ID) => await dispatch(putStation(station, ID))
-    const onDeleteStation = async (ID) => await dispatch(deleteStation(ID))
+
+    const onPostDashoard = (dashboard) => dispatch(postDashboard(dashboard))
 
     const onPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
 
@@ -227,7 +229,7 @@ const ApiContainer = (props) => {
 
         const loggers = await onGetLoggers()
 
-
+        handleDeviceWithoutADashboard(devices, dashboards)
         handleTasksWithBrokenPositions(tasks, locations)
         handlePositionsWithBrokenParents(locations)
         handleDevicesWithBrokenStations(devices, locations)
@@ -339,6 +341,48 @@ const ApiContainer = (props) => {
 
     //  API DATA CLEAN UP (Ideally these functions should not exist... but it's not an ideal world...)
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+    /**
+     * Not the best place but it should still work
+     * This will either make a dashboard for the device or replace a lost dashboard
+     */
+    const handleDeviceWithoutADashboard = (devices, dashboards) => {
+        Object.values(devices).map((device) => {
+            // if the device does not have a dashboard, add one
+            if (!device.dashboard) {
+                const newDeviceDashboard = {
+                    name: `${device.device_name} Dashboard`,
+                    buttons: [],
+                    device: device._id,
+                }
+
+                const newDashboard = onPostDashoard(newDeviceDashboard)
+
+                newDashboard.then(dashPromise => {
+                    device.dashboards = [dashPromise._id.$oid]
+                    onPutDevice(device, device._id)
+                })
+
+
+            }
+
+            // If the device does have a dashboard, but that dashboard has been lost for some reason, make a new dashboard
+            else if (!dashboards[device.dashboard]) {
+
+            }
+        })
+    }
+
+    /**
+     * The dashboard is tied to a device that does not exist anymore, so delete the dashboard
+     * @param {*} devices 
+     * @param {*} dashboards 
+     */
+    const handleDashboardsWithBrokenDevice = (devices, dashboards) => {
+
+    }
+
 
     /**
      * This deletes tasks that have broken positions
@@ -512,7 +556,7 @@ const ApiContainer = (props) => {
         const stations = locations.stations
 
         Object.values(dashboards).map((dashboard) => {
-            if (!!dashboard.location && !stations[dashboard.location]) {
+            if (!!dashboard.location && !dashboard.device && !stations[dashboard.location]) {
                 console.log('QQQQ dashboard belongs to a station that does not exist', dashboard)
                 onDeleteDashboard(dashboard._id.$oid)
             }

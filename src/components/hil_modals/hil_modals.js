@@ -64,10 +64,15 @@ const HILModals = (props) => {
             setHilLoadUnload('unload')
         }
 
-        if(item.quantity){
+        if (item.quantity) {
             setQuantity(item.quantity)
         } else {
             setQuantity(0)
+        }
+
+        // On unmount, set the task q item to none 
+        return () => {
+            onTaskQueueItemClicked('')
         }
 
     }, [])

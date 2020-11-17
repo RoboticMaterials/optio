@@ -26,9 +26,11 @@ import { deepCopy } from '../../../../../methods/utils/utils'
 import * as taskActions from '../../../../../redux/actions/tasks_actions'
 import { setSelectedTask, deleteTask, getTasks } from '../../../../../redux/actions/tasks_actions'
 import * as dashboardActions from '../../../../../redux/actions/dashboards_actions'
+import { putDashboard } from '../../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../../redux/actions/objects_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import { putProcesses, setSelectedProcess } from '../../../../../redux/actions/processes_actions'
+import { putStation } from '../../../../../redux/actions/stations_actions'
 
 const EditTask = (props) => {
 
@@ -48,6 +50,8 @@ const EditTask = (props) => {
     const onSetSelectedTask = (task) => dispatch(setSelectedTask(task))
     const onDeleteTask = (ID) => dispatch(deleteTask(ID))
     const onGetTasks = () => dispatch(getTasks())
+    const onPutStation = (station, ID) => dispatch(putStation(station, ID))
+    const onPutDashboard = (dashboard, ID) => dispatch(putDashboard(dashboard, ID))
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -272,7 +276,7 @@ const EditTask = (props) => {
             )
 
         if (!!isProcessTask) {
-            
+
             // Removes the task from the array of routes
             const copyProcess = deepCopy(selectedProcess)
             const index = copyProcess.routes.indexOf(selectedTask._id)
@@ -361,6 +365,20 @@ const EditTask = (props) => {
                 dispatch(taskActions.postTask(selectedTask))
 
             }
+
+            // Add the task automatically to the associated load station dashboard
+            // Since as of now the only type of task we are doing is push, only need to add it to the load location
+            let updatedStation = deepCopy(stations[selectedTask.load.station])
+            let updatedDashboard = dashboards[updatedStation.dashboards[0]]
+            const newDashboardButton = {
+                color: '#bcbcbc',
+                id: selectedTask._id,
+                name: selectedTask.name,
+                task_id: selectedTask._id
+            }
+            updatedDashboard.buttons.push(newDashboardButton)
+            onPutDashboard(updatedDashboard, updatedDashboard._id.$oid)
+
 
             // dispatch(taskActions.removeTask(selectedTask._id)) // Remove the temporary task from the local copy of tasks
 

@@ -12,7 +12,7 @@ import * as styled from "./splash_screen.style"
 
 // import logger
 import logger from '../../../logger.js';
-import {postLocalSettings} from "../../../redux/actions/local_actions";
+import { postLocalSettings } from "../../../redux/actions/local_actions";
 
 
 const ToggleMapViewSwitch = (props) => {
@@ -22,13 +22,13 @@ const ToggleMapViewSwitch = (props) => {
         switchContainerStyle
     } = props
 
-    return(
+    return (
         <styled.SwitchContainer style={switchContainerStyle}>
             <styled.SwitchContainerLabel>Show List View</styled.SwitchContainerLabel>
             <Switch
                 checked={checked}
                 onChange={onChange}
-                style={{margin: "0 2rem 0 2rem"}}
+                style={{ margin: "0 2rem 0 2rem" }}
             />
             <styled.SwitchContainerLabel>Show Map View</styled.SwitchContainerLabel>
         </styled.SwitchContainer>
@@ -78,7 +78,7 @@ const SplashScreen = (props) => {
                                     setApiIpAddress(event.target.value)
                                 }}
                                 style={{ width: '100%' }}
-                                // type = 'submit'
+                            // type = 'submit'
                             />
                             <Button schema={'scheduler'} style={{ color: 'red', border: '0.1rem solid red' }} type='submit'>Submit</Button>
                         </form>
@@ -98,13 +98,13 @@ const SplashScreen = (props) => {
                 </div>
 
                 :
-                <div style={{ width: '100%', height: '100%',  display: 'flex', justifyContent: 'center', alignItems:"center", flexDirection: "column" }}>
+                <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: "center", flexDirection: "column" }}>
                     <i className={'icon-rmLogo'} style={{ fontSize: '10rem', margin: "3rem", color: '#FF4B4B' }} />
 
-                    <ToggleMapViewSwitch
+                    {/* <ToggleMapViewSwitch
                         checked={localSettings.localSettings.mapViewEnabled}
                         onChange={toggleMapViewEnabled}
-                    />
+                    /> */}
 
                 </div>
                 :

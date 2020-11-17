@@ -42,6 +42,8 @@ const devicesReducer = (state = defaultState, action) => {
     // ======================================== //
     const setDevices = (devices) => {
 
+        if(Object.keys(devices).length === 0) return
+
         // What this does is update the devices X and Y positions based on the values in the backend.
         // When the RMStudio initially loads, the devices X and Y is calculated in the map_view container, but those values aren't put to the backend.
         // When a get call is made, the state.devices is overwritten with the backend data (data without X and Y coords). This removes the device from the map view, which we dont want.
@@ -81,7 +83,7 @@ const devicesReducer = (state = defaultState, action) => {
                 return devicesClone
             })
         } else {
-            return devices
+            return state
         }
         return {
             ...state,
@@ -102,7 +104,10 @@ const devicesReducer = (state = defaultState, action) => {
             break;
 
         case GET_DEVICES_SUCCESS:
-            return setDevices(action.payload)
+
+            // Fix for when action.payload is undefined
+            let devices = !!action.payload ? action.payload : {}
+            return setDevices(devices)
 
         case GET_DEVICES_FAILURE:
             return Object.assign({}, state, {

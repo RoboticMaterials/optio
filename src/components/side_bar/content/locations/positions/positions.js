@@ -142,7 +142,6 @@ export default function Positions(props) {
                 <styled.PositionListItem>
                     <MinusButton
                         onClick={() => {
-                            console.log('QQQQ delete', deepCopy(position), deepCopy(positions))
                             // Sees if any tasks are associated with the position
                             Object.values(tasks).filter(task => {
                                 return task.load.position == position._id || task.unload.position == position._id
@@ -156,7 +155,6 @@ export default function Positions(props) {
                             dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
 
                             dispatch(positionActions.deletePosition(positions[position._id], position._id))
-                            console.log('QQQQ delete here')
 
                         }}
                     />

@@ -197,7 +197,6 @@ const DashboardEditor = (props) => {
 
                 // adds a button to buttons key in Formik values
                 const handleDrop = (dropResult) => {
-                    console.log("dropResult", dropResult)
                     const { removedIndex, addedIndex, payload, element } = dropResult;
                     console.log(removedIndex, addedIndex, payload, element)
                     const buttonsCopy = (values.buttons)
