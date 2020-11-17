@@ -42,6 +42,8 @@ import logger from '../../logger.js';
 import { getMap } from '../../api/map_api';
 import SideBar from '../side_bar/side_bar';
 import localReducer from "../../redux/reducers/local_reducer";
+import {getCards, getProcessCards} from "../../redux/actions/card_actions";
+import apiReducer from "../../redux/reducers/api_reducer";
 
 const ApiContainer = (props) => {
 
@@ -54,6 +56,9 @@ const ApiContainer = (props) => {
     const onGetTasks = () => dispatch(getTasks())
     const onGetSounds = (api) => dispatch(getSounds(api))
     const onGetTaskQueue = () => dispatch(getTaskQueue())
+
+    const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
+    const onGetCards = () => dispatch(getCards())
 
     const onGetProcesses = () => dispatch(getProcesses());
     const onPutProcess = (process) => dispatch(putProcesses(process))
@@ -80,6 +85,8 @@ const ApiContainer = (props) => {
 
     // Selectors
     const schedulerReducer = useSelector(state => state.schedulerReducer)
+    const apiPage = useSelector(state => state.apiReducer.page)
+    console.log("api container apiPage",apiPage)
 
     // States
     const [currentPage, setCurrentPage] = useState('')
@@ -141,9 +148,14 @@ const ApiContainer = (props) => {
     let pageDataInterval = null
     const setDataInterval = (pageParams) => {
         let pageName = ''
+        const {
+            data1,
+            data2
+        } = pageParams
 
         if (Object.keys(pageParams)[0] === 'sidebar') {
             pageName = pageParams.sidebar
+
 
         } else if (Object.keys(pageParams)[0] === 'stationID') {
 
@@ -162,6 +174,9 @@ const ApiContainer = (props) => {
 
         // clear current interval
         clearInterval(pageDataInterval);
+
+        console.log("api_container pageName",pageName)
+        console.log("api_container pageParams",pageParams)
 
         // set new interval for specific page
         switch (pageName) {
@@ -185,6 +200,19 @@ const ApiContainer = (props) => {
             case 'settings':
                 pageDataInterval = setInterval(() => loadSettingsData(), 10000);
                 break;
+
+            case 'processes':
+                if(data2 === "card") {
+                    console.log("api container apiPage",apiPage)
+                    loadCardsData(data1) // initial call
+                    pageDataInterval = setInterval(()=>loadCardsData(data1), 10000) // set interval
+                }
+                else if(data1 === "timeline") {
+                    loadCardsData() // initial call
+                    pageDataInterval = setInterval(()=>loadCardsData(), 10000)
+                }
+
+                break
 
             case 'more':
                 pageDataInterval = setInterval(() => loadMoreData(), 100000);
@@ -215,6 +243,7 @@ const ApiContainer = (props) => {
         const objects = await onGetObjects()
         const sounds = await onGetSounds()
         const tasks = await onGetTasks()
+        // const cards = await onGetCards()
         const taskQueue = await onGetTaskQueue()
         const processes = await onGetProcesses()
 
@@ -317,6 +346,21 @@ const ApiContainer = (props) => {
         const settings = await onGetSettings();
         const localSettings = await onGetLocalSettings()
         const loggers = await onGetLoggers();
+
+    }
+
+    /*
+        Loads data pertinent to process card view
+
+        required data:
+        cards
+    */
+    const loadCardsData = async (processId) => {
+        if(processId) {
+            await onGetProcessCards(processId)
+        } else {
+            onGetCards()
+        }
 
     }
 

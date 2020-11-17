@@ -79,11 +79,11 @@ const SideBar = (props) => {
 
         const time = Date.now()
 
-        if(page === "processes" && (subpage === "card")) {
+        if(page === "processes" && ((subpage === "card")) || (id === "timeline") || (id === "summary")) {
             setPrevWidth(width) // store previous width to restore when card page is left
             setWidth(window.innerWidth)
         }
-        else if((prevSubpage === "card" && prevPage === "processes") && (subpage !== "card") ) {
+        else if((((prevSubpage === "card") || (prevId === "timeline") || (prevId === "summary")) && prevPage === "processes") && ((subpage !== "card") || (id === "timeline") || (id === "summary")) ) {
             setWidth(prevWidth)
         }
 
@@ -162,7 +162,9 @@ const SideBar = (props) => {
         //     break
 
         case 'processes':
-            if(subpage === "card")   {
+            console.log("subpage",subpage)
+            console.log("id",id)
+            if(subpage === "card" || (id === "summary") || (id === "timeline"))   {
                 content = <Cards id={id}/>
             }
             else {

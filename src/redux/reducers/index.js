@@ -27,8 +27,10 @@ import eventsReducer from './events_reducer'
 import authenticationReducer from './authentication_reducer'
 import processesReducer from './processes_reducer'
 import cardsReducer from './cards_reducer'
+import testReducer from './test_reducer'
 
 export default combineReducers({
+    testReducer,
     apiReducer,
     cardsReducer,
     schedulesReducer,

@@ -7,13 +7,19 @@ const Card = (props) => {
     const {
         name,
         index,
-        id
+        id,
+        onClick
     } = props
 
 
     return(
-        <Draggable key={id} index={index} style={{ overflow: 'visible', background: "blue" }}>
-            <styled.Container>{name}</styled.Container>
+        <Draggable key={id} index={index} style={{ background: "blue" }}>
+            <styled.Container
+                onClick={onClick}
+
+            >
+                {name}
+            </styled.Container>
         </Draggable>
     )
 }

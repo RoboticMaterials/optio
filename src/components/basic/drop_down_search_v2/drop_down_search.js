@@ -259,12 +259,16 @@ export class DropDownSearch extends Component {
       this.dropDown('close');
     }
 
-    this.setState({
-      values: this.state.values.filter(
+    let newValues = this.state.values.filter(
         (values) =>
-          getByPath(values, this.props.valueField) !== getByPath(item, this.props.valueField)
-      )
+            getByPath(values, this.props.valueField) !== getByPath(item, this.props.valueField)
+    )
+
+    this.setState({
+      values: newValues
     });
+
+    this.props.onRemoveItem && this.props.onRemoveItem(newValues)
   };
 
   setSearch = (event) => {

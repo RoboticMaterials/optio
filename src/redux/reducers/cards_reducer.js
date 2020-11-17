@@ -13,53 +13,19 @@ import {
 
 import {
   CARD,
-  CARDS
+  CARDS,
+  CARD_HISTORY,
+  PROCESS_CARDS
 } from '../types/data_types'
 
 import {uuidv4} from "../../methods/utils/utils";
 
-var count = 0
-
-function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max));
-}
-
-const STATION_NAMES = [
-    "d5d852d1-58ae-46b1-bbc3-717ad0bcc11b",
-  "d3cb02a4-0402-4253-9ef8-90ab00ade680",
-  "1b4ab529-5faa-460f-a0a3-8690ef683d59",
-  "96ac8ba8-209e-4050-b16e-2333b56e3923",
-  "1807a2b4-e2f0-47f8-861d-b080007cbd07",
-  "7eabf577-96f0-440f-adad-4d69a593289a"
-]
-
-const getCard = () => {
-  const id = uuidv4()
-  count = count + 1
-
-  return [id,
-    {
-      _id: id,
-      name: "card" + count,
-      stationId: STATION_NAMES[getRandomInt(STATION_NAMES.length - 1)]
-    }
-  ]
-}
-
-
-let TEMP_CARDS = {
-
-
-}
-
-for (let i = 0; i < 10; i++) {
-  let card = getCard()
-  TEMP_CARDS[card[0]] = card[1]
-}
 
 const defaultState = {
 
-  cards: TEMP_CARDS,
+  cards: {},
+  processCards: {},
+  cardHistories: {},
   error: {},
   pending: false
 };
@@ -67,10 +33,86 @@ const defaultState = {
 export default function cardsReducer(state = defaultState, action) {
 
   switch (action.type) {
-    case PUT + CARD + SUCCESS:
+    case GET + CARD + SUCCESS:
       return {
         ...state,
-        // processes: action.payload,
+        cards: {...state.cards, [action.payload.card._id]: action.payload.card},
+        pending: false,
+      }
+
+    case GET + CARDS + SUCCESS:
+      return {
+        ...state,
+        cards: {...state.cards, ...action.payload.cards},
+        pending: false,
+      }
+
+    case GET + PROCESS_CARDS + SUCCESS:
+      return {
+        ...state,
+        processCards: {...state.processCards, [action.payload.processId]: {
+          ...state.processCards[action.payload.processId], ...action.payload.cards
+          }},
+        pending: false,
+      }
+
+    case PUT + CARD + SUCCESS:
+      console.log("PUT + CARD + SUCCESS action", action)
+      return {
+        ...state,
+        cards: {...state.cards, [action.payload.card._id]: action.payload.card},
+        processCards: {...state.processCards, [action.payload.processId]: {
+            ...state.processCards[action.payload.processId], [action.payload.card._id]: action.payload.card
+          }},
+        pending: false,
+      }
+
+    case POST + CARD + SUCCESS:
+      console.log("PUT + CARD + SUCCESS action", action)
+      return {
+        ...state,
+        cards: {...state.cards, [action.payload.card._id]: action.payload.card},
+        processCards: {...state.processCards, [action.payload.processId]: {
+            ...state.processCards[action.payload.processId], [action.payload.card._id]: action.payload.card
+          }},
+        pending: false,
+      }
+
+    case DELETE + CARD + SUCCESS:
+      console.log("DELETE + CARD + SUCCESS action", action)
+      const { [action.payload.cardId]: value, ...rest } = state.cards; // extracts payload card from rest
+      const {
+
+        [action.payload.processId]: {[action.payload.cardId]: removedCard, ...remaining} ,
+        ...unchangedProcessGroups
+
+      } = state.processCards; // extracts payload card from rest
+
+      return {
+        ...state,
+        cards: {...rest},
+        processCards: {...unchangedProcessGroups, [action.payload.processId]: remaining},
+        pending: false,
+      }
+
+    case GET + CARD_HISTORY + SUCCESS:
+      return {
+        ...state,
+        cardHistories: {...state.cardHistories, [action.payload.cardHistory.card_id]: action.payload.cardHistory},
+        pending: false,
+      }
+
+    case POST + CARD_HISTORY + SUCCESS:
+      return {
+        ...state,
+        cardHistories: {...state.cardHistories, [action.payload.cardHistory.card_id]: action.payload.cardHistory},
+        pending: false,
+      }
+
+    case PUT + CARD_HISTORY + SUCCESS:
+      return {
+        ...state,
+        cardHistories: {...state.cardHistories, [action.payload.cardHistory.card_id]: action.payload.cardHistory},
         pending: false,
       }
 

@@ -24,6 +24,7 @@ import HILModal from './containers/hil_modal/hil_modal'
 import Authentication from './containers/authentication/authentication'
 import Widgets from './components/widgets/widgets'
 import ListView from "./components/list_view/list_view";
+import TestsContainer from "./containers/api_container/tests_container";
 
 const widthBreakPoint = 1000;
 
@@ -79,6 +80,7 @@ const App = (props) => {
     return (
         <>
             <Logger />
+            {/*<TestsContainer/>*/}
 
             {/* <ThemeProvider theme={theme[this.state.theme]}> */}
             <ThemeProvider theme={theme[stateTheme]}>
@@ -88,7 +90,7 @@ const App = (props) => {
 
 
                         <Route
-                            path={["/locations/:stationID?/:widgetPage?", '/:sidebar?', '/']}
+                            path={["/locations/:stationID?/:widgetPage?", '/:sidebar?/:data1?/:data2?', '/', ]}
                         >
                             <ApiContainer styleMode={null} apiMode={null} mode={null} logMode={"DEV"} onLoad={() => setLoaded(true)} apiLoaded={() => setApiLoaded(true)} isApiLoaded={apiLoaded} />
                         </Route>

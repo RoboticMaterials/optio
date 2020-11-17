@@ -1,202 +1,143 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { useHistory } from 'react-router-dom'
 import {useDispatch, useSelector} from "react-redux";
 
 import * as styled from './cards.style'
-import Card from "./card/card";
-import {Container} from "react-smooth-dnd";
-import { SortableContainer } from "react-sortable-hoc";
-import arrayMove from "array-move";
-import {randomHash} from "../../../../methods/utils/utils";
-import {putDashboard} from "../../../../redux/actions/dashboards_actions";
-import {putCard} from "../../../../redux/actions/card_actions";
-const TEMP_STATIONS = {
+import CardEditor from "./card_editor/card_editor";
+import CardMenu from "./card_menu/card_menu";
+import CardZone from "./card_zone/card_zone";
+import TimelineZone from "./timeline_zone/timeline_zone";
 
-
+const PAGES = {
+    CARDS: "CARDS",
+    SUMMARY: "SUMMARY",
+    TIMELINE: "TIMELINE"
 }
-
-const TEMP_CARDS = [
-    {
-        name: "card1",
-    },
-    {
-        name: "card2",
-    },
-    {
-        name: "card3",
-    },
-    {
-        name: "card4",
-    },
-    {
-        name: "card5",
-    },
-]
-
-function getRandomInt(max) {
-    return Math.floor(Math.random() * Math.floor(max));
-}
-
-
-const StationsColumn = SortableContainer((props) => {
-    const {
-        id,
-
-        cards
-    } = props
-
-    const dispatch = useDispatch()
-    const station = useSelector(state => { return state.locationsReducer.stations[id] })
-
-
-    const {
-        name
-    } = station
-
-    const handleDrop = (dropResult) => {
-        console.log("handleDrop dropResult", dropResult)
-        console.log("handleDrop id", id)
-        const { removedIndex, addedIndex, payload, element } = dropResult;
-        dispatch(putCard(payload))
-
-        //
-        // const buttonsCopy = (values.buttons)
-        //
-        if (payload === null) { //  No new button, only reorder
-        //     const shiftedButtonsCopy = arrayMove(buttonsCopy, removedIndex, addedIndex)
-        //     formikProps.setFieldValue("buttons", shiftedButtonsCopy)
-        } else { // New button
-            if(addedIndex !== null) {
-        //         payload.id = randomHash()
-        //         buttonsCopy.splice(addedIndex, 0, payload)
-        //         formikProps.setFieldValue("buttons", buttonsCopy)
-            }
-        //
-        }
-    }
-
-    const renderCards = () => {
-        return(
-            <styled.RouteContainer>
-                <Container
-                    onDrop={(DropResult)=> {
-                        handleDrop(DropResult)
-                    }}
-                    groupName="process-cards"
-                    getChildPayload={index =>
-                        cards[index]
-                    }
-                    style={{background: "purple"}}
-                >
-                {cards.map((card, index) => {
-                    return(
-                        <Card
-                            name={card.name}
-                            id={index}
-                            index={index}
-                        />
-                    )
-                })}
-                </Container>
-            </styled.RouteContainer>
-
-        )
-    }
-
-    return(
-        <styled.RouteContainer>
-            <styled.StationHeader>
-                <styled.RouteName>{name}</styled.RouteName>
-                <styled.StationButton>
-                    <i className="fas fa-ellipsis-h"></i>
-                </styled.StationButton>
-            </styled.StationHeader>
-
-            {renderCards()}
-
-
-        </styled.RouteContainer>
-    )
-})
-
-const StationsList = (props) => {
-    const {
-        routes
-    } = props
-
-    const cards = useSelector(state => { return state.cardsReducer.cards })
-
-    // get stations from routes
-    let stations = []
-    routes.forEach((route) => {
-        const {
-            load: {station: loadStationId},
-            unload: {station: unloadStationId},
-        } = route
-
-        stations.push(loadStationId)
-        stations.push(unloadStationId)
-
-    })
-
-    let cardsSorted = {}
-    // build card array for each station
-    stations.forEach((stationId) => {
-        cardsSorted[stationId] = []
-    })
-
-    Object.values(cards).forEach((card) => {
-        if(stations.includes(card.stationId)) cardsSorted[card.stationId].push(card)
-    })
-
-
-
-
-
-    const renderStations = () => {
-        return(
-            <styled.RoutesListContainer>
-                {
-                    stations.map((stationId) => {
-
-                        return (
-                            <StationsColumn
-                                // onDrop={handleDrop}
-                                id={stationId}
-                                cards={cardsSorted[stationId]}
-                            />
-                        )
-                    })
-                }
-            </styled.RoutesListContainer>
-
-        )
-    }
-
-    return(
-        renderStations()
-    )
-}
-
 const Cards = (props) => {
 
     const {
         id
     } = props
 
+    const history = useHistory()
+    const processes = useSelector(state => { return state.processesReducer.processes })
+    const routes = useSelector(state => { return state.tasksReducer.tasks })
+    const cards = useSelector(state => { return state.cardsReducer.processCards[id] })
+    const processIds = Object.keys(processes)
 
+    const [showCardEditor, setShowCardEditor] = useState(false)
+    const [page, setPage] = useState()
+    const [selectedCard, setSelectedCard] = useState(null)
+    const [showMenu, setShowMenu] = useState(false)
 
-    const currentProcess = useSelector(state => { return state.processesReducer.processes[id] })
-    const routes = useSelector(state => { return Object.values(state.tasksReducer.tasks).filter((route) => currentProcess.routes.includes(route._id)) })
+    var stations = []
+    let filteredRoutes = []
 
-    console.log("currentProcess",currentProcess)
-    console.log("routes",routes)
+    let title
+    let showAddCard
+    let showGanttViewButton = false
+
     console.log("id",id)
+    console.log("processIds",processIds)
+    let currentProcess
+
+    switch(id) {
+        case "summary":
+            title = "Summary Zone"
+            showAddCard = false
+            currentProcess = processes[processIds[0]]
+            break
+        case "timeline":
+            showAddCard = false
+            showGanttViewButton = true
+            title = "Timeline Zone"
+            currentProcess = processes[processIds[0]]
+            break
+        default:
+            showAddCard = true
+            currentProcess = processes[id]
+            title = currentProcess.name
+            break
+    }
+
+    console.log("processes",processes)
+    console.log("currentProcess",currentProcess)
 
 
-    return (
+
+    const handleCardClick = (cardId) => {
+        setShowCardEditor(true)
+        setSelectedCard(cardId)
+    }
+
+
+    return(
         <styled.Container>
-            <StationsList routes={routes}/>
+            <CardEditor
+                isOpen={showCardEditor}
+                onAfterOpen={null}
+                cardId={selectedCard}
+                close={()=>{
+                    setShowCardEditor(false)
+                    setSelectedCard(null)
+                }}
+            />
+
+            <styled.Header>
+                <styled.MenuButton
+                    className="fa fa-th"
+                    aria-hidden="true"
+                    onClick={()=>setShowMenu(!showMenu)}
+                />
+
+                <styled.ProcessName>{title}</styled.ProcessName>
+                {showAddCard &&
+                    <styled.AddCardButton
+                        onClick={()=>setShowCardEditor(!showCardEditor)}
+                    >
+                        + Card
+                    </styled.AddCardButton>
+                }
+                {showGanttViewButton &&
+                <styled.AddCardButton
+                >
+                    Gantt View
+                </styled.AddCardButton>
+                }
+                {(id === "summary" || id === "timeline") &&
+                    <styled.AddCardButton
+                        onClick={()=>history.replace ('/processes/' + processIds[0] + "/card")}
+                    >
+                        Leave Zone
+                    </styled.AddCardButton>
+                }
+            </styled.Header>
+            <styled.Body>
+                {showMenu &&
+                    <CardMenu
+                        currentProcess={currentProcess}
+                        close={()=>setShowMenu(false)}
+                    />
+                }
+                {
+                    {
+                        'summary':
+                            <div>THIS WILL BE THE SUMMARY ZONE</div>,
+                        'timeline':
+                            <TimelineZone
+                                handleCardClick={handleCardClick}
+                                initialProcesses={[currentProcess]}
+                            />
+                    }[id] ||
+                    <CardZone
+                        processId={id}
+                        // stations={stations}
+                        handleCardClick={handleCardClick}
+                    />
+                }
+            </styled.Body>
+
+
         </styled.Container>
     )
 }

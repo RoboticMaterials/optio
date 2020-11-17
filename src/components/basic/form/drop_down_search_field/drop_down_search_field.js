@@ -54,6 +54,10 @@ const DropDownSearchField = ({
 		// set
 		if(updatingValue) setUpdatingValue(false)
 
+		return () => {
+			setTouched(false)
+		}
+
 	}, [touched])
 
 	let ReactDropdownSelectStyle = {
