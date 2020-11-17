@@ -19,8 +19,8 @@ const WidgetButton = (props) => {
         currentPage,
         id,
         coordinateMove,
+        label,
     } = props
-
     const history = useHistory()
     const dispatch = useDispatch()
     const onPostTaskQueue = (q) => dispatch(postTaskQueue(q))
@@ -87,9 +87,13 @@ const WidgetButton = (props) => {
                     <styled.WidgetButtonIcon className="fas fa-times" pageID={type} currentPage={currentPage} />
 
                     :
-                    <styled.WidgetButtonIcon style={{ fontSize: type === 'cart' && '.9rem' }} className={"icon-" + type} pageID={type} currentPage={currentPage} />
+                    <>
+                    <styled.WidgetButtonIcon style={{ fontSize: type === 'cart' && '1.2rem', paddingTop: type === 'cart' && '.6rem' }} className={"icon-" + type} pageID={type} currentPage={currentPage} />
+                    <styled.WidgetButtonText>{label}</styled.WidgetButtonText>
+                    </>
             }
             {/* <styled.ButtonText>{props.type}</styled.ButtonText> */}
+
         </styled.WidgetButtonButton>
     )
 }

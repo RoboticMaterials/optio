@@ -22,7 +22,6 @@ import HILModals from '../hil_modals/hil_modals'
 import * as styled from './widgets.style'
 
 const Widgets = (props) => {
-
     const size = useWindowSize()
     const windowWidth = size.width
     const widthBreakPoint = 1000;
@@ -50,7 +49,6 @@ const Widgets = (props) => {
 
     // Location ID passed down through workstations via redux
     const stationID = hoveringInfo.id
-
     // This tells redux that the widget has mounted. Used in map view to handle if widget is still open but shoulnt be
     // This happens when moving the mouse too fast over a location causing a widget to load, but not fast enough for the onmouselave to execute
     useEffect(() => {
@@ -74,7 +72,6 @@ const Widgets = (props) => {
 
     // Renders the buttons under the location. useMemo is passed a blank array because the buttons only need to be rendered once
     const handleWidgetButtons = useMemo(() => {
-
         const location = locations[hoveringInfo.id]
 
         // If the schema is a station then show these buttons, else it's a position
@@ -94,6 +91,7 @@ const Widgets = (props) => {
                                     key={ind}
                                     id={stationID}
                                     type={'statistics'}
+                                    label={'Statistics'}
                                     currentPage={widgetPage}
                                 />
                             )
@@ -103,6 +101,7 @@ const Widgets = (props) => {
                                     key={ind}
                                     id={stationID}
                                     type={'dashboards'}
+                                    label={'Dashboards'}
                                     currentPage={widgetPage}
                                 />
                             )
@@ -112,6 +111,7 @@ const Widgets = (props) => {
                                     key={ind}
                                     id={stationID}
                                     type={'view'}
+                                    label={'View'}
                                     currentPage={widgetPage}
                                 />
                             )
@@ -129,12 +129,14 @@ const Widgets = (props) => {
                         <WidgetButton
                             id={stationID}
                             type={'statistics'}
+                            label={'Statistics'}
                             currentPage={widgetPage}
                         />
 
                         <WidgetButton
                             id={stationID}
                             type={'dashboards'}
+                            label={'Dashboards'}
                             currentPage={widgetPage}
                         />
 
@@ -185,6 +187,7 @@ const Widgets = (props) => {
                 <WidgetButton
                     id={stationID}
                     type={'cart'}
+                    label={'Send Cart Here'}
                     currentPage={widgetPage}
                 />
             )
@@ -225,8 +228,8 @@ const Widgets = (props) => {
     /**
      * This handles the x and y position of the widget.
      * It centers the x and y position to the middle of the widget by using the element height and width
-     * This takes care issue with widgets that are different sizes 
-     * @param {} coord 
+     * This takes care issue with widgets that are different sizes
+     * @param {} coord
      */
     // Left outside of function so that otherplaces can access it
     const element = document.getElementById(hoveringInfo.id)
@@ -303,7 +306,6 @@ const Widgets = (props) => {
                 // This sets the opacity to 0 if the element has not been mounted yet. Eliminates the 'snapping'
                 style={{ opacity: !widgetPage && element === null ? '0' : '1' }}
             >
-
                 {/* If not widget page and not a right click widget then add an invisable hover area */}
                 {!widgetPage && !!selectedLocation && selectedLocation.name !== 'TempRightClickMoveLocation' &&
                     <styled.WidgetHoverArea
@@ -314,9 +316,9 @@ const Widgets = (props) => {
 
                     />
                 }
-
                 <styled.WidgetContainer widgetPage={widgetPage}>
-
+                  {widgetPage==undefined &&
+                    <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>}
                     {mobileMode ?
                         dashboardOpen ?
                             <></>
