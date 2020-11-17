@@ -146,14 +146,14 @@ export default function locationsReducer(state = defaultState, action) {
             // If the station exists in the backend and frontend, take the new stations, but assign local x and y
             if (oldStation._id in newStations) {
                 Object.assign(newStations[oldStation._id], { x: oldStation.x, y: oldStation.y })
-            } 
+            }
             else { // If the station is not in the backend, it is either deleted or new
                 if (oldStation.new == true) { // If new, add it to the pulled stations
                     newStations[oldStation._id] = oldStation
                 }
             }
 
-            
+
         })
 
 
@@ -162,14 +162,14 @@ export default function locationsReducer(state = defaultState, action) {
             // This replaces the incoming station with the selected station
             // This eliminates your edits being over written 
             newStations[state.selectedLocation._id] = state.selectedLocation
-            console.log('QQQQ station')
+
 
             return {
                 ...state,
                 stations: newStations,
                 locations: filterLocations(newStations, positionsCopy),
                 // selectedLocation: newStations[state.selectedLocation._id],
-                selectedLocation: state.selectedLocation,
+                // selectedLocation: state.selectedLocation,
                 pending: false
             }
         } else {
@@ -240,11 +240,12 @@ export default function locationsReducer(state = defaultState, action) {
         Object.assign(stationsCopy[id], attr)
 
         if (state.selectedLocation !== null && state.selectedLocation._id === id) { // The updated station is the selected location
+            console.log('QQQQ redux here', stationsCopy[id])
             return {
                 ...state,
                 stations: stationsCopy,
                 locations: filterLocations(stationsCopy, positionsCopy),
-                selectedLocation: deepCopy(stationsCopy[state.selectedLocation._id]),
+                selectedLocation: deepCopy(stationsCopy[id]),
                 pending: false
             }
         } else {
@@ -318,23 +319,28 @@ export default function locationsReducer(state = defaultState, action) {
                 positions: newPositions,
                 locations: filterLocations(stationsCopy, newPositions),
                 // selectedLocation: newPositions[state.selectedLocation._id],
-                selectedLocation: state.selectedLocation,
+                // selectedLocation: state.selectedLocation,
                 pending: false
             }
         }
 
+        // Else if the selected location is a station, make sure to not overwrite that stations children on api calls
         else if (state.selectedLocation !== null && state.selectedLocation.schema === 'station') {
 
             Object.values(newPositions).forEach(position => {
 
                 if (state.selectedLocation.children.includes(position._id)) {
                     newPositions[position._id] = state.positions[position._id]
+                    // delete newPositions[position._id]
                 }
             })
 
             return {
                 ...state,
-                positions: newPositions,
+                positions: {
+                    // ...state.positions,
+                    ...newPositions,
+                },
                 locations: filterLocations(stationsCopy, newPositions),
                 pending: false
             }
@@ -405,8 +411,10 @@ export default function locationsReducer(state = defaultState, action) {
         stationsCopy = deepCopy(state.stations)
         positionsCopy = deepCopy(state.positions)
 
+        if (!(id in positionsCopy)) {
+            return state
+        }
 
-        if (!(id in positionsCopy)) { return state }
         Object.assign(positionsCopy[id], attr)
 
         if (state.selectedLocation !== null && state.selectedLocation._id === id) { // The updated position is the selected location
@@ -414,10 +422,14 @@ export default function locationsReducer(state = defaultState, action) {
                 ...state,
                 positions: positionsCopy,
                 locations: filterLocations(stationsCopy, positionsCopy),
-                selectedLocation: deepCopy(positionsCopy[state.selectedLocation._id]),
+                selectedLocation: deepCopy(positionsCopy[id]),
                 pending: false
             }
         } else {
+
+            if (!!positionsCopy[id].parent) {
+            }
+
             return {
                 ...state,
                 positions: positionsCopy,

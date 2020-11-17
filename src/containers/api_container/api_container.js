@@ -95,7 +95,7 @@ const ApiContainer = (props) => {
         // loads essential info used on every page such as status and taskQueue
 
         const criticalDataInterval = setInterval(() => loadCriticalData(), 500);
-        const mapDataInterval = setInterval(() => loadMapData(), 3000)
+        const mapDataInterval = setInterval(() => loadMapData(), 1000)
         return () => {
             // clear intervals
             clearInterval(pageDataInterval);
@@ -179,6 +179,10 @@ const ApiContainer = (props) => {
                 break;
 
             case 'tasks':
+                pageDataInterval = setInterval(() => loadTasksData(), 10000);
+                break;
+
+            case 'processes':
                 pageDataInterval = setInterval(() => loadTasksData(), 10000);
                 break;
 
@@ -272,6 +276,8 @@ const ApiContainer = (props) => {
         tasks
     */
     const loadTasksData = async () => {
+        // const tasks = await onGetTasks()
+        // const processes = await onGetProcesses()
     }
 
     /*
@@ -553,17 +559,17 @@ const ApiContainer = (props) => {
     const handleTasksWithBrokenProcess = async (processes, tasks) => {
 
         Object.values(tasks).map(async (task) => {
-            if(!!task.process){
+            if (!!task.process) {
 
                 // If the task process is equal to true, then it should be deleted because it was never associated with a process
-                if(task.process === true){
+                if (task.process === true) {
                     console.log('QQQQ task never associated with a process', task)
                     await onDeleteTask(task._id)
                     return
                 }
 
                 // If process does not contain the task process, that means the process must have been deleted
-                else if (!processes[task.process]){
+                else if (!processes[task.process]) {
                     console.log('QQQQ tasks parent process has been deleted', task)
                     await onDeleteTask(task._id)
                     return

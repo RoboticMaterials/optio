@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import * as styled from './positions.style'
 
@@ -38,24 +38,23 @@ export default function Positions(props) {
     const currentMap = useSelector(state => state.mapReducer.currentMap)
 
     const [editingIndex, setEditingIndex] = useState(null)
-    const [selectedPositions, setSelectedPositions] = useState([])
+    // const [selectedPositions, setSelectedPositions] = useState([])
 
 
     const positionType = type
     let positionTypeCamel = ''
     let positionName = ''
 
-    useEffect(() => {
-        setSelectedPositions(Object.values(positions).filter(position => position.parent == selectedLocation._id))
-        console.log('QQQQ Selected pos', deepCopy(selectedPositions))
+    const selectedPositions = Object.values(positions).filter(position => position.parent == selectedLocation._id)
 
+    useEffect(() => {
+        // setSelectedPositions(Object.values(positions).filter(position => position.parent == selectedLocation._id))
         return () => {
 
         }
     }, [])
 
     useEffect(() => {
-        console.log('QQQQ Editing Index', editingIndex)
         return () => {
 
         }
@@ -69,11 +68,9 @@ export default function Positions(props) {
     if (positionType === 'shelf_position') {
         positionTypeCamel = 'shelfPosition'
         positionName = 'Shelf'
-
     }
 
     const onSortEnd = ({ oldIndex, newIndex }) => {
-        console.log('QQQQ Sort end')
         // dispatch(locationActions.setLocationAttributes(selectedLocation._id, { positions: arrayMove(selectedLocation.positions, oldIndex, newIndex) }))
         // setEditingIndex(null)
     };
@@ -81,30 +78,92 @@ export default function Positions(props) {
     const DragHandle = sortableHandle(() => <styled.SortIcon className='fas fa-bars'></styled.SortIcon>);
 
     const SortableItem = SortableElement(({ position, i }) =>
-    // const SortableItem = ({ position, i }) => (
-            <li style={{ listStyle: 'none' }}>
-                <styled.PositionListItem>
-                    <MinusButton onClick={() => {
-                        // Sees if any tasks are associated with the position
-                        Object.values(tasks).filter(task => {
-                            return task.load.position == position._id || task.unload.position == position._id
-                        }).forEach(relevantTask => {
-                            dispatch(deleteTask(relevantTask._id))
-                        })
+        // const SortableItem = ({ position, i }) => (
+        <li style={{ listStyle: 'none' }}>
+            <styled.PositionListItem>
+                <MinusButton onClick={() => {
+                    // Sees if any tasks are associated with the position
+                    Object.values(tasks).filter(task => {
+                        return task.load.position == position._id || task.unload.position == position._id
+                    }).forEach(relevantTask => {
+                        dispatch(deleteTask(relevantTask._id))
+                    })
 
-                        // TODO: Get rid of deep copy
-                        let locationPositionIDs = deepCopy(selectedLocation.children)
-                        locationPositionIDs.splice(i, 1)
-                        dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
+                    // TODO: Get rid of deep copy
+                    let locationPositionIDs = deepCopy(selectedLocation.children)
+                    locationPositionIDs.splice(i, 1)
+                    dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
 
-                        dispatch(positionActions.deletePosition(positions[position._id], position._id))
+                    dispatch(positionActions.deletePosition(positions[position._id], position._id))
 
+                }}
+                />
+                <Textbox
+                    style={{ flex: '1' }}
+                    schema="locations"
+                    focus={i == editingIndex}
+                    defaultValue={position.name}
+                    onChange={(e) => {
+                        setEditingIndex(i)
+                        dispatch(positionActions.setPositionAttributes(position._id, { name: e.target.value }))
                     }}
+
+                />
+                <styled.CartIcon className='icon-cart' onClick={() => handleSetChildPositionToCartCoords(position)} />
+
+                {/* Commenting out for now, not working with constent updating */}
+                {/* <DragHandle></DragHandle> */}
+
+            </styled.PositionListItem>
+        </li>
+    );
+
+    const SortableList = SortableContainer(({ positions }) => {
+        // const SortableList = useMemo((positions) => {
+        if (positions === undefined) return null
+        return (
+            <styled.PositionList>
+                {positions.map((position, index) => {
+                    if (position.type === positionType) {
+                        return (
+                            <SortableItem key={`position-item-${position._id}`} index={index} position={position} i={index} />
+                        )
+                    }
+                })}
+            </styled.PositionList>
+        );
+    });
+    // }, [selectedPositions]);
+
+    const handleAssociatedPositions = (associatedPositions) => {
+        return associatedPositions.map((position, i) => {
+
+            return (
+                <styled.PositionListItem>
+                    <MinusButton
+                        onClick={() => {
+                            console.log('QQQQ delete', deepCopy(position), deepCopy(positions))
+                            // Sees if any tasks are associated with the position
+                            Object.values(tasks).filter(task => {
+                                return task.load.position == position._id || task.unload.position == position._id
+                            }).forEach(relevantTask => {
+                                dispatch(deleteTask(relevantTask._id))
+                            })
+
+                            // TODO: Get rid of deep copy
+                            let locationPositionIDs = deepCopy(selectedLocation.children)
+                            locationPositionIDs.splice(i, 1)
+                            dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
+
+                            dispatch(positionActions.deletePosition(positions[position._id], position._id))
+                            console.log('QQQQ delete here')
+
+                        }}
                     />
                     <Textbox
                         style={{ flex: '1' }}
                         schema="locations"
-                        // focus={i == editingIndex} 
+                        focus={i == editingIndex}
                         defaultValue={position.name}
                         onChange={(e) => {
                             setEditingIndex(i)
@@ -118,25 +177,10 @@ export default function Positions(props) {
                     {/* <DragHandle></DragHandle> */}
 
                 </styled.PositionListItem>
-            </li>
-        );
+            )
+        })
 
-    const SortableList = SortableContainer(({ positions }) => {
-        // const SortableList = ({ positions }) => {
-        console.log('QQQQ Here')
-        // if (positions[0] === undefined) return null
-        return (
-            <styled.PositionList>
-                {positions.map((position, index) => {
-                    if (position.type === positionType) {
-                        return (
-                            <SortableItem key={`position-item-${position._id}`} index={index} position={position} i={index} />
-                        )
-                    }
-                })}
-            </styled.PositionList>
-        );
-    });
+    }
 
     return (
         // Takes care of error when selectedLocation is null, but shelves are still being rendered
@@ -185,13 +229,14 @@ export default function Positions(props) {
                 <styled.Label>{'Associated ' + positionName} </styled.Label>
 
                 <styled.ListContainer>
-                    <SortableList
+                    {handleAssociatedPositions(selectedPositions)}
+                    {/* <SortableList
                         positions={selectedPositions}
                         onSortEnd={onSortEnd}
                         useDragHandle={true}
                         lockAxis={'y'}
                         axis={'y'}
-                    />
+                    /> */}
                 </styled.ListContainer>
             </styled.PositionsContainer>
     )
