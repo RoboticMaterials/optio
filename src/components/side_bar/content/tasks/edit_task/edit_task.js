@@ -79,7 +79,8 @@ const EditTask = (props) => {
     const loadUnloadFields = () => {
         return (
             <>
-                <styled.RowContainer>
+                {/* Commented out for now, currently at IPW all tasks will be robot enabled. When switching back, change device_type to 'human' when a new task is created */}
+                {/* <styled.RowContainer>
                     <styled.Header>Robot Enabled</styled.Header>
                     <Switch
                         checked={selectedTask.device_type !== 'human'}
@@ -97,7 +98,7 @@ const EditTask = (props) => {
                     />
 
                 </styled.RowContainer>
-                <styled.HelpText>Do you want a robot to perform this task? If selected, there will be an option for a person to take over the task when the button is placed onto the dashboard.</styled.HelpText>
+                <styled.HelpText>Do you want a robot to perform this task? If selected, there will be an option for a person to take over the task when the button is placed onto the dashboard.</styled.HelpText> */}
 
 
                 <styled.RowContainer>

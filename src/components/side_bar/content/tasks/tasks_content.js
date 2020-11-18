@@ -126,7 +126,8 @@ export default function TaskContent(props) {
                         obj: null,
                         type: 'push',
                         quantity: 1,
-                        device_type: 'human',
+                        device_type: 'MiR_100',
+                        // device_type: 'human',
                         map_id: currentMap._id,
                         new: true,
                         load: {

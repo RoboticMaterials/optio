@@ -150,7 +150,8 @@ const EditProcess = (props) => {
                                     type: 'push',
                                     quantity: 1,
                                     new: true,
-                                    device_type: 'human',
+                                    // device_type: 'human',
+                                    device_type: 'MiR_100',
                                     map_id: currentMap._id,
                                     idle_location: null,
                                     // Makes the task/route a part of a process
