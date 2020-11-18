@@ -85,7 +85,7 @@ const HILModal = () => {
                 // If a device dashboard, then show all associated HILs
                 else if (deviceDashboard) {
                     const hilType = tasks[item.task_id].type
-                    return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item} />
+                    return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={id} item={item} />
                 }
                 else {
                     return null

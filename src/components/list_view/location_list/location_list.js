@@ -43,7 +43,6 @@ const LocationList = (props) => {
         <styled.ListScrollContainer>
             {dashboardsArr.length > 0 ?
                 dashboardsArr.map((item, index, arr) => {
-                    // console.log('QQQQ item', item)
                     const {
                         name,
                         device_name,
