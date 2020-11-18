@@ -67,12 +67,13 @@ export const ListItemRect = styled.div`
 `
 
 export const ListItemTitle = styled.div`
+    text-align: left;
     height: 2rem;
     line-height: 2rem;
     box-sizing: border-box;
     width: 100%;
     margin-top: -0.1rem;
-    padding-left: 1rem;
+    padding-left: 2rem;
     padding-right: 1rem;
 
     font-family: ${props => props.theme.font.primary};
