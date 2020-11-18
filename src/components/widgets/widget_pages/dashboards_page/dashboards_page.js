@@ -47,7 +47,7 @@ const DashboardsPage = (props) => {
     useEffect(() => {
         const dashboardType = !!stations[stationID] ? stations[stationID] : devices[stationID]
 
-        const dashID = dashboardType.dashboards
+        const dashID = dashboardType.dashboards[0]
         props.history.push(`/locations/${stationID}/dashboards/${dashID}`)
         return () => {
 

@@ -128,7 +128,6 @@ export const removeLocation = (location) => {
 }
 
 export const setLocationAttributes = (id, attr) => {
-    console.log('QQQQ att', id, attr)
     return async dispatch => {
         dispatch(stationActions.setStationAttributes(id, attr))
         dispatch(positionActions.setPositionAttributes(id, attr))

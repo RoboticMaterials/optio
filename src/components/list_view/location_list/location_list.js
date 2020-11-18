@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from "prop-types";
 
+import { locationsSortedAlphabetically } from '../../../methods/utils/locations_utils'
+
 import * as styled from '../list_view.style'
 
 
@@ -34,7 +36,7 @@ const LocationList = (props) => {
     const locations = useSelector(state => state.locationsReducer.stations)
     const devices = useSelector(state => state.devicesReducer.devices)
 
-    const locationsArr = Object.values(locations)
+    const locationsArr = locationsSortedAlphabetically(Object.values(locations))
     const devicesArr = Object.values(devices)
 
     const dashboardsArr = [...locationsArr, ...devicesArr]
@@ -51,8 +53,8 @@ const LocationList = (props) => {
                     return (
                         <styled.ListItem
                             key={`li-${index}`}
-                            // onMouseEnter={() => onMouseEnter(item)}
-                            // onMouseLeave={() => onMouseLeave(item)}
+                        // onMouseEnter={() => onMouseEnter(item)}
+                        // onMouseLeave={() => onMouseLeave(item)}
                         >
                             <styled.ListItemRect>
                                 <styled.ListItemTitle schema={"locations"} onClick={() => onLocationClick(item)}>{!!name ? name : device_name}</styled.ListItemTitle>
