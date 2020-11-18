@@ -45,6 +45,7 @@ const DashboardScreen = (props) => {
     const currentDashboard = useSelector(state => { return state.dashboardsReducer.dashboards[dashboardId] })
     const taskQueueApi = useSelector(state => { return state.apiReducer.taskQueueApi })
     const code409 = useSelector(state => { return state.taskQueueReducer.error })
+    const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
 
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
@@ -79,49 +80,51 @@ const DashboardScreen = (props) => {
     }
 
     const { buttons } = currentDashboard	// extract buttons from dashboard
-
     // handles event of task click
     // creates an alert on the screen, and dispatches an action to update the task queue
     const handleTaskClick = async (Id, name) => {
 
-        // add alert to notify task has been added
-        setAddTaskAlert({
-            type: ADD_TASK_ALERT_TYPE.ADDING,
-            message: "Adding to Queue..."
+        let inQueue = false
+
+        Object.values(taskQueue).map((item) => {
+            if (item.task_id === Id) inQueue = true
         })
 
-        // dispatch action to add task to queue
-        await dispatch(postTaskQueue({ "task_id": Id }))
+        // add alert to notify task has been added
+        if (!inQueue) {
+            // dispatch action to add task to queue
+            await dispatch(postTaskQueue({ "task_id": Id }))
 
-        try {
-            // code409 is returned if task is already in the queue
-            if (code409.response.data.status === 409) {
-                // display alert notifying user that task is already in queue
-                setAddTaskAlert({
-                    type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
-                    label: "Alert! Task Already in Queue",
-                    message: "'" + name + "' not added"
-                })
-            }
-
-        } catch {
-            // display alert notifying user that task was successfully added
             setAddTaskAlert({
                 type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
                 label: "Task Added to Queue",
                 message: name
             })
+
+            // clear alert after timeout
+            return setTimeout(() => setAddTaskAlert(null), 1800)
         }
 
-        // clear alert after timeout
-        setTimeout(() => setAddTaskAlert(null), 1800)
+        else {
+            // display alert notifying user that task is already in queue
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
+                label: "Alert! Task Already in Queue",
+                message: `'${name}' not added`,
+            })
+
+            // clear alert after timeout
+            return setTimeout(() => setAddTaskAlert(null), 1800)
+        }
+
+
     }
 
     return (
         <style.Container
             // clear alert
             // convenient to be able to clear the alert instead of having to wait for the timeout to clear it automatically
-            onClick={() => setAddTaskAlert(null)}
+            // onClick={() => setAddTaskAlert(null)}
         >
             <DashboardsHeader
                 showTitle={false}
