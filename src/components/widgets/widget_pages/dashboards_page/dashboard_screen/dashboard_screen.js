@@ -140,6 +140,27 @@ const DashboardScreen = (props) => {
     // creates an alert on the screen, and dispatches an action to update the task queue
     const handleTaskClick = async (Id, name, custom) => {
 
+        // If a custom task then add custom task key to task q
+        if (Id === 'custom_task') {
+
+            await dispatch(postTaskQueue(
+                {
+                    "task_id": Id,
+                    'custom_task': custom
+                })
+            )
+
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+                label: "Task Added to Queue",
+                message: name
+            })
+
+            // clear alert after timeout
+            return setTimeout(() => setAddTaskAlert(null), 1800)
+
+        }
+
         let inQueue = false
 
         Object.values(taskQueue).map((item) => {
@@ -149,25 +170,11 @@ const DashboardScreen = (props) => {
         // add alert to notify task has been added
         if (!inQueue) {
             // dispatch action to add task to queue
-            // If a custom task then add custom task key to task q
-            if (Id === 'custom_task') {
-
-                await dispatch(postTaskQueue(
-                    {
-                        "task_id": Id,
-                        'custom_task': custom
-                    })
-                )
-
-            }
-            else {
-                
-                await dispatch(postTaskQueue(
-                    {
-                        "task_id": Id,
-                    })
-                )
-            }
+            await dispatch(postTaskQueue(
+                {
+                    "task_id": Id,
+                })
+            )
 
             setAddTaskAlert({
                 type: ADD_TASK_ALERT_TYPE.TASK_ADDED,

@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import * as stylesh from '../../containers/status_header/status_header.style'
 import {LightenDarkenColor} from "../../methods/utils/color_utils";
 
 export const Container = styled.div`
@@ -105,4 +106,12 @@ export const ListItemTitle = styled.div`
         -webkit-background-clip: text;
         display:block;
     }
+`
+
+export const PlayButton = styled(stylesh.PlayButton)`
+    position: absolute;
+    right: 0;
+`
+
+export const PlayButtonIcon = styled(stylesh.PlayButtonIcon)`
 `
