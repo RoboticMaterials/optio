@@ -57,6 +57,9 @@ const DashboardsList = (props) => {
     // dispatch
     const dispatch = useDispatch()
 
+    const params = useParams()
+    const history = useHistory()
+
     // Drop reference for new dashboard
     const [{ }, newDashDropRef] = useDrop({
         accept: "DashboardSidebarButton",
@@ -77,18 +80,23 @@ const DashboardsList = (props) => {
     const selectedDashboardType = !!station ? station : device
 
 
-    const dashboardsArray = selectedDashboardType.dashboards.map(dashboardID => dashboards[dashboardID])
-
-    const params = useParams()
 
     // logger.log("DashboardsList dashboards", dashboards)
     // logger.log("DashboardsList dashboardsArray", dashboardsArray)
 
     useEffect(() => {
+        if (dashboards[params.dashboardID] === undefined) {
+            history.push('/locations/')
+        }
         return () => {
 
         }
     }, [])
+
+
+
+    const dashboardsArray = selectedDashboardType.dashboards.map(dashboardID => dashboards[dashboardID])
+
 
     // handles event of button drag-and-drop onto a dashboard
     // adds the dropped button to the dashboard target
@@ -163,8 +171,6 @@ const DashboardsList = (props) => {
         } else {
             const currDashboard = dashboardsArray[index]
             if (currDashboard === undefined) {
-                console.log('QQQQ Current station', station)
-                // console.log('QQQQ dashboards', dashboards)
                 return null
             }
 

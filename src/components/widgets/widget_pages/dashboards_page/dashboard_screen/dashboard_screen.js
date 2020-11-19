@@ -43,9 +43,9 @@ const DashboardScreen = (props) => {
     // redux state
     const status = useSelector(state => { return state.statusReducer.status })
     const currentDashboard = useSelector(state => { return state.dashboardsReducer.dashboards[dashboardId] })
-    const taskQueueApi = useSelector(state => { return state.apiReducer.taskQueueApi })
-    const code409 = useSelector(state => { return state.taskQueueReducer.error })
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
+    const devices = useSelector(state => state.devicesReducer.devices)
+    const positions = useSelector(state => state.locationsReducer.positions)
 
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
@@ -55,6 +55,7 @@ const DashboardScreen = (props) => {
     const onDashboardOpen = (bol) => dispatch(dashboardOpen(bol))
 
     const history = useHistory()
+    const params = useParams()
 
     /**
      * When a dashboard screen is loaded, tell redux that its open
@@ -64,7 +65,6 @@ const DashboardScreen = (props) => {
      */
     useEffect(() => {
         onDashboardOpen(true)
-
         return () => {
             onDashboardOpen(false)
         }
@@ -79,10 +79,66 @@ const DashboardScreen = (props) => {
         )
     }
 
-    const { buttons } = currentDashboard	// extract buttons from dashboard
+    /**
+     * Handles buttons associated with selected dashboard
+     * 
+     * If it's a AMR device dashboard, add a extra buttons
+     * The extra buttons are: 
+     * 'Send to charge location'
+     * 'Send to Idle Location'
+     */
+    const handleDashboardButtons = () => {
+        let { buttons } = currentDashboard	// extract buttons from dashboard
+
+        if (!!devices[params.stationID] && devices[params.stationID].device_model === 'MiR100') {
+            const device = devices[params.stationID]
+
+            // If the device has an idle location, add a button for it
+            if (!!device.idle_location) {
+                buttons = [
+                    ...buttons,
+                    {
+                        'name': 'Send to Idle Location',
+                        'color': '#FF4B4B',
+                        'task_id': 'custom_task',
+                        'custom_task': {
+                            'type': 'position_move',
+                            'position': device.idle_location,
+                            'device_type': 'MiR_100',
+                        },
+                        'id': 'custom_task_idle'
+                    }
+                ]
+            }
+
+            // Map through positions and add a button if it's a charge position
+            Object.values(positions).map((position, ind) => {
+                if (position.type === 'charger_position') {
+                    buttons = [
+                        ...buttons,
+                        {
+                            'name': position.name,
+                            'color': '#FFFF4B',
+                            'task_id': 'custom_task',
+                            'custom_task': {
+                                'type': 'position_move',
+                                'position': position._id,
+                                'device_type': 'MiR_100',
+                            },
+                            'id': `custom_task_charge_${ind}`
+                        }
+                    ]
+                }
+            })
+
+        }
+
+        return buttons
+    }
+
     // handles event of task click
     // creates an alert on the screen, and dispatches an action to update the task queue
-    const handleTaskClick = async (Id, name) => {
+    const handleTaskClick = async (Id, name, custom) => {
 
         let inQueue = false
 
@@ -93,7 +149,25 @@ const DashboardScreen = (props) => {
         // add alert to notify task has been added
         if (!inQueue) {
             // dispatch action to add task to queue
-            await dispatch(postTaskQueue({ "task_id": Id }))
+            // If a custom task then add custom task key to task q
+            if (Id === 'custom_task') {
+
+                await dispatch(postTaskQueue(
+                    {
+                        "task_id": Id,
+                        'custom_task': custom
+                    })
+                )
+
+            }
+            else {
+                
+                await dispatch(postTaskQueue(
+                    {
+                        "task_id": Id,
+                    })
+                )
+            }
 
             setAddTaskAlert({
                 type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
@@ -122,9 +196,9 @@ const DashboardScreen = (props) => {
 
     return (
         <style.Container
-            // clear alert
-            // convenient to be able to clear the alert instead of having to wait for the timeout to clear it automatically
-            // onClick={() => setAddTaskAlert(null)}
+        // clear alert
+        // convenient to be able to clear the alert instead of having to wait for the timeout to clear it automatically
+        // onClick={() => setAddTaskAlert(null)}
         >
             <DashboardsHeader
                 showTitle={false}
@@ -141,7 +215,7 @@ const DashboardScreen = (props) => {
             </DashboardsHeader>
 
             <DashboardButtonList
-                buttons={buttons}
+                buttons={handleDashboardButtons()}
                 addedTaskAlert={addTaskAlert}
                 onTaskClick={handleTaskClick}
             />
