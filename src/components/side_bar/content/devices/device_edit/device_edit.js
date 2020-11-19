@@ -25,6 +25,7 @@ import * as templates from '../devices_templates/device_templates'
 
 // Import Utils
 import { DeviceItemTypes } from '../../../../../methods/utils/device_utils'
+import { locationsSortedAlphabetically } from '../../../../../methods/utils/locations_utils'
 
 /**
  * This handles editing device informaton
@@ -52,6 +53,7 @@ const DeviceEdit = (props) => {
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const selectedDevice = useSelector(state => state.devicesReducer.selectedDevice)
     const devices = useSelector(state => state.devicesReducer.devices)
+    const positions = useSelector(state => state.locationsReducer.positions)
 
     // On page load, see if the device is a new device or existing device
     // TODO: This is going to fundementally change with how devices 'connect' to the cloud.
@@ -122,47 +124,77 @@ const DeviceEdit = (props) => {
     }
 
     /**
-     * This will appear if the device being edited is an existing device
+     * This is used to place the device onto the map
+     * Mir cart or AGV do not need to show this because they will already be on the map
      */
-    const handleExistingDevice = () => {
+    const handleDeviceMapLocation = () => {
 
         let template = templates.defaultAttriutes
 
+        // Sets the device logo type
         let deviceType = DeviceItemTypes['generic']
         if (!!DeviceItemTypes[selectedDevice.device_model]) deviceType = DeviceItemTypes[selectedDevice.device_model]
         else if (selectedDevice.device_model === 'MiR100') deviceType = DeviceItemTypes['cart']
 
 
         return (
-            <styled.SettingsSectionsContainer style={{ alignItems: 'center', textAlign: 'center', }}>
+            <styled.SectionsContainer style={{ alignItems: 'center', textAlign: 'center', }}>
 
-                {selectedDevice.device_model !== 'MiR100' &&
-                    <>
-                        <styled.ConnectionText>To add the device to the screen, grab the device with your mouse and drag onto the screen</styled.ConnectionText>
+                <styled.ConnectionText>To add the device to the screen, grab the device with your mouse and drag onto the screen</styled.ConnectionText>
 
-                        <styled.DeviceIcon
-                            className={deviceType.icon}
-                            style={{ color: !!showPositions ? deviceType.primaryColor : 'white' }}
-                            onMouseDown={async e => {
-                                if (selectedLocation.type !== null) { return }
-                                await Object.assign(selectedLocation, { ...template, temp: true })
-                                await onAddLocation(selectedLocation)
-                                await onSetSelectedLocation(selectedLocation)
-                                setShowPositions(true)
-                            }
-                            }
+                <styled.DeviceIcon
+                    className={deviceType.icon}
+                    style={{ color: !!showPositions ? deviceType.primaryColor : 'white' }}
+                    onMouseDown={async e => {
+                        if (selectedLocation.type !== null) { return }
+                        await Object.assign(selectedLocation, { ...template, temp: true })
+                        await onAddLocation(selectedLocation)
+                        await onSetSelectedLocation(selectedLocation)
+                        setShowPositions(true)
+                    }}
+                />
 
-
-
-                        />
-                    </>
-                }
-
-
-            </styled.SettingsSectionsContainer>
+            </styled.SectionsContainer>
 
         )
 
+    }
+
+    /**
+     * This is used to set the idle location of the AMR when not in use.
+     * This should only show up if th
+     */
+    const handleAMRIdleLocation = () => {
+
+        return (
+            <styled.SectionsContainer>
+
+                <styled.Label schema={'devices'} >Idle Location</styled.Label>
+                <DropDownSearch
+                    placeholder="Select Location"
+                    label="Idle Location for MiR Cart"
+                    labelField="name"
+                    valueField="name"
+                    options={locationsSortedAlphabetically(Object.values(positions))}
+                    values={!!selectedDevice.idle_location ? [positions[selectedDevice.idle_location]] : []}
+                    dropdownGap={5}
+                    noDataLabel="No matches found"
+                    closeOnSelect="true"
+                    onChange={values => {
+
+                        const idleLocation = values[0]._id
+                        console.log('QQQQ idle location', idleLocation)
+
+                        onSetSelectedDevice({
+                            ...selectedDevice,
+                            idle_location: idleLocation,
+                        })
+                    }}
+                    className="w-100"
+                    schema="tasks"
+                />
+            </styled.SectionsContainer>
+        )
     }
 
     const handleSetChildPositionToCartCoords = (position) => {
@@ -191,18 +223,18 @@ const DeviceEdit = (props) => {
 
         return (
             <>
-                <styled.SettingsSectionsContainer style={{ alignItems: 'center', textAlign: 'center', userSelect: 'none' }}>
+                <styled.SectionsContainer style={{ alignItems: 'center', textAlign: 'center', userSelect: 'none' }}>
 
                     <styled.ConnectionText>Add Cart Position associated with this device</styled.ConnectionText>
                     <Positions type='cart_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
 
-                </styled.SettingsSectionsContainer>
+                </styled.SectionsContainer>
 
-                <styled.SettingsSectionsContainer style={{ alignItems: 'center', textAlign: 'center', userSelect: 'none' }}>
+                <styled.SectionsContainer style={{ alignItems: 'center', textAlign: 'center', userSelect: 'none' }}>
 
                     <styled.ConnectionText>Add Shelf Positions associated with this device</styled.ConnectionText>
                     <Positions type='shelf_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
-                </styled.SettingsSectionsContainer>
+                </styled.SectionsContainer>
             </>
         )
     }
@@ -222,10 +254,10 @@ const DeviceEdit = (props) => {
     }
 
     return (
-        <styled.SettingsContainer>
+        <styled.Container>
 
             {/* Commented Out for now because we dont need to show/connect via IP TODO: Probably delete   */}
-            {/* <styled.SettingsSectionsContainer>
+            {/* <styled.SectionsContainer>
 
                 <styled.RowContainer style={{ justifyContent: 'space-between' }}>
                     <styled.SettingsLabel schema={'devices'} >Device IP</styled.SettingsLabel>
@@ -248,11 +280,11 @@ const DeviceEdit = (props) => {
                     style={{ fontWeight: '600', fontSize: '1.5rem' }}
                     labelStyle={{ color: 'black' }}
                 />
-            </styled.SettingsSectionsContainer> */}
+            </styled.SectionsContainer> */}
 
-            <styled.SettingsSectionsContainer>
+            <styled.SectionsContainer>
 
-                <styled.SettingsLabel schema={'devices'} >Device Name</styled.SettingsLabel>
+                <styled.Label schema={'devices'} >Device Name</styled.Label>
 
                 <Textbox
                     defaultValue={selectedDevice.device_name}
@@ -264,10 +296,14 @@ const DeviceEdit = (props) => {
                     labelStyle={{ color: 'black' }}
                 />
 
-            </styled.SettingsSectionsContainer>
+            </styled.SectionsContainer>
 
 
-            {handleExistingDevice()}
+            {selectedDevice.device_model !== 'MiR100' ?
+                handleDeviceMapLocation()
+                :
+                handleAMRIdleLocation()
+            }
 
             {!!showPositions &&
 
@@ -282,7 +318,7 @@ const DeviceEdit = (props) => {
                 Delete
                 </Button>
 
-        </styled.SettingsContainer>
+        </styled.Container>
     )
 
 }

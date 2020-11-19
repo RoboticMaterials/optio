@@ -3,13 +3,13 @@ import * as style from '../devices_content.style'
 import * as styles from '../../settings/settings.style'
 import * as stylel from '../../locations/locations_content.style'
 
-export const SettingsContainer = styled(style.SettingsContainer)`
+export const Container = styled(style.SettingsContainer)`
 `
 
-export const SettingsSectionsContainer = styled(style.SettingsSectionsContainer)`
+export const SectionsContainer = styled(style.SettingsSectionsContainer)`
 `
 
-export const SettingsLabel = styled(style.SettingsLabel)`
+export const Label = styled(style.SettingsLabel)`
     margin-bottom: 1rem;
 `
 
