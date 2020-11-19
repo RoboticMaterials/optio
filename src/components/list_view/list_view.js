@@ -1,7 +1,7 @@
 // import external dependencies
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { Route, useHistory } from 'react-router-dom'
+import { Route, useHistory, useParams } from 'react-router-dom'
 
 // components
 import DashboardsPage from "../widgets/widget_pages/dashboards_page/dashboards_page";
@@ -48,6 +48,7 @@ const ListView = (props) => {
 
     const dispatch = useDispatch()
     const history = useHistory()
+    const params = useParams()
     const { widgetPage } = props.match.params
 
     const size = useWindowSize()
@@ -55,8 +56,10 @@ const ListView = (props) => {
     const widthBreakPoint = 1025
 
     const locations = useSelector(state => state.locationsReducer.stations)
+    const positions = useSelector(state => state.locationsReducer.positions)
     const devices = useSelector(state => state.devicesReducer.devices)
     const status = useSelector(state => state.statusReducer.status)
+    const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
 
     const onPostStatus = (status) => dispatch(postStatus(status))
 
@@ -95,6 +98,10 @@ const ListView = (props) => {
 
     }, [widgetPage])
 
+    // useEffect(() => {
+    //     console.log('QQQQ task q', taskQueue)
+    // }, [taskQueue])
+
     const onLocationClick = (item) => {
         history.push('/locations/' + item._id + '/' + "dashboards")
         setShowDashboards(true)
@@ -109,6 +116,45 @@ const ListView = (props) => {
 
         //Post the status to the API
         await onPostStatus({ pause_status: pause_status });
+    }
+
+
+    const handleTaskQueueStatus = () => {
+
+        // return (
+        //     <styled.StatusContainer>
+        //         <p>Distance to Station 3 is 30m</p>
+        //     </styled.StatusContainer>
+        // )
+        return Object.values(taskQueue).map((item, ind) => {
+
+            // If the item has an owner that means that task is being executed
+            if (!!item.owner) {
+
+                // If the station is a device and the task q owner is that device then show the status
+                if (!!devices[params.stationID] && item.owner === devices[params.stationID]._id) {
+                    console.log('QQQQ device', devices[params.stationID])
+                    
+                    console.log('QQQQ Item', item)
+
+                    let locationName = ''
+                    
+                    if(!!item.custom_task){
+                        locationName = positions[item.custom_task.position].name
+                    }
+                    else if(!!item.next_position){
+                        locationName = positions[item.next_position].name
+                    }
+
+                    return (
+                        <styled.StatusContainer>
+                            <p>{`Distance to ${locationName} - ${Math.floor(devices[item.owner].distance_to_next_target)}m`}</p>
+                        </styled.StatusContainer>
+                    )
+
+                }
+            }
+        })
     }
 
 
@@ -151,6 +197,7 @@ const ListView = (props) => {
                     </BounceButton>
                 }
                 <styled.Title schema={CURRENT_SCREEN.schema}>{title}</styled.Title>
+                {handleTaskQueueStatus()}
 
                 <styled.PlayButton
                     play={pause_status}

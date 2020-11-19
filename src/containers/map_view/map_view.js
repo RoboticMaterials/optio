@@ -647,9 +647,9 @@ export class MapView extends Component {
                         }
                     </svg>
 
-                    {/* {!!this.props.selectedTask &&
+                    {!!this.props.selectedTask &&
                         <TaskStatistics d3={this.d3} />
-                    } */}
+                    }
 
                     {/* Widgets are here when not in mobile mode. If mobile mode, then they are in App.js.
                     The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons). */}
