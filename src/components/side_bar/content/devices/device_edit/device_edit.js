@@ -59,26 +59,29 @@ const DeviceEdit = (props) => {
     // TODO: This is going to fundementally change with how devices 'connect' to the cloud.
     useEffect(() => {
 
-        // If the selected device does not have a location, then give it a temp one
-        if (!selectedLocation) {
-            onSetSelectedLocation({
-                name: selectedDevice.device_name,
-                device_id: selectedDevice._id,
-                schema: null,
-                type: null,
-                pos_x: 0,
-                pos_y: 0,
-                rotation: 0,
-                x: 0,
-                y: 0,
-                _id: uuid.v4(),
-            })
-        } else {
-            // If selected device has children then it has positions to show
-            if (!!selectedLocation.children) {
-                setShowPositions(true)
-            }
+        // If the selected device is not a AMR then set a location. If an AMR, it does not need a location
+        if (selectedDevice.device_model !== 'MiR100') {
+            // If the selected device does not have a location, then give it a temp one
+            if (!selectedLocation) {
+                onSetSelectedLocation({
+                    name: selectedDevice.device_name,
+                    device_id: selectedDevice._id,
+                    schema: null,
+                    type: null,
+                    pos_x: 0,
+                    pos_y: 0,
+                    rotation: 0,
+                    x: 0,
+                    y: 0,
+                    _id: uuid.v4(),
+                })
+            } else {
+                // If selected device has children then it has positions to show
+                if (!!selectedLocation.children) {
+                    setShowPositions(true)
+                }
 
+            }
         }
 
         // Sets the type of device, unknown devic defaults to an RM logo while known devices use their own custom SVGs
