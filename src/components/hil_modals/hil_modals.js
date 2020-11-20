@@ -64,7 +64,7 @@ const HILModals = (props) => {
             setHilLoadUnload('unload')
         }
 
-        if (item.quantity) {
+        if (!!item.quantity) {
             setQuantity(item.quantity)
         } else {
             setQuantity(0)
@@ -100,7 +100,7 @@ const HILModals = (props) => {
         setTimeout(() => onHILResponse(''), 2000)
         await onPutTaskQueue(newItem, ID)
 
-        // handleLogEvent()
+        handleLogEvent()
     }
 
     // Posts HIL Postpone to API
@@ -124,37 +124,41 @@ const HILModals = (props) => {
 
     // Posts event to back end for stats and tracking
     const handleLogEvent = () => {
-        let event = {}
+
+        let event = {
+            object: null,
+            outgoing: false,
+            quantity: 0,
+            station: null,
+            time: null,
+        }
 
         //Get the time
         const time = Date.now() / 1000
-
-        const task = item.task_id
-        const object = task.obj
+        const object = tasks[item.task_id].obj
         const station = item.hil_station_id
 
-        // let quantity = 0
-        // if(!!item.quantity){
-        //     quantity = item.quantity
-        // }
+        let eventQuantity = 0
+        if(!!item.quantity){
+            eventQuantity = item.quantity
+        } else {
+            eventQuantity = quantity
+        }
 
-        const quantity = item.quantity
-
-        let incoming = ''
+        let outgoing = null
         if (hilLoadUnload === 'load') {
-            incoming = true
+            outgoing = true
         } else if (hilLoadUnload === 'unload') {
-            incoming = false
+            outgoing = false
         } else (
-            incoming = 'Unknown'
+            outgoing = 'Unknown'
         )
 
         event.time = time
-        event.task = task
         event.object = object
         event.station = station
-        event.quantity = quantity
-
+        event.quantity = eventQuantity
+        event.outgoing = outgoing
 
         onPostEvents(event)
     }
