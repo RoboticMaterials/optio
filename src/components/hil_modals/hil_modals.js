@@ -163,7 +163,7 @@ const HILModals = (props) => {
         console.log('QQQQ event', event)
         console.log('QQQQ item', item)
 
-        // onPostEvents(event)
+        onPostEvents(event)
     }
 
     /**
