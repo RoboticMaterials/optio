@@ -46,6 +46,7 @@ const DashboardScreen = (props) => {
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const devices = useSelector(state => state.devicesReducer.devices)
     const positions = useSelector(state => state.locationsReducer.positions)
+    const tasks = useSelector(state => state.tasksReducer.tasks)
 
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
@@ -56,6 +57,9 @@ const DashboardScreen = (props) => {
 
     const history = useHistory()
     const params = useParams()
+
+    const stationID = params.stationID
+    const dashboardID = params.dashboardID
 
     /**
      * When a dashboard screen is loaded, tell redux that its open
@@ -86,12 +90,15 @@ const DashboardScreen = (props) => {
      * The extra buttons are: 
      * 'Send to charge location'
      * 'Send to Idle Location'
+     * 
+     * If there's a human task in the human task Q (see human_task_queue_actions for more details)
+     * and if the the tasks unload location is the dashboards station, then show a unload button
      */
     const handleDashboardButtons = () => {
         let { buttons } = currentDashboard	// extract buttons from dashboard
 
-        if (!!devices[params.stationID] && devices[params.stationID].device_model === 'MiR100') {
-            const device = devices[params.stationID]
+        if (!!devices[stationID] && devices[stationID].device_model === 'MiR100') {
+            const device = devices[stationID]
 
             // If the device has an idle location, add a button for it
             if (!!device.idle_location) {
@@ -169,12 +176,33 @@ const DashboardScreen = (props) => {
 
         // add alert to notify task has been added
         if (!inQueue) {
-            // dispatch action to add task to queue
-            await dispatch(postTaskQueue(
-                {
-                    "task_id": Id,
-                })
-            )
+
+            // If the task is a human task, its handled a little differently compared to a normal task
+            // Set hil_response to false because the backend does not dictate the load hil message
+            // Since the task is put into the q but automatically assigned to the person that clicks the button upon up a hill message quick
+            if (tasks[Id].device_type === 'human') {
+
+                console.log('QQQQ Human task')
+                // dispatch action to add task to queue
+                await dispatch(postTaskQueue(
+                    {
+                        "task_id": Id,
+                        dashboard: dashboardID,
+                        hil_response: false,
+                    })
+                )
+
+            } else {
+
+
+
+                // dispatch action to add task to queue
+                await dispatch(postTaskQueue(
+                    {
+                        "task_id": Id,
+                    })
+                )
+            }
 
             setAddTaskAlert({
                 type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
@@ -197,7 +225,6 @@ const DashboardScreen = (props) => {
             // clear alert after timeout
             return setTimeout(() => setAddTaskAlert(null), 1800)
         }
-
 
     }
 
