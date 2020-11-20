@@ -160,7 +160,7 @@ const HILModals = (props) => {
         event.quantity = eventQuantity
         event.outgoing = outgoing
 
-        onPostEvents(event)
+        // onPostEvents(event)
     }
 
     /**
