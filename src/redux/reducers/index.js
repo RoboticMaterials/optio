@@ -26,6 +26,7 @@ import notificationsReducer from './notifications_reducer'
 import eventsReducer from './events_reducer'
 import authenticationReducer from './authentication_reducer'
 import processesReducer from './processes_reducer'
+import humanTaskQueueReducer from './human_task_queue_reducer'
 
 export default combineReducers({
     apiReducer,
@@ -55,4 +56,5 @@ export default combineReducers({
     eventsReducer,
     authenticationReducer,
     processesReducer,
+    humanTaskQueueReducer
 })

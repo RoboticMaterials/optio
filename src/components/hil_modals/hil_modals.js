@@ -100,7 +100,7 @@ const HILModals = (props) => {
         setTimeout(() => onHILResponse(''), 2000)
         await onPutTaskQueue(newItem, ID)
 
-        handleLogEvent()
+        handleLogHumanEvent()
     }
 
     // Posts HIL Postpone to API
@@ -123,7 +123,7 @@ const HILModals = (props) => {
     }
 
     // Posts event to back end for stats and tracking
-    const handleLogEvent = () => {
+    const handleLogHumanEvent = () => {
 
         let event = {
             object: null,
@@ -160,7 +160,10 @@ const HILModals = (props) => {
         event.quantity = eventQuantity
         event.outgoing = outgoing
 
-        onPostEvents(event)
+        console.log('QQQQ event', event)
+        console.log('QQQQ item', item)
+
+        // onPostEvents(event)
     }
 
     /**
