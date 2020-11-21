@@ -138,7 +138,8 @@ const DashboardScreen = (props) => {
                 }
             })
 
-        }
+        } 
+        else if (taskQueue)
 
         return buttons
     }
