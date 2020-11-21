@@ -57,7 +57,8 @@ const HILModal = () => {
             // If the task queue item has a HIL and it's corresponding dashboard id is not in the activeHILDasbaords list then display HIL.
             // Dashboards can only have 1 HIL at a time, if the task queue has 2 HILS for the same dashboards, then only read the 
             // most recent in the list 
-            if (!!item.hil_station_id) {
+            // Do not display HIL if the tasks device type is human, if it's a human, and unload button will appear on the dashboard
+            if (!!item.hil_station_id && tasks[item.task_id].device_type !== 'human') {
 
                 // Loops through all ascociated dashboards at that location
                 locations[item.hil_station_id].dashboards.map((dashboard, ind) => {
