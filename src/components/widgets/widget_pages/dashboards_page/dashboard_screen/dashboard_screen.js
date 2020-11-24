@@ -12,12 +12,13 @@ import DashboardTaskQueue from './dashboard_task_queue/dashboard_task_queue'
 
 // Import Utils
 import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../constants/dashboard_contants";
+import { deepCopy } from '../../../../../methods/utils/utils'
 
 // Import API
 import { postStatus } from '../../../../../api/status_api'
 
 // Import Actions
-import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
+import { postTaskQueue, putTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import { dashboardOpen } from '../../../../../redux/actions/dashboards_actions'
 
 // Import styles
@@ -54,6 +55,8 @@ const DashboardScreen = (props) => {
     // actions
     const dispatch = useDispatch()
     const onDashboardOpen = (bol) => dispatch(dashboardOpen(bol))
+    const onHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
+    const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
 
     const history = useHistory()
     const params = useParams()
@@ -97,6 +100,7 @@ const DashboardScreen = (props) => {
     const handleDashboardButtons = () => {
         let { buttons } = currentDashboard	// extract buttons from dashboard
 
+        // If this dashboard belongs to a device and the device is a cart, add some unique buttons
         if (!!devices[stationID] && devices[stationID].device_model === 'MiR100') {
             const device = devices[stationID]
 
@@ -138,8 +142,30 @@ const DashboardScreen = (props) => {
                 }
             })
 
-        } 
-        else if (taskQueue)
+        }
+        // Else if the task q contains a human task that is unloading, show an unload button
+        else if (Object.values(taskQueue).length > 0) {
+
+            // Map through each item and see if it's showing a station, station Id is matching the current station and a human task
+            Object.values(taskQueue).map((item, ind) => {
+
+                // If it is matching, add a button the the dashboard for unloading 
+                if (!!item.hil_station_id && item.hil_station_id === stationID && tasks[item.task_id].device_type === 'human') {
+                    buttons = [
+                        ...buttons,
+                        {
+                            'name': item.hil_message,
+                            'color': '#90eaa8',
+                            'task_id': 'hil_success',
+                            'custom_task': {
+                                ...item
+                            },
+                            'id': `custom_task_charge_${ind}`
+                        }
+                    ]
+                }
+            })
+        }
 
         return buttons
     }
@@ -165,6 +191,21 @@ const DashboardScreen = (props) => {
             })
 
             // clear alert after timeout
+            return setTimeout(() => setAddTaskAlert(null), 1800)
+
+        }
+
+        // Else if its a hil success, execute the HIL success function
+        else if (Id === 'hil_success') {
+
+            handleHilSuccess(custom)
+
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+                label: "Task Added to Queue",
+                message: name
+            })
+
             return setTimeout(() => setAddTaskAlert(null), 1800)
 
         }
@@ -226,6 +267,32 @@ const DashboardScreen = (props) => {
             // clear alert after timeout
             return setTimeout(() => setAddTaskAlert(null), 1800)
         }
+
+    }
+
+    // Posts HIL Success to API 
+    const handleHilSuccess = async (item) => {
+
+        let newItem = {
+            ...item,
+            hil_response: true,
+            // quantity: quantity,
+        }
+
+        // return console.log('QQQQ New Item', newItem)
+
+        const ID = deepCopy(item._id.$oid)
+
+        delete newItem._id
+        delete newItem.dashboard
+
+        // This is used to make the tap of the HIL button respond quickly
+        // TODO: This may not be necessary here 
+        onHILResponse(ID)
+        setTimeout(() => onHILResponse(''), 2000)
+
+        console.log('QQQQ task success', newItem)
+        await onPutTaskQueue(newItem, ID)
 
     }
 

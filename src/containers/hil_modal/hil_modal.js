@@ -57,6 +57,7 @@ const HILModal = () => {
             // If the task queue item has a HIL and it's corresponding dashboard id is not in the activeHILDasbaords list then display HIL.
             // Dashboards can only have 1 HIL at a time, if the task queue has 2 HILS for the same dashboards, then only read the 
             // most recent in the list 
+            // 
             // Do not display HIL if the tasks device type is human, if it's a human, and unload button will appear on the dashboard
             if (!!item.hil_station_id && tasks[item.task_id].device_type !== 'human') {
 
@@ -92,9 +93,11 @@ const HILModal = () => {
                     return null
                 }
             }
-            else if (!!item.dashboard && item.dashboard === dashboardID){
-                console.log('QQQQ Show dah bitch')
 
+            // Else if the task q item has a dashboardID and the dashboardID matches current dashboard, then show that dashboard
+            // The reason this happens is that it's a human task and the person hit a dashboard button (see dashboard_screen). 
+            // The HIL modal needs to immediatly show because the backend will be too slow to respond to show that dashboard after button clikc
+            else if (!!item.dashboard && item.dashboard === dashboardID){
                 return <HILModals hilMessage={item.hil_message} hilType={'push'} taskQuantity={item.quantity} taskQueueID={id} item={item} />
 
             }
