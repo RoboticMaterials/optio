@@ -48,6 +48,8 @@ const DashboardScreen = (props) => {
     const devices = useSelector(state => state.devicesReducer.devices)
     const positions = useSelector(state => state.locationsReducer.positions)
     const tasks = useSelector(state => state.tasksReducer.tasks)
+    const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
+
 
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
@@ -150,7 +152,7 @@ const DashboardScreen = (props) => {
             Object.values(taskQueue).map((item, ind) => {
 
                 // If it is matching, add a button the the dashboard for unloading 
-                if (!!item.hil_station_id && item.hil_station_id === stationID && tasks[item.task_id].device_type === 'human') {
+                if (!!item.hil_station_id && item.hil_station_id === stationID && hilResponse !== item._id.$oid && tasks[item.task_id].device_type === 'human') {
                     buttons = [
                         ...buttons,
                         {
@@ -203,7 +205,7 @@ const DashboardScreen = (props) => {
             setAddTaskAlert({
                 type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
                 label: "Task Added to Queue",
-                message: name
+                message: 'Unloaded',
             })
 
             return setTimeout(() => setAddTaskAlert(null), 1800)
