@@ -56,7 +56,7 @@ const HILModals = (props) => {
     // Use Effect for when page loads, handles wether the HIL is a load or unload
     useEffect(() => {
         // If the task's load location of the task q item matches the item's location then its a load hil, else its unload
-        if (tasks[item.task_id].load.station === item.hil_station_id) {
+        if (tasks[item.task_id].load.station === item.hil_station_id || !!item.dashboard) {
             // load
             setHilLoadUnload('load')
         } else {
@@ -94,13 +94,16 @@ const HILModals = (props) => {
         const ID = deepCopy(taskQueueID)
 
         delete newItem._id
+        delete newItem.dashboard
 
         // This is used to make the tap of the HIL button respond quickly 
         onHILResponse('success')
         setTimeout(() => onHILResponse(''), 2000)
+
+        console.log('QQQQ task success', newItem)
         await onPutTaskQueue(newItem, ID)
 
-        handleLogEvent()
+        // handleLogHumanEvent()
     }
 
     // Posts HIL Postpone to API
@@ -123,7 +126,7 @@ const HILModals = (props) => {
     }
 
     // Posts event to back end for stats and tracking
-    const handleLogEvent = () => {
+    const handleLogHumanEvent = () => {
 
         let event = {
             object: null,
@@ -192,7 +195,7 @@ const HILModals = (props) => {
     return (
         <styled.HilContainer >
             <styled.HilBorderContainer >
-                <styled.HilMessage>{hilMessage}</styled.HilMessage>
+                <styled.HilMessage>{!!item.dashboard ? 'Enter Quantity' : hilMessage}</styled.HilMessage>
                 {/* Only Showing timers on load at the moment, will probably change in the future */}
                 {!!hilTimers[item._id.$oid] && hilLoadUnload === 'load' &&
                     <styled.HilTimer>{hilTimers[item._id.$oid]}</styled.HilTimer>

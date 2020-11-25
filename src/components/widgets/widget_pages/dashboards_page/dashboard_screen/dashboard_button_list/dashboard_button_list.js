@@ -43,8 +43,8 @@ const DashboardButtonList = ((props) => {
 
         let taskID = currentButton.task_id
         
-        // If the task is in tasks or it's a custom task, then it exists
-		const taskExists = !!tasks[taskID] ? true : taskID === 'custom_task' ? true : false
+        // If the task is in tasks or it's a custom task or hil success, then it exists
+		const taskExists = !!tasks[taskID] ? true : taskID === 'custom_task' ? true : taskID === 'hil_success' ? true : false
 
 		return (
 			<DashboardButton
@@ -52,7 +52,7 @@ const DashboardButtonList = ((props) => {
 				key={index}
 				onClick={() => {
                     logger.log("DashboardButtonList Dashboard onClick")
-                    if(taskID === 'custom_task'){
+                    if(taskID === 'custom_task' || taskID === 'hil_success'){
                         onTaskClick(taskID, name, currentButton.custom_task)
 
                     } else {

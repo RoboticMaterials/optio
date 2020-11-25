@@ -12,12 +12,13 @@ import DashboardTaskQueue from './dashboard_task_queue/dashboard_task_queue'
 
 // Import Utils
 import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../constants/dashboard_contants";
+import { deepCopy } from '../../../../../methods/utils/utils'
 
 // Import API
 import { postStatus } from '../../../../../api/status_api'
 
 // Import Actions
-import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
+import { postTaskQueue, putTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import { dashboardOpen } from '../../../../../redux/actions/dashboards_actions'
 
 // Import styles
@@ -46,6 +47,9 @@ const DashboardScreen = (props) => {
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const devices = useSelector(state => state.devicesReducer.devices)
     const positions = useSelector(state => state.locationsReducer.positions)
+    const tasks = useSelector(state => state.tasksReducer.tasks)
+    const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
+
 
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
@@ -53,9 +57,14 @@ const DashboardScreen = (props) => {
     // actions
     const dispatch = useDispatch()
     const onDashboardOpen = (bol) => dispatch(dashboardOpen(bol))
+    const onHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
+    const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
 
     const history = useHistory()
     const params = useParams()
+
+    const stationID = params.stationID
+    const dashboardID = params.dashboardID
 
     /**
      * When a dashboard screen is loaded, tell redux that its open
@@ -86,12 +95,16 @@ const DashboardScreen = (props) => {
      * The extra buttons are: 
      * 'Send to charge location'
      * 'Send to Idle Location'
+     * 
+     * If there's a human task in the human task Q (see human_task_queue_actions for more details)
+     * and if the the tasks unload location is the dashboards station, then show a unload button
      */
     const handleDashboardButtons = () => {
         let { buttons } = currentDashboard	// extract buttons from dashboard
 
-        if (!!devices[params.stationID] && devices[params.stationID].device_model === 'MiR100') {
-            const device = devices[params.stationID]
+        // If this dashboard belongs to a device and the device is a cart, add some unique buttons
+        if (!!devices[stationID] && devices[stationID].device_model === 'MiR100') {
+            const device = devices[stationID]
 
             // If the device has an idle location, add a button for it
             if (!!device.idle_location) {
@@ -132,6 +145,29 @@ const DashboardScreen = (props) => {
             })
 
         }
+        // Else if the task q contains a human task that is unloading, show an unload button
+        else if (Object.values(taskQueue).length > 0) {
+
+            // Map through each item and see if it's showing a station, station Id is matching the current station and a human task
+            Object.values(taskQueue).map((item, ind) => {
+
+                // If it is matching, add a button the the dashboard for unloading 
+                if (!!item.hil_station_id && item.hil_station_id === stationID && hilResponse !== item._id.$oid && tasks[item.task_id].device_type === 'human') {
+                    buttons = [
+                        ...buttons,
+                        {
+                            'name': item.hil_message,
+                            'color': '#90eaa8',
+                            'task_id': 'hil_success',
+                            'custom_task': {
+                                ...item
+                            },
+                            'id': `custom_task_charge_${ind}`
+                        }
+                    ]
+                }
+            })
+        }
 
         return buttons
     }
@@ -161,6 +197,21 @@ const DashboardScreen = (props) => {
 
         }
 
+        // Else if its a hil success, execute the HIL success function
+        else if (Id === 'hil_success') {
+
+            handleHilSuccess(custom)
+
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+                label: "Task Added to Queue",
+                message: 'Unloaded',
+            })
+
+            return setTimeout(() => setAddTaskAlert(null), 1800)
+
+        }
+
         let inQueue = false
 
         Object.values(taskQueue).map((item) => {
@@ -169,12 +220,33 @@ const DashboardScreen = (props) => {
 
         // add alert to notify task has been added
         if (!inQueue) {
-            // dispatch action to add task to queue
-            await dispatch(postTaskQueue(
-                {
-                    "task_id": Id,
-                })
-            )
+
+            // If the task is a human task, its handled a little differently compared to a normal task
+            // Set hil_response to null because the backend does not dictate the load hil message
+            // Since the task is put into the q but automatically assigned to the person that clicks the button
+            if (tasks[Id].device_type === 'human') {
+
+                console.log('QQQQ Human task')
+                // dispatch action to add task to queue
+                await dispatch(postTaskQueue(
+                    {
+                        "task_id": Id,
+                        dashboard: dashboardID,
+                        hil_response: null,
+                    })
+                )
+
+            } else {
+
+
+
+                // dispatch action to add task to queue
+                await dispatch(postTaskQueue(
+                    {
+                        "task_id": Id,
+                    })
+                )
+            }
 
             setAddTaskAlert({
                 type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
@@ -198,6 +270,31 @@ const DashboardScreen = (props) => {
             return setTimeout(() => setAddTaskAlert(null), 1800)
         }
 
+    }
+
+    // Posts HIL Success to API 
+    const handleHilSuccess = async (item) => {
+
+        let newItem = {
+            ...item,
+            hil_response: true,
+            // quantity: quantity,
+        }
+
+        // return console.log('QQQQ New Item', newItem)
+
+        const ID = deepCopy(item._id.$oid)
+
+        delete newItem._id
+        delete newItem.dashboard
+
+        // This is used to make the tap of the HIL button respond quickly
+        // TODO: This may not be necessary here 
+        onHILResponse(ID)
+        setTimeout(() => onHILResponse(''), 2000)
+
+        console.log('QQQQ task success', newItem)
+        await onPutTaskQueue(newItem, ID)
 
     }
 
