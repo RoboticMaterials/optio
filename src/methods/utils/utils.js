@@ -206,3 +206,14 @@ export const upperCaseFirstLetterInString = (str) => {
         })
         .join(' ');
 }
+
+// Returns name of day ('Mon', 'Tues', etc...)
+export const getDateName = (date) => {
+    return date.toLocaleDateString(undefined, { weekday: 'short' });
+}
+
+// Returns date from string, this assumes the date is the first word in the string
+export const getDateFromString = (str) => {
+    const dateStr = deepCopy(str).replace(/ .*/, '').split('-');
+    return new Date(dateStr[0], dateStr[1] - 1, dateStr[2]);
+}

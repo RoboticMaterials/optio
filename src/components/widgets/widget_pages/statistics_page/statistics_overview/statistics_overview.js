@@ -1,19 +1,25 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
 
+// Import styles
 import * as styled from './statistics_overview.style'
 import { ThemeContext } from 'styled-components';
 
+// Import Components
 import TimeSpans from './timespans/timespans'
 import DataSelector from './data_selector/data_selector.js'
 import ApexGaugeChart from './apex_gauge_chart'
 
 import { ResponsiveLine } from '@nivo/line'
 
+// Import API
 import { getLocationAnalytics } from '../../../../../api/analytics_api'
 import theme from '../../../../../theme';
 import { ResponsiveBar } from '@nivo/bar';
+
+// Import Utils
+import { getDateName, getDateFromString } from '../../../../../methods/utils/utils'
 
 // TODO: Commented out charts for the time being (See comments that start with TEMP)
 const StatisticsOverview = (props) => {
@@ -67,7 +73,6 @@ const StatisticsOverview = (props) => {
         const dataPromise = getLocationAnalytics(params.locationID, 'day')
         dataPromise.then(response => {
 
-            console.log('QQQQ response', response)
             setData(response)
 
         })
@@ -89,7 +94,9 @@ const StatisticsOverview = (props) => {
     // TEMP
     useEffect(() => {
         const dataPromise = getLocationAnalytics(params.locationID, timeSpan)
-        dataPromise.then(response => setData(response))
+        dataPromise.then(response => {
+            setData(response)
+        })
 
         switch (timeSpan) {
             case 'live':
@@ -141,6 +148,54 @@ const StatisticsOverview = (props) => {
         setSlice(props.slice.points[0].data)
         return null
     }
+
+    // Handles the date selector at the top of the charts
+    const handleDateSelector = useMemo(() => {
+
+        if (data === null) return null
+
+        const throughPut = data.throughPut
+
+        let dateSelectorTitle = ''
+        let date
+
+        switch (timeSpan) {
+            case 'day':
+                date = getDateFromString(Object.values(throughPut)[0].x)
+                dateSelectorTitle = date.toDateString()
+                break;
+
+            case 'week':
+                const firstDate = getDateFromString(Object.values(throughPut)[0].x)
+                const lastDate = getDateFromString(Object.values(throughPut)[Object.values(throughPut).length -1].x)
+                dateSelectorTitle = `${firstDate.toDateString()} - ${lastDate.toDateString()}`
+                break;
+
+            case 'month':
+                date = getDateFromString(Object.values(throughPut)[0].x)
+                const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                dateSelectorTitle = `${months[date.getMonth()]} ${date.getFullYear()}`
+                break;
+
+            case 'year':
+                date = getDateFromString(Object.values(throughPut)[0].x)
+                dateSelectorTitle = `${date.getFullYear()}`
+                break;  
+
+            default:
+                break;
+        }
+
+
+        return (
+            <styled.RowContainer>
+                <styled.DateSelectorIcon className='fas fa-chevron-left' />
+                <h2>{dateSelectorTitle}</h2>
+                <styled.DateSelectorIcon className='fas fa-chevron-right' />
+            </styled.RowContainer>
+        )
+
+    }, [timeSpan, data])
 
     const handleGaugeCharts = () => {
         return (
@@ -334,11 +389,7 @@ const StatisticsOverview = (props) => {
             {/* Commented out for now, only need through put bar chart */}
             {/* <DataSelector selector={selector} setSelector={setSelector} /> */}
 
-            <styled.RowContainer>
-                <styled.DateSelectorIcon className='fas fa-chevron-left'/>
-                <h2>Sample Date</h2>
-                <styled.DateSelectorIcon className='fas fa-chevron-right'/>
-            </styled.RowContainer>
+            {handleDateSelector}
 
             <styled.PlotContainer
                 ref={pc => plotRef = pc}

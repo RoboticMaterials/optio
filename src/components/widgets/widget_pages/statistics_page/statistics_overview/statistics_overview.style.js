@@ -123,4 +123,8 @@ export const RowContainer = styled.div`
 
 export const DateSelectorIcon = styled.i`
     font-size: 1.5rem;
+
+    &:hover{
+        cursor:pointer;
+    }
 `
