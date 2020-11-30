@@ -34,9 +34,8 @@ export const WidgetButtonButton = styled.button`
     }
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
-        width: 3.5rem;
-        height: 3.5rem;
-        border-radius: .5rem;
+        width: 6rem;
+        height: 4rem;
 
     }
 `;
@@ -54,6 +53,10 @@ export const WidgetButtonText = styled.h4`
 
     text-align: center;
     align-self:center;
+
+    @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
+
+    }
 `;
 
 export const WidgetStationName = styled.h4`
@@ -62,6 +65,11 @@ export const WidgetStationName = styled.h4`
 
     text-align: center;
     align-self:center;
+
+    @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
+      font-size: ${props => props.theme.fontSize.sz6};
+
+    }
 `;
 
 export const WidgetButtonIcon = styled.i`

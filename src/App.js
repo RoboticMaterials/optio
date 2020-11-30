@@ -37,9 +37,8 @@ const App = (props) => {
     const maps = useSelector(state => state.mapReducer.maps)
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
     const positions = useSelector(state => state.locationsReducer.positions)
-
+    const sideBarOpen = useSelector(state => state.sidebarReducer.open)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
-
     // Set to true for the time being, authentication is not 100% complete as of 09/14/2020
     const [authenticated, setAuthenticated] = useState(true)
 
@@ -48,7 +47,6 @@ const App = (props) => {
     const [stateTheme, setStateTheme] = useState('main')
 
     const [showSideBar, setShowSideBar] = useState(false)
-
     const size = useWindowSize()
     const windowWidth = size.width
 
@@ -131,12 +129,12 @@ const App = (props) => {
                                             <></>
                                             :
                                             <SideBar
-                                                showSideBar={showSideBar}
+                                                showSideBar={sideBarOpen}
                                                 setShowSideBar={setShowSideBar}
                                             />
                                         :
                                         <SideBar
-                                            showSideBar={showSideBar}
+                                            showSideBar={sideBarOpen}
                                             setShowSideBar={setShowSideBar}
                                         />
                                         :
@@ -148,7 +146,7 @@ const App = (props) => {
                                         component={HILModal}
                                     />
 
-                                    {/* If there is no maps, then dont render mapview (Could cause an issue when there is no MIR map)
+                                    {/* If there are no maps, then dont render mapview (Could cause an issue when there is no MIR map)
                                         And if the device is mobile, then unmount if widgets are open
                                     */}
                                     {maps.length > 0 &&

@@ -61,13 +61,13 @@ export const WidgetContainer = styled.div`
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
         /* width: ${props => !!props.widgetPage ? '22rem' : '20rem'}; */
-        width: ${props => !!props.widgetPage ? '15rem' : '13rem'};
+        width: ${props => !!props.widgetPage ? '15rem' : 'fit-content'};
 
-        height: ${props => !!props.widgetPage ? 'auto' : '5.5rem'};
+        height: ${props => !!props.widgetPage ? 'auto' : '6rem'};
 
         /* padding: .5rem .5rem .5rem .5rem; */
         /* margin-top: ${props => !!props.widgetPage ? '0rem' : '5rem'}; */
-        padding: ${props => !!props.widgetPage ? '' : '1rem'};
+        /*padding: ${props => !!props.widgetPage ? '' : '1rem'};*/
 
     }
 
@@ -82,10 +82,26 @@ export const WidgetContainer = styled.div`
 export const WidgetStationName = styled.h4`
     font-size: ${props => props.theme.fontSize.sz4};
     font-family: ${props => props.theme.font.primary};
+    font-weight: 500;
 
     text-align: center;
     align-self:center;
-`;
+
+    &:hover{
+      color: #798fd9;
+    }
+
+`
+
+export const WidgetStationNameUnselectable = styled.h4`
+    font-size: ${props => props.theme.fontSize.sz4};
+    font-family: ${props => props.theme.font.primary};
+    font-weight: 500;
+
+    text-align: center;
+    align-self:center;
+
+`
 
 export const WidgetHoverArea = styled.div`
     margin-top: -12.7rem;

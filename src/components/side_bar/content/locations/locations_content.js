@@ -16,8 +16,8 @@ import Positions from './positions/positions'
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 
 // Import actions
-import { setSelectedLocation, setSelectedLocationCopy, setSelectedLocationChildrenCopy, sideBarBack, deleteLocationProcess } from '../../../../redux/actions/locations_actions'
-import { addPosition } from '../../../../redux/actions/positions_actions'
+import { setSelectedLocation, setSelectedLocationCopy, setSelectedLocationChildrenCopy, sideBarBack, deleteLocationProcess, editing, deselectLocation } from '../../../../redux/actions/locations_actions'
+import { addPosition, removePosition, deletePosition, updatePosition } from '../../../../redux/actions/positions_actions'
 
 import * as locationActions from '../../../../redux/actions/locations_actions'
 import * as stationActions from '../../../../redux/actions/stations_actions'
@@ -68,6 +68,7 @@ export default function LocationContent() {
     const onSideBarBack = (props) => dispatch(sideBarBack(props))
     const onDeleteLocationProcess = (props) => dispatch(deleteLocationProcess(props))
     const onAddPosition = (pos) => dispatch(addPosition(pos))
+    const onEditing = (props) => dispatch(locationActions.editing(props))
 
     const locations = useSelector(state => state.locationsReducer.locations)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
@@ -78,8 +79,7 @@ export default function LocationContent() {
     const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
     const devices = useSelector(state => state.devicesReducer.devices)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
-
-    const [editing, toggleEditing] = useState(false)
+    const editing = useSelector(state => state.locationsReducer.editingLocation)
     const [mergeStation, setMergeStation] = useState(false)
 
     function LocationTypeButton({ type, selected }) {
@@ -134,8 +134,8 @@ export default function LocationContent() {
     useEffect(() => {
 
         if (selectedLocationCopy === null) {
-            toggleEditing(false)
 
+            //onEditing(false)
             onSetSelectedLocationCopy(null)                   // Reset the local copy to null
             onSetSelectedLocationChildrenCopy(null)
         }
@@ -148,15 +148,55 @@ export default function LocationContent() {
      */
     const onBack = () => {
 
-        toggleEditing(false)
 
         onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy })
+
+        let postPositionPromise, child, locationID
+
+        if(selectedLocationChildrenCopy != null){
+
+
+
+
+          selectedLocationChildrenCopy.forEach(async(child, ind) => {
+              if(positions[child._id] == undefined){
+
+                await Object.assign(child, {temp: false, new: true })
+                console.log(child.new)
+                await dispatch(positionActions.addPosition(child))
+                await dispatch(positionActions.postPosition(child))
+                await dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
+
+                dispatch(setSelectedLocationCopy(null))
+                dispatch(setSelectedLocationChildrenCopy(null))
+
+                dispatch(deselectLocation())    // Deselect
+
+            }
+
+
+        })
+
+          selectedLocation.children.forEach((childID, ind) => {
+              child = positions[childID]
+              child.parent = locationID
+              selectedLocation.children[ind] = child._id
+              if (child.new && selectedLocationChildrenCopy[ind] != child._id) {
+                dispatch(positionActions.removePosition(child._id))
+
+              }
+
+          })
+      }
+
+            onEditing(false)
+            console.log(positions)
     }
 
     /**
-     * This function is called when the save button is pressed. The location is POSTED or PUT to the backend. 
+     * This function is called when the save button is pressed. The location is POSTED or PUT to the backend.
      * If the location is new and is a station, this function also handles posting the default dashboard and
-     * tieing it to this location. Each child position for a station is also either POSTED or PUT. 
+     * tieing it to this location. Each child position for a station is also either POSTED or PUT.
      */
     const onSave = () => {
 
@@ -168,7 +208,7 @@ export default function LocationContent() {
                 child = positions[childID]
                 child.parent = locationID
                 if (child.new) { // If the position is new, post it and update its id in the location.children array
-
+                    console.log(child)
                     dispatch(positionActions.postPosition(child))
                     selectedLocation.children[ind] = child._id
                     dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
@@ -212,14 +252,14 @@ export default function LocationContent() {
         dispatch(locationActions.deselectLocation())    // Deselect
         onSetSelectedLocationCopy(null)                 // Reset the local copy to null
         onSetSelectedLocationChildrenCopy(null)         // Reset the local children copy to null
-        toggleEditing(false)                            // No longer editing
+        onEditing(false)                            // No longer editing
 
     }
 
     const onDelete = () => {
 
         onDeleteLocationProcess({ selectedLocation, locations, positions, tasks })
-        toggleEditing(false)
+        onEditing(false)
 
     }
 
@@ -249,7 +289,6 @@ export default function LocationContent() {
     const handleSetChildPositionToCartCoords = (position) => {
         Object.values(devices).map(async (device, ind) => {
             if (device.device_model === 'MiR100') {
-
                 const devicePosition = device.position
 
                 const updatedPosition = {
@@ -277,7 +316,7 @@ export default function LocationContent() {
     }
 
     // TODO: Probably can get rid of editing state, just see if there's a selectedLocation, if there is, you're editing
-    if (editing && !!selectedLocation) { // Editing Mode
+    if (editing) { // Editing Mode
         return (
             <styled.ContentContainer
                 // Delete any new positions that were never dragged onto the map
@@ -351,7 +390,7 @@ export default function LocationContent() {
                                 secondary
                                 onClick={() => {
                                     handleSetPositionToCartCoords()
-                                }}
+}}
                                 style={{ marginBottom: '1rem' }}
                             >
                                 Use Cart Location
@@ -444,14 +483,14 @@ export default function LocationContent() {
                 onClick={(location) => {
                     // If location button is clicked, start editing it
                     onSetSelectedLocationCopy(deepCopy(selectedLocation))
-                    if (!!selectedLocation.children) {
+                    if (selectedLocation.children!==null) {
                         onSetSelectedLocationChildrenCopy(selectedLocation.children.map(positionID => deepCopy(positions[positionID])))
                     }
-                    toggleEditing(true)
+                    onEditing(true)
                 }}
                 onPlus={() => {
                     //// When a new location is created, set the selected location to be a placeholder
-                    //// that will be further filled out when the type is selected. 
+                    //// that will be further filled out when the type is selected.
                     dispatch(locationActions.setSelectedLocation({
                         name: '',
                         schema: null,
@@ -465,10 +504,9 @@ export default function LocationContent() {
                         map_id: currentMap._id
                     }))
 
-                    toggleEditing(true)
+                    onEditing(true)
                 }}
             />
         )
     }
 }
-
