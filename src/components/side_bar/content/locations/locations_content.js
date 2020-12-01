@@ -368,12 +368,15 @@ export default function LocationContent() {
                 {selectedLocation.schema === 'station' ?
                     <>
                         {MiRMapEnabled ?
-                            <Positions type='cart_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+                            <>
+                                <Positions type='cart_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+                                <Positions type='shelf_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+                            </>
                             :
                             <Positions type='human_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
                         }
 
-                        <Positions type='shelf_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+
                     </>
                     :
                     selectedLocation.type === 'cart_position' || selectedLocation.type === 'shelf_position' ?
