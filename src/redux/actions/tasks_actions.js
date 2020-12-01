@@ -61,7 +61,7 @@ export const getTasks = () => {
 
             const normalizedTasks = {}
             tasks.map((task) => {
-                normalizedTasks[task._id.$oid] = task
+                normalizedTasks[task._id] = task
             })
 
             return onSuccess(normalizedTasks);
@@ -110,8 +110,8 @@ export const postTask = (task) => {
         function onStart() {
             dispatch({ type: POST_TASK_STARTED });
         }
-        function onSuccess(newTask) {
-            dispatch({ type: POST_TASK_SUCCESS, payload: newTask });
+        const onSuccess = async (newTask) => {
+            await dispatch({ type: POST_TASK_SUCCESS, payload: newTask });
             return newTask;
         }
         function onError(error) {
@@ -121,7 +121,9 @@ export const postTask = (task) => {
 
         try {
             onStart();
-            delete task._id
+            if(task.new){
+                delete task.new
+            }
             const newTask = await api.postTask(task);
             return onSuccess(newTask);
         } catch (error) {
@@ -150,7 +152,7 @@ export const putTask = (task, ID) => {
         try {
             onStart();
             let taskCopy = deepCopy(task)
-            delete taskCopy._id
+            // delete taskCopy._id
             const updateTask = await api.putTask(taskCopy, ID);
             return onSuccess(updateTask)
         } catch (error) {

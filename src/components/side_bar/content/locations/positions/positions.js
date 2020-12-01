@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import * as styled from './positions.style'
 
@@ -31,18 +31,34 @@ export default function Positions(props) {
     } = props
 
     const dispatch = useDispatch()
-    const [editingIndex, setEditingIndex] = useState(null)
+
     const positions = useSelector(state => state.locationsReducer.positions)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
 
-    const selectedPositions = Object.values(positions).filter(position =>  position.parent == selectedLocation._id)
+    const [editingIndex, setEditingIndex] = useState(null)
+    // const [selectedPositions, setSelectedPositions] = useState([])
 
 
     const positionType = type
     let positionTypeCamel = ''
     let positionName = ''
+
+    const selectedPositions = Object.values(positions).filter(position => position.parent == selectedLocation._id)
+
+    useEffect(() => {
+        // setSelectedPositions(Object.values(positions).filter(position => position.parent == selectedLocation._id))
+        return () => {
+
+        }
+    }, [])
+
+    useEffect(() => {
+        return () => {
+
+        }
+    }, [editingIndex])
 
     // Sets of vairables based on position type
     if (positionType === 'cart_position') {
@@ -52,17 +68,17 @@ export default function Positions(props) {
     if (positionType === 'shelf_position') {
         positionTypeCamel = 'shelfPosition'
         positionName = 'Shelf'
-
     }
 
     const onSortEnd = ({ oldIndex, newIndex }) => {
-        dispatch(locationActions.setLocationAttributes(selectedLocation._id, { positions: arrayMove(selectedLocation.positions, oldIndex, newIndex) }))
-        setEditingIndex(null)
+        // dispatch(locationActions.setLocationAttributes(selectedLocation._id, { positions: arrayMove(selectedLocation.positions, oldIndex, newIndex) }))
+        // setEditingIndex(null)
     };
 
     const DragHandle = sortableHandle(() => <styled.SortIcon className='fas fa-bars'></styled.SortIcon>);
 
     const SortableItem = SortableElement(({ position, i }) =>
+        // const SortableItem = ({ position, i }) => (
         <li style={{ listStyle: 'none' }}>
             <styled.PositionListItem>
                 <MinusButton onClick={() => {
@@ -70,7 +86,7 @@ export default function Positions(props) {
                     Object.values(tasks).filter(task => {
                         return task.load.position == position._id || task.unload.position == position._id
                     }).forEach(relevantTask => {
-                        dispatch(deleteTask(relevantTask._id.$oid))
+                        dispatch(deleteTask(relevantTask._id))
                     })
 
                     // TODO: Get rid of deep copy
@@ -80,11 +96,19 @@ export default function Positions(props) {
 
                     dispatch(positionActions.deletePosition(positions[position._id], position._id))
 
-                }}></MinusButton>
-                <Textbox style={{ flex: '1' }} schema="locations" focus={i == editingIndex} defaultValue={position.name} onChange={(e) => {
-                    setEditingIndex(i)
-                    dispatch(positionActions.setPositionAttributes(position._id, { name: e.target.value }))
-                }}></Textbox>
+                }}
+                />
+                <Textbox
+                    style={{ flex: '1' }}
+                    schema="locations"
+                    focus={i == editingIndex}
+                    defaultValue={position.name}
+                    onChange={(e) => {
+                        setEditingIndex(i)
+                        dispatch(positionActions.setPositionAttributes(position._id, { name: e.target.value }))
+                    }}
+
+                />
                 <styled.CartIcon className='icon-cart' onClick={() => handleSetChildPositionToCartCoords(position)} />
 
                 {/* Commenting out for now, not working with constent updating */}
@@ -95,7 +119,8 @@ export default function Positions(props) {
     );
 
     const SortableList = SortableContainer(({ positions }) => {
-        // if (positions[0] === undefined) return null
+        // const SortableList = useMemo((positions) => {
+        if (positions === undefined) return null
         return (
             <styled.PositionList>
                 {positions.map((position, index) => {
@@ -108,6 +133,52 @@ export default function Positions(props) {
             </styled.PositionList>
         );
     });
+    // }, [selectedPositions]);
+
+    const handleAssociatedPositions = (associatedPositions) => {
+        return associatedPositions.map((position, i) => {
+
+            return (
+                <styled.PositionListItem>
+                    <MinusButton
+                        onClick={() => {
+                            // Sees if any tasks are associated with the position
+                            Object.values(tasks).filter(task => {
+                                return task.load.position == position._id || task.unload.position == position._id
+                            }).forEach(relevantTask => {
+                                dispatch(deleteTask(relevantTask._id))
+                            })
+
+                            // TODO: Get rid of deep copy
+                            let locationPositionIDs = deepCopy(selectedLocation.children)
+                            locationPositionIDs.splice(i, 1)
+                            dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
+
+                            dispatch(positionActions.deletePosition(positions[position._id], position._id))
+
+                        }}
+                    />
+                    <Textbox
+                        style={{ flex: '1' }}
+                        schema="locations"
+                        focus={i == editingIndex}
+                        defaultValue={position.name}
+                        onChange={(e) => {
+                            setEditingIndex(i)
+                            dispatch(positionActions.setPositionAttributes(position._id, { name: e.target.value }))
+                        }}
+
+                    />
+                    <styled.CartIcon className='icon-cart' onClick={() => handleSetChildPositionToCartCoords(position)} />
+
+                    {/* Commenting out for now, not working with constent updating */}
+                    {/* <DragHandle></DragHandle> */}
+
+                </styled.PositionListItem>
+            )
+        })
+
+    }
 
     return (
         // Takes care of error when selectedLocation is null, but shelves are still being rendered
@@ -156,13 +227,14 @@ export default function Positions(props) {
                 <styled.Label>{'Associated ' + positionName} </styled.Label>
 
                 <styled.ListContainer>
-                    <SortableList positions={selectedPositions}
+                    {handleAssociatedPositions(selectedPositions)}
+                    {/* <SortableList
+                        positions={selectedPositions}
                         onSortEnd={onSortEnd}
                         useDragHandle={true}
                         lockAxis={'y'}
                         axis={'y'}
-                        useDragHandle={true}
-                    />
+                    /> */}
                 </styled.ListContainer>
             </styled.PositionsContainer>
     )

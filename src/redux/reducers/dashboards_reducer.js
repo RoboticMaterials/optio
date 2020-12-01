@@ -152,7 +152,7 @@ export default function dashboardsReducer(state = defaultState, action) {
             });
 
         case DELETE_DASHBOARD_SUCCESS:
-            dashboardsCopy = deepCopy(action.payload)
+            dashboardsCopy = deepCopy(state.dashboards)
 
             delete dashboardsCopy[action.payload]
 

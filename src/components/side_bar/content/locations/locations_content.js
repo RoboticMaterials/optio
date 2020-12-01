@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import * as styled from './locations_content.style'
 import { useSelector, useDispatch } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom'
@@ -28,7 +28,7 @@ import * as taskActions from '../../../../redux/actions/tasks_actions'
 // Import Utils
 import { setAction } from '../../../../redux/actions/sidebar_actions'
 import { deepCopy } from '../../../../methods/utils/utils'
-import { LocationTypes } from '../../../../methods/utils/locations_utils'
+import { LocationTypes, locationsSortedAlphabetically } from '../../../../methods/utils/locations_utils'
 
 import uuid from 'uuid'
 
@@ -59,7 +59,7 @@ function locationTypeGraphic(type, isNotSelected) {
 }
 
 // This adds a location selected info to the reducer
-export default function LocationContent(props) {
+export default function LocationContent() {
 
     const dispatch = useDispatch()
     const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
@@ -126,6 +126,13 @@ export default function LocationContent(props) {
     }
 
     useEffect(() => {
+        return () => {
+
+        }
+    }, [])
+
+    useEffect(() => {
+
         if (selectedLocationCopy === null) {
             toggleEditing(false)
 
@@ -161,11 +168,11 @@ export default function LocationContent(props) {
                 child = positions[childID]
                 child.parent = locationID
                 if (child.new) { // If the position is new, post it and update its id in the location.children array
-                    postPositionPromise = dispatch(positionActions.postPosition(child))
-                    postPositionPromise.then(postedPosition => {
-                        selectedLocation.children[ind] = postedPosition._id
-                        dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
-                    })
+
+                    dispatch(positionActions.postPosition(child))
+                    selectedLocation.children[ind] = child._id
+                    dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
+
                 } else { //  If the position is not new, just update it
                     dispatch(positionActions.putPosition(child, child._id))
                 }
@@ -362,7 +369,8 @@ export default function LocationContent(props) {
                                 Merge Position to Station
                             </Button> */}
 
-                            <styled.Label
+                            {/* Commented out for now. Moving merging to inside stations vs inside of positions */}
+                            {/* <styled.Label
                                 schema={'locations'}
                             >
                                 Merge Position To Station
@@ -398,7 +406,7 @@ export default function LocationContent(props) {
                                     Merge
                                 </Button>
 
-                            }
+                            } */}
 
 
                             <div style={{ height: "100%" }}></div>
@@ -425,7 +433,11 @@ export default function LocationContent(props) {
                 title={'Locations'}
                 schema={'locations'}
                 // Filters out devices from being displayed in locations
-                elements={Object.values(locations).filter(location => !location.parent && location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.name !== 'TempRightClickMoveLocation' && (location.map_id === currentMap._id))}
+                elements={
+                    locationsSortedAlphabetically(Object.values(locations))
+                        // Filters out devices, entry positions, other positions and right click to move positions
+                        .filter(location => !location.parent && location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.name !== 'TempRightClickMoveLocation' && (location.map_id === currentMap._id))
+                }
                 // elements={Object.values(locations)}
                 onMouseEnter={(location) => dispatch(locationActions.selectLocation(location._id))}
                 onMouseLeave={(location) => dispatch(locationActions.deselectLocation())}

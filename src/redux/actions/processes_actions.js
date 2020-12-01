@@ -73,7 +73,7 @@ export const postProcesses = (process) => {
 
         try {
             onStart();
-            delete process._id
+            delete process.new
             const newProcesses = await api.postProcesses(process);
             return onSuccess(newProcesses)
         } catch (error) {
@@ -97,8 +97,8 @@ export const putProcesses = (process) => {
 
         try {
             onStart();
-            const ID = deepCopy(process._id.$oid)
-            delete process._id
+            const ID = deepCopy(process._id)
+            // delete process._id
             const updateProcesses = await api.putProcesses(process, ID);
             return onSuccess(updateProcesses)
         } catch (error) {

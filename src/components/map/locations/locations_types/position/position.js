@@ -29,6 +29,7 @@ function Position(props) {
         rd3tClassName,
     } = props
 
+
     const [hovering, setHovering] = useState(false)
     const [rotating, setRotating] = useState(false)
     const [translating, setTranslating] = useState(false)
@@ -47,13 +48,13 @@ function Position(props) {
     useEffect(() => {
         //window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         return () => {
-             window.removeEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
+            window.removeEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         }
-    },[])
+    }, [])
 
     // Automatically opens widget pages and sets hovering to true in the location is a temp right click
     useEffect(() => {
-        if(location !== null && location.name === 'TempRightClickMoveLocation'){
+        if (location !== null && location.name === 'TempRightClickMoveLocation') {
             setHovering(true)
             dispatchHoverStationInfo(handleWidgetHover())
             onSelectLocation(location._id)
@@ -100,7 +101,7 @@ function Position(props) {
                         } else {
                             type = 'push'
                         }
-                        onSetTaskAttributes(selectedTask._id.$oid, { unload, type })
+                        onSetTaskAttributes(selectedTask._id, { unload, type })
                     } else { // Otherwise assign the load position and clear the unload position (to define a new unload)
                         let load = deepCopy(selectedTask.load)
                         let unload = deepCopy(selectedTask.unload)
@@ -113,7 +114,7 @@ function Position(props) {
                         }
                         unload.position = null
                         unload.station = null
-                        onSetTaskAttributes(selectedTask._id.$oid, { load, unload, type })
+                        onSetTaskAttributes(selectedTask._id, { load, unload, type })
                     }
                 }
             }}
@@ -148,14 +149,24 @@ function Position(props) {
                 {/* Only show rotating when editing or its a right click location */}
                 {isSelected && (hovering || rotating) && (hoveringInfo === null || location.name === 'TempRightClickMoveLocation') &&
                     <>
-                        <circle x="-16" y="-16" r="16" strokeWidth="0" fill="transparent" style={{ cursor:  "pointer"  }}></circle>
-                        <circle x="-18" y="-18" r="14" fill="none" strokeWidth="4" stroke="transparent" style={{ cursor: "pointer" }} onMouseDown={() => setRotating(true)}></circle>
+                        <circle x="-16" y="-16" r="16" strokeWidth="0" fill="transparent" style={{ cursor: "pointer" }}></circle>
+                        <circle x="-18" y="-18" r="14" fill="none" strokeWidth="4" stroke="transparent" style={{ cursor: "pointer" }}
+                            onMouseDown={() => {
+                                setRotating(true)
+                            }}
+                        />
                         <circle x="-14" y="-14" r="14" fill="none" strokeWidth="0.6" style={{ filter: "url(#glow)", cursor: "pointer" }}></circle>
                     </>
                 }
             </g>
 
-            <g className={`${rd3tClassName}-trans`} id={`${rd3tClassName}-trans`} transform={"scale(1, 1)", location.type === 'shelf_position' && "rotate(90)"} onMouseDown={() => setTranslating(true)}>
+            <g className={`${rd3tClassName}-trans`} id={`${rd3tClassName}-trans`} transform={"scale(1, 1)", location.type === 'shelf_position' && "rotate(90)"}
+                onMouseDown={() => {
+                    setTranslating(true)
+                
+                }}
+
+            >
 
 
                 <svg x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400" style={{ filter: shouldGlow && `url(#glow-${rd3tClassName})` }}>

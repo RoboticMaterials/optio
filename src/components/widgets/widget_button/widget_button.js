@@ -6,7 +6,7 @@ import * as styled from './widget_button.style'
 
 // Import Actions
 import { postTaskQueue } from '../../../redux/actions/task_queue_actions'
-import { widgetLoaded, sideBarBack} from '../../../redux/actions/locations_actions'
+import { widgetLoaded, sideBarBack } from '../../../redux/actions/locations_actions'
 import { hoverStationInfo } from '../../../redux/actions/stations_actions'
 
 
@@ -48,11 +48,12 @@ const WidgetButton = (props) => {
                                     pos_y: selectedLocation.pos_y,
                                     rotation: selectedLocation.rotation,
                                 },
+                                device_type: 'MiR_100',
                             }
                         })
                         onWidgetLoaded(false)
                         onHoverStationInfo(null)
-                        onSideBarBack({selectedLocation})
+                        onSideBarBack({ selectedLocation })
                     }
                     else {
                         onPostTaskQueue({
@@ -60,7 +61,8 @@ const WidgetButton = (props) => {
                             custom_task: {
                                 type: 'position_move',
                                 position: id,
-                            }
+                                device_type: 'MiR_100',
+                            },
                         })
                     }
                 }
@@ -68,7 +70,7 @@ const WidgetButton = (props) => {
                 else if (props.type === 'cancel') {
                     onWidgetLoaded(false)
                     onHoverStationInfo(null)
-                    onSideBarBack({selectedLocation})
+                    onSideBarBack({ selectedLocation })
                 }
 
                 else {

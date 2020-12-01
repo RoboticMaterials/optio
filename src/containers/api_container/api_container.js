@@ -9,7 +9,7 @@ import { getTaskQueue } from '../../redux/actions/task_queue_actions'
 import { getLocations } from '../../redux/actions/locations_actions'
 import { getObjects } from '../../redux/actions/objects_actions'
 import { getTasks, deleteTask } from '../../redux/actions/tasks_actions'
-import { getDashboards, deleteDashboard } from '../../redux/actions/dashboards_actions'
+import { getDashboards, deleteDashboard, postDashboard } from '../../redux/actions/dashboards_actions'
 import { getSounds } from '../../redux/actions/sounds_actions'
 import { getProcesses, putProcesses } from '../../redux/actions/processes_actions'
 
@@ -56,7 +56,6 @@ const ApiContainer = (props) => {
     const onGetTaskQueue = () => dispatch(getTaskQueue())
 
     const onGetProcesses = () => dispatch(getProcesses());
-    const onPutProcess = (process) => dispatch(putProcesses(process))
 
     const onGetSchedules = () => dispatch(getSchedules())
     const onGetDevices = async () => await dispatch(getDevices())
@@ -72,11 +71,14 @@ const ApiContainer = (props) => {
     const onDeleteTask = (ID) => dispatch(deleteTask(ID))
     const onDeleteDashboard = (ID) => dispatch(deleteDashboard(ID))
     const onDeletePosition = (position, ID) => dispatch(deletePosition(position, ID))
+    const onDeleteStation = async (ID) => await dispatch(deleteStation(ID))
+
     const onPutDevice = (device, ID) => dispatch(putDevices(device, ID))
     const onPutPosition = (position, ID) => dispatch(putPosition(position, ID))
-
+    const onPutProcess = (process) => dispatch(putProcesses(process))
     const onPutStation = async (station, ID) => await dispatch(putStation(station, ID))
-    const onDeleteStation = async (ID) => await dispatch(deleteStation(ID))
+
+    const onPostDashoard = (dashboard) => dispatch(postDashboard(dashboard))
 
 
     // Selectors
@@ -99,7 +101,7 @@ const ApiContainer = (props) => {
         // loads essential info used on every page such as status and taskQueue
 
         const criticalDataInterval = setInterval(() => loadCriticalData(), 500);
-        const mapDataInterval = setInterval(() => loadMapData(), 3000)
+        const mapDataInterval = setInterval(() => loadMapData(), 1000)
         return () => {
             // clear intervals
             clearInterval(pageDataInterval);
@@ -212,6 +214,10 @@ const ApiContainer = (props) => {
                 pageDataInterval = setInterval(() => loadTasksData(), 10000);
                 break;
 
+            case 'processes':
+                pageDataInterval = setInterval(() => loadTasksData(), 10000);
+                break;
+
             case 'settings':
                 pageDataInterval = setInterval(() => loadSettingsData(), 10000);
                 break;
@@ -253,7 +259,7 @@ const ApiContainer = (props) => {
 
         const loggers = await onGetLoggers()
 
-
+        handleDeviceWithoutADashboard(devices, dashboards)
         handleTasksWithBrokenPositions(tasks, locations)
         handlePositionsWithBrokenParents(locations)
         handleDevicesWithBrokenStations(devices, locations)
@@ -302,6 +308,8 @@ const ApiContainer = (props) => {
         tasks
     */
     const loadTasksData = async () => {
+        // const tasks = await onGetTasks()
+        // const processes = await onGetProcesses()
     }
 
     /*
@@ -364,6 +372,48 @@ const ApiContainer = (props) => {
     //  API DATA CLEAN UP (Ideally these functions should not exist... but it's not an ideal world...)
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+
+    /**
+     * Not the best place but it should still work
+     * This will either make a dashboard for the device or replace a lost dashboard
+     */
+    const handleDeviceWithoutADashboard = (devices, dashboards) => {
+        Object.values(devices).map((device) => {
+            // if the device does not have a dashboard, add one
+            if (!device.dashboard) {
+                const newDeviceDashboard = {
+                    name: `${device.device_name} Dashboard`,
+                    buttons: [],
+                    device: device._id,
+                }
+
+                const newDashboard = onPostDashoard(newDeviceDashboard)
+
+                newDashboard.then(dashPromise => {
+                    device.dashboards = [dashPromise._id.$oid]
+                    onPutDevice(device, device._id)
+                })
+
+
+            }
+
+            // If the device does have a dashboard, but that dashboard has been lost for some reason, make a new dashboard
+            else if (!dashboards[device.dashboard]) {
+
+            }
+        })
+    }
+
+    /**
+     * The dashboard is tied to a device that does not exist anymore, so delete the dashboard
+     * @param {*} devices 
+     * @param {*} dashboards 
+     */
+    const handleDashboardsWithBrokenDevice = (devices, dashboards) => {
+
+    }
+
+
     /**
      * This deletes tasks that have broken positions
      * A broken position can be:
@@ -383,8 +433,8 @@ const ApiContainer = (props) => {
 
             // Deletes the task if the load/unload position has been deleted from the positon list
             if (!positions[task.load.position] || !positions[task.unload.position]) {
-                console.log('QQQQ Position doesnt exist in positions, DELETE TASK', task._id.$oid)
-                await onDeleteTask(task._id.$oid)
+                console.log('QQQQ Position doesnt exist in positions, DELETE TASK', task._id)
+                await onDeleteTask(task._id)
                 return
             }
 
@@ -392,7 +442,7 @@ const ApiContainer = (props) => {
             if ((!!positions[task.load.position].change_key && positions[task.load.position].change_key === 'deleted') ||
                 (!!positions[task.unload.position].change_key && positions[task.unload.position].change_key === 'deleted')) {
                 console.log('QQQQ Position is deleted, waiting on back end, DELETE TASK')
-                await onDeleteTask(task._id.$oid)
+                await onDeleteTask(task._id)
                 return
             }
 
@@ -402,7 +452,7 @@ const ApiContainer = (props) => {
             // if ((!!positions[task.load.position].parent && !Object.keys(stations).includes(positions[task.load.position].parent)) ||
             //     (!!positions[task.unload.position].parent && !Object.keys(stations).includes(positions[task.load.position].parent))) {
             //     console.log('QQQQ Position parent has been deleted, DELETE TASK AND POSITION')
-            //     await onDeleteTask(task._id.$oid)
+            //     await onDeleteTask(task._id)
             //     return
             // }
         })
@@ -536,7 +586,7 @@ const ApiContainer = (props) => {
         const stations = locations.stations
 
         Object.values(dashboards).map((dashboard) => {
-            if (!!dashboard.location && !stations[dashboard.location]) {
+            if (!!dashboard.location && !dashboard.device && !stations[dashboard.location]) {
                 console.log('QQQQ dashboard belongs to a station that does not exist', dashboard)
                 onDeleteDashboard(dashboard._id.$oid)
             }
@@ -583,22 +633,22 @@ const ApiContainer = (props) => {
     const handleTasksWithBrokenProcess = async (processes, tasks) => {
 
         Object.values(tasks).map(async (task) => {
-            if(!!task.process){
+            if (!!task.process) {
 
                 // If the task process is equal to true, then it should be deleted because it was never associated with a process
-                if(task.process === true){
+                if (task.process === true) {
                     console.log('QQQQ task never associated with a process', task)
-                    await onDeleteTask(task._id.$oid)
+                    await onDeleteTask(task._id)
                     return
                 }
 
                 // If process does not contain the task process, that means the process must have been deleted
-                else if (!processes[task.process]){
+                else if (!processes[task.process]) {
                     console.log('QQQQ tasks parent process has been deleted', task)
-                    await onDeleteTask(task._id.$oid)
+                    await onDeleteTask(task._id)
                     return
                 }
-                
+
             }
         })
 

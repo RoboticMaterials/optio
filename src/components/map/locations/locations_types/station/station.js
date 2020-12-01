@@ -46,10 +46,10 @@ function Station(props) {
     useEffect(() => {
         window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         return () => {
-             window.removeEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
+            window.removeEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         }
 
-    },[])
+    }, [])
 
     /**
     * This runs on page load (thats mean location are mounted) and shows a widget page if it returns true.
@@ -159,6 +159,9 @@ function Station(props) {
 
 
                 }}
+                // onClick={() => {
+                //     console.log('Station clicked')
+                // }}
 
                 transform={`translate(${location.x},${location.y}) rotate(${location.rotation}) scale(${d3.scale / d3.imgResolution})`}
             >
@@ -203,6 +206,9 @@ function Station(props) {
                         setHovering(true)
                     }}
                     onMouseDown={() => setTranslating(true)}
+                    // onClick={() => {
+                    //     console.log('Station clicked')
+                    // }}
                     transform={location.type === 'device' && 'scale(.07) translate(-180,-140)'}
                 >
 

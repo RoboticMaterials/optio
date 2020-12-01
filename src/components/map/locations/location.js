@@ -41,6 +41,7 @@ const DragEntityProto = (props) => {
 
     /** Callback on continuous rotate event */
     const rotate = (event, element) => {
+
         // Cant rotate if this location is not selected
         if (!props.isSelected) { return }
         if (!rotating) { setRotating(true) }
@@ -244,7 +245,7 @@ const Location = (props) => {
         if (!!location.parent && (stations[location.parent] === undefined || stations[location.parent].x === undefined)) {
             return null
         }
-        
+
         switch (location.type) {
             case 'workstation':
             case 'device':
@@ -252,7 +253,9 @@ const Location = (props) => {
                     <React.Fragment key={`frag-loc-${location._id}`}>
                         <Station isSelected={isSelected} color={color} {...props} />
                         <DragEntityProto isSelected={isSelected} {...props}
-                            onRotate={rotation => dispatch(setLocationAttributes(location._id, { rotation }))}
+                            onRotate={(rotation) => {
+                                dispatch(setLocationAttributes(location._id, { rotation }))
+                            }}
                             onTranslate={({ x, y }) => dispatch(setLocationAttributes(location._id, { x, y }))}
                             onTranslateEnd={({ x, y }) => {
                                 pos = convertD3ToReal([x, y], props.d3)
@@ -267,15 +270,19 @@ const Location = (props) => {
             case 'charger_position':
                 return (
                     <React.Fragment key={`frag-loc-${location._id}`}>
-                        {location.parent !== null && location.parent !== undefined &&
+                        {location.parent !== null && location.parent !== undefined && location.parent.length > 0 &&
                             <line x1={`${location.x}`} y1={`${location.y}`}
                                 x2={`${stations[location.parent].x}`} y2={`${stations[location.parent].y}`}
                                 stroke={color} strokeWidth="1.4" style={{ filter: "url(#glow)", opacity: '0.3' }} />
                         }
                         <Position isSelected={isSelected} color={color} {...props} />
                         <DragEntityProto isSelected={isSelected} {...props}
-                            onRotate={rotation => dispatch(setLocationAttributes(location._id, { rotation }))}
-                            onTranslate={({ x, y }) => dispatch(setLocationAttributes(location._id, { x, y }))}
+                            onRotate={(rotation) => {
+                                dispatch(setLocationAttributes(location._id, { rotation }))
+                            }}
+                            onTranslate={({ x, y }) => {
+                                dispatch(setLocationAttributes(location._id, { x, y }))
+                            }}
                             onTranslateEnd={({ x, y }) => {
                                 pos = convertD3ToReal([x, y], props.d3)
                                 dispatch(setLocationAttributes(location._id, { pos_x: pos[0], pos_y: pos[1] }))

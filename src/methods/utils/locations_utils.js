@@ -2,6 +2,9 @@ import React from 'react'
 
 import { useDispatch, useSelector } from 'react-redux'
 
+// Import utils
+import { deepCopy } from './utils'
+
 // Import Actions
 import { putDevices, postDevices, getDevices, deleteDevices } from '../../redux/actions/devices_actions'
 import * as locationActions from '../../redux/actions/locations_actions'
@@ -205,4 +208,20 @@ export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
 
     return widgetInfo
 
+}
+
+export const locationsSortedAlphabetically = (locations) => {
+
+    const locationsCopy = deepCopy(locations)
+
+    locationsCopy.sort((a,b) => {
+        const aName = a.name
+        const bName = b.name
+
+        if(aName < bName) return -1
+        if(aName > bName) return 1
+        return 0
+    })
+
+    return locationsCopy
 }

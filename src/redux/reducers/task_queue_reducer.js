@@ -93,6 +93,7 @@ export default function taskQueueReducer(state = defaultState, action) {
             if (action.payload === undefined) {
                 action.payload = {}
             }
+            // console.log('QQQQ task q', action.payload)
             return Object.assign({}, state, {
                 taskQueue: action.payload,
                 pending: false

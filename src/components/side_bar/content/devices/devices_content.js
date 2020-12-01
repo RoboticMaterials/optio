@@ -47,8 +47,8 @@ const DevicesContent = () => {
 
     // Redux Set Up
     const dispatch = useDispatch()
-    const onDeviceAdd = (device) => dispatch(postDevices(device))
-    const onDeviceChange = (device, ID) => dispatch(putDevices(device, ID))
+    const onPostDevice = (device) => dispatch(postDevices(device))
+    const onPutDevice = (device, ID) => dispatch(putDevices(device, ID))
     const onDeviceDelete = (ID) => dispatch(deleteDevices(ID))
     const onSetSelectedLocation = (selectedLocation) => dispatch(setSelectedLocation(selectedLocation))
     const onSetSelectedDevice = (selectedDevice) => dispatch(setSelectedDevice(selectedDevice))
@@ -102,7 +102,7 @@ const DevicesContent = () => {
                 // if (!!device.station_id) {
                 //     if (!Object.keys(locations).includes(device.station_id)) {
                 //         delete device.station_id
-                //         onDeviceChange(device, device._id)
+                //         onPutDevice(device, device._id)
                 //         console.log('QQQQ Device has a station ID that does not exist')
                 //     }
                 // }
@@ -153,63 +153,70 @@ const DevicesContent = () => {
      */
     const handleSaveDevice = () => {
 
-        const saveChildren = (locationID) => {
-
-            //// Function to save the children of a posted station
-            // Since the child has a .parent attribute, this function needs to be given the station's id
-            let postPositionPromise, child
-            selectedLocation.children.forEach((childID, ind) => {
-                child = positions[childID]
-                child.parent = locationID
-                if (child.new) { // If the position is new, post it and update its id in the location.children array
-                    postPositionPromise = dispatch(positionActions.postPosition(child))
-                    postPositionPromise.then(postedPosition => {
-                        selectedLocation.children[ind] = postedPosition._id
-                        dispatch(putLocation(selectedLocation, selectedLocation._id))
-                    })
-                } else { //  If the position is not new, just update it
-                    dispatch(positionActions.putPosition(child, child._id))
-                }
-            })
+        // If a AMR, then just put device, no need to save locaiton since it does not need one
+        if (selectedDevice.device_model === 'MiR100') {
+            onPutDevice(selectedDevice, selectedDevice._id)
         }
+        // Else go through and see if it needs to save the locations
+        else {
+            const saveChildren = (locationID) => {
 
-        //// Post the location
-        if (selectedLocation.new == true) {
-            const locationPostPromise = dispatch(postLocation(selectedLocation))
-            locationPostPromise.then(postedLocation => {
-                //// On return of the posted location, if it is a station we also need to assign it a default dashboard
-                // TODO: Aren't devices always stations??
-                // TODO: Should devices have dashboards?? Yes?
-                if (postedLocation.schema == 'station') {
-                    let defaultDashboard = {
-                        name: postedLocation.name + ' Dashboard',
-                        buttons: [],
-                        station: postedLocation._id
+                //// Function to save the children of a posted station
+                // Since the child has a .parent attribute, this function needs to be given the station's id
+                let postPositionPromise, child
+                selectedLocation.children.forEach((childID, ind) => {
+                    child = positions[childID]
+                    child.parent = locationID
+                    if (child.new) { // If the position is new, post it and update its id in the location.children array
+                        postPositionPromise = dispatch(positionActions.postPosition(child))
+                        postPositionPromise.then(postedPosition => {
+                            selectedLocation.children[ind] = postedPosition._id
+                            dispatch(putLocation(selectedLocation, selectedLocation._id))
+                        })
+                    } else { //  If the position is not new, just update it
+                        dispatch(positionActions.putPosition(child, child._id))
                     }
+                })
+            }
 
-                    //// Now post the dashboard, and on return tie that dashboard to location.dashboards and put the location
-                    const postDashboardPromise = dispatch(dashboardActions.postDashboard(defaultDashboard))
-                    postDashboardPromise.then(postedDashboard => {
-                        postedLocation.dashboards = [postedDashboard._id.$oid]
-                        dispatch(stationActions.putStation(postedLocation, postedLocation._id))
-                    })
+            //// Post the location
+            if (selectedLocation.new == true) {
+                const locationPostPromise = dispatch(postLocation(selectedLocation))
+                locationPostPromise.then(postedLocation => {
+                    //// On return of the posted location, if it is a station we also need to assign it a default dashboard
+                    // TODO: Aren't devices always stations??
+                    // TODO: Should devices have dashboards?? Yes?
+                    if (postedLocation.schema == 'station') {
+                        let defaultDashboard = {
+                            name: postedLocation.name + ' Dashboard',
+                            buttons: [],
+                            station: postedLocation._id
+                        }
 
-                    const device = {
-                        ...selectedDevice,
-                        station_id: postedLocation._id
+                        //// Now post the dashboard, and on return tie that dashboard to location.dashboards and put the location
+                        const postDashboardPromise = dispatch(dashboardActions.postDashboard(defaultDashboard))
+                        postDashboardPromise.then(postedDashboard => {
+                            postedLocation.dashboards = [postedDashboard._id.$oid]
+                            dispatch(stationActions.putStation(postedLocation, postedLocation._id))
+                        })
+
+                        const device = {
+                            ...selectedDevice,
+                            station_id: postedLocation._id
+                        }
+                        onPutDevice(device, selectedDevice._id)
+
+
+
+                        saveChildren(postedLocation._id)
+
                     }
-                    onDeviceChange(device, selectedDevice._id)
-
-
-
-                    saveChildren(postedLocation._id)
-
+                })
+            } else { // If the location is not new, PUT it and update it's children
+                dispatch(putLocation(selectedLocation, selectedLocation._id))
+                if (selectedLocation.schema == 'station') {
+                    saveChildren(selectedLocation._id)
                 }
-            })
-        } else { // If the location is not new, PUT it and update it's children
-            dispatch(putLocation(selectedLocation, selectedLocation._id))
-            if (selectedLocation.schema == 'station') {
-                saveChildren(selectedLocation._id)
             }
         }
 
@@ -228,7 +235,7 @@ const DevicesContent = () => {
     */
     const onDeleteDeviceLocation = () => {
 
-        onDeleteLocationProcess({selectedLocation, locations, selectedDevice, positions, tasks})
+        onDeleteLocationProcess({ selectedLocation, locations, selectedDevice, positions, tasks })
 
     }
 

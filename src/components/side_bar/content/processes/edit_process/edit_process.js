@@ -12,12 +12,13 @@ import EditTask from '../../tasks/edit_task/edit_task'
 import ContentHeader from '../../content_header/content_header'
 
 // Import actions
-import { setSelectedTask, deselectTask, addTask, putTask } from '../../../../../redux/actions/tasks_actions'
+import { setSelectedTask, deselectTask, addTask, putTask, deleteTask } from '../../../../../redux/actions/tasks_actions'
 import { setSelectedProcess, postProcesses, putProcesses, deleteProcesses } from '../../../../../redux/actions/processes_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 
 // Import Utils
 import { isEquivalent, deepCopy } from '../../../../../methods/utils/utils'
+import uuid from 'uuid'
 
 const EditProcess = (props) => {
 
@@ -34,6 +35,8 @@ const EditProcess = (props) => {
     const onDeselectTask = () => dispatch(deselectTask())
     const onSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
     const onPutTask = (task, ID) => dispatch(putTask(task, ID))
+    const onDeleteTask = (ID) => dispatch(deleteTask(ID))
+    const onPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
 
     const onPostProcess = async (process) => await dispatch(postProcesses(process))
     const onPutProcess = async (process) => await dispatch(putProcesses(process))
@@ -42,13 +45,13 @@ const EditProcess = (props) => {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
+    const currentMap = useSelector(state => state.mapReducer.currentMap)
 
     // State definitions
-    const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
     const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)  // Current task
     const [shift, setShift] = useState(false) // Is shift key pressed ?
     const [isTransportTask, setIsTransportTask] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
-    const [editingTask, setEditingTask] = useState(false)
+    const [editingTask, setEditingTask] = useState(false) // Used to tell if a task is being edited
     const [newRoute, setNewRoute] = useState(null)
 
     useEffect(() => {
@@ -58,8 +61,9 @@ const EditProcess = (props) => {
         }
     }, [])
 
-    const handleExecuteProcess = () => {
-        alert('Cool button eh? Well, its gonna be even cooler when we get it working!')
+    const handleExecuteProcessTask = (route) => {
+        onPostTaskQueue({ task_id: route })
+
     }
 
     // Maps through the list of existing routes
@@ -68,7 +72,8 @@ const EditProcess = (props) => {
         return selectedProcess.routes.map((route, ind) => {
 
             const routeTask = tasks[route]
-            if(routeTask === undefined){
+            if (routeTask === undefined) {
+                console.log('QQQQ undefined')
                 return
             }
 
@@ -79,13 +84,13 @@ const EditProcess = (props) => {
                     >
                         <styled.ListItemRect
                             onMouseEnter={() => {
-                                if (!selectedTask) {
+                                if (!selectedTask && !editingTask) {
                                     onSetSelectedTask(routeTask)
                                 }
 
                             }}
                             onMouseLeave={() => {
-                                if (selectedTask !== null && selectedTask._id.$oid !== '__NEW_TASK') {
+                                if (selectedTask !== null && !editingTask) {
                                     onDeselectTask()
                                 }
                             }}
@@ -105,19 +110,21 @@ const EditProcess = (props) => {
                         <styled.ListItemIcon
                             className='fas fa-play'
                             onClick={() => {
-                                handleExecuteProcess()
+                                handleExecuteProcessTask(route)
                             }}
                         />
 
                     </styled.ListItem>
-                    {editingTask && isEquivalent(routeTask, selectedTask) &&
+                    {editingTask && selectedTask._id === route &&
                         <EditTask
                             selectedTaskCopy={selectedTaskCopy}
                             setSelectedTaskCopy={props => setSelectedTaskCopy(props)}
                             shift={shift}
                             isTransportTask={isTransportTask}
-                            toggleEditing={props => toggleEditing(props)}
                             isProcessTask={true}
+                            toggleEditing={(props) => {
+                                setEditingTask(props)
+                            }}
                         />
                     }
                 </div>
@@ -142,13 +149,19 @@ const EditProcess = (props) => {
                                     obj: null,
                                     type: 'push',
                                     quantity: 1,
-                                    // Makes the task/route a part of a 
-                                    process: selectedProcessCopy._id.$oid === '__NEW_PROCESS' ? true : selectedProcessCopy._id.$oid,
+                                    new: true,
+                                    // device_type: 'human',
+                                    device_type: 'MiR_100',
+                                    map_id: currentMap._id,
+                                    idle_location: null,
+                                    // Makes the task/route a part of a process
+                                    process: selectedProcessCopy._id,
                                     load: {
                                         position: null,
                                         station: null,
                                         sound: null,
-                                        instructions: 'Load'
+                                        instructions: 'Load',
+                                        timeout: '01:00'
                                     },
                                     unload: {
                                         position: null,
@@ -156,11 +169,12 @@ const EditProcess = (props) => {
                                         sound: null,
                                         instructions: 'Unload'
                                     },
-                                    _id: { $oid: '__NEW_TASK' }
+                                    _id: uuid.v4(),
                                 }
                                 onAddTask(newTask)
                                 setNewRoute(newTask)
                                 onSetSelectedTask(newTask)
+                                setEditingTask(true)
                             }}
                         >
                             Add Route
@@ -179,8 +193,11 @@ const EditProcess = (props) => {
                             }}
                             shift={shift}
                             isTransportTask={isTransportTask}
-                            toggleEditing={props => toggleEditing(props)}
                             isProcessTask={true}
+                            toggleEditing={(props) => {
+                                setEditingTask(props)
+                            }}
+
                         />
                     </styled.TaskContainer>
                 }
@@ -194,22 +211,10 @@ const EditProcess = (props) => {
         onDeselectTask()
 
         // If the id is new then post 
-        if (selectedProcessCopy._id.$oid === '__NEW_PROCESS') {
+        if (selectedProcessCopy.new) {
 
-            // If it's a new process, need to post process and what for the new ID to come back, then add that ID to 
-            // the associated tasks
-            const newProcessPromise = onPostProcess(selectedProcess)
+            await onPostProcess(selectedProcess)
 
-            newProcessPromise.then(postedProcess => {
-                // Map through each associated route and add the process id
-                postedProcess.routes.map((route) => {
-                    let updatedTask = tasks[route]
-                    updatedTask.process = postedProcess._id.$oid
-                    const ID = deepCopy(updatedTask._id.$oid)
-                    onPutTask(updatedTask, ID)
-
-                })
-            })
         }
 
         // Else put
@@ -232,7 +237,12 @@ const EditProcess = (props) => {
 
     const handleDelete = async () => {
 
-        await onDeleteProcess(selectedProcessCopy._id.$oid)
+        // If there's routes in this process, delete the routes
+        if(selectedProcess.routes.length > 0){
+            selectedProcess.routes.forEach(route => onDeleteTask(route))
+        }
+
+        await onDeleteProcess(selectedProcessCopy._id)
 
         onDeselectTask()
         onSetSelectedProcess(null)
@@ -247,7 +257,7 @@ const EditProcess = (props) => {
                 <ContentHeader
                     content={'processes'}
                     mode={'create'}
-                    disabled={!!selectedTask}
+                    disabled={!!selectedTask && !!editingTask}
                     onClickSave={() => {
                         handleSave()
                     }}
@@ -278,13 +288,13 @@ const EditProcess = (props) => {
 
             {handleAddRoute()}
 
-            <div style={{ height: "100%", paddingTop: "1rem" }}/>
+            <div style={{ height: "100%", paddingTop: "1rem" }} />
 
             {/* Delete Task Button */}
             <Button
                 schema={'processes'}
-                disabled={!!selectedProcess && !!selectedProcess._id && selectedProcess._id.$oid == '__NEW_TASK'}
-                style={{marginBottom: '0rem'}}
+                disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
+                style={{ marginBottom: '0rem' }}
                 secondary
                 onClick={() => {
                     handleDelete()
