@@ -177,7 +177,10 @@ function Position(props) {
                         location.type === 'charger_position' ?
                             LocationTypes['chargePosition'].svgPath
                             :
-                            LocationTypes['shelfPosition'].svgPath
+                            location.type === 'shelfPosition' ?
+                                LocationTypes['shelfPosition'].svgPath
+                                :
+                                LocationTypes['humanPosition'].svgPath
                     }
 
 

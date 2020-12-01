@@ -55,6 +55,14 @@ function locationTypeGraphic(type, isNotSelected) {
                 </styled.LocationTypeGraphic>
 
             )
+
+        case 'human_position':
+            return (
+                <styled.LocationTypeGraphic fill={LocationTypes['humanPosition'].color} stroke={LocationTypes['humanPosition'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                    {LocationTypes['humanPosition'].svgPath}
+                </styled.LocationTypeGraphic>
+
+            )
     }
 }
 
@@ -79,6 +87,8 @@ export default function LocationContent() {
     const devices = useSelector(state => state.devicesReducer.devices)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
 
+    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
+
     const [editing, toggleEditing] = useState(false)
     const [mergeStation, setMergeStation] = useState(false)
 
@@ -94,6 +104,13 @@ export default function LocationContent() {
                 template = LocationTypes['cartPosition'].attributes
 
                 break
+
+            case 'human_position':
+                template = LocationTypes['humanPosition'].attributes
+
+                break
+
+
             case 'shelf_position':
                 template = LocationTypes['shelfPosition'].attributes
 
@@ -319,15 +336,25 @@ export default function LocationContent() {
                         <styled.LocationTypeLabel>Station</styled.LocationTypeLabel>
                     </styled.LocationTypeContainer>
 
-                    <styled.LocationTypeContainer>
-                        <LocationTypeButton type='cart_position' selected={selectedLocation.type} />
-                        <styled.LocationTypeLabel>Cart Position</styled.LocationTypeLabel>
-                    </styled.LocationTypeContainer>
+                    {MiRMapEnabled ?
+                        <>
+                            <styled.LocationTypeContainer>
+                                <LocationTypeButton type='cart_position' selected={selectedLocation.type} />
+                                <styled.LocationTypeLabel>Cart Position</styled.LocationTypeLabel>
+                            </styled.LocationTypeContainer>
 
+                            <styled.LocationTypeContainer>
+                                <LocationTypeButton type='shelf_position' selected={selectedLocation.type} />
+                                <styled.LocationTypeLabel>Shelf Position</styled.LocationTypeLabel>
+                            </styled.LocationTypeContainer>
+                        </>
+
+                        :
                     <styled.LocationTypeContainer>
-                        <LocationTypeButton type='shelf_position' selected={selectedLocation.type} />
-                        <styled.LocationTypeLabel>Shelf Position</styled.LocationTypeLabel>
+                        <LocationTypeButton type='human_position' selected={selectedLocation.type} />
+                        <styled.LocationTypeLabel>Human Position</styled.LocationTypeLabel>
                     </styled.LocationTypeContainer>
+                    }
 
                 </styled.DefaultTypesContainer>
                 {/* Will be used later for custom types (Lathe, Cut'it, etc.) */}
@@ -340,7 +367,12 @@ export default function LocationContent() {
 
                 {selectedLocation.schema === 'station' ?
                     <>
-                        <Positions type='cart_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+                        {MiRMapEnabled ?
+                            <Positions type='cart_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+                            :
+                            <Positions type='human_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+                        }
+
                         <Positions type='shelf_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
                     </>
                     :
