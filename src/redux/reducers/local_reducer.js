@@ -69,6 +69,7 @@ const defaultState = {
         non_local_api: false,
         mapViewEnabled: true,
         currentMapId: null,
+        MiRMapEnabled: false
     },
 
     disableAll: false,

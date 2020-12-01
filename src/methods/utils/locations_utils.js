@@ -84,6 +84,25 @@ export const LocationTypes = {
         },
         color: '#6283f0',
     },
+
+    humanPosition: {
+        svgPath:
+            <>
+                <rect fill='transparent' x="100" y="40" width="200" height="320" rx="30" transform="translate(400 0) rotate(90)" strokeMiterlimit="10" strokeWidth="20" />
+                <path d="M315.5,200.87l-64,36.95A1,2,2,2,3,230,237v-73.9a1,1,0,0,1,1.5-.87l64,36.95A1,1,0,0,1,315.5,200.87Z" strokeMiterlimit="10" strokeWidth="10" />
+                <circle cx="200" cy="200" r="15" />
+                <circle cx="150" cy="200" r="10" />
+                <circle cx="102.5" cy="200" r="7.5" />
+            </>,
+        attributes:
+            {
+                schema: 'position',
+                type: 'human_position',
+                parent: null,
+                new: true,
+            },
+        color: '#d2f2a0',
+    },
 }
 
 /**

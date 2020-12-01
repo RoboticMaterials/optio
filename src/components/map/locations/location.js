@@ -265,6 +265,7 @@ const Location = (props) => {
                 )
 
             case 'cart_position':
+            case "human_position":
             case 'shelf_position':
             case 'charger_position':
                 return (

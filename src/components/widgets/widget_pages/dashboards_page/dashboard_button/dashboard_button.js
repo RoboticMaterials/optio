@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import PropTypes from 'prop-types';
 
@@ -14,7 +14,7 @@ import log from '../../../../../logger'
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
 const DashboardButton = (props => {
-    logger.log("DashboardButton props",props)
+    logger.log("DashboardButton props", props)
 
 
     const {
@@ -34,14 +34,15 @@ const DashboardButton = (props => {
         error
     } = props
 
-    return(
-
+    return (
+        <>
             <style.Container
                 disabled={disabled}
                 width={width}
                 height={height}
                 background={color}
                 onClick={clickable ? onClick : null}
+                borderGlow={taskID === 'hil_success'}
                 clickable={clickable}
                 hoverable={hoverable}
                 style={containerStyle}
@@ -55,6 +56,7 @@ const DashboardButton = (props => {
                     ContainerComponent={style.ErrorContainerComponent}
                 />
             </style.Container>
+        </>
     )
 
 })
@@ -75,7 +77,7 @@ DashboardButton.defaultProps = {
     hoverable: true,
     title: "",
     taskID: "",
-    onClick: () => {},
+    onClick: () => { },
     disabled: false
 
 };
