@@ -14,9 +14,10 @@ import BarChart from '../statistics_charts/statistics_charts_types/bar_chart'
 
 import { ResponsiveLine } from '@nivo/line'
 
-// Import API
-import { getLocationAnalytics } from '../../../../../api/analytics_api'
-import theme from '../../../../../theme';
+// Import Actions
+import { getStationAnalytics } from '../../../../../redux/actions/stations_actions'
+
+
 import { ResponsiveBar } from '@nivo/bar';
 
 // Import Utils
@@ -25,7 +26,7 @@ import { getDateName, getDateFromString } from '../../../../../methods/utils/uti
 // TODO: Commented out charts for the time being (See comments that start with TEMP)
 const StatisticsOverview = (props) => {
 
-    const theme = useContext(ThemeContext);
+    const themeContext = useContext(ThemeContext);
 
     const [delayChartRender, setDelayChartRender] = useState('none')
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
@@ -54,7 +55,7 @@ const StatisticsOverview = (props) => {
         throughPut: '#d177ed'
     }
 
-    useEffect(() => {
+    useEffect(async () => {
 
         if (locations[params.stationID].device_id !== undefined) {
             setIsDevice(true)
@@ -72,12 +73,16 @@ const StatisticsOverview = (props) => {
         }
 
         // TEMP
-        const dataPromise = getLocationAnalytics(params.locationID, 'day')
-        dataPromise.then(response => {
+        const analytics = await getStationAnalytics(stationID, 'day')
+        if (analytics === undefined) return
+        setData(analytics)
 
-            setData(response)
+        // dataPromise.then(response => {
+        //     console.log('QQQQ response', response)
+        //     if(response === undefined) return 
+        //     setData(response)
 
-        })
+        // })
     }, [])
 
     const handleDeviceStatistics = () => {
@@ -94,13 +99,13 @@ const StatisticsOverview = (props) => {
     }
 
     // TEMP
-    useEffect(() => {
-        if (data !== null) {
-            const N = Math.round(Math.max(data[selector].length, 80) / 6)
-            const ticks = everyN(data[selector], N).map(datapoint => datapoint.x)
-            setDefaultTicks(ticks)
-        }
-    }, [data])
+    // useEffect(() => {
+    //     if (data !== null) {
+    //         const N = Math.round(Math.max(data[selector].length, 80) / 6)
+    //         const ticks = everyN(data[selector], N).map(datapoint => datapoint.x)
+    //         setDefaultTicks(ticks)
+    //     }
+    // }, [data])
 
     const findSlice = e => {
         // console.log(e.clientX, plotRef.getBoundingClientRect())
@@ -122,14 +127,23 @@ const StatisticsOverview = (props) => {
         return null
     }
 
-    const handleTimeSpan = (timeSpan) => {
+    const handleTimeSpan = async (timeSpan) => {
 
         setIsLoading(true)
-        const dataPromise = getLocationAnalytics(params.locationID, timeSpan)
-        dataPromise.then(response => {
-            setData(response)
-            setIsLoading(false)
-        })
+
+        const analytics = await getStationAnalytics(stationID, 'day')
+        if (analytics === undefined) return
+        setData(analytics)
+        setIsLoading(false)
+
+        // const dataPromise = getStationAnalytics(stationID, timeSpan)
+        // dataPromise.then(response => {
+
+        //     if (response === undefined) return
+
+        //     setData(response)
+        //     setIsLoading(false)
+        // })
 
         switch (timeSpan) {
             case 'live':
@@ -171,7 +185,8 @@ const StatisticsOverview = (props) => {
 
         switch (timeSpan) {
             case 'day':
-                date = getDateFromString(Object.values(throughPut)[0].x)
+                // date = getDateFromString(Object.values(throughPut)[0].x)
+                date = new Date()
                 dateSelectorTitle = date.toDateString()
                 break;
 
@@ -200,10 +215,10 @@ const StatisticsOverview = (props) => {
         return (
             <styled.RowContainer>
                 <styled.DateSelectorIcon className='fas fa-chevron-left' />
-                {isLoading ? 
-                    <i className="fas fa-circle-notch fa-spin"/>
-                :
-                    <h2>{dateSelectorTitle}</h2>
+                {isLoading ?
+                    <i className="fas fa-circle-notch fa-spin" />
+                    :
+                    <styled.DateSelectorTitle>{dateSelectorTitle}</styled.DateSelectorTitle>
 
                 }
                 <styled.DateSelectorIcon className='fas fa-chevron-right' />
@@ -260,14 +275,29 @@ const StatisticsOverview = (props) => {
             {handleDateSelector()}
 
 
-            <styled.PlotContainer
-                ref={pc => plotRef = pc}
-                // onMouseMove={findSlice}
-                onMouseLeave={() => { setSlice(null) }}
-            >
-                {isLoading ? <i className="fas fa-circle-notch fa-spin"/> : <BarChart data={data} selector={selector}/>}
+            {isLoading ?
+                <i className="fas fa-circle-notch fa-spin" />
+                :
 
-            </styled.PlotContainer>
+                // <BarChart data={data} selector={selector} />
+
+                <styled.PlotContainer
+                    ref={pc => plotRef = pc}
+                    // onMouseMove={findSlice}
+                    onMouseLeave={() => { setSlice(null) }}
+                >
+                    <BarChart
+                        data={data}
+                        selector={selector}
+                        mainTheme={themeContext}
+                        timeSpan={timeSpan}
+                    />
+                    {/* <BarChart data={data} selector={selector} /> */}
+
+                </styled.PlotContainer>
+
+            }
+
 
 
         </styled.OverviewContainer>
