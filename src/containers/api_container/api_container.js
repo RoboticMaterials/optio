@@ -111,10 +111,6 @@ const ApiContainer = (props) => {
     }, [])
 
     useEffect( () => {
-        console.log("useEffect devices",devices)
-        console.log("useEffect MiRMapEnabled",MiRMapEnabled)
-
-
         let containsMirCart = false
         // check each device
         // in order for MiR mode to be enabled, there must be at least one device of MiR type and it must be placed on the map
