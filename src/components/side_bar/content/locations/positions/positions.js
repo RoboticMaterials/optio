@@ -44,7 +44,7 @@ export default function Positions(props) {
     const positionType = type
     let positionTypeCamel = ''
     let positionName = ''
-
+    console.log(positionType)
     const selectedPositions = Object.values(positions).filter(position => position.parent == selectedLocation._id)
 
     useEffect(() => {
