@@ -3,10 +3,71 @@ import CloseOutlinedIcon from '@material-ui/icons/CloseOutlined';
 import {RGB_Linear_Shade, hexToRGBA, LightenDarkenColor} from "../../../../../methods/utils/color_utils";
 import * as pageStyle from "../dashboards_header/dashboards_header.style"
 
+export const WidgetButtonButton = styled.button`
+    border: none;
+    border-radius: 1rem;
+    text-align: center;
+    width: 4rem;
+    min-width: 4rem;
+    height: 4rem;
+    outline:none;
+    margin: 0rem .5rem;
+
+    /* margin-top: 0.5rem; */
+
+
+    box-shadow: 0 0.1rem 0.2rem 0rem #303030;
+
+    background-color: ${props => props.selected ? props.theme.bg.quaternary : props.theme.bg.septenary};
+    // background-color: ${props =>  props.theme.bg.quaternary };
+
+    transition: background-color 0.25s ease, box-shadow 0.1s ease;
+
+    &:hover{
+        background-color: ${props => props.theme.bg.senary};
+    }
+
+    &:focus{
+        outline: 0 !important
+    }
+
+    &:active{
+        box-shadow: none;
+    }
+
+    @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: .5rem;
+        
+    }
+`;
+
+export const WidgetButtonLabel = styled.label`
+    display: inline-block;
+    width: 12.5rem;
+    height: 6rem;
+    text-align: center;
+`;
+
+export const WidgetButtonIcon = styled.i`
+    font-size: 2.2rem;
+    color: ${props =>  props.theme.fg.primary};
+
+    @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
+        font-size: 2rem;
+
+        
+    }
+`
 
 export const FooterContainer = styled.div`
-	background: red;
 	width: 100%;
+	display: flex;
+	overflow-x: scroll;
+	overflow-y: hidden;
+	padding: 1rem;
+	// background: ${props => props.theme.bg.quaternary};
 `
 
 // export const
@@ -35,7 +96,7 @@ export const Container = styled.div`
     z-index: 1;
 
     flex: 1;
-    background: green;
+    background: ${props => LightenDarkenColor(props.theme.bg.quaternary, 20)};
     
 `
 

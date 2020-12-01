@@ -35,6 +35,17 @@ const logger = log.getLogger("Dashboards")
 // const tempColors = ['#99A9D7', '#8ED2CD', '#C1ED98', '#FED875', '#F59B7C']
 const tempColors = ['#FF4B4B', '#56d5f5', '#50de76', '#f2ae41', '#c7a0fa']
 
+const TYPES = {
+    ROUTES: {
+        name: "ROUTES",
+        iconName: "fas fa-route"
+    },
+    USER_REPORTS: {
+        name: "USER_REPORTS",
+        iconName: "fas fa-sticky-note"
+    }
+}
+
 const DashboardsSidebar = (props) => {
 
     const {
@@ -67,6 +78,8 @@ const DashboardsSidebar = (props) => {
     * isSmall is true if width is less than breakpoint and false otherwise
     * */
     const [isSmall, setSmall] = useState(testSize(width)); // used for tracking sidebar dimensions
+
+    const [type, setType] = useState(TYPES.ROUTES.name); // used for tracking sidebar dimensions
 
     // redux state
     const dispatch = useDispatch()
@@ -140,6 +153,21 @@ const DashboardsSidebar = (props) => {
         setSmall(testSize(Math.max(minWidth, width + ui.deltaX)))  // check if width is less than styling breakpoint and update isSmall
     }
 
+    const renderTypeButtons = () => {
+        return(
+                Object.values(TYPES).map((currType, index) => {
+                    return (
+                        <style.WidgetButtonButton
+                            selected={type === currType.name}
+                        >
+                            <style.WidgetButtonIcon className="fas fa-route"/>
+                        </style.WidgetButtonButton>
+                    )
+                })
+        )
+
+    }
+
     return (
 
         <style.SidebarWrapper onClick={() => setAddTaskAlert(null)}>
@@ -178,20 +206,9 @@ const DashboardsSidebar = (props) => {
                             )}
                         </Container>
                     </style.ListContainer>
-                    <style.FooterContainer>
-                        <styled.WidgetButtonButton
-                        >
-                            {type === 'view' ?
-                                <styled.WidgetButtonIcon className="far fa-eye" pageID={type} currentPage={currentPage} />
-                                :
-                                type === 'cancel' ?
-                                    <styled.WidgetButtonIcon className="fas fa-times" pageID={type} currentPage={currentPage} />
 
-                                    :
-                                    <styled.WidgetButtonIcon style={{ fontSize: type === 'cart' && '.9rem' }} className={"icon-" + type} pageID={type} currentPage={currentPage} />
-                            }
-                            {/* <styled.ButtonText>{props.type}</styled.ButtonText> */}
-                        </styled.WidgetButtonButton>
+                    <style.FooterContainer>
+                        {renderTypeButtons()}
 
                     </style.FooterContainer>
                 </style.Container>
