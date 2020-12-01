@@ -172,8 +172,29 @@ const DashboardScreen = (props) => {
         return buttons
     }
 
-    // handles event of task click
-    // creates an alert on the screen, and dispatches an action to update the task queue
+    /**
+     * Handles event of task click
+     * 
+     * Currently there are 3 types of tasks that can be clicked on a dashboard
+     * 
+     * 1) Custom task
+     * This task is used to send the cart to a position that does not belong to a station (You cant make a route to a non-station position)
+     * It takes in the custom value, which is the position info, and sends the cart to that position from it's current location
+     * 
+     * 2) HIL Success
+     * This is a button that shows up on dashboard when a human tasks unload location is the current dashboard
+     * Instead of showing a HIL modal, it shows an unload button
+     * The reason why is that humans locations are not known so a HIL modal would have to be on the screen the whole time instead of when a autonomous cart arives
+     * 
+     * 3) Basic Routes
+     * This is the standard button for a dashboard that just executes the route
+     * If the task is already in the q, then show a warning label and dont add it
+     * 
+     * 
+     * @param {*} Id 
+     * @param {*} name 
+     * @param {*} custom 
+     */
     const handleTaskClick = async (Id, name, custom) => {
 
         // If a custom task then add custom task key to task q
@@ -200,15 +221,7 @@ const DashboardScreen = (props) => {
         // Else if its a hil success, execute the HIL success function
         else if (Id === 'hil_success') {
 
-            handleHilSuccess(custom)
-
-            setAddTaskAlert({
-                type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
-                label: "Task Added to Queue",
-                message: 'Unloaded',
-            })
-
-            return setTimeout(() => setAddTaskAlert(null), 1800)
+            return handleHilSuccess(custom)
 
         }
 
@@ -226,7 +239,6 @@ const DashboardScreen = (props) => {
             // Since the task is put into the q but automatically assigned to the person that clicks the button
             if (tasks[Id].device_type === 'human') {
 
-                console.log('QQQQ Human task')
                 // dispatch action to add task to queue
                 await dispatch(postTaskQueue(
                     {
