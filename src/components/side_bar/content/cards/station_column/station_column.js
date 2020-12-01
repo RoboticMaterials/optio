@@ -5,6 +5,7 @@ import * as styled from "./station_column.style";
 import {Container} from "react-smooth-dnd";
 import Card from "../card/card";
 import React, {useState} from "react";
+import {setCardDragging, setColumnHovering} from "../../../../../redux/actions/card_page_actions";
 
 
 const StationsColumn = SortableContainer((props) => {
@@ -13,18 +14,27 @@ const StationsColumn = SortableContainer((props) => {
 		station_id,
 		route_id,
 		handleCardClick,
-		cards
+		cards,
+		size,
+		processId
 	} = props
+
+	const width = size?.width
+	const height = size?.height
+
 
 	const dispatch = useDispatch()
 	const station = useSelector(state => { return state.locationsReducer.stations[station_id] })
 	const route = useSelector(state => { return state.tasksReducer.tasks[route_id] })
 	const [isCollapsed, setCollapsed] = useState(false)
-	const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
+	const [dragEnter, setDragEnter] = useState(false)
+	const [dragLeave, setDragLeave] = useState(false)
 
-	const {
-		name
-	} = station
+	const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
+	const onSetCardDragging = async (isDragging) => await dispatch(setCardDragging(isDragging))
+	const onSetColumnHovering = async (isHoveringOverColumn) => await dispatch(setColumnHovering(isHoveringOverColumn))
+
+	const name = station?.name || "TEMP NAME"
 
 	const handleDrop = (dropResult) => {
 		console.log("handleDrop dropResult", dropResult)
@@ -38,39 +48,58 @@ const StationsColumn = SortableContainer((props) => {
 		} else {
 			if(addedIndex !== null) {
 				console.log("posting payload", payload)
-				onPutCard({...payload, station_id: station_id, route_id: route_id}, payload._id)
+				onPutCard({...payload, station_id: station_id, route_id: route_id, process_id: processId}, payload._id)
 			}
 		}
 	}
 
 	const renderCards = () => {
 		return(
+			<styled.BodyContainer
+				dragEnter={dragEnter}
+				onMouseEnter={()=>onSetColumnHovering(true)}
+				onTouchStart={()=>onSetCardDragging(true)}
+				onScroll={()=>console.log("scroll")}
+				onMouseLeave={()=>onSetColumnHovering(false)}
+				onTouchEnd={()=>onSetCardDragging(false)}
+			>
+				<div onTouchEndCapture={null}></div>
 				<Container
 					onDrop={(DropResult)=> {
 						handleDrop(DropResult)
+						setDragEnter(false)
 					}}
+					getGhostParent={()=>document.body}
+					onDragStart={()=>onSetCardDragging(true)}
+					onDragEnd={()=>onSetCardDragging(false)}
+					onDragEnter={()=>setDragEnter(true)}
+					onDragLeave={()=>setDragEnter(false)}
+					onDropReady={()=>{}}
 					groupName="process-cards"
 					getChildPayload={index =>
 						cards[index]
 					}
-					style={{background: "purple", flex: 1}}
-				>
-					{cards.map((card, index) => {
-						console.log("card",card)
-						const {
-							_id
-						} = card
+					style={{overflow: "auto",height: "100%", padding: "1rem 1rem 2rem 1rem" }}
 
-						return(
-							<Card
-								name={card.name}
-								id={index}
-								index={index}
-								onClick={()=>handleCardClick(_id)}
-							/>
-						)
-					})}
+				>
+						{cards.map((card, index) => {
+							console.log("card",card)
+							const {
+								_id
+							} = card
+
+							return(
+								<Card
+									name={card.name}
+									id={index}
+									index={index}
+									onClick={()=>handleCardClick(_id)}
+								/>
+							)
+						})}
+
 				</Container>
+			</styled.BodyContainer>
 
 		)
 	}
@@ -84,35 +113,29 @@ const StationsColumn = SortableContainer((props) => {
 					/>
 				</styled.StationHeader>
 
-				<styled.RotatedRouteName>{name}</styled.RotatedRouteName>
-
+				<styled.BodyContainer>
+					<styled.RotatedRouteName>{name}</styled.RotatedRouteName>
+				</styled.BodyContainer>
 			</styled.StationContainer>
 		)
 	}
 
 	else {
 		return(
-			<styled.StationContainer isCollapsed={isCollapsed}>
+			<styled.StationContainer height={height} isCollapsed={isCollapsed}>
 				<styled.StationHeader>
-					<i className="fa fa-chevron-down" aria-hidden="true"
-					   onClick={() => setCollapsed(true)}
-					/>
+						<i className="fa fa-chevron-down" aria-hidden="true"
+						   onClick={() => setCollapsed(true)}
+						/>
 
-					<styled.TitleContainer>
-						<styled.LabelContainer>
-							<styled.LabelTitle>Route</styled.LabelTitle>
-							<styled.LabelValue>{route.name}</styled.LabelValue>
-						</styled.LabelContainer>
+
 
 						<styled.LabelContainer>
-							<styled.LabelTitle>Station</styled.LabelTitle>
-							<styled.LabelValue>{name}</styled.LabelValue>
+							<styled.StationLabel>Station</styled.StationLabel>
+							<styled.StationTitle>{name}</styled.StationTitle>
 						</styled.LabelContainer>
-					</styled.TitleContainer>
 
-					<styled.StationButton>
 						<i className="fas fa-ellipsis-h"></i>
-					</styled.StationButton>
 				</styled.StationHeader>
 
 				{renderCards()}

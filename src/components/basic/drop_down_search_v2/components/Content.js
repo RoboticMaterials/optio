@@ -20,7 +20,7 @@ const Content = ({ props, state, methods, ContentComponent, InputComponent }) =>
         props.contentRenderer({ props, state, methods })
       ) : (
         
-        <React.Fragment>
+        <OptionsContainer multi={props.multi}>
           {(props.multi || props.showSelectedBox)
             ? state.values &&
               state.values.map((item) => (
@@ -36,7 +36,7 @@ const Content = ({ props, state, methods, ContentComponent, InputComponent }) =>
               state.values.length > 0 && <Value>{getByPath(state.values[0], props.labelField)}</Value>
             }
           <Input  InputComponent={InputComponent} props={{...props, filled:state.values.length}} methods={methods} state={state} />
-        </React.Fragment>
+        </OptionsContainer>
       )}
     </ContentComponent>
   );
@@ -50,6 +50,20 @@ export const Value = styled.div`
   width: 100%;
 `
 
+export const OptionsContainer = styled.div`
+    width: auto;
+    height: 100%;
+    margin-right: 1rem;
+    display: inline-flex;
+    overflow-y: hidden;
+    overflow-x: ${props => props.multi ? "auto" : "hidden"};
+    
+    word-break: ${props => !props.multi && "break-all"};
+    white-space: ${props => !props.multi && "nowrap"};
+    text-overflow: ${props => !props.multi && "ellipsis"};
+    
+`
+
 export const DefaultContentComponent = styled.div`
   position: relative;
   
@@ -58,8 +72,13 @@ export const DefaultContentComponent = styled.div`
   // flex-wrap: nowrap;
 
   overflow: hidden;
+  
+  .${LIB_NAME}-type-multi {
+    overflow-x: auto;
+  }
+  
   word-break: break-all;
-  // white-space: nowrap;
+  white-space: nowrap;
   text-overflow: ellipsis;
 `;
 

@@ -1,21 +1,23 @@
 import styled from "styled-components";
+import { Draggable } from 'react-smooth-dnd';
 
 export const Container = styled.div`
  
      height: 6rem;
 
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
         
     background: white;
     border-radius: 0.6rem;
-    overflow: visible;
         
     // margins
-    margin: 0 2rem 0.5rem 2rem;
+    margin: 0 0 0.5rem 0;
         
     // padding
-    padding: 0.5rem 1rem 0.5rem 1rem;
+    
     
     outline: none;
     &:focus {
@@ -36,7 +38,25 @@ export const Container = styled.div`
         transform: translateY(-2px);
         cursor: grabbing;
     }
+    
+    color: black;
 
 }
     
+`
+
+export const ContentContainer = styled.div`
+	padding: 0.5rem 1rem 0.5rem 1rem;
+`
+
+export const FooterBar = styled.div`
+	height: 1rem;
+	background: ${props => props.theme.bg.septenary};
+`
+
+export const StyledDraggable = styled(Draggable)`
+	.smooth-dnd-ghost .vertical .smooth-dnd-draggable-wrapper {
+		background: blue;
+		padding: 2rem;
+	}
 `

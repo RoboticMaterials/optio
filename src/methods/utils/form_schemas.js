@@ -191,6 +191,10 @@ export const cardSchema = Yup.object().shape({
         .min(1, '1 character minimum.')
         .max(50, '50 character maximum.')
         .required('Please enter a name.'),
+    count: Yup.number()
+        .integer()
+        .min(0)
+        .required('Please enter count.'),
     description: Yup.string()
         .min(1, '1 character minimum.')
         .max(50, '250 character maximum.'),

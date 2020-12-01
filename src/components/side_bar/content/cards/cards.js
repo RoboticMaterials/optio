@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import { useHistory } from 'react-router-dom'
 import {useDispatch, useSelector} from "react-redux";
 
@@ -7,6 +7,12 @@ import CardEditor from "./card_editor/card_editor";
 import CardMenu from "./card_menu/card_menu";
 import CardZone from "./card_zone/card_zone";
 import TimelineZone from "./timeline_zone/timeline_zone";
+import Button from "../../../basic/button/button";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import Portal from "../../../../higher_order_components/portal";
+import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
+import SummaryZone from "./summary_zone/summary_zone";
+
 
 const PAGES = {
     CARDS: "CARDS",
@@ -21,26 +27,48 @@ const Cards = (props) => {
 
     const history = useHistory()
     const processes = useSelector(state => { return state.processesReducer.processes })
-    const routes = useSelector(state => { return state.tasksReducer.tasks })
-    const cards = useSelector(state => { return state.cardsReducer.processCards[id] })
+    const isCardDragging = useSelector(state => { return state.cardPageReducer.isCardDragging })
+    const isHoveringOverColumn = useSelector(state => { return state.cardPageReducer.isHoveringOverColumn })
     const processIds = Object.keys(processes)
 
     const [showCardEditor, setShowCardEditor] = useState(false)
-    const [page, setPage] = useState()
     const [selectedCard, setSelectedCard] = useState(null)
     const [showMenu, setShowMenu] = useState(false)
+    const [zoneSize, setZoneSize] = useState({
+        width: undefined,
+        height: undefined,
+        offsetLeft: undefined,
+        offsetTop: undefined,
+    })
+    const zoneRef = useRef(null);
 
-    var stations = []
-    let filteredRoutes = []
+    // useEffect will run on zoneRef value assignment
+    useEffect( () => {
+
+        // The 'current' property contains info of the reference:
+        // align, title, ... , width, height, etc.
+        if(zoneRef.current){
+
+            console.log("zoneRef.current",zoneRef.current)
+            let height = zoneRef.current.offsetHeight;
+            let width  = zoneRef.current.offsetWidth;
+            let offsetTop  = zoneRef.current.offsetTop;
+            let offsetLeft  = zoneRef.current.offsetLeft;
+            setZoneSize({
+                width: width,
+                height: height,
+                offsetTop: offsetTop,
+                offsetLeft: offsetLeft,
+            });
+        }
+
+    }, [zoneRef]);
+
 
     let title
     let showAddCard
     let showGanttViewButton = false
-
-    console.log("id",id)
-    console.log("processIds",processIds)
     let currentProcess
-
     switch(id) {
         case "summary":
             title = "Summary Zone"
@@ -59,11 +87,6 @@ const Cards = (props) => {
             title = currentProcess.name
             break
     }
-
-    console.log("processes",processes)
-    console.log("currentProcess",currentProcess)
-
-
 
     const handleCardClick = (cardId) => {
         setShowCardEditor(true)
@@ -90,54 +113,91 @@ const Cards = (props) => {
                     onClick={()=>setShowMenu(!showMenu)}
                 />
 
-                <styled.ProcessName>{title}</styled.ProcessName>
+                <styled.Title>{title}</styled.Title>
                 {showAddCard &&
-                    <styled.AddCardButton
+                    <Button
                         onClick={()=>setShowCardEditor(!showCardEditor)}
+                        schema={'processes'}
                     >
                         + Card
-                    </styled.AddCardButton>
+                    </Button>
                 }
                 {showGanttViewButton &&
-                <styled.AddCardButton
-                >
-                    Gantt View
-                </styled.AddCardButton>
+                    <Button
+                        schema={'processes'}
+                    >
+                        Gantt View
+                    </Button>
                 }
                 {(id === "summary" || id === "timeline") &&
-                    <styled.AddCardButton
+                    <Button
+                        schema={'processes'}
                         onClick={()=>history.replace ('/processes/' + processIds[0] + "/card")}
                     >
                         Leave Zone
-                    </styled.AddCardButton>
+                    </Button>
                 }
             </styled.Header>
-            <styled.Body>
+            <styled.Body id={"cards-body"}>
                 {showMenu &&
-                    <CardMenu
-                        currentProcess={currentProcess}
-                        close={()=>setShowMenu(false)}
-                    />
+                <CardMenu
+                    currentProcess={currentProcess}
+                    close={()=>setShowMenu(false)}
+                />
                 }
+
                 {
                     {
                         'summary':
-                            <div>THIS WILL BE THE SUMMARY ZONE</div>,
+                            <SummaryZone
+                                zoneRef={zoneRef}
+                                zoneSize={zoneSize}
+                                handleCardClick={handleCardClick}
+                            />,
                         'timeline':
                             <TimelineZone
                                 handleCardClick={handleCardClick}
                                 initialProcesses={[currentProcess]}
                             />
                     }[id] ||
-                    <CardZone
-                        processId={id}
-                        // stations={stations}
-                        handleCardClick={handleCardClick}
-                    />
+                    <div ref={zoneRef} style={{overflow: "hidden", height: "100%", flex: 1, maxHeight: "100%"}}>
+                        <TransformWrapper
+                            defaultScale={1}
+                            style={{background: "green", padding: "2rem", flex: 1}}
+                            options={{
+                                minScale: 0.2,
+                                limitToBounds: false,
+                                // limitToWrapper: true,
+                                disabled: isCardDragging,
+                            }}
+                            pan={{
+                                disabled: isCardDragging
+                            }}
+                            enablePanPadding={false}
+                            enablePadding={false}
+                            wheel={{
+                                disabled: isHoveringOverColumn,
+                                // wheelEnabled: false,
+                                step: 50
+                            }}
+                            scalePadding={{
+                                disabled: false
+                            }}
+                            pinch={{
+                                disabled: true
+                            }}
+                        >
+                            <TransformComponent>
+                                <CardZone
+                                    processId={id}
+                                    size={zoneSize}
+                                    handleCardClick={handleCardClick}
+                                />
+                            </TransformComponent>
+                        </TransformWrapper>
+                    </div>
                 }
             </styled.Body>
-
-
         </styled.Container>
     )
 }

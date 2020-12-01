@@ -80,15 +80,23 @@ const SideBar = (props) => {
         const time = Date.now()
 
         if(page === "processes" && ((subpage === "card")) || (id === "timeline") || (id === "summary")) {
-            setPrevWidth(width) // store previous width to restore when card page is left
+
+            if(!prevWidth) setPrevWidth(width) // store previous width to restore when card page is left
             setWidth(window.innerWidth)
+            dispatch(sidebarActions.setWidth(window.innerWidth))
+
         }
         else if((((prevSubpage === "card") || (prevId === "timeline") || (prevId === "summary")) && prevPage === "processes") && ((subpage !== "card") || (id === "timeline") || (id === "summary")) ) {
+            console.log("prevWidth",prevWidth)
             setWidth(prevWidth)
+            dispatch(sidebarActions.setWidth(prevWidth))
+            setPrevWidth(null)
         }
 
-        // update prev params
         setPrevParams(params)
+
+        // update prev params
+
 
         return () => {}
 

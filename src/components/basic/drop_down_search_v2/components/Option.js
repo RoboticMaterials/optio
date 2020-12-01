@@ -36,8 +36,15 @@ export const DefaultOptionComponent = styled.span`
   margin: 3px 0 3px 5px;
   background: ${({ color }) => color};
   color: #fff;
-  display: flex;
+  display: inline-flex;
   flex-direction: ${({ direction }) => direction === 'rtl' ? 'row-reverse' : 'row'};
+  width: auto;
+  white-space: nowrap ;
+  
+  
+  .${LIB_NAME}-option-label {
+    width: auto;
+  }
 
 
   .${LIB_NAME}-option-remove {

@@ -5,6 +5,7 @@ import {SortableContainer} from "react-sortable-hoc";
 import TimelineCard from "./timeline_card/timeline_card";
 import {useSelector} from "react-redux";
 import DropDownSearch from "../../../../basic/drop_down_search_v2/drop_down_search";
+import ZoneHeader from "../zone_header/zone_header";
 
 const TimelineZone = SortableContainer((props) => {
 
@@ -17,7 +18,7 @@ const TimelineZone = SortableContainer((props) => {
 	const stations = useSelector(state => { return state.locationsReducer.stations })
 	const cards = useSelector(state => { return Object.values(state.cardsReducer.cards) })
 
-	const [selectedProcesses, setSelectedProcesses] = useState(initialProcesses)
+	const [selectedProcesses, setSelectedProcesses] = useState(processes)
 
 	console.log("TimelineZone cards",cards)
 
@@ -38,8 +39,11 @@ const TimelineZone = SortableContainer((props) => {
 					} = currProcess
 
 					return(
-						<div>
-							<span>{processName}</span>
+						<styled.ProcessContainer>
+							<styled.ProcessHeader>
+								<styled.ProcessTitle>{processName}</styled.ProcessTitle>
+							</styled.ProcessHeader>
+							<styled.ProcessBody>
 							{
 								processCards.map((card, index) => {
 
@@ -47,7 +51,9 @@ const TimelineZone = SortableContainer((props) => {
 									const {
 										name: cardName,
 										_id: cardId,
-										station_id: stationId
+										station_id: stationId,
+										start_date,
+										end_date
 									} = card
 
 									const cardStation = stations[stationId]
@@ -65,11 +71,14 @@ const TimelineZone = SortableContainer((props) => {
 											key={cardId}
 											id={cardId}
 											name={cardName}
+											start_date={start_date}
+											end_date={end_date}
 										/>
 									)
 								})
 							}
-						</div>
+							</styled.ProcessBody>
+						</styled.ProcessContainer>
 					)
 				})
 
@@ -82,33 +91,10 @@ const TimelineZone = SortableContainer((props) => {
 
 	return(
 		<styled.Container>
-			<styled.Header>
-				<DropDownSearch
-					style={{width: "30rem"}}
-					onClearAll={()=>{
-						setSelectedProcesses([])
-					}}
-					clearable
-					multi
-					values={selectedProcesses}
-					options={processes}
-					onChange={values => {
-						console.log("onChange values",values)
-						setSelectedProcesses(values)
-					}}
-					pattern={null}
-					labelField={'name'}
-					valueField={"_id"}
-					onDropdownOpen={() => {
-					}}
-					onRemoveItem={(values)=> {
-						console.log("onRemoveItem values",values)
-						setSelectedProcesses(values)
-
-					}}
-				/>
-
-			</styled.Header>
+			<ZoneHeader
+				selectedProcesses={selectedProcesses}
+				setSelectedProcesses={setSelectedProcesses}
+			/>
 			<styled.Body>
 				{renderProcessCards()}
 			</styled.Body>

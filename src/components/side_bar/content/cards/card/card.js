@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {useSelector} from "react-redux";
 import * as styled from "./card.style";
-import { Container, Draggable } from 'react-smooth-dnd';
+import { Draggable } from 'react-smooth-dnd';
 
 const Card = (props) => {
     const {
@@ -13,14 +13,19 @@ const Card = (props) => {
 
 
     return(
-        <Draggable key={id} index={index} style={{ background: "blue" }}>
+        <styled.StyledDraggable key={id} index={index}>
             <styled.Container
                 onClick={onClick}
-
             >
-                {name}
+                <styled.ContentContainer>
+                    {name}
+                </styled.ContentContainer>
+                <styled.FooterBar>
+
+                </styled.FooterBar>
+
             </styled.Container>
-        </Draggable>
+        </styled.StyledDraggable>
     )
 }
 

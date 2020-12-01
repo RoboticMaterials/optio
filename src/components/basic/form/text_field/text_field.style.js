@@ -42,5 +42,7 @@ export const IconContainerComponent = styled.div`
     padding: 0;
     // background: magenta;
     
+    ${props => props.iconContainerCss};
+    
 `;
 

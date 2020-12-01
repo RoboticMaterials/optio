@@ -1,39 +1,46 @@
 import styled from 'styled-components'
-
+import {Calendar} from "react-calendar";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import '../../../../index.css';
 export const Container = styled.div`
     display: flex;
     position: relative;
     flex-direction: column;
-    // overflow: hidden;
-    max-width: 100%;
-    position: relative;
-    background: magenta;
-    // height: 100%;
     flex: 1;
-    padding: 1rem;
+    overflow:hidden;
+    font-style: ${props => props.theme.font.primary};
 `
 
 // HEADER
 export const Header = styled.div`
-	background: blue;
 	display: flex;
 	justify-content: space-around;
+	align-items: center;
 	padding: 1rem;
+	background: ${props => props.theme.bg.quinary};
 `
 
 export const Body = styled.div`
 	display: flex;
 	flex: 1;
-	overflow: auto;
+	// max-width: 50%;
+	overflow: hidden;
+	position: relative;
+	
+	
+	background: ${props => props.theme.bg.tertiary};
 `
 
 export const MenuButton = styled.i`
 	font-size: 2rem;
+	padding: 0;
+	margin: 0;
 `
 
-export const ProcessName = styled.span`
-	background: white;
-	
+export const Title = styled.span`
+	font-size: ${props => props.theme.fontSize.sz2};
+	color: white;
+	font-weight: ${props => props.theme.fontWeight.bold};
 `
 
 export const AddCardButton = styled.button`
@@ -59,28 +66,6 @@ export const RoutesListContainer = styled.div`
     padding-right: 5rem;
     padding-bottom: 5rem;
 `
-
-// export const TestContainer = styled.div`
-// 	width: 70%;
-//     // max-width: 100%;
-//     // max-height: 100%;
-//     // min-height: 100%;
-//     height: 100%;
-//     flex: 1;
-//
-//     background: white;
-//
-//     overflow: auto;
-//     // overflow-y: hidden;
-//     // overflow-x: auto;
-//
-//     padding: 2rem;
-//
-// `
-
-// station column
-
-
 
 
 

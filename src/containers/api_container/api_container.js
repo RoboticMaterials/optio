@@ -211,6 +211,10 @@ const ApiContainer = (props) => {
                     loadCardsData() // initial call
                     pageDataInterval = setInterval(()=>loadCardsData(), 10000)
                 }
+                else if(data1 === "summary") {
+                    loadCardsData() // initial call
+                    pageDataInterval = setInterval(()=>loadCardsData(), 10000)
+                }
 
                 break
 

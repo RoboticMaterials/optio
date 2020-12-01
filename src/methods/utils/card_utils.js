@@ -7,7 +7,7 @@ export const parseMessageFromEvent = (eventName, username, data) => {
 	switch(eventName) {
 
 		case EVENT_NAMES.CREATE:
-			return [`Card created by ${username}`]
+			return [`Created card`]
 
 		case EVENT_NAMES.UPDATE:
 			let msgs = []
@@ -28,6 +28,8 @@ export const parseMessageFromEvent = (eventName, username, data) => {
 
 
 			})
+
+			if(msgs.length === 0) msgs.push("No info found")
 
 			return msgs
 

@@ -31,6 +31,7 @@ const defaultState = {
 };
 
 export default function cardsReducer(state = defaultState, action) {
+  let processCards = {}
 
   switch (action.type) {
     case GET + CARD + SUCCESS:
@@ -41,9 +42,21 @@ export default function cardsReducer(state = defaultState, action) {
       }
 
     case GET + CARDS + SUCCESS:
+
+      Object.values(action.payload.cards).forEach((card,index) => {
+        if(processCards[card.process_id]) {
+          processCards[card.process_id][card._id] = card
+        } else {
+          processCards[card.process_id] = {
+            [card._id]: card
+          }
+        }
+
+      })
       return {
         ...state,
         cards: {...state.cards, ...action.payload.cards},
+        processCards: processCards,
         pending: false,
       }
 

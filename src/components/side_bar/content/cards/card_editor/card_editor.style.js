@@ -2,6 +2,10 @@ import styled, {css} from "styled-components";
 import Modal from "react-modal";
 import {Form} from "formik";
 
+export const rowCss = css`
+	margin-bottom: 1rem;
+`
+
 export const Container = styled(Modal)`
   outline: none !important;
   outline-offset: none !important;
@@ -13,33 +17,36 @@ export const Container = styled(Modal)`
 
   position: absolute;
 
-  background: grey;
-  border-width: thin;
-  border-radius: .5rem;
-  border-color: ${props => props.theme.bg.quarternary};
-  border-style: solid;
   z-index: 50;
   
-  min-width: 90%;
-  max-width: 90%;
-  max-height: 90%;
-  height: 90%;
+  min-width: 95%;
+  max-width: 95%;
+  max-height: 95%;
+  // height: 95%;
   
   color: ${props => props.theme.bg.octonary};
   
   display: flex;
   flex-direction: column;
+  
+  color: ${props => props.theme.bg.octonary};
 `;
 
 export const Header = styled.div`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	border-bottom: 1px solid black;
 	padding: 0;
 	margin: 0;
 	height: 3rem;
+	background: ${props => props.theme.bg.quinary};
 	
+`
+
+export const NameContainer = styled.div`
+	background: ${props => props.theme.bg.quaternary};
+	width: 100%;
+	padding: 1rem;
 `
 
 export const CloseButton = styled.button`
@@ -58,7 +65,9 @@ export const Title = styled.span`
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
-	background: tan;
+	
+	font-size: ${props => props.theme.fontSize.sz2};
+	font-weight: ${props => props.theme.fontWeight.bold};
 	
 `
 
@@ -66,14 +75,15 @@ export const Title = styled.span`
 export const StyledForm = styled(Form)`
     display: flex;
     flex-direction: column;
+    flex: 1;
     width: 100%;
     max-width: 100%;
-    max-height: 100%;
+    // max-height: 100%;
     // overflow-x: hidden;
     border-radius: .5rem;
-    background: yellow;
-    padding: 1rem;
     position: relative;
+    
+    overflow: hidden;
     
    
     flex: 1;
@@ -81,20 +91,32 @@ export const StyledForm = styled(Form)`
     justify-content: space-between;
 `;
 
+export const ContentContainer = styled.div`
+	display: flex;
+	padding: 1rem;
+	flex-direction: column;
+	max-height: 100%;
+	overflow: hidden;
+	flex: 1;
+	justify-content: space-between;
+`
+
 export const BodyContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	padding: 1rem;
 	flex: 1;
-	max-height: 100%;
 	justify-content: space-between;
-	background: blue;
+	overflow: auto;
+	
+	background: ${props => props.theme.bg.quaternary};
 `
 
 export const WidgetContainer = styled.div`
 	display: flex;
-	margin-bottom: 1rem;
 	padding-left: 1rem;
+	
+	${rowCss};
 `
 
 export const Icon = styled.i`
@@ -104,8 +126,32 @@ export const Icon = styled.i`
 	
 `
 
+export const ObjectInfoContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+`
+
+export const ObjectTitleContainer = styled.div`
+	display: flex;
+	margin-right: 1rem;
+`
+
+export const CountInput = styled.input`
+
+`
+
+export const ObjectLabel = styled.span`
+	display: flex;
+	margin-right: 1rem;
+	font-weight: bold;
+`
+
+export const ObjectName = styled.span`
+	display: flex;
+`
+
 export const InputContainer = styled.div`
-	margin-bottom: 1rem;
+	flex: 1;
 `
 
 export const ButtonContainer = styled.div`
@@ -116,36 +162,87 @@ export const ButtonContainer = styled.div`
 	margin: 0;
 `
 
+export const DatesContainer = styled.span`
+	display: inline-flex;
+	align-items: center;
+	background: ${props => props.theme.bg.quinary};
+	justify-content: center;
+	padding: .75rem;
+	border-radius: 1rem;
+	
+	
+	
+	${rowCss};
+`
+
+export const DateItem = styled.div`
+	display: flex;
+	flex-direction: column;
+	background: ${props => props.theme.bg.senary};
+	border-radius: 1rem;
+	
+	padding: .5rem;
+	align-items: center;
+	justify-content: center;
+	
+	&:hover {
+		cursor: pointer;
+	}
+	
+`
+
+export const DateArrow = styled.i`
+	margin-left: 1rem;
+	margin-right: 1rem;
+	color: ${props => props.theme.bg.senary};
+`
+
+export const DateTitle = styled.span``
+
+export const DateText = styled.span`
+
+`
+
+export const TimeText = styled.span`
+
+`
+
 export const StationContainer = styled.div`
-	margin-bottom: 1rem;
+	${rowCss};
 `
 
 // history
-export const HistoryContainer = styled.div`
-	display: flex;
-	padding: 1rem;
-	flex-direction: column;
-	background: green;
-	max-height: 100%;
-	overflow: hidden;
-	flex: 1;
-`
 
-export const HistoryHeader = styled.div`
+export const ContentHeader = styled.div`
 	display: flex;
 	justify-content: space-between;
+	width: 100%;
+	padding: 1rem;
+	
+	
+	
+`
+
+export const CalendarContainer = styled.div`
+	overflow: auto;
+	
+	${rowCss};
+`
+
+export const ContentTitle = styled.span`
+	font-size: ${props => props.theme.fontSize.sz3};
+	font-weight: ${props => props.theme.fontWeight.bold};
 `
 
 export const HistoryBodyContainer = styled.div`
 	display: flex;
 	padding: 1rem;
-	background: rgba(200,100,200,0.2);
 	flex-direction: column;
-	
 	overflow-y: auto;
 	overflow-x: hidden;
-	max-height: 100%;
 	flex: 1;
+	border-bottom: 1px solid ${props => props.theme.bg.tertiary};
+	border-top: 1px solid ${props => props.theme.bg.tertiary};
 `
 
 export const HistoryItemContainer = styled.div`
@@ -153,6 +250,8 @@ export const HistoryItemContainer = styled.div`
 	padding: 1rem;
 	background: rgba(200,0,200,0.2);
 	margin-bottom: 1rem;
+	border-radius: 1rem;
+	background: ${props => props.theme.bg.quinary};
 
 `
 
@@ -173,7 +272,6 @@ const historyContainerCommon = css`
 export const HistoryDateContainer = styled.div`
 	${historyContainerCommon};
 	flex: 1;
-	background: rgba(200,200,0,0.2);
 `
 
 
@@ -183,35 +281,39 @@ export const HistoryDateText = styled.span`
 
 export const HistoryUserContainer = styled.div`
 	${historyContainerCommon};
-	background: rgba(0,200,0,0.2);
+	// display: inline-flex;
+	
+	
 `
 export const HistoryUserText = styled.span`
 	${textCommon};
+	background: ${props => props.theme.bg.senary};
+	padding: .5rem;
+	border-radius: .5rem;
+	color: ${props => props.theme.bg.primary};
 
 `
 
 export const HistoryInfoContainer = styled.div`
 	${historyContainerCommon};
 	flex: 2;
-	background: rgba(200,0,0,0.2);
 	align-items: flex-start;
+	margin: 0 1rem 0 1rem;
 	
 `
 
 export const HistoryInfoText = styled.span`
 	display: flex;
-	background: pink;
 	justify-content: flex-start;
 	align-items: flex-start;
 `
 
-// calendar
-export const CalendarContainer = styled.div`
-	display: flex;
-	padding: 1rem;
-	flex-direction: column;
-	background: orange;
-	overflow: hidden;
+export const TimePickerContainer = styled.div`
 	flex: 1;
-	
+	flex-direction: column;
+	display: flex;
+	overflow: hidden;
 `
+
+
+

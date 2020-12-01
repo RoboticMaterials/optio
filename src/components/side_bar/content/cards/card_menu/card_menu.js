@@ -43,7 +43,6 @@ const CardMenu = (props) => {
 			<Button
 				schema={'processes'}
 				style={{ margin: 0, marginBottom: "1rem" }}
-				secondary
 				onClick={async () => {
 					history.replace ('/processes/summary')
 				}}
@@ -54,7 +53,6 @@ const CardMenu = (props) => {
 			<Button
 				schema={'processes'}
 				style={{ margin: 0, marginBottom: "1rem" }}
-				secondary
 				onClick={async () => {
 					history.replace ('/processes/timeline')
 				}}

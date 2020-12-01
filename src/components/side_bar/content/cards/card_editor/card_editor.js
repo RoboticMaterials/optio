@@ -10,7 +10,6 @@ import {Formik} from "formik";
 import {useDispatch, useSelector} from "react-redux";
 import uuid from 'uuid'
 
-import Calendar from 'react-calendar';
 
 // logger
 import log from '../../../../../logger'
@@ -19,14 +18,23 @@ import {FORM_MODES} from "../../../../../constants/scheduler_constants";
 import { TextField as Cal } from '@material-ui/core';
 import {getCardHistory} from "../../../../../redux/actions/card_history_actions";
 import {parseMessageFromEvent} from "../../../../../methods/utils/card_utils";
-
-import { MuiPickersUtilsProvider, TimePicker, DatePicker } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
-import Grid from '@material-ui/core/Grid';
+import TimePicker from "../../../../basic/timer_picker/timer_picker";
+import Calendar from 'react-calendar'
+import CalendarField from "../../../../basic/form/calendar_field/calendar_field";
+import TimePickerField from "../../../../basic/form/time_picker_field/time_picker_field";
+import CustomTimePickerField from "../../../../basic/form/custom_time_picker_field/custom_time_picker_field";
 
 const logger = log.getLogger("CardEditor")
 
 logger.setLevel("debug")
+
+const CONTENT = {
+	HISTORY: "HISTORY",
+	CALENDAR_START: "CALENDAR_START",
+	CALENDAR_END: "CALENDAR_END",
+	CALENDAR_RANGE: "CALENDAR_RANGE",
+
+}
 
 const CardEditor = (props) => {
 	const {
@@ -34,8 +42,17 @@ const CardEditor = (props) => {
 		onAfterOpen,
 		close,
 		cardId,
+		objectId
 
 	} = props
+
+	const object = {
+		_id: 123,
+		name: "hopper"
+	}
+	const {
+		name: objectName
+	} = object
 
 	const processes = useSelector(state => { return state.processesReducer.processes })
 	const processIds = Object.keys(processes)
@@ -62,9 +79,10 @@ const CardEditor = (props) => {
 
 	const [cardDataInterval, setCardDataInterval] = useState(null)
 	const [calendarValue, setCalendarValue] = useState(null)
-	const [showCalendar, setShowCalendar] = useState(true)
+	const [showTimePicker, setShowTimePicker] = useState(false)
 
 	console.log("calendarValue",calendarValue)
+	console.log("typeof calendarValue",typeof calendarValue)
 
 	useEffect( () => {
 		clearInterval(cardDataInterval)
@@ -98,29 +116,19 @@ const CardEditor = (props) => {
 
 
 
-	const [showHistory, setShowHistory] = useState(false)
+
+	const [content, setContent] = useState(null)
 
 	const formMode = card ? FORM_MODES.UPDATE : FORM_MODES.CREATE
 
-
-	// let uniqueChars = [...new Set(stationIds)]
-	// const stationsObj = useSelector(state => { return state.locationsReducer.locations })
-	// let stations = uniqueChars.map((stationId) => {
-	// 	return stationsObj[stationId]
-	// })
-
 	useEffect(() => {
 
-		if(!isOpen && showHistory) setShowHistory(false)
+		if(!isOpen && content) setContent(null)
+		if(showTimePicker) setShowTimePicker(false)
 
 	    return () => {
 	    }
 	}, [isOpen])
-
-
-
-
-	// stations = Object.values().filter((location) => stationIds.includes(location._id) )
 
 	const handleSubmit = (values, formMode) => {
 		logger.log("cardEditor values", values)
@@ -128,8 +136,14 @@ const CardEditor = (props) => {
 		const {
 			name,
 			bin,
-			description
+			description,
+			count
 		} = values
+
+		const start = values?.dates?.start || null
+		const end = values?.dates?.end || null
+
+
 
 		// update (PUT)
 		if(formMode === FORM_MODES.UPDATE) {
@@ -138,7 +152,10 @@ const CardEditor = (props) => {
 				station_id: bin[0]?.station_id,
 				route_id: bin[0]?.route_id,
 				description,
-				process_id: card.process_id
+				process_id: card.process_id,
+				start_date: start,
+				end_date: end,
+				count,
 			}
 
 			onPutCard(submitItem, card._id)
@@ -148,10 +165,13 @@ const CardEditor = (props) => {
 		else {
 			const submitItem = {
 				name,
+				count,
 				station_id: bin[0]?.station_id,
 				route_id: bin[0]?.route_id,
 				description,
-				process_id: processId
+				process_id: processId,
+				start_date: start,
+				end_date: end,
 			}
 
 			onPostCard(submitItem)
@@ -180,6 +200,11 @@ const CardEditor = (props) => {
 					name: card ? card.name : "",
 					bin: card ? dropdownOptions.filter((currOption) => (currOption.station_id === card.station_id) && (currOption.route_id === card.route_id)) : [dropdownOptions[0]],
 					description: card ? card.description : "",
+					dates: card ? {
+						start: card.start_date,
+						end: card.end_date,
+					} : null,
+					count: card ? card.count : 0
 				}}
 
 				// validation control
@@ -189,19 +214,26 @@ const CardEditor = (props) => {
 				validateOnBlur={true}
 
 				enableReinitialize={true} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
-				onSubmit={async (values, { setSubmitting, setTouched }) => {
+				onSubmit={async (values, { setSubmitting, setTouched, resetForm }) => {
 					// set submitting to true, handle submit, then set submitting to false
 					// the submitting property is useful for eg. displaying a loading indicator
 					setSubmitting(true)
 					await handleSubmit(values, formMode)
 					setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
 					setSubmitting(false)
+					resetForm()
 				}}
 			>
 				{formikProps => {
 
 					// extract common properties from formik
 					const {errors, values, touched, isSubmitting} = formikProps
+
+					const startDateText = (values?.dates?.start?.month && values?.dates?.start?.day && values?.dates?.start?.year) ?  values.dates.start.month + "/" + values.dates.start.day + "/" + values.dates.start.year : "Planned start"
+					// const startDateTime = (values?.startTime?.hours && values?.startTime?.minutes && values?.startTime?.seconds) ?  values.startTime.hours + ":" + values.startTime.minutes + ":" + values.startTime.seconds : "Start Time"
+
+					const endDateText = (values?.dates?.end?.month && values?.dates?.end?.day && values?.dates?.end?.year) ?  values.dates?.end.month + "/" + values.dates?.end.day + "/" + values.dates?.end.year : "Planned end"
+					// const endDateTime = (values?.endTime?.hours && values?.endTime?.minutes && values?.endTime?.seconds) ?  values.endTime.hours + ":" + values.endTime.minutes + ":" + values.endTime.seconds : "Start Time"
 
 					logger.log("values",values)
 					logger.log("touched",touched)
@@ -218,38 +250,73 @@ const CardEditor = (props) => {
 
 					const renderCalendar = () => {
 						return(
-							<styled.CalendarContainer>
-								<styled.HistoryHeader>
-									<span>Calendar</span>
-								</styled.HistoryHeader>
+							<styled.BodyContainer>
+								<styled.ContentHeader style={{}}>
+									<styled.ContentTitle>Select Start and End Date</styled.ContentTitle>
+									<div></div>
+								</styled.ContentHeader>
 
-								{/*<Calendar*/}
-								{/*	onChange={setCalendarValue}*/}
-								{/*	value={calendarValue}*/}
-								{/*/>*/}
-
-								<styled.WidgetContainer style={{marginTop: "1rem"}}>
-									<styled.Icon
-										className="fas fa-calendar-alt"
-										color={"red"}
-										onClick={()=>setShowCalendar(false)}
+								<styled.CalendarContainer>
+									<CalendarField
+										name={"dates"}
 									/>
-								</styled.WidgetContainer>
-							</styled.CalendarContainer>
+								</styled.CalendarContainer>
+
+								<Button
+									onClick={()=>setContent(null)}
+									schema={"processes"}
+								>
+									Ok
+								</Button>
+							</styled.BodyContainer>
 						)
 					}
 
 					const renderContent = () => {
 						return(
-							<>
-								<TextField
-									name="description"
-									type="text"
-									placeholder="Description..."
-									InputComponent={Textbox}
-									lines={5}
-									ContentContainer={styled.InputContainer}
-								/>
+							<styled.BodyContainer>
+								<div style={{display: "flex", marginBottom: "1rem"}}>
+									<TextField
+										name="description"
+										type="text"
+										placeholder="Description..."
+										InputComponent={Textbox}
+										lines={5}
+										style={{marginRight: "1rem", flex: 1}}
+										// ContentContainer={styled.InputContainer}
+									/>
+									<styled.ObjectInfoContainer>
+										<styled.ObjectTitleContainer style={{marginBottom: "1rem"}}>
+											<styled.ObjectLabel>Object</styled.ObjectLabel>
+											<styled.ObjectName>{objectName}</styled.ObjectName>
+										</styled.ObjectTitleContainer>
+										<styled.ObjectTitleContainer>
+											<styled.ObjectLabel>Count</styled.ObjectLabel>
+											<TextField
+												name="count"
+												type="number"
+												InputComponent={styled.CountInput}
+											/>
+										</styled.ObjectTitleContainer>
+									</styled.ObjectInfoContainer>
+								</div>
+
+								<span>
+									<styled.DatesContainer>
+										<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_START)}>
+											<styled.DateText>{startDateText}</styled.DateText>
+											{/*<styled.TimeText>{startDateTime}</styled.TimeText>*/}
+										</styled.DateItem>
+
+										<styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
+
+										<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_END)}>
+											<styled.DateText>{endDateText}</styled.DateText>
+											{/*<styled.TimeText>{endDateTime}</styled.TimeText>*/}
+										</styled.DateItem>
+									</styled.DatesContainer>
+								</span>
+
 
 								<DropDownSearchField
 									Container={styled.StationContainer}
@@ -270,19 +337,21 @@ const CardEditor = (props) => {
 										className="fas fa-history"
 										color={"red"}
 										onClick={()=> {
-											onGetCardHistory(cardId)
-											setShowHistory(true)
+											if(content !== CONTENT.HISTORY) {
+												onGetCardHistory(cardId)
+												setContent(CONTENT.HISTORY)
+											}
+											else {
+												setContent(null)
+											}
 										}}
 									/>
-									<styled.Icon color={"grey"} className="fas fa-thermometer-half"/>
-									<styled.Icon color={"grey"} className="fas fa-heart"/>
-									<styled.Icon
-										className="fas fa-calendar-alt"
-										color={"red"}
-										onClick={()=>setShowCalendar(true)}
-									/>
 
+									<styled.Icon color={"grey"} className="fas fa-thermometer-half"/>
+
+									<styled.Icon color={"grey"} className="fas fa-heart"/>
 								</styled.WidgetContainer>
+
 
 								{formMode === FORM_MODES.CREATE ?
 									<styled.ButtonContainer>
@@ -354,7 +423,7 @@ const CardEditor = (props) => {
 										</Button>
 									</styled.ButtonContainer>
 								}
-							</>
+							</styled.BodyContainer>
 						)
 					}
 
@@ -366,15 +435,11 @@ const CardEditor = (props) => {
 						console.log("cardHistory",cardHistory)
 
 						return(
-							<styled.HistoryContainer>
-								<styled.HistoryHeader>
-									<span>history</span>
-									<styled.Icon
-										className="fas fa-history"
-										color={"red"}
-										onClick={()=>setShowHistory(false)}
-									/>
-								</styled.HistoryHeader>
+							<styled.BodyContainer>
+								<styled.ContentHeader style={{}}>
+										<styled.ContentTitle>History</styled.ContentTitle>
+								</styled.ContentHeader>
+
 
 								<styled.HistoryBodyContainer>
 									{events.map((currEvent) => {
@@ -457,38 +522,51 @@ const CardEditor = (props) => {
 										)
 									})}
 								</styled.HistoryBodyContainer>
-							</styled.HistoryContainer>
+							</styled.BodyContainer>
 						)
 					}
 
 					return (
 						<styled.StyledForm>
 							<styled.Header>
+								{((content === CONTENT.CALENDAR_START) || (content === CONTENT.CALENDAR_END) || (content === CONTENT.HISTORY))  &&
+									<Button
+										onClick={()=>setContent(null)}
+										schema={'processes'}
+									>
+										<styled.Icon className="fas fa-arrow-left"></styled.Icon>
+									</Button>
+								}
+
 								<styled.Title>Card Editor</styled.Title>
-								<styled.CloseButton
+								<Button
 									onClick={close}
+									schema={'processes'}
 								>
 									<i className="fa fa-times" aria-hidden="true"/>
-								</styled.CloseButton>
+								</Button>
 							</styled.Header>
 
-							<styled.BodyContainer>
+							<styled.NameContainer>
 								<TextField
 									name="name"
 									type="text"
 									placeholder="Enter name..."
 									InputComponent={Textbox}
-									ContentContainer={styled.InputContainer}
+									// ContentContainer={styled.InputContainer}
 								/>
-								{!showHistory ?
-									!showCalendar ?
-										renderContent()
-										:
-										renderCalendar()
+							</styled.NameContainer>
+
+
+							{!(content === CONTENT.HISTORY) ?
+								!((content === CONTENT.CALENDAR_END) || (content === CONTENT.CALENDAR_START)) ?
+									renderContent()
 									:
-									renderHistory()
-								}
-							</styled.BodyContainer>
+									renderCalendar()
+								:
+								renderHistory()
+							}
+
 
 
 						</styled.StyledForm>

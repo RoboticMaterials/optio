@@ -67,7 +67,7 @@ const App = (props) => {
             return (
                 <Route
                     path={["/locations/:stationID?/:widgetPage?", '/']}>
-                    <MapView mobileMode={mobileMode} />
+                    <div mobileMode={mobileMode} />
                 </Route>
             )
         }
@@ -177,7 +177,7 @@ const App = (props) => {
                                                 :
                                                 <Route
                                                     path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                    component={MapView}
+                                                    component={null}
                                                 />)
 
                                                 :

@@ -10,21 +10,26 @@ const CardZone = SortableContainer((props) => {
 	const {
 		// stations,
 		handleCardClick,
-		processId
+		processId,
+		size
 	} = props
 
-	const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] })
+	const width = size?.width
+	const height = size?.height
+
+	console.log("CardZone height",height)
+
+	const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] }) || {}
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
 	const cards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || []
 
 	let cardsSorted = {}
-	currentProcess.routes.forEach((currRouteId) => {
+	currentProcess.routes && currentProcess.routes.forEach((currRouteId) => {
 		const currRoute =  routes[currRouteId]
+
+		const loadStationId = currRoute?.load?.station
+		const unloadStationId = currRoute?.unload?.station
 		console.log("currRoute",currRoute)
-		const {
-			load: {station: loadStationId},
-			unload: {station: unloadStationId},
-		} = currRoute
 
 		cardsSorted[currRouteId + "+" + loadStationId] = {
 			station_id: loadStationId,
@@ -47,7 +52,6 @@ const CardZone = SortableContainer((props) => {
 
 
 
-	const dispatch = useDispatch()
 	const onSetDataPage = (page) => setDataPage(page)
 
 	useEffect(() => {
@@ -64,7 +68,7 @@ const CardZone = SortableContainer((props) => {
 
 
 		return(
-			<styled.Container>
+			<styled.Container width={width} height={height}>
 				{
 					Object.values(cardsSorted).map((obj, index) => {
 
@@ -76,10 +80,12 @@ const CardZone = SortableContainer((props) => {
 
 						return (
 							<StationsColumn
+								size={size}
 								// onDrop={handleDrop}
 								key={station_id + index}
 								id={route_id+"+"+station_id}
 								station_id={station_id}
+								processId={processId}
 								route_id={route_id}
 								cards={cardsArr}
 								handleCardClick={handleCardClick}
