@@ -126,13 +126,16 @@ export const LocationTypeLabel = styled.p`
     color: ${props => props.theme.bg.octonary};
     margin-bottom: auto;
     user-select: none;
+    text-align: center;
 `
 
 export const LocationTypeContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 9rem;
+    width: 10rem;
+    // margin-right: 1rem;
+    // background: blue;
 `
 
 export const Label = styled.h3`

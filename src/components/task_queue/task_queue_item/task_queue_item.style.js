@@ -3,9 +3,9 @@ import styled, {css} from "styled-components";
 import RemoveIcon from '@material-ui/icons/Remove';
 
 export const containerCss = css`
-	background-color: transparent;
-	border-color: ${props => props.theme.bg.quaternary};
-	color: ${props => props.theme.bg.quaternary};
+	background-color: #C8C8C8;
+	border-color: transparent;
+	color: transparent;
     height: 2rem;
     width: 100%;
     padding: .25rem;
@@ -13,15 +13,17 @@ export const containerCss = css`
 `
 
 export const titleCss = css`
-    color: ${props => props.theme.bg.primary};
+    color: #000000;
     margin-right: .5rem;
 `
 
 export const contentContainerCss = css`
     flex-direction: row;
+
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: ellipsis;-
     white-space: nowrap;
+
     justify-content: flex-start;
 `
 

@@ -87,9 +87,11 @@ export default function LocationContent() {
     const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
     const devices = useSelector(state => state.devicesReducer.devices)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
-    const editing = useSelector(state => state.locationsReducer.editingLocation)
 
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
+
+    // const [editing, toggleEditing] = useState(false)
+    const editing = useSelector(state => state.locationsReducer.editingLocation)
 
     const [mergeStation, setMergeStation] = useState(false)
 
@@ -408,12 +410,15 @@ export default function LocationContent() {
                 {selectedLocation.schema === 'station' ?
                     <>
                         {MiRMapEnabled ?
-                            <Positions type='cart_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+                            <>
+                                <Positions type='cart_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+                                <Positions type='shelf_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+                            </>
                             :
                             <Positions type='human_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
                         }
 
-                        <Positions type='shelf_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+
                     </>
                     :
                     selectedLocation.type === 'cart_position' || selectedLocation.type === 'shelf_position' ?

@@ -59,7 +59,7 @@ const DashboardButtonList = ((props) => {
                         onTaskClick(taskID, name)
                     }
 				}}
-				containerStyle={{height: '4rem', lineHeight: '3rem', marginBottom: '0.3rem', minWidth: '80%'}}
+				containerStyle={{height: '4rem', lineHeight: '3rem', marginBottom: '0.5rem', minWidth: '80%'}}
 				hoverable={false}
 				taskID = {taskID}
 				color = {currentButton.color}

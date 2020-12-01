@@ -69,6 +69,10 @@ export default function Positions(props) {
         positionTypeCamel = 'shelfPosition'
         positionName = 'Shelf'
     }
+    if (positionType === 'human_position') {
+        positionTypeCamel = 'humanPosition'
+        positionName = 'Position'
+    }
 
     const onSortEnd = ({ oldIndex, newIndex }) => {
         // dispatch(locationActions.setLocationAttributes(selectedLocation._id, { positions: arrayMove(selectedLocation.positions, oldIndex, newIndex) }))

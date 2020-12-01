@@ -7,7 +7,6 @@ export const Container = styled.div`
     flex-grow: 1;
     padding: 1rem;
     padding-top: 1.5rem;
-
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
@@ -15,9 +14,9 @@ export const Container = styled.div`
 `
 
 export const Header = styled.div`
-    display: flex; 
+    display: flex;
     flex-direction: row;
-    
+
 `
 
 export const Title = styled.h1`
@@ -41,6 +40,7 @@ export const ListItem = styled.div`
     align-items: center;
     width: auto;
     height: 2.4rem;
+    margin-right:1.5rem;
 
     background: transparent;
     padding-bottom: 0.4rem;
@@ -80,7 +80,7 @@ export const ListItemTitle = styled.div`
     font-size: ${props => props.theme.fontSize.sz4};
     font-weight: 500;
     color: ${props => props.theme.bg.octonary};
-    
+
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
