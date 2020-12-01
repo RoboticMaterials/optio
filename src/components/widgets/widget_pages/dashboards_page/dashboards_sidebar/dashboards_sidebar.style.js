@@ -4,6 +4,12 @@ import {RGB_Linear_Shade, hexToRGBA, LightenDarkenColor} from "../../../../../me
 import * as pageStyle from "../dashboards_header/dashboards_header.style"
 
 
+export const FooterContainer = styled.div`
+	background: red;
+	width: 100%;
+`
+
+// export const
 
 export const Title = styled(pageStyle.Title)`
     margin: 0;

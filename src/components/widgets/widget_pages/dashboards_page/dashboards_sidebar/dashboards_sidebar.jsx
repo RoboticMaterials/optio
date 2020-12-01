@@ -25,6 +25,7 @@ import { ADD_TASK_ALERT_TYPE } from "../../../../../constants/dashboard_contants
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 
 import log from '../../../../../logger'
+import * as styled from "../../../widget_button/widget_button.style";
 // import { Container } from '@material-ui/core';
 
 const logger = log.getLogger("Dashboards")
@@ -177,6 +178,22 @@ const DashboardsSidebar = (props) => {
                             )}
                         </Container>
                     </style.ListContainer>
+                    <style.FooterContainer>
+                        <styled.WidgetButtonButton
+                        >
+                            {type === 'view' ?
+                                <styled.WidgetButtonIcon className="far fa-eye" pageID={type} currentPage={currentPage} />
+                                :
+                                type === 'cancel' ?
+                                    <styled.WidgetButtonIcon className="fas fa-times" pageID={type} currentPage={currentPage} />
+
+                                    :
+                                    <styled.WidgetButtonIcon style={{ fontSize: type === 'cart' && '.9rem' }} className={"icon-" + type} pageID={type} currentPage={currentPage} />
+                            }
+                            {/* <styled.ButtonText>{props.type}</styled.ButtonText> */}
+                        </styled.WidgetButtonButton>
+
+                    </style.FooterContainer>
                 </style.Container>
 
                 <DraggableCore key="handle" onDrag={handleDrag} >
