@@ -88,7 +88,7 @@ function Position(props) {
                 }
             }}
             onMouseLeave={() => { location.name !== 'TempRightClickMoveLocation' && setHovering(false) }}
-            onClick={() => {
+            onMouseDown={() => {
                 if (selectedTask !== null) {
                     // If the load location has been defined but the unload position hasnt, assign the unload position
                     if (selectedTask.load.position !== null && selectedTask.unload.position === null) {

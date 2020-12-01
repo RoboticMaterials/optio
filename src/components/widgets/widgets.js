@@ -208,6 +208,7 @@ const Widgets = (props) => {
                         type={'cart'}
                         coordinateMove={true}
                         currentPage={widgetPage}
+                        label = {'Send Cart Here'}
 
                     />
                     <WidgetButton
