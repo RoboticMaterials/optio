@@ -18,7 +18,7 @@ import { getDevices, putDevices } from '../../redux/actions/devices_actions'
 import { getStatus } from '../../redux/actions/status_actions'
 
 import { getSettings } from '../../redux/actions/settings_actions'
-import { getLocalSettings } from '../../redux/actions/local_actions'
+import {getLocalSettings} from '../../redux/actions/local_actions'
 import { getLoggers } from '../../redux/actions/local_actions';
 import { getRefreshToken } from '../../redux/actions/authentication_actions'
 
@@ -64,6 +64,8 @@ const ApiContainer = (props) => {
 
     const onGetSettings = () => dispatch(getSettings())
     const onGetLocalSettings = () => dispatch(getLocalSettings())
+    const onPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+
     const onGetLoggers = () => dispatch(getLoggers())
     const onGetRefreshToken = () => dispatch(getRefreshToken())
 
@@ -76,10 +78,12 @@ const ApiContainer = (props) => {
     const onPutStation = async (station, ID) => await dispatch(putStation(station, ID))
     const onDeleteStation = async (ID) => await dispatch(deleteStation(ID))
 
-    const onPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
 
     // Selectors
     const schedulerReducer = useSelector(state => state.schedulerReducer)
+    const devices = Object.values(useSelector(state => { return state.devicesReducer })?.devices || {})
+    const localReducer = useSelector(state => state.localReducer)
+    const MiRMapEnabled = localReducer?.localSettings?.MiRMapEnabled
 
     // States
     const [currentPage, setCurrentPage] = useState('')
@@ -103,6 +107,32 @@ const ApiContainer = (props) => {
             // clearInterval(mapDataInterval)
         }
     }, [])
+
+    useEffect( () => {
+        console.log("useEffect devices",devices)
+        console.log("useEffect MiRMapEnabled",MiRMapEnabled)
+
+
+        let containsMirCart = false
+        // check each device
+        // in order for MiR mode to be enabled, there must be at least one device of MiR type and it must be placed on the map
+        Object.values(devices).forEach((currDevice, index) => {
+            const device_model = currDevice?.device_model ? currDevice?.device_model.toLowerCase() : ""
+            const pos_x = currDevice?.position?.pos_x
+            const pos_y = currDevice?.position?.pos_y
+            if(
+                device_model.includes("mir") &&
+                pos_x &&
+                pos_y
+            ) containsMirCart = true
+        })
+
+        if( (MiRMapEnabled === undefined) || (MiRMapEnabled !== containsMirCart)) onPostLocalSettings({
+            ...localReducer.localSettings,
+            MiRMapEnabled: containsMirCart,
+        })
+
+    }, [devices, MiRMapEnabled])
 
     useEffect(() => {
 
