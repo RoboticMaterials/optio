@@ -164,7 +164,7 @@ const Settings = () => {
         let connectionIcon = ''
         let connectionText = ''
 
-        // Sets the connection variables according to the state of 
+        // Sets the connection variables according to the state of
         if (mirUpdated) {
             connectionIcon = 'fas fa-question'
             connectionText = 'Not Connected'
@@ -199,20 +199,7 @@ const Settings = () => {
                     </styled.ConnectionButton>
                 </styled.RowContainer>
 
-                <styled.RowContainer>
-                    <Textbox
-                        placeholder="MIR Cart IP Address"
-                        value={serverSettingsState.mir_ip}
-                        onChange={(event) => {
-                            handleUpdateServerSettings({ mir_ip: event.target.value })
-                            setMirUpdated(true)
-                        }}
-                        style={{ width: '100%' }}
-                    />
-                    {/* {props.updateIpAddress &&
-                        <SmallButton onClick={props.submitIp}>Update</SmallButton>
-                    } */}
-                </styled.RowContainer>
+  
             </styled.SettingContainer>
         )
     }
