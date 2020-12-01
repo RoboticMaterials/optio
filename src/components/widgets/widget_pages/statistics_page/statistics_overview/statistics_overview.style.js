@@ -110,3 +110,21 @@ export const StatValue = styled.h4`
     font-family: ${props => props.theme.font.primary};
     color: white;
 `
+
+export const RowContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+    max-width: 20rem;
+`
+
+export const DateSelectorIcon = styled.i`
+    font-size: 1.5rem;
+
+    &:hover{
+        cursor:pointer;
+    }
+`

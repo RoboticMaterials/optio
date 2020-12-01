@@ -20,6 +20,7 @@ import { postTaskQueue } from '../../../../redux/actions/task_queue_actions'
 
 // Import Utils
 import { deepCopy } from '../../../../methods/utils/utils'
+import { tasksSortedAlphabetically } from '../../../../methods/utils/task_utils'
 import uuid from 'uuid'
 
 
@@ -102,12 +103,12 @@ export default function TaskContent(props) {
                 title={'Routes'}
                 schema={'tasks'}
                 elements={
-                    
-                    Object.values(tasks)
-                    // Filters outs any tasks that don't belong to the current map or apart of a process
-                    .filter(task => !task.process && (task.map_id === currentMap._id))
-                    // Filter outs any human tasks that have associated tasks (AKA it only shows the associated device task)
-                    .filter(task => !task.associated_task || (!!task.associated_task && task.device_type !== 'human'))
+
+                    tasksSortedAlphabetically(Object.values(tasks))
+                        // Filters outs any tasks that don't belong to the current map or apart of a process
+                        .filter(task => !task.process && (task.map_id === currentMap._id))
+                        // Filter outs any human tasks that have associated tasks (AKA it only shows the associated device task)
+                        .filter(task => !task.associated_task || (!!task.associated_task && task.device_type !== 'human'))
 
                 }
                 onMouseEnter={(task) => dispatch(taskActions.selectTask(task._id))}
@@ -126,7 +127,8 @@ export default function TaskContent(props) {
                         obj: null,
                         type: 'push',
                         quantity: 1,
-                        device_type: 'human',
+                        device_type: 'MiR_100',
+                        // device_type: 'human',
                         map_id: currentMap._id,
                         new: true,
                         load: {

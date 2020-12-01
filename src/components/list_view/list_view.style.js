@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import * as stylesh from '../../containers/status_header/status_header.style'
 import {LightenDarkenColor} from "../../methods/utils/color_utils";
 
 export const Container = styled.div`
@@ -105,4 +106,35 @@ export const ListItemTitle = styled.div`
         -webkit-background-clip: text;
         display:block;
     }
+`
+
+export const PlayButton = styled(stylesh.PlayButton)`
+    position: absolute;
+    right: 0;
+`
+
+export const PlayButtonIcon = styled(stylesh.PlayButtonIcon)`
+`
+
+export const StatusContainer = styled.div`
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+
+    border-radius: 0rem 0rem 1rem 1rem;
+
+    height: 2.5rem;
+    max-width: 35rem;
+    min-width: 10rem;
+    
+    padding: 0rem 2rem;
+    padding-top: .5rem;
+
+	background: ${props => props.theme.bg.septenary};
+    top: 5rem;
+
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 `

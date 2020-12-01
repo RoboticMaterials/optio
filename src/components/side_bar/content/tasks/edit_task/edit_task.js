@@ -26,9 +26,11 @@ import { deepCopy } from '../../../../../methods/utils/utils'
 import * as taskActions from '../../../../../redux/actions/tasks_actions'
 import { setSelectedTask, deleteTask, getTasks } from '../../../../../redux/actions/tasks_actions'
 import * as dashboardActions from '../../../../../redux/actions/dashboards_actions'
+import { putDashboard } from '../../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../../redux/actions/objects_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import { putProcesses, setSelectedProcess } from '../../../../../redux/actions/processes_actions'
+import { putStation } from '../../../../../redux/actions/stations_actions'
 
 const EditTask = (props) => {
 
@@ -48,6 +50,8 @@ const EditTask = (props) => {
     const onSetSelectedTask = (task) => dispatch(setSelectedTask(task))
     const onDeleteTask = (ID) => dispatch(deleteTask(ID))
     const onGetTasks = () => dispatch(getTasks())
+    const onPutStation = (station, ID) => dispatch(putStation(station, ID))
+    const onPutDashboard = (dashboard, ID) => dispatch(putDashboard(dashboard, ID))
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -75,6 +79,7 @@ const EditTask = (props) => {
     const loadUnloadFields = () => {
         return (
             <>
+                {/* Commented out for now, currently at IPW all tasks will be robot enabled. When switching back, change device_type to 'human' when a new task is created */}
                 <styled.RowContainer>
                     <styled.Header>Robot Enabled</styled.Header>
                     <Switch
@@ -96,28 +101,32 @@ const EditTask = (props) => {
                 <styled.HelpText>Do you want a robot to perform this task? If selected, there will be an option for a person to take over the task when the button is placed onto the dashboard.</styled.HelpText>
 
 
-                <styled.RowContainer>
+                <styled.RowContainer style={{marginTop: '2rem'}}>
 
-                    <styled.Header>Load</styled.Header>
-                    <TimePicker
-                        // format={'mm:ss'}
-                        style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                        showHour={false}
-                        className="xxx"
-                        allowEmpty={false}
-                        defaultOpenValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
-                        defaultValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
-                        onChange={(time) => {
-                            onSetSelectedTask({
-                                ...selectedTask,
-                                load: {
-                                    ...selectedTask.load,
-                                    timeout: time.format("mm:ss")
-                                }
-                            })
-                        }}
+                    <styled.Header style={{marginTop: '0rem'}}>Load</styled.Header>
+                    <styled.RowContainer style={{justifyContent:'flex-end', alignItems:'baseline'}}>
+                        <styled.HelpText style={{fontSize:'1rem', marginRight:'.5rem'}}>TimeOut: </styled.HelpText>
 
-                    />
+                        <TimePicker
+                            // format={'mm:ss'}
+                            style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                            showHour={false}
+                            className="xxx"
+                            allowEmpty={false}
+                            defaultOpenValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
+                            defaultValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
+                            onChange={(time) => {
+                                onSetSelectedTask({
+                                    ...selectedTask,
+                                    load: {
+                                        ...selectedTask.load,
+                                        timeout: time.format("mm:ss")
+                                    }
+                                })
+                            }}
+
+                        />
+                    </styled.RowContainer>
 
                 </styled.RowContainer>
 
@@ -132,30 +141,33 @@ const EditTask = (props) => {
                     }}
                     lines={2}>
                 </Textbox>
-                <div style={{ display: "flex", flexDirection: "row", marginTop: "0.5rem" }}>
-                    <styled.Label>Sound </styled.Label>
-                    <DropDownSearch
-                        placeholder="Select Sound"
-                        label="Sound to be played upon arrival"
-                        labelField="name"
-                        valueField="name"
-                        options={Object.values(sounds)}
-                        values={!!selectedTask.load.sound ? [sounds[selectedTask.load.sound]] : []}
-                        dropdownGap={5}
-                        noDataLabel="No matches found"
-                        closeOnSelect="true"
-                        onChange={values => {
-                            onSetSelectedTask({
-                                ...selectedTask,
-                                load: {
-                                    ...selectedTask.load,
-                                    sound: values[0]._id,
-                                }
-                            })
-                        }}
-                        className="w-100"
-                        schema="tasks" />
-                </div>
+
+                {selectedTask.device_type !== 'human' &&
+                    <div style={{ display: "flex", flexDirection: "row", marginTop: "0.5rem" }}>
+                        <styled.Label>Sound </styled.Label>
+                        <DropDownSearch
+                            placeholder="Select Sound"
+                            label="Sound to be played upon arrival"
+                            labelField="name"
+                            valueField="name"
+                            options={Object.values(sounds)}
+                            values={!!selectedTask.load.sound ? [sounds[selectedTask.load.sound]] : []}
+                            dropdownGap={5}
+                            noDataLabel="No matches found"
+                            closeOnSelect="true"
+                            onChange={values => {
+                                onSetSelectedTask({
+                                    ...selectedTask,
+                                    load: {
+                                        ...selectedTask.load,
+                                        sound: values[0]._id,
+                                    }
+                                })
+                            }}
+                            className="w-100"
+                            schema="tasks" />
+                    </div>
+                }
 
                 <styled.Header>Unload</styled.Header>
                 <Textbox
@@ -169,32 +181,37 @@ const EditTask = (props) => {
                     }}
                     lines={2}>
                 </Textbox>
-                <div style={{ display: "flex", flexDirection: "row", marginTop: "0.5rem" }}>
-                    <styled.Label>Sound </styled.Label>
-                    <DropDownSearch
-                        placeholder="Select Sound"
-                        label="Sound to be played upon arrival"
-                        labelField="name"
-                        valueField="name"
-                        options={Object.values(sounds)}
-                        values={!!selectedTask.unload.sound ? [sounds[selectedTask.unload.sound]] : []}
-                        dropdownGap={5}
-                        noDataLabel="No matches found"
-                        closeOnSelect="true"
-                        onChange={values => {
 
-                            onSetSelectedTask({
-                                ...selectedTask,
-                                unload: {
-                                    ...selectedTask.unload,
-                                    sound: values[0]._id,
-                                }
-                            })
+                {selectedTask.device_type !== 'human' &&
 
-                        }}
-                        className="w-100"
-                        schema="tasks" />
-                </div>
+                    <div style={{ display: "flex", flexDirection: "row", marginTop: "0.5rem" }}>
+                        <styled.Label>Sound </styled.Label>
+                        <DropDownSearch
+                            placeholder="Select Sound"
+                            label="Sound to be played upon arrival"
+                            labelField="name"
+                            valueField="name"
+                            options={Object.values(sounds)}
+                            values={!!selectedTask.unload.sound ? [sounds[selectedTask.unload.sound]] : []}
+                            dropdownGap={5}
+                            noDataLabel="No matches found"
+                            closeOnSelect="true"
+                            onChange={values => {
+
+                                onSetSelectedTask({
+                                    ...selectedTask,
+                                    unload: {
+                                        ...selectedTask.unload,
+                                        sound: values[0]._id,
+                                    }
+                                })
+
+                            }}
+                            className="w-100"
+                            schema="tasks" />
+                    </div>
+                }
+
 
                 {selectedTask.device_type === 'MiR_100' &&
                     <>
@@ -272,7 +289,7 @@ const EditTask = (props) => {
             )
 
         if (!!isProcessTask) {
-            
+
             // Removes the task from the array of routes
             const copyProcess = deepCopy(selectedProcess)
             const index = copyProcess.routes.indexOf(selectedTask._id)
@@ -361,6 +378,20 @@ const EditTask = (props) => {
                 dispatch(taskActions.postTask(selectedTask))
 
             }
+
+            // Add the task automatically to the associated load station dashboard
+            // Since as of now the only type of task we are doing is push, only need to add it to the load location
+            let updatedStation = deepCopy(stations[selectedTask.load.station])
+            let updatedDashboard = dashboards[updatedStation.dashboards[0]]
+            const newDashboardButton = {
+                color: '#bcbcbc',
+                id: selectedTask._id,
+                name: selectedTask.name,
+                task_id: selectedTask._id
+            }
+            updatedDashboard.buttons.push(newDashboardButton)
+            onPutDashboard(updatedDashboard, updatedDashboard._id.$oid)
+
 
             // dispatch(taskActions.removeTask(selectedTask._id)) // Remove the temporary task from the local copy of tasks
 

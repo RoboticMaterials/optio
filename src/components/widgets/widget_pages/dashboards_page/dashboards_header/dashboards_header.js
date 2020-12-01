@@ -82,13 +82,14 @@ const DashboardsHeader = (props) => {
                         Save
 				</Button>
 
-                    <Button
+                    {/* Comment out for now since locations only have one dashboard, so you should not be able to delete the only dashboard */}
+                    {/* <Button
                         schema={'delete'}
                         style={{ order: '4', marginTop: '1.8rem', marginLeft: '2rem' }}
                         onClick={onDelete}
                     >
                         Delete
-                    </Button>
+                    </Button> */}
                 </>
             }
 

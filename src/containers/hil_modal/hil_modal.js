@@ -24,8 +24,14 @@ const HILModal = () => {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
     const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
+    const devices = useSelector(state => state.devicesReducer.devices)
 
     const [statusTimerIntervals, setStatusTimerIntervals] = useState({})
+
+    const dashboardID = params.dashboardID
+    const stationID = params.stationID
+
+    const deviceDashboard = !!devices ? !!devices[stationID] : false
 
     /**
      * Handles any task that should be displaying a HIL
@@ -51,7 +57,9 @@ const HILModal = () => {
             // If the task queue item has a HIL and it's corresponding dashboard id is not in the activeHILDasbaords list then display HIL.
             // Dashboards can only have 1 HIL at a time, if the task queue has 2 HILS for the same dashboards, then only read the 
             // most recent in the list 
-            if (!!item.hil_station_id) {
+            // 
+            // Do not display HIL if the tasks device type is human, if it's a human, and unload button will appear on the dashboard
+            if (!!item.hil_station_id && tasks[item.task_id].device_type !== 'human') {
 
                 // Loops through all ascociated dashboards at that location
                 locations[item.hil_station_id].dashboards.map((dashboard, ind) => {
@@ -68,22 +76,36 @@ const HILModal = () => {
                 })
 
                 // If active hils matches the dashboard selected (found in params) then display hil
-                // if (params.dashboardID === item.hil_station_id && !dashboards[params.dashboardID].unsubcribedHILS.includes(item.hil.taskID)) {
-                if (Object.keys(activeHilDashboards).includes(params.dashboardID)) {
+                // if (dashboardID === item.hil_station_id && !dashboards[dashboardID].unsubcribedHILS.includes(item.hil.taskID)) {
+                if (Object.keys(activeHilDashboards).includes(dashboardID)) {
 
                     const hilType = tasks[item.task_id].type
 
                     return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={id} item={item} key={id} />
+                }
+
+                // If a device dashboard, then show all associated HILs
+                else if (deviceDashboard) {
+                    const hilType = tasks[item.task_id].type
+                    return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={id} item={item} />
                 }
                 else {
                     return null
                 }
             }
 
+            // Else if the task q item has a dashboardID and the dashboardID matches current dashboard, then show that dashboard
+            // The reason this happens is that it's a human task and the person hit a dashboard button (see dashboard_screen). 
+            // The HIL modal needs to immediatly show because the backend will be too slow to respond to show that dashboard after button clikc
+            else if (!!item.dashboard && item.dashboard === dashboardID){
+                return <HILModals hilMessage={item.hil_message} hilType={'push'} taskQuantity={item.quantity} taskQueueID={id} item={item} />
+
+            }
+
 
         })
 
-    }, [taskQueue, params.dashboardID, taskQueueItemClicked, hilResponse])
+    }, [taskQueue, dashboardID, taskQueueItemClicked, hilResponse])
 
 
     /**

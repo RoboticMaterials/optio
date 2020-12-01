@@ -4,70 +4,86 @@ import { ResponsiveLine, Line } from '@nivo/line'
 
 const LineChart = (props) => {
 
-    const data = props.data
-
-    return(
+    const {
+        colors,
+        selector,
+        slice,
+        data,
+        format,
+        theme,
+        ToolTipCallback
+    } = props
+    return (
         <ResponsiveLine
-            data={data}
-            margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-            xScale={{ type: 'point' }}
-            yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: true, reverse: false }}
-            axisTop={null}
-            axisRight={null}
-            axisBottom={{
-                orient: 'bottom',
+            data={[{
+                id: 'none',
+                color: colors[selector],
+                data: data[selector]
+            }]}
+            curve='monotoneX'
+            animate={false}
+            xScale={{ type: 'time', format: '%Y-%m-%d %H:%M:%S', useUTC: false, precision: 'second', }}
+            xFormat={'time:' + format}
+            yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
+            axisBottom={null}
+            margin={{ top: 22, left: 70, right: 70, bottom: 30 }}
+            axisTop={{
                 tickSize: 5,
                 tickPadding: 5,
-                tickRotation: 0,
-                legend: 'transportation',
-                legendOffset: 36,
-                legendPosition: 'middle'
+                tickValues: [!!slice && slice.x],
+                format: format,
+            }}
+            axisRight={null}
+            axisBottom={{
+                format: format,
+                tickValues: 6
             }}
             axisLeft={{
                 orient: 'left',
                 tickSize: 5,
                 tickPadding: 5,
-                tickRotation: 0,
-                legend: 'count',
-                legendOffset: -40,
-                legendPosition: 'middle'
+                tickOffset: 10,
+                tickValues: 4
             }}
-            colors={{ scheme: 'nivo' }}
-            pointSize={10}
-            pointColor={{ theme: 'background' }}
-            pointBorderWidth={2}
-            pointBorderColor={{ from: 'serieColor' }}
+            enableGridX={false}
+            enableGridY={false}
+            colors={d => d.color}
+            enablePoints={true}
+            pointSize={4}
+            pointColor={colors[selector]}
+            pointBorderWidth={1}
+            pointBorderColor={{ from: 'white' }}
             pointLabel="y"
             pointLabelYOffset={-12}
-            enableArea={true}
-            enableGridX={false}
-            useMesh={true}
-            legends={[
-                {
-                    anchor: 'bottom-right',
-                    direction: 'column',
-                    justify: false,
-                    translateX: 100,
-                    translateY: 0,
-                    itemsSpacing: 0,
-                    itemDirection: 'left-to-right',
-                    itemWidth: 80,
-                    itemHeight: 20,
-                    itemOpacity: 0.75,
-                    symbolSize: 12,
-                    symbolShape: 'circle',
-                    symbolBorderColor: 'rgba(0, 0, 0, .5)',
-                    effects: [
-                        {
-                            on: 'hover',
-                            style: {
-                                itemBackground: 'rgba(0, 0, 0, .03)',
-                                itemOpacity: 1
-                            }
-                        }
-                    ]
+
+            crosshairType="x"
+            enableSlices={'x'}
+            sliceTooltip={ToolTipCallback}
+            theme={{
+                axis: {
+                    ticks: {
+                        line: {
+                            stroke: "fff",
+                        },
+                        text: {
+                            fill: "fff",
+                            fontFamily: theme.font.primary,
+                            fontSize: "0.8rem"
+                        },
+                    }
+                },
+                grid: {
+                    line: {
+                        stroke: "",
+                    }
+                },
+                crosshair: {
+                    line: {
+                        stroke: "#fff",
+                        strokeDasharray: "0"
+                    }
                 }
-            ]}
+            }}
         />
     )
 }
