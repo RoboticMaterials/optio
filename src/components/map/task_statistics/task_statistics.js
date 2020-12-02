@@ -14,7 +14,20 @@ const TaskStatistics = (props) => {
 
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const positions = useSelector(state => state.locationsReducer.positions)
+    const tasksAnalysis = useSelector(state => state.taskAnalysisReducer.tasksAnalysis)
 
+    const selectedTaskAnalysis = tasksAnalysis[selectedTask._id]
+
+
+    useEffect(() => {
+        
+        console.log('QQQQ Selected Task', selectedTask)
+        console.log('QQQQ Task Analysis', tasksAnalysis[selectedTask._id])
+
+
+    }, [])
+
+    if(selectedTaskAnalysis === undefined) return null
 
     const startPos = positions[selectedTask.load.position]
     const endPos = positions[selectedTask.unload.position]
@@ -63,24 +76,25 @@ const TaskStatistics = (props) => {
     const xPosition = (midX - height() * Math.sin(theta)) - 80 + 'px'
     const yPosition = (midY + height() * Math.cos(theta)) - 40 + 'px'
 
+
     return (
         <styled.TaskStatisticsContainer xPosition={xPosition} yPosition={yPosition}>
-            <styled.TaskNameText>Task Name</styled.TaskNameText>
+            <styled.TaskNameText>{selectedTask.name}</styled.TaskNameText>
 
             <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', marginTop: '.25rem' }}>
                 <styled.RowContainer>
                     <styled.TaskIcon className='far fa-clock' />
-                    <styled.TaskText>30s</styled.TaskText>
+                    <styled.TaskText>{`${selectedTaskAnalysis.avg_run_time}s`}</styled.TaskText>
                 </styled.RowContainer>
 
                 <styled.RowContainer>
                     <styled.TaskIcon className='far fa-check-circle' />
-                    <styled.TaskText>3</styled.TaskText>
+                    <styled.TaskText>{selectedTaskAnalysis.successes}</styled.TaskText>
                 </styled.RowContainer>
 
                 <styled.RowContainer>
                     <styled.TaskIcon className='far fa-times-circle' />
-                    <styled.TaskText>0</styled.TaskText>
+                    <styled.TaskText>{selectedTaskAnalysis.failures}</styled.TaskText>
                 </styled.RowContainer>
 
             </styled.RowContainer>

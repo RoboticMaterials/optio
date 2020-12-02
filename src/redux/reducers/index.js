@@ -17,7 +17,7 @@ import modelsReducer from './models_reducer'
 import skillTemplatesReducer from './skill_templates_reducer'
 import posesReducer from './poses_reducer';
 import requestStatusReducer from './request_status_reducer';
-import TaskAnalysisReducer from './task_analysis_reducer'
+import taskAnalysisReducer from './task_analysis_reducer'
 import mapReducer from './map_reducer'
 import sidebarReducer from './sidebar_reducer'
 import widgetReducer from './widget_reducer'
@@ -46,7 +46,7 @@ export default combineReducers({
     skillTemplatesReducer,
     posesReducer,
     requestStatusReducer,
-    TaskAnalysisReducer,
+    taskAnalysisReducer,
     mapReducer,
     sidebarReducer,
     widgetReducer,
