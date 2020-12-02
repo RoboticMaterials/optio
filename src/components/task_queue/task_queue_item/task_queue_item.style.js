@@ -21,7 +21,7 @@ export const contentContainerCss = css`
     flex-direction: row;
 
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: ellipsis;-
     white-space: nowrap;
 
     justify-content: flex-start;

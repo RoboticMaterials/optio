@@ -267,6 +267,7 @@ const Location = (props) => {
             case 'cart_position':
             case "human_position":
             case 'shelf_position':
+            case 'human_position':
             case 'charger_position':
                 return (
                     <React.Fragment key={`frag-loc-${location._id}`}>

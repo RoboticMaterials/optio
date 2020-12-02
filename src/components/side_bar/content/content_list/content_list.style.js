@@ -7,7 +7,6 @@ export const Container = styled.div`
     flex-grow: 1;
     padding: 1rem;
     padding-top: 1.5rem;
-
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
@@ -43,6 +42,7 @@ export const ListItem = styled.div`
     align-items: center;
     width: auto;
     height: 2.4rem;
+    margin-right:1.5rem;
 
     background: transparent;
     padding-bottom: .4rem;

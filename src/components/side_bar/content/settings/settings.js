@@ -38,6 +38,7 @@ const Settings = () => {
     const serverSettings = useSelector(state => state.settingsReducer.settings)
     const localSettings = useSelector(state => state.localReducer.localSettings)
     const status = useSelector(state => state.statusReducer.status)
+    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
     const {
         currentMap,
@@ -187,7 +188,7 @@ const Settings = () => {
 
         }
 
-
+      if(MiRMapEnabled){
         return (
             <styled.SettingContainer style={{ marginTop: '1rem' }}>
 
@@ -202,9 +203,16 @@ const Settings = () => {
   
             </styled.SettingContainer>
         )
+      }
     }
 
+
+
+
+
+
     const APIAddress = () => {
+      if(MiRMapEnabled){
         return (
             <styled.SettingContainer>
 
@@ -234,6 +242,7 @@ const Settings = () => {
 
             </styled.SettingContainer>
         )
+      }
     }
 
     const MapViewEnabled = () => {

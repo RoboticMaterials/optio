@@ -19,6 +19,7 @@ const SideBarSwitcher = (props) => {
     const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
     const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
+    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
     const mode = useSelector(state => state.sidebarReducer.mode)
     const wrapperRef = useRef(null)
@@ -72,17 +73,19 @@ const SideBarSwitcher = (props) => {
                 }}
                 currentMode={url}
             /> */}
+            {MiRMapEnabled &&
+              <SideBarButton
+                  mode={'scheduler'}
+                  setShowSideBarPage={(page) => {
+                      dispatch(setMode(page));
+                      history.push(`/${page}`)
+                      dispatch(deselectLocation())
+                      dispatch(deselectTask())
+                  }}
+                  currentMode={url}
+              />  
+            }
 
-            <SideBarButton
-                mode={'scheduler'}
-                setShowSideBarPage={(page) => {
-                    dispatch(setMode(page));
-                    history.push(`/${page}`)
-                    dispatch(deselectLocation())
-                    dispatch(deselectTask())
-                }}
-                currentMode={url}
-            />
 
             <SideBarButton
                 mode={'devices'}

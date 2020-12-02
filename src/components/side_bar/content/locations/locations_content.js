@@ -90,6 +90,7 @@ export default function LocationContent() {
     const editing = useSelector(state => state.locationsReducer.editingLocation)
 
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
+    // const [editing, toggleEditing] = useState(false)
 
     const [mergeStation, setMergeStation] = useState(false)
 
@@ -518,8 +519,9 @@ export default function LocationContent() {
                 onMouseLeave={(location) => dispatch(locationActions.deselectLocation())}
                 onClick={(location) => {
                     // If location button is clicked, start editing it
+
                     onSetSelectedLocationCopy(deepCopy(selectedLocation))
-                    if (selectedLocation.children!==null) {
+                    if (selectedLocation.children!=null && selectedLocation.children!=undefined) {
                         onSetSelectedLocationChildrenCopy(selectedLocation.children.map(positionID => deepCopy(positions[positionID])))
                     }
                     onEditing(true)
