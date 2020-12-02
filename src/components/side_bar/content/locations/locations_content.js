@@ -89,7 +89,6 @@ export default function LocationContent() {
     const currentMap = useSelector(state => state.mapReducer.currentMap)
 
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
-
     // const [editing, toggleEditing] = useState(false)
     const editing = useSelector(state => state.locationsReducer.editingLocation)
 

@@ -38,6 +38,7 @@ const Settings = () => {
     const serverSettings = useSelector(state => state.settingsReducer.settings)
     const localSettings = useSelector(state => state.localReducer.localSettings)
     const status = useSelector(state => state.statusReducer.status)
+    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
     const {
         currentMap,
@@ -164,7 +165,7 @@ const Settings = () => {
         let connectionIcon = ''
         let connectionText = ''
 
-        // Sets the connection variables according to the state of 
+        // Sets the connection variables according to the state of
         if (mirUpdated) {
             connectionIcon = 'fas fa-question'
             connectionText = 'Not Connected'
@@ -187,7 +188,7 @@ const Settings = () => {
 
         }
 
-
+      if(MiRMapEnabled){
         return (
             <styled.SettingContainer style={{ marginTop: '1rem' }}>
 
@@ -215,9 +216,16 @@ const Settings = () => {
                 </styled.RowContainer>
             </styled.SettingContainer>
         )
+      }
     }
 
+
+
+
+
+
     const APIAddress = () => {
+      if(MiRMapEnabled){
         return (
             <styled.SettingContainer>
 
@@ -247,6 +255,7 @@ const Settings = () => {
 
             </styled.SettingContainer>
         )
+      }
     }
 
     const MapViewEnabled = () => {

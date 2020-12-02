@@ -54,6 +54,7 @@ const RightClickMenu = (props) => {
     const editing = useSelector(state => state.locationsReducer.editingLocation)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const showSideBar = useSelector(state=> state.sidebarReducer.open)
+    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
     const history = useHistory()
 
@@ -86,19 +87,37 @@ const RightClickMenu = (props) => {
         history.push('/locations')
         const pos = convertD3ToReal([coords.x, coords.y], d3)
 
-        const tempSelectedLocation = {
-            new: true,
-            name: '',
-            schema: 'position',
-            type: 'cart_position',
-            pos_x: pos[0],
-            pos_y: pos[1],
-            rotation: 0,
-            x: coords.x,
-            y: coords.y,
-            _id: uuid.v4(),
-            map_id: currentMap._id
-        }
+            const tempSelectedLocation = {
+                new: true,
+                name: '',
+                schema: 'station',
+                type: 'workstation',
+                pos_x: pos[0],
+                pos_y: pos[1],
+                rotation: 0,
+                x: coords.x,
+                y: coords.y,
+                _id: uuid.v4(),
+                map_id: currentMap._id,
+                children: [],
+                dashboards: []
+            }
+
+            if (MiRMapEnabled==true){
+                const tempSelectedLocation = {
+                    new: true,
+                    name: '',
+                    schema: 'position',
+                    type: 'cart_position',
+                    pos_x: pos[0],
+                    pos_y: pos[1],
+                    rotation: 0,
+                    x: coords.x,
+                    y: coords.y,
+                    _id: uuid.v4(),
+                    map_id: currentMap._id
+                }
+              }
 
          await dispatch(locationActions.addLocation(tempSelectedLocation))
          await dispatch(locationActions.setSelectedLocation(tempSelectedLocation))
@@ -116,8 +135,16 @@ const RightClickMenu = (props) => {
 
     return(
         <styled.MenuContainer style={{top: coords.y, left: coords.x}}>
+        {MiRMapEnabled ?
+          <>
             <styled.MenuButton onClick={handleAddLocation}>Add Cart Position</styled.MenuButton>
             <styled.MenuButton onClick={handleSendCartToLocation}>Send Cart to Location</styled.MenuButton>
+          </>
+          :
+            <styled.MenuButton onClick={handleAddLocation}>Add Workstation</styled.MenuButton>
+
+        }
+
         </styled.MenuContainer>
     )
 }

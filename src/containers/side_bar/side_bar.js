@@ -69,8 +69,6 @@ const SideBar = (props) => {
         const hamburger = document.querySelector('.hamburger')
         hamburger.classList.toggle('is-active')
 
-        dispatch(locationActions.editing(false))
-        onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy })
 
         if (!showSideBar && url == '/') {
             history.push(`/locations`)
@@ -80,9 +78,13 @@ const SideBar = (props) => {
         if (widgetPageLoaded) {
             history.push('/locations')
             dispatchHoverStationInfo(null)
+            dispatch(locationActions.editing(false))
+
+
         } else {
             const newSideBarState = !showSideBar
-
+            //onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy })
+            dispatch(locationActions.editing(false))
             setShowSideBar(newSideBarState)
             dispatch(sidebarActions.setOpen(newSideBarState))
         }
