@@ -40,6 +40,7 @@ const WidgetButton = (props) => {
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const editing = useSelector(state => state.locationsReducer.editingLocation)
     const positions = useSelector(state => state.locationsReducer.positions)
+    console.log(props.type)
 
 
 
@@ -87,6 +88,7 @@ const WidgetButton = (props) => {
 
                 else {
                   history.push('/locations/' + id + '/' +type)
+
                 }
             }}
             pageID={type}

@@ -181,7 +181,6 @@ export default function LocationContent() {
               if(positions[child._id] == undefined){
 
                 await Object.assign(child, {temp: false, new: true })
-                console.log(child.new)
                 await dispatch(positionActions.addPosition(child))
                 await dispatch(positionActions.postPosition(child))
                 await dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
@@ -209,7 +208,6 @@ export default function LocationContent() {
       }
 
             onEditing(false)
-            console.log(positions)
     }
 
     /**
