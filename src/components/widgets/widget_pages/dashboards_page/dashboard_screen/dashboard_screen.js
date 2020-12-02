@@ -30,6 +30,7 @@ import DashboardsHeader from "../dashboards_header/dashboards_header";
 // import logging
 import log from "../../../../../logger";
 import {REPORT_TYPES, TYPES} from "../dashboards_sidebar/dashboards_sidebar";
+import ReportModal from "./report_modal/report_modal";
 
 const logger = log.getLogger("DashboardsPage");
 
@@ -199,7 +200,7 @@ const DashboardScreen = (props) => {
      */
     const handleTaskClick = async (type, Id, name, custom) => {
         console.log("handleTaskClick type",type)
-        switch(type) {
+        switch(type.toUpperCase()) {
             case TYPES.ROUTES.name.toUpperCase():
                 handleRouteClick(Id, name, custom)
                 break
@@ -208,7 +209,7 @@ const DashboardScreen = (props) => {
                 break
             case REPORT_TYPES.REPORT.name.toUpperCase():
                 console.log("handleTaskClick REPORT_TYPES")
-                set
+                setReportModal(REPORT_TYPES.REPORT.name.toUpperCase())
                 break
             default:
                 break
@@ -343,6 +344,9 @@ const DashboardScreen = (props) => {
         // convenient to be able to clear the alert instead of having to wait for the timeout to clear it automatically
         // onClick={() => setAddTaskAlert(null)}
         >
+            <ReportModal
+                isOpen={!!reportModal}
+            />
             <DashboardsHeader
                 showTitle={false}
                 showBackButton={false}
