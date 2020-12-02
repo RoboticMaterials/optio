@@ -83,7 +83,7 @@ const SideBar = (props) => {
 
         } else {
             const newSideBarState = !showSideBar
-            //onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy })
+            onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy })
             dispatch(locationActions.editing(false))
             setShowSideBar(newSideBarState)
             dispatch(sidebarActions.setOpen(newSideBarState))
