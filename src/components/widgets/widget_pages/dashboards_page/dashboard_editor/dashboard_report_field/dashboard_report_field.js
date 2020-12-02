@@ -12,16 +12,19 @@ import DashboardButton from "../../dashboard_button/dashboard_button";
 import ColorField from "../../../../../basic/form/color_field/color_field";
 
 // Import Styles
-import * as styled from './dashboard_edit_tasks_field.style';
+import * as styled from './dashboard_report_field.style';
 
 // import logging
 import log from '../../../../../../logger'
 import {ThemeContext} from "styled-components";
 import BounceButton from "../../../../../basic/bounce_button/bounce_button";
+import {REPORT_TYPES} from "../../dashboards_sidebar/dashboards_sidebar";
+import {theme} from "../../../../../../theme";
+import {SchemaIcon} from "../button_fields/button_fields.style";
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
 
-const DashboardEditTasksField = props => {
+const DashboardReportField = props => {
 
 	// extract props
 	const {
@@ -36,7 +39,12 @@ const DashboardEditTasksField = props => {
 
 	const [showColorPicker, setShowColorPicker] = useState(false);
 	const tasks = useSelector(state => state.tasksReducer.tasks)
-	const taskName = tasks[button.task_id]?.name || "TASK NOT FOUND"
+	const taskName = REPORT_TYPES[button]
+
+	const schema = theme.main.schema.user_reports
+	const iconClassName = schema.iconName
+
+		// tasks[button.task_id]?.name || "TASK NOT FOUND"
 
 	return(
 		// set zindex to make sure the dropdown from buttons above display on top of the buttons below it
@@ -68,10 +76,11 @@ const DashboardEditTasksField = props => {
 				fontSize={"large"}
 			/>
 
+			<SchemaIcon className={iconClassName} color={schema.solid}></SchemaIcon>
 		</styled.DashboardEditButton>
 
 	)
 
 }
 
-export default (DashboardEditTasksField)
+export default (DashboardReportField)

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import PropTypes from 'prop-types';
+import { theme } from "../../../../../theme"
 
 // import components
 import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
@@ -33,6 +34,8 @@ const DashboardButton = (props => {
         containerCss,
         error
     } = props
+
+
 
     return (
         <>

@@ -30,12 +30,26 @@ import * as styled from "../../../widget_button/widget_button.style";
 
 const logger = log.getLogger("Dashboards")
 
-// const tempColors = ["#798FD9", "#FFB62E", "#79D99B ", "#F24236", "#BA274A", "#592E83"]
-// const tempColors = ["#b17de3", "#91a2db", "#92d6aa", "#ffc65c", "#92d6aa", "#fa6e64", "#cf5f7a"]
-// const tempColors = ['#99A9D7', '#8ED2CD', '#C1ED98', '#FED875', '#F59B7C']
 const tempColors = ['#FF4B4B', '#56d5f5', '#50de76', '#f2ae41', '#c7a0fa']
 
-const TYPES = {
+export const REPORT_TYPES = {
+    REPORT: {
+        schema: "error",
+        name: "Report",
+        _id: 0
+    },
+    KICK_OFF: {
+        schema: "scheduler",
+        name: "Kick off",
+        _id: 1
+    }
+}
+
+export const TYPES = {
+    ALL: {
+        name: "ALL",
+        iconName: "fal fa-globe"
+    },
     ROUTES: {
         name: "ROUTES",
         iconName: "fas fa-route"
@@ -43,6 +57,22 @@ const TYPES = {
     USER_REPORTS: {
         name: "USER_REPORTS",
         iconName: "fas fa-sticky-note"
+    },
+    LOCATIONS: {
+        name: "LOCATIONS",
+        iconName: "far fa-calendar-alt"
+    },
+    OBJECTS: {
+        name: "OBJECTS",
+        iconName: "far fa-calendar-alt"
+    },
+    DEVICES: {
+        name: "DEVICES",
+        iconName: "far fa-calendar-alt"
+    },
+    SCHEDULER: {
+        name: "SCHEDULER",
+        iconName: "far fa-calendar-alt"
     }
 }
 
@@ -56,6 +86,7 @@ const DashboardsSidebar = (props) => {
         stationID,
         clickable
     } = props
+
 
     /*
     * Tests sidebar width to  determine if styling should be for small or large width
@@ -90,7 +121,9 @@ const DashboardsSidebar = (props) => {
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null)
 
-    const handleTaskClick = (Id, name) => {
+    const handleTaskClick = (Id) => {
+        const clickedTask = tasks[Id]
+        const name = clickedTask?.name
 
         // add alert to notify task has been added
         setAddTaskAlert({
@@ -128,6 +161,10 @@ const DashboardsSidebar = (props) => {
 
     }
 
+    const handleReportClick = (Id) => {
+
+    }
+
     const station = stations[stationID]
 
     var availableTasks = []
@@ -139,14 +176,47 @@ const DashboardsSidebar = (props) => {
         logger.log("availableTasks e", e)
     }
 
-    var availableButtons = availableTasks.map((task, index) => {
-        return {
-            name: task.name,
-            color: tempColors[index % tempColors.length],
-            task_id: task._id,
-            id: task._id,
-        }
-    })
+    const getRouteButtons = () => {
+        return availableTasks.map((task, index) => {
+            return {
+                name: task.name,
+                color: tempColors[index % tempColors.length],
+                type: TYPES.ROUTES.name,
+                task_id: task._id,
+                id: task._id,
+            }
+        })
+    }
+
+    const getReportButtons = () => {
+        return Object.values(REPORT_TYPES).map((currType, ind) => {
+            return {
+                name: currType.name,
+                color: themeContext.schema[currType.schema].solid,
+                id: currType._id,
+                type: currType.name.toUpperCase(),
+            }
+        })
+    }
+
+    var availableButtons = []
+    var availableReportButtons = []
+    switch(type) {
+        case TYPES.ROUTES.name:
+            availableButtons = getRouteButtons()
+            break
+        case TYPES.USER_REPORTS.name:
+            availableReportButtons = getReportButtons()
+            break
+
+        case TYPES.ALL.name:
+            availableButtons = getRouteButtons()
+            availableReportButtons = getReportButtons()
+            break
+
+        default:
+            break
+    }
 
     function handleDrag(e, ui) {
         setWidth(Math.max(minWidth, width + ui.deltaX))
@@ -159,8 +229,10 @@ const DashboardsSidebar = (props) => {
                     return (
                         <style.WidgetButtonButton
                             selected={type === currType.name}
+                            onClick={()=>setType(currType.name)}
+                            schema={currType.name}
                         >
-                            <style.WidgetButtonIcon className="fas fa-route"/>
+                            <style.WidgetButtonIcon schema={currType.name.toLocaleLowerCase()} className={currType.iconName}/>
                         </style.WidgetButtonButton>
                     )
                 })
@@ -192,7 +264,7 @@ const DashboardsSidebar = (props) => {
 
                                 return (
                                     <DashboardSidebarButton
-                                        key={`dashboard-sidebar-button-${index}`}
+                                        key={`dashboard-sidebar-button-${button.id}`}
                                         name={button.name}
                                         color={button.color}
                                         task_id={button.task_id}
@@ -202,9 +274,29 @@ const DashboardsSidebar = (props) => {
                                         disabled={!!addTaskAlert}
                                     />
                                 )
-                            }
-                            )}
+                            })}
                         </Container>
+                        <Container
+                            groupName="dashboard-buttons"
+                            getChildPayload={index =>
+                                availableReportButtons[index]
+                            }
+                        >
+                            {availableReportButtons.map((button, index) => {
+                                return (
+                                    <DashboardSidebarButton
+                                        key={`dashboard-sidebar-button-${button.id}`}
+                                        name={button.name}
+                                        color={button.color}
+                                        id={button.id}
+                                        clickable={clickable}
+                                        onTaskClick={handleReportClick}
+                                        disabled={!!addTaskAlert}
+                                    />
+                                )
+                            })}
+                        </Container>
+
                     </style.ListContainer>
 
                     <style.FooterContainer>

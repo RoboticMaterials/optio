@@ -52,7 +52,7 @@ export const WidgetButtonLabel = styled.label`
 
 export const WidgetButtonIcon = styled.i`
     font-size: 2.2rem;
-    color: ${props =>  props.theme.fg.primary};
+    color: ${props => props.theme.schema[props.schema].solid}};
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
         font-size: 2rem;
@@ -67,7 +67,8 @@ export const FooterContainer = styled.div`
 	overflow-x: scroll;
 	overflow-y: hidden;
 	padding: 1rem;
-	// background: ${props => props.theme.bg.quaternary};
+	border-top: 1px solid ${props => props.theme.bg.quaternary};
+	background: ${props => props.theme.bg.tertiary + "B1"};
 `
 
 // export const

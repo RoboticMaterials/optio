@@ -29,6 +29,7 @@ import DashboardsHeader from "../dashboards_header/dashboards_header";
 
 // import logging
 import log from "../../../../../logger";
+import {REPORT_TYPES, TYPES} from "../dashboards_sidebar/dashboards_sidebar";
 
 const logger = log.getLogger("DashboardsPage");
 
@@ -53,6 +54,7 @@ const DashboardScreen = (props) => {
 
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
+    const [reportModal, setReportModal] = useState(null);
 
     // actions
     const dispatch = useDispatch()
@@ -195,8 +197,34 @@ const DashboardScreen = (props) => {
      * @param {*} name 
      * @param {*} custom 
      */
-    const handleTaskClick = async (Id, name, custom) => {
+    const handleTaskClick = async (type, Id, name, custom) => {
+        console.log("handleTaskClick type",type)
+        switch(type) {
+            case TYPES.ROUTES.name.toUpperCase():
+                handleRouteClick(Id, name, custom)
+                break
+            case TYPES.USER_REPORTS.name.toUpperCase():
+                handleOperationClick()
+                break
+            case REPORT_TYPES.REPORT.name.toUpperCase():
+                console.log("handleTaskClick REPORT_TYPES")
+                set
+                break
+            default:
+                break
+        }
 
+
+    }
+
+    const handleOperationClick = () => {
+        // setReportModal()
+    }
+
+    const handleReportClick = () => {
+    }
+
+    const handleRouteClick = async (Id, name, custom) => {
         // If a custom task then add custom task key to task q
         if (Id === 'custom_task') {
 
@@ -281,7 +309,6 @@ const DashboardScreen = (props) => {
             // clear alert after timeout
             return setTimeout(() => setAddTaskAlert(null), 1800)
         }
-
     }
 
     // Posts HIL Success to API 

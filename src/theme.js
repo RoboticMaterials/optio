@@ -37,7 +37,7 @@ const light = {
     octonary: '#000000',  // Black
 }
 
-const theme = {
+export const theme = {
     main: {
         bg: dark,
         fg: {
@@ -168,6 +168,24 @@ const theme = {
             tasks: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
                 solid: '#79d99b'
+            },
+            routes: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
+                solid: '#79d99b',
+                iconName: "fas fa-route"
+            },
+            all: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
+                solid: '#1ae8a0'
+            },
+            error: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
+                solid: '#ff1900'
+            },
+            user_reports: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
+                solid: '#e81a69',
+                iconName: "fas fa-sticky-note"
             },
             devices: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 75, 75, 0.95) 0%, rgba(255, 61, 61, 0.95) 100%)',
