@@ -3,7 +3,7 @@ import styled, {css} from "styled-components";
 import RemoveIcon from '@material-ui/icons/Remove';
 
 export const containerCss = css`
-	background-color: #C8C8C8;
+	background-color: #FFFFFF;
 	border-color: transparent;
 	color: transparent;
     height: 2rem;
@@ -29,7 +29,7 @@ export const contentContainerCss = css`
 
 export const rightContentContainerCss = css`
 	width: auto;
-	margin-left: .25rem;
+	margin-left: .5rem;
 	margin-right: .25rem;
 	display: flex;
 	align-items: center;

@@ -68,9 +68,10 @@ const SideBar = (props) => {
     const handleSideBarOpenCloseButtonClick = () => {
         const hamburger = document.querySelector('.hamburger')
         hamburger.classList.toggle('is-active')
-
         dispatch(locationActions.editing(false))
-        //onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy })
+        dispatch(locationActions.setSelectedLocationCopy(null))
+        dispatch(locationActions.setSelectedLocationChildrenCopy(null))
+        dispatch(locationActions.deselectLocation())    // Deselect
 
         if (!showSideBar && url == '/') {
             history.push(`/locations`)

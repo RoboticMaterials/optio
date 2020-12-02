@@ -74,7 +74,6 @@ const TaskQueueMenu = (props) => {
         // get item from task queue based on index
         const item = taskQueue[index]
         const type = item.task.device_type
-
         // extract properties
         const { name } = item
         const id = item?._id?.$oid
@@ -87,6 +86,7 @@ const TaskQueueMenu = (props) => {
                 status={status}
                 id={id}
                 key={key}
+                type={type}
             />
         )
     }

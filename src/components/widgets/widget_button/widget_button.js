@@ -36,12 +36,9 @@ const WidgetButton = (props) => {
     const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
     const onSetSelectedLocationChildrenCopy = (locationChildren) => dispatch(setSelectedLocationChildrenCopy(locationChildren))
 
-
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const editing = useSelector(state => state.locationsReducer.editingLocation)
     const positions = useSelector(state => state.locationsReducer.positions)
-    console.log(props.type)
-
 
 
     return (

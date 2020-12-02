@@ -21,6 +21,7 @@ const TaskQueueListItem = (props) => {
 	const {
         id,
         onClick,
+				type,
 		...rest
     } = props
 
@@ -55,7 +56,11 @@ const TaskQueueListItem = (props) => {
 						<IconButton
 							color={themeContext.fg.primary}
 						>
+						{type=='human' ?
 							<i class="fas fa-user"></i>
+							:
+							<i class="fas fa-robot"></i>
+						}
 						</IconButton>
 
 						<IconButton
