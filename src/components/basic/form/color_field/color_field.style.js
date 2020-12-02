@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import {TwitterPicker} from "react-color";
 
 export const DefaultContainer = styled.div`
 	position: absolute;
@@ -15,6 +16,12 @@ export const ColorPicker = styled.div`
 	left: 50%;
 	transform: translate(-50%, -50%);
 
+`
+
+export const StyledTwitterPicker = styled(TwitterPicker)`
+	.twitter-picker {
+		background: ${props => props.theme.bg.quinary};
+	}
 `
 
 

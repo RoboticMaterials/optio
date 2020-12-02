@@ -43,6 +43,8 @@ const DashboardButtonList = ((props) => {
 		let name = currentButton.name
 		const type = currentButton?.type
 
+		console.log("itemRenderer type",type)
+
         let taskID = currentButton.task_id
         
         // If the task is in tasks or it's a custom task or hil success, then it exists

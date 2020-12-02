@@ -157,6 +157,10 @@ export const theme = {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 143, 217, 0.95) 0%, rgba(125, 89, 183, 0.95) 100%)',
                 solid: '#798fd9'
             },
+            dashboards: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 214, 0, 0.95) 0%, rgba(255, 138, 0, 0.95) 100%)',
+                solid: '#5294ff'
+            },
             objects: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 214, 0, 0.95) 0%, rgba(255, 138, 0, 0.95) 100%)',
                 solid: '#ffb62e'
@@ -183,6 +187,11 @@ export const theme = {
                 solid: '#ff1900'
             },
             user_reports: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
+                solid: '#e81a69',
+                iconName: "fas fa-sticky-note"
+            },
+            report: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
                 solid: '#e81a69',
                 iconName: "fas fa-sticky-note"

@@ -57,22 +57,6 @@ export const TYPES = {
     USER_REPORTS: {
         name: "USER_REPORTS",
         iconName: "fas fa-sticky-note"
-    },
-    LOCATIONS: {
-        name: "LOCATIONS",
-        iconName: "far fa-calendar-alt"
-    },
-    OBJECTS: {
-        name: "OBJECTS",
-        iconName: "far fa-calendar-alt"
-    },
-    DEVICES: {
-        name: "DEVICES",
-        iconName: "far fa-calendar-alt"
-    },
-    SCHEDULER: {
-        name: "SCHEDULER",
-        iconName: "far fa-calendar-alt"
     }
 }
 

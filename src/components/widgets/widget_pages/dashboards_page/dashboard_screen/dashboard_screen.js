@@ -346,6 +346,9 @@ const DashboardScreen = (props) => {
         >
             <ReportModal
                 isOpen={!!reportModal}
+                title={"Send Report"}
+                close={()=>setReportModal(null)}
+                dashboard={currentDashboard}
             />
             <DashboardsHeader
                 showTitle={false}
