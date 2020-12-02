@@ -32,6 +32,7 @@ export const PlotContainer = styled.div`
     right: 8rem; */
 
     display: flex;
+    flex-direction: column;
     /* position:inherit; */
 
     height: 100%;
@@ -138,4 +139,8 @@ export const DateSelectorTitle = styled.h1`
 
     margin: 0rem .5rem;
 
+`
+
+export const LoadingIcon = styled.i`
+    font-size: 1.5rem;
 `

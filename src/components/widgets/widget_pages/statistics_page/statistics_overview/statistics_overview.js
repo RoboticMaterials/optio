@@ -35,6 +35,7 @@ const StatisticsOverview = (props) => {
 
     const [data, setData] = useState(null)
     const [timeSpan, setTimeSpan] = useState('day')
+    const [dateIndex, setDateIndex] = useState(0)
     const [format, setFormat] = useState('%m-%d %H:%M')
     const [selector, setSelector] = useState('throughPut')
     const [slice, setSlice] = useState(null)
@@ -55,7 +56,8 @@ const StatisticsOverview = (props) => {
         throughPut: '#d177ed'
     }
 
-    useEffect(async () => {
+    // On page load, load in the data for today
+    useEffect(() => {
 
         if (locations[params.stationID].device_id !== undefined) {
             setIsDevice(true)
@@ -73,16 +75,13 @@ const StatisticsOverview = (props) => {
         }
 
         // TEMP
-        const analytics = await getStationAnalytics(stationID, 'day')
-        if (analytics === undefined) return
-        setData(analytics)
+        const body = { timespan: timeSpan, index: dateIndex }
+        const dataPromise = getStationAnalytics(stationID, body)
+        dataPromise.then(response => {
+            if (response === undefined) return
+            setData(response)
 
-        // dataPromise.then(response => {
-        //     console.log('QQQQ response', response)
-        //     if(response === undefined) return 
-        //     setData(response)
-
-        // })
+        })
     }, [])
 
     const handleDeviceStatistics = () => {
@@ -127,25 +126,38 @@ const StatisticsOverview = (props) => {
         return null
     }
 
-    const handleTimeSpan = async (timeSpan) => {
+    /**
+     * Gets the new data based on the selected time span and dateIndex
+     * 
+     * TimeSpan:
+     * Can be either Day, Week, Month or Year
+     * 
+     * DateIndex:
+     * The current date (today) index is 0, if you want to go back to the past date, the index would be 1 
+     * 
+     * @param {*} newTimeSpan 
+     * @param {*} newDateIndex 
+     */
+    const handleTimeSpan = async (newTimeSpan, newDateIndex) => {
+
+        setTimeSpan(newTimeSpan)
+        setDateIndex(newDateIndex)
 
         setIsLoading(true)
 
-        const analytics = await getStationAnalytics(stationID, 'day')
-        if (analytics === undefined) return
-        setData(analytics)
-        setIsLoading(false)
+        const body = { timespan: newTimeSpan, index: newDateIndex }
+        const dataPromise = getStationAnalytics(stationID, body)
+        dataPromise.then(response => {
 
-        // const dataPromise = getStationAnalytics(stationID, timeSpan)
-        // dataPromise.then(response => {
+            if (response === undefined) return setIsLoading(false)
 
-        //     if (response === undefined) return
+            setData(response)
+            setIsLoading(false)
+        })
 
-        //     setData(response)
-        //     setIsLoading(false)
-        // })
-
-        switch (timeSpan) {
+        // Usses a regex to take all characters before a '['
+        // switch (timeSpan(/^(.*?)(?=\[|$)/)) {
+        switch (newTimeSpan) {
             case 'live':
                 setFormat('%I:%M:%S %p')
                 setTimeSpan('live')
@@ -182,12 +194,12 @@ const StatisticsOverview = (props) => {
 
         let dateSelectorTitle = ''
         let date
+        const today = new Date()
 
         switch (timeSpan) {
             case 'day':
                 // date = getDateFromString(Object.values(throughPut)[0].x)
-                date = new Date()
-                dateSelectorTitle = date.toDateString()
+                dateSelectorTitle = today.toDateString()
                 break;
 
             case 'week':
@@ -214,14 +226,31 @@ const StatisticsOverview = (props) => {
 
         return (
             <styled.RowContainer>
-                <styled.DateSelectorIcon className='fas fa-chevron-left' />
+                <styled.DateSelectorIcon
+                    className='fas fa-chevron-left'
+                    onClick={() => {
+                        const index = dateIndex + 1
+                        handleTimeSpan(timeSpan, index)
+                    }}
+                />
                 {isLoading ?
-                    <i className="fas fa-circle-notch fa-spin" />
+                    <styled.LoadingIcon className="fas fa-circle-notch fa-spin" />
                     :
-                    <styled.DateSelectorTitle>{dateSelectorTitle}</styled.DateSelectorTitle>
+                    <styled.DateSelectorTitle>{data.date_title}</styled.DateSelectorTitle>
 
                 }
-                <styled.DateSelectorIcon className='fas fa-chevron-right' />
+
+                {/* If the current dateIndex is 0, hide go to next day button. Can't go to the future now can we dummy */}
+                {dateIndex !== 0 &&
+                    <styled.DateSelectorIcon
+                        className='fas fa-chevron-right'
+                        onClick={() => {
+                            const index = dateIndex - 1
+                            handleTimeSpan(timeSpan, index)
+                        }}
+                    />
+
+                }
             </styled.RowContainer>
         )
 
@@ -262,7 +291,7 @@ const StatisticsOverview = (props) => {
 
             {!!data &&
                 <>
-                    <TimeSpans color={colors[selector]} setTimeSpan={(ts) => handleTimeSpan(ts)} timeSpan={timeSpan}></TimeSpans>
+                    <TimeSpans color={colors[selector]} setTimeSpan={(timeSpan) => handleTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
 
                     {/* Commented out for now, only need through put bar chart */}
                     {/* {handleGaugeCharts()} */}
@@ -276,7 +305,7 @@ const StatisticsOverview = (props) => {
 
 
             {isLoading ?
-                <i className="fas fa-circle-notch fa-spin" />
+                <styled.LoadingIcon className="fas fa-circle-notch fa-spin" style={{ fontSize: '3rem', marginTop: '5rem' }} />
                 :
 
                 // <BarChart data={data} selector={selector} />
@@ -286,6 +315,9 @@ const StatisticsOverview = (props) => {
                     // onMouseMove={findSlice}
                     onMouseLeave={() => { setSlice(null) }}
                 >
+
+                    <styled.DateSelectorTitle>Throughput</styled.DateSelectorTitle>
+
                     <BarChart
                         data={data}
                         selector={selector}

@@ -113,3 +113,24 @@ export const soundSchema = new schema.Entity(
 );
 
 export const soundsSchema = [soundSchema]
+
+
+// sounds schema
+export const taskAnalysisSchema = new schema.Entity(
+    // key
+    'taskAnalysis',
+    // definition
+    {
+        //condition: conditionSchema
+    },
+    // options
+    {
+        idAttribute: (value, parent, key) => {
+            return value.task_id
+        },
+
+    },
+
+);
+
+export const tasksAnalysisSchema = [taskAnalysisSchema]

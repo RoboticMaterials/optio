@@ -186,8 +186,14 @@ export async function putStation(station, ID) {
 export async function getStationAnalytics(id, timeSpan) {
     try {
         const response = await axios({
-            method: 'get',
-            url: apiIPAddress() + operator + '/' + id + '/analysis/' + timeSpan,
+            method: 'PUT',
+            url: apiIPAddress() + operator + '/' + id + '/analysis',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'text/html'
+            },
+            // A timespan is {time_span: 'day', index: 0}
+            data: timeSpan
         });
         // Success 🎉
         const data = response.data;
@@ -196,7 +202,6 @@ export async function getStationAnalytics(id, timeSpan) {
 
 
     } catch (error) {
-        console.log('QQQQ error', error)
         // Error 😨
         if (error.response) {
             /*

@@ -19,19 +19,18 @@ const BarChart = (props) => {
         fontSize: '1rem',
         fontFamily: mainTheme.font.primary,
 
-        // axis: {
-        //     ticks: {
-        //         text: {
-        //             fill: "fff",
-        //             fontFamily: mainTheme.font.primary,
-        //             fontSize: "1rem"
-        //         },
-        //     }
-        // },
+        axis: {
+            legend: {
+                text: {
+                    fontSize: '1.25rem',
+                    fontWeight: 'bold',
+                },
+            }
+        },
 
     }
 
-    console.log('QQQQ Data', data)
+    // console.log('QQQQ Data', data)
     if (data === null || data === undefined) { return null }
     return (
         <ResponsiveBar
@@ -39,12 +38,14 @@ const BarChart = (props) => {
             keys={['y']}
             indexBy='x'
             animate={false}
-            colors={{scheme:'nivo'}}
+            // colors={{scheme:'nivo'}}
+            colors='#d177ed'
             borderColor={{ from: 'color' }}
+            // borderColor='#d177ed'
             // xScale={{ type: 'time', format: '%Y-%m-%d %H:%M:%S', useUTC: false, precision: 'second', }}
             // xFormat={'time:' + format}
             // yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
-            margin={{ top: 22, left: 70, right: 70, bottom: 50 }}
+            margin={{ top: 22, left: 70, right: 70, bottom: 70 }}
 
             axisTop={null}
             axisRight={null}
@@ -54,8 +55,8 @@ const BarChart = (props) => {
                 tickRotation: 0,
                 legend: 'Time',
                 legendPosition: 'middle',
-                legendOffset: 32,
-                
+                legendOffset: 45,
+
 
                 // format: (value) => {
                 //     console.log('QQQQ val', value.split(' ')[1])
@@ -68,13 +69,15 @@ const BarChart = (props) => {
                 tickRotation: 0,
                 legend: 'Units',
                 legendPosition: 'middle',
-                legendOffset: -40
+                legendOffset: -45
             }}
 
             // enableGridX={false}
             // enableGridY={false}
-            colors={d => d.color}
             theme={theme}
+        // legends={[{
+        //     fontSize: '1rem'
+        // }]}
 
         />
     )

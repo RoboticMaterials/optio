@@ -6,6 +6,7 @@ import { ThemeProvider } from "styled-components";
 import theme from './theme';
 import './App.css';
 
+// Import Hooks
 import useWindowSize from './hooks/useWindowSize'
 
 // import logger
