@@ -29,18 +29,18 @@ function Station(props) {
     const [rotating, setRotating] = useState(false)
     const [translating, setTranslating] = useState(false)
 
-
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const hoveringID = useSelector(state => state.locationsReducer.hoverLocationID)
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
     const devices = useSelector(state => state.devicesReducer.devices)
+    const editing = useSelector(state => state.locationsReducer.editingLocation)
+
 
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const onSelectLocation = (locationId) => dispatch(selectLocation(locationId))
     const onDeselectLocation = () => dispatch(deselectLocation())
-
     // Used to see if a widget Page is opened
     let params = useParams()
     useEffect(() => {
@@ -155,10 +155,11 @@ function Station(props) {
                             dispatchHoverStationInfo(handleWidgetHover())
                             onSelectLocation(location._id)
                         }
+                      }
                     }
 
 
-                }}
+                }
                 // onClick={() => {
                 //     console.log('Station clicked')
                 // }}

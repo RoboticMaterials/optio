@@ -177,7 +177,7 @@ const ApiContainer = (props) => {
 
             // Not the best way to do this, but if the params have a locationId and it's undefined
             // then it's url is just locations and not a widget page
-            // This happens in app.js file in the route path. 
+            // This happens in app.js file in the route path.
             if (pageParams.widgetPage === undefined) {
                 pageName = 'locations'
 
@@ -457,7 +457,7 @@ const ApiContainer = (props) => {
     /**
      * This deletes positions that have parents that are broken
      * A broken parent is a parent that has been deleted
-     * @param {*} locations 
+     * @param {*} locations
      */
     const handlePositionsWithBrokenParents = async (locations) => {
 
@@ -480,7 +480,7 @@ const ApiContainer = (props) => {
      * 1) This finds positions that have become disassociated with their parent stations and reassociates them
      * 2) Also finds stations that have children positions that have been deleted. Deletes those positions from the stations
      * This happens because it happens... I have no idea why this happens....
-     * @param {*} locations 
+     * @param {*} locations
      */
     const handleStationsWithBrokenChildren = (locations) => {
 
@@ -516,8 +516,8 @@ const ApiContainer = (props) => {
     /**
      * This deletes device station if the station is broken
      * A broken station would happen when a station has been deleted
-     * @param {*} devices 
-     * @param {*} locations 
+     * @param {*} devices
+     * @param {*} locations
      */
     const handleDevicesWithBrokenStations = async (devices, locations) => {
 
@@ -538,11 +538,11 @@ const ApiContainer = (props) => {
     /**
      * This adds station to device if the station has a device ID and the device does not have a station ID
      * Why this happens is unkown atm, but this fixes when a device comes back without a station ID but should have one
-     * 
+     *
      * It also deletes stations that should be associated with a device, but the device either does not exist or ID has changed
-     * 
-     * @param {*} devices 
-     * @param {*} locations 
+     *
+     * @param {*} devices
+     * @param {*} locations
      */
     const handleStationsWithBrokenDevices = (devices, locations) => {
 
@@ -572,8 +572,8 @@ const ApiContainer = (props) => {
 
     /**
      * This deletes dashboards that belong to stations that don't exist
-     * @param {*} dashboards 
-     * @param {*} locations 
+     * @param {*} dashboards
+     * @param {*} locations
      */
     const handleDashboardsWithBrokenStations = (dashboards, locations) => {
 
@@ -594,8 +594,8 @@ const ApiContainer = (props) => {
     /**
      * This handles broken Processes
      * A broken process would happen if a route/task that has been deleted but the process has not been updated
-     * @param {*} processes 
-     * @param {*} tasks 
+     * @param {*} processes
+     * @param {*} tasks
      */
     const handleProcessesWithBrokenRoutes = async (processes, tasks) => {
 
@@ -623,8 +623,8 @@ const ApiContainer = (props) => {
      * This handles tasks that belong to broken process
      * This would happen because either the process has been deleted and the task have not
      * or The task was created but the process was never saved
-     * @param {*} processes 
-     * @param {*} tasks 
+     * @param {*} processes
+     * @param {*} tasks
      */
     const handleTasksWithBrokenProcess = async (processes, tasks) => {
 

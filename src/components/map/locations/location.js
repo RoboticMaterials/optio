@@ -205,6 +205,8 @@ const Location = (props) => {
     const locations = useSelector(state => state.locationsReducer.locations)
 
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
+    //const [showSideBar, setShowSideBar] = useState(false)
+
 
     // Is this location selected, or is it's parent selected
     let isSelected =
@@ -220,9 +222,6 @@ const Location = (props) => {
     let pos
 
     let color = '#6283f0' // Blue
-
-
-
 
     if (location.type === 'shelf_position') color = '#fb7c4e'
     if (location.type === 'charger_position') color = '#fbd34e'
@@ -268,13 +267,14 @@ const Location = (props) => {
             case 'cart_position':
             case "human_position":
             case 'shelf_position':
+            case 'human_position':
             case 'charger_position':
                 return (
                     <React.Fragment key={`frag-loc-${location._id}`}>
                         {location.parent !== null && location.parent !== undefined && location.parent.length > 0 &&
                             <line x1={`${location.x}`} y1={`${location.y}`}
                                 x2={`${stations[location.parent].x}`} y2={`${stations[location.parent].y}`}
-                                stroke={color} strokeWidth="1.4" style={{ filter: "url(#glow)", opacity: '0.3' }} />
+                                stroke={color} strokeWidth="1.4" shape-rendering="geometricPrecision" style={{ opacity: '0.3',}} />
                         }
                         <Position isSelected={isSelected} color={color} {...props} />
                         <DragEntityProto isSelected={isSelected} {...props}

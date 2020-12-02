@@ -78,6 +78,7 @@ const SchedulerContent = () => {
                     handleSelectTask={handleSelectTask}
                     schedules={schedules}
                     setShowScheduleCreator={setShowScheduleCreator}
+                    setSelectedScheduleId = {(id)=>setSelectedScheduleId(id)}
                     openSchedule={(id) => {
                         setSelectedScheduleId(id)
                         setShowScheduleCreator(true)

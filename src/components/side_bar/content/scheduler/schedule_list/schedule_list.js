@@ -34,16 +34,21 @@ const ScheduleList = (props) => {
         selectedScheduleId,
         tasks,
         setShowScheduleCreator,
-        openSchedule
+        setSelectedScheduleId,
+        openSchedule,
     } = props
 
     // dispatch
     const dispatch = useDispatch()
 
-    const [timeToNextScheduled, setTimeToNextScheduled] = useState("10000000")
-    const [timeToNextScheduledHours, setTimeToNextScheduledHours] = useState("10000000")
-    const [timeToNextScheduledMinutes, setTimeToNextScheduledMinutes] = useState("10000000")
-    const [nextScheduleName, setNextScheduleName] = useState("")
+    let [timeToNextScheduled, setTimeToNextScheduled] = useState("10000000")
+    let [timeToNextScheduledTemp, setTimeToNextScheduledTemp] = useState("10000000")
+    let [nextScheduledTimeTemp, setNextScheduledTimeTemp] = useState("10000000")
+
+    let [timeToNextScheduledHours, setTimeToNextScheduledHours] = useState("10000000")
+    let [timeToNextScheduledMinutes, setTimeToNextScheduledMinutes] = useState("10000000")
+    let [nextScheduleName, setNextScheduleName] = useState("")
+    let [id, setId] = useState("")
 
     const currentMap = useSelector(state => state.mapReducer.currentMap)
 
@@ -70,6 +75,7 @@ const ScheduleList = (props) => {
             start_time: scheduleItem.start_time,
             time_interval: scheduleItem.time_interval,
             stop_time: scheduleItem.stop_time,
+            next_time: scheduleItem.next_time,
         }
 
         dispatch(putSchedule(scheduleItem.id, submitItem))
@@ -80,7 +86,6 @@ const ScheduleList = (props) => {
     * */
     const renderTasks = () => {
         let fullSchedulesArr = Object.values(schedules).filter((item) => item.map_id === currentMap._id)
-
         return (
             <styled.TaskListContainer>
                 {fullSchedulesArr.length > 0 ?
@@ -95,6 +100,7 @@ const ScheduleList = (props) => {
                             stop_time_on,
                             task_id,
                             time_interval,
+                            next_time,
                             _id: {$oid: id}
                         } = item
 
@@ -137,6 +143,7 @@ const ScheduleList = (props) => {
                                 onClick={openSchedule}
                                 disabled={taskIsDeleted || (item.task_id === 'TEMP_NEW_SCHEDULE_ID') || (item.task_id === 'DEFAULT_TASK_ID')}
                                 error={error}
+                                next_time={next_time}
                             />
                         );
                     })
@@ -152,40 +159,56 @@ const ScheduleList = (props) => {
     }
 
     const handleNextExecution = () => {
-        const fullSchedulesArr = Object.values(schedules)
+        let fullSchedulesArr = Object.values(schedules).filter((item) => item.map_id === currentMap._id)
         const minutesPerDay = 1440
         let currentTime = Number(((moment(moment(), 'HH:mm:ss')).format('HH')) * 60) + Number((moment(moment(), 'HH:mm:ss')).format('mm'))
         logger.log('nexttime')
 
         if (fullSchedulesArr.length > 0) {
-            fullSchedulesArr.map((item, index, arr) => {
-                var startTime = Number(((moment(item.start_time, 'HH:mm:ss')).format('HH')) * 60) + Number((moment(item.start_time, 'HH:mm:ss')).format('mm'))
+          fullSchedulesArr.map((item, index, arr) => {
+            var startTime = Number(((moment(item.start_time, 'HH:mm:ss')).format('HH')) * 60) + Number((moment(item.start_time, 'HH:mm:ss')).format('mm'))
+            if(item.interval_on){
                 var stopTime = Number(((moment(item.stop_time, 'HH:mm:ss')).format('HH')) * 60) + Number((moment(item.stop_time, 'HH:mm:ss')).format('mm'))
 
                 if (stopTime - currentTime > 0 && startTime - currentTime < 0) {
                     var intervalTime = Number(((moment(item.time_interval, 'HH:mm:ss')).format('HH')) * 60) + Number((moment(item.time_interval, 'HH:mm:ss')).format('mm'))
-                    var timeToNextScheduled = Math.ceil((currentTime - startTime) / intervalTime) * intervalTime + startTime - currentTime
-                    var nextScheduledTime = Math.ceil((currentTime - startTime) / intervalTime) * intervalTime + startTime
+                    timeToNextScheduledTemp = Math.ceil((currentTime - startTime) / intervalTime) * intervalTime + startTime - currentTime
+                    nextScheduledTimeTemp = Math.ceil((currentTime - startTime) / intervalTime) * intervalTime + startTime
                 }
 
                 if (stopTime - currentTime < 0) {
-                    timeToNextScheduled = minutesPerDay - currentTime + startTime
-                    nextScheduledTime = minutesPerDay + startTime
+                    timeToNextScheduledTemp = minutesPerDay - currentTime + startTime
+                    nextScheduledTimeTemp = minutesPerDay + startTime
                 }
                 if (startTime - currentTime > 0) {
-                    timeToNextScheduled = startTime - currentTime
-                    nextScheduledTime = startTime
+                    timeToNextScheduledTemp = startTime - currentTime
+                    nextScheduledTimeTemp = startTime
                 }
+          }
+          else{
+              nextScheduledTimeTemp = startTime
 
-                if (timeToNextScheduled < timeToNextScheduled) {
-                    setTimeToNextScheduled(timeToNextScheduled)
-                    setTimeToNextScheduledHours(Math.floor(timeToNextScheduled / 60))
-                    setTimeToNextScheduledMinutes(timeToNextScheduled % 60)
-                    nextScheduleName(item.name)
-                }
-            })
-        }
-    }
+              if (startTime - currentTime > 0) {
+                  timeToNextScheduledTemp = startTime - currentTime
+              }
+
+              else{
+                timeToNextScheduledTemp = minutesPerDay - currentTime + startTime
+              }
+            }
+
+            if (timeToNextScheduledTemp < timeToNextScheduled) {
+                setTimeToNextScheduled(timeToNextScheduledTemp)
+                setTimeToNextScheduledHours(Math.floor(timeToNextScheduled / 60))
+                setTimeToNextScheduledMinutes(timeToNextScheduled % 60)
+                setNextScheduleName(item.name)
+                setId(item.id)
+
+              }
+              })
+            }
+          }
+
 
     return (
         <styled.Container>
@@ -196,6 +219,12 @@ const ScheduleList = (props) => {
                 />
             </pageStyle.Header> */}
             <ContentHeader content={'scheduler'} onClickAdd={() => setShowScheduleCreator(true)}/>
+            {handleNextExecution()}
+            <styled.NextExecution
+                onClick={() => {setShowScheduleCreator(true)
+                                setSelectedScheduleId(id)}}>
+                                Next Up:  " {nextScheduleName} " will execute in {timeToNextScheduled} minutes
+            </styled.NextExecution>
             {renderTasks()}
         </styled.Container>
 

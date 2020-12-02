@@ -7,6 +7,7 @@ import {
     SET_SELECTED_LOCATION_CHILDREN_COPY,
     DESELECT_LOCATION,
     WIDGET_LOADED,
+    EDITING_LOCATION,
 } from '../types/locations_types'
 
 import * as stationActions from './stations_actions.js'
@@ -89,6 +90,18 @@ export const updateLocation = (location) => {
     }
 }
 
+export const updateChildren = (location) => {
+    return async dispatch => {
+
+
+
+            dispatch(stationActions.updateStation(location))
+            dispatch(positionActions.updatePosition(location))
+
+    }
+}
+
+
 export const updateLocations = (locations) => {
     return async dispatch => {
         Object.values(locations).forEach(location => {
@@ -124,7 +137,6 @@ export const removeLocation = (location) => {
             dispatch(positionActions.removePosition(_id))
         }
     }
-
 }
 
 export const setLocationAttributes = (id, attr) => {
@@ -158,6 +170,10 @@ export const widgetLoaded = (bool) => {
     return { type: WIDGET_LOADED, payload: bool }
 }
 
+export const editing = (bool) => {
+    return { type: EDITING_LOCATION, payload: bool }
+}
+
 
 // ======================================== //
 //                                          //
@@ -172,6 +188,7 @@ export const widgetLoaded = (bool) => {
  * otherwise, it is reverted to the state it was when editing begun.
  * @param {*} props
  */
+
 export const sideBarBack = (props) => {
     // Does a quick check to make sure there is a location, if not then just return an arbitrary dispatch
     // Redux requires a dispatch here (I think...) so I just use setselectedDevice since it wont have any side effects (again... I think...)
@@ -189,17 +206,20 @@ export const sideBarBack = (props) => {
     } = props
 
     return async dispatch => {
-
         //// Revert location
         if (selectedLocation.new == true) { // If the location was new, simply delete it
             dispatch(removeLocation(selectedLocation))
 
         } else { // If the location is not new, revert it to the old copy, and do the same to its children
             dispatch(updateLocation(selectedLocationCopy))
-            if (selectedLocationChildrenCopy !== null) {
-                selectedLocationChildrenCopy.forEach(child => dispatch(positionActions.updatePosition(child)))
-            }
+
+            if (selectedLocationChildrenCopy != null) {
+                  selectedLocationChildrenCopy.forEach(child =>
+                      dispatch(updateLocation(child))
+                    )
+
         }
+      }
 
         dispatch(setSelectedLocationCopy(null))
         dispatch(setSelectedLocationChildrenCopy(null))
@@ -208,7 +228,10 @@ export const sideBarBack = (props) => {
 
         dispatch(setSelectedDevice(null))
     }
-}
+  }
+
+
+
 
 /**
 * Called when the delete button is pressed. Deletes the location, its children, its dashboards,

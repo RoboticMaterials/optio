@@ -20,6 +20,7 @@ import {
     UPDATE_POSITIONS,
     REMOVE_POSITION,
     SET_POSITION_ATTRIBUTES,
+    REVERT_CHILDREN,
 } from '../types/positions_types'
 
 import { deepCopy } from '../../methods/utils/utils';
@@ -191,6 +192,10 @@ export const updatePosition = (position) => {
     return { type: UPDATE_POSITION, payload: { position } }
 }
 
+export const revertChildren = (position) => {
+    return { type: REVERT_CHILDREN, payload: { position } }
+}
+
 export const updatePositions = (positions) => {
     return { type: UPDATE_POSITIONS, payload: { positions } }
 }
@@ -201,4 +206,4 @@ export const removePosition = (id) => {
 
 export const setPositionAttributes = (id, attr) => {
     return { type: SET_POSITION_ATTRIBUTES, payload: { id, attr } }
-} 
+}

@@ -43,8 +43,6 @@ function Position(props) {
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const hoveringID = useSelector(state => state.locationsReducer.hoverLocationID)
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
-
-
     useEffect(() => {
         //window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         return () => {
@@ -86,10 +84,11 @@ function Position(props) {
                 if (!rotating && !translating && selectedLocation == null && selectedTask == null) {
                     dispatchHoverStationInfo(handleWidgetHover())
                     onSelectLocation(location._id)
+
                 }
             }}
             onMouseLeave={() => { location.name !== 'TempRightClickMoveLocation' && setHovering(false) }}
-            onClick={() => {
+            onMouseDown={() => {
                 if (selectedTask !== null) {
                     // If the load location has been defined but the unload position hasnt, assign the unload position
                     if (selectedTask.load.position !== null && selectedTask.unload.position === null) {
@@ -151,8 +150,11 @@ function Position(props) {
                     <>
                         <circle x="-16" y="-16" r="16" strokeWidth="0" fill="transparent" style={{ cursor: "pointer" }}></circle>
                         <circle x="-18" y="-18" r="14" fill="none" strokeWidth="4" stroke="transparent" style={{ cursor: "pointer" }}
-                            onMouseDown={() => {
-                                setRotating(true)
+                          //  onMouseDown={() => {setRotating(true)
+                          //  }}
+
+                            onMouseUp={() => {
+                              //  setRotating(false)
                             }}
                         />
                         <circle x="-14" y="-14" r="14" fill="none" strokeWidth="0.6" style={{ filter: "url(#glow)", cursor: "pointer" }}></circle>
@@ -163,7 +165,10 @@ function Position(props) {
             <g className={`${rd3tClassName}-trans`} id={`${rd3tClassName}-trans`} transform={"scale(1, 1)", location.type === 'shelf_position' && "rotate(90)"}
                 onMouseDown={() => {
                     setTranslating(true)
-                
+                }}
+
+                onMouseUp={() => {
+                    setTranslating(false)
                 }}
 
             >

@@ -9,9 +9,33 @@ export const Container = styled.div`
     padding: 1rem;
     padding-top: 1.5rem;
 
-    
-`
 
+`
+export const NextExecution = styled.h2`
+	font-size: ${props => props.theme.fontSize.sz3};
+	font-weight: 100;
+	text-align: center;
+	margin-top: 1rem;
+  margin-left:1rem;
+  margin-right:1rem;
+  color: ${props => props.theme.schema["scheduler"].solid};
+	font-family: ${props => props.theme.font.primary};
+
+  border: .2rem solid;
+  border-radius: 1rem;
+  border-color: ${props=>props.theme.bg.octonary};
+
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+  padding-left: .5rem;
+  padding-right: .5rem;
+
+  &:hover{
+    cursor: pointer;
+    border-color: ${props => props.theme.schema["scheduler"].solid};
+    color: ${props => props.theme.schema["scheduler"].solid};
+  }
+`
 
 
 export const TaskListContainer = styled.div`

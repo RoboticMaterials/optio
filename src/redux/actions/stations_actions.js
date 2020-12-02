@@ -72,7 +72,7 @@ export const postStation = (station) => {
             dispatch({ type: POST_STATION_STARTED });
         }
         function onSuccess(station) {
-            dispatch({ type: POST_STATION_SUCCESS, payload: { station }});
+            dispatch({ type: POST_STATION_SUCCESS, payload: { station } });
             return station;
         }
         function onError(error) {
@@ -105,7 +105,7 @@ export const putStation = (station, ID) => {
             dispatch({ type: PUT_STATION_STARTED });
         }
         function onSuccess(station) {
-            dispatch({ type: PUT_STATION_SUCCESS, payload: { station }});
+            dispatch({ type: PUT_STATION_SUCCESS, payload: { station } });
             return station;
         }
         function onError(error) {
@@ -135,7 +135,7 @@ export const deleteStation = (ID) => {
             dispatch({ type: DELETE_STATION_STARTED });
         }
         function onSuccess(id) {
-            dispatch({ type: DELETE_STATION_SUCCESS, payload: { id }});
+            dispatch({ type: DELETE_STATION_SUCCESS, payload: { id } });
             return id;
         }
         function onError(error) {
@@ -152,6 +152,18 @@ export const deleteStation = (ID) => {
         }
     }
 }
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+// get Station Analytics
+// ******************************
+export const getStationAnalytics = async (id, timeSpan) => {
+    try {
+        const stationAnalytics = await api.getStationAnalytics(id, timeSpan);
+        return stationAnalytics
+    } catch (error) {
+    }
+};
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 export const addStation = (station) => {

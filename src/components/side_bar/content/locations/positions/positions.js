@@ -44,7 +44,7 @@ export default function Positions(props) {
     const positionType = type
     let positionTypeCamel = ''
     let positionName = ''
-
+    console.log(positionType)
     const selectedPositions = Object.values(positions).filter(position => position.parent == selectedLocation._id)
 
     useEffect(() => {
@@ -69,6 +69,7 @@ export default function Positions(props) {
         positionTypeCamel = 'shelfPosition'
         positionName = 'Shelf'
     }
+
     if (positionType === 'human_position') {
         positionTypeCamel = 'humanPosition'
         positionName = 'Position'
@@ -146,6 +147,7 @@ export default function Positions(props) {
                 <styled.PositionListItem>
                     <MinusButton
                         onClick={() => {
+                            console.log('QQQQ delete', deepCopy(position), deepCopy(positions))
                             // Sees if any tasks are associated with the position
                             Object.values(tasks).filter(task => {
                                 return task.load.position == position._id || task.unload.position == position._id
@@ -159,6 +161,7 @@ export default function Positions(props) {
                             dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
 
                             dispatch(positionActions.deletePosition(positions[position._id], position._id))
+                            console.log('QQQQ delete here')
 
                         }}
                     />

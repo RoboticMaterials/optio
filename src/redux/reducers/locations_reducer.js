@@ -45,7 +45,8 @@ import {
     UPDATE_POSITION,
     SET_POSITION_ATTRIBUTES,
     UPDATE_POSITIONS,
-    REMOVE_POSITION
+    REMOVE_POSITION,
+    REVERT_CHILDREN
 } from '../types/positions_types'
 
 import {
@@ -55,6 +56,7 @@ import {
     SET_SELECTED_LOCATION_CHILDREN_COPY,
     DESELECT_LOCATION,
     WIDGET_LOADED,
+    EDITING_LOCATION,
 } from '../types/locations_types'
 
 
@@ -62,16 +64,16 @@ import { deepCopy, isEquivalent } from '../../methods/utils/utils';
 
 /**
  * This reducer is different than the rest of the common reducers. The way locations are formatted is that a location
- * can either be a position or a station. Each station may have a list of children, where each child is a position. 
+ * can either be a position or a station. Each station may have a list of children, where each child is a position.
  * Therefore, each position can either have a parent (which is a station) or have parent == null, meaning it is a stand-alone
- * (or idle) position. 
- * 
+ * (or idle) position.
+ *
  * 'locations' is an object that combines all stations and all stand-along positions. This is all the locations that are displayed
  * in the locations sidebar. Therefore, any time we change a station or a position, we must also update the locations.
- * 
+ *
  * Additionally, since a location can either be a station or position, I have added an abstraction for location actions to update, delete, set, etc.
- * a location, and have that function appropriatly route the operation to either alter a position or a location. This is done in location_actions.js.
- * 
+ * a location, and have that function appropriately route the operation to either alter a position or a location. This is done in location_actions.js.
+ *
  * NOTE: This distinction of being a station or a position is held in the 'schema' attribute
  */
 
@@ -86,6 +88,7 @@ const defaultState = {
 
     hoverStationInfo: null,
     widgetLoaded: false,
+    editingLocation: false,
 
     error: {},
     pending: false
@@ -96,6 +99,7 @@ export default function locationsReducer(state = defaultState, action) {
     let ID = ''
     let stationsCopy = {}
     let positionsCopy = {}
+    let childrenCopy = {}
 
     let oldStations = {}
     let oldPositions = {}
@@ -105,7 +109,7 @@ export default function locationsReducer(state = defaultState, action) {
 
     // Object.values(state.locations).forEach((location) => {
     //     if(location.name === 'TempRightClickMoveLocation'){
-    //         console.log('QQQQ position', location)
+    //         console.log('QQQQ position', location)Widgets
     //     }
 
     // })
@@ -160,7 +164,7 @@ export default function locationsReducer(state = defaultState, action) {
         if (state.selectedLocation !== null && state.selectedLocation.schema === 'station') { // The updated station is the selected location
 
             // This replaces the incoming station with the selected station
-            // This eliminates your edits being over written 
+            // This eliminates your edits being over written
             newStations[state.selectedLocation._id] = state.selectedLocation
 
 
@@ -263,7 +267,7 @@ export default function locationsReducer(state = defaultState, action) {
     //                                          //
     // ======================================== //
 
-    // TODO: Commented out Deep Copy's here for now (left selectedLocation with deepCopy though). 
+    // TODO: Commented out Deep Copy's here for now (left selectedLocation with deepCopy though).
     const setPositions = (positions) => {
         // let stationsCopy = deepCopy(state.stations)
         // let positionsCopy = deepCopy(positions)
@@ -273,7 +277,7 @@ export default function locationsReducer(state = defaultState, action) {
         stationsCopy = state.stations
         newPositions = positions
 
-        // IMPORTANT: Removes 'deleted' positions from the reducer state. 
+        // IMPORTANT: Removes 'deleted' positions from the reducer state.
         // These 'deleted' positions have been deleted on the front end, but since deleting a position on the backend causes a bug, the key 'change_key'
         // is added to the position and set to 'delete' and the backend will delete it when it needs to be
         Object.values(newPositions).map((position) => {
@@ -284,7 +288,7 @@ export default function locationsReducer(state = defaultState, action) {
 
         // What this does is add the x and y coordinates of the states positions to the positions coming into this function
         // The reason why this has to be done is that on page load, the X and Y coordinates for each postion are calulated but not added to the back end,
-        // when a get call for positions is made for the backend, the calculated X and Y coordinates are deleted (since they dont exist on the backend). 
+        // when a get call for positions is made for the backend, the calculated X and Y coordinates are deleted (since they dont exist on the backend).
         // This takes the calculated X and Y coordinates already calculated in state and adds them to the incoming positions if the positions copy doesn match. They wouldnt match because the backend does not have X and Y coordinates
         // if (!isEquivalent(positionsCopy, positionsStateCopy)) {
 
@@ -300,7 +304,7 @@ export default function locationsReducer(state = defaultState, action) {
             // If the position exists in frontend and backend, take the new position but assign the local x and y
             if (oldPosition._id in newPositions) {
                 Object.assign(newPositions[oldPosition._id], { x: oldPosition.x, y: oldPosition.y })
-            } else { // If the position is not in the backend, it is either deleted or new. 
+            } else { // If the position is not in the backend, it is either deleted or new.
                 if (oldPosition.new == true) { // If new, add it to the pulled positions
                     newPositions[oldPosition._id] = oldPosition
                 }
@@ -310,7 +314,7 @@ export default function locationsReducer(state = defaultState, action) {
         if (state.selectedLocation !== null && state.selectedLocation.schema === 'position') { // The updated position is the selected location
 
             // This replaces the incoming position with the selected station
-            // This eliminates your edits being over written 
+            // This eliminates your edits being over written
             newPositions[state.selectedLocation._id] = state.selectedLocation
 
             return {
@@ -360,7 +364,6 @@ export default function locationsReducer(state = defaultState, action) {
         stationsCopy = deepCopy(state.stations)
         positionsCopy = deepCopy(state.positions)
 
-
         positionsCopy[position._id] = deepCopy(position)
 
         if (state.selectedLocation !== null && state.selectedLocation._id === position._id) { // The updated position is the selected location
@@ -380,6 +383,44 @@ export default function locationsReducer(state = defaultState, action) {
             }
         }
     }
+
+    const revertChildren = (position) => {
+        stationsCopy = deepCopy(state.stations)
+        positionsCopy = deepCopy(state.positions)
+
+        //Associated position was added in the editing process
+        Object.values(positionsCopy).forEach(position => {
+            if(position.new == true){
+              delete positionsCopy[position._id]
+            }
+        })
+
+        //Associated position was deleted in the editing process
+      //  if(positionsCopy[position._id] == undefined){
+        //  positionsCopy = [positionsCopy, position.position]
+          //console.log(positionsCopy)
+        //}
+
+
+        if (state.selectedLocation !== null && state.selectedLocation._id === position._id) { // The updated position is the selected location
+            return {
+                ...state,
+                positions: positionsCopy,
+                locations: filterLocations(stationsCopy, positionsCopy),
+                selectedLocation: deepCopy(position),
+                pending: false
+            }
+
+        } else {
+            return {
+                ...state,
+                positions: positionsCopy,
+                locations: filterLocations(stationsCopy, positionsCopy),
+                pending: false
+            }
+        }
+    }
+
 
     const removePosition = (id) => {
 
@@ -514,6 +555,7 @@ export default function locationsReducer(state = defaultState, action) {
         case UPDATE_STATION:
             return setStation(action.payload.station)
 
+
         case UPDATE_STATIONS:
             return setStations(action.payload.stations)
 
@@ -603,6 +645,9 @@ export default function locationsReducer(state = defaultState, action) {
         case REMOVE_POSITION:
             return removePosition(action.payload.id)
 
+        case REVERT_CHILDREN:
+            return revertChildren(action.payload)
+
         case SET_POSITION_ATTRIBUTES:
             return setPositionAttributes(action.payload.id, action.payload.attr)
 
@@ -630,7 +675,7 @@ export default function locationsReducer(state = defaultState, action) {
         case DESELECT_LOCATION:
             return {
                 ...state,
-                selectedLocation: null,
+                selectedLocation: null
             }
 
         case SET_SELECTED_LOCATION_COPY:
@@ -661,6 +706,12 @@ export default function locationsReducer(state = defaultState, action) {
             return {
                 ...state,
                 widgetLoaded: action.payload,
+            }
+
+        case EDITING_LOCATION:
+            return {
+                ...state,
+                editingLocation: action.payload,
             }
 
 
