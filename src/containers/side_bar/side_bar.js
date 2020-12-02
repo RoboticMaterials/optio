@@ -9,7 +9,7 @@ import { DraggableCore } from "react-draggable";
 import SideBarSwitcher from '../../components/side_bar/side_bar_switcher/side_bar_switcher'
 
 import { hoverStationInfo } from '../../redux/actions/stations_actions'
-
+import {sideBarBack} from '../../redux/actions/locations_actions'
 
 import LocationsContent from '../../components/side_bar/content/locations/locations_content'
 import ObjectsContent from '../../components/side_bar/content/objects/objects_content'
@@ -21,6 +21,8 @@ import Settings from '../../components/side_bar/content/settings/settings'
 
 import { setWidth, setMode } from "../../redux/actions/sidebar_actions";
 import * as sidebarActions from "../../redux/actions/sidebar_actions"
+import * as locationActions from '../../redux/actions/locations_actions'
+
 
 const SideBar = (props) => {
 
@@ -29,15 +31,19 @@ const SideBar = (props) => {
         setShowSideBar
     } = props
 
-    const dispatch = useDispatch()
-    const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
-
     const [width, setWidth] = useState(450)
     const [buttonActive, setButtonActive] = useState(false)
 
     const mode = useSelector(state => state.sidebarReducer.mode)
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
+    const editing = useSelector(state => state.locationsReducer.editingLocation)
+    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
+    const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
+    const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
 
+    const dispatch = useDispatch()
+    const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
+    const onSideBarBack = (props) => dispatch(sideBarBack(props))
 
     const history = useHistory()
     const url = useLocation().pathname
@@ -63,6 +69,7 @@ const SideBar = (props) => {
         const hamburger = document.querySelector('.hamburger')
         hamburger.classList.toggle('is-active')
 
+
         if (!showSideBar && url == '/') {
             history.push(`/locations`)
         }
@@ -71,9 +78,13 @@ const SideBar = (props) => {
         if (widgetPageLoaded) {
             history.push('/locations')
             dispatchHoverStationInfo(null)
+            dispatch(locationActions.editing(false))
+
+
         } else {
             const newSideBarState = !showSideBar
-
+            onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy })
+            dispatch(locationActions.editing(false))
             setShowSideBar(newSideBarState)
             dispatch(sidebarActions.setOpen(newSideBarState))
         }

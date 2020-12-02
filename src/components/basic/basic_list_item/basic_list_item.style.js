@@ -13,27 +13,26 @@ export const textStyle = css`
 
 export const Container = styled.div`
     width: 100%;
-    
+
     padding-left: 1rem;
     padding-right: 1rem;
     padding-top: .5rem;
     padding-bottom: .5rem;
-    
+
     position: relative;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    
+
     border-radius: 0.5rem;
     border: thin solid ${props => props.theme.bg.primary};
     background-color: transparent;
-    
     /* // optional overwrite styles passed as css in props */
     ${props => props.css};
-    
+
     /* // uncomment to show debug styles */
     /* // ${getDebugStyle()}; */
-   
+
 `
 
 
@@ -42,10 +41,11 @@ export const Container = styled.div`
 export const Title = styled.span`
     // align-self: flex-start;
     // ${textStyle};
-    
+		overflow-wrap: break-word;
+
     display: inline-flex;
   	align-items: center;
-  	
+
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz4};
     font-weight: 500;
@@ -53,16 +53,16 @@ export const Title = styled.span`
 
     /* // optional overwrite styles passed as css in props */
     ${props => props.css};
-    
+
     /* // uncomment to show debug styles */
     // ${getDebugStyle()};
 `
 
 export const Status = styled.span`
-    
+
     display: inline-flex;
   	align-items: center;
-  	
+
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz4};
     font-weight: 500;
@@ -79,14 +79,14 @@ export const ContentContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	
-	
+
+
 	// optional overwrite styles passed as css in props
     ${props => props.css};
-    
+
     // uncomment to show debug styles
     // ${getDebugStyle()};
-    
+
 `
 
 export const RightContentContainer = styled.div`
@@ -103,7 +103,7 @@ export const Description = styled.span`
     color: ${props => props.theme.bg.senary};
     cursor: pointer;
     white-space: pre-line;
-    
+
     // optional overwrite styles passed as css in props
     ${props => props.css};
 

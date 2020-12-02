@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { useState} from 'react';
 import { useHistory } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as styled from './widget_button.style'
 
+
 // Import Actions
 import { postTaskQueue } from '../../../redux/actions/task_queue_actions'
-import { widgetLoaded, sideBarBack } from '../../../redux/actions/locations_actions'
+import { widgetLoaded, sideBarBack, setSelectedLocationCopy, setSelectedLocationChildrenCopy } from '../../../redux/actions/locations_actions'
 import { hoverStationInfo } from '../../../redux/actions/stations_actions'
 
+import * as sidebarActions from "../../../redux/actions/sidebar_actions"
+import * as locationActions from '../../../redux/actions/locations_actions'
+
+import { deepCopy } from '../../../methods/utils/utils'
 
 
 
@@ -19,16 +24,23 @@ const WidgetButton = (props) => {
         currentPage,
         id,
         coordinateMove,
+        label,
+        toggle,
     } = props
-
     const history = useHistory()
     const dispatch = useDispatch()
     const onPostTaskQueue = (q) => dispatch(postTaskQueue(q))
     const onWidgetLoaded = (bol) => dispatch(widgetLoaded(bol))
     const onHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const onSideBarBack = (props) => dispatch(sideBarBack(props))
+    const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
+    const onSetSelectedLocationChildrenCopy = (locationChildren) => dispatch(setSelectedLocationChildrenCopy(locationChildren))
+
 
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
+    const editing = useSelector(state => state.locationsReducer.editingLocation)
+    const positions = useSelector(state => state.locationsReducer.positions)
+
 
 
     return (
@@ -74,22 +86,28 @@ const WidgetButton = (props) => {
                 }
 
                 else {
-                    history.push('/locations/' + id + '/' + type)
+                  history.push('/locations/' + id + '/' +type)
                 }
             }}
             pageID={type}
             currentPage={currentPage}
         >
             {type === 'view' ?
-                <styled.WidgetButtonIcon className="far fa-eye" pageID={type} currentPage={currentPage} />
+                <styled.WidgetButtonIcon className="far fa-eye" pageID={type} currentPage={currentPage}/>
                 :
                 type === 'cancel' ?
-                    <styled.WidgetButtonIcon className="fas fa-times" pageID={type} currentPage={currentPage} />
-
+                    <>
+                      <styled.WidgetButtonIcon className="fas fa-times" pageID={type} currentPage={currentPage} />
+                      <styled.WidgetButtonText>{"Cancel"}</styled.WidgetButtonText>
+                    </>
                     :
-                    <styled.WidgetButtonIcon style={{ fontSize: type === 'cart' && '.9rem' }} className={"icon-" + type} pageID={type} currentPage={currentPage} />
+                    <>
+                      <styled.WidgetButtonIcon style={{ fontSize: type === 'cart' && '1.2rem', paddingTop: type === 'cart' && '.8rem' }} className={"icon-" + type} pageID={type} currentPage={currentPage} />
+                      <styled.WidgetButtonText>{label}</styled.WidgetButtonText>
+                    </>
             }
             {/* <styled.ButtonText>{props.type}</styled.ButtonText> */}
+
         </styled.WidgetButtonButton>
     )
 }

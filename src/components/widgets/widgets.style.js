@@ -18,7 +18,7 @@ export const WidgetLocationContainer = styled.div`
     width: ${props => !!props.widgetPage && '35rem'};
 
     margin: ${props => !!props.widgetPage && 'auto'};
-    margin-top: ${props => !!props.widgetPage && '.5rem'};
+    margin-top: ${props => !!props.widgetPage && '.2rem'};
 
     transition: ${props => !!props.widgetPage ? 'top 0.25s ease, margin 0.25s ease' : 'none'};
 
@@ -29,24 +29,24 @@ export const WidgetLocationContainer = styled.div`
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
         width: ${props => !!props.widgetPage && '25rem'};
         margin-top: ${props => !!props.widgetPage && '.205rem'};
-        
+
     }
 
 `
 
 export const WidgetContainer = styled.div`
-    
+    align-content:center;
     margin: ${props => !!props.widgetPage ? '.25rem auto' : 'auto'};
-
-    padding: ${props => !!props.widgetPage ? '' : '.5rem 1rem'};
+    padding-top:.3rem;
+    padding-bottom:.3rem;
 
     display: ${props => !!props.widgetPage ? 'flex' : ''};
 
 
     /* width: ${props => !!props.widgetPage ? '32rem' : '30rem'}; */
-    width: ${props => !!props.widgetPage ? '15rem' : 'fit-content'};
-    height: ${props => !!props.widgetPage ? 'auto' : '5rem'};
-    
+    width: ${props => !!props.widgetPage ? '14rem' : 'fit-content'};
+    height: ${props => !!props.widgetPage ? 'auto' : '6rem'};
+
     box-shadow: ${props => !!props.widgetPage ? 'none' : '0 0.1rem 0.2rem 0rem #303030'};
 
     border-radius: 1rem;
@@ -61,14 +61,14 @@ export const WidgetContainer = styled.div`
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
         /* width: ${props => !!props.widgetPage ? '22rem' : '20rem'}; */
-        width: ${props => !!props.widgetPage ? '15rem' : '13rem'};
+        width: ${props => !!props.widgetPage ? '15rem' : 'fit-content'};
 
-        height: ${props => !!props.widgetPage ? 'auto' : '5.5rem'};
+        height: ${props => !!props.widgetPage ? 'auto' : '6rem'};
 
         /* padding: .5rem .5rem .5rem .5rem; */
         /* margin-top: ${props => !!props.widgetPage ? '0rem' : '5rem'}; */
-        padding: ${props => !!props.widgetPage ? '' : '1rem'};
-        
+        /*padding: ${props => !!props.widgetPage ? '' : '1rem'};*/
+
     }
 
     &:hover{
@@ -76,6 +76,30 @@ export const WidgetContainer = styled.div`
     }
 
     pointer-events: auto;
+
+`
+
+export const WidgetStationName = styled.h4`
+    font-size: ${props => props.theme.fontSize.sz4};
+    font-family: ${props => props.theme.font.primary};
+    font-weight: 500;
+
+    text-align: center;
+    align-self:center;
+
+    &:hover{
+      color: #798fd9;
+    }
+
+`
+
+export const WidgetStationNameUnselectable = styled.h4`
+    font-size: ${props => props.theme.fontSize.sz4};
+    font-family: ${props => props.theme.font.primary};
+    font-weight: 500;
+
+    text-align: center;
+    align-self:center;
 
 `
 
@@ -105,7 +129,7 @@ export const WidgetPageButtonContainer = styled.div`
     margin-top: .5rem;
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
-        width: 20rem;        
+        width: 20rem;
     }
 
 `
@@ -147,7 +171,7 @@ export const WidgetStatisticsContainer = styled.div`
     /* padding: 0rem 3rem; */
     padding: 0rem 1rem;
     margin-top: .5rem;
-    
+
     justify-content: space-between;
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
@@ -207,7 +231,7 @@ export const CloseButton = styled.i`
     background: none;
     color: ${props => props.theme.fg.red};
     text-align: center;
-    
+
     font-size: 4rem;
     z-index: 4;
     margin-left: 1rem;
@@ -224,4 +248,3 @@ export const CloseButton = styled.i`
     z-index: 10000;
 
 `;
-

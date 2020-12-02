@@ -98,7 +98,8 @@ const CreateScheduleForm = (props) => {
             interval_on,
             time_interval,
             stop_time,
-            map_id
+            map_id,
+            next_time
         } = values
 
         // eextract properties into new object for submission
@@ -111,6 +112,7 @@ const CreateScheduleForm = (props) => {
             interval_on: interval_on,
             time_interval: time_interval.format("HH:mm:ss"),
             stop_time: stop_time.format("HH:mm:ss"),
+            next_time: next_time,
             map_id: map_id,
         }
 
@@ -165,6 +167,7 @@ const CreateScheduleForm = (props) => {
                 schedule_on: selectedScheduleItem.schedule_on,
                 time_interval: selectedScheduleItem.time_interval ? moment(timeString24HrToDate(selectedScheduleItem.time_interval)) : nowTimeString,
                 interval_on: selectedScheduleItem.interval_on,
+                next_time: selectedScheduleItem.next_time,
                 map_id: currentMap._id,
                 stop_time: selectedScheduleItem.stop_time ? moment(timeString24HrToDate(selectedScheduleItem.stop_time)) : nowTimeString,
                 name: selectedScheduleItem.name ? selectedScheduleItem.name : '',

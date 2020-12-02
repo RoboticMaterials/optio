@@ -1,6 +1,5 @@
-import React, { Component } from 'react'
-
-import ReactDOM from 'react-dom'
+import React, { Component, useState } from 'react'
+import {ReactDOM, Route} from 'react-dom'
 import { connect } from 'react-redux';
 import moduleName from 'react'
 import { withRouter } from "react-router-dom";
@@ -34,18 +33,17 @@ import Zones from '../../components/map/zones/zones'
 import RightClickMenu from '../../components/map/right_click_menu/right_click_menu'
 import TaskStatistics from '../../components/map/task_statistics/task_statistics'
 import Widgets from '../../components/widgets/widgets'
-
 // logging
 import log from "../../logger"
 import { setCurrentMap } from "../../redux/actions/map_actions";
 
 const logger = log.getLogger("MapView")
-
 export class MapView extends Component {
     constructor(props) {
         super(props)
 
         this.mobileMode = this.props.mobileMode
+        this.onClick = this.props.onClick
 
         this.state = {
             showRightClickMenu: {},
@@ -84,7 +82,6 @@ export class MapView extends Component {
         // in the returned list (which will be the active map)
         // this.refreshMap()
         this.checkForMapLoad()
-
         window.addEventListener('mousedown', () => this.mouseDown = true, { passive: false })
         window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, { passive: false })
 
@@ -118,7 +115,6 @@ export class MapView extends Component {
         // if (prevProps.maps.length != this.props.maps.length) {
         //     this.refreshMap()
         // }
-
         this.checkForMapLoad()
 
 
@@ -170,6 +166,12 @@ export class MapView extends Component {
             this.props.onGetMap(this.props.maps[0].guid)
         }
     }
+
+    openLocation = () => {
+      return  <Route path={["/locations"]}/>
+    }
+
+
 
     // ---------- Functionality for adding new location ---------- //
 
@@ -240,9 +242,9 @@ export class MapView extends Component {
                 .on('zoom', () => {
 
                     // Disables the ability to hover over location on mouse drag when a loction is selected that is not new or a right click
-                    if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation' && this.props.selectedLocation.type !== null) {
+                    if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation' && this.props.selectedLocation.type !== null && !this.props.editing) {
                         this.props.onHoverStationInfo(null)
-                        // this.props.onDeselectLocation()
+                        this.props.onDeselectLocation()
                     }
 
                     //// Saving the last event is usefull for saving d3 state when draggable is toggled (when moving locations)
@@ -478,7 +480,7 @@ export class MapView extends Component {
                             if (!!this.props.widgetLoaded) {
                                 // If there is a selected location and its not the right click menu location then hide
                                 // should always show widget if its the right click menu
-                                if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation') {
+                                if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation' && !this.props.editing) {
                                     this.props.onHoverStationInfo(null)
                                     this.props.onDeselectLocation()
                                 }
@@ -490,7 +492,10 @@ export class MapView extends Component {
                                 // should always show widget if its the right click menu
                                 if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation') {
                                     this.props.onHoverStationInfo(null)
+
+                                if(!this.props.editing){
                                     this.props.onDeselectLocation()
+                                  }
                                 }
                             }
                         }}
@@ -690,6 +695,7 @@ const mapStateToProps = function (state) {
         selectedProcess: state.processesReducer.selectedProcess,
 
         hoveringInfo: state.locationsReducer.hoverStationInfo,
+        editing: state.locationsReducer.editingLocation,
         widgetLoaded: state.locationsReducer.widgetLoaded,
     };
 }

@@ -6,7 +6,6 @@ import { ThemeProvider } from "styled-components";
 import theme from './theme';
 import './App.css';
 
-// Import Hooks
 import useWindowSize from './hooks/useWindowSize'
 
 // import logger
@@ -24,7 +23,6 @@ import MapView from './containers/map_view/map_view'
 import HILModal from './containers/hil_modal/hil_modal'
 import Authentication from './containers/authentication/authentication'
 import Widgets from './components/widgets/widgets'
-import ListView from "./components/list_view/list_view";
 
 const widthBreakPoint = 1000;
 
@@ -38,8 +36,7 @@ const App = (props) => {
     const maps = useSelector(state => state.mapReducer.maps)
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
     const positions = useSelector(state => state.locationsReducer.positions)
-    const sideBarOpen = useSelector(state => state.sidebarReducer.open)
-    const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
+
     // Set to true for the time being, authentication is not 100% complete as of 09/14/2020
     const [authenticated, setAuthenticated] = useState(true)
 
@@ -48,9 +45,10 @@ const App = (props) => {
     const [stateTheme, setStateTheme] = useState('main')
 
     const [showSideBar, setShowSideBar] = useState(false)
+
     const size = useWindowSize()
     const windowWidth = size.width
-
+console.log({showSideBar})
     const mobileMode = windowWidth < widthBreakPoint;
 
     /**
@@ -63,7 +61,8 @@ const App = (props) => {
             return (
                 <Route
                     path={["/locations/:stationID?/:widgetPage?", '/']}>
-                    <MapView mobileMode={mobileMode} />
+                    <MapView mobileMode={mobileMode} onClick = {()=>setShowSideBar(true)} />
+
                 </Route>
             )
         }
@@ -101,8 +100,7 @@ const App = (props) => {
 
                                 {/* If in mobile mode and dashboard is open (set in dashboard screens), don't mount the header; dashboard screen should be in full screen on mobile devices. If not in mobile mode, always mount header. */}
                                 <styled.HeaderContainer>
-                                    {mapViewEnabled ?
-                                        mobileMode ?
+                                    {mobileMode ?
                                         dashboardOpen ?
                                             <></>
                                             :
@@ -115,8 +113,6 @@ const App = (props) => {
                                             path={["/locations/:stationID?/:widgetPage?", '/']}
                                             component={StatusHeader}
                                         />
-                                        :
-                                        <> </>
                                     }
                                 </styled.HeaderContainer>
 
@@ -124,22 +120,19 @@ const App = (props) => {
 
                                 <styled.BodyContainer>
                                     {/* Hides Side bar when in a dashboard in mobile mode */}
-                                    {mapViewEnabled ?
-                                        mobileMode ?
+                                    {mobileMode ?
                                         dashboardOpen ?
                                             <></>
                                             :
                                             <SideBar
-                                                showSideBar={sideBarOpen}
+                                                showSideBar={showSideBar}
                                                 setShowSideBar={setShowSideBar}
                                             />
                                         :
                                         <SideBar
-                                            showSideBar={sideBarOpen}
+                                            showSideBar={showSideBar}
                                             setShowSideBar={setShowSideBar}
                                         />
-                                        :
-                                        <></>
                                     }
 
                                     <Route
@@ -147,14 +140,12 @@ const App = (props) => {
                                         component={HILModal}
                                     />
 
-                                    {/* If there are no maps, then dont render mapview (Could cause an issue when there is no MIR map)
+                                    {/* If there is no maps, then dont render mapview (Could cause an issue when there is no MIR map)
                                         And if the device is mobile, then unmount if widgets are open
                                     */}
                                     {maps.length > 0 &&
                                         <>
-                                            {mapViewEnabled ?
-
-                                                (mobileMode ?
+                                            {mobileMode ?
                                                 <Route
                                                     path={["/locations/:stationID?/:widgetPage?", '/']}
                                                 >
@@ -164,16 +155,7 @@ const App = (props) => {
                                                 <Route
                                                     path={["/locations/:stationID?/:widgetPage?", '/']}
                                                     component={MapView}
-                                                />)
-
-                                                :
-
-                                                <Route
-                                                path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                component={ListView}
                                                 />
-
-
                                             }
                                         </>
                                     }
