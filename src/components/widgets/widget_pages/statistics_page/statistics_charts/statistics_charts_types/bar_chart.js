@@ -69,7 +69,7 @@ const BarChart = (props) => {
                 tickRotation: 0,
                 legend: 'Units',
                 legendPosition: 'middle',
-                legendOffset: -40
+                legendOffset: -45
             }}
 
             // enableGridX={false}

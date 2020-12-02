@@ -35,7 +35,7 @@ const StatisticsOverview = (props) => {
 
     const [data, setData] = useState(null)
     const [timeSpan, setTimeSpan] = useState('day')
-    const [dateIndex, setDateIndex] = useState(1)
+    const [dateIndex, setDateIndex] = useState(0)
     const [format, setFormat] = useState('%m-%d %H:%M')
     const [selector, setSelector] = useState('throughPut')
     const [slice, setSlice] = useState(null)
