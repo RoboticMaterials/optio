@@ -214,7 +214,7 @@ export const AddNewButtonContainer = styled.div`
 	display: flex;
 	justify-content: center;
 	width: 100%;
-	border-bottom: 1px solid ${props => props.theme.bg.tertiary};
+	border-bottom:  ${props => props.showBorder && `1px solid` + props.theme.bg.tertiary};
 `
 
 export const WidgetButtonText = styled.span`

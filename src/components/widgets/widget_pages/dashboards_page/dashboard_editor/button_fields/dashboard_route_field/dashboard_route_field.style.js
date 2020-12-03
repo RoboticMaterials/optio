@@ -1,10 +1,10 @@
 import styled, { css } from 'styled-components'
 
-import { hexToRGBA, RGB_Linear_Shade, LightenDarkenColor } from '../../../../../../methods/utils/color_utils';
+import { hexToRGBA, RGB_Linear_Shade, LightenDarkenColor } from '../../../../../../../methods/utils/color_utils';
 
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import ColorLensIcon from '@material-ui/icons/ColorLens';
-import Textbox from "../../../../../basic/textbox/textbox";
+import Textbox from "../../../../../../basic/textbox/textbox";
 
 export const TransparentTextBox = styled(Textbox)`
     background: rgba(0 ,0 ,0 , 0.2);
@@ -18,8 +18,6 @@ export const TransparentTextBox = styled(Textbox)`
 
     text-align: center;
 `
-
-
 
 export const DashboardEditButton = styled.div`
     height: 6rem;

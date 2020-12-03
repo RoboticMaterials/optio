@@ -63,7 +63,10 @@ const DashboardButton = (props => {
                 <div style={{display: "flex", alignItems: "center"}}>
                     <style.ConditionText style={titleStyle}>{title}</style.ConditionText>
                     {schema &&
-                    <SchemaIcon className={iconClassName} color={schema.solid}></SchemaIcon>
+                        <style.IconContainer>
+                            <SchemaIcon className={iconClassName} color={schema.solid}></SchemaIcon>
+                        </style.IconContainer>
+
                     }
                 </div>
 

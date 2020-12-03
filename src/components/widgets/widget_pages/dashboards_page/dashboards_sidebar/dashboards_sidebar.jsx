@@ -39,7 +39,7 @@ export const REPORT_TYPES = {
         _id: 0
     },
     KICK_OFF: {
-        schema: "scheduler",
+        schema: "kick_off",
         name: "Kick off",
         _id: 1
     }
@@ -173,12 +173,14 @@ const DashboardsSidebar = (props) => {
     }
 
     const getReportButtons = () => {
-        return Object.values(REPORT_TYPES).map((currType, ind) => {
+        return Object.entries(REPORT_TYPES).map((currEntry, ind) => {
+            const currValue = currEntry[1]
+            const currKey = currEntry[0]
             return {
-                name: currType.name,
-                color: themeContext.schema[currType.schema].solid,
-                id: currType._id,
-                type: currType.name.toUpperCase(),
+                name: currValue.name,
+                color: themeContext.schema[currValue.schema].solid,
+                id: currValue._id,
+                type: currKey,
             }
         })
     }

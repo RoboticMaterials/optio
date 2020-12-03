@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux'
 
 import { SortableContainer } from "react-sortable-hoc";
-import DashboardEditTasksField from "../dashboard_route_field/dashboard_route_field";
+import DashboardEditTasksField from "../button_fields/dashboard_route_field/dashboard_route_field";
 
 import ReactList from 'react-list';
 
@@ -11,7 +11,7 @@ import { Container, Draggable } from 'react-smooth-dnd';
 
 import log from "../../../../../../logger"
 import {TYPES} from "../../dashboards_sidebar/dashboards_sidebar";
-import DashboardReportField from "../dashboard_report_field/dashboard_report_field";
+import DashboardReportField from "../button_fields/dashboard_report_field/dashboard_report_field";
 
 const logger = log.getLogger("Dashboards")
 

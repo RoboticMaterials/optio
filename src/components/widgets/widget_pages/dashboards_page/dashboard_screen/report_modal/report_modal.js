@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Modal from 'react-modal';
 
 import * as styled from './report_modal.style'
@@ -34,11 +34,13 @@ const NewButtonForm = (props) => {
         editing
     } = props
 
+    const report_buttons = dashboard?.report_buttons || []
+
 
     const dispatch = useDispatch()
     const onPutDashboard = (dashboardCopy, dashboardId) =>dispatch(putDashboard(dashboardCopy, dashboardId))
 
-    const editingButton = dashboard?.report_buttons.find((currButton) => currButton._id === buttonId)
+    const editingButton = report_buttons.find((currButton) => currButton._id === buttonId)
     const _id = editingButton?._id
     const description = editingButton?.description
     const iconClassName = editingButton?.iconClassName
@@ -320,15 +322,18 @@ const ReportModal = (props) => {
 
     } = props
 
+    const report_buttons = dashboard?.report_buttons || []
+
     const dispatch = useDispatch()
     const onPutDashboard = (dashboardCopy, dashboardId) =>dispatch(putDashboard(dashboardCopy, dashboardId))
 
+    const noButtons = report_buttons.length === 0
+
     const [addingNew, setAddingNew] = useState(false)
-    const [editing, setEditing] = useState(false)
+    const [editing, setEditing] = useState(noButtons)  // default editing to true if there are currently no buttons
     const [sending, setSending] = useState(false)
     const [buttonId, setButtonId] = useState(null)
 
-    const report_buttons = dashboard?.report_buttons || []
 
     return (
         <styled.Container
@@ -373,7 +378,9 @@ const ReportModal = (props) => {
                     <div style={{display: "flex", flexDirection: "column", overflow: "hidden"}}>
                         <styled.ContentContainer>
                             {editing &&
-                                <styled.AddNewButtonContainer>
+                                <styled.AddNewButtonContainer
+                                    showBorder={!noButtons}
+                                >
                                     <Button
                                         primary
                                         schema={"dashboards"}
@@ -384,37 +391,39 @@ const ReportModal = (props) => {
                                 </styled.AddNewButtonContainer>
 
                             }
-                        <styled.ReportButtonsContainer style={{marginBottom: "1rem"}}>
 
-                            {report_buttons.map((currReportButton, ind) => {
+                            {!noButtons &&
+                            <styled.ReportButtonsContainer style={{marginBottom: "1rem"}}>
 
-                                const description = currReportButton?.description || ""
-                                const label = currReportButton?.label
-                                const iconClassName = currReportButton?.iconClassName || ""
-                                const color = currReportButton?.color || "red"
-                                const _id = currReportButton?._id
+                                {report_buttons.map((currReportButton, ind) => {
 
-                                const schema = REPORT_TYPES.REPORT.schema
+                                    const description = currReportButton?.description || ""
+                                    const label = currReportButton?.label
+                                    const iconClassName = currReportButton?.iconClassName || ""
+                                    const color = currReportButton?.color || "red"
+                                    const _id = currReportButton?._id
 
-                                return(
-                                    <styled.WidgetButtonButton
-                                        schema={schema}
-                                        style={{
-                                            margin: "1rem",
-                                        }}
-                                        onClick={()=>{
-                                            if(editing) {
-                                                setAddingNew(true)
-                                                setButtonId(_id)
-                                            }
-                                            else {
-                                                setSending(true)
-                                                setButtonId(_id)
-                                            }
+                                    const schema = REPORT_TYPES.REPORT.schema
 
-                                        }}
-                                    >
-                                        {editing &&
+                                    return(
+                                        <styled.WidgetButtonButton
+                                            schema={schema}
+                                            style={{
+                                                margin: "1rem",
+                                            }}
+                                            onClick={()=>{
+                                                if(editing) {
+                                                    setAddingNew(true)
+                                                    setButtonId(_id)
+                                                }
+                                                else {
+                                                    setSending(true)
+                                                    setButtonId(_id)
+                                                }
+
+                                            }}
+                                        >
+                                            {editing &&
                                             <i
                                                 style={{color: "red", position: "absolute", top: 5, right: 5}}
                                                 className="fas fa-times-circle"
@@ -433,18 +442,20 @@ const ReportModal = (props) => {
 
                                                 }}
                                             />
-                                        }
-                                        {/*<div>{description}</div>*/}
-                                        <styled.WidgetButtonIcon selected color={color} className={iconClassName}/>
-                                        {label &&
-                                        <styled.WidgetButtonText>{label}</styled.WidgetButtonText>
-                                        }
+                                            }
+                                            {/*<div>{description}</div>*/}
+                                            <styled.WidgetButtonIcon selected color={color} className={iconClassName}/>
+                                            {label &&
+                                            <styled.WidgetButtonText>{label}</styled.WidgetButtonText>
+                                            }
 
-                                    </styled.WidgetButtonButton>
+                                        </styled.WidgetButtonButton>
 
-                                )
-                            })}
-                        </styled.ReportButtonsContainer>
+                                    )
+                                })}
+                            </styled.ReportButtonsContainer>
+                            }
+
                         </styled.ContentContainer>
 
                         <styled.ButtonForm>

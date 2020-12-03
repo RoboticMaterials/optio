@@ -51,6 +51,7 @@ const ColorField = (props) => {
 						<styled.ColorButton className="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							Color
 						</styled.ColorButton>
+
 						<styled.DropdownMenu className="dropdown-menu" aria-labelledby="dropdownMenuButton">
 							<styled.ColorOption type={type} className="dropdown-item" color={'#bcbcbc'} onClick={() => setFieldValue(field.name, '#bcbcbc')}>Gray</styled.ColorOption>
 							<styled.ColorOption type={type} className="dropdown-item" color={'#FF4B4B'} onClick={() => setFieldValue(field.name, '#FF4B4B')}>Red</styled.ColorOption>
