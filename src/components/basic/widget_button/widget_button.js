@@ -28,7 +28,7 @@ const WidgetButton = props => {
 			{children && children}
 			<styled.WidgetIcon selected={selected} color={color} className={iconClassName}/>
 			{label &&
-				<styled.WidgetText labelSize={labelSize}>{label}</styled.WidgetText>
+				<styled.WidgetText selected={selected} labelSize={labelSize}>{label}</styled.WidgetText>
 			}
 		</styled.WidgetButton>
 

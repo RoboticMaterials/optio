@@ -7,6 +7,8 @@ export const WidgetText = styled.span`
 	text-align: center;
 	align-self:center;
 	
+	color: ${props => props.selected ? props.theme.bg.octonary : props.theme.bg.primary};
+	
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
