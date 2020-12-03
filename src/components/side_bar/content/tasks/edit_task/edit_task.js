@@ -77,35 +77,54 @@ const EditTask = (props) => {
 
 
     const loadUnloadFields = () => {
+        
+        // This handles if any position of a route is a human position, then it cant be done by a robot
+        let humanPosition = false
+        if (positions[selectedTask.load.position].type === 'human_position' || positions[selectedTask.unload.position].type === 'human_position') {
+            humanPosition = true
+
+            if (selectedTask.device_type !== 'human') {
+                onSetSelectedTask({
+                    ...selectedTask,
+                    device_type: 'human',
+                })
+            }
+
+        }
+
         return (
             <>
-                {/* Commented out for now, currently at IPW all tasks will be robot enabled. When switching back, change device_type to 'human' when a new task is created */}
-                <styled.RowContainer>
-                    <styled.Header>Robot Enabled</styled.Header>
-                    <Switch
-                        checked={selectedTask.device_type !== 'human'}
-                        onChange={() => {
+                {!humanPosition &&
+                    <>
+                        <styled.RowContainer>
+                            <styled.Header>Robot Enabled</styled.Header>
+                            <Switch
+                                checked={selectedTask.device_type !== 'human'}
+                                onChange={() => {
 
-                            const device_type = selectedTask.device_type !== 'human' ? 'human' : 'MiR_100'
-                            onSetSelectedTask({
-                                ...selectedTask,
-                                // Just setting this to MiR100 for now. Need to expand in the future for other devices
-                                device_type: device_type
-                            })
-                        }}
-                        onColor='red'
-                        style={{ marginRight: '1rem' }}
-                    />
+                                    const device_type = selectedTask.device_type !== 'human' ? 'human' : 'MiR_100'
+                                    onSetSelectedTask({
+                                        ...selectedTask,
+                                        // Just setting this to MiR100 for now. Need to expand in the future for other devices
+                                        device_type: device_type
+                                    })
+                                }}
+                                onColor='red'
+                                style={{ marginRight: '1rem' }}
+                            />
 
-                </styled.RowContainer>
-                <styled.HelpText>Do you want a robot to perform this task? If selected, there will be an option for a person to take over the task when the button is placed onto the dashboard.</styled.HelpText>
+                        </styled.RowContainer>
+                        <styled.HelpText>Do you want a robot to perform this task? If selected, there will be an option for a person to take over the task when the button is placed onto the dashboard.</styled.HelpText>
+                    </>
+                }
 
 
-                <styled.RowContainer style={{marginTop: '2rem'}}>
 
-                    <styled.Header style={{marginTop: '0rem'}}>Load</styled.Header>
-                    <styled.RowContainer style={{justifyContent:'flex-end', alignItems:'baseline'}}>
-                        <styled.HelpText style={{fontSize:'1rem', marginRight:'.5rem'}}>TimeOut: </styled.HelpText>
+                <styled.RowContainer style={{ marginTop: '2rem' }}>
+
+                    <styled.Header style={{ marginTop: '0rem' }}>Load</styled.Header>
+                    <styled.RowContainer style={{ justifyContent: 'flex-end', alignItems: 'baseline' }}>
+                        <styled.HelpText style={{ fontSize: '1rem', marginRight: '.5rem' }}>TimeOut: </styled.HelpText>
 
                         <TimePicker
                             // format={'mm:ss'}

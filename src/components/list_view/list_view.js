@@ -98,10 +98,6 @@ const ListView = (props) => {
 
     }, [widgetPage])
 
-    // useEffect(() => {
-    //     console.log('QQQQ task q', taskQueue)
-    // }, [taskQueue])
-
     const onLocationClick = (item) => {
         history.push('/locations/' + item._id + '/' + "dashboards")
         setShowDashboards(true)
@@ -133,9 +129,6 @@ const ListView = (props) => {
 
                 // If the station is a device and the task q owner is that device then show the status
                 if (!!devices[params.stationID] && item.owner === devices[params.stationID]._id) {
-                    console.log('QQQQ device', devices[params.stationID])
-                    
-                    console.log('QQQQ Item', item)
 
                     let locationName = ''
                     

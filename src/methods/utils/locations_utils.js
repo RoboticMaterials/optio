@@ -15,6 +15,17 @@ import * as taskActions from '../../redux/actions/tasks_actions'
 import * as deviceActions from '../../redux/actions/devices_actions'
 
 export const LocationTypes = {
+
+    /**
+     * Heads up, currently there are 2 different svg rectangles being used
+     * One thats width is 200 and height is 320
+     * One thats width is 378 and height 236
+     * 
+     * Need to unify this and make all of them standard
+     * Probably use the 200 by 320 since you don't need to add a 'y' offset to the svg
+     * 
+     *  */ 
+
     shelfPosition: {
         svgPath:
             <svg y="70">
@@ -87,21 +98,18 @@ export const LocationTypes = {
 
     humanPosition: {
         svgPath:
-        <>
-            <rect fill='transparent' x="100" y="40" width="200" height="320" rx="30" transform="translate(400 0) rotate(90)" strokeMiterlimit="10" strokeWidth="20" />
-            <path d="M315.5,200.87l-64,36.95A1,1,0,0,1,250,237v-73.9a1,1,0,0,1,1.5-.87l64,36.95A1,1,0,0,1,315.5,200.87Z" strokeMiterlimit="10" strokeWidth="10" />
-            <circle cx="200" cy="200" r="15" />
-            <circle cx="150" cy="200" r="10" />
-            <circle cx="102.5" cy="200" r="7.5" />
-        </>,
+            <svg y="70">
+                <rect fill='transparent' strokeMiterlimit='10' strokeWidth='20px' x="10" y="10" width="378" height="236" rx="30" />
+                <path d="M194,123a49.63,49.63,0,1,0-49.62-49.63A49.62,49.62,0,0,0,194,123Zm34.74,12.41h-6.48a67.51,67.51,0,0,1-56.52,0h-6.48a52.12,52.12,0,0,0-52.1,52.1v16.13a18.61,18.61,0,0,0,18.61,18.61H262.23a18.61,18.61,0,0,0,18.61-18.61V187.51A52.12,52.12,0,0,0,228.74,135.41Z" />
+            </svg>,
         attributes:
-            {
-                schema: 'position',
-                type: 'human_position',
-                parent: null,
-                new: true,
-            },
-        color: '#d2f2a0',
+        {
+            schema: 'position',
+            type: 'human_position',
+            parent: null,
+            new: true,
+        },
+        color: '#5eec33',
     },
 }
 
@@ -233,12 +241,12 @@ export const locationsSortedAlphabetically = (locations) => {
 
     const locationsCopy = deepCopy(locations)
 
-    locationsCopy.sort((a,b) => {
+    locationsCopy.sort((a, b) => {
         const aName = a.name
         const bName = b.name
 
-        if(aName < bName) return -1
-        if(aName > bName) return 1
+        if (aName < bName) return -1
+        if (aName > bName) return 1
         return 0
     })
 

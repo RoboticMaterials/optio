@@ -8,10 +8,14 @@ import Station from './locations_types/station/station'
 import * as d3 from 'd3'
 import uuid from 'uuid';
 
-// Import Utils
+// Import Actions
 import { setLocationAttributes } from '../../../redux/actions/locations_actions'
 import { setPositionAttributes } from '../../../redux/actions/positions_actions'
+
+// Import Utils
 import { convertD3ToReal, convertRealToD3, getRelativeD3, getRelativeOffset } from '../../../methods/utils/map_utils'
+import { LocationTypes } from '../../../methods/utils/locations_utils'
+
 import { select } from 'd3'
 
 /**
@@ -223,8 +227,9 @@ const Location = (props) => {
 
     let color = '#6283f0' // Blue
 
-    if (location.type === 'shelf_position') color = '#fb7c4e'
-    if (location.type === 'charger_position') color = '#fbd34e'
+    if (location.type === 'shelf_position') color = LocationTypes['shelfPosition'].color
+    if (location.type === 'charger_position') color = LocationTypes['chargePosition'].color
+    if (location.type === 'human_position') color = LocationTypes['humanPosition'].color
 
     if (selectedTask === null) {
         if (selectedLocation !== null && !isSelected && selectedTask === null) {
@@ -274,7 +279,7 @@ const Location = (props) => {
                         {location.parent !== null && location.parent !== undefined && location.parent.length > 0 &&
                             <line x1={`${location.x}`} y1={`${location.y}`}
                                 x2={`${stations[location.parent].x}`} y2={`${stations[location.parent].y}`}
-                                stroke={color} strokeWidth="1.4" shape-rendering="geometricPrecision" style={{ opacity: '0.3',}} />
+                                stroke={color} strokeWidth="1.4" shape-rendering="geometricPrecision" style={{ opacity: '0.3', }} />
                         }
                         <Position isSelected={isSelected} color={color} {...props} />
                         <DragEntityProto isSelected={isSelected} {...props}
