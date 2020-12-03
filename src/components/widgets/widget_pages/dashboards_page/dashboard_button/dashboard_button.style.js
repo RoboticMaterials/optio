@@ -3,8 +3,8 @@ import styled, { css } from 'styled-components'
 import { hexToRGBA, RGB_Linear_Shade, LightenDarkenColor } from '../../../../../methods/utils/color_utils';
 
 const borderGlowCss = css`
-    --border-width: .25rem;
-
+    --border-width: .1rem;
+    background: none;
 
     @keyframes moveGradient {
         50% {
@@ -24,11 +24,13 @@ const borderGlowCss = css`
     height: calc(100% + var(--border-width) * 2);
     background: linear-gradient(
         60deg,
-        hsl(224, 85%, 66%),
-        hsl(269, 85%, 66%),
-        hsl(314, 85%, 66%),
-        hsl(359, 85%, 66%),
+        /* hsl(224, 85%, 66%), */
+        /* hsl(269, 85%, 66%), */
+        /* hsl(314, 85%, 66%), */
+        /* hsl(359, 85%, 66%), */
         hsl(44, 85%, 66%),
+        hsl(89, 85%, 66%),
+        hsl(134, 85%, 66%),
         hsl(179, 85%, 66%)
     );
     background-size: 300% 300%;

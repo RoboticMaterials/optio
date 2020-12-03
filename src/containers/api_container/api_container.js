@@ -12,13 +12,14 @@ import { getTasks, deleteTask } from '../../redux/actions/tasks_actions'
 import { getDashboards, deleteDashboard, postDashboard } from '../../redux/actions/dashboards_actions'
 import { getSounds } from '../../redux/actions/sounds_actions'
 import { getProcesses, putProcesses } from '../../redux/actions/processes_actions'
+import { getTasksAnalysis } from '../../redux/actions/task_analysis_actions'
 
 import { getSchedules } from '../../redux/actions/schedule_actions';
 import { getDevices, putDevices } from '../../redux/actions/devices_actions'
 import { getStatus } from '../../redux/actions/status_actions'
 
 import { getSettings } from '../../redux/actions/settings_actions'
-import {getLocalSettings} from '../../redux/actions/local_actions'
+import { getLocalSettings } from '../../redux/actions/local_actions'
 import { getLoggers } from '../../redux/actions/local_actions';
 import { getRefreshToken } from '../../redux/actions/authentication_actions'
 
@@ -54,6 +55,7 @@ const ApiContainer = (props) => {
     const onGetTasks = () => dispatch(getTasks())
     const onGetSounds = (api) => dispatch(getSounds(api))
     const onGetTaskQueue = () => dispatch(getTaskQueue())
+    const onGetTasksAnalysis = () => dispatch(getTasksAnalysis())
 
     const onGetProcesses = () => dispatch(getProcesses());
 
@@ -100,8 +102,8 @@ const ApiContainer = (props) => {
         // this interval is always on
         // loads essential info used on every page such as status and taskQueue
 
-        const criticalDataInterval = setInterval(() => loadCriticalData(), 50000);
-        const mapDataInterval = setInterval(() => loadMapData(), 10000)
+        const criticalDataInterval = setInterval(() => loadCriticalData(), 500);
+        const mapDataInterval = setInterval(() => loadMapData(), 5000)
         return () => {
             // clear intervals
             clearInterval(pageDataInterval);
@@ -110,7 +112,7 @@ const ApiContainer = (props) => {
         }
     }, [])
 
-    useEffect( () => {
+    useEffect(() => {
         let containsMirCart = false
         // check each device
         // in order for MiR mode to be enabled, there must be at least one device of MiR type and it must be placed on the map
@@ -118,14 +120,14 @@ const ApiContainer = (props) => {
             const device_model = currDevice?.device_model ? currDevice?.device_model.toLowerCase() : ""
             const pos_x = currDevice?.position?.pos_x
             const pos_y = currDevice?.position?.pos_y
-            if(
+            if (
                 device_model.includes("mir") &&
                 pos_x &&
                 pos_y
             ) containsMirCart = true
         })
 
-        if( (MiRMapEnabled === undefined) || (MiRMapEnabled !== containsMirCart)) onPostLocalSettings({
+        if ((MiRMapEnabled === undefined) || (MiRMapEnabled !== containsMirCart)) onPostLocalSettings({
             ...localReducer.localSettings,
             MiRMapEnabled: containsMirCart,
         })
@@ -250,6 +252,8 @@ const ApiContainer = (props) => {
         const taskQueue = await onGetTaskQueue()
         const processes = await onGetProcesses()
 
+        const tasksAnalysis = await onGetTasksAnalysis()
+
         const status = await onGetStatus()
         const getSchedules = await onGetSchedules()
 
@@ -339,6 +343,7 @@ const ApiContainer = (props) => {
     */
     const loadMapData = async () => {
         const locations = await onGetLocations();
+        const tasksAnalysis = await onGetTasksAnalysis()
     }
 
     /*

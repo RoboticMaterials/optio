@@ -70,14 +70,14 @@ const HILModals = (props) => {
             setQuantity(0)
         }
 
-        // On unmount, set the task q item to none 
+        // On unmount, set the task q item to none
         return () => {
             onTaskQueueItemClicked('')
         }
 
     }, [])
 
-    // Posts HIL Success to API 
+    // Posts HIL Success to API
     const handleHilSuccess = async () => {
 
         onTaskQueueItemClicked('')
@@ -96,7 +96,7 @@ const HILModals = (props) => {
         delete newItem._id
         delete newItem.dashboard
 
-        // This is used to make the tap of the HIL button respond quickly 
+        // This is used to make the tap of the HIL button respond quickly
         onHILResponse('success')
         setTimeout(() => onHILResponse(''), 2000)
 
@@ -112,7 +112,7 @@ const HILModals = (props) => {
         onTaskQueueItemClicked('')
     }
 
-    // Posts HIL Failure to API 
+    // Posts HIL Failure to API
     const handleHilFailure = async () => {
 
         let newItem = {
@@ -168,33 +168,41 @@ const HILModals = (props) => {
 
     /**
      * Conditioinally renders HIL Modal based on type.
-     * 
+     *
      * Type 1: HIL Load Pull
      * This type requires a quantity input, success, postpone, and cancel
-     * Requires a postpone becauses if someone requests (pulls) a object without 
+     * Requires a postpone becauses if someone requests (pulls) a object without
      * the person loading being ready, they should be able to postopen until they are ready
-     * 
+     *
      * Type 2: HIL Load Push
      * This type requires a quantity input, success and cancel
-     * No postpone because you're pushing objects to the next location. 
+     * No postpone because you're pushing objects to the next location.
      * Meaning that your objects should be ready since you said they were
-     * 
+     *
      * Type 3: HIL Unload
      * This type requires just a success button
-     * No Cancel, postpone or quantity button. 
+     * No Cancel, postpone or quantity button.
      * Quantity is already taken care of in the load section, no objects should be lost in transportation.
      * No postpone becasue your objects are already on the cart and ready to be taken off, plus the cart cant be used while objects are on it
      * No cancel becasue the cart cant be used with objects on it
-     * 
+     *
      * Type 4: HIL Check
      * This type requires a Yes of postpone button
-     * The purpose of a HIL check is to make sure the operator is ready to deliver parts. 
+     * The purpose of a HIL check is to make sure the operator is ready to deliver parts.
      * HIL Check will only show on a pull request
      */
 
     return (
         <styled.HilContainer >
+
+          <styled.HilExitModal
+              className='fas fa-times'
+              onClick={()=>onTaskQueueItemClicked('')}
+          />
             <styled.HilBorderContainer >
+
+
+
                 <styled.HilMessage>{!!item.dashboard ? 'Enter Quantity' : hilMessage}</styled.HilMessage>
                 {/* Only Showing timers on load at the moment, will probably change in the future */}
                 {!!hilTimers[item._id.$oid] && hilLoadUnload === 'load' &&
@@ -262,7 +270,7 @@ const HILModals = (props) => {
 
                         <styled.HilButton color={'#ff9898'} onClick={handleHilFailure}>
                             <styled.HilIcon
-                                // onClick={handleHilFailure} 
+                                // onClick={handleHilFailure}
                                 className='fas fa-times'
                                 color={'#ff1818'}
                             />

@@ -14,6 +14,9 @@ import DashboardTaskQueue from './dashboard_task_queue/dashboard_task_queue'
 import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../constants/dashboard_contants";
 import { deepCopy } from '../../../../../methods/utils/utils'
 
+// Import Hooks
+import useWindowSize from '../../../../../hooks/useWindowSize'
+
 // Import API
 import { postStatus } from '../../../../../api/status_api'
 
@@ -33,6 +36,9 @@ import {OPERATION_TYPES, TYPES} from "../dashboards_sidebar/dashboards_sidebar";
 import ReportModal from "./report_modal/report_modal";
 
 const logger = log.getLogger("DashboardsPage");
+
+const widthBreakPoint = 1026;
+
 
 const DashboardScreen = (props) => {
 
@@ -68,6 +74,12 @@ const DashboardScreen = (props) => {
 
     const stationID = params.stationID
     const dashboardID = params.dashboardID
+
+    const size = useWindowSize()
+    const windowWidth = size.width
+
+    const mobileMode = windowWidth < widthBreakPoint;
+
 
     /**
      * When a dashboard screen is loaded, tell redux that its open
@@ -372,7 +384,9 @@ const DashboardScreen = (props) => {
                 visible={!!addTaskAlert}
             />
 
-            <DashboardTaskQueue />
+            {mobileMode &&
+                <DashboardTaskQueue />
+            }
 
         </style.Container>
     )

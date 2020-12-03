@@ -39,39 +39,37 @@ const DashboardButton = (props => {
     const iconClassName = schema?.iconName || ""
 
     return (
-        <>
-            <style.Container
-                disabled={disabled}
-                width={width}
-                height={height}
-                background={color}
-                onClick={clickable ? onClick : null}
-                borderGlow={taskID === 'hil_success'}
-                clickable={clickable}
-                hoverable={hoverable}
-                style={containerStyle}
-                css={containerCss}
-            >
-                <div style={{display: "flex", alignItems: "center"}}>
-                    <style.ConditionText style={titleStyle}>{title}</style.ConditionText>
-                    {schema &&
-                    <style.IconContainer>
-                        <SchemaIcon className={iconClassName} color={schema.solid}></SchemaIcon>
-                    </style.IconContainer>
+        <style.Container
+            disabled={disabled}
+            width={width}
+            height={height}
+            background={color}
+            onClick={clickable ? onClick : null}
+            borderGlow={taskID === 'hil_success'}
+            clickable={clickable}
+            hoverable={hoverable}
+            style={containerStyle}
+            css={containerCss}
+        >
+            <div style={{display: "flex", alignItems: "center"}}>
+                <style.ConditionText style={titleStyle}>{title}</style.ConditionText>
+                {schema &&
+                <style.IconContainer>
+                    <SchemaIcon className={iconClassName} color={schema.solid}></SchemaIcon>
+                </style.IconContainer>
 
-                    }
-                </div>
+                }
+            </div>
 
-                {children && children}
-                <ErrorTooltip
-                    visible={error}
-                    text={error}
-                    ContainerComponent={style.ErrorContainerComponent}
-                />
+            {children && children}
+            <ErrorTooltip
+                visible={error}
+                text={error}
+                ContainerComponent={style.ErrorContainerComponent}
+            />
 
 
-            </style.Container>
-        </>
+        </style.Container>
     )
 
 })

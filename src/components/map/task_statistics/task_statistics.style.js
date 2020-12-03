@@ -20,6 +20,9 @@ export const TaskStatisticsContainer = styled.div`
     box-shadow: 0 0.1rem 0.2rem 0rem #303030;
     background-color: rgba(255, 255, 255, 0.9);
 
+    overflow: hidden;
+    white-space: nowrap;
+
 
 `
 
@@ -28,6 +31,8 @@ export const TaskNameText = styled.p`
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz3};
     font-weight: bold;
+
+    align-self: baseline;
 
 `
 
