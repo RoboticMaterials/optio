@@ -200,7 +200,7 @@ const NewButtonForm = (props) => {
                                     type="text"
                                     placeholder="Description..."
                                     InputComponent={Textbox}
-                                    lines={5}
+                                    lines={2}
                                     style={{marginBottom: "1rem", borderRadius: "0.5rem"}}
                                 />
                             </div>
@@ -368,6 +368,7 @@ const ReportModal = (props) => {
                                 showBorder={!noButtons}
                             >
                                 <Button
+                                    style={{margin: "1rem 0rem"}}
                                     primary
                                     schema={"dashboards"}
                                     onClick={()=>setAddingNew(true)}
@@ -378,7 +379,7 @@ const ReportModal = (props) => {
                             }
 
                             {!noButtons &&
-                            <styled.ReportButtonsContainer style={{marginBottom: "1rem"}}>
+                            <styled.ReportButtonsContainer>
 
                                 {report_buttons.map((currReportButton, ind) => {
 

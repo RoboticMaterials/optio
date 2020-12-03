@@ -148,6 +148,7 @@ export const IconSelectorContainer = styled.div`
 	align-items: center;
 	justify-content: center;
 	flex-wrap: wrap;
+	border-radius: .5rem;
 `
 
 export const ContentContainer = styled.div`
@@ -165,7 +166,6 @@ export const ReportButtonsContainer = styled.div`
 	justify-content: center;
 	flex-wrap: wrap;
 	overflow: auto;
-	margin-bottom: 1rem;
 	min-height: 5rem;
 	width: 100%;
 `

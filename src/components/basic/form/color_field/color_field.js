@@ -3,7 +3,6 @@ import React from "react";
 // external functions
 import PropTypes from 'prop-types';
 import { useField, useFormikContext } from "formik";
-
 // external components
 import { TwitterPicker } from 'react-color'
 
@@ -31,7 +30,8 @@ const ColorField = (props) => {
 		<Container>
 
 			{mode === "twitter" ?
-				<styled.StyledTwitterPicker
+				<styled.StyledTwitterPicker>
+				<TwitterPicker
 					color={ field.value }
 					onChangeComplete={(color)=>{
 						setFieldValue(field.name, color.hex);
@@ -45,6 +45,8 @@ const ColorField = (props) => {
 					{...props}
 					triangle={"hide"}
 				/>
+				</styled.StyledTwitterPicker>
+
 				:
 				<styled.ColorPicker>
 					<div className="dropdown show" style={{zIndex: '1'}}>
