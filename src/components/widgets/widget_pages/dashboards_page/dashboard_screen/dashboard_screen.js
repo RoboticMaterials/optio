@@ -305,8 +305,6 @@ const DashboardScreen = (props) => {
             // quantity: quantity,
         }
 
-        // return console.log('QQQQ New Item', newItem)
-
         const ID = deepCopy(item._id.$oid)
 
         delete newItem._id
@@ -317,7 +315,6 @@ const DashboardScreen = (props) => {
         onHILResponse(ID)
         setTimeout(() => onHILResponse(''), 2000)
 
-        console.log('QQQQ task success', newItem)
         await onPutTaskQueue(newItem, ID)
 
     }

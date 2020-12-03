@@ -5,17 +5,12 @@ import { useParams } from 'react-router-dom'
 
 // Import Utils
 import { deepCopy } from '../../../../../methods/utils/utils'
-import { LocationTypes } from '../../../../../methods/utils/locations_utils'
+import { LocationTypes, handleWidgetHoverCoord } from '../../../../../methods/utils/locations_utils'
 
 // Import Actions
 import { setTaskAttributes } from '../../../../../redux/actions/tasks_actions'
 import { hoverStationInfo } from '../../../../../redux/actions/stations_actions'
 import { selectLocation, deselectLocation } from '../../../../../redux/actions/locations_actions'
-
-
-// Import Utils
-import { handleWidgetHoverCoord } from '../../../../../methods/utils/locations_utils'
-
 
 function Position(props) {
 
@@ -80,12 +75,16 @@ function Position(props) {
             className={rd3tClassName}
             style={{ fill: color, stroke: color, strokeWidth: '0', opacity: '0.8', cursor: "pointer" }}
             onMouseEnter={() => {
-                setHovering(true)
-                if (!rotating && !translating && selectedLocation == null && selectedTask == null) {
-                    dispatchHoverStationInfo(handleWidgetHover())
-                    onSelectLocation(location._id)
+                // If this is a human position, then dont show a widget
+                if (location.type !== 'human_position') {
+                    setHovering(true)
+                    if (!rotating && !translating && selectedLocation == null && selectedTask == null) {
+                        dispatchHoverStationInfo(handleWidgetHover())
+                        onSelectLocation(location._id)
 
+                    }
                 }
+
             }}
             onMouseLeave={() => { location.name !== 'TempRightClickMoveLocation' && setHovering(false) }}
             onMouseDown={() => {
@@ -150,11 +149,11 @@ function Position(props) {
                     <>
                         <circle x="-16" y="-16" r="16" strokeWidth="0" fill="transparent" style={{ cursor: "pointer" }}></circle>
                         <circle x="-18" y="-18" r="14" fill="none" strokeWidth="4" stroke="transparent" style={{ cursor: "pointer" }}
-                          //  onMouseDown={() => {setRotating(true)
-                          //  }}
+                            //  onMouseDown={() => {setRotating(true)
+                            //  }}
 
                             onMouseUp={() => {
-                              //  setRotating(false)
+                                //  setRotating(false)
                             }}
                         />
                         <circle x="-14" y="-14" r="14" fill="none" strokeWidth="0.6" style={{ filter: "url(#glow)", cursor: "pointer" }}></circle>

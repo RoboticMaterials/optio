@@ -20,10 +20,6 @@ const TaskStatistics = (props) => {
 
 
     useEffect(() => {
-        
-        console.log('QQQQ Selected Task', selectedTask)
-        console.log('QQQQ Task Analysis', tasksAnalysis[selectedTask._id])
-
 
     }, [])
 
@@ -62,16 +58,12 @@ const TaskStatistics = (props) => {
 
     // const height = 100
 
-    // console.log('QQQQ Height', 150 / difY)
-
     const numerator = Math.abs(y2 - (midY))
 
     // const denominator = Math.sqrt(Math.pow(x2 - (midX), 2) + Math.pow(y2 - (midY), 2))
     const denominator = Math.abs(x2- (midX))
 
     const theta = Math.atan(numerator / denominator)
-
-    // console.log('QQQQ Theta', theta)
 
     const xPosition = (midX - height() * Math.sin(theta)) - 80 + 'px'
     const yPosition = (midY + height() * Math.cos(theta)) - 40 + 'px'
