@@ -344,12 +344,14 @@ const DashboardScreen = (props) => {
         // convenient to be able to clear the alert instead of having to wait for the timeout to clear it automatically
         // onClick={() => setAddTaskAlert(null)}
         >
-            <ReportModal
-                isOpen={!!reportModal}
-                title={"Send Report"}
-                close={()=>setReportModal(null)}
-                dashboard={currentDashboard}
-            />
+            {reportModal &&
+                <ReportModal
+                    isOpen={!!reportModal}
+                    title={"Send Report"}
+                    close={()=>setReportModal(null)}
+                    dashboard={currentDashboard}
+                />
+            }
             <DashboardsHeader
                 showTitle={false}
                 showBackButton={false}

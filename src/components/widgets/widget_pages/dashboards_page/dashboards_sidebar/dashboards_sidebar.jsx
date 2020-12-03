@@ -46,10 +46,10 @@ export const REPORT_TYPES = {
 }
 
 export const TYPES = {
-    ALL: {
-        name: "ALL",
-        iconName: "fal fa-globe"
-    },
+    // ALL: {
+    //     name: "ALL",
+    //     iconName: "fal fa-globe"
+    // },
     ROUTES: {
         name: "ROUTES",
         iconName: "fas fa-route"
