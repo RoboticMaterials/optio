@@ -87,6 +87,7 @@ export const updateLocation = (location) => {
         } else if (location.schema == 'position') {
             dispatch(positionActions.updatePosition(location))
         }
+
     }
 }
 
@@ -212,14 +213,12 @@ export const sideBarBack = (props) => {
 
         } else { // If the location is not new, revert it to the old copy, and do the same to its children
             dispatch(updateLocation(selectedLocationCopy))
-
-            if (selectedLocationChildrenCopy != null) {
-                  selectedLocationChildrenCopy.forEach(child =>
-                      dispatch(updateLocation(child))
-                    )
-
+            if (selectedLocationChildrenCopy != null){
+                  //selectedLocationChildrenCopy.forEach(child =>
+                      //dispatch(updateLocation(child))
+                    //)
+          }
         }
-      }
 
         dispatch(setSelectedLocationCopy(null))
         dispatch(setSelectedLocationChildrenCopy(null))
@@ -229,6 +228,7 @@ export const sideBarBack = (props) => {
         dispatch(setSelectedDevice(null))
     }
   }
+
 
 
 

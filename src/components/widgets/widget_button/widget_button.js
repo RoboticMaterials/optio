@@ -36,11 +36,9 @@ const WidgetButton = (props) => {
     const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
     const onSetSelectedLocationChildrenCopy = (locationChildren) => dispatch(setSelectedLocationChildrenCopy(locationChildren))
 
-
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const editing = useSelector(state => state.locationsReducer.editingLocation)
     const positions = useSelector(state => state.locationsReducer.positions)
-
 
 
     return (
@@ -87,6 +85,7 @@ const WidgetButton = (props) => {
 
                 else {
                   history.push('/locations/' + id + '/' +type)
+
                 }
             }}
             pageID={type}

@@ -15,8 +15,8 @@ export const HilContainer = styled.div`
     background-color: white;
 
     overflow-y: scroll;
-    
-    ::-webkit-scrollbar { 
+
+    ::-webkit-scrollbar {
         display: none;  /* Safari and Chrome */
     }
 
@@ -52,6 +52,22 @@ export const HilInputIcon = styled.i`
     transition: text-shadow 0.1s ease, filter 0.1s ease;
 
 
+    &:hover {
+        cursor: pointer;
+    }
+
+    &:active{
+        filter: brightness(85%);
+        text-shadow: none;
+    }
+`
+
+export const HilExitModal = styled.i`
+    font-size: 5rem;
+    text-shadow: 0.05rem 0.05rem 0.2rem #303030;
+    transition: text-shadow 0.1s ease, filter 0.1s ease;
+    padding-left:2rem;
+    padding-top:1rem;
     &:hover {
         cursor: pointer;
     }

@@ -21,12 +21,12 @@ const TaskQueueListItem = (props) => {
 	const {
         id,
         onClick,
+				type,
 		...rest
     } = props
-    
+
 	// dispatch
 	const dispatch = useDispatch()
-
 	// theme
 	const themeContext = useContext(ThemeContext);
 
@@ -41,7 +41,7 @@ const TaskQueueListItem = (props) => {
     const handleTaskItemClicked = () => {
         dispatch({type: 'TASK_QUEUE_ITEM_CLICKED', payload: id})
     }
-    
+
 	return (
 		<style.ItemDiv>
 			<BasicListItem
@@ -52,14 +52,26 @@ const TaskQueueListItem = (props) => {
                 rightContentContainerCss={style.rightContentContainerCss}
                 contentContainerCss={style.contentContainerCss}
 				rightContent={
-					<IconButton
-						color={themeContext.fg.primary}
-						onClick={handleClick}
-					>
-						<style.StyledRemoveIcon
-							fontSize={"large"}
-						/>
-					</IconButton>
+					<>
+						<IconButton
+							color={themeContext.fg.primary}
+						>
+						{type=='human' ?
+							<i class="fas fa-user"></i>
+							:
+							<i class="fas fa-robot"></i>
+						}
+						</IconButton>
+
+						<IconButton
+							color={themeContext.fg.primary}
+							onClick={handleClick}
+						>
+							<style.StyledRemoveIcon
+								fontSize={"large"}
+							/>
+						</IconButton>
+					</>
 
 				}
 			/>
