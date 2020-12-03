@@ -1,29 +1,29 @@
 import React, {useEffect, useState} from "react";
 import Modal from 'react-modal';
+import {useDispatch} from "react-redux";
+import uuid from 'uuid'
 
-import * as styled from './report_modal.style'
+// external components
+import {Formik} from "formik";
+
+// internal components
+import ColorField from "../../../../../basic/form/color_field/color_field";
+import WidgetButton from "../../../../../basic/widget_button/widget_button";
 import Button from "../../../../../basic/button/button";
 import Textbox from "../../../../../basic/textbox/textbox";
 import TextField from "../../../../../basic/form/text_field/text_field";
-import {FORM_MODES} from "../../../../../../constants/scheduler_constants";
-import {Formik} from "formik";
-import {putDashboard} from "../../../../../../redux/actions/dashboards_actions";
-import {useDispatch} from "react-redux";
-import uuid from 'uuid'
-import * as style from "../../dashboards_sidebar/dashboards_sidebar.style";
-import {REPORT_TYPES} from "../../dashboards_sidebar/dashboards_sidebar";
+
+// utils
 import {faClassNames} from "../../../../../../methods/utils/class_name_utils";
-import ColorField from "../../../../../basic/form/color_field/color_field";
+import {FORM_MODES} from "../../../../../../constants/scheduler_constants";
+
+// actions
+import {putDashboard} from "../../../../../../redux/actions/dashboards_actions";
+
+// styles
+import * as styled from './report_modal.style'
 
 Modal.setAppElement('body');
-
-var names = new Set();
-var icons = document.getElementsByClassName('icon');
-for (const icon of icons) {
-    const name = icon.getElementsByTagName('dd')[0].innerText;
-    names.add(name);
-}
-console.log("JSON.stringify(Array.from(names))",JSON.stringify(Array.from(names)));
 
 const NewButtonForm = (props) => {
 
@@ -47,22 +47,27 @@ const NewButtonForm = (props) => {
     const color  = editingButton?.color
     const label  = editingButton?.label
 
-    console.log("editingButton",editingButton)
+    const formMode = _id ? FORM_MODES.UPDATE : FORM_MODES.CREATE
 
     const handleSubmit = (values, formMode) => {
+        // extract values and default values
         const description = values?.description || ""
         const iconClassName = values?.iconClassName
         const color = values?.color || "red"
         const label = values?.label || ""
-
-
         const old_report_buttons = dashboard?.report_buttons || []
 
+        // handle logic for editing buttons
         if(editing) {
+
+            // update existing button
             if(formMode === FORM_MODES.UPDATE ) {
+
                 const updatedDashboard = {
                     ...dashboard,
                     report_buttons: old_report_buttons.map((currButton) => {
+
+                        // if this is the button being updating, update values
                         if(currButton._id === _id) {
                             return {
                                 ...currButton,
@@ -72,16 +77,22 @@ const NewButtonForm = (props) => {
                                 label
                             }
                         }
+
+                        // if not current button being editing, return original
                         return currButton
                     })
                 }
 
+                // update dashboard
                 onPutDashboard(updatedDashboard, dashboard._id.$oid)
             }
+
+            // create new button
             else if(formMode === FORM_MODES.CREATE) {
                 const updatedDashboard = {
                     ...dashboard,
                     report_buttons: [
+                        // spread original buttons and add new one with form values
                         ...old_report_buttons,
                         {
                             _id: uuid.v4(),
@@ -94,17 +105,19 @@ const NewButtonForm = (props) => {
 
                 }
 
+                // update dashboard
                 onPutDashboard(updatedDashboard, dashboard._id.$oid)
             }
 
+            // close form
             cancel()
         }
 
+        // handle submit logic for sending report
+        else {
 
-
+        }
     }
-
-    const formMode = _id ? FORM_MODES.UPDATE : FORM_MODES.CREATE
 
     return(
         <Formik
@@ -132,7 +145,10 @@ const NewButtonForm = (props) => {
             }}
         >
             {formikProps => {
-                const { values, setFieldValue } = formikProps
+                const {
+                    values,
+                    setFieldValue
+                } = formikProps
 
                 const {
                     color,
@@ -142,48 +158,39 @@ const NewButtonForm = (props) => {
 
                 return(
                     <styled.StyledForm>
-                        <styled.WidgetButtonButton
-                            type={"button"}
-                            style={{
-                                // marginBottom: "1rem",
-                                alignSelf: "center"
-                            }}
-                            // schema={schema}
-                        >
-                            <styled.WidgetButtonIcon selected={true} color={color} className={iconClassName}/>
-                            {label &&
-                                <styled.WidgetButtonText>{label}</styled.WidgetButtonText>
-                            }
-                        </styled.WidgetButtonButton>
-
-
+                        <WidgetButton
+                            containerStyle={{alignSelf: "center"}}
+                            label={label}
+                            color={color}
+                            iconClassName={iconClassName}
+                            selected={false}
+                        />
 
                         <div>
                             <styled.Label>Label</styled.Label>
-                        {editing ?
-                            <TextField
-                                name="label"
-                                type="text"
-                                placeholder="Label..."
-                                InputComponent={Textbox}
-                                lines={1}
-                                style={{marginBottom: "1rem", borderRadius: ".5rem"}}
-                            />
-                            :
-                            <styled.TextboxDiv
-                                name="label"
-                                type="text"
-                                placeholder="Label..."
-                                // value={label}
-                                lines={1}
-                                style={{marginBottom: "1rem"}}
-                                readonly
-                            >
-                                {label}
-                            </styled.TextboxDiv>
-                        }
+                            {editing ?
+                                <TextField
+                                    name="label"
+                                    type="text"
+                                    placeholder="Label..."
+                                    InputComponent={Textbox}
+                                    lines={1}
+                                    style={{marginBottom: "1rem", borderRadius: ".5rem"}}
+                                />
+                                :
+                                <styled.TextboxDiv
+                                    name="label"
+                                    type="text"
+                                    placeholder="Label..."
+                                    // value={label}
+                                    lines={1}
+                                    style={{marginBottom: "1rem"}}
+                                    readonly
+                                >
+                                    {label}
+                                </styled.TextboxDiv>
+                            }
                         </div>
-
 
                         {editing ?
                             <div>
@@ -197,7 +204,7 @@ const NewButtonForm = (props) => {
                                     style={{marginBottom: "1rem", borderRadius: "0.5rem"}}
                                 />
                             </div>
-                        :
+                            :
                             description ?
                                 <div>
                                     <styled.Label>Description</styled.Label>
@@ -213,81 +220,62 @@ const NewButtonForm = (props) => {
                                         {description}
                                     </styled.TextboxDiv>
                                 </div>
-                                    :
-                                    null
-
+                                :
+                                null
                         }
-
 
                         {!editing &&
                         <div>
                             <styled.Label>Comments</styled.Label>
-                        <TextField
-                            name="comments"
-                            type="text"
-                            placeholder="enter additonal comments..."
-                            InputComponent={Textbox}
-                            lines={5}
-                            style={{marginBottom: "1rem", borderRadius: ".5rem"}}
-                        />
-                            </div>
+                            <TextField
+                                name="comments"
+                                type="text"
+                                placeholder="enter additonal comments..."
+                                InputComponent={Textbox}
+                                lines={5}
+                                style={{marginBottom: "1rem", borderRadius: ".5rem"}}
+                            />
+                        </div>
                         }
-
-
-
-
-
 
                         {editing &&
                         <div>
                             <styled.Label>Color</styled.Label>
-                        <ColorField
-                            name={"color"}
-                            Container={styled.ColorFieldContainer}
-                            type={"button"}
-                            mode={"twitter"}
-                        />
+                            <ColorField
+                                name={"color"}
+                                Container={styled.ColorFieldContainer}
+                                type={"button"}
+                                mode={"twitter"}
+                            />
                         </div>
                         }
-
-
 
                         {editing &&
                         <div style={{overflow: "hidden", marginBottom: "1rem", display: "flex", flexDirection: "column"}}>
                             <styled.Label>Icon</styled.Label>
-                        <styled.IconSelectorContainer>
-                            {faClassNames.map((currClassName, index) => {
-                                currClassName = "fas fa-" + currClassName
-                                const selected = currClassName === values.iconClassName
-                                const schema = REPORT_TYPES.REPORT.schema
+                            <styled.IconSelectorContainer>
+                                {faClassNames.map((currClassName, index) => {
+                                    currClassName = "fas fa-" + currClassName
+                                    const selected = currClassName === values.iconClassName
 
-                                return(
-                                    <styled.WidgetButtonButton
-                                        key={currClassName}
-                                        type={"button"}
-                                        style={{
-                                            margin: "1rem",
-                                            color: selected ? "red" : "white"
-                                        }}
-                                        onClick={()=>{
-                                            setFieldValue("iconClassName", currClassName)
-                                        }}
-                                        schema={schema}
-                                    >
-                                        <styled.WidgetButtonIcon selected={selected} color={color} className={currClassName}/>
-                                    </styled.WidgetButtonButton>
-                                )
-                            })
-
-                            }
-                        </styled.IconSelectorContainer>
-                            </div>
+                                    return(
+                                        <WidgetButton
+                                            key={currClassName}
+                                            containerStyle={{
+                                                margin: "1rem",
+                                            }}
+                                            color={color}
+                                            iconClassName={currClassName}
+                                            selected={selected}
+                                            onClick={()=>{
+                                                setFieldValue("iconClassName", currClassName)
+                                            }}
+                                        />
+                                    )
+                                })}
+                            </styled.IconSelectorContainer>
+                        </div>
                         }
-
-
-
-
-
 
                         <styled.ButtonForm>
                             <Button
@@ -297,6 +285,7 @@ const NewButtonForm = (props) => {
                                 label={"Cancel"}
                                 type="button"
                             />
+
                             <Button
                                 primary
                                 schema={"dashboards"}
@@ -308,7 +297,6 @@ const NewButtonForm = (props) => {
                 )
             }}
         </Formik>
-
     )
 }
 
@@ -319,21 +307,21 @@ const ReportModal = (props) => {
         title,
         close,
         dashboard
-
     } = props
 
+    // get current buttons, default to empty array
     const report_buttons = dashboard?.report_buttons || []
 
     const dispatch = useDispatch()
     const onPutDashboard = (dashboardCopy, dashboardId) =>dispatch(putDashboard(dashboardCopy, dashboardId))
 
+    // boolean - true if no buttons, false otherwise
     const noButtons = report_buttons.length === 0
 
-    const [addingNew, setAddingNew] = useState(false)
+    const [addingNew, setAddingNew] = useState(false) // edit button form
     const [editing, setEditing] = useState(noButtons)  // default editing to true if there are currently no buttons
-    const [sending, setSending] = useState(false)
-    const [buttonId, setButtonId] = useState(null)
-
+    const [sending, setSending] = useState(false) // sending report
+    const [buttonId, setButtonId] = useState(null) // button being edited
 
     return (
         <styled.Container
@@ -349,11 +337,9 @@ const ReportModal = (props) => {
                 }
             }}
         >
-
-
             <styled.Header>
-
                 <styled.Title>{title}</styled.Title>
+
                 <Button
                     onClick={close}
                     schema={'dashboards'}
@@ -378,18 +364,17 @@ const ReportModal = (props) => {
                     <div style={{display: "flex", flexDirection: "column", overflow: "hidden"}}>
                         <styled.ContentContainer>
                             {editing &&
-                                <styled.AddNewButtonContainer
-                                    showBorder={!noButtons}
-                                >
-                                    <Button
-                                        primary
-                                        schema={"dashboards"}
-                                        onClick={()=>setAddingNew(true)}
-                                        label={"+"}
-                                        type="button"
-                                    />
-                                </styled.AddNewButtonContainer>
-
+                            <styled.AddNewButtonContainer
+                                showBorder={!noButtons}
+                            >
+                                <Button
+                                    primary
+                                    schema={"dashboards"}
+                                    onClick={()=>setAddingNew(true)}
+                                    label={"+"}
+                                    type="button"
+                                />
+                            </styled.AddNewButtonContainer>
                             }
 
                             {!noButtons &&
@@ -403,14 +388,15 @@ const ReportModal = (props) => {
                                     const color = currReportButton?.color || "red"
                                     const _id = currReportButton?._id
 
-                                    const schema = REPORT_TYPES.REPORT.schema
-
                                     return(
-                                        <styled.WidgetButtonButton
-                                            schema={schema}
-                                            style={{
+                                        <WidgetButton
+                                            key={iconClassName}
+                                            containerStyle={{
                                                 margin: "1rem",
                                             }}
+                                            color={color}
+                                            iconClassName={iconClassName}
+                                            label={label}
                                             onClick={()=>{
                                                 if(editing) {
                                                     setAddingNew(true)
@@ -428,34 +414,28 @@ const ReportModal = (props) => {
                                                 style={{color: "red", position: "absolute", top: 5, right: 5}}
                                                 className="fas fa-times-circle"
                                                 onClick={(event)=>{
+                                                    // remove button
+
                                                     event.preventDefault()
                                                     event.stopPropagation()
 
-                                                    const old_report_buttons = dashboard?.report_buttons || []
 
                                                     const updatedDashboard = {
                                                         ...dashboard,
-                                                        report_buttons: old_report_buttons.filter((currOldButton) => currOldButton._id !== _id)
+                                                        // filter through buttons, keep all but one with matching id of current button
+                                                        report_buttons: report_buttons.filter((currOldButton) => currOldButton._id !== _id)
                                                     }
 
+                                                    // update dashboard
                                                     onPutDashboard(updatedDashboard, dashboard._id.$oid)
-
                                                 }}
                                             />
                                             }
-                                            {/*<div>{description}</div>*/}
-                                            <styled.WidgetButtonIcon selected color={color} className={iconClassName}/>
-                                            {label &&
-                                            <styled.WidgetButtonText>{label}</styled.WidgetButtonText>
-                                            }
-
-                                        </styled.WidgetButtonButton>
-
+                                        </WidgetButton>
                                     )
                                 })}
                             </styled.ReportButtonsContainer>
                             }
-
                         </styled.ContentContainer>
 
                         <styled.ButtonForm>
@@ -475,13 +455,8 @@ const ReportModal = (props) => {
                             />
                         </styled.ButtonForm>
                     </div>
-
                 }
-
-
             </styled.BodyContainer>
-
-
         </styled.Container>
     );
 };

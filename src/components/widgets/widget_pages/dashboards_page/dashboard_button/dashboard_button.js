@@ -1,23 +1,20 @@
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux'
 import PropTypes from 'prop-types';
-import { theme } from "../../../../../theme"
 
 // import components
 import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
+import {SchemaIcon} from "../dashboard_editor/button_fields/button_fields.style";
 
 // Import Styles
 import * as style from './dashboard_button.style';
+import { theme } from "../../../../../theme"
 
 // import logging
 import log from '../../../../../logger'
-import {SchemaIcon} from "../dashboard_editor/button_fields/button_fields.style";
 
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
 const DashboardButton = (props => {
-    logger.log("DashboardButton props", props)
-
 
     const {
         color,
@@ -37,14 +34,9 @@ const DashboardButton = (props => {
         type = ""
     } = props
 
-    console.log("de type",type)
-
 
     const schema = theme.main.schema[type.toLowerCase()]
     const iconClassName = schema?.iconName || ""
-
-
-
 
     return (
         <>
@@ -63,9 +55,9 @@ const DashboardButton = (props => {
                 <div style={{display: "flex", alignItems: "center"}}>
                     <style.ConditionText style={titleStyle}>{title}</style.ConditionText>
                     {schema &&
-                        <style.IconContainer>
-                            <SchemaIcon className={iconClassName} color={schema.solid}></SchemaIcon>
-                        </style.IconContainer>
+                    <style.IconContainer>
+                        <SchemaIcon className={iconClassName} color={schema.solid}></SchemaIcon>
+                    </style.IconContainer>
 
                     }
                 </div>

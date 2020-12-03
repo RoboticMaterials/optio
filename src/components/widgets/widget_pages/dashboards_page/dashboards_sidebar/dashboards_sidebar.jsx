@@ -2,10 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { DraggableCore } from "react-draggable";
-import { Container, Draggable } from 'react-smooth-dnd'
-
-// external component imports
-import ReactList from 'react-list';
+import { Container } from 'react-smooth-dnd'
 
 import * as style from "./dashboards_sidebar.style"
 import { ThemeContext } from "styled-components";
@@ -15,7 +12,6 @@ import DashboardSidebarButton from "./dashboard_sidebar_button/dashboard_sidebar
 import TaskAddedAlert from "../dashboard_screen/task_added_alert/task_added_alert";
 
 // Helpers
-import { randomHash } from "../../../../../methods/utils/utils";
 import { handleAvailableTasks } from "../../../../../methods/utils/dashboards_utils";
 
 // Import Utils
@@ -25,21 +21,22 @@ import { ADD_TASK_ALERT_TYPE } from "../../../../../constants/dashboard_contants
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 
 import log from '../../../../../logger'
-import * as styled from "../../../widget_button/widget_button.style";
-// import { Container } from '@material-ui/core';
+import WidgetButton from "../../../../basic/widget_button/widget_button";
 
 const logger = log.getLogger("Dashboards")
 
 const tempColors = ['#FF4B4B', '#56d5f5', '#50de76', '#f2ae41', '#c7a0fa']
 
-export const REPORT_TYPES = {
+export const OPERATION_TYPES = {
     REPORT: {
         schema: "error",
         name: "Report",
+        key: "REPORT",
         _id: 0
     },
     KICK_OFF: {
         schema: "kick_off",
+        key: "KICK_OFF",
         name: "Kick off",
         _id: 1
     }
@@ -51,12 +48,14 @@ export const TYPES = {
     //     iconName: "fal fa-globe"
     // },
     ROUTES: {
-        name: "ROUTES",
-        iconName: "fas fa-route"
+        name: "Routes",
+        iconName: "fas fa-route",
+        key: "ROUTES"
     },
-    USER_REPORTS: {
-        name: "USER_REPORTS",
-        iconName: "fas fa-sticky-note"
+    OPERATIONS: {
+        name: "Operations",
+        iconName: "fas fa-sticky-note",
+        key: "OPERATIONS"
     }
 }
 
@@ -94,7 +93,7 @@ const DashboardsSidebar = (props) => {
     * */
     const [isSmall, setSmall] = useState(testSize(width)); // used for tracking sidebar dimensions
 
-    const [type, setType] = useState(TYPES.ROUTES.name); // used for tracking sidebar dimensions
+    const [type, setType] = useState(TYPES.ROUTES.key); // used for tracking sidebar dimensions
 
     // redux state
     const dispatch = useDispatch()
@@ -173,7 +172,7 @@ const DashboardsSidebar = (props) => {
     }
 
     const getReportButtons = () => {
-        return Object.entries(REPORT_TYPES).map((currEntry, ind) => {
+        return Object.entries(OPERATION_TYPES).map((currEntry, ind) => {
             const currValue = currEntry[1]
             const currKey = currEntry[0]
             return {
@@ -187,18 +186,19 @@ const DashboardsSidebar = (props) => {
 
     var availableButtons = []
     var availableReportButtons = []
+
     switch(type) {
-        case TYPES.ROUTES.name:
+        case TYPES.ROUTES.key:
             availableButtons = getRouteButtons()
             break
-        case TYPES.USER_REPORTS.name:
+        case TYPES.OPERATIONS.key:
             availableReportButtons = getReportButtons()
             break
 
-        case TYPES.ALL.name:
-            availableButtons = getRouteButtons()
-            availableReportButtons = getReportButtons()
-            break
+        // case TYPES.ALL.name:
+        //     availableButtons = getRouteButtons()
+        //     availableReportButtons = getReportButtons()
+        //     break
 
         default:
             break
@@ -211,25 +211,27 @@ const DashboardsSidebar = (props) => {
 
     const renderTypeButtons = () => {
         return(
-                Object.values(TYPES).map((currType, index) => {
-                    return (
-                        <style.WidgetButtonButton
-                            selected={type === currType.name}
-                            onClick={()=>setType(currType.name)}
-                            schema={currType.name}
-                        >
-                            <style.WidgetButtonIcon schema={currType.name.toLocaleLowerCase()} className={currType.iconName}/>
-                        </style.WidgetButtonButton>
-                    )
-                })
-        )
+            Object.entries(TYPES).map((currEntry, index) => {
+                const currKey = currEntry[0]
+                const currValue = currEntry[1]
+                return (
+                    <WidgetButton
+                        containerStyle={{marginRight: "1rem"}}
+                        label={currValue.name}
+                        color={themeContext.schema[currKey.toLocaleLowerCase()].solid}
+                        iconClassName={currValue.iconName}
+                        selected={type === currKey}
+                        onClick={()=>setType(currKey)}
+                        labelSize={"0.5rem"}
 
+                    />
+                )
+            })
+        )
     }
 
     return (
-
         <style.SidebarWrapper onClick={() => setAddTaskAlert(null)}>
-
             <style.SidebarContent
                 key="sidebar-content"
                 style={{ width: width }}
@@ -282,12 +284,10 @@ const DashboardsSidebar = (props) => {
                                 )
                             })}
                         </Container>
-
                     </style.ListContainer>
 
                     <style.FooterContainer>
                         {renderTypeButtons()}
-
                     </style.FooterContainer>
                 </style.Container>
 
@@ -296,14 +296,12 @@ const DashboardsSidebar = (props) => {
                         <style.ResizeHandle></style.ResizeHandle>
                     </style.ResizeBar>
                 </DraggableCore>
-
             </style.SidebarContent>
 
             <TaskAddedAlert
                 {...addTaskAlert}
                 visible={!!addTaskAlert}
             />
-
         </style.SidebarWrapper>
     )
 }

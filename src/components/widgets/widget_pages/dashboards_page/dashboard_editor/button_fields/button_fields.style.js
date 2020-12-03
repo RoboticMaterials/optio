@@ -34,6 +34,8 @@ export const ColorDropdownInnerContainer = styled.div`
     position: relative;
     width: 8rem;
     margin-right: 1rem;
+    z-index: 0;
+    // z-index: 100;
 `
 
 export const DeleteButton = styled.button`

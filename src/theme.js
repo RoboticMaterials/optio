@@ -191,7 +191,7 @@ export const theme = {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
                 solid: '#ff1900'
             },
-            user_reports: {
+            operations: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
                 solid: '#e81a69',
                 iconName: "fas fa-sticky-note"

@@ -16,7 +16,7 @@ import { getTasks } from '../../../../../../redux/actions/tasks_actions'
 // logging
 import log from "../../../../../../logger"
 import {deepCopy} from "../../../../../../methods/utils/utils";
-import {TYPES} from "../../dashboards_sidebar/dashboards_sidebar";
+import {OPERATION_TYPES, TYPES} from "../../dashboards_sidebar/dashboards_sidebar";
 const logger = log.getLogger("Dashboards")
 
 
@@ -26,7 +26,6 @@ const logger = log.getLogger("Dashboards")
 const DashboardButtonList = ((props) => {
 
 	const { buttons, addedTaskAlert, onTaskClick } = props
-	const dispatch = useDispatch()
 
 	// ref for list of buttons
 	const listRef = useRef(null);
@@ -42,9 +41,6 @@ const DashboardButtonList = ((props) => {
 		let broken = false
 		let name = currentButton.name
 		const type = currentButton?.type
-
-		console.log("itemRenderer type",type)
-
         let taskID = currentButton.task_id
         
         // If the task is in tasks or it's a custom task or hil success, then it exists
@@ -66,18 +62,17 @@ const DashboardButtonList = ((props) => {
 					}
 				}
 				break
-			case TYPES.USER_REPORTS.name:
+			case OPERATION_TYPES.REPORT.key:
 				disabled = addedTaskAlert || currentButton.deleted || broken
 				error = null
 				onClick = () => {
-					onTaskClick(TYPES.USER_REPORTS.name, currentButton.key)
+					onTaskClick(OPERATION_TYPES.REPORT.key, currentButton.key)
 				}
 				break
 			default:
-				disabled = false
+				disabled = true
 				error = null
 				onClick = () => {
-					console.log("neato!")
 					onTaskClick(type)
 				}
 				break

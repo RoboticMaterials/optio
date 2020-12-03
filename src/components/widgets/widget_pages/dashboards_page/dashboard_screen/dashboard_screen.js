@@ -29,7 +29,7 @@ import DashboardsHeader from "../dashboards_header/dashboards_header";
 
 // import logging
 import log from "../../../../../logger";
-import {REPORT_TYPES, TYPES} from "../dashboards_sidebar/dashboards_sidebar";
+import {OPERATION_TYPES, TYPES} from "../dashboards_sidebar/dashboards_sidebar";
 import ReportModal from "./report_modal/report_modal";
 
 const logger = log.getLogger("DashboardsPage");
@@ -199,17 +199,15 @@ const DashboardScreen = (props) => {
      * @param {*} custom 
      */
     const handleTaskClick = async (type, Id, name, custom) => {
-        console.log("handleTaskClick type",type)
         switch(type.toUpperCase()) {
-            case TYPES.ROUTES.name.toUpperCase():
+            case TYPES.ROUTES.key:
                 handleRouteClick(Id, name, custom)
                 break
-            case TYPES.USER_REPORTS.name.toUpperCase():
+            case TYPES.OPERATIONS.key:
                 handleOperationClick()
                 break
-            case REPORT_TYPES.REPORT.name.toUpperCase():
-                console.log("handleTaskClick REPORT_TYPES")
-                setReportModal(REPORT_TYPES.REPORT.name.toUpperCase())
+            case OPERATION_TYPES.REPORT.key:
+                setReportModal(OPERATION_TYPES.REPORT.key)
                 break
             default:
                 break
@@ -321,8 +319,6 @@ const DashboardScreen = (props) => {
             // quantity: quantity,
         }
 
-        // return console.log('QQQQ New Item', newItem)
-
         const ID = deepCopy(item._id.$oid)
 
         delete newItem._id
@@ -333,7 +329,6 @@ const DashboardScreen = (props) => {
         onHILResponse(ID)
         setTimeout(() => onHILResponse(''), 2000)
 
-        console.log('QQQQ task success', newItem)
         await onPutTaskQueue(newItem, ID)
 
     }
