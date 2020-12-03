@@ -1,0 +1,464 @@
+import React, {useEffect, useState} from "react";
+import Modal from 'react-modal';
+import {useDispatch} from "react-redux";
+import uuid from 'uuid'
+
+// external components
+import {Formik} from "formik";
+
+// internal components
+import ColorField from "../../../../../basic/form/color_field/color_field";
+import WidgetButton from "../../../../../basic/widget_button/widget_button";
+import Button from "../../../../../basic/button/button";
+import Textbox from "../../../../../basic/textbox/textbox";
+import TextField from "../../../../../basic/form/text_field/text_field";
+
+// utils
+import {faClassNames} from "../../../../../../methods/utils/class_name_utils";
+import {FORM_MODES} from "../../../../../../constants/scheduler_constants";
+
+// actions
+import {putDashboard} from "../../../../../../redux/actions/dashboards_actions";
+
+// styles
+import * as styled from './report_modal.style'
+
+Modal.setAppElement('body');
+
+const NewButtonForm = (props) => {
+
+    const {
+        cancel,
+        dashboard,
+        buttonId,
+        editing
+    } = props
+
+    const report_buttons = dashboard?.report_buttons || []
+
+
+    const dispatch = useDispatch()
+    const onPutDashboard = (dashboardCopy, dashboardId) =>dispatch(putDashboard(dashboardCopy, dashboardId))
+
+    const editingButton = report_buttons.find((currButton) => currButton._id === buttonId)
+    const _id = editingButton?._id
+    const description = editingButton?.description
+    const iconClassName = editingButton?.iconClassName
+    const color  = editingButton?.color
+    const label  = editingButton?.label
+
+    const formMode = _id ? FORM_MODES.UPDATE : FORM_MODES.CREATE
+
+    const handleSubmit = (values, formMode) => {
+        // extract values and default values
+        const description = values?.description || ""
+        const iconClassName = values?.iconClassName
+        const color = values?.color || "red"
+        const label = values?.label || ""
+        const old_report_buttons = dashboard?.report_buttons || []
+
+        // handle logic for editing buttons
+        if(editing) {
+
+            // update existing button
+            if(formMode === FORM_MODES.UPDATE ) {
+
+                const updatedDashboard = {
+                    ...dashboard,
+                    report_buttons: old_report_buttons.map((currButton) => {
+
+                        // if this is the button being updating, update values
+                        if(currButton._id === _id) {
+                            return {
+                                ...currButton,
+                                description,
+                                iconClassName,
+                                color,
+                                label
+                            }
+                        }
+
+                        // if not current button being editing, return original
+                        return currButton
+                    })
+                }
+
+                // update dashboard
+                onPutDashboard(updatedDashboard, dashboard._id.$oid)
+            }
+
+            // create new button
+            else if(formMode === FORM_MODES.CREATE) {
+                const updatedDashboard = {
+                    ...dashboard,
+                    report_buttons: [
+                        // spread original buttons and add new one with form values
+                        ...old_report_buttons,
+                        {
+                            _id: uuid.v4(),
+                            description,
+                            iconClassName,
+                            color,
+                            label
+                        }
+                    ]
+
+                }
+
+                // update dashboard
+                onPutDashboard(updatedDashboard, dashboard._id.$oid)
+            }
+
+            // close form
+            cancel()
+        }
+
+        // handle submit logic for sending report
+        else {
+
+        }
+    }
+
+    return(
+        <Formik
+            initialValues={{
+                label: label ? label : "",
+                description:  description ? description : "",
+                iconClassName: iconClassName ? iconClassName : "far fa-flag",
+                color: color ? color : "red"
+            }}
+
+            // validation control
+            validationSchema={null}
+            validateOnChange={true}
+            validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
+            validateOnBlur={true}
+            enableReinitialize={true} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
+            onSubmit={async (values, { setSubmitting, setTouched, resetForm }) => {
+                // set submitting to true, handle submit, then set submitting to false
+                // the submitting property is useful for eg. displaying a loading indicator
+                setSubmitting(true)
+                await handleSubmit(values, formMode)
+                setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
+                setSubmitting(false)
+                resetForm()
+            }}
+        >
+            {formikProps => {
+                const {
+                    values,
+                    setFieldValue
+                } = formikProps
+
+                const {
+                    color,
+                    label,
+                    iconClassName
+                } = values
+
+                return(
+                    <styled.StyledForm>
+                        <WidgetButton
+                            containerStyle={{alignSelf: "center"}}
+                            label={label}
+                            color={color}
+                            iconClassName={iconClassName}
+                            selected={false}
+                        />
+
+                        <div>
+                            <styled.Label>Label</styled.Label>
+                            {editing ?
+                                <TextField
+                                    name="label"
+                                    type="text"
+                                    placeholder="Label..."
+                                    InputComponent={Textbox}
+                                    lines={1}
+                                    style={{marginBottom: "1rem", borderRadius: ".5rem"}}
+                                />
+                                :
+                                <styled.TextboxDiv
+                                    name="label"
+                                    type="text"
+                                    placeholder="Label..."
+                                    // value={label}
+                                    lines={1}
+                                    style={{marginBottom: "1rem"}}
+                                    readonly
+                                >
+                                    {label}
+                                </styled.TextboxDiv>
+                            }
+                        </div>
+
+                        {editing ?
+                            <div>
+                                <styled.Label>Description</styled.Label>
+                                <TextField
+                                    name="description"
+                                    type="text"
+                                    placeholder="Description..."
+                                    InputComponent={Textbox}
+                                    lines={5}
+                                    style={{marginBottom: "1rem", borderRadius: "0.5rem"}}
+                                />
+                            </div>
+                            :
+                            description ?
+                                <div>
+                                    <styled.Label>Description</styled.Label>
+                                    <styled.TextboxDiv
+                                        name="description"
+                                        type="text"
+                                        placeholder="Description..."
+                                        // value={description}
+                                        // lines={5}
+                                        style={{marginBottom: "1rem"}}
+                                        readonly
+                                    >
+                                        {description}
+                                    </styled.TextboxDiv>
+                                </div>
+                                :
+                                null
+                        }
+
+                        {!editing &&
+                        <div>
+                            <styled.Label>Comments</styled.Label>
+                            <TextField
+                                name="comments"
+                                type="text"
+                                placeholder="enter additonal comments..."
+                                InputComponent={Textbox}
+                                lines={5}
+                                style={{marginBottom: "1rem", borderRadius: ".5rem"}}
+                            />
+                        </div>
+                        }
+
+                        {editing &&
+                        <div>
+                            <styled.Label>Color</styled.Label>
+                            <ColorField
+                                name={"color"}
+                                Container={styled.ColorFieldContainer}
+                                type={"button"}
+                                mode={"twitter"}
+                            />
+                        </div>
+                        }
+
+                        {editing &&
+                        <div style={{overflow: "hidden", marginBottom: "1rem", display: "flex", flexDirection: "column"}}>
+                            <styled.Label>Icon</styled.Label>
+                            <styled.IconSelectorContainer>
+                                {faClassNames.map((currClassName, index) => {
+                                    currClassName = "fas fa-" + currClassName
+                                    const selected = currClassName === values.iconClassName
+
+                                    return(
+                                        <WidgetButton
+                                            key={currClassName}
+                                            containerStyle={{
+                                                margin: "1rem",
+                                            }}
+                                            color={color}
+                                            iconClassName={currClassName}
+                                            selected={selected}
+                                            onClick={()=>{
+                                                setFieldValue("iconClassName", currClassName)
+                                            }}
+                                        />
+                                    )
+                                })}
+                            </styled.IconSelectorContainer>
+                        </div>
+                        }
+
+                        <styled.ButtonForm>
+                            <Button
+                                tertiary
+                                schema={"dashboards"}
+                                onClick={cancel}
+                                label={"Cancel"}
+                                type="button"
+                            />
+
+                            <Button
+                                primary
+                                schema={"dashboards"}
+                                label={editing ? "Save" : "Send"}
+                                type="submit"
+                            />
+                        </styled.ButtonForm>
+                    </styled.StyledForm>
+                )
+            }}
+        </Formik>
+    )
+}
+
+const ReportModal = (props) => {
+
+    const {
+        isOpen,
+        title,
+        close,
+        dashboard
+    } = props
+
+    // get current buttons, default to empty array
+    const report_buttons = dashboard?.report_buttons || []
+
+    const dispatch = useDispatch()
+    const onPutDashboard = (dashboardCopy, dashboardId) =>dispatch(putDashboard(dashboardCopy, dashboardId))
+
+    // boolean - true if no buttons, false otherwise
+    const noButtons = report_buttons.length === 0
+
+    const [addingNew, setAddingNew] = useState(false) // edit button form
+    const [editing, setEditing] = useState(noButtons)  // default editing to true if there are currently no buttons
+    const [sending, setSending] = useState(false) // sending report
+    const [buttonId, setButtonId] = useState(null) // button being edited
+
+    return (
+        <styled.Container
+            isOpen={isOpen}
+            contentLabel="Confirm Delete Modal"
+            onRequestClose={close}
+            style={{
+                overlay: {
+                    zIndex: 500
+                },
+                content: {
+
+                }
+            }}
+        >
+            <styled.Header>
+                <styled.Title>{title}</styled.Title>
+
+                <Button
+                    onClick={close}
+                    schema={'dashboards'}
+                >
+                    <i className="fa fa-times" aria-hidden="true"/>
+                </Button>
+            </styled.Header>
+
+            <styled.BodyContainer>
+                {(addingNew || sending) ?
+                    <NewButtonForm
+                        cancel={()=>{
+                            setAddingNew(false)
+                            setSending(false)
+                            setButtonId(null)
+                        }}
+                        dashboard={dashboard}
+                        buttonId={buttonId}
+                        editing={editing}
+                    />
+                    :
+                    <div style={{display: "flex", flexDirection: "column", overflow: "hidden"}}>
+                        <styled.ContentContainer>
+                            {editing &&
+                            <styled.AddNewButtonContainer
+                                showBorder={!noButtons}
+                            >
+                                <Button
+                                    primary
+                                    schema={"dashboards"}
+                                    onClick={()=>setAddingNew(true)}
+                                    label={"+"}
+                                    type="button"
+                                />
+                            </styled.AddNewButtonContainer>
+                            }
+
+                            {!noButtons &&
+                            <styled.ReportButtonsContainer style={{marginBottom: "1rem"}}>
+
+                                {report_buttons.map((currReportButton, ind) => {
+
+                                    const description = currReportButton?.description || ""
+                                    const label = currReportButton?.label
+                                    const iconClassName = currReportButton?.iconClassName || ""
+                                    const color = currReportButton?.color || "red"
+                                    const _id = currReportButton?._id
+
+                                    return(
+                                        <WidgetButton
+                                            key={iconClassName}
+                                            containerStyle={{
+                                                margin: "1rem",
+                                            }}
+                                            color={color}
+                                            iconClassName={iconClassName}
+                                            label={label}
+                                            onClick={()=>{
+                                                if(editing) {
+                                                    setAddingNew(true)
+                                                    setButtonId(_id)
+                                                }
+                                                else {
+                                                    setSending(true)
+                                                    setButtonId(_id)
+                                                }
+
+                                            }}
+                                        >
+                                            {editing &&
+                                            <i
+                                                style={{color: "red", position: "absolute", top: 5, right: 5}}
+                                                className="fas fa-times-circle"
+                                                onClick={(event)=>{
+                                                    // remove button
+
+                                                    event.preventDefault()
+                                                    event.stopPropagation()
+
+
+                                                    const updatedDashboard = {
+                                                        ...dashboard,
+                                                        // filter through buttons, keep all but one with matching id of current button
+                                                        report_buttons: report_buttons.filter((currOldButton) => currOldButton._id !== _id)
+                                                    }
+
+                                                    // update dashboard
+                                                    onPutDashboard(updatedDashboard, dashboard._id.$oid)
+                                                }}
+                                            />
+                                            }
+                                        </WidgetButton>
+                                    )
+                                })}
+                            </styled.ReportButtonsContainer>
+                            }
+                        </styled.ContentContainer>
+
+                        <styled.ButtonForm>
+                            <Button
+                                tertiary
+                                schema={"dashboards"}
+                                onClick={close}
+                                label={"Close"}
+                                type="button"
+                            />
+                            <Button
+                                primary
+                                schema={"dashboards"}
+                                onClick={()=>setEditing(!editing)}
+                                label={editing ? "Done" : "Edit"}
+                                type="button"
+                            />
+                        </styled.ButtonForm>
+                    </div>
+                }
+            </styled.BodyContainer>
+        </styled.Container>
+    );
+};
+
+export default ReportModal

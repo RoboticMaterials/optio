@@ -133,6 +133,19 @@ overflow: hidden;
 text - overflow: ellipsis;
 `
 
+export const IconContainer = styled.div`
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: ${props => props.theme.bg.senary};
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 4rem;
+    border-left: 1px solid ${props => props.theme.bg.tertiary};
+`
+
 export const GlowBorder = styled.div`
 
     `

@@ -16,6 +16,7 @@ import { getTasks } from '../../../../../../redux/actions/tasks_actions'
 // logging
 import log from "../../../../../../logger"
 import {deepCopy} from "../../../../../../methods/utils/utils";
+import {OPERATION_TYPES, TYPES} from "../../dashboards_sidebar/dashboards_sidebar";
 const logger = log.getLogger("Dashboards")
 
 
@@ -25,7 +26,6 @@ const logger = log.getLogger("Dashboards")
 const DashboardButtonList = ((props) => {
 
 	const { buttons, addedTaskAlert, onTaskClick } = props
-	const dispatch = useDispatch()
 
 	// ref for list of buttons
 	const listRef = useRef(null);
@@ -40,32 +40,68 @@ const DashboardButtonList = ((props) => {
 
 		let broken = false
 		let name = currentButton.name
-
+		const type = currentButton?.type
         let taskID = currentButton.task_id
         
         // If the task is in tasks or it's a custom task or hil success, then it exists
 		const taskExists = !!tasks[taskID] ? true : taskID === 'custom_task' ? true : taskID === 'hil_success' ? true : false
 
+		var disabled
+		var error
+		var onClick
+		switch(type) {
+			case TYPES.ROUTES.key:
+				disabled = addedTaskAlert || currentButton.deleted || broken || !taskExists
+				error = !taskExists ? "This buttons task has been deleted." : null
+				onClick = () => {
+					logger.log("DashboardButtonList Dashboard onClick")
+					if(taskID === 'custom_task' || taskID === 'hil_success'){
+						onTaskClick(TYPES.ROUTES.key, taskID, name, currentButton.custom_task)
+					} else {
+						onTaskClick(TYPES.ROUTES.key, taskID, name)
+					}
+				}
+				break
+			case OPERATION_TYPES.REPORT.key:
+				disabled = addedTaskAlert || currentButton.deleted || broken
+				error = null
+				onClick = () => {
+					onTaskClick(OPERATION_TYPES.REPORT.key, currentButton.key)
+				}
+				break
+			case OPERATION_TYPES.KICK_OFF.key:
+				disabled = true
+				error = null
+				onClick = () => {
+					onTaskClick(type)
+				}
+				break
+			default:
+				disabled = addedTaskAlert || currentButton.deleted || broken || !taskExists
+				error = !taskExists ? "This buttons task has been deleted." : null
+				onClick = () => {
+					logger.log("DashboardButtonList Dashboard onClick")
+					if(taskID === 'custom_task' || taskID === 'hil_success'){
+						onTaskClick(TYPES.ROUTES.key, taskID, name, currentButton.custom_task)
+					} else {
+						onTaskClick(TYPES.ROUTES.key, taskID, name)
+					}
+				}
+				break
+		}
 		return (
 			<DashboardButton
 				title={name}
 				key={index}
-				onClick={() => {
-                    logger.log("DashboardButtonList Dashboard onClick")
-                    if(taskID === 'custom_task' || taskID === 'hil_success'){
-                        onTaskClick(taskID, name, currentButton.custom_task)
-
-                    } else {
-                        onTaskClick(taskID, name)
-                    }
-				}}
+				type={type}
+				onClick={onClick}
 				containerStyle={{height: '4rem', lineHeight: '3rem', marginBottom: '0.5rem', minWidth: '80%'}}
 				hoverable={false}
 				taskID = {taskID}
 				color = {currentButton.color}
-				disabled = {addedTaskAlert || currentButton.deleted || broken || !taskExists}
+				disabled = {disabled}
 				containerCss={style.ButtonContainerCss}
-				error={!taskExists ? "This buttons task has been deleted." : null}
+				error={error}
 			>
 			</DashboardButton>
 		)
