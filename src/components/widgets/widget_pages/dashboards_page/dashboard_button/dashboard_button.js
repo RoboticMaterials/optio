@@ -35,28 +35,26 @@ const DashboardButton = (props => {
     } = props
 
     return (
-        <>
-            <style.Container
-                disabled={disabled}
-                width={width}
-                height={height}
-                background={color}
-                onClick={clickable ? onClick : null}
-                borderGlow={taskID === 'hil_success'}
-                clickable={clickable}
-                hoverable={hoverable}
-                style={containerStyle}
-                css={containerCss}
-            >
-                <style.ConditionText style={titleStyle}>{title}</style.ConditionText>
-                {children && children}
-                <ErrorTooltip
-                    visible={error}
-                    text={error}
-                    ContainerComponent={style.ErrorContainerComponent}
-                />
-            </style.Container>
-        </>
+        <style.Container
+            disabled={disabled}
+            width={width}
+            height={height}
+            background={color}
+            onClick={clickable ? onClick : null}
+            borderGlow={taskID === 'hil_success'}
+            clickable={clickable}
+            hoverable={hoverable}
+            style={containerStyle}
+            css={containerCss}
+        >
+            <style.ConditionText style={titleStyle}>{title}</style.ConditionText>
+            {children && children}
+            <ErrorTooltip
+                visible={error}
+                text={error}
+                ContainerComponent={style.ErrorContainerComponent}
+            />
+        </style.Container>
     )
 
 })
