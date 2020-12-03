@@ -45,7 +45,7 @@ const Widgets = (props) => {
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const editing = useSelector(state => state.locationsReducer.editingLocation)
     const positions = useSelector(state => state.locationsReducer.positions)
-    const showSideBar = useSelector(state=> state.sidebarReducer.open)
+    const showSideBar = useSelector(state => state.sidebarReducer.open)
 
     // Info passed from workstations/device_locations via redux
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
@@ -55,7 +55,7 @@ const Widgets = (props) => {
     const onDeselectLocation = () => dispatch(deselectLocation())
     const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
     const onSetSelectedLocationChildrenCopy = (locationChildren) => dispatch(setSelectedLocationChildrenCopy(locationChildren))
-    const onShowSideBar = (bool)=> dispatch(sidebarActions.setOpen(bool))
+    const onShowSideBar = (bool) => dispatch(sidebarActions.setOpen(bool))
     const [hoverX, setHoverX] = useState(null)
     const [hoverY, setHoverY] = useState(null)
     // Location ID passed down through workstations via redux
@@ -68,7 +68,7 @@ const Widgets = (props) => {
         onWidgetLoaded(true)
         return () => {
             onHoverStationInfo(null)
-            if(!!editing){onDeselectLocation()}
+            if (!!editing) { onDeselectLocation() }
             onWidgetLoaded(false)
         }
     }, [])
@@ -81,24 +81,24 @@ const Widgets = (props) => {
         }
     }
 
-    const clickLocation= () => {
-          history.push('/locations')
+    const clickLocation = () => {
+        history.push('/locations')
 
-          if(!showSideBar){
-          const hamburger = document.querySelector('.hamburger')
-          hamburger.classList.toggle('is-active')
+        if (!showSideBar) {
+            const hamburger = document.querySelector('.hamburger')
+            hamburger.classList.toggle('is-active')
         }
 
-          onShowSideBar(true)
+        onShowSideBar(true)
 
-          onSetSelectedLocationCopy(deepCopy(selectedLocation))
-          if (!!selectedLocation.children) {
-              onSetSelectedLocationChildrenCopy(selectedLocation.children.map(positionID => deepCopy(positions[positionID])))
-          }
+        onSetSelectedLocationCopy(deepCopy(selectedLocation))
+        if (!!selectedLocation.children) {
+            onSetSelectedLocationChildrenCopy(selectedLocation.children.map(positionID => deepCopy(positions[positionID])))
+        }
 
-          dispatch(locationActions.editing(true))
+        dispatch(locationActions.editing(true))
 
-}
+    }
 
 
     // Renders the buttons under the location. useMemo is passed a blank array because the buttons only need to be rendered once
@@ -208,7 +208,7 @@ const Widgets = (props) => {
                         type={'cart'}
                         coordinateMove={true}
                         currentPage={widgetPage}
-                        label = {'Send Cart Here'}
+                        label={'Send Cart Here'}
 
                     />
                     <WidgetButton
@@ -357,37 +357,28 @@ const Widgets = (props) => {
                     />
                 }
                 <styled.WidgetContainer widgetPage={widgetPage}>
-                  {!widgetPage &&
-                    <>
-                    {selectedLocation.name == "TempRightClickMoveLocation" ?
-                        <styled.WidgetStationNameUnselectable>{"Send Cart To Location"}</styled.WidgetStationNameUnselectable>
-                        :
+                    {!widgetPage &&
                         <>
-                      {selectedLocation.schema=="positions" ?
-                          <styled.WidgetStationNameUnselectable>{selectedLocation.name}</styled.WidgetStationNameUnselectable>
-                          :
-                          <styled.WidgetStationName onClick={()=>clickLocation()}>{selectedLocation.name}</styled.WidgetStationName>
-                        }
+                            {selectedLocation.name == "TempRightClickMoveLocation" ?
+                                <styled.WidgetStationNameUnselectable>{"Send Cart To Location"}</styled.WidgetStationNameUnselectable>
+                                :
+                                <>
+                                    {selectedLocation.schema == "positions" ?
+                                        <styled.WidgetStationNameUnselectable>{selectedLocation.name}</styled.WidgetStationNameUnselectable>
+                                        :
+                                        <styled.WidgetStationName onClick={() => clickLocation()}>{selectedLocation.name}</styled.WidgetStationName>
+                                    }
+                                </>
+                            }
                         </>
-                      }
-                    </>
-                  }
-
-
-                    {mobileMode ?
-                        dashboardOpen ?
-                            <></>
-                            :
-                            <styled.WidgetButtonContainer widgetPage={widgetPage}>
-                                {handleWidgetButtons}
-                            </styled.WidgetButtonContainer>
-
-                        :
-                        <styled.WidgetButtonContainer widgetPage={widgetPage}>
-                            {handleWidgetButtons}
-                        </styled.WidgetButtonContainer>
-
                     }
+
+
+
+                    <styled.WidgetButtonContainer widgetPage={widgetPage}>
+                        {handleWidgetButtons}
+                    </styled.WidgetButtonContainer>
+
 
                     {/* Commented out for the time being, statistics have not been implemented as of Sept 1 */}
                     {/* {!widgetPage &&

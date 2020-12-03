@@ -29,7 +29,6 @@ export const WidgetLocationContainer = styled.div`
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
         width: ${props => !!props.widgetPage && '25rem'};
         margin-top: ${props => !!props.widgetPage && '.205rem'};
-
     }
 
 `
@@ -66,7 +65,7 @@ export const WidgetContainer = styled.div`
         height: ${props => !!props.widgetPage ? 'auto' : '6rem'};
 
         /* padding: .5rem .5rem .5rem .5rem; */
-        /* margin-top: ${props => !!props.widgetPage ? '0rem' : '5rem'}; */
+        margin-top: ${props => !!props.widgetPage && '0rem'};
         /*padding: ${props => !!props.widgetPage ? '' : '1rem'};*/
 
     }

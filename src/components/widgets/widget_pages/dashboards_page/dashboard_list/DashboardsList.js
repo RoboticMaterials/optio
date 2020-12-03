@@ -95,7 +95,7 @@ const DashboardsList = (props) => {
 
 
     // Hopefully fixes a bug when there is no dashboards for this type
-    const dashboardsArray = !!selectedDashboardType && !!selectedDashboardType.dashboards ? selectedDashboardType.dashboards.map(dashboardID => dashboards[dashboardID]) : []
+    const dashboardsArray = !!selectedDashboardType ? !!selectedDashboardType.dashboards ? selectedDashboardType.dashboards.map(dashboardID => dashboards[dashboardID]) : [] : []
 
 
     // handles event of button drag-and-drop onto a dashboard

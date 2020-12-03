@@ -99,18 +99,8 @@ const App = (props) => {
                         {loaded && authenticated && apiLoaded &&
                             <styled.ContentContainer>
 
-                                {/* If in mobile mode and dashboard is open (set in dashboard screens), don't mount the header; dashboard screen should be in full screen on mobile devices. If not in mobile mode, always mount header. */}
                                 <styled.HeaderContainer>
                                     {mapViewEnabled ?
-                                        mobileMode ?
-                                        dashboardOpen ?
-                                            <></>
-                                            :
-                                            <Route
-                                                path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                component={StatusHeader}
-                                            />
-                                        :
                                         <Route
                                             path={["/locations/:stationID?/:widgetPage?", '/']}
                                             component={StatusHeader}
@@ -125,15 +115,6 @@ const App = (props) => {
                                 <styled.BodyContainer>
                                     {/* Hides Side bar when in a dashboard in mobile mode */}
                                     {mapViewEnabled ?
-                                        mobileMode ?
-                                        dashboardOpen ?
-                                            <></>
-                                            :
-                                            <SideBar
-                                                showSideBar={sideBarOpen}
-                                                setShowSideBar={setShowSideBar}
-                                            />
-                                        :
                                         <SideBar
                                             showSideBar={sideBarOpen}
                                             setShowSideBar={setShowSideBar}
@@ -155,22 +136,22 @@ const App = (props) => {
                                             {mapViewEnabled ?
 
                                                 (mobileMode ?
-                                                <Route
-                                                    path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                >
-                                                    {handleMobileMapView()}
-                                                </Route>
-                                                :
-                                                <Route
-                                                    path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                    component={MapView}
-                                                />)
+                                                    <Route
+                                                        path={["/locations/:stationID?/:widgetPage?", '/']}
+                                                    >
+                                                        {handleMobileMapView()}
+                                                    </Route>
+                                                    :
+                                                    <Route
+                                                        path={["/locations/:stationID?/:widgetPage?", '/']}
+                                                        component={MapView}
+                                                    />)
 
                                                 :
 
                                                 <Route
-                                                path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                component={ListView}
+                                                    path={["/locations/:stationID?/:widgetPage?", '/']}
+                                                    component={ListView}
                                                 />
 
 
