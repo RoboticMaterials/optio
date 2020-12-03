@@ -10,7 +10,7 @@ import * as style from "./dashboard_editor_button_renderer.style"
 import { Container, Draggable } from 'react-smooth-dnd';
 
 import log from "../../../../../../logger"
-import {TYPES} from "../../dashboards_sidebar/dashboards_sidebar";
+import {OPERATION_TYPES, TYPES} from "../../dashboards_sidebar/dashboards_sidebar";
 import DashboardReportField from "../button_fields/dashboard_report_field/dashboard_report_field";
 
 const logger = log.getLogger("Dashboards")
@@ -33,18 +33,19 @@ const DashboardEditorButtonRenderer = SortableContainer((props) => {
         >
             {buttons.map((button, ind) =>
                 <Draggable key={button.id} index={ind} style={{ overflow: 'visible' }}>
-                    {button.type === TYPES.ROUTES.name ?
-                        <DashboardEditTasksField
-                            button={button}
-                            ind={ind}
-                            {...props}
-                        />
-                        :
+                    {button.type === OPERATION_TYPES.REPORT.key ?
                         <DashboardReportField
                             button={button}
                             ind={ind}
                             {...props}
                         />
+                        :
+                        <DashboardEditTasksField
+                            button={button}
+                            ind={ind}
+                            {...props}
+                        />
+
                     }
 
                 </Draggable>

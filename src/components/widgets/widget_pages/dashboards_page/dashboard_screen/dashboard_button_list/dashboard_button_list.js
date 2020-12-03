@@ -50,15 +50,15 @@ const DashboardButtonList = ((props) => {
 		var error
 		var onClick
 		switch(type) {
-			case TYPES.ROUTES.name:
+			case TYPES.ROUTES.key:
 				disabled = addedTaskAlert || currentButton.deleted || broken || !taskExists
 				error = !taskExists ? "This buttons task has been deleted." : null
 				onClick = () => {
 					logger.log("DashboardButtonList Dashboard onClick")
 					if(taskID === 'custom_task' || taskID === 'hil_success'){
-						onTaskClick(type, taskID, name, currentButton.custom_task)
+						onTaskClick(TYPES.ROUTES.key, taskID, name, currentButton.custom_task)
 					} else {
-						onTaskClick(type, taskID, name)
+						onTaskClick(TYPES.ROUTES.key, taskID, name)
 					}
 				}
 				break
@@ -69,11 +69,23 @@ const DashboardButtonList = ((props) => {
 					onTaskClick(OPERATION_TYPES.REPORT.key, currentButton.key)
 				}
 				break
-			default:
+			case OPERATION_TYPES.KICK_OFF.key:
 				disabled = true
 				error = null
 				onClick = () => {
 					onTaskClick(type)
+				}
+				break
+			default:
+				disabled = addedTaskAlert || currentButton.deleted || broken || !taskExists
+				error = !taskExists ? "This buttons task has been deleted." : null
+				onClick = () => {
+					logger.log("DashboardButtonList Dashboard onClick")
+					if(taskID === 'custom_task' || taskID === 'hil_success'){
+						onTaskClick(TYPES.ROUTES.key, taskID, name, currentButton.custom_task)
+					} else {
+						onTaskClick(TYPES.ROUTES.key, taskID, name)
+					}
 				}
 				break
 		}
