@@ -164,6 +164,7 @@ const NewButtonForm = (props) => {
 
                 return(
                     <styled.StyledForm>
+                        {/*uncomment for widget style instead of big rectangles*/}
                         {/*<WidgetButton*/}
                         {/*    containerStyle={{alignSelf: "center"}}*/}
                         {/*    label={label}*/}
@@ -466,6 +467,7 @@ const ReportModal = (props) => {
                                         >
                                             {editing &&
                                                 <div
+                                                    style={{zIndex: 500}}
                                                     onClick={(event)=>{
                                                         // remove button
                                                         event.preventDefault()
@@ -483,7 +485,7 @@ const ReportModal = (props) => {
                                                     }}
                                                 >
                                                     <i
-                                                        style={{color: "red", position: "absolute", fontSize: "2rem", top: 5, right: 5}}
+                                                        style={{color: "red", position: "absolute", fontSize: "1.5rem", top: 5, right: 5}}
                                                         className="fas fa-times-circle"
 
                                                     />
@@ -493,6 +495,7 @@ const ReportModal = (props) => {
                                         </DashboardButton>
                                     )
 
+                                    // uncomment for widget style instead of big rectangles
                                     // return(
                                     //     <styled.ButtonContainer
                                     //         background={color}
