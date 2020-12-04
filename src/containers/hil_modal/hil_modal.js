@@ -59,7 +59,7 @@ const HILModal = () => {
             // most recent in the list 
             // 
             // Do not display HIL if the tasks device type is human, if it's a human, and unload button will appear on the dashboard
-            if (!!item.hil_station_id && tasks[item.task_id].device_type !== 'human') {
+            if (!!item.hil_station_id && !!tasks[item.task_id] && tasks[item.task_id].device_type !== 'human') {
 
                 // Loops through all ascociated dashboards at that location
                 locations[item.hil_station_id].dashboards.map((dashboard, ind) => {

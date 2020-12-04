@@ -57,9 +57,9 @@ const TaskQueueListItem = (props) => {
 							color={themeContext.fg.primary}
 						>
 						{type=='human' ?
-							<i class="fas fa-user"></i>
+							<i className="fas fa-user"></i>
 							:
-							<i class="fas fa-robot"></i>
+							<i className="fas fa-robot"></i>
 						}
 						</IconButton>
 
