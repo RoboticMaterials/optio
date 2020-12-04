@@ -8,6 +8,8 @@ import Textbox from '../../../basic/textbox/textbox.js'
 import Button from '../../../basic/button/button'
 import DropDownSearch from '../../../basic/drop_down_search_v2/drop_down_search'
 import TextBoxSearch from '../../../basic/textbox_search/textbox_search'
+import HILModals from '../../../../components/hil_modals/hil_modals'
+
 
 import ContentList from '../content_list/content_list'
 import EditTask from './edit_task/edit_task'
@@ -16,6 +18,8 @@ import EditTask from './edit_task/edit_task'
 import * as taskActions from '../../../../redux/actions/tasks_actions'
 import * as dashboardActions from '../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../redux/actions/objects_actions'
+import * as taskQueueActions from '../../../../redux/actions/task_queue_actions'
+
 import { postTaskQueue } from '../../../../redux/actions/task_queue_actions'
 
 // Import Utils
@@ -29,6 +33,8 @@ export default function TaskContent(props) {
     // Connect redux reducers
     const dispatch = useDispatch()
     const onPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
+    const onTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
+
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -40,13 +46,13 @@ export default function TaskContent(props) {
     const stations = useSelector(state => state.locationsReducer.stations)
     const positions = useSelector(state => state.locationsReducer.positions)
     const locations = useSelector(state => state.locationsReducer.locations)
+    const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
 
     // State definitions
     const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
     const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)  // Current task
     const [shift, setShift] = useState(false) // Is shift key pressed ?
     const [isTransportTask, setIsTransportTask] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
-
     // To be able to remove the listeners, the function needs to be stored in state
     const [shiftCallback] = useState(() => e => {
         setShift(e.shiftKey)
@@ -87,6 +93,32 @@ export default function TaskContent(props) {
         }
     }, [selectedTask])
 
+
+    const handleHumanHil = async() => {
+
+      if(selectedTask!=null){
+
+        if (selectedTask.device_type == 'human') {
+          const dashboardId = stations[selectedTask.load.station].dashboards[0]
+          //const item = taskQueue[dashboardId
+          //const hilType = tasks[item.task_id].type
+          dispatch(postTaskQueue({ task_id: selectedTask._id, dashboard: dashboardId, hil_response: null}))
+          //onTaskQueueItemClicked(dashboardId)
+
+          //return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={dashboardId} item={item} />
+
+
+        }
+        else {
+          onPostTaskQueue({ task_id: selectedTask._id })
+        }
+      }
+
+    }
+
+
+
+
     if (editing && selectedTask !== null) { // Editing Mode
         return (
             <EditTask
@@ -118,9 +150,7 @@ export default function TaskContent(props) {
                     setSelectedTaskCopy(deepCopy(selectedTask))
                     toggleEditing(true)
                 }}
-                executeTask={() => {
-                    onPostTaskQueue({ task_id: selectedTask._id })
-                }}
+                executeTask={()=>handleHumanHil()}
                 onPlus={() => {
                     const newTask = {
                         name: '',

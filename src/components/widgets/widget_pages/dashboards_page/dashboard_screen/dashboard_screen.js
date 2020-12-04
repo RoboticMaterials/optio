@@ -56,7 +56,6 @@ const DashboardScreen = (props) => {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
 
-
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
 
@@ -81,7 +80,7 @@ const DashboardScreen = (props) => {
     /**
      * When a dashboard screen is loaded, tell redux that its open
      * On unmount tell redux that its not loaded
-     * 
+     *
      * Used in app.js and widget pages to make dashboard screen full size in mobile mode
      */
     useEffect(() => {
@@ -102,12 +101,12 @@ const DashboardScreen = (props) => {
 
     /**
      * Handles buttons associated with selected dashboard
-     * 
+     *
      * If it's a AMR device dashboard, add a extra buttons
-     * The extra buttons are: 
+     * The extra buttons are:
      * 'Send to charge location'
      * 'Send to Idle Location'
-     * 
+     *
      * If there's a human task in the human task Q (see human_task_queue_actions for more details)
      * and if the the tasks unload location is the dashboards station, then show a unload button
      */
@@ -163,7 +162,7 @@ const DashboardScreen = (props) => {
             // Map through each item and see if it's showing a station, station Id is matching the current station and a human task
             Object.values(taskQueue).map((item, ind) => {
 
-                // If it is matching, add a button the the dashboard for unloading 
+                // If it is matching, add a button the the dashboard for unloading
                 if (!!item.hil_station_id && item.hil_station_id === stationID && hilResponse !== item._id.$oid && tasks[item.task_id].device_type === 'human') {
                     buttons = [
                         ...buttons,
@@ -186,26 +185,26 @@ const DashboardScreen = (props) => {
 
     /**
      * Handles event of task click
-     * 
+     *
      * Currently there are 3 types of tasks that can be clicked on a dashboard
-     * 
+     *
      * 1) Custom task
      * This task is used to send the cart to a position that does not belong to a station (You cant make a route to a non-station position)
      * It takes in the custom value, which is the position info, and sends the cart to that position from it's current location
-     * 
+     *
      * 2) HIL Success
      * This is a button that shows up on dashboard when a human tasks unload location is the current dashboard
      * Instead of showing a HIL modal, it shows an unload button
      * The reason why is that humans locations are not known so a HIL modal would have to be on the screen the whole time instead of when a autonomous cart arives
-     * 
+     *
      * 3) Basic Routes
      * This is the standard button for a dashboard that just executes the route
      * If the task is already in the q, then show a warning label and dont add it
-     * 
-     * 
-     * @param {*} Id 
-     * @param {*} name 
-     * @param {*} custom 
+     *
+     *
+     * @param {*} Id
+     * @param {*} name
+     * @param {*} custom
      */
     const handleTaskClick = async (Id, name, custom) => {
 
@@ -296,7 +295,7 @@ const DashboardScreen = (props) => {
 
     }
 
-    // Posts HIL Success to API 
+    // Posts HIL Success to API
     const handleHilSuccess = async (item) => {
 
         let newItem = {
@@ -313,7 +312,7 @@ const DashboardScreen = (props) => {
         delete newItem.dashboard
 
         // This is used to make the tap of the HIL button respond quickly
-        // TODO: This may not be necessary here 
+        // TODO: This may not be necessary here
         onHILResponse(ID)
         setTimeout(() => onHILResponse(''), 2000)
 

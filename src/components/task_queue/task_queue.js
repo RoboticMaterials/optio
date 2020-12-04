@@ -36,8 +36,6 @@ const TaskQueueMenu = (props) => {
         var taskQueueClone = [];
         if (taskQueue) {
             Object.values(taskQueue).forEach((queueItem, index) => {
-                let hi = tasks[queueItem.task_id] ? tasks[queueItem.task_id].name : null
-            //    console.log(hi)
                 let queueItemClone = clone_object(queueItem);
                 // Sees if task is a custom task
                 let task = {}
@@ -65,6 +63,7 @@ const TaskQueueMenu = (props) => {
 
         return taskQueueClone
     })
+
 
     // dispatch
     const dispatch = useDispatch()

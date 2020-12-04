@@ -44,10 +44,11 @@ const HILModals = (props) => {
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
-
+    const taskQueueItemClicked = useSelector(state=> state.taskQueueReducer.taskQueueItemClicked)
     const [quantity, setQuantity] = useState(taskQuantity)
     const [hilLoadUnload, setHilLoadUnload] = useState('')
 
+    console.log(taskQueueItemClicked)
     // If the qty goes below 0, then set to 0. You can never send negative parts
     if (quantity < 0) {
         setQuantity(0)

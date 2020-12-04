@@ -85,6 +85,8 @@ const WidgetButton = (props) => {
 
                 else {
                   history.push('/locations/' + id + '/' +type)
+                  const hamburger = document.querySelector('.hamburger')
+                  hamburger.classList.toggle(false)
 
                 }
             }}
