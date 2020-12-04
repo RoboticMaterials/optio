@@ -91,9 +91,15 @@ const DashboardButtonList = ((props) => {
 				break
 		}
 
-		const schema = theme.main.schema[type.toLowerCase()]
-		const iconClassName = schema?.iconName
-		const iconColor = schema?.solid
+		var schema
+		var iconClassName = ""
+		var iconColor
+
+		if(type && (typeof type === 'string' || type instanceof String)) {
+			schema = theme.main.schema[type.toLowerCase()]
+			iconClassName = schema?.iconName
+			iconColor = schema?.solid
+		}
 
 		return (
 			<DashboardButton
