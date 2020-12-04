@@ -14,6 +14,16 @@ export function mapArrayToObjById(arr) {
     return obj;
 }
 
+export const convertArrayToObject = (array, key) => {
+    const initialValue = {};
+    return array.reduce((obj, item) => {
+        return {
+            ...obj,
+            [item[key]]: item,
+        };
+    }, initialValue);
+};
+
 export function clone_object(obj) {
     if (null == obj || "object" != typeof obj) return obj;
     var copy = obj.constructor();

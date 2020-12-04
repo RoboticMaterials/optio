@@ -357,6 +357,18 @@ const DashboardScreen = (props) => {
                     title={"Send Report"}
                     close={()=>setReportModal(null)}
                     dashboard={currentDashboard}
+                    onSubmit={(name)=> {
+
+                        // set alert
+                        setAddTaskAlert({
+                            type: ADD_TASK_ALERT_TYPE.REPORT_SENT,
+                            label: "Report sent",
+                            message: name ? `"` + name + `"` : null
+                        })
+
+                        // clear alert
+                        setTimeout(() => setAddTaskAlert(null), 1800)
+                    }}
                 />
             }
             <DashboardsHeader

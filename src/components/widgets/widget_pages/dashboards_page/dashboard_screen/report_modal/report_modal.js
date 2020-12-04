@@ -26,6 +26,8 @@ import * as style from "../../dashboard_button/dashboard_button.style";
 import * as buttonFieldStyles from "../../dashboard_editor/button_fields/button_fields.style";
 import DeleteFieldButton from "../../../../../basic/form/delete_field_button/delete_field_button";
 import DashboardButton from "../../dashboard_button/dashboard_button";
+import {postReportEvent} from "../../../../../../redux/actions/report_event_actions";
+import {reportEventSchema, scheduleSchema} from "../../../../../../methods/utils/form_schemas";
 
 Modal.setAppElement('body');
 
@@ -133,7 +135,7 @@ const NewButtonForm = (props) => {
             }}
 
             // validation control
-            validationSchema={null}
+            validationSchema={reportEventSchema}
             validateOnChange={true}
             validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
             validateOnBlur={true}
@@ -182,7 +184,7 @@ const NewButtonForm = (props) => {
                         />
                         }
 
-                        <div>
+                        <div style={{marginBottom: "1rem"}}>
                             <styled.Label>Label</styled.Label>
                             {editing &&
                                 <TextField
@@ -191,7 +193,7 @@ const NewButtonForm = (props) => {
                                     placeholder="Label..."
                                     InputComponent={Textbox}
                                     lines={1}
-                                    style={{marginBottom: "1rem", borderRadius: ".5rem"}}
+                                    style={{borderRadius: ".5rem"}}
                                 />
                                 // :
                                 // <styled.TextboxDiv
@@ -209,7 +211,11 @@ const NewButtonForm = (props) => {
                         </div>
 
                         {editing ?
-                            <div>
+                            <div
+                                style={{
+                                    marginBottom: "1rem"
+                                }}
+                            >
                                 <styled.Label>Description</styled.Label>
                                 <TextField
                                     name="description"
@@ -217,20 +223,21 @@ const NewButtonForm = (props) => {
                                     placeholder="Description..."
                                     InputComponent={Textbox}
                                     lines={2}
-                                    style={{marginBottom: "1rem", borderRadius: "0.5rem"}}
+                                    style={{borderRadius: "0.5rem"}}
                                 />
                             </div>
                             :
                             description ?
-                                <div>
+                                <div
+                                    style={{
+                                        marginBottom: "1rem"
+                                    }}
+                                >
                                     <styled.Label>Description</styled.Label>
                                     <styled.TextboxDiv
                                         name="description"
                                         type="text"
                                         placeholder="Description..."
-                                        // value={description}
-                                        // lines={5}
-                                        style={{marginBottom: "1rem"}}
                                         readonly
                                     >
                                         {description}
@@ -255,7 +262,11 @@ const NewButtonForm = (props) => {
                         {/*}*/}
 
                         {editing &&
-                        <div>
+                        <div
+                            style={{
+                                marginBottom: "1rem"
+                            }}
+                        >
                             <styled.Label>Color</styled.Label>
                             <ColorField
                                 name={"color"}
@@ -322,7 +333,8 @@ const ReportModal = (props) => {
         isOpen,
         title,
         close,
-        dashboard
+        dashboard,
+        onSubmit
     } = props
 
     // get current buttons, default to empty array
@@ -330,6 +342,7 @@ const ReportModal = (props) => {
 
     const dispatch = useDispatch()
     const onPutDashboard = (dashboardCopy, dashboardId) =>dispatch(putDashboard(dashboardCopy, dashboardId))
+    const onPostReportEvent = (reportEvent) =>dispatch(postReportEvent(reportEvent))
 
     // boolean - true if no buttons, false otherwise
     const noButtons = report_buttons.length === 0
@@ -338,9 +351,27 @@ const ReportModal = (props) => {
     const [editing, setEditing] = useState(noButtons)  // default editing to true if there are currently no buttons
     const [sending, setSending] = useState(false) // sending report
     const [buttonId, setButtonId] = useState(null) // button being edited
+    const [submitting, setSubmitting] = useState(false)
 
-    const sendReport = (button) => {
-        console.log("sendReport button",button)
+    const sendReport = async (button) => {
+        setSubmitting(true)
+        const {
+            _id,
+            iconClassName,
+            color,
+            ...rest
+        } = button
+
+        const reportEvent = {
+            dashboard_id: dashboard._id.$oid,
+            station_id: dashboard.station,
+            report_button_id: _id,
+            ...rest
+        }
+
+        onPostReportEvent(reportEvent)
+        onSubmit(button.label)
+        setSubmitting(false)
         close()
     }
 

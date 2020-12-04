@@ -43,6 +43,7 @@ import logger from '../../logger.js';
 import { getMap } from '../../api/map_api';
 import SideBar from '../side_bar/side_bar';
 import localReducer from "../../redux/reducers/local_reducer";
+import {getReportEvents} from "../../redux/actions/report_event_actions";
 
 const ApiContainer = (props) => {
 
@@ -58,6 +59,7 @@ const ApiContainer = (props) => {
     const onGetTasksAnalysis = () => dispatch(getTasksAnalysis())
 
     const onGetProcesses = () => dispatch(getProcesses());
+    const onGetReportEvents = () => dispatch(getReportEvents());
 
     const onGetSchedules = () => dispatch(getSchedules())
     const onGetDevices = async () => await dispatch(getDevices())
@@ -332,6 +334,7 @@ const ApiContainer = (props) => {
     */
     const loadDashboardsData = async () => {
         const dashboards = await onGetDashboards();
+        // await onGetReportEvents()
 
     }
 

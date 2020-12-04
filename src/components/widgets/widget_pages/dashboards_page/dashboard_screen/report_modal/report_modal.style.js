@@ -323,7 +323,7 @@ export const AddNewButtonContainer = styled.div`
 
 export const ColorFieldContainer = styled.div`
 	position: relative;
-	margin-bottom: 1rem;
+	
 `
 
 

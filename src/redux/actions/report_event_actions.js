@@ -20,6 +20,7 @@ import * as api from '../../api/report_events_api'
 // import { scheduleSchema, schedulesSchema } from '../../normalizr/schedules_schema';
 
 import log from "../../logger"
+import {convertArrayToObject} from "../../methods/utils/utils";
 
 const logger = log.getLogger("ReportEvents", "Redux")
 
@@ -36,23 +37,23 @@ export const getReportEvents = () =>  async (dispatch) => {
 
         // make request
         const reportEvents = await api.getReportEvents();
+        const reportEventsObj = convertArrayToObject(reportEvents, "_id")
 
         // format response
         // const normalizedSchedules = normalize(schedules, schedulesSchema);
 
         // return payload for redux
         return {
-            schedulesObj: normalizedSchedules.entities.schedules,
-            scheduleIds: normalizedSchedules.result
+            reportEventsObj
         };
     }
 
-    const actionName = GET + SCHEDULES;
+    const actionName = GET + REPORT_EVENTS;
 
     // payload is returned back
     const payload = await api_action(actionName, callback, dispatch);
 
-    return payload.schedulesObj;
+    return payload;
 
 };
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -60,40 +61,40 @@ export const getReportEvents = () =>  async (dispatch) => {
 
 // create
 // ******************************
-export const postSchedule = (schedule) =>  async dispatch => {
+export const postReportEvent = (reportEvent) =>  async dispatch => {
 
     const callback = async () => {
-        const createdSchedule = await api.postSchedule(schedule);
-        const normalizedSchedules = normalize(createdSchedule, scheduleSchema);
+        const createdReportEvent = await api.postReportEvent(reportEvent);
+        // const normalizedSchedules = normalize(createdSchedule, scheduleSchema);
 
         return {
-            createdSchedules:normalizedSchedules.entities.schedules,
+            createdReportEvent
         };
     }
 
-    const actionName = POST + SCHEDULE;
+    const actionName = POST + REPORT_EVENT;
 
-    const payload = await api_action(actionName, callback, dispatch, schedule);
+    const payload = await api_action(actionName, callback, dispatch, reportEvent);
 
-    return Object.values(payload.createdSchedules)[0];
+    return payload
 
 };
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // delete
 // ******************************
-export const deleteSchedule = (scheduleId) => async (dispatch) => {
+export const deleteReportEvent = (id) => async (dispatch) => {
 
     const callback = async () => {
-        await api.deleteSchedule(scheduleId);
+        await api.deleteReportEvent(id);
 
         return {
-            scheduleId
+            id
         };
     }
 
-    const actionName = DELETE + SCHEDULE;
-    const payload = await api_action(actionName, callback, dispatch, scheduleId);
+    const actionName = DELETE + REPORT_EVENT;
+    const payload = await api_action(actionName, callback, dispatch, id);
     return payload;
 
 };
@@ -101,43 +102,19 @@ export const deleteSchedule = (scheduleId) => async (dispatch) => {
 
 // update
 // ******************************
-export const putSchedule = (scheduleId, schedule) => async dispatch => {
+export const putReportEvent = (id, reportEvent) => async dispatch => {
 
-    logger.log("action_putSchedule: scheduleId:",scheduleId)
-    logger.log("action_putSchedule: schedule:",schedule)
 
     const callback = async () => {
-        const response = await api.putSchedule(scheduleId, schedule);
-        const normalizedSchedule = normalize(response, scheduleSchema);
+        const updatedReportEvent = await api.putReportEvent(reportEvent, id);
 
         return {
-            scheduleId,
-            schedules: normalizedSchedule.entities.schedules
+            updatedReportEvent
         };
     }
 
-    const actionName = PUT + SCHEDULE;
-    const payload = await api_action(actionName, callback, dispatch, {scheduleId, schedule});
-    return payload.scheduleId;
+    const actionName = PUT + REPORT_EVENT           ;
+    const payload = await api_action(actionName, callback, dispatch);
+    return payload;
 };
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-// add edited schedules (temp storage for unsaved schedules, so no api call)
-// ******************************
-export const addUnsavedSchedules = (schedules) => {
-  return async dispatch => {
-      const payload = schedules;
-      dispatch({ type: "ADD_SCHEDULES_UNSAVED", payload });
-      return schedules;
-  };
-
-};
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-export function addSchedules(schedules) {
-  return {
-    type: "ADD_SCHEDULES",
-    schedules
-  };
-}
