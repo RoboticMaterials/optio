@@ -32,10 +32,19 @@ export const Label = styled.h2`
     line-height: 2rem;
 `
 
+export const LabelHighlight = styled.span`
+    font-size: ${props => props.theme.fontSize.sz3};
+    font-family: ${props => props.theme.font.primary};
+    color: ${props => props.theme.schema.tasks.solid};
+    line-height: 2rem;
+    font-weight: bold;
+
+`
+
 export const HelpText = styled.h3`
     font-size: ${props => props.theme.fontSize.sz4};
     font-family: ${props => props.theme.font.primary};
-    color: ${props => props.theme.bg.senary};
+    color: white;
     text-align: center;
 `
 
