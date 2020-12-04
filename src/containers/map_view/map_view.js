@@ -652,7 +652,7 @@ export class MapView extends Component {
                         }
                     </svg>
 
-                    {!!this.props.selectedTask &&
+                    {(!!this.props.selectedProcess || !!this.props.selectedTask) &&
                         <TaskStatistics d3={this.d3} />
                     }
 
