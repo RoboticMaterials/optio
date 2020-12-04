@@ -22,6 +22,10 @@ import {putDashboard} from "../../../../../../redux/actions/dashboards_actions";
 
 // styles
 import * as styled from './report_modal.style'
+import * as style from "../../dashboard_button/dashboard_button.style";
+import * as buttonFieldStyles from "../../dashboard_editor/button_fields/button_fields.style";
+import DeleteFieldButton from "../../../../../basic/form/delete_field_button/delete_field_button";
+import DashboardButton from "../../dashboard_button/dashboard_button";
 
 Modal.setAppElement('body');
 
@@ -124,7 +128,7 @@ const NewButtonForm = (props) => {
             initialValues={{
                 label: label ? label : "",
                 description:  description ? description : "",
-                iconClassName: iconClassName ? iconClassName : "far fa-flag",
+                iconClassName: iconClassName ? iconClassName : null,
                 color: color ? color : "red"
             }}
 
@@ -158,17 +162,29 @@ const NewButtonForm = (props) => {
 
                 return(
                     <styled.StyledForm>
-                        <WidgetButton
-                            containerStyle={{alignSelf: "center"}}
-                            label={label}
-                            color={color}
+                        {/*<WidgetButton*/}
+                        {/*    containerStyle={{alignSelf: "center"}}*/}
+                        {/*    label={label}*/}
+                        {/*    color={color}*/}
+                        {/*    iconClassName={iconClassName}*/}
+                        {/*    selected={false}*/}
+                        {/*/>*/}
+                        {editing &&
+                        <DashboardButton
+                            title={label}
+                            type={"button"}
                             iconClassName={iconClassName}
-                            selected={false}
+                            iconColor={color}
+                            containerStyle={{height: '4rem', minHeight: "4rem", lineHeight: '3rem', width: '80%', alignSelf: "center", marginBottom: "1rem"}}
+                            hoverable={false}
+                            color = {color}
+                            disabled = {false}
                         />
+                        }
 
                         <div>
                             <styled.Label>Label</styled.Label>
-                            {editing ?
+                            {editing &&
                                 <TextField
                                     name="label"
                                     type="text"
@@ -177,18 +193,18 @@ const NewButtonForm = (props) => {
                                     lines={1}
                                     style={{marginBottom: "1rem", borderRadius: ".5rem"}}
                                 />
-                                :
-                                <styled.TextboxDiv
-                                    name="label"
-                                    type="text"
-                                    placeholder="Label..."
-                                    // value={label}
-                                    lines={1}
-                                    style={{marginBottom: "1rem"}}
-                                    readonly
-                                >
-                                    {label}
-                                </styled.TextboxDiv>
+                                // :
+                                // <styled.TextboxDiv
+                                //     name="label"
+                                //     type="text"
+                                //     placeholder="Label..."
+                                //     // value={label}
+                                //     lines={1}
+                                //     style={{marginBottom: "1rem"}}
+                                //     readonly
+                                // >
+                                //     {label}
+                                // </styled.TextboxDiv>
                             }
                         </div>
 
@@ -224,19 +240,19 @@ const NewButtonForm = (props) => {
                                 null
                         }
 
-                        {!editing &&
-                        <div>
-                            <styled.Label>Comments</styled.Label>
-                            <TextField
-                                name="comments"
-                                type="text"
-                                placeholder="enter additonal comments..."
-                                InputComponent={Textbox}
-                                lines={5}
-                                style={{marginBottom: "1rem", borderRadius: ".5rem"}}
-                            />
-                        </div>
-                        }
+                        {/*{!editing &&*/}
+                        {/*<div>*/}
+                        {/*    <styled.Label>Comments</styled.Label>*/}
+                        {/*    <TextField*/}
+                        {/*        name="comments"*/}
+                        {/*        type="text"*/}
+                        {/*        placeholder="enter additonal comments..."*/}
+                        {/*        InputComponent={Textbox}*/}
+                        {/*        lines={5}*/}
+                        {/*        style={{marginBottom: "1rem", borderRadius: ".5rem"}}*/}
+                        {/*    />*/}
+                        {/*</div>*/}
+                        {/*}*/}
 
                         {editing &&
                         <div>
@@ -250,32 +266,32 @@ const NewButtonForm = (props) => {
                         </div>
                         }
 
-                        {editing &&
-                        <div style={{overflow: "hidden", marginBottom: "1rem", display: "flex", flexDirection: "column"}}>
-                            <styled.Label>Icon</styled.Label>
-                            <styled.IconSelectorContainer>
-                                {faClassNames.map((currClassName, index) => {
-                                    currClassName = "fas fa-" + currClassName
-                                    const selected = currClassName === values.iconClassName
+                        {/*{editing &&*/}
+                        {/*<div style={{overflow: "hidden", marginBottom: "1rem", display: "flex", flexDirection: "column"}}>*/}
+                        {/*    <styled.Label>Icon</styled.Label>*/}
+                        {/*    <styled.IconSelectorContainer>*/}
+                        {/*        {faClassNames.map((currClassName, index) => {*/}
+                        {/*            currClassName = "fas fa-" + currClassName*/}
+                        {/*            const selected = currClassName === values.iconClassName*/}
 
-                                    return(
-                                        <WidgetButton
-                                            key={currClassName}
-                                            containerStyle={{
-                                                margin: "1rem",
-                                            }}
-                                            color={color}
-                                            iconClassName={currClassName}
-                                            selected={selected}
-                                            onClick={()=>{
-                                                setFieldValue("iconClassName", currClassName)
-                                            }}
-                                        />
-                                    )
-                                })}
-                            </styled.IconSelectorContainer>
-                        </div>
-                        }
+                        {/*            return(*/}
+                        {/*                <WidgetButton*/}
+                        {/*                    key={currClassName}*/}
+                        {/*                    containerStyle={{*/}
+                        {/*                        margin: "1rem",*/}
+                        {/*                    }}*/}
+                        {/*                    color={color}*/}
+                        {/*                    iconClassName={currClassName}*/}
+                        {/*                    selected={selected}*/}
+                        {/*                    onClick={()=>{*/}
+                        {/*                        setFieldValue("iconClassName", currClassName)*/}
+                        {/*                    }}*/}
+                        {/*                />*/}
+                        {/*            )*/}
+                        {/*        })}*/}
+                        {/*    </styled.IconSelectorContainer>*/}
+                        {/*</div>*/}
+                        {/*}*/}
 
                         <styled.ButtonForm>
                             <Button
@@ -322,6 +338,11 @@ const ReportModal = (props) => {
     const [editing, setEditing] = useState(noButtons)  // default editing to true if there are currently no buttons
     const [sending, setSending] = useState(false) // sending report
     const [buttonId, setButtonId] = useState(null) // button being edited
+
+    const sendReport = (button) => {
+        console.log("sendReport button",button)
+        close()
+    }
 
     return (
         <styled.Container
@@ -388,52 +409,163 @@ const ReportModal = (props) => {
                                     const iconClassName = currReportButton?.iconClassName || ""
                                     const color = currReportButton?.color || "red"
                                     const _id = currReportButton?._id
-
                                     return(
-                                        <WidgetButton
-                                            key={iconClassName}
-                                            containerStyle={{
-                                                margin: "1rem",
-                                            }}
-                                            color={color}
+                                        <DashboardButton
+                                            title={label}
+                                            key={_id}
+                                            type={null}
                                             iconClassName={iconClassName}
-                                            label={label}
+                                            iconColor={color}
                                             onClick={()=>{
                                                 if(editing) {
                                                     setAddingNew(true)
                                                     setButtonId(_id)
                                                 }
                                                 else {
-                                                    setSending(true)
-                                                    setButtonId(_id)
+                                                    // setSending(true)
+                                                    // setButtonId(_id)
+                                                    sendReport(currReportButton)
                                                 }
-
                                             }}
+                                            containerStyle={{height: '4rem', minHeight: "4rem", lineHeight: '3rem', margin: '0.5rem 0', width: '80%'}}
+                                            hoverable={false}
+                                            taskID = {null}
+                                            color = {color}
+                                            disabled = {false}
                                         >
                                             {editing &&
-                                            <i
-                                                style={{color: "red", position: "absolute", top: 5, right: 5}}
-                                                className="fas fa-times-circle"
-                                                onClick={(event)=>{
-                                                    // remove button
-
-                                                    event.preventDefault()
-                                                    event.stopPropagation()
+                                                <div
+                                                    onClick={(event)=>{
+                                                        // remove button
+                                                        event.preventDefault()
+                                                        event.stopPropagation()
 
 
-                                                    const updatedDashboard = {
-                                                        ...dashboard,
-                                                        // filter through buttons, keep all but one with matching id of current button
-                                                        report_buttons: report_buttons.filter((currOldButton) => currOldButton._id !== _id)
-                                                    }
+                                                        const updatedDashboard = {
+                                                            ...dashboard,
+                                                            // filter through buttons, keep all but one with matching id of current button
+                                                            report_buttons: report_buttons.filter((currOldButton) => currOldButton._id !== _id)
+                                                        }
 
-                                                    // update dashboard
-                                                    onPutDashboard(updatedDashboard, dashboard._id.$oid)
-                                                }}
-                                            />
+                                                        // update dashboard
+                                                        onPutDashboard(updatedDashboard, dashboard._id.$oid)
+                                                    }}
+                                                >
+                                                    <i
+                                                        style={{color: "red", position: "absolute", fontSize: "2rem", top: 5, right: 5}}
+                                                        className="fas fa-times-circle"
+
+                                                    />
+                                                </div>
+
                                             }
-                                        </WidgetButton>
+                                        </DashboardButton>
                                     )
+
+                                    // return(
+                                    //     <styled.ButtonContainer
+                                    //         background={color}
+                                    //         onClick={()=>{
+                                    //             if(editing) {
+                                    //               setAddingNew(true)
+                                    //                 setButtonId(_id)
+                                    //             }
+                                    //             else {
+                                    //                 setSending(true)
+                                    //                 setButtonId(_id)
+                                    //             }
+                                    //
+                                    //         }}
+                                    //
+                                    //     >
+                                    //         <div style={{flex: 1}}></div>
+                                    //
+                                    //         <div style={{flex: 1, display: "flex", justifyContent: "center"}}>
+                                    //             <styled.ConditionText>{label}</styled.ConditionText>
+                                    //         </div>
+                                    //
+                                    //         <div style={{flex: 1, display: "flex", justifyContent: "flex-end", height: "100%"}}>
+                                    //             {iconClassName &&
+                                    //             <styled.RightContentContainer>
+                                    //
+                                    //                 <buttonFieldStyles.SchemaIcon className={iconClassName}
+                                    //                                               color={color}></buttonFieldStyles.SchemaIcon>
+                                    //             </styled.RightContentContainer>
+                                    //             }
+                                    //
+                                    //         </div>
+                                    //
+                                    //         {editing &&
+                                    //             <i
+                                    //                 style={{color: "red", position: "absolute", top: 5, right: 5}}
+                                    //                 className="fas fa-times-circle"
+                                    //                 onClick={(event)=>{
+                                    //                     // remove button
+                                    //                     event.preventDefault()
+                                    //                     event.stopPropagation()
+                                    //
+                                    //
+                                    //                     const updatedDashboard = {
+                                    //                         ...dashboard,
+                                    //                         // filter through buttons, keep all but one with matching id of current button
+                                    //                         report_buttons: report_buttons.filter((currOldButton) => currOldButton._id !== _id)
+                                    //                     }
+                                    //
+                                    //                     // update dashboard
+                                    //                     onPutDashboard(updatedDashboard, dashboard._id.$oid)
+                                    //                 }}
+                                    //             />
+                                    //         }
+                                    //             {/*<WidgetButton*/}
+                                    //             {/*    key={iconClassName}*/}
+                                    //             {/*    containerStyle={{*/}
+                                    //             {/*        // margin: "1rem",*/}
+                                    //             {/*    }}*/}
+                                    //             {/*    color={color}*/}
+                                    //             {/*    iconClassName={iconClassName}*/}
+                                    //             {/*    label={label}*/}
+                                    //             {/*    onClick={()=>{*/}
+                                    //             {/*        if(editing) {*/}
+                                    //             {/*            setAddingNew(true)*/}
+                                    //             {/*            setButtonId(_id)*/}
+                                    //             {/*        }*/}
+                                    //             {/*        else {*/}
+                                    //             {/*            setSending(true)*/}
+                                    //             {/*            setButtonId(_id)*/}
+                                    //             {/*        }*/}
+                                    //
+                                    //             {/*    }}*/}
+                                    //             {/*>*/}
+                                    //             {/*    {editing &&*/}
+                                    //             {/*    <i*/}
+                                    //             {/*        style={{color: "red", position: "absolute", top: 5, right: 5}}*/}
+                                    //             {/*        className="fas fa-times-circle"*/}
+                                    //             {/*        onClick={(event)=>{*/}
+                                    //             {/*            // remove button*/}
+                                    //
+                                    //             {/*            event.preventDefault()*/}
+                                    //             {/*            event.stopPropagation()*/}
+                                    //
+                                    //
+                                    //             {/*            const updatedDashboard = {*/}
+                                    //             {/*                ...dashboard,*/}
+                                    //             {/*                // filter through buttons, keep all but one with matching id of current button*/}
+                                    //             {/*                report_buttons: report_buttons.filter((currOldButton) => currOldButton._id !== _id)*/}
+                                    //             {/*            }*/}
+                                    //
+                                    //             {/*            // update dashboard*/}
+                                    //             {/*            onPutDashboard(updatedDashboard, dashboard._id.$oid)*/}
+                                    //             {/*        }}*/}
+                                    //             {/*    />*/}
+                                    //             {/*    }*/}
+                                    //             {/*</WidgetButton>*/}
+                                    //
+                                    //         {/*</div>*/}
+                                    //
+                                    //
+                                    //     </styled.ButtonContainer>
+                                    //
+                                    // )
                                 })}
                             </styled.ReportButtonsContainer>
                             }

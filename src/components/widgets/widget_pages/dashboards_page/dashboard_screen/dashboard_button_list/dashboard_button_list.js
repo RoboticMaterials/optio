@@ -17,6 +17,7 @@ import { getTasks } from '../../../../../../redux/actions/tasks_actions'
 import log from "../../../../../../logger"
 import {deepCopy} from "../../../../../../methods/utils/utils";
 import {OPERATION_TYPES, TYPES} from "../../dashboards_sidebar/dashboards_sidebar";
+import {theme} from "../../../../../../theme";
 const logger = log.getLogger("Dashboards")
 
 
@@ -89,9 +90,16 @@ const DashboardButtonList = ((props) => {
 				}
 				break
 		}
+
+		const schema = theme.main.schema[type.toLowerCase()]
+		const iconClassName = schema?.iconName
+		const iconColor = schema?.solid
+
 		return (
 			<DashboardButton
 				title={name}
+				iconColor={iconColor}
+				iconClassName={iconClassName}
 				key={index}
 				type={type}
 				onClick={onClick}
