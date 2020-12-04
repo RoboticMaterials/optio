@@ -80,8 +80,8 @@ export default function TaskPaths(props) {
         }
 
         return () => {
-          window.removeEventListener('mousemove', lockToMouse, false)
-          window.removeEventListener('keydown', exitTaskPath)
+            window.removeEventListener('mousemove', lockToMouse, false)
+            window.removeEventListener('keydown', exitTaskPath)
         }
     }, [selectedTask])
 
@@ -104,9 +104,9 @@ export default function TaskPaths(props) {
         const dashes = [...Array(Math.ceil(lineLen / (10 * props.d3.scale))).keys()]
 
         // Changes the color based on whether it's a selected task or part of a process
-        const primaryColor = !route ? 'rgba(56, 235, 135, 0.95)'  : 'rgb(56, 235, 225, 0.95)'
-        const secondaryColor = !route ? 'rgba(184, 255, 215, 0.7)'  : 'rgba(184, 255, 251, 0.7)'
-
+        const primaryColor = !route ? 'rgba(56, 235, 135, 0.95)' : 'rgba(255, 182, 46, 0.95)'
+        const secondaryColor = !route ? 'rgba(184, 255, 215, 0.7)' : 'rgba(255, 236, 201, 0.7)'
+        const dashColor = !route ? 'rgba(56, 235, 135, 0.95)' : 'rgba(255, 182, 47, 0.95)'
         return (
             <>
                 <g>
@@ -138,7 +138,7 @@ export default function TaskPaths(props) {
                         <g key={`arrow-${delta}`}
                             transform={`translate(${x1 + delta * props.d3.scale * 10 * Math.cos(lineRot)} ${y1 + delta * props.d3.scale * 10 * Math.sin(lineRot)})`}>
                             <g viewBox="-50 -50 50 50" transform={`rotate(${arrowRot}) scale(${0.05 * props.d3.scale})`}>
-                                <polygon points="-40,-50 -40,50 40,0" fill="rgba(56, 235, 135, 0.95)" />
+                                <polygon points="-40,-50 -40,50 40,0" fill={dashColor} />
                             </g>
                         </g>
                     )}

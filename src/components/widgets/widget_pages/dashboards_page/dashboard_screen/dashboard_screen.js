@@ -32,6 +32,8 @@ import DashboardsHeader from "../dashboards_header/dashboards_header";
 
 // import logging
 import log from "../../../../../logger";
+import {OPERATION_TYPES, TYPES} from "../dashboards_sidebar/dashboards_sidebar";
+import ReportModal from "./report_modal/report_modal";
 
 const logger = log.getLogger("DashboardsPage");
 
@@ -58,6 +60,7 @@ const DashboardScreen = (props) => {
 
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
+    const [reportModal, setReportModal] = useState(null);
 
     // actions
     const dispatch = useDispatch()
@@ -206,8 +209,32 @@ const DashboardScreen = (props) => {
      * @param {*} name
      * @param {*} custom
      */
-    const handleTaskClick = async (Id, name, custom) => {
+    const handleTaskClick = async (type, Id, name, custom) => {
+        switch(type.toUpperCase()) {
+            case TYPES.ROUTES.key:
+                handleRouteClick(Id, name, custom)
+                break
+            case TYPES.OPERATIONS.key:
+                handleOperationClick()
+                break
+            case OPERATION_TYPES.REPORT.key:
+                setReportModal(OPERATION_TYPES.REPORT.key)
+                break
+            default:
+                break
+        }
 
+
+    }
+
+    const handleOperationClick = () => {
+        // setReportModal()
+    }
+
+    const handleReportClick = () => {
+    }
+
+    const handleRouteClick = async (Id, name, custom) => {
         // If a custom task then add custom task key to task q
         if (Id === 'custom_task') {
 
@@ -292,7 +319,6 @@ const DashboardScreen = (props) => {
             // clear alert after timeout
             return setTimeout(() => setAddTaskAlert(null), 1800)
         }
-
     }
 
     // Posts HIL Success to API
@@ -304,8 +330,6 @@ const DashboardScreen = (props) => {
             // quantity: quantity,
         }
 
-        // return console.log('QQQQ New Item', newItem)
-
         const ID = deepCopy(item._id.$oid)
 
         delete newItem._id
@@ -316,7 +340,6 @@ const DashboardScreen = (props) => {
         onHILResponse(ID)
         setTimeout(() => onHILResponse(''), 2000)
 
-        console.log('QQQQ task success', newItem)
         await onPutTaskQueue(newItem, ID)
 
     }
@@ -327,6 +350,14 @@ const DashboardScreen = (props) => {
         // convenient to be able to clear the alert instead of having to wait for the timeout to clear it automatically
         // onClick={() => setAddTaskAlert(null)}
         >
+            {reportModal &&
+                <ReportModal
+                    isOpen={!!reportModal}
+                    title={"Send Report"}
+                    close={()=>setReportModal(null)}
+                    dashboard={currentDashboard}
+                />
+            }
             <DashboardsHeader
                 showTitle={false}
                 showBackButton={false}

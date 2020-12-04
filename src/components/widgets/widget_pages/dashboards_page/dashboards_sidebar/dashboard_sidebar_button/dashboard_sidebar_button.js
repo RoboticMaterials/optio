@@ -26,7 +26,7 @@ const DashboardSidebarButton = (props) => {
                             width={"80%"}
                             clickable={clickable}
                             color={color}
-                            onClick={() => onTaskClick(task_id, name)}
+                            onClick={() => onTaskClick(task_id)}
                             disabled={disabled}
                         />
                 </style.Container>

@@ -13,92 +13,110 @@ const TaskStatistics = (props) => {
     } = props
 
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
+    const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
+    const tasks = useSelector(state => state.tasksReducer.tasks)
     const positions = useSelector(state => state.locationsReducer.positions)
     const tasksAnalysis = useSelector(state => state.taskAnalysisReducer.tasksAnalysis)
 
-    const selectedTaskAnalysis = tasksAnalysis[selectedTask._id]
 
 
     useEffect(() => {
-        
-        console.log('QQQQ Selected Task', selectedTask)
-        console.log('QQQQ Task Analysis', tasksAnalysis[selectedTask._id])
-
-
     }, [])
 
-    if(selectedTaskAnalysis === undefined) return null
 
-    const startPos = positions[selectedTask.load.position]
-    const endPos = positions[selectedTask.unload.position]
 
-    if (selectedTask === null || positions === null || startPos === undefined || endPos === undefined) return null
+    const handleSingleTask = (task) => {
+        const selectedTaskAnalysis = tasksAnalysis[task._id]
+        if (selectedTaskAnalysis === undefined) return null
 
-    // const xPosition = (startPos.x + endPos.x) / 2 + 10 * d3.scale + 'px'
-    // const yPosition = (startPos.y + endPos.y) / 2 - 30 + 'px'
+        const startPos = positions[task.load.position]
+        const endPos = positions[task.unload.position]
 
-    // const xPosition = (startPos.x + endPos.x) / 2 + 'px'
-    // const yPosition = (startPos.y + endPos.y) / 2 - 30 + 'px'
+        if (task === null || positions === null || startPos === undefined || endPos === undefined) return null
 
-    const x1 = startPos.x
-    const y1 = startPos.y
-    const x2 = endPos.x
-    const y2 = endPos.y
+        // const xPosition = (startPos.x + endPos.x) / 2 + 10 * d3.scale + 'px'
+        // const yPosition = (startPos.y + endPos.y) / 2 - 30 + 'px'
 
-    const midX = (x1 + x2) / 2
-    const midY = (y1 + y2) / 2
+        // const xPosition = (startPos.x + endPos.x) / 2 + 'px'
+        // const yPosition = (startPos.y + endPos.y) / 2 - 30 + 'px'
 
-    const difY = (y2 - y1)
+        const x1 = startPos.x
+        const y1 = startPos.y
+        const x2 = endPos.x
+        const y2 = endPos.y
 
-    // const height = (25*Math.pow(difY,1/4))/Math.pow(d3.scale/5.8,1/4)
+        const midX = (x1 + x2) / 2
+        const midY = (y1 + y2) / 2
 
-    const height = () => {
-        if ((150 / difY) > 50) {
-            return 50
-        } else {
-            return 100 - 150 / difY
+        const difY = (y2 - y1)
+
+        // const height = (25*Math.pow(difY,1/4))/Math.pow(d3.scale/5.8,1/4)
+
+        const height = () => {
+            if ((150 / difY) > 50) {
+                return 50
+            } else {
+                return 100 - 150 / difY
+            }
         }
+
+        // const height = 100
+
+        const numerator = Math.abs(y2 - (midY))
+
+        // const denominator = Math.sqrt(Math.pow(x2 - (midX), 2) + Math.pow(y2 - (midY), 2))
+        const denominator = Math.abs(x2 - (midX))
+
+        const theta = Math.atan(numerator / denominator)
+
+        const xPosition = (midX - height() * Math.sin(theta)) - 80 + 'px'
+        const yPosition = (midY + height() * Math.cos(theta)) - 40 + 'px'
+
+        return (
+            <styled.TaskStatisticsContainer xPosition={xPosition} yPosition={yPosition}>
+                <styled.TaskNameText>{task.name}</styled.TaskNameText>
+
+                <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', marginTop: '.25rem' }}>
+                    <styled.RowContainer>
+                        <styled.TaskIcon className='far fa-clock' />
+                        <styled.TaskText>{`${selectedTaskAnalysis.avg_run_time}s`}</styled.TaskText>
+                    </styled.RowContainer>
+
+                    <styled.RowContainer>
+                        <styled.TaskIcon className='far fa-check-circle' />
+                        <styled.TaskText>{selectedTaskAnalysis.successes}</styled.TaskText>
+                    </styled.RowContainer>
+
+                    <styled.RowContainer>
+                        <styled.TaskIcon className='far fa-times-circle' />
+                        <styled.TaskText>{selectedTaskAnalysis.failures}</styled.TaskText>
+                    </styled.RowContainer>
+
+                </styled.RowContainer>
+            </styled.TaskStatisticsContainer>
+        )
     }
 
-    // const height = 100
+    const handleProcessTasks = () => {
+        
+        if(!!selectedTask){
+            return handleSingleTask(selectedTask)
+        }
 
-    // console.log('QQQQ Height', 150 / difY)
-
-    const numerator = Math.abs(y2 - (midY))
-
-    // const denominator = Math.sqrt(Math.pow(x2 - (midX), 2) + Math.pow(y2 - (midY), 2))
-    const denominator = Math.abs(x2- (midX))
-
-    const theta = Math.atan(numerator / denominator)
-
-    // console.log('QQQQ Theta', theta)
-
-    const xPosition = (midX - height() * Math.sin(theta)) - 80 + 'px'
-    const yPosition = (midY + height() * Math.cos(theta)) - 40 + 'px'
+        return selectedProcess.routes.map((route) => {
+            return handleSingleTask(tasks[route])
+        })
+    }
 
 
     return (
-        <styled.TaskStatisticsContainer xPosition={xPosition} yPosition={yPosition}>
-            <styled.TaskNameText>{selectedTask.name}</styled.TaskNameText>
 
-            <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', marginTop: '.25rem' }}>
-                <styled.RowContainer>
-                    <styled.TaskIcon className='far fa-clock' />
-                    <styled.TaskText>{`${selectedTaskAnalysis.avg_run_time}s`}</styled.TaskText>
-                </styled.RowContainer>
+        !!selectedProcess ?
+            handleProcessTasks()
+            :
+            handleSingleTask(selectedTask)
 
-                <styled.RowContainer>
-                    <styled.TaskIcon className='far fa-check-circle' />
-                    <styled.TaskText>{selectedTaskAnalysis.successes}</styled.TaskText>
-                </styled.RowContainer>
 
-                <styled.RowContainer>
-                    <styled.TaskIcon className='far fa-times-circle' />
-                    <styled.TaskText>{selectedTaskAnalysis.failures}</styled.TaskText>
-                </styled.RowContainer>
-
-            </styled.RowContainer>
-        </styled.TaskStatisticsContainer>
     )
 
 }

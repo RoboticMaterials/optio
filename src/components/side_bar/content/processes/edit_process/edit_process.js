@@ -116,16 +116,19 @@ const EditProcess = (props) => {
 
                     </styled.ListItem>
                     {editingTask && selectedTask._id === route &&
-                        <EditTask
-                            selectedTaskCopy={selectedTaskCopy}
-                            setSelectedTaskCopy={props => setSelectedTaskCopy(props)}
-                            shift={shift}
-                            isTransportTask={isTransportTask}
-                            isProcessTask={true}
-                            toggleEditing={(props) => {
-                                setEditingTask(props)
-                            }}
-                        />
+                        <styled.TaskContainer schema={'processes'}>
+
+                            <EditTask
+                                selectedTaskCopy={selectedTaskCopy}
+                                setSelectedTaskCopy={props => setSelectedTaskCopy(props)}
+                                shift={shift}
+                                isTransportTask={isTransportTask}
+                                isProcessTask={true}
+                                toggleEditing={(props) => {
+                                    setEditingTask(props)
+                                }}
+                            />
+                        </styled.TaskContainer>
                     }
                 </div>
             )
@@ -238,7 +241,7 @@ const EditProcess = (props) => {
     const handleDelete = async () => {
 
         // If there's routes in this process, delete the routes
-        if(selectedProcess.routes.length > 0){
+        if (selectedProcess.routes.length > 0) {
             selectedProcess.routes.forEach(route => onDeleteTask(route))
         }
 

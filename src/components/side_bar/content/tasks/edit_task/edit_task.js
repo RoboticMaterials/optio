@@ -77,35 +77,54 @@ const EditTask = (props) => {
 
 
     const loadUnloadFields = () => {
+
+        // This handles if any position of a route is a human position, then it cant be done by a robot
+        let humanPosition = false
+        if (positions[selectedTask.load.position].type === 'human_position' || positions[selectedTask.unload.position].type === 'human_position') {
+            humanPosition = true
+
+            if (selectedTask.device_type !== 'human') {
+                onSetSelectedTask({
+                    ...selectedTask,
+                    device_type: 'human',
+                })
+            }
+
+        }
+
         return (
             <>
-                {/* Commented out for now, currently at IPW all tasks will be robot enabled. When switching back, change device_type to 'human' when a new task is created */}
-                <styled.RowContainer>
-                    <styled.Header>Robot Enabled</styled.Header>
-                    <Switch
-                        checked={selectedTask.device_type !== 'human'}
-                        onChange={() => {
+                {!humanPosition &&
+                    <>
+                        <styled.RowContainer>
+                            <styled.Header>Robot Enabled</styled.Header>
+                            <Switch
+                                checked={selectedTask.device_type !== 'human'}
+                                onChange={() => {
 
-                            const device_type = selectedTask.device_type !== 'human' ? 'human' : 'MiR_100'
-                            onSetSelectedTask({
-                                ...selectedTask,
-                                // Just setting this to MiR100 for now. Need to expand in the future for other devices
-                                device_type: device_type
-                            })
-                        }}
-                        onColor='red'
-                        style={{ marginRight: '1rem' }}
-                    />
+                                    const device_type = selectedTask.device_type !== 'human' ? 'human' : 'MiR_100'
+                                    onSetSelectedTask({
+                                        ...selectedTask,
+                                        // Just setting this to MiR100 for now. Need to expand in the future for other devices
+                                        device_type: device_type
+                                    })
+                                }}
+                                onColor='red'
+                                style={{ marginRight: '1rem' }}
+                            />
 
-                </styled.RowContainer>
-                <styled.HelpText>Do you want a robot to perform this task? If selected, there will be an option for a person to take over the task when the button is placed onto the dashboard.</styled.HelpText>
+                        </styled.RowContainer>
+                        <styled.HelpText>Do you want a robot to perform this task? If selected, there will be an option for a person to take over the task when the button is placed onto the dashboard.</styled.HelpText>
+                    </>
+                }
 
 
-                <styled.RowContainer style={{marginTop: '2rem'}}>
 
-                    <styled.Header style={{marginTop: '0rem'}}>Load</styled.Header>
-                    <styled.RowContainer style={{justifyContent:'flex-end', alignItems:'baseline'}}>
-                        <styled.HelpText style={{fontSize:'1rem', marginRight:'.5rem'}}>TimeOut: </styled.HelpText>
+                <styled.RowContainer style={{ marginTop: '2rem' }}>
+
+                    <styled.Header style={{ marginTop: '0rem' }}>Load</styled.Header>
+                    <styled.RowContainer style={{ justifyContent: 'flex-end', alignItems: 'baseline' }}>
+                        <styled.HelpText style={{ fontSize: '1rem', marginRight: '.5rem' }}>TimeOut: </styled.HelpText>
 
                         <TimePicker
                             // format={'mm:ss'}
@@ -236,7 +255,8 @@ const EditTask = (props) => {
                                 })
                             }}
                             className="w-100"
-                            schema="tasks" />
+                            schema="tasks"
+                        />
                     </>
                 }
 
@@ -475,6 +495,26 @@ const EditTask = (props) => {
         toggleEditing(false)                            // No longer editing
     }
 
+    /**
+     * Removes the route from the array of routes for a process
+     */
+    const handleRemove = () => {
+
+        const index = selectedProcess.routes.indexOf(selectedTask._id)
+        const updatedRoutes = deepCopy(selectedProcess.routes)
+
+        updatedRoutes.splice(index, 1)
+
+        onSetSelectedProcess({
+            ...selectedProcess,
+            routes: updatedRoutes
+        })
+
+        dispatch(taskActions.deselectTask()) // Deselect
+        setSelectedTaskCopy(null) // Reset the local copy to null
+        toggleEditing(false)
+    }
+
     const handleBack = () => {
         // Discard the task changes
 
@@ -520,6 +560,7 @@ const EditTask = (props) => {
 
     return (
         <styled.ContentContainer>
+
             <div style={{ marginBottom: '1rem' }}>
                 <ContentHeader
                     content={'tasks'}
@@ -535,6 +576,88 @@ const EditTask = (props) => {
                     }}
                 />
             </div>
+
+            {/* 
+                If it's a process route and its a new route then add the ability to select alread existing routes.
+                Some filtering is done based on certain conditions, see 'options' key
+            */}
+            {isProcessTask && !!selectedTask.new &&
+                <>
+                    <styled.Label>
+                        <styled.LabelHighlight>Either</styled.LabelHighlight> choose an existing Route...
+                    </styled.Label>
+                    <DropDownSearch
+
+                        placeholder="Select Existing Route"
+                        label="Choose An Existing Route"
+                        labelField="name"
+                        valueField="name"
+
+                        options={
+
+                            Object.values(tasks)
+
+                                .filter(task => {
+
+                                    // If the selected process has routes, then filter out tasks that have load stations that arent the last route's unload station
+                                    // This eliminates 'broken' processes with tasks that are between non-connected stations
+                                    if (selectedProcess.routes.length > 0) {
+
+                                        // Gets the previous route
+                                        const previousRouteID = selectedProcess.routes[selectedProcess.routes.length - 1]
+                                        const previousRoute = tasks[previousRouteID]
+
+                                        // Gets the previouse route unload location
+                                        const unloadStationID = previousRoute.unload.station
+
+                                        // If the load and unload station match, then this route can be added to this process
+                                        if (task.load.station === unloadStationID) {
+                                            return true
+                                        }
+                                    }
+
+                                    else {
+                                        return true
+                                    }
+                                })
+
+                        }
+                        // values={!!selectedTask.idle_location ? [positions[selectedTask.idle_location]] : []}
+                        dropdownGap={5}
+                        noDataLabel="No matches found"
+                        closeOnSelect="true"
+                        onChange={values => {
+
+                            const newRoute = values[0]._id
+
+                            console.log('QQQQ route', newRoute)
+
+                            // If this task is part of a process and not already in the array of routes, then add the task to the selected process
+                            if (!selectedProcess.routes.includes(selectedTask._id)) {
+                                onSetSelectedProcess({
+                                    ...selectedProcess,
+                                    routes: [...selectedProcess.routes, newRoute]
+                                })
+                            }
+
+                            dispatch(taskActions.deselectTask())    // Deselect
+                            setSelectedTaskCopy(null)                   // Reset the local copy to null
+                            toggleEditing(false)                            // No longer editing
+                        }}
+                        className="w-100"
+                        schema="tasks"
+                    />
+                </>
+            }
+
+            {isProcessTask && !!selectedTask.new &&
+
+                <styled.Label style={{ marginTop: '1rem' }}>
+                    <styled.LabelHighlight>Or</styled.LabelHighlight> make a new one
+                </styled.Label>
+
+            }
+            
             {/* Task Title */}
             <Textbox
                 placeholder="Task Name"
@@ -545,8 +668,8 @@ const EditTask = (props) => {
                     dispatch(taskActions.setTaskAttributes(selectedTask._id, { name: e.target.value }))
 
                 }}
-                style={{ fontSize: '1.2rem', fontWeight: '600' }}>
-            </Textbox>
+                style={{ fontSize: '1.2rem', fontWeight: '600' }}
+            />
 
             {isTransportTask &&
                 <>
@@ -567,7 +690,7 @@ const EditTask = (props) => {
                     <styled.HelpText>
                         Select the object that will be transported. Either search & select an existing object, or type the
                         name of a new object to create one.
-                </styled.HelpText>
+                    </styled.HelpText>
                 </>
             }
 
@@ -608,6 +731,19 @@ const EditTask = (props) => {
             </div>
 
             <hr />
+
+            {/* Remove Task From Process Button */}
+            <Button
+                schema={'tasks'}
+                disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
+                primary
+                onClick={() => {
+                    handleRemove()
+                }}
+            >
+                Remove
+            </Button>
+
             {/* Delete Task Button */}
             <Button
                 schema={'tasks'}

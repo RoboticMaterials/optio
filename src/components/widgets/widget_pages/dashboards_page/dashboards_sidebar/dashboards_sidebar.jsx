@@ -2,10 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { DraggableCore } from "react-draggable";
-import { Container, Draggable } from 'react-smooth-dnd'
-
-// external component imports
-import ReactList from 'react-list';
+import { Container } from 'react-smooth-dnd'
 
 import * as style from "./dashboards_sidebar.style"
 import { ThemeContext } from "styled-components";
@@ -15,7 +12,6 @@ import DashboardSidebarButton from "./dashboard_sidebar_button/dashboard_sidebar
 import TaskAddedAlert from "../dashboard_screen/task_added_alert/task_added_alert";
 
 // Helpers
-import { randomHash } from "../../../../../methods/utils/utils";
 import { handleAvailableTasks } from "../../../../../methods/utils/dashboards_utils";
 
 // Import Utils
@@ -25,14 +21,43 @@ import { ADD_TASK_ALERT_TYPE } from "../../../../../constants/dashboard_contants
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 
 import log from '../../../../../logger'
-// import { Container } from '@material-ui/core';
+import WidgetButton from "../../../../basic/widget_button/widget_button";
 
 const logger = log.getLogger("Dashboards")
 
-// const tempColors = ["#798FD9", "#FFB62E", "#79D99B ", "#F24236", "#BA274A", "#592E83"]
-// const tempColors = ["#b17de3", "#91a2db", "#92d6aa", "#ffc65c", "#92d6aa", "#fa6e64", "#cf5f7a"]
-// const tempColors = ['#99A9D7', '#8ED2CD', '#C1ED98', '#FED875', '#F59B7C']
 const tempColors = ['#FF4B4B', '#56d5f5', '#50de76', '#f2ae41', '#c7a0fa']
+
+export const OPERATION_TYPES = {
+    REPORT: {
+        schema: "error",
+        name: "Report",
+        key: "REPORT",
+        _id: 0
+    },
+    KICK_OFF: {
+        schema: "kick_off",
+        key: "KICK_OFF",
+        name: "Kick off",
+        _id: 1
+    }
+}
+
+export const TYPES = {
+    // ALL: {
+    //     name: "ALL",
+    //     iconName: "fal fa-globe"
+    // },
+    ROUTES: {
+        name: "Routes",
+        iconName: "fas fa-route",
+        key: "ROUTES"
+    },
+    OPERATIONS: {
+        name: "Operations",
+        iconName: "fas fa-sticky-note",
+        key: "OPERATIONS"
+    }
+}
 
 const DashboardsSidebar = (props) => {
 
@@ -44,6 +69,7 @@ const DashboardsSidebar = (props) => {
         stationID,
         clickable
     } = props
+
 
     /*
     * Tests sidebar width to  determine if styling should be for small or large width
@@ -67,6 +93,8 @@ const DashboardsSidebar = (props) => {
     * */
     const [isSmall, setSmall] = useState(testSize(width)); // used for tracking sidebar dimensions
 
+    const [type, setType] = useState(TYPES.ROUTES.key); // used for tracking sidebar dimensions
+
     // redux state
     const dispatch = useDispatch()
     const tasks = useSelector(state => state.tasksReducer.tasks)
@@ -76,7 +104,9 @@ const DashboardsSidebar = (props) => {
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null)
 
-    const handleTaskClick = (Id, name) => {
+    const handleTaskClick = (Id) => {
+        const clickedTask = tasks[Id]
+        const name = clickedTask?.name
 
         // add alert to notify task has been added
         setAddTaskAlert({
@@ -114,6 +144,10 @@ const DashboardsSidebar = (props) => {
 
     }
 
+    const handleReportClick = (Id) => {
+
+    }
+
     const station = stations[stationID]
 
     var availableTasks = []
@@ -125,24 +159,79 @@ const DashboardsSidebar = (props) => {
         logger.log("availableTasks e", e)
     }
 
-    var availableButtons = availableTasks.map((task, index) => {
-        return {
-            name: task.name,
-            color: tempColors[index % tempColors.length],
-            task_id: task._id,
-            id: task._id,
-        }
-    })
+    const getRouteButtons = () => {
+        return availableTasks.map((task, index) => {
+            return {
+                name: task.name,
+                color: tempColors[index % tempColors.length],
+                type: TYPES.ROUTES.name,
+                task_id: task._id,
+                id: task._id,
+            }
+        })
+    }
+
+    const getReportButtons = () => {
+        return Object.entries(OPERATION_TYPES).map((currEntry, ind) => {
+            const currValue = currEntry[1]
+            const currKey = currEntry[0]
+            return {
+                name: currValue.name,
+                color: themeContext.schema[currValue.schema].solid,
+                id: currValue._id,
+                type: currKey,
+            }
+        })
+    }
+
+    var availableButtons = []
+    var availableReportButtons = []
+
+    switch(type) {
+        case TYPES.ROUTES.key:
+            availableButtons = getRouteButtons()
+            break
+        case TYPES.OPERATIONS.key:
+            availableReportButtons = getReportButtons()
+            break
+
+        // case TYPES.ALL.name:
+        //     availableButtons = getRouteButtons()
+        //     availableReportButtons = getReportButtons()
+        //     break
+
+        default:
+            break
+    }
 
     function handleDrag(e, ui) {
         setWidth(Math.max(minWidth, width + ui.deltaX))
         setSmall(testSize(Math.max(minWidth, width + ui.deltaX)))  // check if width is less than styling breakpoint and update isSmall
     }
 
+    const renderTypeButtons = () => {
+        return(
+            Object.entries(TYPES).map((currEntry, index) => {
+                const currKey = currEntry[0]
+                const currValue = currEntry[1]
+                return (
+                    <WidgetButton
+                        containerStyle={{marginRight: "1rem"}}
+                        label={currValue.name}
+                        color={themeContext.schema[currKey.toLocaleLowerCase()].solid}
+                        iconClassName={currValue.iconName}
+                        selected={type === currKey}
+                        onClick={()=>setType(currKey)}
+                        labelSize={"0.5rem"}
+
+                    />
+                )
+            })
+        )
+    }
+
     return (
-
         <style.SidebarWrapper onClick={() => setAddTaskAlert(null)}>
-
             <style.SidebarContent
                 key="sidebar-content"
                 style={{ width: width }}
@@ -163,7 +252,7 @@ const DashboardsSidebar = (props) => {
 
                                 return (
                                     <DashboardSidebarButton
-                                        key={`dashboard-sidebar-button-${index}`}
+                                        key={`dashboard-sidebar-button-${button.id}`}
                                         name={button.name}
                                         color={button.color}
                                         task_id={button.task_id}
@@ -173,10 +262,33 @@ const DashboardsSidebar = (props) => {
                                         disabled={!!addTaskAlert}
                                     />
                                 )
+                            })}
+                        </Container>
+                        <Container
+                            groupName="dashboard-buttons"
+                            getChildPayload={index =>
+                                availableReportButtons[index]
                             }
-                            )}
+                        >
+                            {availableReportButtons.map((button, index) => {
+                                return (
+                                    <DashboardSidebarButton
+                                        key={`dashboard-sidebar-button-${button.id}`}
+                                        name={button.name}
+                                        color={button.color}
+                                        id={button.id}
+                                        clickable={clickable}
+                                        onTaskClick={handleReportClick}
+                                        disabled={!!addTaskAlert}
+                                    />
+                                )
+                            })}
                         </Container>
                     </style.ListContainer>
+
+                    <style.FooterContainer>
+                        {renderTypeButtons()}
+                    </style.FooterContainer>
                 </style.Container>
 
                 <DraggableCore key="handle" onDrag={handleDrag} >
@@ -184,14 +296,12 @@ const DashboardsSidebar = (props) => {
                         <style.ResizeHandle></style.ResizeHandle>
                     </style.ResizeBar>
                 </DraggableCore>
-
             </style.SidebarContent>
 
             <TaskAddedAlert
                 {...addTaskAlert}
                 visible={!!addTaskAlert}
             />
-
         </style.SidebarWrapper>
     )
 }

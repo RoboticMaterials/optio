@@ -29,7 +29,7 @@ export const Container = styled.div`
 
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
-        top: ${props => !!props.dashboardOpen && !!props.mobileMode ? '.5rem' : '4.5rem'};
+        top: 5rem;
         bottom: .5rem;
         left: .5rem;
         right: .5rem;

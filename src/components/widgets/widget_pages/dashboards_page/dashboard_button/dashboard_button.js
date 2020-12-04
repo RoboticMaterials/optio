@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux'
 import PropTypes from 'prop-types';
 
 // import components
 import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
+import {SchemaIcon} from "../dashboard_editor/button_fields/button_fields.style";
 
 // Import Styles
 import * as style from './dashboard_button.style';
+import { theme } from "../../../../../theme"
 
 // import logging
 import log from '../../../../../logger'
@@ -14,8 +15,6 @@ import log from '../../../../../logger'
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
 const DashboardButton = (props => {
-    logger.log("DashboardButton props", props)
-
 
     const {
         color,
@@ -31,32 +30,46 @@ const DashboardButton = (props => {
         titleStyle,
         containerStyle,
         containerCss,
-        error
+        error,
+        type = ""
     } = props
 
+
+    const schema = theme.main.schema[type.toLowerCase()]
+    const iconClassName = schema?.iconName || ""
+
     return (
-        <>
-            <style.Container
-                disabled={disabled}
-                width={width}
-                height={height}
-                background={color}
-                onClick={clickable ? onClick : null}
-                borderGlow={taskID === 'hil_success'}
-                clickable={clickable}
-                hoverable={hoverable}
-                style={containerStyle}
-                css={containerCss}
-            >
+        <style.Container
+            disabled={disabled}
+            width={width}
+            height={height}
+            background={color}
+            onClick={clickable ? onClick : null}
+            borderGlow={taskID === 'hil_success'}
+            clickable={clickable}
+            hoverable={hoverable}
+            style={containerStyle}
+            css={containerCss}
+        >
+            <div style={{display: "flex", alignItems: "center"}}>
                 <style.ConditionText style={titleStyle}>{title}</style.ConditionText>
-                {children && children}
-                <ErrorTooltip
-                    visible={error}
-                    text={error}
-                    ContainerComponent={style.ErrorContainerComponent}
-                />
-            </style.Container>
-        </>
+                {schema &&
+                <style.IconContainer>
+                    <SchemaIcon className={iconClassName} color={schema.solid}></SchemaIcon>
+                </style.IconContainer>
+
+                }
+            </div>
+
+            {children && children}
+            <ErrorTooltip
+                visible={error}
+                text={error}
+                ContainerComponent={style.ErrorContainerComponent}
+            />
+
+
+        </style.Container>
     )
 
 })

@@ -100,8 +100,6 @@ const HILModals = (props) => {
         // This is used to make the tap of the HIL button respond quickly
         onHILResponse('success')
         setTimeout(() => onHILResponse(''), 2000)
-
-        console.log('QQQQ task success', newItem)
         await onPutTaskQueue(newItem, ID)
 
         // handleLogHumanEvent()
