@@ -1,7 +1,46 @@
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
 import Modal from 'react-modal';
 import {Form} from "formik";
 import {LightenDarkenColor} from "../../../../../../methods/utils/color_utils";
+
+
+const borderGlowCss = css`
+    --border-width: .1rem;
+    background: none;
+
+    @keyframes moveGradient {
+        50% {
+          background-position: 100% 50%;
+        }
+      }
+
+    border-radius: var(--border-width);
+
+    &::after {
+    position: absolute;
+    content: "";
+    top: calc(-1 * var(--border-width));
+    left: calc(-1 * var(--border-width));
+    z-index: -1;
+    width: calc(100% + var(--border-width) * 2);
+    height: calc(100% + var(--border-width) * 2);
+    background: linear-gradient(
+        60deg,
+        /* hsl(224, 85%, 66%), */
+        /* hsl(269, 85%, 66%), */
+        /* hsl(314, 85%, 66%), */
+        /* hsl(359, 85%, 66%), */
+        hsl(44, 85%, 66%),
+        hsl(89, 85%, 66%),
+        hsl(134, 85%, 66%),
+        hsl(179, 85%, 66%)
+    );
+    background-size: 300% 300%;
+    background-position: 0 50%;
+    border-radius: calc(2 * var(--border-width));
+    animation: moveGradient 4s alternate infinite;
+}
+`
 
 export const TextboxDiv = styled.div`
     background-color: ${props => props.theme.bg.quinary};
@@ -148,6 +187,7 @@ export const IconSelectorContainer = styled.div`
 	align-items: center;
 	justify-content: center;
 	flex-wrap: wrap;
+	border-radius: .5rem;
 `
 
 export const ContentContainer = styled.div`
@@ -161,13 +201,117 @@ export const ContentContainer = styled.div`
 `
 export const ReportButtonsContainer = styled.div`
 	display: flex;
+	
+	flex-direction: column;
 	align-items: center;
-	justify-content: center;
-	flex-wrap: wrap;
+	// justify-content: center;
+	flex-wrap: nowrap;
 	overflow: auto;
-	margin-bottom: 1rem;
 	min-height: 5rem;
 	width: 100%;
+`
+
+export const ConditionText = styled.span`
+	font: ${props => props.theme.font.primary};
+	font-size: ${props => props.theme.fontSize.sz3};
+	max-width: 100 %;
+	overflow: hidden;
+	text-overflow: ellipsis;
+`
+
+export const RightContentContainer = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: ${props => props.theme.bg.senary};
+    width: 4rem;
+    border-left: 1px solid ${props => props.theme.bg.tertiary};
+    height: 100%;
+    // background-color: ${props => props.theme.bg.septenary};
+    
+    // padding-left: 1rem;
+    // border-top-right-radius: 0.6rem;
+    // border-bottom-right-radius: 0.6rem;
+    
+    
+`
+
+export const ButtonContainer = styled.button`
+  position: relative;
+  user-select: none;
+  
+  // flex layout
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  // flex-grow: 1;
+  width: 90%;
+  overflow: hidden;
+  height: 4rem;
+  min-height: 4rem;
+  line-height: 3rem;
+  min-width: 80%;
+	
+  background: ${props => `linear-gradient(180deg, 
+                            ${LightenDarkenColor(props.background, 20)} 0%, 
+                            ${props.background} 50%, 
+                            ${LightenDarkenColor(props.background, -20)} 100%)`};
+  border-radius: 0.6rem;
+  padding: 0;
+	
+	
+  // margins
+  margin: .5rem 0 .5rem 0;
+	
+  // padding
+  // padding: 0.5rem 1rem 0.5rem 1rem;
+  
+  outline: none;
+  &:focus {
+    outline: none;
+  }
+
+  letter-spacing: 1.5px;
+  border: none;
+  box-shadow: ${props => props.clickable ? 'none' : `2px 2px 2px rgba(0, 0, 0, 0.5)`};
+  transition: all 0.1s ease 0s;
+  cursor: pointer;
+  outline: none;
+    
+  &:hover {
+    ${props => props.hoverable && !props.clickable &&
+	{
+		boxShadow: "3px 3px 3px rgba(0, 0, 0, 0.5)",
+		transform: "translateY(-1px)",
+	}
+}
+  }
+
+  ${props => props.clickable && !props.disabled &&
+	`&:active {
+      background: ${`linear-gradient(180deg, 
+          ${LightenDarkenColor(props.background, -20)} 0%, 
+          ${props.background} 50%, 
+          ${LightenDarkenColor(props.background, 20)} 100%)`
+	}
+    }`
+}
+  
+  ${props => props.disabled &&
+	{
+		color: props.theme.bg.quaternary,
+		background: `linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.4) 100%), ${LightenDarkenColor(props.background, -60)}`,
+		pointerEvents: "none",
+	}
+}
+
+    // --border-width: 3px;
+    ${props => props.borderGlow &&
+	borderGlowCss
+}
+
+${props => props.css};
+
 `
 
 export const AddNewButtonContainer = styled.div`
@@ -179,7 +323,7 @@ export const AddNewButtonContainer = styled.div`
 
 export const ColorFieldContainer = styled.div`
 	position: relative;
-	margin-bottom: 1rem;
+	
 `
 
 

@@ -22,6 +22,12 @@ import {putDashboard} from "../../../../../../redux/actions/dashboards_actions";
 
 // styles
 import * as styled from './report_modal.style'
+import * as style from "../../dashboard_button/dashboard_button.style";
+import * as buttonFieldStyles from "../../dashboard_editor/button_fields/button_fields.style";
+import DeleteFieldButton from "../../../../../basic/form/delete_field_button/delete_field_button";
+import DashboardButton from "../../dashboard_button/dashboard_button";
+import {postReportEvent} from "../../../../../../redux/actions/report_event_actions";
+import {reportEventSchema, scheduleSchema} from "../../../../../../methods/utils/form_schemas";
 
 Modal.setAppElement('body');
 
@@ -124,12 +130,12 @@ const NewButtonForm = (props) => {
             initialValues={{
                 label: label ? label : "",
                 description:  description ? description : "",
-                iconClassName: iconClassName ? iconClassName : "far fa-flag",
+                iconClassName: iconClassName ? iconClassName : null,
                 color: color ? color : "red"
             }}
 
             // validation control
-            validationSchema={null}
+            validationSchema={reportEventSchema}
             validateOnChange={true}
             validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
             validateOnBlur={true}
@@ -158,63 +164,81 @@ const NewButtonForm = (props) => {
 
                 return(
                     <styled.StyledForm>
-                        <WidgetButton
-                            containerStyle={{alignSelf: "center"}}
-                            label={label}
-                            color={color}
+                        {/*uncomment for widget style instead of big rectangles*/}
+                        {/*<WidgetButton*/}
+                        {/*    containerStyle={{alignSelf: "center"}}*/}
+                        {/*    label={label}*/}
+                        {/*    color={color}*/}
+                        {/*    iconClassName={iconClassName}*/}
+                        {/*    selected={false}*/}
+                        {/*/>*/}
+                        {editing &&
+                        <DashboardButton
+                            title={label}
+                            type={"button"}
                             iconClassName={iconClassName}
-                            selected={false}
+                            iconColor={color}
+                            containerStyle={{height: '4rem', minHeight: "4rem", lineHeight: '3rem', width: '80%', alignSelf: "center", marginBottom: "1rem"}}
+                            hoverable={false}
+                            color = {color}
+                            disabled = {false}
                         />
+                        }
 
-                        <div>
+                        <div style={{marginBottom: "1rem"}}>
                             <styled.Label>Label</styled.Label>
-                            {editing ?
+                            {editing &&
                                 <TextField
                                     name="label"
                                     type="text"
                                     placeholder="Label..."
                                     InputComponent={Textbox}
                                     lines={1}
-                                    style={{marginBottom: "1rem", borderRadius: ".5rem"}}
+                                    style={{borderRadius: ".5rem"}}
                                 />
-                                :
-                                <styled.TextboxDiv
-                                    name="label"
-                                    type="text"
-                                    placeholder="Label..."
-                                    // value={label}
-                                    lines={1}
-                                    style={{marginBottom: "1rem"}}
-                                    readonly
-                                >
-                                    {label}
-                                </styled.TextboxDiv>
+                                // :
+                                // <styled.TextboxDiv
+                                //     name="label"
+                                //     type="text"
+                                //     placeholder="Label..."
+                                //     // value={label}
+                                //     lines={1}
+                                //     style={{marginBottom: "1rem"}}
+                                //     readonly
+                                // >
+                                //     {label}
+                                // </styled.TextboxDiv>
                             }
                         </div>
 
                         {editing ?
-                            <div>
+                            <div
+                                style={{
+                                    marginBottom: "1rem"
+                                }}
+                            >
                                 <styled.Label>Description</styled.Label>
                                 <TextField
                                     name="description"
                                     type="text"
                                     placeholder="Description..."
                                     InputComponent={Textbox}
-                                    lines={5}
-                                    style={{marginBottom: "1rem", borderRadius: "0.5rem"}}
+                                    lines={2}
+                                    style={{borderRadius: "0.5rem"}}
                                 />
                             </div>
                             :
                             description ?
-                                <div>
+                                <div
+                                    style={{
+                                        marginBottom: "1rem"
+                                    }}
+                                >
                                     <styled.Label>Description</styled.Label>
                                     <styled.TextboxDiv
                                         name="description"
                                         type="text"
                                         placeholder="Description..."
-                                        // value={description}
-                                        // lines={5}
-                                        style={{marginBottom: "1rem"}}
                                         readonly
                                     >
                                         {description}
@@ -224,22 +248,26 @@ const NewButtonForm = (props) => {
                                 null
                         }
 
-                        {!editing &&
-                        <div>
-                            <styled.Label>Comments</styled.Label>
-                            <TextField
-                                name="comments"
-                                type="text"
-                                placeholder="enter additonal comments..."
-                                InputComponent={Textbox}
-                                lines={5}
-                                style={{marginBottom: "1rem", borderRadius: ".5rem"}}
-                            />
-                        </div>
-                        }
+                        {/*{!editing &&*/}
+                        {/*<div>*/}
+                        {/*    <styled.Label>Comments</styled.Label>*/}
+                        {/*    <TextField*/}
+                        {/*        name="comments"*/}
+                        {/*        type="text"*/}
+                        {/*        placeholder="enter additonal comments..."*/}
+                        {/*        InputComponent={Textbox}*/}
+                        {/*        lines={5}*/}
+                        {/*        style={{marginBottom: "1rem", borderRadius: ".5rem"}}*/}
+                        {/*    />*/}
+                        {/*</div>*/}
+                        {/*}*/}
 
                         {editing &&
-                        <div>
+                        <div
+                            style={{
+                                marginBottom: "1rem"
+                            }}
+                        >
                             <styled.Label>Color</styled.Label>
                             <ColorField
                                 name={"color"}
@@ -250,32 +278,32 @@ const NewButtonForm = (props) => {
                         </div>
                         }
 
-                        {editing &&
-                        <div style={{overflow: "hidden", marginBottom: "1rem", display: "flex", flexDirection: "column"}}>
-                            <styled.Label>Icon</styled.Label>
-                            <styled.IconSelectorContainer>
-                                {faClassNames.map((currClassName, index) => {
-                                    currClassName = "fas fa-" + currClassName
-                                    const selected = currClassName === values.iconClassName
+                        {/*{editing &&*/}
+                        {/*<div style={{overflow: "hidden", marginBottom: "1rem", display: "flex", flexDirection: "column"}}>*/}
+                        {/*    <styled.Label>Icon</styled.Label>*/}
+                        {/*    <styled.IconSelectorContainer>*/}
+                        {/*        {faClassNames.map((currClassName, index) => {*/}
+                        {/*            currClassName = "fas fa-" + currClassName*/}
+                        {/*            const selected = currClassName === values.iconClassName*/}
 
-                                    return(
-                                        <WidgetButton
-                                            key={currClassName}
-                                            containerStyle={{
-                                                margin: "1rem",
-                                            }}
-                                            color={color}
-                                            iconClassName={currClassName}
-                                            selected={selected}
-                                            onClick={()=>{
-                                                setFieldValue("iconClassName", currClassName)
-                                            }}
-                                        />
-                                    )
-                                })}
-                            </styled.IconSelectorContainer>
-                        </div>
-                        }
+                        {/*            return(*/}
+                        {/*                <WidgetButton*/}
+                        {/*                    key={currClassName}*/}
+                        {/*                    containerStyle={{*/}
+                        {/*                        margin: "1rem",*/}
+                        {/*                    }}*/}
+                        {/*                    color={color}*/}
+                        {/*                    iconClassName={currClassName}*/}
+                        {/*                    selected={selected}*/}
+                        {/*                    onClick={()=>{*/}
+                        {/*                        setFieldValue("iconClassName", currClassName)*/}
+                        {/*                    }}*/}
+                        {/*                />*/}
+                        {/*            )*/}
+                        {/*        })}*/}
+                        {/*    </styled.IconSelectorContainer>*/}
+                        {/*</div>*/}
+                        {/*}*/}
 
                         <styled.ButtonForm>
                             <Button
@@ -306,7 +334,8 @@ const ReportModal = (props) => {
         isOpen,
         title,
         close,
-        dashboard
+        dashboard,
+        onSubmit
     } = props
 
     // get current buttons, default to empty array
@@ -314,6 +343,7 @@ const ReportModal = (props) => {
 
     const dispatch = useDispatch()
     const onPutDashboard = (dashboardCopy, dashboardId) =>dispatch(putDashboard(dashboardCopy, dashboardId))
+    const onPostReportEvent = (reportEvent) =>dispatch(postReportEvent(reportEvent))
 
     // boolean - true if no buttons, false otherwise
     const noButtons = report_buttons.length === 0
@@ -322,6 +352,29 @@ const ReportModal = (props) => {
     const [editing, setEditing] = useState(noButtons)  // default editing to true if there are currently no buttons
     const [sending, setSending] = useState(false) // sending report
     const [buttonId, setButtonId] = useState(null) // button being edited
+    const [submitting, setSubmitting] = useState(false)
+
+    const sendReport = async (button) => {
+        setSubmitting(true)
+        const {
+            _id,
+            iconClassName,
+            color,
+            ...rest
+        } = button
+
+        const reportEvent = {
+            dashboard_id: dashboard._id.$oid,
+            station_id: dashboard.station,
+            report_button_id: _id,
+            ...rest
+        }
+
+        onPostReportEvent(reportEvent)
+        onSubmit(button.label)
+        setSubmitting(false)
+        close()
+    }
 
     return (
         <styled.Container
@@ -368,6 +421,7 @@ const ReportModal = (props) => {
                                 showBorder={!noButtons}
                             >
                                 <Button
+                                    style={{margin: "1rem 0rem"}}
                                     primary
                                     schema={"dashboards"}
                                     onClick={()=>setAddingNew(true)}
@@ -378,7 +432,7 @@ const ReportModal = (props) => {
                             }
 
                             {!noButtons &&
-                            <styled.ReportButtonsContainer style={{marginBottom: "1rem"}}>
+                            <styled.ReportButtonsContainer>
 
                                 {report_buttons.map((currReportButton, ind) => {
 
@@ -387,52 +441,165 @@ const ReportModal = (props) => {
                                     const iconClassName = currReportButton?.iconClassName || ""
                                     const color = currReportButton?.color || "red"
                                     const _id = currReportButton?._id
-
                                     return(
-                                        <WidgetButton
-                                            key={iconClassName}
-                                            containerStyle={{
-                                                margin: "1rem",
-                                            }}
-                                            color={color}
+                                        <DashboardButton
+                                            title={label}
+                                            key={_id}
+                                            type={null}
                                             iconClassName={iconClassName}
-                                            label={label}
+                                            iconColor={color}
                                             onClick={()=>{
                                                 if(editing) {
                                                     setAddingNew(true)
                                                     setButtonId(_id)
                                                 }
                                                 else {
-                                                    setSending(true)
-                                                    setButtonId(_id)
+                                                    // setSending(true)
+                                                    // setButtonId(_id)
+                                                    sendReport(currReportButton)
                                                 }
-
                                             }}
+                                            containerStyle={{height: '4rem', minHeight: "4rem", lineHeight: '3rem', margin: '0.5rem 0', width: '80%'}}
+                                            hoverable={false}
+                                            taskID = {null}
+                                            color = {color}
+                                            disabled = {false}
                                         >
                                             {editing &&
-                                            <i
-                                                style={{color: "red", position: "absolute", top: 5, right: 5}}
-                                                className="fas fa-times-circle"
-                                                onClick={(event)=>{
-                                                    // remove button
-
-                                                    event.preventDefault()
-                                                    event.stopPropagation()
+                                                <div
+                                                    style={{zIndex: 500}}
+                                                    onClick={(event)=>{
+                                                        // remove button
+                                                        event.preventDefault()
+                                                        event.stopPropagation()
 
 
-                                                    const updatedDashboard = {
-                                                        ...dashboard,
-                                                        // filter through buttons, keep all but one with matching id of current button
-                                                        report_buttons: report_buttons.filter((currOldButton) => currOldButton._id !== _id)
-                                                    }
+                                                        const updatedDashboard = {
+                                                            ...dashboard,
+                                                            // filter through buttons, keep all but one with matching id of current button
+                                                            report_buttons: report_buttons.filter((currOldButton) => currOldButton._id !== _id)
+                                                        }
 
-                                                    // update dashboard
-                                                    onPutDashboard(updatedDashboard, dashboard._id.$oid)
-                                                }}
-                                            />
+                                                        // update dashboard
+                                                        onPutDashboard(updatedDashboard, dashboard._id.$oid)
+                                                    }}
+                                                >
+                                                    <i
+                                                        style={{color: "red", position: "absolute", fontSize: "1.5rem", top: 5, right: 5}}
+                                                        className="fas fa-times-circle"
+
+                                                    />
+                                                </div>
+
                                             }
-                                        </WidgetButton>
+                                        </DashboardButton>
                                     )
+
+                                    // uncomment for widget style instead of big rectangles
+                                    // return(
+                                    //     <styled.ButtonContainer
+                                    //         background={color}
+                                    //         onClick={()=>{
+                                    //             if(editing) {
+                                    //               setAddingNew(true)
+                                    //                 setButtonId(_id)
+                                    //             }
+                                    //             else {
+                                    //                 setSending(true)
+                                    //                 setButtonId(_id)
+                                    //             }
+                                    //
+                                    //         }}
+                                    //
+                                    //     >
+                                    //         <div style={{flex: 1}}></div>
+                                    //
+                                    //         <div style={{flex: 1, display: "flex", justifyContent: "center"}}>
+                                    //             <styled.ConditionText>{label}</styled.ConditionText>
+                                    //         </div>
+                                    //
+                                    //         <div style={{flex: 1, display: "flex", justifyContent: "flex-end", height: "100%"}}>
+                                    //             {iconClassName &&
+                                    //             <styled.RightContentContainer>
+                                    //
+                                    //                 <buttonFieldStyles.SchemaIcon className={iconClassName}
+                                    //                                               color={color}></buttonFieldStyles.SchemaIcon>
+                                    //             </styled.RightContentContainer>
+                                    //             }
+                                    //
+                                    //         </div>
+                                    //
+                                    //         {editing &&
+                                    //             <i
+                                    //                 style={{color: "red", position: "absolute", top: 5, right: 5}}
+                                    //                 className="fas fa-times-circle"
+                                    //                 onClick={(event)=>{
+                                    //                     // remove button
+                                    //                     event.preventDefault()
+                                    //                     event.stopPropagation()
+                                    //
+                                    //
+                                    //                     const updatedDashboard = {
+                                    //                         ...dashboard,
+                                    //                         // filter through buttons, keep all but one with matching id of current button
+                                    //                         report_buttons: report_buttons.filter((currOldButton) => currOldButton._id !== _id)
+                                    //                     }
+                                    //
+                                    //                     // update dashboard
+                                    //                     onPutDashboard(updatedDashboard, dashboard._id.$oid)
+                                    //                 }}
+                                    //             />
+                                    //         }
+                                    //             {/*<WidgetButton*/}
+                                    //             {/*    key={iconClassName}*/}
+                                    //             {/*    containerStyle={{*/}
+                                    //             {/*        // margin: "1rem",*/}
+                                    //             {/*    }}*/}
+                                    //             {/*    color={color}*/}
+                                    //             {/*    iconClassName={iconClassName}*/}
+                                    //             {/*    label={label}*/}
+                                    //             {/*    onClick={()=>{*/}
+                                    //             {/*        if(editing) {*/}
+                                    //             {/*            setAddingNew(true)*/}
+                                    //             {/*            setButtonId(_id)*/}
+                                    //             {/*        }*/}
+                                    //             {/*        else {*/}
+                                    //             {/*            setSending(true)*/}
+                                    //             {/*            setButtonId(_id)*/}
+                                    //             {/*        }*/}
+                                    //
+                                    //             {/*    }}*/}
+                                    //             {/*>*/}
+                                    //             {/*    {editing &&*/}
+                                    //             {/*    <i*/}
+                                    //             {/*        style={{color: "red", position: "absolute", top: 5, right: 5}}*/}
+                                    //             {/*        className="fas fa-times-circle"*/}
+                                    //             {/*        onClick={(event)=>{*/}
+                                    //             {/*            // remove button*/}
+                                    //
+                                    //             {/*            event.preventDefault()*/}
+                                    //             {/*            event.stopPropagation()*/}
+                                    //
+                                    //
+                                    //             {/*            const updatedDashboard = {*/}
+                                    //             {/*                ...dashboard,*/}
+                                    //             {/*                // filter through buttons, keep all but one with matching id of current button*/}
+                                    //             {/*                report_buttons: report_buttons.filter((currOldButton) => currOldButton._id !== _id)*/}
+                                    //             {/*            }*/}
+                                    //
+                                    //             {/*            // update dashboard*/}
+                                    //             {/*            onPutDashboard(updatedDashboard, dashboard._id.$oid)*/}
+                                    //             {/*        }}*/}
+                                    //             {/*    />*/}
+                                    //             {/*    }*/}
+                                    //             {/*</WidgetButton>*/}
+                                    //
+                                    //         {/*</div>*/}
+                                    //
+                                    //
+                                    //     </styled.ButtonContainer>
+                                    //
+                                    // )
                                 })}
                             </styled.ReportButtonsContainer>
                             }
