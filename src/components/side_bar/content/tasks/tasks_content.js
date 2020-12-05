@@ -100,20 +100,17 @@ export default function TaskContent(props) {
 
         if (selectedTask.device_type == 'human') {
           const dashboardId = stations[selectedTask.load.station].dashboards[0]
-          //const item = taskQueue[dashboardId
-          //const hilType = tasks[item.task_id].type
-          dispatch(postTaskQueue({ task_id: selectedTask._id, dashboard: dashboardId, hil_response: null}))
-          //onTaskQueueItemClicked(dashboardId)
 
-          //return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={dashboardId} item={item} />
-
-
+          const postToQueue = dispatch(postTaskQueue({ task_id: selectedTask._id, 'task_id': selectedTask._id, dashboard: dashboardId, hil_response:null}))
+                postToQueue.then(item=>{
+                const id = item?._id?.$oid
+                onTaskQueueItemClicked(id)
+          })
         }
         else {
           onPostTaskQueue({ task_id: selectedTask._id })
         }
       }
-
     }
 
 
@@ -138,8 +135,7 @@ export default function TaskContent(props) {
 
                     tasksSortedAlphabetically(Object.values(tasks))
                         // Filters outs any tasks that don't belong to the current map or apart of a process
-                        // .filter(task => !task.process && (task.map_id === currentMap._id))
-                        .filter(task => task.map_id === currentMap._id)
+                        .filter(task => !task.process && (task.map_id === currentMap._id))
                         // Filter outs any human tasks that have associated tasks (AKA it only shows the associated device task)
                         .filter(task => !task.associated_task || (!!task.associated_task && task.device_type !== 'human'))
 

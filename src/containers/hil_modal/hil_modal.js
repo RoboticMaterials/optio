@@ -25,6 +25,7 @@ const HILModal = () => {
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
     const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
     const devices = useSelector(state => state.devicesReducer.devices)
+    let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
 
     const [statusTimerIntervals, setStatusTimerIntervals] = useState({})
 
@@ -32,7 +33,6 @@ const HILModal = () => {
     const stationID = params.stationID
 
     const deviceDashboard = !!devices ? !!devices[stationID] : false
-
     /**
      * Handles any task that should be displaying a HIL
      * useMemo for performance reasons, should only rerender if taskQueue changes and dashbaordID params
@@ -47,15 +47,10 @@ const HILModal = () => {
             return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item} />
         }
 
-        else{ if (!!taskQueueItemClicked && taskQueue[taskQueueItemClicked]){
+        else{ if (!!taskQueueItemClicked && taskQueue[taskQueueItemClicked]) {
             const item = taskQueue[taskQueueItemClicked]
-            console.log(item)
             const type = tasks[item.task_id].device_type
             const hilType = tasks[item.task_id].type
-
-            const hamburger = document.querySelector('.hamburger')
-            hamburger.classList.toggle(false)
-
               if(type=='human'){
               return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item} />
             }
