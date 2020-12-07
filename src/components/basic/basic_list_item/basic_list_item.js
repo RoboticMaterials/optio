@@ -18,16 +18,17 @@ function BasicListItem(props) {
 		<Container
 			{...containerProps}
             css={containerCss}
-
 		>
-			<LeftContentContainer css={leftContentContainerCss} {...leftContentContainerProps} onClick={onClick}>
+			<LeftContentContainer css={leftContentContainerCss} {...leftContentContainerProps} onClick={onClick}
+>
 				{leftContent && leftContent}
-					
 			</LeftContentContainer>
 
 			<ContentContainer
 				{...contentContainerProps}
 				css={contentContainerCss}
+				onClick={onClick}
+
 			>
 				<Title css={titleCss}{...titleProps}>
 					{title}
