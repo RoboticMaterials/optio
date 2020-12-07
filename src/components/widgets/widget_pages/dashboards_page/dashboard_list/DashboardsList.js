@@ -73,6 +73,7 @@ const DashboardsList = (props) => {
     const stations = useSelector(state => state.locationsReducer.stations)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const devices = useSelector(state => state.devicesReducer.devices)
+    const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
 
     const station = stations[stationID]
     const device = devices[stationID]
@@ -85,7 +86,7 @@ const DashboardsList = (props) => {
     // logger.log("DashboardsList dashboardsArray", dashboardsArray)
 
     useEffect(() => {
-        if (dashboards[params.dashboardID] === undefined) {
+        if (dashboards[params.dashboardID] === undefined && !dashboardOpen) {
             history.push('/locations/')
         }
         return () => {
