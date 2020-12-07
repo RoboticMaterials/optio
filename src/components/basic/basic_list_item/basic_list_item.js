@@ -18,10 +18,11 @@ function BasicListItem(props) {
 		<Container
 			{...containerProps}
             css={containerCss}
-            onClick={onClick}
+
 		>
-			<LeftContentContainer css={leftContentContainerCss} {...leftContentContainerProps}>
+			<LeftContentContainer css={leftContentContainerCss} {...leftContentContainerProps} onClick={onClick}>
 				{leftContent && leftContent}
+					
 			</LeftContentContainer>
 
 			<ContentContainer
@@ -75,4 +76,3 @@ BasicListItem.defaultProps = {
 }
 
 export default BasicListItem
-
