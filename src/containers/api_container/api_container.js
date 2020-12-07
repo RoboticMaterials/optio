@@ -236,11 +236,12 @@ const ApiContainer = (props) => {
         // Local Settings must stay on top of initial data so that the correct API address is seleceted
         const localSettings = await onGetLocalSettings()
 
-        const refreshToken = await onGetRefreshToken()
+        // const refreshToken = await onGetRefreshToken()
         const devices = await onGetDevices()
         const maps = await onGetMaps()
 
         if (maps.length === undefined) {
+            console.log('QQQQ Map is undefined')
             props.onLoad()
             setApiError(true)
             return
@@ -268,8 +269,8 @@ const ApiContainer = (props) => {
         handleStationsWithBrokenDevices(devices, locations)
         handleDashboardsWithBrokenStations(dashboards, locations)
         handleStationsWithBrokenChildren(locations)
-        await handleTasksWithBrokenProcess(processes, tasks)
-        await handleProcessesWithBrokenRoutes(processes, tasks)
+        handleTasksWithBrokenProcess(processes, tasks)
+        handleProcessesWithBrokenRoutes(processes, tasks)
 
         props.apiLoaded()
         props.onLoad()
