@@ -37,7 +37,7 @@ export const getReportEvents = () =>  async (dispatch) => {
 
         // make request
         const reportEvents = await api.getReportEvents();
-        const reportEventsObj = convertArrayToObject(reportEvents, "_id")
+        const reportEventsObj = convertArrayToObject(reportEvents, "report_button_id")
 
         // format response
         // const normalizedSchedules = normalize(schedules, schedulesSchema);

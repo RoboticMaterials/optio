@@ -207,7 +207,7 @@ const ApiContainer = (props) => {
                 break;
 
             case 'dashboards':
-                pageDataInterval = setInterval(() => loadDashboardsData(), 10000);
+                pageDataInterval = setInterval(() => loadDashboardsData(), 1000);
                 break;
 
             case 'tasks':
@@ -334,7 +334,7 @@ const ApiContainer = (props) => {
     */
     const loadDashboardsData = async () => {
         const dashboards = await onGetDashboards();
-        // await onGetReportEvents()
+        await onGetReportEvents()
 
     }
 
