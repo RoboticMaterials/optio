@@ -35,9 +35,9 @@ import uuid from 'uuid'
 function locationTypeGraphic(type, isNotSelected) {
     switch (type) {
         case 'shelf_position':
-            return (                <styled.LocationTypeGraphic fill={LocationTypes['shelfPosition'].color} stroke={LocationTypes['shelfPosition'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                    {LocationTypes['shelfPosition'].svgPath}
-                </styled.LocationTypeGraphic>
+            return (<styled.LocationTypeGraphic fill={LocationTypes['shelfPosition'].color} stroke={LocationTypes['shelfPosition'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                {LocationTypes['shelfPosition'].svgPath}
+            </styled.LocationTypeGraphic>
             )
 
         case 'workstation':
@@ -167,46 +167,46 @@ export default function LocationContent() {
     const onBack = () => {
 
 
-        onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy })
+        onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy, positions, locations })
 
-        let postPositionPromise, child, locationID
+        // let postPositionPromise, child, locationID
 
-        if(selectedLocationChildrenCopy != null){
-
-
+        // if (selectedLocationChildrenCopy != null) {
 
 
-          selectedLocationChildrenCopy.forEach(async(child, ind) => {
-              if(positions[child._id] == undefined){
-
-                await Object.assign(child, {temp: false, new: true })
-                await dispatch(positionActions.addPosition(child))
-                await dispatch(positionActions.postPosition(child))
-                await dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
-
-                dispatch(setSelectedLocationCopy(null))
-                dispatch(setSelectedLocationChildrenCopy(null))
-
-                dispatch(deselectLocation())    // Deselect
-
-            }
 
 
-        })
+        //     selectedLocationChildrenCopy.forEach(async (child, ind) => {
+        //         if (positions[child._id] == undefined) {
 
-          selectedLocation.children.forEach((childID, ind) => {
-              child = positions[childID]
-              child.parent = locationID
-              selectedLocation.children[ind] = child._id
-              if (child.new && selectedLocationChildrenCopy[ind] != child._id) {
-                dispatch(positionActions.removePosition(child._id))
+        //             await Object.assign(child, { temp: false, new: true })
+        //             await dispatch(positionActions.addPosition(child))
+        //             await dispatch(positionActions.postPosition(child))
+        //             await dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
 
-              }
+        //             dispatch(setSelectedLocationCopy(null))
+        //             dispatch(setSelectedLocationChildrenCopy(null))
 
-          })
-      }
+        //             dispatch(deselectLocation())    // Deselect
 
-            onEditing(false)
+        //         }
+
+
+        //     })
+
+        //     selectedLocation.children.forEach((childID, ind) => {
+        //         child = positions[childID]
+        //         child.parent = locationID
+        //         selectedLocation.children[ind] = child._id
+        //         if (child.new && selectedLocationChildrenCopy[ind] != child._id) {
+        //             dispatch(positionActions.removePosition(child._id))
+
+        //         }
+
+        //     })
+        // }
+
+        onEditing(false)
     }
 
     /**
@@ -388,10 +388,10 @@ export default function LocationContent() {
                         </>
 
                         :
-                    <styled.LocationTypeContainer>
-                        <LocationTypeButton type='human_position' selected={selectedLocation.type} />
-                        <styled.LocationTypeLabel>Human Position</styled.LocationTypeLabel>
-                    </styled.LocationTypeContainer>
+                        <styled.LocationTypeContainer>
+                            <LocationTypeButton type='human_position' selected={selectedLocation.type} />
+                            <styled.LocationTypeLabel>Human Position</styled.LocationTypeLabel>
+                        </styled.LocationTypeContainer>
                     }
 
                 </styled.DefaultTypesContainer>
@@ -424,7 +424,7 @@ export default function LocationContent() {
                                 secondary
                                 onClick={() => {
                                     handleSetPositionToCartCoords()
-}}
+                                }}
                                 style={{ marginBottom: '1rem' }}
                             >
                                 Use Cart Location
@@ -516,9 +516,8 @@ export default function LocationContent() {
                 onMouseLeave={(location) => dispatch(locationActions.deselectLocation())}
                 onClick={(location) => {
                     // If location button is clicked, start editing it
-
                     onSetSelectedLocationCopy(deepCopy(selectedLocation))
-                    if (selectedLocation.children!=null && selectedLocation.children!=undefined) {
+                    if (selectedLocation.children != null && selectedLocation.children != undefined) {
                         onSetSelectedLocationChildrenCopy(selectedLocation.children.map(positionID => deepCopy(positions[positionID])))
                     }
                     onEditing(true)

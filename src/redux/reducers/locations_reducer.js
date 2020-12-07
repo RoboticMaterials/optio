@@ -241,6 +241,9 @@ export default function locationsReducer(state = defaultState, action) {
 
         if (!(id in stationsCopy)) { return state }
 
+        // This should not be here...
+        // Seting the station in the stations list instead of the selectedLocation doesn't make sense
+        // Doing it this way does not store the unedited copy in the list
         Object.assign(stationsCopy[id], attr)
 
         if (state.selectedLocation !== null && state.selectedLocation._id === id) { // The updated station is the selected location
@@ -249,9 +252,12 @@ export default function locationsReducer(state = defaultState, action) {
                 stations: stationsCopy,
                 locations: filterLocations(stationsCopy, positionsCopy),
                 selectedLocation: deepCopy(stationsCopy[id]),
+                // selectedLocation: Object.assign(state.selectedLocation, attr),
                 pending: false
             }
         } else {
+            // Object.assign(stationsCopy[id], attr)
+
             return {
                 ...state,
                 stations: stationsCopy,
@@ -390,15 +396,15 @@ export default function locationsReducer(state = defaultState, action) {
 
         //Associated position was added in the editing process
         Object.values(positionsCopy).forEach(position => {
-            if(position.new == true){
-              delete positionsCopy[position._id]
+            if (position.new == true) {
+                delete positionsCopy[position._id]
             }
         })
 
         //Associated position was deleted in the editing process
-      //  if(positionsCopy[position._id] == undefined){
+        //  if(positionsCopy[position._id] == undefined){
         //  positionsCopy = [positionsCopy, position.position]
-          //console.log(positionsCopy)
+        //console.log(positionsCopy)
         //}
 
 
