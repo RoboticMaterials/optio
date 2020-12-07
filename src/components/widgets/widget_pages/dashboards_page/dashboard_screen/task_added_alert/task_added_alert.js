@@ -29,6 +29,11 @@ const TaskAddedAlert = (props) => {
             alertColor = '#79d99b'
             break
 
+        case ADD_TASK_ALERT_TYPE.REPORT_SENT:
+            alertColor = '#79d99b'
+            break
+
+
         default:
             alertColor = '#FF4B4Bs'
     }

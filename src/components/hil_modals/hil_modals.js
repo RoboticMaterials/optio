@@ -44,7 +44,8 @@ const HILModals = (props) => {
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
-
+    const taskQueueItemClicked = useSelector(state=> state.taskQueueReducer.taskQueueItemClicked)
+    const dashboardOpen = useSelector(state=> state.dashboardsReducer.dashboardOpen)
     const [quantity, setQuantity] = useState(taskQuantity)
     const [hilLoadUnload, setHilLoadUnload] = useState('')
 
@@ -99,6 +100,8 @@ const HILModals = (props) => {
         // This is used to make the tap of the HIL button respond quickly
         onHILResponse('success')
         setTimeout(() => onHILResponse(''), 2000)
+
+        console.log('QQQQ task success', newItem)
         await onPutTaskQueue(newItem, ID)
 
         // handleLogHumanEvent()
@@ -192,11 +195,14 @@ const HILModals = (props) => {
 
     return (
         <styled.HilContainer >
-
-          <styled.HilExitModal
-              className='fas fa-times'
-              onClick={()=>onTaskQueueItemClicked('')}
-          />
+          {dashboardOpen ?
+              <></>
+              :
+              <styled.HilExitModal
+                  className='fas fa-times'
+                  onClick={()=>onTaskQueueItemClicked('')}
+              />
+            }
             <styled.HilBorderContainer >
 
 

@@ -31,15 +31,15 @@ const DashboardButton = (props => {
         containerStyle,
         containerCss,
         error,
-        type = ""
+        type = "",
+        iconColor,
+        iconClassName
     } = props
 
 
-    const schema = theme.main.schema[type.toLowerCase()]
-    const iconClassName = schema?.iconName || ""
-
     return (
         <style.Container
+            type={"button"}
             disabled={disabled}
             width={width}
             height={height}
@@ -53,9 +53,9 @@ const DashboardButton = (props => {
         >
             <div style={{display: "flex", alignItems: "center"}}>
                 <style.ConditionText style={titleStyle}>{title}</style.ConditionText>
-                {schema &&
+                {(iconColor && iconClassName) &&
                 <style.IconContainer>
-                    <SchemaIcon className={iconClassName} color={schema.solid}></SchemaIcon>
+                    <SchemaIcon className={iconClassName} color={iconColor}></SchemaIcon>
                 </style.IconContainer>
 
                 }

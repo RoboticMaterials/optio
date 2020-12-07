@@ -30,11 +30,11 @@ export default function mapReducer(state=defaultState, action) {
 
     switch (action.type) {
 
-    // ======================================== //
-    //                                          //
-    //              Get All Maps                //
-    //                                          //
-    // ======================================== //
+        // ======================================== //
+        //                                          //
+        //              Get All Maps                //
+        //                                          //
+        // ======================================== //
 
         case GET_MAPS:
             break;
@@ -57,11 +57,11 @@ export default function mapReducer(state=defaultState, action) {
                 pending: false
             });
 
-    // ======================================== //
-    //                                          //
-    //            Get Map Details               //
-    //                                          //
-    // ======================================== //
+        // ======================================== //
+        //                                          //
+        //            Get Map Details               //
+        //                                          //
+        // ======================================== //
 
         case GET_MAP:
             break;
@@ -91,11 +91,11 @@ export default function mapReducer(state=defaultState, action) {
                 pending: false
             });
 
-    // ======================================== //
-    //                                          //
-    //            Map Utility Funcs             //
-    //                                          //
-    // ======================================== //
+        // ======================================== //
+        //                                          //
+        //            Map Utility Funcs             //
+        //                                          //
+        // ======================================== //
 
         case SET_MAP_ATTRIBUTES:
             currentMapCopy = deepCopy(state.currentMap)
