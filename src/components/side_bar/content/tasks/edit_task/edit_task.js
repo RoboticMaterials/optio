@@ -517,11 +517,11 @@ const EditTask = (props) => {
 
     const handleBack = () => {
         // Discard the task changes
-
         if (!!selectedTask.new) {
             dispatch(taskActions.removeTask(selectedTask._id))   // If the task is new, simply remove it from the local copy of tasks
         } else {
             dispatch(taskActions.updateTask(selectedTask))  // Else, revert the task back to the copy we saved when user started editing
+            // dispatch(taskActions.updateTask(tasks[selectedTask._id]))  // Else, revert the task back to the copy we saved when user started editing
         }
         dispatch(taskActions.deselectTask())    // Deselect
         setSelectedTaskCopy(null)                   // Reset the local copy to null
@@ -733,6 +733,7 @@ const EditTask = (props) => {
             <hr />
 
             {/* Remove Task From Process Button */}
+            {selectedProcess &&
             <Button
                 schema={'tasks'}
                 disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
@@ -743,6 +744,8 @@ const EditTask = (props) => {
             >
                 Remove
             </Button>
+            }
+
 
             {/* Delete Task Button */}
             <Button
