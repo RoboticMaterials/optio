@@ -96,8 +96,8 @@ export const updateChildren = (location) => {
 
 
 
-            dispatch(stationActions.updateStation(location))
-            dispatch(positionActions.updatePosition(location))
+        dispatch(stationActions.updateStation(location))
+        dispatch(positionActions.updatePosition(location))
 
     }
 }
@@ -203,7 +203,9 @@ export const sideBarBack = (props) => {
     const {
         selectedLocation,
         selectedLocationCopy,
-        selectedLocationChildrenCopy
+        selectedLocationChildrenCopy,
+        positions,
+        locations
     } = props
 
     return async dispatch => {
@@ -212,12 +214,59 @@ export const sideBarBack = (props) => {
             dispatch(removeLocation(selectedLocation))
 
         } else { // If the location is not new, revert it to the old copy, and do the same to its children
+
+            if (selectedLocationChildrenCopy != null) {
+
+                selectedLocationChildrenCopy.forEach(async (child, ind) => {
+
+                    // If a child in the copy is udnefined (Don't know why it should be....)
+                    // then add the location to the backend
+                    if (positions[child._id] == undefined) {
+
+                        await Object.assign(child, { temp: false, new: true })
+                        await dispatch(positionActions.addPosition(child))
+                        await dispatch(positionActions.postPosition(child))
+                        await dispatch(putLocation(selectedLocation, selectedLocation._id))
+
+                        dispatch(setSelectedLocationCopy(null))
+                        dispatch(setSelectedLocationChildrenCopy(null))
+
+                        dispatch(deselectLocation())    // Deselect
+
+                    }
+
+                    // Go through and remove any temp positions
+                    selectedLocation.children.forEach((childID, ind) => {
+
+                        // Get the actual position
+                        child = positions[childID]
+
+                        // Set the parent to the selected Location
+                        child.parent = selectedLocation._id
+
+                        // Add the postion to the station because we want to remove this positon from this station in the next step
+                        // You know, cause that makes sense............
+                        // selectedLocation.children[ind] = child._id
+
+                        // If the child position is new and the copy does not contain the child, then remove
+                        if (child.new && selectedLocationChildrenCopy[ind] != child._id) {
+                            dispatch(positionActions.removePosition(child._id))
+
+                        }
+
+                    })
+
+                })
+            }
+
+            // TODO: This is just sloppy... 
+            // The original copy should be stored in stations in the stations reducer
+            // And the edited copy should be the 'selectedLocation'
+            // For some reason, the station in stations is being edited as well
             dispatch(updateLocation(selectedLocationCopy))
-            if (selectedLocationChildrenCopy != null){
-                  //selectedLocationChildrenCopy.forEach(child =>
-                      //dispatch(updateLocation(child))
-                    //)
-          }
+
+            // The old copy of the location should still be in redux since the edited location is the selectedLocation
+            // dispatch(updateLocation(locations[selectedLocation._id]))
         }
 
         dispatch(setSelectedLocationCopy(null))
@@ -227,7 +276,7 @@ export const sideBarBack = (props) => {
 
         dispatch(setSelectedDevice(null))
     }
-  }
+}
 
 
 
