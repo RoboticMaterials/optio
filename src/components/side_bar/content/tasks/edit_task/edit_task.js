@@ -733,6 +733,7 @@ const EditTask = (props) => {
             <hr />
 
             {/* Remove Task From Process Button */}
+            {selectedProcess &&
             <Button
                 schema={'tasks'}
                 disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
@@ -743,6 +744,8 @@ const EditTask = (props) => {
             >
                 Remove
             </Button>
+            }
+
 
             {/* Delete Task Button */}
             <Button

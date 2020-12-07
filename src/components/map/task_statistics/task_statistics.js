@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 // Import Styles
 import * as styled from './task_statistics.style'
+import taskAnalysisReducer from "../../../redux/reducers/task_analysis_reducer";
 
 const TaskStatistics = (props) => {
 
@@ -16,7 +17,7 @@ const TaskStatistics = (props) => {
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const positions = useSelector(state => state.locationsReducer.positions)
-    const tasksAnalysis = useSelector(state => state.taskAnalysisReducer.tasksAnalysis)
+    const tasksAnalysis = useSelector(state => state.taskAnalysisReducer.tasksAnalysis) || {}
 
 
 
