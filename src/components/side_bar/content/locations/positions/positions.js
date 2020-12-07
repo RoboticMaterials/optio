@@ -44,7 +44,6 @@ export default function Positions(props) {
     const positionType = type
     let positionTypeCamel = ''
     let positionName = ''
-    console.log(positionType)
     const selectedPositions = Object.values(positions).filter(position => position.parent == selectedLocation._id)
 
     useEffect(() => {
@@ -140,43 +139,74 @@ export default function Positions(props) {
     });
     // }, [selectedPositions]);
 
+    /**
+     * Handles deleting positions
+     * Does some different things based on if the position is new or not (see comments bellow)
+     * @param {*} position 
+     * @param {*} i 
+     */
+    const handleDelete = (position, i) => {
+
+        // If the position is new, just remove it from the local station
+        // Since the position is new, it does not exist in the backend and there can't be any associated tasks
+        if (!!position.new) {
+
+            // Remove the position from the list of children
+            let locationPositionIDs = deepCopy(selectedLocation.children)
+            locationPositionIDs.splice(i, 1)
+            dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
+
+            // 
+            dispatch(positionActions.removePosition(position._id))
+        } 
+        
+        // Else remove from local copy, delete in backend and delete any associated tasks
+        else {
+            // Sees if any tasks are associated with the position
+            Object.values(tasks).filter(task => {
+                return task.load.position == position._id || task.unload.position == position._id
+            }).forEach(relevantTask => {
+                dispatch(deleteTask(relevantTask._id))
+            })
+
+            // TODO: Get rid of deep copy
+            let locationPositionIDs = deepCopy(selectedLocation.children)
+            locationPositionIDs.splice(i, 1)
+            dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
+
+            dispatch(positionActions.deletePosition(positions[position._id], position._id))
+
+        }
+
+
+    }
+
     const handleAssociatedPositions = (associatedPositions) => {
         return associatedPositions.map((position, i) => {
-
             return (
                 <styled.PositionListItem>
                     <MinusButton
                         onClick={() => {
-                            console.log('QQQQ delete', deepCopy(position), deepCopy(positions))
-                            // Sees if any tasks are associated with the position
-                            Object.values(tasks).filter(task => {
-                                return task.load.position == position._id || task.unload.position == position._id
-                            }).forEach(relevantTask => {
-                                dispatch(deleteTask(relevantTask._id))
-                            })
-
-                            // TODO: Get rid of deep copy
-                            let locationPositionIDs = deepCopy(selectedLocation.children)
-                            locationPositionIDs.splice(i, 1)
-                            dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
-
-                            dispatch(positionActions.deletePosition(positions[position._id], position._id))
-                            console.log('QQQQ delete here')
-
+                            handleDelete(position, i)
                         }}
                     />
                     <Textbox
                         style={{ flex: '1' }}
                         schema="locations"
                         focus={i == editingIndex}
-                        defaultValue={position.name}
+                        // defaultValue={position.name}
+                        value={position.name}
                         onChange={(e) => {
                             setEditingIndex(i)
                             dispatch(positionActions.setPositionAttributes(position._id, { name: e.target.value }))
                         }}
 
                     />
-                    <styled.CartIcon className='icon-cart' onClick={() => handleSetChildPositionToCartCoords(position)} />
+
+                    {/* If not a human position, then add ability to use cart location */}
+                    {position.type !== 'human_position' &&
+                        <styled.CartIcon className='icon-cart' onClick={() => handleSetChildPositionToCartCoords(position)} />
+                    }
 
                     {/* Commenting out for now, not working with constent updating */}
                     {/* <DragHandle></DragHandle> */}

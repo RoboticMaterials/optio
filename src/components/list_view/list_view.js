@@ -131,7 +131,7 @@ const ListView = (props) => {
                 if (!!devices[params.stationID] && item.owner === devices[params.stationID]._id) {
 
                     let locationName = ''
-                    
+
                     if(!!item.custom_task){
                         locationName = positions[item.custom_task.position].name
                     }

@@ -33,13 +33,14 @@ export const getLocalSettings = async () => {
     if (localSettings) {
         localSettings = JSON.parse(localSettings);
         return localSettings;
-    } 
+    }
     // Posts settigns to the backend if there's nothing there
     else {
         const settings = {
             non_local_api_ip: '',
             non_local_api: false,
             mapViewEnabled: true,
+            toggleDevOptions:false,
             currentMapId: null,
 
         }

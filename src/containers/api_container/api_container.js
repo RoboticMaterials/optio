@@ -115,24 +115,29 @@ const ApiContainer = (props) => {
     }, [])
 
     useEffect(() => {
-        let containsMirCart = false
-        // check each device
-        // in order for MiR mode to be enabled, there must be at least one device of MiR type and it must be placed on the map
-        Object.values(devices).forEach((currDevice, index) => {
-            const device_model = currDevice?.device_model ? currDevice?.device_model.toLowerCase() : ""
-            const pos_x = currDevice?.position?.pos_x
-            const pos_y = currDevice?.position?.pos_y
-            if (
-                device_model.includes("mir") &&
-                pos_x &&
-                pos_y
-            ) containsMirCart = true
-        })
 
-        if ((MiRMapEnabled === undefined) || (MiRMapEnabled !== containsMirCart)) onPostLocalSettings({
-            ...localReducer.localSettings,
-            MiRMapEnabled: containsMirCart,
-        })
+
+        // once MiR map is enabled, it's always enabled, so only need to do check if it isn't enabled
+        if(!MiRMapEnabled) {
+            let containsMirCart = false
+
+            // check each device
+            // in order for MiR mode to be enabled, there must be at least one device of MiR type
+            Object.values(devices).forEach((currDevice, index) => {
+                const device_model = currDevice?.device_model ? currDevice?.device_model : ""
+               // const x = currDevice?.position?.x
+               // const y = currDevice?.position?.y
+                if (
+                    device_model === "MiR100"
+                ) containsMirCart = true
+            })
+
+            // only update if MiRMapEnabled isn't currently set or MiRMapEnabled needs to be updated because it isn't equal to containsMirCart
+            if ((MiRMapEnabled === undefined) || (MiRMapEnabled !== containsMirCart)) onPostLocalSettings({
+                ...localReducer.localSettings,
+                MiRMapEnabled: containsMirCart,
+            })
+        }
 
     }, [devices, MiRMapEnabled])
 
@@ -236,11 +241,12 @@ const ApiContainer = (props) => {
         // Local Settings must stay on top of initial data so that the correct API address is seleceted
         const localSettings = await onGetLocalSettings()
 
-        const refreshToken = await onGetRefreshToken()
+        // const refreshToken = await onGetRefreshToken()
         const devices = await onGetDevices()
         const maps = await onGetMaps()
 
         if (maps.length === undefined) {
+            console.log('QQQQ Map is undefined')
             props.onLoad()
             setApiError(true)
             return
@@ -268,8 +274,8 @@ const ApiContainer = (props) => {
         handleStationsWithBrokenDevices(devices, locations)
         handleDashboardsWithBrokenStations(dashboards, locations)
         handleStationsWithBrokenChildren(locations)
-        await handleTasksWithBrokenProcess(processes, tasks)
-        await handleProcessesWithBrokenRoutes(processes, tasks)
+        handleTasksWithBrokenProcess(processes, tasks)
+        handleProcessesWithBrokenRoutes(processes, tasks)
 
         props.apiLoaded()
         props.onLoad()
