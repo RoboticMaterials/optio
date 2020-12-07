@@ -55,7 +55,7 @@ export default function reportEventsReducer(state = defaultState, action) {
       const created = action.payload.createdReportEvent
 
       return  Object.assign({}, state, {
-        reportEvents: {...state.reportEvents, [created._id]: created},
+        reportEvents: {...state.reportEvents, [created.report_button_id]: created},
         pending: false
       });
 
@@ -104,7 +104,7 @@ export default function reportEventsReducer(state = defaultState, action) {
     case  PUT + REPORT_EVENT + SUCCESS:
 
       return  Object.assign({}, state, {
-        reportEvents: {...state.reportEvents, [action.payload.updatedReportEvent._id]: action.payload.updatedReportEvent},
+        reportEvents: {...state.reportEvents, [action.payload.updatedReportEvent.report_button_id]: action.payload.updatedReportEvent},
         pending: false
       });
 

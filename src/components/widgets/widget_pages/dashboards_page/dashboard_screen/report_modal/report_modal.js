@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import Modal from 'react-modal';
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import uuid from 'uuid'
 
 // external components
@@ -26,7 +26,7 @@ import * as style from "../../dashboard_button/dashboard_button.style";
 import * as buttonFieldStyles from "../../dashboard_editor/button_fields/button_fields.style";
 import DeleteFieldButton from "../../../../../basic/form/delete_field_button/delete_field_button";
 import DashboardButton from "../../dashboard_button/dashboard_button";
-import {postReportEvent} from "../../../../../../redux/actions/report_event_actions";
+import {postReportEvent, putReportEvent} from "../../../../../../redux/actions/report_event_actions";
 import {reportEventSchema, scheduleSchema} from "../../../../../../methods/utils/form_schemas";
 
 Modal.setAppElement('body');
@@ -344,6 +344,7 @@ const ReportModal = (props) => {
     const dispatch = useDispatch()
     const onPutDashboard = (dashboardCopy, dashboardId) =>dispatch(putDashboard(dashboardCopy, dashboardId))
     const onPostReportEvent = (reportEvent) =>dispatch(postReportEvent(reportEvent))
+    const onPutReportEvent = (id, reportEvent) =>dispatch(putReportEvent(id, reportEvent))
 
     // boolean - true if no buttons, false otherwise
     const noButtons = report_buttons.length === 0
@@ -354,6 +355,8 @@ const ReportModal = (props) => {
     const [buttonId, setButtonId] = useState(null) // button being edited
     const [submitting, setSubmitting] = useState(false)
 
+    const reportEvents = useSelector(state => { return state.reportEventsReducer.reportEvents })
+
     const sendReport = async (button) => {
         setSubmitting(true)
         const {
@@ -363,14 +366,61 @@ const ReportModal = (props) => {
             ...rest
         } = button
 
-        const reportEvent = {
-            dashboard_id: dashboard._id.$oid,
-            station_id: dashboard.station,
-            report_button_id: _id,
-            ...rest
+        const existingReportEvent = reportEvents[_id]
+
+        // there is already an existing reportEvent for this button, update it
+        if(existingReportEvent) {
+
+            // create new event entry
+            const newEvent = {
+                date: new Date().getTime(),
+                name: "REPORT_SENT",
+            }
+
+            // update reportEvent
+            const updatedReportEvent = {
+                // spread original data
+                ...existingReportEvent,
+
+                // increment event count
+                event_count: existingReportEvent.event_count + 1,
+
+                // add new event to events list
+                events:  [
+                    ...existingReportEvent.events,
+                    newEvent
+                ]
+            }
+
+            onPutReportEvent(existingReportEvent._id, updatedReportEvent)
         }
 
-        onPostReportEvent(reportEvent)
+        // no existing reportEvent was found for this button, create new
+        else {
+            const reportEvent = {
+                // save identifying info
+                dashboard_id: dashboard._id.$oid,
+                station_id: dashboard.station,
+                report_button_id: _id,
+
+                // add event_count
+                event_count: 1,
+
+                // add event list with initial event
+                events:  [{
+                    date: new Date().getTime(),
+                    name: "REPORT_SENT",
+                }],
+
+                // spread rest of buttons data
+                ...rest
+            }
+
+            onPostReportEvent(reportEvent)
+
+        }
+
+
         onSubmit(button.label)
         setSubmitting(false)
         close()
