@@ -115,24 +115,29 @@ const ApiContainer = (props) => {
     }, [])
 
     useEffect(() => {
-        let containsMirCart = false
-        // check each device
-        // in order for MiR mode to be enabled, there must be at least one device of MiR type and it must be placed on the map
-        Object.values(devices).forEach((currDevice, index) => {
-            const device_model = currDevice?.device_model ? currDevice?.device_model.toLowerCase() : ""
-            const x = currDevice?.position?.x
-            const y = currDevice?.position?.y
-            if (
-                device_model.toLocaleLowerCase().includes("mir") &&
-                x &&
-                y
-            ) containsMirCart = true
-        })
 
-        if ((MiRMapEnabled === undefined) || (MiRMapEnabled !== containsMirCart)) onPostLocalSettings({
-            ...localReducer.localSettings,
-            MiRMapEnabled: containsMirCart,
-        })
+
+        // once MiR map is enabled, it's always enabled, so only need to do check if it isn't enabled
+        if(!MiRMapEnabled) {
+            let containsMirCart = false
+
+            // check each device
+            // in order for MiR mode to be enabled, there must be at least one device of MiR type
+            Object.values(devices).forEach((currDevice, index) => {
+                const device_model = currDevice?.device_model ? currDevice?.device_model : ""
+               // const x = currDevice?.position?.x
+               // const y = currDevice?.position?.y
+                if (
+                    device_model === "MiR100"
+                ) containsMirCart = true
+            })
+
+            // only update if MiRMapEnabled isn't currently set or MiRMapEnabled needs to be updated because it isn't equal to containsMirCart
+            if ((MiRMapEnabled === undefined) || (MiRMapEnabled !== containsMirCart)) onPostLocalSettings({
+                ...localReducer.localSettings,
+                MiRMapEnabled: containsMirCart,
+            })
+        }
 
     }, [devices, MiRMapEnabled])
 
