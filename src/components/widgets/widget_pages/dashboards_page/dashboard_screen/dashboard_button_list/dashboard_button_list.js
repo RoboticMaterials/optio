@@ -43,7 +43,7 @@ const DashboardButtonList = ((props) => {
 		let name = currentButton.name
 		const type = currentButton?.type
         let taskID = currentButton.task_id
-        
+
         // If the task is in tasks or it's a custom task or hil success, then it exists
 		const taskExists = !!tasks[taskID] ? true : taskID === 'custom_task' ? true : taskID === 'hil_success' ? true : false
 
@@ -81,6 +81,7 @@ const DashboardButtonList = ((props) => {
 				disabled = addedTaskAlert || currentButton.deleted || broken || !taskExists
 				error = !taskExists ? "This buttons task has been deleted." : null
 				onClick = () => {
+
 					logger.log("DashboardButtonList Dashboard onClick")
 					if(taskID === 'custom_task' || taskID === 'hil_success'){
 						onTaskClick(TYPES.ROUTES.key, taskID, name, currentButton.custom_task)
@@ -91,9 +92,15 @@ const DashboardButtonList = ((props) => {
 				break
 		}
 
-		const schema = theme.main.schema[type.toLowerCase()]
-		const iconClassName = schema?.iconName
-		const iconColor = schema?.solid
+		var schema
+		var iconClassName = ""
+		var iconColor
+
+		if(type && (typeof type === 'string' || type instanceof String)) {
+			schema = theme.main.schema[type.toLowerCase()]
+			iconClassName = schema?.iconName
+			iconColor = schema?.solid
+		}
 
 		return (
 			<DashboardButton
