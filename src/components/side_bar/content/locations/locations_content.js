@@ -220,11 +220,12 @@ export default function LocationContent() {
             //// Function to save the children of a posted station
             // Since the child has a .parent attribute, this function needs to be given the station's id
             let postPositionPromise, child
+            console.log('QQQQ Saving children', locationID, selectedLocation)
             selectedLocation.children.forEach((childID, ind) => {
                 child = positions[childID]
                 child.parent = locationID
                 if (child.new) { // If the position is new, post it and update its id in the location.children array
-                    console.log(child)
+                    console.log('QQQQ child', child)
                     dispatch(positionActions.postPosition(child))
                     selectedLocation.children[ind] = child._id
                     dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
@@ -260,7 +261,7 @@ export default function LocationContent() {
             })
         } else { // If the location is not new, PUT it and update it's children
             dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
-            if (selectedLocation.schema == 'station') {
+            if (selectedLocation.schema === 'station') {
                 saveChildren(selectedLocation._id)
             }
         }
@@ -390,7 +391,7 @@ export default function LocationContent() {
                         :
                         <styled.LocationTypeContainer>
                             <LocationTypeButton type='human_position' selected={selectedLocation.type} />
-                            <styled.LocationTypeLabel>Human Position</styled.LocationTypeLabel>
+                            <styled.LocationTypeLabel>Position</styled.LocationTypeLabel>
                         </styled.LocationTypeContainer>
                     }
 
