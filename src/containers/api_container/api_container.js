@@ -120,12 +120,12 @@ const ApiContainer = (props) => {
         // in order for MiR mode to be enabled, there must be at least one device of MiR type and it must be placed on the map
         Object.values(devices).forEach((currDevice, index) => {
             const device_model = currDevice?.device_model ? currDevice?.device_model.toLowerCase() : ""
-            const pos_x = currDevice?.position?.pos_x
-            const pos_y = currDevice?.position?.pos_y
+            const x = currDevice?.position?.x
+            const y = currDevice?.position?.y
             if (
-                device_model.includes("mir") &&
-                pos_x &&
-                pos_y
+                device_model.toLocaleLowerCase().includes("mir") &&
+                x &&
+                y
             ) containsMirCart = true
         })
 
