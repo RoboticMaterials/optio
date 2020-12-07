@@ -44,7 +44,6 @@ export default function Positions(props) {
     const positionType = type
     let positionTypeCamel = ''
     let positionName = ''
-    console.log(positionType)
     const selectedPositions = Object.values(positions).filter(position => position.parent == selectedLocation._id)
 
     useEffect(() => {
@@ -142,7 +141,6 @@ export default function Positions(props) {
 
     const handleAssociatedPositions = (associatedPositions) => {
         return associatedPositions.map((position, i) => {
-
             return (
                 <styled.PositionListItem>
                     <MinusButton
@@ -161,7 +159,6 @@ export default function Positions(props) {
                             dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
 
                             dispatch(positionActions.deletePosition(positions[position._id], position._id))
-                            console.log('QQQQ delete here')
 
                         }}
                     />
@@ -169,14 +166,19 @@ export default function Positions(props) {
                         style={{ flex: '1' }}
                         schema="locations"
                         focus={i == editingIndex}
-                        defaultValue={position.name}
+                        // defaultValue={position.name}
+                        value={position.name}
                         onChange={(e) => {
                             setEditingIndex(i)
                             dispatch(positionActions.setPositionAttributes(position._id, { name: e.target.value }))
                         }}
 
                     />
-                    <styled.CartIcon className='icon-cart' onClick={() => handleSetChildPositionToCartCoords(position)} />
+
+                    {/* If not a human position, then add ability to use cart location */}
+                    {position.type !== 'human_position' &&
+                        <styled.CartIcon className='icon-cart' onClick={() => handleSetChildPositionToCartCoords(position)} />
+                    }
 
                     {/* Commenting out for now, not working with constent updating */}
                     {/* <DragHandle></DragHandle> */}
