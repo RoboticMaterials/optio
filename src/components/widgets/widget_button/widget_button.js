@@ -1,5 +1,5 @@
 import React, { useState} from 'react';
-import { useHistory } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as styled from './widget_button.style'
@@ -12,6 +12,8 @@ import { hoverStationInfo } from '../../../redux/actions/stations_actions'
 
 import * as sidebarActions from "../../../redux/actions/sidebar_actions"
 import * as locationActions from '../../../redux/actions/locations_actions'
+import * as dashboardActions from '../../../redux/actions/dashboards_actions'
+
 
 import { deepCopy } from '../../../methods/utils/utils'
 
@@ -29,16 +31,22 @@ const WidgetButton = (props) => {
     } = props
     const history = useHistory()
     const dispatch = useDispatch()
+    const params = useParams()
     const onPostTaskQueue = (q) => dispatch(postTaskQueue(q))
     const onWidgetLoaded = (bol) => dispatch(widgetLoaded(bol))
     const onHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const onSideBarBack = (props) => dispatch(sideBarBack(props))
     const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
     const onSetSelectedLocationChildrenCopy = (locationChildren) => dispatch(setSelectedLocationChildrenCopy(locationChildren))
+    const onDashboardOpen = (props) => dispatch(dashboardActions.dashboardOpen(props))
 
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const editing = useSelector(state => state.locationsReducer.editingLocation)
     const positions = useSelector(state => state.locationsReducer.positions)
+
+    const dashboardID = params.dashboardID
+
+
 
 
     return (
@@ -81,13 +89,19 @@ const WidgetButton = (props) => {
                     onWidgetLoaded(false)
                     onHoverStationInfo(null)
                     onSideBarBack({ selectedLocation })
+
                 }
 
                 else {
-                  history.push('/locations/' + id + '/' +type)
-                  const hamburger = document.querySelector('.hamburger')
-                  hamburger.classList.toggle(false)
+                  if(type=='dashboards'){
+                    const dashboardID = selectedLocation ? selectedLocation.dashboards[0] : null
+                    history.push('/locations/' + id + '/' +type + '/' + dashboardID)
+                    onDashboardOpen(true)
+                  }
+                  else {history.push('/locations/' + id + '/' +type)}
 
+                  //const hamburger = document.querySelector('.hamburger')
+                  //hamburger.classList.toggle(false)
                 }
             }}
             pageID={type}

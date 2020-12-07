@@ -357,7 +357,7 @@ const Widgets = (props) => {
                     />
                 }
                 <styled.WidgetContainer widgetPage={widgetPage}>
-                    {!widgetPage &&
+                    {!widgetPage && !!selectedLocation &&
                         <>
                             {selectedLocation.name == "TempRightClickMoveLocation" ?
                                 <styled.WidgetStationNameUnselectable>{"Send Cart To Location"}</styled.WidgetStationNameUnselectable>

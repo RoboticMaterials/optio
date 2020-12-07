@@ -65,7 +65,7 @@ const DashboardsHeader = (props) => {
                 <style.Title style={{ order: '2' }}>{page}</style.Title>
             }
 
-            {showEditButton && !mobileMode && 
+            {showEditButton && !mobileMode &&
                 <Button style={{ order: '3', marginTop: '1.8rem' }}
                     onClick={setEditingDashboard}
                 >
