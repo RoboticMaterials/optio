@@ -32,7 +32,7 @@ import DashboardsHeader from "../dashboards_header/dashboards_header";
 
 // import logging
 import log from "../../../../../logger";
-import {OPERATION_TYPES, TYPES} from "../dashboards_sidebar/dashboards_sidebar";
+import { OPERATION_TYPES, TYPES } from "../dashboards_sidebar/dashboards_sidebar";
 import ReportModal from "./report_modal/report_modal";
 
 const logger = log.getLogger("DashboardsPage");
@@ -164,7 +164,6 @@ const DashboardScreen = (props) => {
 
             // Map through each item and see if it's showing a station, station Id is matching the current station and a human task
             Object.values(taskQueue).map((item, ind) => {
-                console.log('QQQQ Item', tasks, item)
                 // If it is matching, add a button the the dashboard for unloading
                 if (!!item.hil_station_id && item.hil_station_id === stationID && hilResponse !== item._id.$oid && tasks[item.task_id].device_type === 'human') {
                     buttons = [
@@ -210,7 +209,7 @@ const DashboardScreen = (props) => {
      * @param {*} custom
      */
     const handleTaskClick = async (type, Id, name, custom) => {
-        switch(type.toUpperCase()) {
+        switch (type.toUpperCase()) {
             case TYPES.ROUTES.key:
                 handleRouteClick(Id, name, custom)
                 break
@@ -354,9 +353,9 @@ const DashboardScreen = (props) => {
                 <ReportModal
                     isOpen={!!reportModal}
                     title={"Send Report"}
-                    close={()=>setReportModal(null)}
+                    close={() => setReportModal(null)}
                     dashboard={currentDashboard}
-                    onSubmit={(name)=> {
+                    onSubmit={(name) => {
 
                         // set alert
                         setAddTaskAlert({
