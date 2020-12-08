@@ -27,6 +27,7 @@ const TaskStatistics = (props) => {
 
 
     const handleSingleTask = (task) => {
+        if(task === undefined) return null
         const selectedTaskAnalysis = tasksAnalysis[task._id]
         if (selectedTaskAnalysis === undefined) return null
 
@@ -105,6 +106,7 @@ const TaskStatistics = (props) => {
         }
 
         return selectedProcess.routes.map((route) => {
+            console.log('QQQQ selected process', selectedProcess)
             return handleSingleTask(tasks[route])
         })
     }

@@ -49,6 +49,7 @@ const defaultState = {
     hilTimers: {},
     hilResponse: '',
     activeHilDashboards: {},
+    localHumanTask: false,
 };
 
 export default function taskQueueReducer(state = defaultState, action) {
@@ -76,6 +77,13 @@ export default function taskQueueReducer(state = defaultState, action) {
             return {
                 ...state,
                 hilResponse: action.payload,
+            }
+
+        // Used for when a human task is clicked, should only show dashboard on the clicked tablet
+        case 'LOCAL_HUMAN_TASK':
+            return {
+                ...state,
+                localHumanTask: action.payload,
             }
 
         // Used to set first in, first out dashboard HILs
