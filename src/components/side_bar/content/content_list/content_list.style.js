@@ -42,7 +42,7 @@ export const ListItem = styled.div`
     align-items: center;
     width: auto;
     height: 2.4rem;
-    margin-right:1.5rem;
+    text-overflow: ellipsis;
 
     background: transparent;
     padding-bottom: .4rem;
@@ -56,7 +56,7 @@ export const ListItemRect = styled.div`
 
     border-radius: 0.5rem;
     text-align: center;
-
+    padding-right:0.5rem;
     cursor: pointer;
     user-select: none;
 
@@ -101,7 +101,9 @@ export const ListItemIcon = styled.i`
     font-size: 1.25rem;
     color: lightgreen;
 
+
     &:hover {
         cursor: pointer;
+        color:green;
     }
 `
