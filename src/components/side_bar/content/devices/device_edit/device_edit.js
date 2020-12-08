@@ -186,8 +186,6 @@ const DeviceEdit = (props) => {
                     onChange={values => {
 
                         const idleLocation = values[0]._id
-                        console.log('QQQQ idle location', idleLocation)
-
                         onSetSelectedDevice({
                             ...selectedDevice,
                             idle_location: idleLocation,

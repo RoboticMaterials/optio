@@ -13,7 +13,8 @@ export const Label = styled.h1`
     font-family: ${props => props.theme.font.primary};
     font-size: 1.5rem;
     font-weight: 500;
-    color: ${props => props.theme.schema.locations.solid};
+    /* color: ${props => props.theme.schema.locations.solid}; */
+    color: ${props => props.theme.bg.octonary};
     text-align: center;
     user-select: none;
 `
@@ -22,19 +23,38 @@ export const LocationTypeGraphic = styled.svg`
     height: 2.5rem;
 
     position: absolute;
-    top: 50%;
+    top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
 `
 
-export const Cards = styled.div`
-    height: 5rem;
+export const LocationTypeLabel = styled.p`
+    margin-bottom: 0rem;
+`
+
+export const Card = styled.div`
+    height: 7rem;
+    width: 100%;
+    position:relative;
+    margin: 0rem .5rem;
+
+`
+
+export const CardContainer = styled.div`
+    display: flex;
+    
 `
 
 export const NewPositionCard = styled.div`
 
-    height: 3rem;
-    width: 6rem;
+    max-height: 4rem;
+    max-width: 6rem;
+    
+    display: flex;
+
+    height: 100%;
+    width: 100%;
+
     border-radius: 0.5rem;
 
     background: ${props => props.theme.bg.octonary};
@@ -44,6 +64,10 @@ export const NewPositionCard = styled.div`
     left: calc(50% - 3rem);
 
     box-shadow: 0 0.2rem 0.3rem 0rem rgba(0,0,0,0.3);
+
+    text-align: center;
+    justify-content: center;
+    align-items: flex-end;
 
     cursor: grab;
     &:active {
@@ -60,6 +84,14 @@ export const PositionList = styled.div`
 `
 
 export const PositionListItem = styled.div`
+    border: .25rem solid ${props => props.background};
+    border-radius: 1rem;
+
+    padding: .25rem;
+    padding-top: .35rem;
+
+    margin: .5rem 0rem;
+
     display: flex;
     flex-direction: row;
     flex-grow: 1;

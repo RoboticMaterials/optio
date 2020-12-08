@@ -223,7 +223,6 @@ export default function LocationContent() {
                 child = positions[childID]
                 child.parent = locationID
                 if (child.new) { // If the position is new, post it and update its id in the location.children array
-                    console.log(child)
                     dispatch(positionActions.postPosition(child))
                     selectedLocation.children[ind] = child._id
                     dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
@@ -259,7 +258,7 @@ export default function LocationContent() {
             })
         } else { // If the location is not new, PUT it and update it's children
             dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
-            if (selectedLocation.schema == 'station') {
+            if (selectedLocation.schema === 'station') {
                 saveChildren(selectedLocation._id)
             }
         }
@@ -332,6 +331,31 @@ export default function LocationContent() {
 
     // TODO: Probably can get rid of editing state, just see if there's a selectedLocation, if there is, you're editing
     if (editing) { // Editing Mode
+
+        let locationTypeName = ''
+        if (!!selectedLocation.type) {
+            switch (selectedLocation.type) {
+                case 'workstation':
+                    locationTypeName = 'Station'
+                    break;
+
+                case 'human_position':
+                    locationTypeName = 'Position'
+                    break;
+
+                case 'cart_position':
+                    locationTypeName = 'Cart Position'
+                    break;
+
+                case 'human_position':
+                    locationTypeName = 'Position'
+                    break;
+
+                default:
+                    locationTypeName = selectedLocation.type
+                    break;
+            }
+        }
         return (
             <styled.ContentContainer
                 // Delete any newf positions that were never dragged onto the map
@@ -368,28 +392,45 @@ export default function LocationContent() {
                 {/* Location Type */}
                 <styled.DefaultTypesContainer>
 
-                    <styled.LocationTypeContainer>
-                        <LocationTypeButton type='workstation' selected={selectedLocation.type} />
-                        <styled.LocationTypeLabel>Station</styled.LocationTypeLabel>
-                    </styled.LocationTypeContainer>
 
-                    {MiRMapEnabled ?
+                    {!selectedLocation.type ?
                         <>
                             <styled.LocationTypeContainer>
-                                <LocationTypeButton type='cart_position' selected={selectedLocation.type} />
-                                <styled.LocationTypeLabel>Cart Position</styled.LocationTypeLabel>
+                                <LocationTypeButton type='workstation' selected={selectedLocation.type} />
+                                <styled.LocationTypeLabel>Station</styled.LocationTypeLabel>
                             </styled.LocationTypeContainer>
 
-                            <styled.LocationTypeContainer>
-                                <LocationTypeButton type='shelf_position' selected={selectedLocation.type} />
-                                <styled.LocationTypeLabel>Shelf Position</styled.LocationTypeLabel>
-                            </styled.LocationTypeContainer>
+                            {MiRMapEnabled &&
+                                <>
+
+                                    {/* <styled.LocationTypeContainer>
+                                        <LocationTypeButton type='human_position' selected={selectedLocation.type} />
+                                        <styled.LocationTypeLabel>Position</styled.LocationTypeLabel>
+                                    </styled.LocationTypeContainer> */}
+
+                                    <styled.LocationTypeContainer>
+                                        <LocationTypeButton type='cart_position' selected={selectedLocation.type} />
+                                        <styled.LocationTypeLabel>Cart Position</styled.LocationTypeLabel>
+                                    </styled.LocationTypeContainer>
+
+                                    <styled.LocationTypeContainer>
+                                        <LocationTypeButton type='shelf_position' selected={selectedLocation.type} />
+                                        <styled.LocationTypeLabel>Shelf Position</styled.LocationTypeLabel>
+                                    </styled.LocationTypeContainer>
+
+                                </>
+                            }
+                            {/* :
+                                <styled.LocationTypeContainer>
+                                    <LocationTypeButton type='human_position' selected={selectedLocation.type} />
+                                    <styled.LocationTypeLabel>Position</styled.LocationTypeLabel>
+                                </styled.LocationTypeContainer>
+                                } */}
                         </>
-
                         :
                         <styled.LocationTypeContainer>
-                            <LocationTypeButton type='human_position' selected={selectedLocation.type} />
-                            <styled.LocationTypeLabel>Human Position</styled.LocationTypeLabel>
+                            <LocationTypeButton type={selectedLocation.type} selected={selectedLocation.type} />
+                            <styled.LocationTypeLabel>{locationTypeName}</styled.LocationTypeLabel>
                         </styled.LocationTypeContainer>
                     }
 
@@ -404,14 +445,17 @@ export default function LocationContent() {
 
                 {selectedLocation.schema === 'station' ?
                     <>
-                        {MiRMapEnabled ?
+
+                        <Positions handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+
+                        {/* {MiRMapEnabled ?
                             <>
                                 <Positions type='cart_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
                                 <Positions type='shelf_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
                             </>
                             :
                             <Positions type='human_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
-                        }
+                        } */}
 
 
                     </>
