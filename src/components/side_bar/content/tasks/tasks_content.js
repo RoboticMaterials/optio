@@ -48,7 +48,7 @@ export default function TaskContent(props) {
     const locations = useSelector(state => state.locationsReducer.locations)
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
 
-    console.log('hi')
+
 
     // State definitions
     const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
@@ -136,8 +136,8 @@ export default function TaskContent(props) {
 
                     tasksSortedAlphabetically(Object.values(tasks))
                         // Filters outs any tasks that don't belong to the current map or apart of a process
-                        // .filter(task => !task.process && (task.map_id === currentMap._id))
-                        .filter(task => task.map_id === currentMap._id)
+                        .filter(task => !task.process && (task.map_id === currentMap._id))
+                        // .filter(task => task.map_id === currentMap._id)
                         // Filter outs any human tasks that have associated tasks (AKA it only shows the associated device task)
                         .filter(task => !task.associated_task || (!!task.associated_task && task.device_type !== 'human'))
 
