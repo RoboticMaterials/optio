@@ -202,6 +202,8 @@ const StatisticsOverview = (props) => {
         var stationReportEventIds = reportEvents.station_id && reportEvents.station_id[stationID]
 
         let data = []
+        var minCount = 0
+        var maxCount = 1
 
         stationReportEventIds && Array.isArray(stationReportEventIds) && stationReportEventIds.forEach((currId, ind) => {
             const currentEvent = reportEvents._id && reportEvents._id[currId]
@@ -215,6 +217,9 @@ const StatisticsOverview = (props) => {
                 description,
                 label,
             } = currentEvent || {}
+
+            if(event_count < minCount) minCount = event_count
+            if(event_count > maxCount) maxCount = event_count
 
             if(label && event_count) data.push({
                 x: label,
@@ -252,6 +257,12 @@ const StatisticsOverview = (props) => {
                 y: 0
             })
         }
+
+        var list = [];
+        for (var i = minCount; i <= maxCount; i++) {
+            list.push(i);
+        }
+
         return(
             <styled.SinglePlotContainer>
                 <styled.DateSelectorTitle>Reports</styled.DateSelectorTitle>
@@ -259,20 +270,72 @@ const StatisticsOverview = (props) => {
                 <BarChart
                     layout={isData ? "horizontal" : "vertical"}
                     data={data}
-                    // selector={"day"}
                     enableGridX={ isData ? true : false}
                     enableGridY={ !isData ? true : false}
                     mainTheme={themeContext}
                     axisBottom={{
                         legend: 'Count',
+                        tickValues: list
                     }}
                     axisLeft={{
-                        legend: 'Event'
+                        legend: 'asb'
                     }}
                 />
 
                 {!isData &&
                     <styled.NoDataText>No Data</styled.NoDataText>
+                }
+            </styled.SinglePlotContainer>
+        )
+    }
+
+    const renderThroughputChart = () => {
+
+        const filteredData = data?.throughPut.filter((item, index) => {
+          return item.y > 0
+        })
+
+        var tickValues
+        if(filteredData && filteredData.length > 7) {
+            tickValues = filteredData && filteredData.filter((item, index) => {
+                return index % 2 === 0
+            }).map((item) => item.x)
+        }
+
+        return (
+            <styled.SinglePlotContainer>
+                {!!data &&
+                <>
+                    <TimeSpans color={colors[selector]} setTimeSpan={(timeSpan) => handleTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
+
+                    {/* Commented out for now, only need through put bar chart */}
+                    {/* {handleGaugeCharts()} */}
+                </>
+                }
+                {handleDateSelector()}
+                <styled.DateSelectorTitle>Throughput</styled.DateSelectorTitle>
+                <BarChart
+                    data={filteredData ? {
+                        throughPut: filteredData
+                    } : {
+                        // default fake data
+                        throughPut:[{
+                            x: "",
+                            y: 0
+                        }]}
+                    }
+                    enableGridY={true}
+                    selector={selector}
+                    mainTheme={themeContext}
+                    timeSpan={timeSpan}
+                    axisBottom={{
+                        tickValues: tickValues,
+                        tickRotation: -90,
+                    }}
+                />
+
+                {!data &&
+                <styled.NoDataText>No Data</styled.NoDataText>
                 }
             </styled.SinglePlotContainer>
         )
@@ -373,6 +436,8 @@ const StatisticsOverview = (props) => {
         )
     }
 
+
+
     return (
 
         <styled.OverviewContainer>
@@ -387,71 +452,17 @@ const StatisticsOverview = (props) => {
             {/* Commented out for now, only need through put bar chart */}
             {/* <DataSelector selector={selector} setSelector={setSelector} /> */}
 
-
-
-
             {isLoading ?
                 <styled.LoadingIcon className="fas fa-circle-notch fa-spin" style={{ fontSize: '3rem', marginTop: '5rem' }} />
                 :
-
-                // <BarChart data={data} selector={selector} />
-
-
                 <styled.PlotsContainer
                     ref={pc => plotRef = pc}
                     // onMouseMove={findSlice}
                     onMouseLeave={() => { setSlice(null) }}
                 >
-
-
-
-                    <styled.SinglePlotContainer>
-                        {/*{!!data &&*/}
-                        {/*<>*/}
-                        {/*    <TimeSpans color={colors[selector]} setTimeSpan={(timeSpan) => handleTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>*/}
-
-                        {/*    /!* Commented out for now, only need through put bar chart *!/*/}
-                        {/*    /!* {handleGaugeCharts()} *!/*/}
-                        {/*</>*/}
-                        {/*}*/}
-                        {/*{handleDateSelector()}*/}
-                    <styled.DateSelectorTitle>Throughput</styled.DateSelectorTitle>
-                        {/*<div style={{flex: 1}}>*/}
-
-
-                        {/*<div style={{flex: 1, background: "pink", padding: "1rem"}}>*/}
-                        {/*    <div style={{height:"100%", background: "magenta", padding: '1rem'}}>*/}
-                            <BarChart
-                                data={data ? data : {
-                                    // default fake data
-                                    throughPut:[{
-                                        x: "",
-                                        y: 0
-                                    }]}
-                                }
-                                enableGridY={true}
-                                selector={selector}
-                                mainTheme={themeContext}
-                                timeSpan={timeSpan}
-                            />
-                        {/*    </div>*/}
-                        {/*</div>*/}
-                        {/*</div>*/}
-
-                        {!data &&
-                        <styled.NoDataText>No Data</styled.NoDataText>
-                        }
-                    </styled.SinglePlotContainer>
-                    {/* <BarChart data={data} selector={selector} /> */}
-
-
+                    {renderThroughputChart()}
                     {renderReportChart()}
-
-
                 </styled.PlotsContainer>
-
-
-
             }
 
 

@@ -166,7 +166,7 @@ const DashboardScreen = (props) => {
             Object.values(taskQueue).map((item, ind) => {
 
                 // If it is matching, add a button the the dashboard for unloading
-                if (!!item.hil_station_id && item.hil_station_id === stationID && hilResponse !== item._id.$oid && tasks[item.task_id].device_type === 'human') {
+                if (!!item.hil_station_id && item.hil_station_id === stationID && hilResponse !== item._id.$oid && tasks[item.task_id]?.device_type === 'human') {
                     buttons = [
                         ...buttons,
                         {

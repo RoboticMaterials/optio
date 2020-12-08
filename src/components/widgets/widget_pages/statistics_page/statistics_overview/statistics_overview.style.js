@@ -15,7 +15,7 @@ export const OverviewContainer = styled.div`
     justify-content: center;
 
     padding-top: 1rem;
-    padding: .5rem;
+    // padding: .5rem;
 
 `
 
@@ -33,6 +33,7 @@ export const PlotsContainer = styled.div`
     flex: 1;
     width: 100%;
     overflow: auto;
+    // padding: 1rem;
     padding: 1rem;
     
     @media (max-width: ${props => props.theme.widthBreakpoint.laptopL}){
@@ -55,16 +56,19 @@ export const SinglePlotContainer = styled.div`
 	position: relative;
   	display: flex;
   	flex-direction: column;
-	margin: 2rem;
+  	align-items: center;
 	overflow: hidden;
 	height: 100%;
-	min-height: 100%;
-	padding: 2rem;
-	flex: 1;
+	min-height: 20rem;
+	margin-bottom: 1rem;
+	
+	@media (min-width: ${props => props.theme.widthBreakpoint.laptopL}){
+        flex: 1;
+        height: 100%;
+        width: 100%;
+    }
 	
 	@media (max-width: ${props => props.theme.widthBreakpoint.laptopL}){
-        // flex-direction: column;
-        // flex: 0;
         height: 100%;
         width: 100%;
     }
@@ -145,6 +149,8 @@ export const RowContainer = styled.div`
 
 export const DateSelectorIcon = styled.i`
     font-size: 1.5rem;
+    margin-right: 1rem;
+    margin-left: 1rem;
     color: ${props => props.theme.bg.septenary};
 
     &:hover{
