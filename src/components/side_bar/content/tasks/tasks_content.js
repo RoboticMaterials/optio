@@ -48,6 +48,8 @@ export default function TaskContent(props) {
     const locations = useSelector(state => state.locationsReducer.locations)
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
 
+    console.log('hi')
+
     // State definitions
     const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
     const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)  // Current task
