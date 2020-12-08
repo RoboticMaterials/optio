@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 
 // Import Actions
 import { getMaps } from '../../redux/actions/map_actions'
-import { getTaskQueue } from '../../redux/actions/task_queue_actions'
+import { getTaskQueue, deleteTaskQueueItem } from '../../redux/actions/task_queue_actions'
 import { getLocations } from '../../redux/actions/locations_actions'
 import { getObjects } from '../../redux/actions/objects_actions'
 import { getTasks, deleteTask } from '../../redux/actions/tasks_actions'
@@ -76,6 +76,7 @@ const ApiContainer = (props) => {
     const onDeleteDashboard = (ID) => dispatch(deleteDashboard(ID))
     const onDeletePosition = (position, ID) => dispatch(deletePosition(position, ID))
     const onDeleteStation = async (ID) => await dispatch(deleteStation(ID))
+    const onDeleteTaskQItem = async (ID) => await dispatch(deleteTaskQueueItem(ID))
 
     const onPutDevice = (device, ID) => dispatch(putDevices(device, ID))
     const onPutPosition = (position, ID) => dispatch(putPosition(position, ID))
@@ -276,6 +277,7 @@ const ApiContainer = (props) => {
         handleStationsWithBrokenChildren(locations)
         handleTasksWithBrokenProcess(processes, tasks)
         handleProcessesWithBrokenRoutes(processes, tasks)
+        handleTaskQueueWithBrokenTasks(taskQueue, tasks)
 
         props.apiLoaded()
         props.onLoad()
@@ -662,6 +664,24 @@ const ApiContainer = (props) => {
             }
         })
 
+    }
+
+    /**
+     * This handles task queue items that belong to a broken task
+     * A task would be broken because it has been deleted
+     * @param {*} taskQueue 
+     * @param {*} tasks 
+     */
+    const handleTaskQueueWithBrokenTasks = async (taskQueue, tasks) => {
+        if(taskQueue === undefined) return
+
+        Object.values(taskQueue).map( async (Q, i) => {
+            if(tasks[Q.task_id] === undefined) {
+                console.log('QQQQ TaskQ associated task has been deleted')
+                await onDeleteTaskQItem(Q._id.$oid)
+            }
+
+        })
     }
 
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -136,7 +136,6 @@ export default function Positions(props) {
      * @param {*} i 
      */
     const handleDelete = async (position, i) => {
-        console.log('QQQQ deleting', position, i)
         // If the position is new, just remove it from the local station
         // Since the position is new, it does not exist in the backend and there can't be any associated tasks
         if (!!position.new) {
@@ -166,7 +165,6 @@ export default function Positions(props) {
             
             // If deleting an existing position, you also need to update the copy because it's a permenant delete, you cant undo a position delete
             // TODO: Get rid of copy's....
-            console.log('QQQQ HERE!!!!', deepCopy(selectedLocation), locationPositionIDs)
             onSetSelectedLocationCopy(deepCopy({
                 ...selectedLocation,
                 children: [...locationPositionIDs],
