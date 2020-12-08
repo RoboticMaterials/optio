@@ -14,7 +14,6 @@ import * as sidebarActions from "../../../redux/actions/sidebar_actions"
 import * as locationActions from '../../../redux/actions/locations_actions'
 import * as dashboardActions from '../../../redux/actions/dashboards_actions'
 
-
 import { deepCopy } from '../../../methods/utils/utils'
 
 
@@ -43,6 +42,7 @@ const WidgetButton = (props) => {
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const editing = useSelector(state => state.locationsReducer.editingLocation)
     const positions = useSelector(state => state.locationsReducer.positions)
+    const showSideBar = useSelector(state => state.sidebarReducer.open)
 
     const dashboardID = params.dashboardID
 
@@ -95,10 +95,19 @@ const WidgetButton = (props) => {
                 else {
                   if(type=='dashboards'){
                     const dashboardID = selectedLocation ? selectedLocation.dashboards[0] : null
-                    history.push('/locations/' + id + '/' +type + '/' + dashboardID)
+                    if(dashboardID){
+                      history.push('/locations/' + id + '/' +type + '/' + dashboardID)
+                    }
+                    else{history.push('/locations/' + id + '/' +type + '/')}
                     onDashboardOpen(true)
                   }
                   else {history.push('/locations/' + id + '/' +type)}
+
+
+                  if (showSideBar) {
+                      const hamburger = document.querySelector('.hamburger')
+                      hamburger.classList.toggle('is-active')
+                  }
 
                   //const hamburger = document.querySelector('.hamburger')
                   //hamburger.classList.toggle(false)
