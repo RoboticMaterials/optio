@@ -40,6 +40,8 @@ const SideBar = (props) => {
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
     const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
+    const locations = useSelector(state => state.locationsReducer.locations)
+    const positions = useSelector(state => state.locationsReducer.positions)
 
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
@@ -83,7 +85,6 @@ const SideBar = (props) => {
             dispatchHoverStationInfo(null)
         } else {
             const newSideBarState = !showSideBar
-
             setShowSideBar(newSideBarState)
             dispatch(sidebarActions.setOpen(newSideBarState))
         }

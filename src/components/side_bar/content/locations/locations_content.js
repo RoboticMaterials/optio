@@ -89,7 +89,6 @@ export default function LocationContent() {
     const editing = useSelector(state => state.locationsReducer.editingLocation)
 
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
-    // const [editing, toggleEditing] = useState(false)
 
     const [mergeStation, setMergeStation] = useState(false)
 
@@ -359,7 +358,7 @@ export default function LocationContent() {
         }
         return (
             <styled.ContentContainer
-                // Delete any new positions that were never dragged onto the map
+                // Delete any newf positions that were never dragged onto the map
                 onMouseUp={e => {
 
                 }}
