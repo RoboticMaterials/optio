@@ -21,6 +21,10 @@ import { clone_object } from '../../methods/utils/utils';
 
 const defaultState = {
   reportEvents: {},
+  id: {},
+  dashboard_id: {},
+  station_id: {},
+  report_button_id: {},
   error: {},
   pending: false
 };
@@ -55,7 +59,13 @@ export default function reportEventsReducer(state = defaultState, action) {
       const created = action.payload.createdReportEvent
 
       return  Object.assign({}, state, {
-        reportEvents: {...state.reportEvents, [created.report_button_id]: created},
+        reportEvents: {
+          ...state.reportEvents,
+          _id: {
+            ...state.reportEvents._id,
+            [created.report_button_id]: created
+          }
+        },
         pending: false
       });
 
@@ -79,10 +89,13 @@ export default function reportEventsReducer(state = defaultState, action) {
       const {
         [action.payload.id]: old,
           ...rest
-      } = state.reportEvents
+      } = state.reportEvents._id
 
       return  Object.assign({}, state, {
-        reportEvents: {...rest},
+        reportEvents: {
+          ...state.reportEvents,
+          _id: {...rest,}
+        },
         pending: false
       });
 
@@ -104,7 +117,13 @@ export default function reportEventsReducer(state = defaultState, action) {
     case  PUT + REPORT_EVENT + SUCCESS:
 
       return  Object.assign({}, state, {
-        reportEvents: {...state.reportEvents, [action.payload.updatedReportEvent.report_button_id]: action.payload.updatedReportEvent},
+        reportEvents: {
+          ...state.reportEvents,
+          _id: {
+            ...state.reportEvents._id,
+            [action.payload.updatedReportEvent.report_button_id]: action.payload.updatedReportEvent
+          }
+        },
         pending: false
       });
 

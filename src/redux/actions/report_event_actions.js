@@ -24,6 +24,35 @@ import {convertArrayToObject} from "../../methods/utils/utils";
 
 const logger = log.getLogger("ReportEvents", "Redux")
 
+export const convertData = (array, key) => {
+    const initialValue = {
+        station_id: {},
+        report_button_id: {}
+    };
+    return array.reduce((obj, item) => {
+        let current = obj.station_id[item.station_id] ? obj.station_id[item.station_id] : []
+        let current1 = obj.report_button_id[item.report_button_id] ? obj.report_button_id[item.report_button_id] : []
+
+        return {
+            ...obj,
+            // [item[key]]: item,
+            _id: {
+                ...obj._id,
+                [item._id]: item
+            },
+            station_id: {
+                ...obj.station_id,
+                [item.station_id]: [...current, item._id]
+            },
+            report_button_id: {
+                ...obj.report_button_id,
+                [item.report_button_id]: [...current1, item._id]
+            }
+        };
+    }, initialValue);
+};
+
+
 // get
 // ******************************
 export const getReportEvents = () =>  async (dispatch) => {
@@ -37,7 +66,7 @@ export const getReportEvents = () =>  async (dispatch) => {
 
         // make request
         const reportEvents = await api.getReportEvents();
-        const reportEventsObj = convertArrayToObject(reportEvents, "report_button_id")
+        const reportEventsObj = convertData(reportEvents, "_id")
 
         // format response
         // const normalizedSchedules = normalize(schedules, schedulesSchema);

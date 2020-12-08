@@ -24,6 +24,7 @@ export const convertArrayToObject = (array, key) => {
     }, initialValue);
 };
 
+
 export function clone_object(obj) {
     if (null == obj || "object" != typeof obj) return obj;
     var copy = obj.constructor();

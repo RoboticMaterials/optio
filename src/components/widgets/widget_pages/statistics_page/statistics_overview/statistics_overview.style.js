@@ -7,7 +7,7 @@ export const OverviewContainer = styled.div`
     flex-direction: column;
     text-align: center;
     width: 100%;
-    height: auto;
+    height: 100%;
     border-radius: 1rem;
 
     align-items: center;
@@ -23,31 +23,42 @@ export const StationName = styled.h1`
     font-family: ${props => props.theme.font.primary};
 `
 
-export const PlotContainer = styled.div`
-    position: absolute;
-    top: 8rem;
-    /* bottom: 6rem; */
-
-    /* left: 9rem;
-    right: 8rem; */
-
+export const PlotsContainer = styled.div`
+  	align-items: center;
+  	justify-content: center;
     display: flex;
-    flex-direction: column;
-    /* position:inherit; */
-
+    flex-direction: row;
+  	flex-wrap: wrap;
     height: 100%;
     max-height: 50rem;
-    
     max-width: 90rem;
     width: 100%;
-    margin: 0rem auto;
-    margin-top: 4rem;
-
-    overflow: visible;
+    overflow: hidden;
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
         max-height: 30rem;
     }
+`
+
+export const NoDataText = styled.span`
+	position: absolute;
+	top: 40%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: ${props => props.theme.fontSize.sz2};
+	font-family: ${props => props.theme.font.primary};
+	font-weight: ${props => props.theme.fontWeight.bold};
+	color: ${props => props.theme.bg.septenary};
+`
+
+export const SinglePlotContainer = styled.div`
+	position: relative;
+	max-height: 100%;
+  	height: 100%;
+	max-width: 90rem;
+	width: 45%;
+	margin: 2rem;
+	overflow: hidden;
 `
 
 // ========== Statistics Container ========== //
