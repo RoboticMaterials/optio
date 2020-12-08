@@ -22,16 +22,23 @@ import { ResponsiveBar } from '@nivo/bar';
 
 // Import Utils
 import { getDateName, getDateFromString } from '../../../../../methods/utils/utils'
+import {getReportEvents} from "../../../../../redux/actions/report_event_actions";
+
+const tempColors = ['#FF4B4B', '#56d5f5', '#50de76', '#f2ae41', '#c7a0fa']
 
 // TODO: Commented out charts for the time being (See comments that start with TEMP)
 const StatisticsOverview = (props) => {
 
     const themeContext = useContext(ThemeContext);
 
+    const dispatch = useDispatch()
+    const onGetReportEvents = () => dispatch(getReportEvents());
+
     const [delayChartRender, setDelayChartRender] = useState('none')
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
     const locations = useSelector(state => state.locationsReducer.locations)
     const devices = useSelector(state => state.devicesReducer.devices)
+    const reportEvents = useSelector(state => { return state.reportEventsReducer.reportEvents }) || {}
 
     const [data, setData] = useState(null)
     const [timeSpan, setTimeSpan] = useState('day')
@@ -48,6 +55,7 @@ const StatisticsOverview = (props) => {
     const stationID = params.stationID
     let plotRef = useRef()
 
+
     const locationName = locations[params.stationID].name
 
     const colors = {
@@ -58,6 +66,8 @@ const StatisticsOverview = (props) => {
 
     // On page load, load in the data for today
     useEffect(() => {
+        onGetReportEvents() // load report events
+
 
         if (locations[params.stationID].device_id !== undefined) {
             setIsDevice(true)
@@ -185,6 +195,87 @@ const StatisticsOverview = (props) => {
         }
     }
 
+    const renderReportChart = () => {
+        // stationID = params.stationID
+        var stationReportEventIds = reportEvents.station_id && reportEvents.station_id[stationID]
+
+        let data = []
+
+        stationReportEventIds && Array.isArray(stationReportEventIds) && stationReportEventIds.forEach((currId, ind) => {
+            const currentEvent = reportEvents._id && reportEvents._id[currId]
+
+            const {
+                _id,
+                dashboard_id,
+                station_id,
+                report_button_id,
+                event_count,
+                description,
+                label,
+            } = currentEvent || {}
+
+            if(label && event_count) data.push({
+                x: label,
+                y: event_count,
+            })
+        })
+
+        const isData = data.length > 0
+
+        if(isData) {
+            // add blank entries if there are less than 5 so the chart looks better
+            let blankLabel = ""
+            for(let i = data.length; i < 5; i++) {
+                data.push({
+                    x: blankLabel,
+                    y: 0
+                })
+                blankLabel += " "
+            }
+
+            // sort by event_count, which is stored under the key 'y'
+            data.sort(function(a, b) {
+                var keyA = a.y,
+                    keyB = b.y;
+                // Compare the 2 dates
+                if (keyA < keyB) return -1;
+                if (keyA > keyB) return 1;
+                return 0;
+            });
+        }
+
+        else {
+            data.push({
+                x: "",
+                y: 0
+            })
+        }
+        return(
+            <styled.SinglePlotContainer>
+                <styled.DateSelectorTitle>Reports</styled.DateSelectorTitle>
+
+                <BarChart
+                    layout={isData ? "horizontal" : "vertical"}
+                    data={data}
+                    // selector={"day"}
+                    enableGridX={ isData ? true : false}
+                    enableGridY={ !isData ? true : false}
+                    mainTheme={themeContext}
+                    axisBottom={{
+                        legend: 'Count',
+                    }}
+                    axisLeft={{
+                        legend: 'Event'
+                    }}
+                />
+
+                {!isData &&
+                    <styled.NoDataText>No Data</styled.NoDataText>
+                }
+            </styled.SinglePlotContainer>
+        )
+    }
+
     // Handles the date selector at the top of the charts
     const handleDateSelector = () => {
 
@@ -310,23 +401,41 @@ const StatisticsOverview = (props) => {
 
                 // <BarChart data={data} selector={selector} />
 
-                <styled.PlotContainer
+                <styled.PlotsContainer
                     ref={pc => plotRef = pc}
                     // onMouseMove={findSlice}
                     onMouseLeave={() => { setSlice(null) }}
                 >
 
+                    <styled.SinglePlotContainer>
                     <styled.DateSelectorTitle>Throughput</styled.DateSelectorTitle>
 
                     <BarChart
-                        data={data}
+                        data={data ? data : {
+                            // default fake data
+                            throughPut:[{
+                                x: "",
+                                y: 0
+                            }]}
+                        }
+                        enableGridY={true}
                         selector={selector}
                         mainTheme={themeContext}
                         timeSpan={timeSpan}
                     />
+                        {!data &&
+                        <styled.NoDataText>No Data</styled.NoDataText>
+                        }
+                    </styled.SinglePlotContainer>
                     {/* <BarChart data={data} selector={selector} /> */}
 
-                </styled.PlotContainer>
+
+                    {renderReportChart()}
+
+
+                </styled.PlotsContainer>
+
+
 
             }
 

@@ -68,6 +68,7 @@ const defaultState = {
         non_local_api_ip: '',
         non_local_api: false,
         mapViewEnabled: true,
+        toggleDevOptions: true,
         currentMapId: null,
         MiRMapEnabled: false
     },
@@ -191,7 +192,7 @@ const localReducer = (state = defaultState, action) => {
             });
         // ~~~~~~~~~~~~~~~
     }
-    
+
     return state
 }
 

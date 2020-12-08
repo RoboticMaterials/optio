@@ -95,7 +95,6 @@ export default function TaskContent(props) {
 
 
     const handleHumanHil = async() => {
-
       if(selectedTask!=null){
 
         if (selectedTask.device_type == 'human') {
