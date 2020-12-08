@@ -282,7 +282,7 @@ const StatisticsOverview = (props) => {
                         tickValues: list
                     }}
                     axisLeft={{
-                        legend: 'asb'
+                        legend: 'Label'
                     }}
                 />
 
