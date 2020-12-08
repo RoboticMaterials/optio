@@ -14,6 +14,7 @@ import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 // Import Actions
 import locationsReducer from '../../../../../redux/reducers/locations_reducer';
 import * as locationActions from '../../../../../redux/actions/locations_actions'
+import { setSelectedLocationCopy } from '../../../../../redux/actions/locations_actions'
 import * as positionActions from '../../../../../redux/actions/positions_actions'
 import { deleteTask } from '../../../../../redux/actions/tasks_actions'
 import { deepCopy } from '../../../../../methods/utils/utils'
@@ -30,9 +31,11 @@ export default function Positions(props) {
     } = props
 
     const dispatch = useDispatch()
+    const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
 
     const positions = useSelector(state => state.locationsReducer.positions)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
+    const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
@@ -132,8 +135,8 @@ export default function Positions(props) {
      * @param {*} position 
      * @param {*} i 
      */
-    const handleDelete = (position, i) => {
-
+    const handleDelete = async (position, i) => {
+        console.log('QQQQ deleting', position, i)
         // If the position is new, just remove it from the local station
         // Since the position is new, it does not exist in the backend and there can't be any associated tasks
         if (!!position.new) {
@@ -159,7 +162,16 @@ export default function Positions(props) {
             // TODO: Get rid of deep copy
             let locationPositionIDs = deepCopy(selectedLocation.children)
             locationPositionIDs.splice(i, 1)
-            dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
+            await dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
+            
+            // If deleting an existing position, you also need to update the copy because it's a permenant delete, you cant undo a position delete
+            // TODO: Get rid of copy's....
+            console.log('QQQQ HERE!!!!', deepCopy(selectedLocation), locationPositionIDs)
+            onSetSelectedLocationCopy(deepCopy({
+                ...selectedLocation,
+                children: [...locationPositionIDs],
+            }))
+
 
             dispatch(positionActions.deletePosition(positions[position._id], position._id))
 
