@@ -26,7 +26,7 @@ export const LocationTypes = {
      * 
      *  */ 
 
-    shelfPosition: {
+    shelf_position: {
         svgPath:
             <svg y="70">
                 <path d="M263.53,56.31l33,47a10,10,0,0,1-8.18,15.74h-66a10,10,0,0,1-8.19-15.74l33-47A10,10,0,0,1,263.53,56.31Z" />
@@ -48,7 +48,7 @@ export const LocationTypes = {
 
     },
 
-    chargePosition: {
+    charge_position: {
         svgPath:
             <svg y="70">
                 <path d="M344.75,131.18l-47,33A10,10,0,0,1,282,156V90a10,10,0,0,1,15.75-8.18l47,33A10,10,0,0,1,344.75,131.18Z" />
@@ -77,7 +77,7 @@ export const LocationTypes = {
         color: '#6283f0'
     },
 
-    cartPosition: {
+    cart_position: {
         svgPath:
             <>
                 <rect fill='transparent' x="100" y="40" width="200" height="320" rx="30" transform="translate(400 0) rotate(90)" strokeMiterlimit="10" strokeWidth="20" />
@@ -96,7 +96,7 @@ export const LocationTypes = {
         color: '#6283f0',
     },
 
-    humanPosition: {
+    human_position: {
         svgPath:
             <svg y="70">
                 <rect fill='transparent' strokeMiterlimit='10' strokeWidth='20px' x="10" y="10" width="378" height="236" rx="30" />

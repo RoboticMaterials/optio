@@ -227,9 +227,9 @@ const Location = (props) => {
 
     let color = '#6283f0' // Blue
 
-    if (location.type === 'shelf_position') color = LocationTypes['shelfPosition'].color
-    if (location.type === 'charger_position') color = LocationTypes['chargePosition'].color
-    if (location.type === 'human_position') color = LocationTypes['humanPosition'].color
+    color = LocationTypes[location.type].color
+    color = LocationTypes[location.type].color
+    color = LocationTypes[location.type].color
 
     if (selectedTask === null) {
         if (selectedLocation !== null && !isSelected && selectedTask === null) {
