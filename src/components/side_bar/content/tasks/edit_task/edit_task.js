@@ -156,7 +156,7 @@ const EditTask = (props) => {
                 </styled.RowContainer>
 
                 <Textbox
-                    defaultValue={!!selectedTask && selectedTask.load.instructions}
+                    value={!!selectedTask && selectedTask.load.instructions}
                     schema={'tasks'}
                     focus={!!selectedTask && selectedTask.type == null}
                     onChange={e => {
@@ -196,7 +196,7 @@ const EditTask = (props) => {
 
                 <styled.Header>Unload</styled.Header>
                 <Textbox
-                    defaultValue={!!selectedTask && selectedTask.unload.instructions}
+                    value={!!selectedTask && selectedTask.unload.instructions}
                     schema={'tasks'}
                     focus={!!selectedTask && selectedTask.type == null}
                     onChange={e => {
@@ -688,7 +688,21 @@ const EditTask = (props) => {
                         defaultValue={handleObject()}
                         textboxGap={0}
                         closeOnSelect="true"
-                        onChange={(values) => setObject(values[0])}
+                        onChange={(values) => {
+                            // console.log('QQQQ object', values)
+                            setObject(values[0])
+                            // onSetSelectedTask({
+                            //     ...selectedTask,
+                            //     load: {
+                            //         ...selectedTask.load,
+                            //         instructions: objects[selectedTask.obj] && !selectedTask.load.instructions.includes(objects[selectedTask.obj])`Load ${!selectedTask.load.instructions.includes(objects[selectedTask.obj])  }`
+                            //     },
+                            //     unload: {
+                            //         ...selectedTask.unload,
+                            //         instructions: `Unload ${values[0].name}`
+                            //     },
+                            // })
+                        }}
                         className="w-100"
                         schema="tasks"
                         disbaled={!isTransportTask}
