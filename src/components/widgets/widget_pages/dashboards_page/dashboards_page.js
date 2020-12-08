@@ -54,7 +54,6 @@ const DashboardsPage = (props) => {
         }
     }, [])
 
-
     // checks url params and updates editingDashboard / selectedDashboard accordingly
     useEffect(() => {
 

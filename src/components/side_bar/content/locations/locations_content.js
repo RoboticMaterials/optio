@@ -162,48 +162,12 @@ export default function LocationContent() {
     /**
      * This function is called when the back button is pressed. If the location is new, it is deleted;
      * otherwise, it is reverted to the state it was when editing begun.
+     * TODO: FIX THIS JUNKY JUNK (redo location logic, it sucks)
      */
     const onBack = () => {
 
 
         onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy, positions, locations })
-
-        // let postPositionPromise, child, locationID
-
-        // if (selectedLocationChildrenCopy != null) {
-
-
-
-
-        //     selectedLocationChildrenCopy.forEach(async (child, ind) => {
-        //         if (positions[child._id] == undefined) {
-
-        //             await Object.assign(child, { temp: false, new: true })
-        //             await dispatch(positionActions.addPosition(child))
-        //             await dispatch(positionActions.postPosition(child))
-        //             await dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
-
-        //             dispatch(setSelectedLocationCopy(null))
-        //             dispatch(setSelectedLocationChildrenCopy(null))
-
-        //             dispatch(deselectLocation())    // Deselect
-
-        //         }
-
-
-        //     })
-
-        //     selectedLocation.children.forEach((childID, ind) => {
-        //         child = positions[childID]
-        //         child.parent = locationID
-        //         selectedLocation.children[ind] = child._id
-        //         if (child.new && selectedLocationChildrenCopy[ind] != child._id) {
-        //             dispatch(positionActions.removePosition(child._id))
-
-        //         }
-
-        //     })
-        // }
 
         onEditing(false)
     }
@@ -559,7 +523,6 @@ export default function LocationContent() {
                 onMouseLeave={(location) => dispatch(locationActions.deselectLocation())}
                 onClick={(location) => {
                     // If location button is clicked, start editing it
-                    console.log('QQQQ selected Location', deepCopy(selectedLocation))
                     onSetSelectedLocationCopy(deepCopy(selectedLocation))
                     if (selectedLocation.children != null && selectedLocation.children != undefined) {
                         onSetSelectedLocationChildrenCopy(selectedLocation.children.map(positionID => deepCopy(positions[positionID])))

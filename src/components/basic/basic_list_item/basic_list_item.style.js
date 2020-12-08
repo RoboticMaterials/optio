@@ -14,8 +14,8 @@ export const textStyle = css`
 export const Container = styled.div`
     width: 100%;
 
-    padding-left: .15rem;
-    padding-right: .15rem;
+    padding-left: .5rem;
+    padding-right: .5rem;
     padding-top: .5rem;
     padding-bottom: .5rem;
 
@@ -66,7 +66,7 @@ export const Status = styled.span`
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz4};
     font-weight: 500;
-	color: ${props => props.theme.bg.quaternary};
+		color: ${props => props.theme.bg.quaternary};
 `
 
 export const LeftContentContainer = styled.div`

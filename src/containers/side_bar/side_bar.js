@@ -22,6 +22,8 @@ import Settings from '../../components/side_bar/content/settings/settings'
 import { setWidth, setMode } from "../../redux/actions/sidebar_actions";
 import * as sidebarActions from "../../redux/actions/sidebar_actions"
 import * as locationActions from '../../redux/actions/locations_actions'
+import * as taskActions from '../../redux/actions/tasks_actions'
+
 
 
 const SideBar = (props) => {
@@ -74,6 +76,8 @@ const SideBar = (props) => {
         dispatch(locationActions.setSelectedLocationCopy(null))
         dispatch(locationActions.setSelectedLocationChildrenCopy(null))
         dispatch(locationActions.deselectLocation())    // Deselect
+
+        dispatch(taskActions.deselectTask())    // Deselect
 
         if (!showSideBar && url == '/') {
             history.push(`/locations`)
