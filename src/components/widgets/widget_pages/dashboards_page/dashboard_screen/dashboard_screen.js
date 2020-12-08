@@ -164,7 +164,7 @@ const DashboardScreen = (props) => {
 
             // Map through each item and see if it's showing a station, station Id is matching the current station and a human task
             Object.values(taskQueue).map((item, ind) => {
-
+                console.log('QQQQ Item', tasks, item)
                 // If it is matching, add a button the the dashboard for unloading
                 if (!!item.hil_station_id && item.hil_station_id === stationID && hilResponse !== item._id.$oid && tasks[item.task_id].device_type === 'human') {
                     buttons = [
