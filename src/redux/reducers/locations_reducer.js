@@ -188,24 +188,53 @@ export default function locationsReducer(state = defaultState, action) {
     }
 
     const setStation = (station) => {
-        stationsCopy = deepCopy(state.stations)
+        // stationsCopy = deepCopy(state.stations)
         positionsCopy = deepCopy(state.positions)
 
-        stationsCopy[station._id] = deepCopy(station)
+        // stationsCopy[station._id] = deepCopy(station)
+        console.log('QQQQ Set station selected location', deepCopy(state.selectedLocation))
+
+        const ID = station._id
+
+        console.log('QQQQ station', deepCopy(station), ID)
+
 
         if (state.selectedLocation !== null && state.selectedLocation._id === station._id) { // The updated station is the selected location
+            console.log('QQQQ Here', state.stations)
             return {
                 ...state,
-                stations: stationsCopy,
-                locations: filterLocations(stationsCopy, positionsCopy),
-                selectedLocation: deepCopy(station),
+                stations: {
+                    ...state.stations,
+                    [ID]: station,
+                },
+                locations:
+                    filterLocations(
+                        {
+                            ...state.stations,
+                            [ID]: station,
+                        },
+                        positionsCopy
+                    ),
+                selectedLocation: station,
                 pending: false
             }
         } else {
+            console.log('QQQQ Hur', state.stations)
+
             return {
                 ...state,
-                stations: stationsCopy,
-                locations: filterLocations(stationsCopy, positionsCopy),
+                stations: {
+                    ...state.stations,
+                    [ID]: station,
+                },
+                locations:
+                    filterLocations(
+                        {
+                            ...state.stations,
+                            [ID]: station,
+                        },
+                        positionsCopy
+                    ),
                 pending: false
             }
         }
@@ -434,6 +463,8 @@ export default function locationsReducer(state = defaultState, action) {
         positionsCopy = deepCopy(state.positions)
 
         delete positionsCopy[id]
+
+        console.log('QQQQ removing position', id)
 
         if (state.selectedLocation !== null && state.selectedLocation._id === id) { // The deleted position is the selected location
             return {

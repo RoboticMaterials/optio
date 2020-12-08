@@ -35,8 +35,8 @@ import uuid from 'uuid'
 function locationTypeGraphic(type, isNotSelected) {
     switch (type) {
         case 'shelf_position':
-            return (<styled.LocationTypeGraphic fill={LocationTypes['shelfPosition'].color} stroke={LocationTypes['shelfPosition'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                {LocationTypes['shelfPosition'].svgPath}
+            return (<styled.LocationTypeGraphic fill={LocationTypes['shelf_position'].color} stroke={LocationTypes['shelf_position'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                {LocationTypes['shelf_position'].svgPath}
             </styled.LocationTypeGraphic>
             )
 
@@ -49,16 +49,16 @@ function locationTypeGraphic(type, isNotSelected) {
 
         case 'cart_position':
             return (
-                <styled.LocationTypeGraphic fill={LocationTypes['cartPosition'].color} stroke={LocationTypes['cartPosition'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                    {LocationTypes['cartPosition'].svgPath}
+                <styled.LocationTypeGraphic fill={LocationTypes['cart_position'].color} stroke={LocationTypes['cart_position'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                    {LocationTypes['cart_position'].svgPath}
                 </styled.LocationTypeGraphic>
 
             )
 
         case 'human_position':
             return (
-                <styled.LocationTypeGraphic fill={LocationTypes['humanPosition'].color} stroke={LocationTypes['humanPosition'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                    {LocationTypes['humanPosition'].svgPath}
+                <styled.LocationTypeGraphic fill={LocationTypes['human_position'].color} stroke={LocationTypes['human_position'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                    {LocationTypes['human_position'].svgPath}
                 </styled.LocationTypeGraphic>
 
             )
@@ -101,18 +101,18 @@ export default function LocationContent() {
 
                 break
             case 'cart_position':
-                template = LocationTypes['cartPosition'].attributes
+                template = LocationTypes['cart_position'].attributes
 
                 break
 
             case 'human_position':
-                template = LocationTypes['humanPosition'].attributes
+                template = LocationTypes['human_position'].attributes
 
                 break
 
 
             case 'shelf_position':
-                template = LocationTypes['shelfPosition'].attributes
+                template = LocationTypes['shelf_position'].attributes
 
                 break
 
@@ -559,6 +559,7 @@ export default function LocationContent() {
                 onMouseLeave={(location) => dispatch(locationActions.deselectLocation())}
                 onClick={(location) => {
                     // If location button is clicked, start editing it
+                    console.log('QQQQ selected Location', deepCopy(selectedLocation))
                     onSetSelectedLocationCopy(deepCopy(selectedLocation))
                     if (selectedLocation.children != null && selectedLocation.children != undefined) {
                         onSetSelectedLocationChildrenCopy(selectedLocation.children.map(positionID => deepCopy(positions[positionID])))
