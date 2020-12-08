@@ -64,6 +64,8 @@ const StatisticsOverview = (props) => {
         throughPut: '#d177ed'
     }
 
+    console.log("data",data)
+
     // On page load, load in the data for today
     useEffect(() => {
         onGetReportEvents() // load report events
@@ -380,19 +382,12 @@ const StatisticsOverview = (props) => {
                 handleDeviceStatistics()
             } */}
 
-            {!!data &&
-                <>
-                    <TimeSpans color={colors[selector]} setTimeSpan={(timeSpan) => handleTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
 
-                    {/* Commented out for now, only need through put bar chart */}
-                    {/* {handleGaugeCharts()} */}
-                </>
-            }
 
             {/* Commented out for now, only need through put bar chart */}
             {/* <DataSelector selector={selector} setSelector={setSelector} /> */}
 
-            {handleDateSelector()}
+
 
 
             {isLoading ?
@@ -401,28 +396,48 @@ const StatisticsOverview = (props) => {
 
                 // <BarChart data={data} selector={selector} />
 
+
                 <styled.PlotsContainer
                     ref={pc => plotRef = pc}
                     // onMouseMove={findSlice}
                     onMouseLeave={() => { setSlice(null) }}
                 >
 
-                    <styled.SinglePlotContainer>
-                    <styled.DateSelectorTitle>Throughput</styled.DateSelectorTitle>
 
-                    <BarChart
-                        data={data ? data : {
-                            // default fake data
-                            throughPut:[{
-                                x: "",
-                                y: 0
-                            }]}
-                        }
-                        enableGridY={true}
-                        selector={selector}
-                        mainTheme={themeContext}
-                        timeSpan={timeSpan}
-                    />
+
+                    <styled.SinglePlotContainer>
+                        {/*{!!data &&*/}
+                        {/*<>*/}
+                        {/*    <TimeSpans color={colors[selector]} setTimeSpan={(timeSpan) => handleTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>*/}
+
+                        {/*    /!* Commented out for now, only need through put bar chart *!/*/}
+                        {/*    /!* {handleGaugeCharts()} *!/*/}
+                        {/*</>*/}
+                        {/*}*/}
+                        {/*{handleDateSelector()}*/}
+                    <styled.DateSelectorTitle>Throughput</styled.DateSelectorTitle>
+                        {/*<div style={{flex: 1}}>*/}
+
+
+                        {/*<div style={{flex: 1, background: "pink", padding: "1rem"}}>*/}
+                        {/*    <div style={{height:"100%", background: "magenta", padding: '1rem'}}>*/}
+                            <BarChart
+                                data={data ? data : {
+                                    // default fake data
+                                    throughPut:[{
+                                        x: "",
+                                        y: 0
+                                    }]}
+                                }
+                                enableGridY={true}
+                                selector={selector}
+                                mainTheme={themeContext}
+                                timeSpan={timeSpan}
+                            />
+                        {/*    </div>*/}
+                        {/*</div>*/}
+                        {/*</div>*/}
+
                         {!data &&
                         <styled.NoDataText>No Data</styled.NoDataText>
                         }

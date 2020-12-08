@@ -8,12 +8,14 @@ export const OverviewContainer = styled.div`
     text-align: center;
     width: 100%;
     height: 100%;
+    flex: 1;
     border-radius: 1rem;
 
     align-items: center;
     justify-content: center;
 
     padding-top: 1rem;
+    padding: .5rem;
 
 `
 
@@ -25,18 +27,16 @@ export const StationName = styled.h1`
 
 export const PlotsContainer = styled.div`
   	align-items: center;
-  	justify-content: center;
+  	position: relative;
     display: flex;
     flex-direction: row;
-  	flex-wrap: wrap;
-    height: 100%;
-    max-height: 50rem;
-    max-width: 90rem;
+    flex: 1;
     width: 100%;
-    overflow: hidden;
-
-    @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
-        max-height: 30rem;
+    overflow: auto;
+    padding: 1rem;
+    
+    @media (max-width: ${props => props.theme.widthBreakpoint.laptopL}){
+        flex-direction: column;
     }
 `
 
@@ -53,12 +53,21 @@ export const NoDataText = styled.span`
 
 export const SinglePlotContainer = styled.div`
 	position: relative;
-	max-height: 100%;
-  	height: 100%;
-	max-width: 90rem;
-	width: 45%;
+  	display: flex;
+  	flex-direction: column;
 	margin: 2rem;
 	overflow: hidden;
+	height: 100%;
+	min-height: 100%;
+	padding: 2rem;
+	flex: 1;
+	
+	@media (max-width: ${props => props.theme.widthBreakpoint.laptopL}){
+        // flex-direction: column;
+        // flex: 0;
+        height: 100%;
+        width: 100%;
+    }
 `
 
 // ========== Statistics Container ========== //

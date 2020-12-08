@@ -46,9 +46,11 @@ const BarChart = (props) => {
             keys={['y']}
             // borderColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}
             indexBy='x'
+            // indexScale={{ type: 'band', round: true }}
             animate={false}
-            // colors={{scheme:'nivo'}}
-            colors={['#d177ed', "#eed312"]}
+            colors={{scheme:'nivo'}}
+            colorBy={"x"}
+            // colors={['#d177ed', "#eed312"]}
             // color={['#d177ed', "#eed312"]}
             borderColor={{ from: 'color' }}
             // borderColor='#d177ed'
