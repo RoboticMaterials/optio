@@ -35,11 +35,11 @@ export const ListContainer = styled.div`
 	width: 100%;
 	flex: 1;
 
-    padding: 1rem;
+    padding: .1rem;
     padding-top: 1.5rem;
 
 	overflow: auto;
-	
+
 	// optionally style scroll bar
 	::-webkit-scrollbar {
 	}
