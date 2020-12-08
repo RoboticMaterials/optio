@@ -66,6 +66,7 @@ const DashboardScreen = (props) => {
     const dispatch = useDispatch()
     const onDashboardOpen = (bol) => dispatch(dashboardOpen(bol))
     const onHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
+    const onLocalHumanTask = (bol) => dispatch({type: 'LOCAL_HUMAN_TASK', payload: bol})
     const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
 
     const history = useHistory()
@@ -275,7 +276,7 @@ const DashboardScreen = (props) => {
             // Set hil_response to null because the backend does not dictate the load hil message
             // Since the task is put into the q but automatically assigned to the person that clicks the button
             if (tasks[Id].device_type === 'human') {
-
+                onLocalHumanTask(true)
                 // dispatch action to add task to queue
                 await dispatch(postTaskQueue(
                     {
