@@ -559,6 +559,7 @@ export default function LocationContent() {
                 onMouseLeave={(location) => dispatch(locationActions.deselectLocation())}
                 onClick={(location) => {
                     // If location button is clicked, start editing it
+                    console.log('QQQQ selected Location', deepCopy(selectedLocation))
                     onSetSelectedLocationCopy(deepCopy(selectedLocation))
                     if (selectedLocation.children != null && selectedLocation.children != undefined) {
                         onSetSelectedLocationChildrenCopy(selectedLocation.children.map(positionID => deepCopy(positions[positionID])))
