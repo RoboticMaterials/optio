@@ -260,7 +260,11 @@ const StatisticsOverview = (props) => {
 
         var list = [];
         for (var i = minCount; i <= maxCount; i++) {
-            list.push(i);
+            if((maxCount - minCount) > 15) {
+                if(i % 2 === 0) list.push(i)
+            } else {
+                list.push(i)
+            }
         }
 
         return(
@@ -292,13 +296,15 @@ const StatisticsOverview = (props) => {
     const renderThroughputChart = () => {
 
         const filteredData = data?.throughPut.filter((item, index) => {
-          return item.y > 0
+          // return item.y > 0
+            return true
         })
 
         var tickValues
         if(filteredData && filteredData.length > 7) {
             tickValues = filteredData && filteredData.filter((item, index) => {
-                return index % 2 === 0
+                // return index % 2 === 0
+                return true
             }).map((item) => item.x)
         }
 

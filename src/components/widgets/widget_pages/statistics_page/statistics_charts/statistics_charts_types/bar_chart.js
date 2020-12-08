@@ -195,6 +195,7 @@ const BarChart = (props) => {
             axisLeft={{
                 tickSize: 5,
                 zIndex: 200,
+                // anchor: "right",
                 // tickPadding: layout === "horizontal" ? 40 : 4,
                 tickRotation: 0,
                 legend: 'Units',

@@ -10,6 +10,7 @@ export const SchemaIcon = styled.i`
     margin: 0;
     height: fit-content;
     width: fit-content;
+    // background: blue;
 
 `
 

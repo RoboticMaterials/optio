@@ -59,7 +59,8 @@ export const SinglePlotContainer = styled.div`
   	align-items: center;
 	overflow: hidden;
 	height: 100%;
-	min-height: 20rem;
+	min-height: 25rem;
+	min-width: 40rem;
 	margin-bottom: 1rem;
 	
 	@media (min-width: ${props => props.theme.widthBreakpoint.laptopL}){
