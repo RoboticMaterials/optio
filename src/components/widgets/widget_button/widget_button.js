@@ -116,7 +116,7 @@ const WidgetButton = (props) => {
     // Handles if a dashboard is clicked
     const handleDashboardClick = async () => {
 
-        let dashboardID = selectedLocation.dashboards[0]
+        let dashboardID = selectedLocation ? selectedLocation.dashboards[0] : null
 
         // If the dashboard is undefined, that means the location must not have a dashboard yet, so add one
         if (dashboardID === undefined) {

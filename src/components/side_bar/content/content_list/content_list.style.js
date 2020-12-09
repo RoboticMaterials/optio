@@ -100,6 +100,7 @@ export const ListItemIcon = styled.i`
     margin-left: 1rem;
     font-size: 1.25rem;
     color: lightgreen;
+    margin-right:2rem;
 
 
     &:hover {
