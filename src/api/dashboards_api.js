@@ -107,7 +107,6 @@ export async function postDashboards(dashboards) {
         const dataJson = JSON.parse(data)
         // log.debug('response data json',dataJson);
 
-
         return dataJson;
 
 
