@@ -232,7 +232,6 @@ const Location = (props) => {
         color = LocationTypes[location.type].color
 
     } catch (error) {
-
         color = '#6283f0' // Blue
     }
 

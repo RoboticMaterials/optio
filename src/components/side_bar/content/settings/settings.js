@@ -39,6 +39,7 @@ const Settings = () => {
     const localSettings = useSelector(state => state.localReducer.localSettings)
     const status = useSelector(state => state.statusReducer.status)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
+    const devices = useSelector(state =>state.devicesReducer.devices)
 
     const {
         currentMap,
@@ -56,6 +57,10 @@ const Settings = () => {
     useEffect(() => {
         setServerSettingsState(serverSettings)
         setLocalSettingsState(localSettings)
+
+        console.log('QQQQ devices', devices)
+        console.log('QQQQ status', status)
+        console.log('QQQQ server settings', serverSettings)
 
     }, [])
 
@@ -199,19 +204,20 @@ const Settings = () => {
                             <styled.ConnectionIcon className={connectionIcon} />
                         </styled.ConnectionButton>
 
-                        {/* <Textbox
-                            placeholder="MiR IP Address"
-                            value={localSettingsState.non_local_api_ip}
-                            onChange={(event) => {
-                                handleUpdateLocalSettings({ non_local_api_ip: event.target.value })
-                            }}
-                            style={{ width: '100%' }}
-
-                        /> */}
-
-
                     </styled.RowContainer>
 
+                    <Textbox
+                        placeholder="MiR IP Address"
+                        value={serverSettingsState.mir_ip}
+                        onChange={(event) => {
+                            setServerSettingsState({ 
+                                ...serverSettingsState,
+                                mir_ip: event.target.value
+                            })
+                        }}
+                        style={{ width: '100%' }}
+
+                    />
 
                 </styled.SettingContainer>
             )
