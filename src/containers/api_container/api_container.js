@@ -392,7 +392,9 @@ const ApiContainer = (props) => {
     const handleDeviceWithoutADashboard = (devices, dashboards) => {
         Object.values(devices).map((device) => {
             // if the device does not have a dashboard, add one
-            if (!device.dashboard) {
+            if (!device.dashboards) {
+
+                console.log('QQQQ Device does not have a dashboard', device)
                 const newDeviceDashboard = {
                     name: `${device.device_name} Dashboard`,
                     buttons: [],
