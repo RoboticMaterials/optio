@@ -48,7 +48,7 @@ export const LocationTypes = {
 
     },
 
-    charge_position: {
+    charger_position: {
         svgPath:
             <svg y="70">
                 <path d="M344.75,131.18l-47,33A10,10,0,0,1,282,156V90a10,10,0,0,1,15.75-8.18l47,33A10,10,0,0,1,344.75,131.18Z" />
@@ -59,6 +59,8 @@ export const LocationTypes = {
         color: '#fbd34e',
 
     },
+
+    // charger_position: charge_position,
 
     workstation: {
         svgPath:
