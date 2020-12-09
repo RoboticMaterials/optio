@@ -226,7 +226,15 @@ const Location = (props) => {
     let pos
 
     let color = '#6283f0' // Blue
-    color = LocationTypes[location.type].color
+
+    // Try catch for unknown location types
+    try {
+        color = LocationTypes[location.type].color
+
+    } catch (error) {
+
+        color = '#6283f0' // Blue
+    }
 
     if (selectedTask === null) {
         if (selectedLocation !== null && !isSelected && selectedTask === null) {

@@ -46,7 +46,6 @@ const DashboardsPage = (props) => {
     // Leaving the rest of the code in for adding dashboards and dashboard list view because we may need it in the future
     useEffect(() => {
         const dashboardType = !!stations[stationID] ? stations[stationID] : devices[stationID]
-        console.log('QQQQ device type', dashboardType)
         const dashID = dashboardType.dashboards[0]
         props.history.push(`/locations/${stationID}/dashboards/${dashID}`)
         return () => {
