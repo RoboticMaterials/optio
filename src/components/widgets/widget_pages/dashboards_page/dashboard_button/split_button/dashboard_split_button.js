@@ -47,11 +47,11 @@ const DashboardSplitButton = (props => {
             borderGlow={taskID === 'hil_success'}
             style={containerStyle}
             css={containerCss}
-            onClick={clickable ? () => onClick(taskID) : null}
         >
             <style.SubButton
                 background={color}
                 clickable={clickable}
+                onClick={clickable ? () => onClick(taskID) : null}
 
             >
                 <style.ConditionText style={null}>{title}</style.ConditionText>
