@@ -226,6 +226,7 @@ const Location = (props) => {
     let pos
 
     let color = '#6283f0' // Blue
+    color = LocationTypes[location.type].color
 
     if (selectedTask === null) {
         if (selectedLocation !== null && !isSelected && selectedTask === null) {
@@ -249,8 +250,6 @@ const Location = (props) => {
         switch (location.type) {
             case 'workstation':
             case 'device':
-                color = LocationTypes[location.type].color
-
                 return (
                     <React.Fragment key={`frag-loc-${location._id}`}>
                         <Station isSelected={isSelected} color={color} {...props} />
@@ -271,7 +270,6 @@ const Location = (props) => {
             case "human_position":
             case 'shelf_position':
             case 'charger_position':
-                color = LocationTypes[location.type].color
 
                 return (
                     <React.Fragment key={`frag-loc-${location._id}`}>
