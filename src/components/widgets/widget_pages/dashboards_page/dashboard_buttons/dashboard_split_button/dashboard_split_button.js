@@ -6,8 +6,8 @@ import ErrorTooltip from "../../../../../basic/form/error_tooltip/error_tooltip"
 import {SchemaIcon} from "../../dashboard_editor/button_fields/button_fields.style";
 
 // Import Styles
-import * as style from './dashboard_split_button.style';
-// import { theme } from "../../../../../theme"
+import * as style from './dashboard_split_button.style'
+import * as dashboard_buttons_style from '../dashboard_buttons.style'
 
 // import logging
 import log from '../../../../../../logger'
@@ -27,13 +27,10 @@ const DashboardSplitButton = (props => {
         height,
         clickable,
         hoverable,
-        titleStyle,
         containerStyle,
         containerCss,
         error,
-        type = "",
         iconColor,
-        iconClassName,
         associatedTaskId
     } = props
 
@@ -48,7 +45,7 @@ const DashboardSplitButton = (props => {
             style={containerStyle}
             css={containerCss}
         >
-            <style.SubButton
+            <style.RobotButton
                 background={color}
                 clickable={clickable}
                 onClick={clickable ? () => onClick(taskID) : null}
@@ -57,25 +54,24 @@ const DashboardSplitButton = (props => {
                 <style.ConditionText style={null}>{title}</style.ConditionText>
 
                 <SchemaIcon className={"icon-cart"} style={{fontSize: "1rem"}} color={iconColor}></SchemaIcon>
-            </style.SubButton>
+            </style.RobotButton>
 
-            <style.SubButton2
+            <style.HumanButton
                 clickable={clickable}
                 background={color}
                 onClick={clickable ? () => onClick(associatedTaskId) : null}
             >
                 <SchemaIcon className={"fas fa-user"} color={iconColor}></SchemaIcon>
-            </style.SubButton2>
+            </style.HumanButton>
 
             {children && children}
             <ErrorTooltip
                 visible={error}
                 text={error}
-                ContainerComponent={style.ErrorContainerComponent}
+                ContainerComponent={dashboard_buttons_style.ErrorContainerComponent}
             />
         </style.Container>
     )
-
 })
 
 // Specifies propTypes

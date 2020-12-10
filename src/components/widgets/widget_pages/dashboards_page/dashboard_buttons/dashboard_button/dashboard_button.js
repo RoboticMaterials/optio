@@ -2,15 +2,16 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 // import components
-import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
-import {SchemaIcon} from "../dashboard_editor/button_fields/button_fields.style";
+import ErrorTooltip from "../../../../../basic/form/error_tooltip/error_tooltip";
+import {SchemaIcon} from "../../dashboard_editor/button_fields/button_fields.style";
 
 // Import Styles
 import * as style from './dashboard_button.style';
-import { theme } from "../../../../../theme"
+import * as dashboard_buttons_style from '../dashboard_buttons.style';
+import { theme } from "../../../../../../theme"
 
 // import logging
-import log from '../../../../../logger'
+import log from '../../../../../../logger'
 
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
@@ -65,7 +66,7 @@ const DashboardButton = (props => {
             <ErrorTooltip
                 visible={error}
                 text={error}
-                ContainerComponent={style.ErrorContainerComponent}
+                ContainerComponent={dashboard_buttons_style.ErrorContainerComponent}
             />
 
 

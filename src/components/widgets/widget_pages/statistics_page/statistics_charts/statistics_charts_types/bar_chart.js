@@ -6,7 +6,7 @@ import { ResponsiveBar } from '@nivo/bar'
 // Import utils
 import { } from '../../../../../../methods/utils/utils'
 import PropTypes from "prop-types";
-import DashboardButton from "../../../dashboards_page/dashboard_button/dashboard_button";
+import DashboardButton from "../../../dashboards_page/dashboard_buttons/dashboard_button/dashboard_button";
 
 const theme = {
     background: 'transparent',

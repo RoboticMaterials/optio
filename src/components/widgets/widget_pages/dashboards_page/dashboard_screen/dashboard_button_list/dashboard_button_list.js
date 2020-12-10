@@ -4,7 +4,7 @@ import React, {useRef, useEffect, useState} from 'react';
 import ReactList from 'react-list';
 
 // import internal components
-import DashboardButton from "../../dashboard_button/dashboard_button";
+import DashboardButton from "../../dashboard_buttons/dashboard_button/dashboard_button";
 
 // style
 import * as style from "./dashboard_button_list.style"
@@ -18,7 +18,7 @@ import log from "../../../../../../logger"
 import {deepCopy} from "../../../../../../methods/utils/utils";
 import {OPERATION_TYPES, TYPES} from "../../dashboards_sidebar/dashboards_sidebar";
 import {theme} from "../../../../../../theme";
-import DashboardSplitButton from "../../dashboard_button/split_button/dashboard_split_button";
+import DashboardSplitButton from "../../dashboard_buttons/dashboard_split_button/dashboard_split_button";
 const logger = log.getLogger("Dashboards")
 
 

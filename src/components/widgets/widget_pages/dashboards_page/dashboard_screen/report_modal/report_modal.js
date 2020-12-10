@@ -22,10 +22,10 @@ import {putDashboard} from "../../../../../../redux/actions/dashboards_actions";
 
 // styles
 import * as styled from './report_modal.style'
-import * as style from "../../dashboard_button/dashboard_button.style";
+import * as style from "../../dashboard_buttons/dashboard_button/dashboard_button.style";
 import * as buttonFieldStyles from "../../dashboard_editor/button_fields/button_fields.style";
 import DeleteFieldButton from "../../../../../basic/form/delete_field_button/delete_field_button";
-import DashboardButton from "../../dashboard_button/dashboard_button";
+import DashboardButton from "../../dashboard_buttons/dashboard_button/dashboard_button";
 import {postReportEvent, putReportEvent} from "../../../../../../redux/actions/report_event_actions";
 import {reportEventSchema, scheduleSchema} from "../../../../../../methods/utils/form_schemas";
 
