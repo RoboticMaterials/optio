@@ -34,12 +34,12 @@ export const OPERATION_TYPES = {
         key: "REPORT",
         _id: 0
     },
-    // KICK_OFF: {
-    //     schema: "kick_off",
-    //     key: "KICK_OFF",
-    //     name: "Kick off",
-    //     _id: 1
-    // }
+    KICK_OFF: {
+        schema: "kick_off",
+        key: "KICK_OFF",
+        name: "Kick off",
+        _id: 1
+    }
 }
 
 export const TYPES = {
@@ -172,9 +172,15 @@ const DashboardsSidebar = (props) => {
     }
 
     const getReportButtons = () => {
-        return Object.entries(OPERATION_TYPES).map((currEntry, ind) => {
+        return Object.entries(OPERATION_TYPES).filter((currEntry, ind) => {
+            const currKey = currEntry[0]
+            if(currKey !== OPERATION_TYPES.KICK_OFF.key) return true // KICK_OFF currently disabled
+
+        }).map((currEntry, ind) => {
+
             const currValue = currEntry[1]
             const currKey = currEntry[0]
+
             return {
                 name: currValue.name,
                 color: themeContext.schema[currValue.schema].solid,

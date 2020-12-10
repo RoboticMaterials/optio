@@ -85,14 +85,16 @@ const DashboardButtonList = ((props) => {
 				}
 				break
 
-			// uncomment when kick_off is allowed
-			// case OPERATION_TYPES.KICK_OFF.key:
-			// 	disabled = true
-			// 	error = null
-			// 	onClick = () => {
-			// 		onTaskClick(type)
-			// 	}
-			// 	break
+			case OPERATION_TYPES.KICK_OFF.key:
+			// case "KICK_OFF":
+				return null // KICK_OFF button is currently disabled
+				disabled = true
+				error = null
+				onClick = () => {
+					onTaskClick(type)
+				}
+				break
+
 			default:
 				handleRouteClick()
 				break

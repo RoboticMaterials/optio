@@ -34,21 +34,20 @@ const DashboardEditorButtonRenderer = SortableContainer((props) => {
             {buttons.map((button, ind) =>
                 <Draggable key={button.id} index={ind} style={{ overflow: 'visible' }}>
                     {/*{(button.type === OPERATION_TYPES.REPORT.key || button.type === OPERATION_TYPES.KICK_OFF.key) ?*/}
-                    {(button.type === OPERATION_TYPES.REPORT.key) ?
+                    {(button.type === OPERATION_TYPES.REPORT.key) &&
                         <DashboardReportField
                             button={button}
                             ind={ind}
                             {...props}
                         />
-                        :
+                    }
+                    {((button.type === TYPES.ROUTES.key) || (!button.type)) && // KICK_OFF currently disabled
                         <DashboardEditTasksField
                             button={button}
                             ind={ind}
                             {...props}
                         />
-
                     }
-
                 </Draggable>
             )}
         </Container>
