@@ -227,9 +227,13 @@ const Location = (props) => {
 
     let color = '#6283f0' // Blue
 
-    color = LocationTypes[location.type].color
-    color = LocationTypes[location.type].color
-    color = LocationTypes[location.type].color
+    // Try catch for unknown location types
+    try {
+        color = LocationTypes[location.type].color
+
+    } catch (error) {
+        color = '#6283f0' // Blue
+    }
 
     if (selectedTask === null) {
         if (selectedLocation !== null && !isSelected && selectedTask === null) {
@@ -272,8 +276,8 @@ const Location = (props) => {
             case 'cart_position':
             case "human_position":
             case 'shelf_position':
-            case 'human_position':
             case 'charger_position':
+
                 return (
                     <React.Fragment key={`frag-loc-${location._id}`}>
                         {location.parent !== null && location.parent !== undefined && location.parent.length > 0 &&

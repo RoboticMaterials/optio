@@ -238,7 +238,7 @@ const EditTask = (props) => {
                 }
 
 
-                {selectedTask.device_type === 'MiR_100' &&
+                {/* {selectedTask.device_type === 'MiR_100' &&
                     <>
                         <styled.Header>Idle Location</styled.Header>
                         <DropDownSearch
@@ -264,7 +264,7 @@ const EditTask = (props) => {
                             schema="tasks"
                         />
                     </>
-                }
+                } */}
 
 
             </>
