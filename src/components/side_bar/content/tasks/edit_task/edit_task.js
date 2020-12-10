@@ -67,9 +67,11 @@ const EditTask = (props) => {
 
 
     const [obj, setObject] = useState({}) // The current object (may or may not be on backend, but if not it will be posted when task is saved)
+    // const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)
 
     useEffect(() => {
         console.log('QQQQ Selected Task', selectedTask)
+        setSelectedTaskCopy(selectedTask)
         return () => {
 
         }
@@ -123,34 +125,38 @@ const EditTask = (props) => {
                 <styled.RowContainer style={{ marginTop: '2rem' }}>
 
                     <styled.Header style={{ marginTop: '0rem' }}>Load</styled.Header>
-                    <styled.RowContainer style={{ justifyContent: 'flex-end', alignItems: 'baseline' }}>
-                        <styled.HelpText style={{ fontSize: '1rem', marginRight: '.5rem' }}>TimeOut: </styled.HelpText>
 
-                        <TimePicker
-                            // format={'mm:ss'}
-                            style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                            showHour={false}
-                            className="xxx"
-                            allowEmpty={false}
-                            defaultOpenValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
-                            defaultValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
-                            onChange={(time) => {
-                                onSetSelectedTask({
-                                    ...selectedTask,
-                                    load: {
-                                        ...selectedTask.load,
-                                        timeout: time.format("mm:ss")
-                                    }
-                                })
-                            }}
+                    {!humanPosition &&
 
-                        />
-                    </styled.RowContainer>
+                        <styled.RowContainer style={{ justifyContent: 'flex-end', alignItems: 'baseline' }}>
+                            <styled.HelpText style={{ fontSize: '1rem', marginRight: '.5rem' }}>TimeOut: </styled.HelpText>
+
+                            <TimePicker
+                                // format={'mm:ss'}
+                                style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                                showHour={false}
+                                className="xxx"
+                                allowEmpty={false}
+                                defaultOpenValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
+                                defaultValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
+                                onChange={(time) => {
+                                    onSetSelectedTask({
+                                        ...selectedTask,
+                                        load: {
+                                            ...selectedTask.load,
+                                            timeout: time.format("mm:ss")
+                                        }
+                                    })
+                                }}
+
+                            />
+                        </styled.RowContainer>
+                    }
 
                 </styled.RowContainer>
 
                 <Textbox
-                    defaultValue={!!selectedTask && selectedTask.load.instructions}
+                    value={!!selectedTask && selectedTask.load.instructions}
                     schema={'tasks'}
                     focus={!!selectedTask && selectedTask.type == null}
                     onChange={e => {
@@ -190,7 +196,7 @@ const EditTask = (props) => {
 
                 <styled.Header>Unload</styled.Header>
                 <Textbox
-                    defaultValue={!!selectedTask && selectedTask.unload.instructions}
+                    value={!!selectedTask && selectedTask.unload.instructions}
                     schema={'tasks'}
                     focus={!!selectedTask && selectedTask.type == null}
                     onChange={e => {
@@ -232,7 +238,7 @@ const EditTask = (props) => {
                 }
 
 
-                {selectedTask.device_type === 'MiR_100' &&
+                {/* {selectedTask.device_type === 'MiR_100' &&
                     <>
                         <styled.Header>Idle Location</styled.Header>
                         <DropDownSearch
@@ -258,7 +264,7 @@ const EditTask = (props) => {
                             schema="tasks"
                         />
                     </>
-                }
+                } */}
 
 
             </>
@@ -520,7 +526,7 @@ const EditTask = (props) => {
         if (!!selectedTask.new) {
             dispatch(taskActions.removeTask(selectedTask._id))   // If the task is new, simply remove it from the local copy of tasks
         } else {
-            dispatch(taskActions.updateTask(selectedTask))  // Else, revert the task back to the copy we saved when user started editing
+            dispatch(taskActions.updateTask(selectedTaskCopy))  // Else, revert the task back to the copy we saved when user started editing
             // dispatch(taskActions.updateTask(tasks[selectedTask._id]))  // Else, revert the task back to the copy we saved when user started editing
         }
         dispatch(taskActions.deselectTask())    // Deselect
@@ -657,7 +663,7 @@ const EditTask = (props) => {
                 </styled.Label>
 
             }
-            
+
             {/* Task Title */}
             <Textbox
                 placeholder="Task Name"
@@ -682,7 +688,21 @@ const EditTask = (props) => {
                         defaultValue={handleObject()}
                         textboxGap={0}
                         closeOnSelect="true"
-                        onChange={(values) => setObject(values[0])}
+                        onChange={(values) => {
+                            // console.log('QQQQ object', values)
+                            setObject(values[0])
+                            // onSetSelectedTask({
+                            //     ...selectedTask,
+                            //     load: {
+                            //         ...selectedTask.load,
+                            //         instructions: objects[selectedTask.obj] && !selectedTask.load.instructions.includes(objects[selectedTask.obj])`Load ${!selectedTask.load.instructions.includes(objects[selectedTask.obj])  }`
+                            //     },
+                            //     unload: {
+                            //         ...selectedTask.unload,
+                            //         instructions: `Unload ${values[0].name}`
+                            //     },
+                            // })
+                        }}
                         className="w-100"
                         schema="tasks"
                         disbaled={!isTransportTask}
@@ -734,15 +754,15 @@ const EditTask = (props) => {
 
             {/* Remove Task From Process Button */}
             {selectedProcess &&
-            <Button
-                schema={'tasks'}
-                disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
-                primary
-                onClick={() => {
-                    handleRemove()
-                }}
-            >
-                Remove
+                <Button
+                    schema={'tasks'}
+                    disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
+                    primary
+                    onClick={() => {
+                        handleRemove()
+                    }}
+                >
+                    Remove
             </Button>
             }
 

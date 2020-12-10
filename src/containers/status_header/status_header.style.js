@@ -20,7 +20,7 @@ export const LeftContentContainer = styled.div`
     z-index: 2;
     margin-left: 4.5rem;
     pointer-events: auto;
-    
+
     display: flex;
 
 `

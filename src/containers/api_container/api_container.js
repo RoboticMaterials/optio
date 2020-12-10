@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 
 // Import Actions
 import { getMaps } from '../../redux/actions/map_actions'
-import { getTaskQueue } from '../../redux/actions/task_queue_actions'
+import { getTaskQueue, deleteTaskQueueItem } from '../../redux/actions/task_queue_actions'
 import { getLocations } from '../../redux/actions/locations_actions'
 import { getObjects } from '../../redux/actions/objects_actions'
 import { getTasks, deleteTask } from '../../redux/actions/tasks_actions'
@@ -76,8 +76,9 @@ const ApiContainer = (props) => {
     const onDeleteDashboard = (ID) => dispatch(deleteDashboard(ID))
     const onDeletePosition = (position, ID) => dispatch(deletePosition(position, ID))
     const onDeleteStation = async (ID) => await dispatch(deleteStation(ID))
+    const onDeleteTaskQItem = async (ID) => await dispatch(deleteTaskQueueItem(ID))
 
-    const onPutDevice = (device, ID) => dispatch(putDevices(device, ID))
+    const onPutDevice = async (device, ID) => await dispatch(putDevices(device, ID))
     const onPutPosition = (position, ID) => dispatch(putPosition(position, ID))
     const onPutProcess = (process) => dispatch(putProcesses(process))
     const onPutStation = async (station, ID) => await dispatch(putStation(station, ID))
@@ -267,15 +268,16 @@ const ApiContainer = (props) => {
 
         const loggers = await onGetLoggers()
 
-        handleDeviceWithoutADashboard(devices, dashboards)
-        handleTasksWithBrokenPositions(tasks, locations)
-        handlePositionsWithBrokenParents(locations)
-        handleDevicesWithBrokenStations(devices, locations)
-        handleStationsWithBrokenDevices(devices, locations)
-        handleDashboardsWithBrokenStations(dashboards, locations)
-        handleStationsWithBrokenChildren(locations)
-        handleTasksWithBrokenProcess(processes, tasks)
-        handleProcessesWithBrokenRoutes(processes, tasks)
+        const funtion = await handleDeviceWithoutADashboard(devices, dashboards)
+        const funtion1 = await handleTasksWithBrokenPositions(tasks, locations)
+        const funtion2 = await handlePositionsWithBrokenParents(locations)
+        const funtion3 = await handleDevicesWithBrokenStations(devices, locations)
+        const funtion4 = await handleStationsWithBrokenDevices(devices, locations)
+        const funtion5 = await handleDashboardsWithBrokenStations(dashboards, locations)
+        const funtion6 = await handleStationsWithBrokenChildren(locations)
+        const funtion7 = await handleTasksWithBrokenProcess(processes, tasks)
+        const funtion8 = await handleProcessesWithBrokenRoutes(processes, tasks)
+        const funtion9 = await handleTaskQueueWithBrokenTasks(taskQueue, tasks)
 
         props.apiLoaded()
         props.onLoad()
@@ -387,10 +389,13 @@ const ApiContainer = (props) => {
      * Not the best place but it should still work
      * This will either make a dashboard for the device or replace a lost dashboard
      */
-    const handleDeviceWithoutADashboard = (devices, dashboards) => {
-        Object.values(devices).map((device) => {
+    const handleDeviceWithoutADashboard = async (devices, dashboards) => {
+        Object.values(devices).map(async (device) => {
             // if the device does not have a dashboard, add one
-            if (!device.dashboard) {
+            if (!device.dashboards) {
+
+                console.log('QQQQ Device does not have a dashboard', deepCopy(device))
+
                 const newDeviceDashboard = {
                     name: `${device.device_name} Dashboard`,
                     buttons: [],
@@ -399,9 +404,9 @@ const ApiContainer = (props) => {
 
                 const newDashboard = onPostDashoard(newDeviceDashboard)
 
-                newDashboard.then(dashPromise => {
+                return newDashboard.then(async (dashPromise) => {
                     device.dashboards = [dashPromise._id.$oid]
-                    onPutDevice(device, device._id)
+                    await onPutDevice(device, device._id)
                 })
 
 
@@ -662,6 +667,24 @@ const ApiContainer = (props) => {
             }
         })
 
+    }
+
+    /**
+     * This handles task queue items that belong to a broken task
+     * A task would be broken because it has been deleted
+     * @param {*} taskQueue 
+     * @param {*} tasks 
+     */
+    const handleTaskQueueWithBrokenTasks = async (taskQueue, tasks) => {
+        if(taskQueue === undefined) return
+
+        Object.values(taskQueue).map( async (Q, i) => {
+            if(tasks[Q.task_id] === undefined) {
+                console.log('QQQQ TaskQ associated task has been deleted')
+                await onDeleteTaskQItem(Q._id.$oid)
+            }
+
+        })
     }
 
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

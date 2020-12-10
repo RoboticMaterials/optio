@@ -75,7 +75,7 @@ const RightClickMenu = (props) => {
             _id: uuid.v4()
         }
 
-        await Object.assign(tempSelectedLocation, { ...LocationTypes['cartPosition'].attributes, temp: true })
+        await Object.assign(tempSelectedLocation, { ...LocationTypes['cart_position'].attributes, temp: true })
         await onAddLocation(tempSelectedLocation)
         await onSetSelectedLocation(tempSelectedLocation)
 

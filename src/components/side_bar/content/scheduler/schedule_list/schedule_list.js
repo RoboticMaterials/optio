@@ -220,11 +220,16 @@ const ScheduleList = (props) => {
             </pageStyle.Header> */}
             <ContentHeader content={'scheduler'} onClickAdd={() => setShowScheduleCreator(true)}/>
             {handleNextExecution()}
+            {timeToNextScheduled < 1440 ?
+
             <styled.NextExecution
                 onClick={() => {setShowScheduleCreator(true)
                                 setSelectedScheduleId(id)}}>
                                 Next Up:  " {nextScheduleName} " will execute in {timeToNextScheduled} minutes
             </styled.NextExecution>
+            :
+            <></>
+          }
             {renderTasks()}
         </styled.Container>
 

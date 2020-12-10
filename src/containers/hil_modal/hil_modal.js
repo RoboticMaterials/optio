@@ -26,6 +26,7 @@ const HILModal = () => {
     const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
     const devices = useSelector(state => state.devicesReducer.devices)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
+    const localHumanTask = useSelector(state => state.taskQueueReducer.localHumanTask)
 
     const [statusTimerIntervals, setStatusTimerIntervals] = useState({})
 
@@ -106,8 +107,9 @@ const HILModal = () => {
 
             // Else if the task q item has a dashboardID and the dashboardID matches current dashboard, then show that dashboard
             // The reason this happens is that it's a human task and the person hit a dashboard button (see dashboard_screen).
-            // The HIL modal needs to immediatly show because the backend will be too slow to respond to show that dashboard after button clikc
-            else if (!!item.dashboard && item.dashboard === dashboardID){
+            // The HIL modal needs to immediatly show because the backend will be too slow to respond to show that dashboard after button click
+            else if (!!item.dashboard && item.dashboard === dashboardID && localHumanTask){
+                console.log('QQQQ HUR BABY')
                 return <HILModals hilMessage={item.hil_message} hilType={'push'} taskQuantity={item.quantity} taskQueueID={id} item={item} />
 
             }

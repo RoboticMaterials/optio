@@ -366,7 +366,8 @@ const ReportModal = (props) => {
             ...rest
         } = button
 
-        const existingReportEvent = reportEvents._id[reportEvents.report_button_id[_id]]
+        const reportEventId = reportEvents?.report_button_id[_id]
+        const existingReportEvent = reportEvents?._id &&  reportEvents?._id[reportEventId]
 
         // there is already an existing reportEvent for this button, update it
         if(existingReportEvent) {

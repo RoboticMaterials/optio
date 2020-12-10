@@ -73,7 +73,7 @@ const SideBarSwitcher = (props) => {
                 }}
                 currentMode={url}
             /> */}
-            {MiRMapEnabled &&
+            {/* {MiRMapEnabled &&
               <SideBarButton
                   mode={'scheduler'}
                   setShowSideBarPage={(page) => {
@@ -84,7 +84,7 @@ const SideBarSwitcher = (props) => {
                   }}
                   currentMode={url}
               />  
-            }
+            } */}
 
 
             <SideBarButton

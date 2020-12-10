@@ -32,7 +32,7 @@ import DashboardsHeader from "../dashboards_header/dashboards_header";
 
 // import logging
 import log from "../../../../../logger";
-import {OPERATION_TYPES, TYPES} from "../dashboards_sidebar/dashboards_sidebar";
+import { OPERATION_TYPES, TYPES } from "../dashboards_sidebar/dashboards_sidebar";
 import ReportModal from "./report_modal/report_modal";
 
 const logger = log.getLogger("DashboardsPage");
@@ -66,6 +66,7 @@ const DashboardScreen = (props) => {
     const dispatch = useDispatch()
     const onDashboardOpen = (bol) => dispatch(dashboardOpen(bol))
     const onHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
+    const onLocalHumanTask = (bol) => dispatch({type: 'LOCAL_HUMAN_TASK', payload: bol})
     const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
 
     const history = useHistory()
@@ -164,9 +165,8 @@ const DashboardScreen = (props) => {
 
             // Map through each item and see if it's showing a station, station Id is matching the current station and a human task
             Object.values(taskQueue).map((item, ind) => {
-
                 // If it is matching, add a button the the dashboard for unloading
-                if (!!item.hil_station_id && item.hil_station_id === stationID && hilResponse !== item._id.$oid && tasks[item.task_id].device_type === 'human') {
+                if (!!item.hil_station_id && item.hil_station_id === stationID && hilResponse !== item._id.$oid && tasks[item.task_id]?.device_type === 'human') {
                     buttons = [
                         ...buttons,
                         {
@@ -210,7 +210,7 @@ const DashboardScreen = (props) => {
      * @param {*} custom
      */
     const handleTaskClick = async (type, Id, name, custom) => {
-        switch(type.toUpperCase()) {
+        switch (type.toUpperCase()) {
             case TYPES.ROUTES.key:
                 handleRouteClick(Id, name, custom)
                 break
@@ -276,7 +276,7 @@ const DashboardScreen = (props) => {
             // Set hil_response to null because the backend does not dictate the load hil message
             // Since the task is put into the q but automatically assigned to the person that clicks the button
             if (tasks[Id].device_type === 'human') {
-
+                onLocalHumanTask(true)
                 // dispatch action to add task to queue
                 await dispatch(postTaskQueue(
                     {
@@ -354,9 +354,9 @@ const DashboardScreen = (props) => {
                 <ReportModal
                     isOpen={!!reportModal}
                     title={"Send Report"}
-                    close={()=>setReportModal(null)}
+                    close={() => setReportModal(null)}
                     dashboard={currentDashboard}
-                    onSubmit={(name)=> {
+                    onSubmit={(name) => {
 
                         // set alert
                         setAddTaskAlert({

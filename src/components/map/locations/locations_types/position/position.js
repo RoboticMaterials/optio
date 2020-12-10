@@ -40,6 +40,7 @@ function Position(props) {
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
     useEffect(() => {
         //window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
+
         return () => {
             window.removeEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         }
@@ -175,18 +176,7 @@ function Position(props) {
 
                 <svg x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400" style={{ filter: shouldGlow && `url(#glow-${rd3tClassName})` }}>
 
-                    {location.type === 'cart_position' ?
-                        LocationTypes['cartPosition'].svgPath
-                        :
-                        location.type === 'charger_position' ?
-                            LocationTypes['chargePosition'].svgPath
-                            :
-                            location.type === 'shelfPosition' ?
-                                LocationTypes['shelfPosition'].svgPath
-                                :
-                                LocationTypes['humanPosition'].svgPath
-                    }
-
+                    {LocationTypes[location.type].svgPath}
 
                 </svg>
             </g>

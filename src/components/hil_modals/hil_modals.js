@@ -39,6 +39,8 @@ const HILModals = (props) => {
     const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
     const onSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
     const onPostEvents = (event) => dispatch(postEvents)
+    const onLocalHumanTask = (bol) => dispatch({type: 'LOCAL_HUMAN_TASK', payload: bol})
+
 
     const hilTimers = useSelector(state => { return state.taskQueueReducer.hilTimers })
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
@@ -74,6 +76,7 @@ const HILModals = (props) => {
         // On unmount, set the task q item to none
         return () => {
             onTaskQueueItemClicked('')
+            onLocalHumanTask(false)
         }
 
     }, [])

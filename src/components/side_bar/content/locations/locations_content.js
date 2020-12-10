@@ -35,8 +35,8 @@ import uuid from 'uuid'
 function locationTypeGraphic(type, isNotSelected) {
     switch (type) {
         case 'shelf_position':
-            return (<styled.LocationTypeGraphic fill={LocationTypes['shelfPosition'].color} stroke={LocationTypes['shelfPosition'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                {LocationTypes['shelfPosition'].svgPath}
+            return (<styled.LocationTypeGraphic fill={LocationTypes['shelf_position'].color} stroke={LocationTypes['shelf_position'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                {LocationTypes['shelf_position'].svgPath}
             </styled.LocationTypeGraphic>
             )
 
@@ -49,16 +49,16 @@ function locationTypeGraphic(type, isNotSelected) {
 
         case 'cart_position':
             return (
-                <styled.LocationTypeGraphic fill={LocationTypes['cartPosition'].color} stroke={LocationTypes['cartPosition'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                    {LocationTypes['cartPosition'].svgPath}
+                <styled.LocationTypeGraphic fill={LocationTypes['cart_position'].color} stroke={LocationTypes['cart_position'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                    {LocationTypes['cart_position'].svgPath}
                 </styled.LocationTypeGraphic>
 
             )
 
         case 'human_position':
             return (
-                <styled.LocationTypeGraphic fill={LocationTypes['humanPosition'].color} stroke={LocationTypes['humanPosition'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                    {LocationTypes['humanPosition'].svgPath}
+                <styled.LocationTypeGraphic fill={LocationTypes['human_position'].color} stroke={LocationTypes['human_position'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                    {LocationTypes['human_position'].svgPath}
                 </styled.LocationTypeGraphic>
 
             )
@@ -89,7 +89,6 @@ export default function LocationContent() {
     const editing = useSelector(state => state.locationsReducer.editingLocation)
 
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
-    // const [editing, toggleEditing] = useState(false)
 
     const [mergeStation, setMergeStation] = useState(false)
 
@@ -102,18 +101,18 @@ export default function LocationContent() {
 
                 break
             case 'cart_position':
-                template = LocationTypes['cartPosition'].attributes
+                template = LocationTypes['cart_position'].attributes
 
                 break
 
             case 'human_position':
-                template = LocationTypes['humanPosition'].attributes
+                template = LocationTypes['human_position'].attributes
 
                 break
 
 
             case 'shelf_position':
-                template = LocationTypes['shelfPosition'].attributes
+                template = LocationTypes['shelf_position'].attributes
 
                 break
 
@@ -163,48 +162,12 @@ export default function LocationContent() {
     /**
      * This function is called when the back button is pressed. If the location is new, it is deleted;
      * otherwise, it is reverted to the state it was when editing begun.
+     * TODO: FIX THIS JUNKY JUNK (redo location logic, it sucks)
      */
     const onBack = () => {
 
 
         onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy, positions, locations })
-
-        // let postPositionPromise, child, locationID
-
-        // if (selectedLocationChildrenCopy != null) {
-
-
-
-
-        //     selectedLocationChildrenCopy.forEach(async (child, ind) => {
-        //         if (positions[child._id] == undefined) {
-
-        //             await Object.assign(child, { temp: false, new: true })
-        //             await dispatch(positionActions.addPosition(child))
-        //             await dispatch(positionActions.postPosition(child))
-        //             await dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
-
-        //             dispatch(setSelectedLocationCopy(null))
-        //             dispatch(setSelectedLocationChildrenCopy(null))
-
-        //             dispatch(deselectLocation())    // Deselect
-
-        //         }
-
-
-        //     })
-
-        //     selectedLocation.children.forEach((childID, ind) => {
-        //         child = positions[childID]
-        //         child.parent = locationID
-        //         selectedLocation.children[ind] = child._id
-        //         if (child.new && selectedLocationChildrenCopy[ind] != child._id) {
-        //             dispatch(positionActions.removePosition(child._id))
-
-        //         }
-
-        //     })
-        // }
 
         onEditing(false)
     }
@@ -224,7 +187,6 @@ export default function LocationContent() {
                 child = positions[childID]
                 child.parent = locationID
                 if (child.new) { // If the position is new, post it and update its id in the location.children array
-                    console.log(child)
                     dispatch(positionActions.postPosition(child))
                     selectedLocation.children[ind] = child._id
                     dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
@@ -260,7 +222,7 @@ export default function LocationContent() {
             })
         } else { // If the location is not new, PUT it and update it's children
             dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
-            if (selectedLocation.schema == 'station') {
+            if (selectedLocation.schema === 'station') {
                 saveChildren(selectedLocation._id)
             }
         }
@@ -333,9 +295,34 @@ export default function LocationContent() {
 
     // TODO: Probably can get rid of editing state, just see if there's a selectedLocation, if there is, you're editing
     if (editing) { // Editing Mode
+
+        let locationTypeName = ''
+        if (!!selectedLocation.type) {
+            switch (selectedLocation.type) {
+                case 'workstation':
+                    locationTypeName = 'Station'
+                    break;
+
+                case 'human_position':
+                    locationTypeName = 'Position'
+                    break;
+
+                case 'cart_position':
+                    locationTypeName = 'Cart Position'
+                    break;
+
+                case 'human_position':
+                    locationTypeName = 'Position'
+                    break;
+
+                default:
+                    locationTypeName = selectedLocation.type
+                    break;
+            }
+        }
         return (
             <styled.ContentContainer
-                // Delete any new positions that were never dragged onto the map
+                // Delete any newf positions that were never dragged onto the map
                 onMouseUp={e => {
 
                 }}
@@ -369,28 +356,45 @@ export default function LocationContent() {
                 {/* Location Type */}
                 <styled.DefaultTypesContainer>
 
-                    <styled.LocationTypeContainer>
-                        <LocationTypeButton type='workstation' selected={selectedLocation.type} />
-                        <styled.LocationTypeLabel>Station</styled.LocationTypeLabel>
-                    </styled.LocationTypeContainer>
 
-                    {MiRMapEnabled ?
+                    {!selectedLocation.type ?
                         <>
                             <styled.LocationTypeContainer>
-                                <LocationTypeButton type='cart_position' selected={selectedLocation.type} />
-                                <styled.LocationTypeLabel>Cart Position</styled.LocationTypeLabel>
+                                <LocationTypeButton type='workstation' selected={selectedLocation.type} />
+                                <styled.LocationTypeLabel>Station</styled.LocationTypeLabel>
                             </styled.LocationTypeContainer>
 
-                            <styled.LocationTypeContainer>
-                                <LocationTypeButton type='shelf_position' selected={selectedLocation.type} />
-                                <styled.LocationTypeLabel>Shelf Position</styled.LocationTypeLabel>
-                            </styled.LocationTypeContainer>
+                            {MiRMapEnabled &&
+                                <>
+
+                                    {/* <styled.LocationTypeContainer>
+                                        <LocationTypeButton type='human_position' selected={selectedLocation.type} />
+                                        <styled.LocationTypeLabel>Position</styled.LocationTypeLabel>
+                                    </styled.LocationTypeContainer> */}
+
+                                    <styled.LocationTypeContainer>
+                                        <LocationTypeButton type='cart_position' selected={selectedLocation.type} />
+                                        <styled.LocationTypeLabel>Cart Position</styled.LocationTypeLabel>
+                                    </styled.LocationTypeContainer>
+
+                                    <styled.LocationTypeContainer>
+                                        <LocationTypeButton type='shelf_position' selected={selectedLocation.type} />
+                                        <styled.LocationTypeLabel>Shelf Position</styled.LocationTypeLabel>
+                                    </styled.LocationTypeContainer>
+
+                                </>
+                            }
+                            {/* :
+                                <styled.LocationTypeContainer>
+                                    <LocationTypeButton type='human_position' selected={selectedLocation.type} />
+                                    <styled.LocationTypeLabel>Position</styled.LocationTypeLabel>
+                                </styled.LocationTypeContainer>
+                                } */}
                         </>
-
                         :
                         <styled.LocationTypeContainer>
-                            <LocationTypeButton type='human_position' selected={selectedLocation.type} />
-                            <styled.LocationTypeLabel>Human Position</styled.LocationTypeLabel>
+                            <LocationTypeButton type={selectedLocation.type} selected={selectedLocation.type} />
+                            <styled.LocationTypeLabel>{locationTypeName}</styled.LocationTypeLabel>
                         </styled.LocationTypeContainer>
                     }
 
@@ -405,14 +409,17 @@ export default function LocationContent() {
 
                 {selectedLocation.schema === 'station' ?
                     <>
-                        {MiRMapEnabled ?
+
+                        <Positions handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+
+                        {/* {MiRMapEnabled ?
                             <>
                                 <Positions type='cart_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
                                 <Positions type='shelf_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
                             </>
                             :
                             <Positions type='human_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
-                        }
+                        } */}
 
 
                     </>

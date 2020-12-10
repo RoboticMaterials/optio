@@ -27,6 +27,7 @@ const TaskStatistics = (props) => {
 
 
     const handleSingleTask = (task) => {
+        if(task === undefined) return null
         const selectedTaskAnalysis = tasksAnalysis[task._id]
         if (selectedTaskAnalysis === undefined) return null
 

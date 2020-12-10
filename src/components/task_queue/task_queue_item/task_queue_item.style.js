@@ -5,21 +5,30 @@ import RemoveIcon from '@material-ui/icons/Remove';
 export const containerCss = css`
 	background-color: #FFFFFF;
 	border-color: transparent;
+	border-width: 2px;
 	color: transparent;
-    height: 2rem;
+    height: 4.5rem;
     width: 100%;
     padding: .25rem;
+
+		&:hover{
+				border-color: #c58bff;
+
+		}
 
 `
 
 export const titleCss = css`
     color: #000000;
     margin-right: .5rem;
+		width:100%;
+		word-break: break-word;
+
+
 `
 
 export const contentContainerCss = css`
     flex-direction: row;
-
     overflow: hidden;
     text-overflow: ellipsis;-
     white-space: nowrap;
@@ -34,6 +43,7 @@ export const rightContentContainerCss = css`
 	display: flex;
 	align-items: center;
 `
+
 
 export const StyledRemoveIcon = styled(RemoveIcon)`
 	padding: 0;

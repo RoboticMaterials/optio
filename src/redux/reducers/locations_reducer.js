@@ -188,24 +188,45 @@ export default function locationsReducer(state = defaultState, action) {
     }
 
     const setStation = (station) => {
-        stationsCopy = deepCopy(state.stations)
+        // stationsCopy = deepCopy(state.stations)
         positionsCopy = deepCopy(state.positions)
 
-        stationsCopy[station._id] = deepCopy(station)
+        // stationsCopy[station._id] = deepCopy(station)
+        const ID = station._id
 
         if (state.selectedLocation !== null && state.selectedLocation._id === station._id) { // The updated station is the selected location
             return {
                 ...state,
-                stations: stationsCopy,
-                locations: filterLocations(stationsCopy, positionsCopy),
-                selectedLocation: deepCopy(station),
+                stations: {
+                    ...state.stations,
+                    [ID]: station,
+                },
+                locations:
+                    filterLocations(
+                        {
+                            ...state.stations,
+                            [ID]: station,
+                        },
+                        positionsCopy
+                    ),
+                selectedLocation: station,
                 pending: false
             }
         } else {
             return {
                 ...state,
-                stations: stationsCopy,
-                locations: filterLocations(stationsCopy, positionsCopy),
+                stations: {
+                    ...state.stations,
+                    [ID]: station,
+                },
+                locations:
+                    filterLocations(
+                        {
+                            ...state.stations,
+                            [ID]: station,
+                        },
+                        positionsCopy
+                    ),
                 pending: false
             }
         }

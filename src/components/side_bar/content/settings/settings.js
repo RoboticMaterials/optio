@@ -39,6 +39,7 @@ const Settings = () => {
     const localSettings = useSelector(state => state.localReducer.localSettings)
     const status = useSelector(state => state.statusReducer.status)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
+    const devices = useSelector(state =>state.devicesReducer.devices)
 
     const {
         currentMap,
@@ -56,6 +57,10 @@ const Settings = () => {
     useEffect(() => {
         setServerSettingsState(serverSettings)
         setLocalSettingsState(localSettings)
+
+        console.log('QQQQ devices', devices)
+        console.log('QQQQ status', status)
+        console.log('QQQQ server settings', serverSettings)
 
     }, [])
 
@@ -188,75 +193,88 @@ const Settings = () => {
 
         }
 
-      if(MiRMapEnabled){
-        return (
-            <styled.SettingContainer style={{ marginTop: '1rem' }}>
+        if (MiRMapEnabled) {
+            return (
+                <styled.SettingContainer style={{ marginTop: '1rem' }}>
 
-                <styled.RowContainer style={{ position: 'relative', justifyContent: 'space-between' }}>
-                    <styled.Header>MIR IP</styled.Header>
-                    <styled.ConnectionButton onClick={() => handleMirConnection()} disabled={(connectionText==='Connected' || connectionText==='Connecting')}>
-                        {connectionText}
-                        <styled.ConnectionIcon className={connectionIcon} />
-                    </styled.ConnectionButton>
-                </styled.RowContainer>
+                    <styled.RowContainer style={{ position: 'relative', justifyContent: 'space-between' }}>
+                        <styled.Header>MIR IP</styled.Header>
+                        <styled.ConnectionButton onClick={() => handleMirConnection()} disabled={(connectionText === 'Connected' || connectionText === 'Connecting')}>
+                            {connectionText}
+                            <styled.ConnectionIcon className={connectionIcon} />
+                        </styled.ConnectionButton>
 
+                    </styled.RowContainer>
 
-            </styled.SettingContainer>
-        )
-      }
+                    <Textbox
+                        placeholder="MiR IP Address"
+                        value={serverSettingsState.mir_ip}
+                        onChange={(event) => {
+                            setServerSettingsState({ 
+                                ...serverSettingsState,
+                                mir_ip: event.target.value
+                            })
+                        }}
+                        style={{ width: '100%' }}
+
+                    />
+
+                </styled.SettingContainer>
+            )
+        }
     }
 
     const APIAddress = () => {
-    //  if(MiRMapEnabled){
+        //  if(MiRMapEnabled){
         return (
             <styled.SettingContainer>
 
 
 
                 <styled.RowContainer>
-                   <styled.Header>Show Developer Settings</styled.Header>
+                    <styled.Header>Show Developer Settings</styled.Header>
 `                  <Switch
-                      checked={localSettingsState.toggleDevOptions}
-                      onChange={() => {
-                          handleUpdateLocalSettings({ toggleDevOptions: !localSettingsState.toggleDevOptions })
-                      }}
-                      onColor='red'
-                      style={{ marginRight: '1rem' }}
-                  />
+                        checked={localSettingsState.toggleDevOptions}
+                        onChange={() => {
+                            handleUpdateLocalSettings({ toggleDevOptions: !localSettingsState.toggleDevOptions })
+                        }}
+                        onColor='red'
+                        style={{ marginRight: '1rem' }}
+                    />
 
                 </styled.RowContainer>
 
                 {localSettingsState.toggleDevOptions ?
-                  <>
-                    <styled.Header>Non Local API IP Address</styled.Header>
+                    <>
+                        <styled.Header>Non Local API IP Address</styled.Header>
 
-                    <styled.RowContainer>
-                        <Switch
-                            checked={localSettingsState.non_local_api}
-                            onChange={() => {
-                                handleUpdateLocalSettings({ non_local_api: !localSettings.non_local_api })
-                            }}
-                            onColor='red'
-                            style={{ marginRight: '1rem' }}
-                        />
-                        <Textbox
-                            placeholder="API IP Address"
-                            value={localSettingsState.non_local_api_ip}
-                            onChange={(event) => {
-                                handleUpdateLocalSettings({ non_local_api_ip: event.target.value })
-                            }}
-                            style={{width: '100%'}}
-                        // type = 'number'
-                        />
-                    </styled.RowContainer>
-                  </>
-                  :
-                  <></>
+                        <styled.RowContainer>
+                            <Switch
+                                checked={localSettingsState.non_local_api}
+                                onChange={() => {
+                                    handleUpdateLocalSettings({ non_local_api: !localSettings.non_local_api })
+                                }}
+                                onColor='red'
+                                style={{ marginRight: '1rem' }}
+                            />
+                            <Textbox
+                                placeholder="API IP Address"
+                                value={localSettingsState.non_local_api_ip}
+                                onChange={(event) => {
+                                    handleUpdateLocalSettings({ non_local_api_ip: event.target.value })
+                                }}
+                                style={{ width: '100%' }}
+                            // type = 'number'
+                            />
+                        </styled.RowContainer>
+                    </>
+                    :
+                    <></>
                 }
 
             </styled.SettingContainer>
         )
-    //  }
+        //  }
     }
 
 
@@ -269,16 +287,16 @@ const Settings = () => {
 
 
                 <styled.RowContainer>
-                        <styled.SwitchContainerLabel>Show List View</styled.SwitchContainerLabel>
-                        <Switch
-                            onColor='red'
-                            checked={localSettingsState.mapViewEnabled}
-                            onChange={() => {
-                                handleUpdateLocalSettings({ mapViewEnabled: !localSettingsState.mapViewEnabled })
-                            }}
-                            style={{margin: "0 2rem 0 2rem"}}
-                        />
-                        <styled.SwitchContainerLabel>Show Map View</styled.SwitchContainerLabel>
+                    <styled.SwitchContainerLabel>Show List View</styled.SwitchContainerLabel>
+                    <Switch
+                        onColor='red'
+                        checked={localSettingsState.mapViewEnabled}
+                        onChange={() => {
+                            handleUpdateLocalSettings({ mapViewEnabled: !localSettingsState.mapViewEnabled })
+                        }}
+                        style={{ margin: "0 2rem 0 2rem" }}
+                    />
+                    <styled.SwitchContainerLabel>Show Map View</styled.SwitchContainerLabel>
                 </styled.RowContainer>
 
             </styled.SettingContainer>
