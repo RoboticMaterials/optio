@@ -34,12 +34,12 @@ export const OPERATION_TYPES = {
         key: "REPORT",
         _id: 0
     },
-    KICK_OFF: {
-        schema: "kick_off",
-        key: "KICK_OFF",
-        name: "Kick off",
-        _id: 1
-    }
+    // KICK_OFF: {
+    //     schema: "kick_off",
+    //     key: "KICK_OFF",
+    //     name: "Kick off",
+    //     _id: 1
+    // }
 }
 
 export const TYPES = {

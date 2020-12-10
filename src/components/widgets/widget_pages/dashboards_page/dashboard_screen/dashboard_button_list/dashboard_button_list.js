@@ -70,13 +70,15 @@ const DashboardButtonList = ((props) => {
 					onTaskClick(OPERATION_TYPES.REPORT.key, currentButton.key)
 				}
 				break
-			case OPERATION_TYPES.KICK_OFF.key:
-				disabled = true
-				error = null
-				onClick = () => {
-					onTaskClick(type)
-				}
-				break
+
+			// uncomment when kick_off is allowed
+			// case OPERATION_TYPES.KICK_OFF.key:
+			// 	disabled = true
+			// 	error = null
+			// 	onClick = () => {
+			// 		onTaskClick(type)
+			// 	}
+			// 	break
 			default:
 				disabled = addedTaskAlert || currentButton.deleted || broken || !taskExists
 				error = !taskExists ? "This buttons task has been deleted." : null
