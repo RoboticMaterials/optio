@@ -267,11 +267,34 @@ const StatisticsOverview = (props) => {
             }
         }
 
-        return(
-            <styled.SinglePlotContainer>
-                <styled.DateSelectorTitle>Reports</styled.DateSelectorTitle>
+        const minHeight = data.length * 5
 
+        return(
+            <styled.SinglePlotContainer
+                minHeight={minHeight}
+            >
+                <styled.PlotHeader>
+                    <styled.PlotTitle>Reports</styled.PlotTitle>
+
+                    {/* hide this for now*/}
+                    <div style={{opacity: 0}}>
+                        {
+                            <>
+                                <TimeSpans color={colors[selector]} setTimeSpan={(timeSpan) => handleTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
+
+                                {/* Commented out for now, only need through put bar chart */}
+                                {/* {handleGaugeCharts()} */}
+                            </>
+                        }
+                        {handleDateSelector()}
+                    </div>
+
+                </styled.PlotHeader>
+
+
+                <styled.PlotContainer minHeight={minHeight - 10}>
                 <BarChart
+
                     layout={isData ? "horizontal" : "vertical"}
                     data={data}
                     enableGridX={ isData ? true : false}
@@ -289,6 +312,7 @@ const StatisticsOverview = (props) => {
                 {!isData &&
                     <styled.NoDataText>No Data</styled.NoDataText>
                 }
+                </styled.PlotContainer>
             </styled.SinglePlotContainer>
         )
     }
@@ -308,9 +332,15 @@ const StatisticsOverview = (props) => {
             }).map((item) => item.x)
         }
 
+        const minHeight=0
+
         return (
-            <styled.SinglePlotContainer>
-                {!!data &&
+            <styled.SinglePlotContainer
+                minHeight={minHeight}
+            >
+                <styled.PlotHeader>
+                    <styled.PlotTitle>Throughput</styled.PlotTitle>
+                {
                 <>
                     <TimeSpans color={colors[selector]} setTimeSpan={(timeSpan) => handleTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
 
@@ -319,30 +349,37 @@ const StatisticsOverview = (props) => {
                 </>
                 }
                 {handleDateSelector()}
-                <styled.DateSelectorTitle>Throughput</styled.DateSelectorTitle>
-                <BarChart
-                    data={filteredData ? {
-                        throughPut: filteredData
-                    } : {
-                        // default fake data
-                        throughPut:[{
-                            x: "",
-                            y: 0
-                        }]}
-                    }
-                    enableGridY={true}
-                    selector={selector}
-                    mainTheme={themeContext}
-                    timeSpan={timeSpan}
-                    axisBottom={{
-                        tickValues: tickValues,
-                        tickRotation: -90,
-                    }}
-                />
+                </styled.PlotHeader>
 
-                {!data &&
-                <styled.NoDataText>No Data</styled.NoDataText>
-                }
+
+
+                <styled.PlotContainer
+                    minHeight={minHeight}
+                >
+                    <BarChart
+                        data={filteredData ? filteredData : []}
+                        // data={{throughPut: []}}
+                        enableGridY={true}
+                        // enableGridX={true}
+                        // selector={selector}
+                        mainTheme={themeContext}
+                        timeSpan={timeSpan}
+                        axisBottom={{
+                            tickValues: tickValues,
+                            tickRotation: -90,
+                        }}
+                        axisLeft={{
+                            enable: true,
+                            // tickValues: [0, 1],
+                            // tickRotation: -90,
+                        }}
+                    />
+
+                    {!data &&
+                    <styled.NoDataText>No Data</styled.NoDataText>
+                    }
+                </styled.PlotContainer>
+
             </styled.SinglePlotContainer>
         )
     }
