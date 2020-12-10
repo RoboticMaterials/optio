@@ -164,7 +164,7 @@ const DashboardsSidebar = (props) => {
             return {
                 name: task.name,
                 color: tempColors[index % tempColors.length],
-                type: TYPES.ROUTES.name,
+                type: TYPES.ROUTES.key,
                 task_id: task._id,
                 id: task._id,
             }
