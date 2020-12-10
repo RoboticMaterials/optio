@@ -484,7 +484,9 @@ const StatisticsOverview = (props) => {
     return (
 
         <styled.OverviewContainer>
-            <styled.StationName>{locationName}</styled.StationName>
+            <styled.Header>
+                <styled.StationName>{locationName}</styled.StationName>
+            </styled.Header>
 
             {/* {isDevice &&
                 handleDeviceStatistics()

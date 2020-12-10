@@ -14,15 +14,21 @@ export const OverviewContainer = styled.div`
     align-items: center;
     justify-content: center;
 
-    padding-top: 1rem;
+    //padding-top: 1rem;
     // padding: .5rem;
 
 `
 
 export const StationName = styled.h1`
-    margin-bottom: 0.5rem;
     color: ${props => props.theme.bg.septenary};
     font-family: ${props => props.theme.font.primary};
+`
+
+export const Header = styled.div`
+	background: ${props => props.theme.bg.quinary};
+  	border-bottom: 1px solid black;
+  	width: 100%;
+  	padding: 1rem;
 `
 
 
@@ -36,8 +42,9 @@ export const PlotsContainer = styled.div`
     //flex-direction: row;
     //flex: 1;
     width: 100%;
-    overflow: scroll;
-    padding: 1rem;
+    overflow: auto;
+    padding: 1rem 1rem 0rem 1rem;
+  
     
     // @media (max-width: ${props => props.theme.widthBreakpoint.laptopL}){
     //     flex-direction: column;
