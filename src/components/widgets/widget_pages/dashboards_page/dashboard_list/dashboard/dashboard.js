@@ -9,7 +9,7 @@ import ReactList from 'react-list';
 import ReactTooltip from "react-tooltip";
 
 // import internal components
-import DashboardButton from "../../dashboard_button/dashboard_button";
+import DashboardButton from "../../dashboard_buttons/dashboard_button/dashboard_button";
 
 // Import styles
 import * as style from './dashboard.style';

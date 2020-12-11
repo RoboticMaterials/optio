@@ -30,8 +30,10 @@ export const postLocalSettings = async (settings) => {
 
 export const getLocalSettings = async () => {
     var localSettings = localStorage.getItem("local-settings-config");
+
     if (localSettings) {
         localSettings = JSON.parse(localSettings);
+        localSettings.MiRMapEnabled = true
         return localSettings;
     }
     // Posts settigns to the backend if there's nothing there
