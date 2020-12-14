@@ -13,13 +13,17 @@ import IconButton from "../../basic/icon_button/icon_button";
 import {ThemeContext} from "styled-components";
 import { type } from 'jquery';
 
+import * as taskActions from '../../../redux/actions/tasks_actions'
+
 const logger = log.getLogger("TaskQueueListItem")
 
 const TaskQueueListItem = (props) => {
 
 	// extract props
 	const {
-        id,
+		id,
+		item,
+		task,
         onClick,
 				type,
 		...rest
@@ -46,7 +50,12 @@ const TaskQueueListItem = (props) => {
 		<style.ItemDiv>
 			<BasicListItem
                 {...rest}
-                onClick={handleTaskItemClicked}
+				onClick={handleTaskItemClicked}
+			//	onMouseEnter={
+					//(task) => dispatch(taskActions.setSelectedTask(task)),
+				//	console.log(item.task)
+				//	(item) => dispatch(taskActions.selectTask(item.task_id))
+			//	}
 				titleCss={style.titleCss}
 				containerCss={style.containerCss}
                 rightContentContainerCss={style.rightContentContainerCss}
@@ -66,6 +75,7 @@ const TaskQueueListItem = (props) => {
 						<IconButton
 							color={themeContext.fg.primary}
 							onClick={handleClick}
+
 						>
 							<style.StyledRemoveIcon
 								fontSize={"large"}

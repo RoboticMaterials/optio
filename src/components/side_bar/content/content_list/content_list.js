@@ -15,6 +15,7 @@ export default function ContentList(props) {
         hideHeader
     } = props
 
+
     return (
         <styled.Container>
 
