@@ -48,6 +48,7 @@ const WidgetButton = (props) => {
     const editing = useSelector(state => state.locationsReducer.editingLocation)
     const positions = useSelector(state => state.locationsReducer.positions)
     const showSideBar = useSelector(state => state.sidebarReducer.open)
+    const stations = useSelector(state => state.locationsReducer.stations)
 
     const dashboardID = params.dashboardID
 
@@ -115,8 +116,20 @@ const WidgetButton = (props) => {
 
     // Handles if a dashboard is clicked
     const handleDashboardClick = async () => {
+        let dashboardID
 
-        let dashboardID = selectedLocation ? selectedLocation.dashboards[0] : null
+        // If there's no selected station, then see if theres a station in the url, if so, use that, else do nothing
+        if(!selectedLocation) {
+            if(!!params.stationID) {
+                dashboardID = stations[params.stationID].dashboards[0]
+            } else {
+                return null
+            }
+        } else {
+            dashboardID = selectedLocation.dashboards[0]
+        }
+
+        //let dashboardID = selectedLocation ? selectedLocation.dashboards[0] : null
 
         // If the dashboard is undefined, that means the location must not have a dashboard yet, so add one
         if (dashboardID === undefined) {

@@ -82,13 +82,10 @@ export const WidgetStationName = styled.h4`
     font-size: ${props => props.theme.fontSize.sz4};
     font-family: ${props => props.theme.font.primary};
     font-weight: 500;
-
+    flex:10;
+    justify-content: center;
     text-align: center;
-    align-self:center;
-
-    &:hover{
-      color: #798fd9;
-    }
+    padding-left: 2rem;
 
 `
 
@@ -97,8 +94,6 @@ export const WidgetStationNameUnselectable = styled.h4`
     font-family: ${props => props.theme.font.primary};
     font-weight: 500;
 
-    text-align: center;
-    align-self:center;
 
 `
 
@@ -159,6 +154,24 @@ export const WidgetStatisticsBlock = styled.div`
     justify-content: center;
     align-items: center;
     height: 2rem;
+`;
+
+export const RowContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    padding-right: .7rem;
+    justify-content: center;
+
+`;
+
+export const EditIcon = styled.i`
+    font-size: 1rem;
+    text-align: right;
+    flex:1;
+    &:hover {
+      color: #798fd9;
+    }
+
 `;
 
 export const WidgetStatisticsContainer = styled.div`

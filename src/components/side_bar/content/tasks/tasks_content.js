@@ -49,7 +49,6 @@ export default function TaskContent(props) {
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
 
 
-
     // State definitions
     const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
     const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)  // Current task
@@ -143,7 +142,10 @@ export default function TaskContent(props) {
                         .filter(task => !task.associated_task || (!!task.associated_task && task.device_type !== 'human'))
 
                 }
-                onMouseEnter={(task) => dispatch(taskActions.selectTask(task._id))}
+                onMouseEnter={(task) => {dispatch(taskActions.selectTask(task._id))
+                                        console.log(selectedTask)
+
+                }}
                 onMouseLeave={(task) => dispatch(taskActions.deselectTask())}
                 onClick={(task) => {
                     // If task button is clicked, start editing it

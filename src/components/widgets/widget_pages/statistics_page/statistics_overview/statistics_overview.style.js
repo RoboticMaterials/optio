@@ -8,12 +8,14 @@ export const OverviewContainer = styled.div`
     text-align: center;
     width: 100%;
     height: 100%;
+    flex: 1;
     border-radius: 1rem;
 
     align-items: center;
     justify-content: center;
 
     padding-top: 1rem;
+    // padding: .5rem;
 
 `
 
@@ -25,18 +27,17 @@ export const StationName = styled.h1`
 
 export const PlotsContainer = styled.div`
   	align-items: center;
-  	justify-content: center;
+  	position: relative;
     display: flex;
     flex-direction: row;
-  	flex-wrap: wrap;
-    height: 100%;
-    max-height: 50rem;
-    max-width: 90rem;
+    flex: 1;
     width: 100%;
-    overflow: hidden;
-
-    @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
-        max-height: 30rem;
+    overflow: auto;
+    // padding: 1rem;
+    padding: 1rem;
+    
+    @media (max-width: ${props => props.theme.widthBreakpoint.laptopL}){
+        flex-direction: column;
     }
 `
 
@@ -53,12 +54,25 @@ export const NoDataText = styled.span`
 
 export const SinglePlotContainer = styled.div`
 	position: relative;
-	max-height: 100%;
-  	height: 100%;
-	max-width: 90rem;
-	width: 45%;
-	margin: 2rem;
+  	display: flex;
+  	flex-direction: column;
+  	align-items: center;
 	overflow: hidden;
+	height: 100%;
+	min-height: 25rem;
+	min-width: 40rem;
+	margin-bottom: 1rem;
+	
+	@media (min-width: ${props => props.theme.widthBreakpoint.laptopL}){
+        flex: 1;
+        height: 100%;
+        width: 100%;
+    }
+	
+	@media (max-width: ${props => props.theme.widthBreakpoint.laptopL}){
+        height: 100%;
+        width: 100%;
+    }
 `
 
 // ========== Statistics Container ========== //
@@ -136,6 +150,8 @@ export const RowContainer = styled.div`
 
 export const DateSelectorIcon = styled.i`
     font-size: 1.5rem;
+    margin-right: 1rem;
+    margin-left: 1rem;
     color: ${props => props.theme.bg.septenary};
 
     &:hover{
