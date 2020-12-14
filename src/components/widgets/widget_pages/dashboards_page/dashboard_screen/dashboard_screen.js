@@ -363,12 +363,12 @@ const DashboardScreen = (props) => {
                     title={"Send Report"}
                     close={() => setReportModal(null)}
                     dashboard={currentDashboard}
-                    onSubmit={(name) => {
+                    onSubmit={(name, success) => {
 
                         // set alert
                         setAddTaskAlert({
-                            type: ADD_TASK_ALERT_TYPE.REPORT_SENT,
-                            label: "Report sent",
+                            type: success ? ADD_TASK_ALERT_TYPE.REPORT_SEND_SUCCESS : ADD_TASK_ALERT_TYPE.REPORT_SEND_FAILURE,
+                            label: success ? "Report sent" : "Failed to send report",
                             message: name ? `"` + name + `"` : null
                         })
 
