@@ -7,34 +7,13 @@ import {TransformComponent, TransformWrapper} from "react-zoom-pan-pinch";
 import CardZone from "../card_zone/card_zone";
 import {useDispatch, useSelector} from "react-redux";
 import ZoneHeader from "../zone_header/zone_header";
-import Portal from "../../../../../higher_order_components/portal";
+// import Portal from "../../../../../higher_order_components/portal";
 import { throttle } from 'lodash'
 import Button from "../../../../basic/button/button";
 import SummaryCardZone from "../card_zone/summary_card_zone/summary_card_zone";
 import {all} from "ramda";
 import {setSize} from "../../../../../redux/actions/card_page_actions";
-import {postCard} from "../../../../../redux/actions/card_actions";
 
-// function throttle(fn, ms) {
-// 	let timeout
-// 	function exec() {
-// 		fn.apply()
-// 	}
-// 	function clear() {
-// 		clearTimeout(timeout)
-// 	}
-// 	if(fn !== undefined && ms !== undefined) {
-// 		timeout = setTimeout(exec, ms)
-// 	} else {
-// 		console.error('callback function and the timeout must be supplied')
-// 	}
-// 	// API to clear the timeout
-// 	throttle.clearTimeout = function() {
-// 		clear();
-// 	}
-// }
-
-var handleInputThrottled
 
 const SummaryZone = SortableContainer((props) => {
 
@@ -89,7 +68,7 @@ const SummaryZone = SortableContainer((props) => {
 						const containerSize = sizes[currProcess._id]
 
 						return(
-							<styled.ProcessNameContainer className={"banana"} positionX={wrapperPositionX+containerSize?.offsetLeft -50} positionY={wrapperPositionY+((containerSize?.offsetTop + containerSize?.height/2) * scale)} >
+							<styled.ProcessNameContainer className={"banana"} positionX={wrapperPositionX+containerSize?.offsetLeft -50} positionY={wrapperPositionY+((containerSize?.offsetTop) * scale)} >
 								<styled.ProcessName>{processName}</styled.ProcessName>
 									<i
 										style={{fontSize: "1rem", padding: 0, margin: 0, marginLeft: ".25rem", marginRight: ".25rem"}}

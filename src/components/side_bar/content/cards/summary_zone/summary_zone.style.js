@@ -65,7 +65,7 @@ export const ProcessNameContainer = styled.div`
 	border-radius: 1rem;
 	height: 3rem;
 	transform: translateY(-50%);
-	z-index: 20;
+	// z-index: 20;
 	background: ${props => props.theme.bg.quinary};
 	overflow: hidden;
 	margin: 5rem 0 5rem 0;
@@ -93,6 +93,7 @@ export const ProcessesList = styled.div`
 	background: ${props => props.theme.bg.quaternary};
 	width: 150px;
 	height: 100%;
-	zIndex: 500;
+	zIndex: 0;
 	overflow: hidden;
+	position: relative;
 `

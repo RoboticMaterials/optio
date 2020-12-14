@@ -13,5 +13,5 @@ export const Container = styled.div`
     min-height: ${props => props.height ? props.height + "px" : "auto"};
     // min-height: ${props => props.height + "px"};
     
-    overflow: auto;
+    // overflow: auto;
 `
