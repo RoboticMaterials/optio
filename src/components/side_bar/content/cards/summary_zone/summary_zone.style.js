@@ -42,8 +42,10 @@ export const ProcessName = styled.span`
 	color: white;
 	font-weight: ${props => props.theme.fontWeight.bold};
 	z-index: 200;
+	// background: red;
 	display: inline-flex;
 	align-items: center;
+	justify-content: center;
 	flex: 1;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -73,8 +75,9 @@ export const ProcessNameContainer = styled.div`
 	align-items: center;
 	
 	
-	transition: all .5s ease;
-	border: 1px solid black;
+	transition: all .25s linear;
+	// border: thin solid black;
+	box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 	
 	
 	overflow: hidden;

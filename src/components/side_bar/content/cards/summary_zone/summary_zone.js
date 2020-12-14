@@ -64,7 +64,7 @@ const SummaryZone = SortableContainer((props) => {
 	const [allContainersSize, setAllContainersSize] = useState({})
 
 	const [value, setValue] = useState(0)
-	const throttled = useRef(throttle(setTransformWrapperPosition, 850))
+	const throttled = useRef(throttle(setTransformWrapperPosition, 200))
 
 	// useEffect(() => throttled.current && throttled.current(value), [value])
 
@@ -92,7 +92,7 @@ const SummaryZone = SortableContainer((props) => {
 							<styled.ProcessNameContainer className={"banana"} positionX={wrapperPositionX+containerSize?.offsetLeft -50} positionY={wrapperPositionY+((containerSize?.offsetTop + containerSize?.height/2) * scale)} >
 								<styled.ProcessName>{processName}</styled.ProcessName>
 									<i
-										style={{fontSize: "1rem", padding: 0, margin: 0, marginLeft: ".25rem"}}
+										style={{fontSize: "1rem", padding: 0, margin: 0, marginLeft: ".25rem", marginRight: ".25rem"}}
 										className="fas fa-times"
 										onClick={()=>{
 											const filteredProcesses = selectedProcesses.filter((item,index) => item._id !== currProcess._id)
