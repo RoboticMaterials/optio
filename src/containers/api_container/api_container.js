@@ -279,8 +279,6 @@ const ApiContainer = (props) => {
         const funtion8 = await handleProcessesWithBrokenRoutes(processes, tasks)
         const funtion9 = await handleTaskQueueWithBrokenTasks(taskQueue, tasks)
 
-        console.log('QQQQ data loaded')
-
         props.apiLoaded()
         props.onLoad()
 
@@ -407,7 +405,6 @@ const ApiContainer = (props) => {
                 const newDashboard = onPostDashoard(newDeviceDashboard)
 
                 return newDashboard.then(async (dashPromise) => {
-                    console.log('QQQQ hur')
                     device.dashboards = [dashPromise._id.$oid]
                     await onPutDevice(device, device._id)
                 })

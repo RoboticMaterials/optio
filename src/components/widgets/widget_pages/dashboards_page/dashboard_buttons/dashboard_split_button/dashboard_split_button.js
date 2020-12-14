@@ -2,19 +2,19 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 // import components
-import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
-import {SchemaIcon} from "../dashboard_editor/button_fields/button_fields.style";
+import ErrorTooltip from "../../../../../basic/form/error_tooltip/error_tooltip";
+import {SchemaIcon} from "../../dashboard_editor/button_fields/button_fields.style";
 
 // Import Styles
-import * as style from './dashboard_button.style';
-import { theme } from "../../../../../theme"
+import * as style from './dashboard_split_button.style'
+import * as dashboard_buttons_style from '../dashboard_buttons.style'
 
 // import logging
-import log from '../../../../../logger'
+import log from '../../../../../../logger'
 
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
-const DashboardButton = (props => {
+const DashboardSplitButton = (props => {
 
     const {
         color,
@@ -27,15 +27,12 @@ const DashboardButton = (props => {
         height,
         clickable,
         hoverable,
-        titleStyle,
         containerStyle,
         containerCss,
         error,
-        type = "",
         iconColor,
-        iconClassName
+        associatedTaskId
     } = props
-
 
     return (
         <style.Container
@@ -44,38 +41,41 @@ const DashboardButton = (props => {
             width={width}
             height={height}
             background={color}
-            onClick={clickable ? ()=>onClick(taskID) : null}
             borderGlow={taskID === 'hil_success'}
-            clickable={clickable}
-            hoverable={hoverable}
             style={containerStyle}
             css={containerCss}
         >
-            <div style={{display: "flex", alignItems: "center"}}>
-                <style.ConditionText style={titleStyle}>{title}</style.ConditionText>
-                {(iconColor && iconClassName) &&
-                <style.IconContainer>
-                    <SchemaIcon className={iconClassName} color={iconColor}></SchemaIcon>
-                </style.IconContainer>
+            <style.RobotButton
+                background={color}
+                clickable={clickable}
+                onClick={clickable ? () => onClick(taskID) : null}
 
-                }
-            </div>
+            >
+                <style.ConditionText style={null}>{title}</style.ConditionText>
+
+                <SchemaIcon className={"icon-cart"} style={{fontSize: "1rem"}} color={iconColor}></SchemaIcon>
+            </style.RobotButton>
+
+            <style.HumanButton
+                clickable={clickable}
+                background={color}
+                onClick={clickable ? () => onClick(associatedTaskId) : null}
+            >
+                <SchemaIcon className={"fas fa-user"} color={iconColor}></SchemaIcon>
+            </style.HumanButton>
 
             {children && children}
             <ErrorTooltip
                 visible={error}
                 text={error}
-                ContainerComponent={style.ErrorContainerComponent}
+                ContainerComponent={dashboard_buttons_style.ErrorContainerComponent}
             />
-
-
         </style.Container>
     )
-
 })
 
 // Specifies propTypes
-DashboardButton.propTypes = {
+DashboardSplitButton.propTypes = {
     clickable: PropTypes.bool,
     hoverable: PropTypes.bool,
     title: PropTypes.string,
@@ -85,7 +85,7 @@ DashboardButton.propTypes = {
 };
 
 // Specifies the default values for props:
-DashboardButton.defaultProps = {
+DashboardSplitButton.defaultProps = {
     clickable: true,
     hoverable: true,
     title: "",
@@ -95,4 +95,4 @@ DashboardButton.defaultProps = {
 
 };
 
-export default (DashboardButton)
+export default (DashboardSplitButton)

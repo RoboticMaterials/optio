@@ -4,7 +4,7 @@ import React, {useRef, useEffect, useState} from 'react';
 import ReactList from 'react-list';
 
 // import internal components
-import DashboardButton from "../../dashboard_button/dashboard_button";
+import DashboardButton from "../../dashboard_buttons/dashboard_button/dashboard_button";
 
 // style
 import * as style from "./dashboard_button_list.style"
@@ -18,7 +18,7 @@ import log from "../../../../../../logger"
 import {deepCopy} from "../../../../../../methods/utils/utils";
 import {OPERATION_TYPES, TYPES} from "../../dashboards_sidebar/dashboards_sidebar";
 import {theme} from "../../../../../../theme";
-import DashboardSplitButton from "../../dashboard_button/split_button/dashboard_split_button";
+import DashboardSplitButton from "../../dashboard_buttons/dashboard_split_button/dashboard_split_button";
 const logger = log.getLogger("Dashboards")
 
 
@@ -28,8 +28,6 @@ const logger = log.getLogger("Dashboards")
 const DashboardButtonList = ((props) => {
 
 	const { buttons, addedTaskAlert, onTaskClick } = props
-
-
 
 	// ref for list of buttons
 	const listRef = useRef(null);
@@ -42,16 +40,12 @@ const DashboardButtonList = ((props) => {
 
 		const currentButton = buttons[index]
 
-		console.log("currentButton",currentButton)
-
 		let broken = false
 		let name = currentButton.name
 		const type = currentButton?.type
         let taskID = currentButton.task_id
 		const task = tasks[taskID]
 		const associatedTaskId = task?.associated_task
-
-		console.log("task", task)
 
         // If the task is in tasks or it's a custom task or hil success, then it exists
 		const taskExists = !!tasks[taskID] ? true : taskID === 'custom_task' ? true : taskID === 'hil_success' ? true : false
@@ -64,7 +58,6 @@ const DashboardButtonList = ((props) => {
 			disabled = addedTaskAlert || currentButton.deleted || broken || !taskExists
 			error = !taskExists ? "This buttons task has been deleted." : null
 			onClick = (associatedTaskIdArg) => {
-				console.log("associatedTaskIdArg",associatedTaskIdArg)
 				if(taskID === 'custom_task' || taskID === 'hil_success'){
 					onTaskClick(TYPES.ROUTES.key, associatedTaskIdArg, name, currentButton.custom_task)
 				} else {
@@ -84,6 +77,7 @@ const DashboardButtonList = ((props) => {
 					onTaskClick(OPERATION_TYPES.REPORT.key, currentButton.key)
 				}
 				break
+
 			case OPERATION_TYPES.KICK_OFF.key:
 				disabled = true
 				error = null
@@ -91,6 +85,7 @@ const DashboardButtonList = ((props) => {
 					onTaskClick(type)
 				}
 				break
+
 			default:
 				handleRouteClick()
 				break

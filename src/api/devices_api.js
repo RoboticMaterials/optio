@@ -16,7 +16,6 @@ export async function getDevices() {
         // Success 🎉
         const data = response.data;
         const dataJson = JSON.parse(data)
-        // console.log('QQQQ getting devices', dataJson)
         return dataJson;     
 
 
@@ -155,7 +154,6 @@ export async function putDevices(device, ID) {
         // log.debug('response',response);
         const data = response.data;
         const dataJson = JSON.parse(data)
-        console.log('QQQQ PUT worked!!!', dataJson)
         return dataJson;
 
 

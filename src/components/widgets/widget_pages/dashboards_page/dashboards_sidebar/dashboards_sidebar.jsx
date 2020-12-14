@@ -164,7 +164,7 @@ const DashboardsSidebar = (props) => {
             return {
                 name: task.name,
                 color: tempColors[index % tempColors.length],
-                type: TYPES.ROUTES.name,
+                type: TYPES.ROUTES.key,
                 task_id: task._id,
                 id: task._id,
             }
@@ -172,9 +172,15 @@ const DashboardsSidebar = (props) => {
     }
 
     const getReportButtons = () => {
-        return Object.entries(OPERATION_TYPES).map((currEntry, ind) => {
+        return Object.entries(OPERATION_TYPES).filter((currEntry, ind) => {
+            const currKey = currEntry[0]
+            if(currKey !== OPERATION_TYPES.KICK_OFF.key) return true // KICK_OFF currently disabled
+
+        }).map((currEntry, ind) => {
+
             const currValue = currEntry[1]
             const currKey = currEntry[0]
+
             return {
                 name: currValue.name,
                 color: themeContext.schema[currValue.schema].solid,

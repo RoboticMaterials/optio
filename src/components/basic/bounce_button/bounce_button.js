@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 // Import Styles
 import * as style from './bounce_button.style'
-import DashboardButton from "../../widgets/widget_pages/dashboards_page/dashboard_button/dashboard_button"
+import DashboardButton from "../../widgets/widget_pages/dashboards_page/dashboard_buttons/dashboard_button/dashboard_button"
 import useOnClickOutside from "../../../hooks/useOnClickOutside";
 
 const BounceButton = (props => {

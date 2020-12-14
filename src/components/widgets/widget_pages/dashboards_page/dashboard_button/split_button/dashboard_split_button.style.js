@@ -128,6 +128,7 @@ export const SubButton = styled.div`
 export const SubButton2 = styled.button`
     ${ButtonStyle};
     flex: 1;
+    height: 100%;
     border-left: 1px solid ${props => props.theme.bg.tertiary};
     background: ${props => `linear-gradient(180deg, 
                             ${LightenDarkenColor(props.background, -40)} 0%, 

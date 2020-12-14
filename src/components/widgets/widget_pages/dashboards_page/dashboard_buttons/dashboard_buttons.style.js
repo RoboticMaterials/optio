@@ -1,8 +1,7 @@
-import styled, { css } from 'styled-components'
+import styled, {css} from "styled-components";
+import {LightenDarkenColor} from "../../../../../methods/utils/color_utils";
 
-import { hexToRGBA, RGB_Linear_Shade, LightenDarkenColor } from '../../../../../methods/utils/color_utils';
-
-const borderGlowCss = css`
+export const borderGlowCss = css`
     --border-width: .1rem;
     background: none;
 
@@ -40,10 +39,10 @@ const borderGlowCss = css`
 }
 `
 
-export const Container = styled.button`
+export const ContainerCss = css`
   position: relative;
   user-select: none;
-  
+
   // flex layout
   display: flex;
   flex-direction: column;
@@ -51,20 +50,20 @@ export const Container = styled.button`
   flex-grow: 1;
   width: 100%;
   overflow: hidden;
-	
+
   background: ${props => `linear-gradient(180deg, 
                             ${LightenDarkenColor(props.background, 20)} 0%, 
                             ${props.background} 50%, 
                             ${LightenDarkenColor(props.background, -20)} 100%)`};
   border-radius: 0.6rem;
-	
-	
+
+
   // margins
   margin: 0 0 0.1rem 0;
-	
+
   // padding
   padding: 0.5rem 1rem 0.5rem 1rem;
-  
+
   outline: none;
   &:focus {
     outline: none;
@@ -76,76 +75,57 @@ export const Container = styled.button`
   transition: all 0.1s ease 0s;
   cursor: pointer;
   outline: none;
-    
+
   &:hover {
     ${props => props.hoverable && !props.clickable &&
-    {
-        boxShadow: "3px 3px 3px rgba(0, 0, 0, 0.5)",
-        transform: "translateY(-1px)",
-    }
+            {
+              boxShadow: "3px 3px 3px rgba(0, 0, 0, 0.5)",
+              transform: "translateY(-1px)",
+            }
     }
   }
 
   ${props => props.clickable && !props.disabled &&
-        `&:active {
+          `&:active {
       background: ${`linear-gradient(180deg, 
           ${LightenDarkenColor(props.background, -20)} 0%, 
           ${props.background} 50%, 
           ${LightenDarkenColor(props.background, 20)} 100%)`
-        }
+          }
     }`
-    }
-  
-  ${props => props.disabled &&
-    {
-        color: props.theme.bg.quaternary,
-        background: `linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.4) 100%), ${LightenDarkenColor(props.background, -60)}`,
-        pointerEvents: "none",
-    }
-    }
+  }
 
-    // --border-width: 3px;
-    ${props => props.borderGlow &&
-        borderGlowCss
-    }
+          ${props => props.disabled &&
+                  {
+                    color: props.theme.bg.quaternary,
+                    background: `linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.4) 100%), ${LightenDarkenColor(props.background, -60)}`,
+                    pointerEvents: "none",
+                  }
+          }
 
-${props => props.css};
+            // --border-width: 3px;
+          ${props => props.borderGlow &&
+                  borderGlowCss
+          }
 
+          ${props => props.css};
 `
 
 export const ErrorContainerComponent = styled.div`
-width: auto;
-height: auto;
-position: absolute;
-top: 50 %;
-right: 1rem;
-transform: translateY(-50 %);
-margin: 0;
-padding: 0;
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50 %);
+    margin: 0;
+    padding: 0;
 `;
 
-export const ConditionText = styled.span`
-
-font: ${props => props.theme.font.primary};
-font - size: ${props => props.theme.fontSize.sz3};
-max - width: 100 %;
-overflow: hidden;
-text - overflow: ellipsis;
+export const conditionTextCss = css`
+    font: ${props => props.theme.font.primary};
+    font-size: ${props => props.theme.fontSize.sz3};
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 `
-
-export const IconContainer = styled.div`
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: ${props => props.theme.bg.senary};
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 4rem;
-    border-left: 1px solid ${props => props.theme.bg.tertiary};
-`
-
-export const GlowBorder = styled.div`
-
-    `

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Draggable } from 'react-smooth-dnd';
 
-import DashboardButton from "../../dashboard_button/dashboard_button";
+import DashboardButton from "../../dashboard_buttons/dashboard_button/dashboard_button";
 
 import * as style from "./dashboard_sidebar_button.style"
 

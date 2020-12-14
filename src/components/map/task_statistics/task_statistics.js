@@ -106,7 +106,6 @@ const TaskStatistics = (props) => {
         }
 
         return selectedProcess.routes.map((route) => {
-            console.log('QQQQ selected process', selectedProcess)
             return handleSingleTask(tasks[route])
         })
     }
