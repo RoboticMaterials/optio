@@ -6,6 +6,7 @@ import { ThemeProvider } from "styled-components";
 import theme from './theme';
 import './App.css';
 
+// Import Hooks
 import useWindowSize from './hooks/useWindowSize'
 
 // import logger
@@ -24,7 +25,6 @@ import HILModal from './containers/hil_modal/hil_modal'
 import Authentication from './containers/authentication/authentication'
 import Widgets from './components/widgets/widgets'
 import ListView from "./components/list_view/list_view";
-import TestsContainer from "./containers/api_container/tests_container";
 
 const widthBreakPoint = 1000;
 
@@ -38,9 +38,8 @@ const App = (props) => {
     const maps = useSelector(state => state.mapReducer.maps)
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
     const positions = useSelector(state => state.locationsReducer.positions)
-
+    const sideBarOpen = useSelector(state => state.sidebarReducer.open)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
-
     // Set to true for the time being, authentication is not 100% complete as of 09/14/2020
     const [authenticated, setAuthenticated] = useState(true)
 
@@ -49,11 +48,8 @@ const App = (props) => {
     const [stateTheme, setStateTheme] = useState('main')
 
     const [showSideBar, setShowSideBar] = useState(false)
-
     const size = useWindowSize()
     const windowWidth = size.width
-
-    console.log("showSideBar",showSideBar)
 
     const mobileMode = windowWidth < widthBreakPoint;
 
@@ -80,7 +76,6 @@ const App = (props) => {
     return (
         <>
             <Logger />
-            {/*<TestsContainer/>*/}
 
             {/* <ThemeProvider theme={theme[this.state.theme]}> */}
             <ThemeProvider theme={theme[stateTheme]}>
@@ -90,7 +85,7 @@ const App = (props) => {
 
 
                         <Route
-                            path={["/locations/:stationID?/:widgetPage?", '/:sidebar?/:data1?/:data2?', '/', ]}
+                            path={["/locations/:stationID?/:widgetPage?", '/:sidebar?', '/']}
                         >
                             <ApiContainer styleMode={null} apiMode={null} mode={null} logMode={"DEV"} onLoad={() => setLoaded(true)} apiLoaded={() => setApiLoaded(true)} isApiLoaded={apiLoaded} />
                         </Route>
@@ -104,18 +99,8 @@ const App = (props) => {
                         {loaded && authenticated && apiLoaded &&
                             <styled.ContentContainer>
 
-                                {/* If in mobile mode and dashboard is open (set in dashboard screens), don't mount the header; dashboard screen should be in full screen on mobile devices. If not in mobile mode, always mount header. */}
                                 <styled.HeaderContainer>
                                     {mapViewEnabled ?
-                                        mobileMode ?
-                                        dashboardOpen ?
-                                            <></>
-                                            :
-                                            <Route
-                                                path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                component={StatusHeader}
-                                            />
-                                        :
                                         <Route
                                             path={["/locations/:stationID?/:widgetPage?", '/']}
                                             component={StatusHeader}
@@ -130,28 +115,10 @@ const App = (props) => {
                                 <styled.BodyContainer>
                                     {/* Hides Side bar when in a dashboard in mobile mode */}
                                     {mapViewEnabled ?
-                                        mobileMode ?
-                                        dashboardOpen ?
-                                            <></>
-                                            :
-
-                                            <Route
-                                                path={["/:page?/:id?/:subpage?", '/']}
-                                            >
-                                                <SideBar
-                                                    showSideBar={showSideBar}
-                                                    setShowSideBar={setShowSideBar}
-                                                />
-                                            </Route>
-                                        :
-                                            <Route
-                                                path={["/:page?/:id?/:subpage?", '/']}
-                                            >
-                                                <SideBar
-                                                    showSideBar={showSideBar}
-                                                    setShowSideBar={setShowSideBar}
-                                                />
-                                            </Route>
+                                        <SideBar
+                                            showSideBar={sideBarOpen}
+                                            setShowSideBar={setShowSideBar}
+                                        />
                                         :
                                         <></>
                                     }
@@ -161,7 +128,7 @@ const App = (props) => {
                                         component={HILModal}
                                     />
 
-                                    {/* If there is no maps, then dont render mapview (Could cause an issue when there is no MIR map)
+                                    {/* If there are no maps, then dont render mapview (Could cause an issue when there is no MIR map)
                                         And if the device is mobile, then unmount if widgets are open
                                     */}
                                     {maps.length > 0 &&
@@ -169,22 +136,22 @@ const App = (props) => {
                                             {mapViewEnabled ?
 
                                                 (mobileMode ?
-                                                <Route
-                                                    path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                >
-                                                    {handleMobileMapView()}
-                                                </Route>
-                                                :
-                                                <Route
-                                                    path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                    component={MapView}
-                                                />)
+                                                    <Route
+                                                        path={["/locations/:stationID?/:widgetPage?", '/']}
+                                                    >
+                                                        {handleMobileMapView()}
+                                                    </Route>
+                                                    :
+                                                    <Route
+                                                        path={["/locations/:stationID?/:widgetPage?", '/']}
+                                                        component={MapView}
+                                                    />)
 
                                                 :
 
                                                 <Route
-                                                path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                component={ListView}
+                                                    path={["/locations/:stationID?/:widgetPage?", '/']}
+                                                    component={ListView}
                                                 />
 
 
