@@ -176,6 +176,14 @@ const Widgets = (props) => {
 
                         />
 
+                        <WidgetButton
+                            id={stationID}
+                            type={'lots'}
+                            label={'Lots'}
+                            currentPage={widgetPage}
+
+                        />
+
                         {/* Commented out for now, these widgets aren't working as of Sept. 1 2020. Once re-implemented make sure to update CSS */}
                         {/* <WidgetButton
                     id={stationID}
