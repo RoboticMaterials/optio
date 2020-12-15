@@ -1,14 +1,15 @@
 import {SortableContainer} from "react-sortable-hoc";
 import {useDispatch, useSelector} from "react-redux";
 import {putCard} from "../../../../../redux/actions/card_actions";
-import * as styled from "./station_column.style";
+import * as styled from "../station_column/station_column.style";
 import {Container} from "react-smooth-dnd";
 import Card from "../card/card";
 import React, {useState} from "react";
 import {setCardDragging, setColumnHovering} from "../../../../../redux/actions/card_page_actions";
+import Button from "../../../../basic/button/button";
 
 
-const StationsColumn = SortableContainer((props) => {
+const LotQueue = SortableContainer((props) => {
 	const {
 		id,
 		station_id,
@@ -17,7 +18,9 @@ const StationsColumn = SortableContainer((props) => {
 		handleCardClick,
 		cards = [],
 		size,
-		processId
+		processId,
+		setShowCardEditor,
+		showCardEditor
 	} = props
 
 	const width = size?.width
@@ -110,6 +113,7 @@ const StationsColumn = SortableContainer((props) => {
 					<i className="fa fa-chevron-right" aria-hidden="true"
 					   onClick={() => setCollapsed(false)}
 					/>
+
 				</styled.StationHeader>
 
 				<styled.BodyContainer>
@@ -127,12 +131,17 @@ const StationsColumn = SortableContainer((props) => {
 						   onClick={() => setCollapsed(true)}
 						/>
 
-
-
 						<styled.LabelContainer>
 							<styled.StationLabel>Station</styled.StationLabel>
 							<styled.StationTitle>{stationName}</styled.StationTitle>
 						</styled.LabelContainer>
+
+						<Button
+							onClick={()=>setShowCardEditor(!showCardEditor)}
+							schema={'processes'}
+						>
+							+ Card
+						</Button>
 
 						<i className="fas fa-ellipsis-h"></i>
 				</styled.StationHeader>
@@ -146,4 +155,4 @@ const StationsColumn = SortableContainer((props) => {
 
 })
 
-export default StationsColumn
+export default LotQueue

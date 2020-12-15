@@ -1,9 +1,24 @@
-import * as styled from "./card_zone.style";
-import StationsColumn from "../station_column/station_column";
 import React, {useEffect, useState} from "react";
+
+
+
+// components
+import StationsColumn from "../station_column/station_column";
+import LotQueue from "../lot_queue/lot_queue";
+import Button from "../../../../basic/button/button";
+
+// external components
 import {SortableContainer} from "react-sortable-hoc";
+import {Container} from "react-smooth-dnd";
+
+// external functions
 import {useDispatch, useSelector} from "react-redux";
+
+// actions
 import {setDataPage} from "../../../../../redux/actions/api_actions";
+
+// styles
+import * as styled from "./card_zone.style";
 
 const CardZone = SortableContainer((props) => {
 
@@ -11,7 +26,9 @@ const CardZone = SortableContainer((props) => {
 		// stations,
 		handleCardClick,
 		processId,
-		size
+		size,
+		setShowCardEditor,
+		showCardEditor
 	} = props
 
 	const width = size?.width
@@ -22,6 +39,7 @@ const CardZone = SortableContainer((props) => {
 	const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] }) || {}
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
 	const cards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || []
+	const stations = useSelector(state => { return state.locationsReducer.stations })
 
 	let cardsSorted = {}
 	currentProcess.routes && currentProcess.routes.forEach((currRouteId) => {
@@ -50,6 +68,8 @@ const CardZone = SortableContainer((props) => {
 		}
 	})
 
+	console.log("cardsSorted",cardsSorted)
+
 
 
 	const onSetDataPage = (page) => setDataPage(page)
@@ -68,7 +88,34 @@ const CardZone = SortableContainer((props) => {
 
 
 		return(
-			<styled.Container width={width} height={height}>
+			<Container
+				style={{
+					overflow: "auto",
+					height: "100%",
+					display: "flex",
+					flexDirection: "row",
+					padding: "1rem",
+					justifyContent:" flex-start",
+				}}
+				// groupName="process-cards"
+			>
+			{/*<styled.Container width={width} height={height}>*/}
+				<LotQueue
+					// size={size}
+					// onDrop={handleDrop}
+					key={null}
+					setShowCardEditor={setShowCardEditor}
+					showCardEditor={showCardEditor}
+
+					stationName={"Queue"}
+					// id={route_id+"+"+station_id}
+					// station_id={station_id}
+					processId={processId}
+					// route_id={route_id}
+					// cards={cardsArr}
+					// handleCardClick={handleCardClick}
+				/>
+
 				{
 					Object.values(cardsSorted).map((obj, index) => {
 
@@ -78,6 +125,11 @@ const CardZone = SortableContainer((props) => {
 							cards: cardsArr
 						} = obj
 
+						const currStation = stations[station_id]
+						const {
+							name: stationName
+						} = currStation || {}
+
 						return (
 							<StationsColumn
 								size={size}
@@ -85,6 +137,7 @@ const CardZone = SortableContainer((props) => {
 								key={station_id + index}
 								id={route_id+"+"+station_id}
 								station_id={station_id}
+								stationName={stationName}
 								processId={processId}
 								route_id={route_id}
 								cards={cardsArr}
@@ -93,7 +146,9 @@ const CardZone = SortableContainer((props) => {
 						)
 					})
 				}
-			</styled.Container>
+
+			{/*</styled.Container>*/}
+</Container>
 		)
 
 

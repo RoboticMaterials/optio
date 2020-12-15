@@ -160,42 +160,17 @@ const Cards = (props) => {
                                 initialProcesses={[currentProcess]}
                             />
                     }[id] ||
-                    <div ref={zoneRef} style={{overflow: "hidden", height: "100%", flex: 1, maxHeight: "100%"}}>
-                        <TransformWrapper
-                            defaultScale={1}
-                            style={{background: "green", padding: "2rem", flex: 1}}
-                            options={{
-                                minScale: 0.2,
-                                limitToBounds: false,
-                                // limitToWrapper: true,
-                                disabled: isCardDragging,
-                            }}
-                            pan={{
-                                disabled: isCardDragging
-                            }}
-                            enablePanPadding={false}
-                            enablePadding={false}
-                            wheel={{
-                                disabled: isHoveringOverColumn,
-                                // wheelEnabled: false,
-                                step: 50
-                            }}
-                            scalePadding={{
-                                disabled: false
-                            }}
-                            pinch={{
-                                disabled: true
-                            }}
-                        >
-                            <TransformComponent>
+
+
                                 <CardZone
+                                    setShowCardEditor={setShowCardEditor}
+                                    showCardEditor={showCardEditor}
                                     processId={id}
                                     size={zoneSize}
                                     handleCardClick={handleCardClick}
                                 />
-                            </TransformComponent>
-                        </TransformWrapper>
-                    </div>
+
+
                 }
             </styled.Body>
         </styled.Container>
