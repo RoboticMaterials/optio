@@ -88,8 +88,6 @@ export default function LocationContent() {
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const editing = useSelector(state => state.locationsReducer.editingLocation)
 
-    const hi = selectedLocation ? selectedLocation._id : null
-    console.log(hi)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
     const [mergeStation, setMergeStation] = useState(false)
