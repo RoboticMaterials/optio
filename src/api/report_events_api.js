@@ -91,6 +91,7 @@ export async function deleteReportEvent(ID) {
 }
 
 export async function postReportEvent(reportEvent) {
+    console.log("postReportEvent reportEvent",reportEvent)
     try {
         const response = await axios({
             method: 'POST',
@@ -135,6 +136,7 @@ export async function postReportEvent(reportEvent) {
             log.debug('error.message', error.message);
         }
         log.debug('error', error);
+        // throw error
     }
 }
 

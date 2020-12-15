@@ -45,6 +45,8 @@ const StatusHeader = (props) => {
     const isSideBarOpen = useSelector(state => state.sidebarReducer.open)
 
     const [statusBarPath, setStatusBarPath] = useState(``)
+    const [rightCurvePoint, setRightCurvePoint] = useState(``)
+    const [overlapStatus, setOverlapStatus] = useState('')
 
     const prevNotificationRef = useRef()
 
@@ -57,12 +59,20 @@ const StatusHeader = (props) => {
     // Used for determining break point of header
     const size = useWindowSize()
     const windowWidth = size.width
-
     const params = useParams()
 
     const generatePath = () => {
 
         const pageWidth = window.innerWidth
+
+        if(windowWidth<800 && isSideBarOpen && showRightMenu){
+          setRightCurvePoint(220)
+          setOverlapStatus(true)
+        }
+        else{
+          setRightCurvePoint(320)
+          setOverlapStatus(false)
+        }
 
         let x, mergeHeight
         let leftMargin = 200
@@ -88,8 +98,8 @@ const StatusHeader = (props) => {
                 L0,40
                 L${isSideBarOpen ? sideBarWidth : leftMargin},40
                 C${isSideBarOpen ? sideBarWidth + x / 2 : leftMargin + x / 2},40 ${isSideBarOpen ? sideBarWidth + x / 2 : leftMargin + x / 2},${mergeHeight} ${isSideBarOpen ? sideBarWidth + x : leftMargin + x},${mergeHeight}
-                L${pageWidth - (showRightMenu ? 320 : rightMargin) - x},${mergeHeight}
-                C${pageWidth - (showRightMenu ? 320 : rightMargin) - x / 2},${mergeHeight} ${showRightMenu ? `${pageWidth - 320},${mergeHeight}` : `${pageWidth - rightMargin - x / 2},40`} ${pageWidth - (showRightMenu ? 320 : rightMargin)},40
+                L${pageWidth - (showRightMenu ? rightCurvePoint : rightMargin) - x},${mergeHeight}
+                C${pageWidth - (showRightMenu ? rightCurvePoint : rightMargin) - x / 2},${mergeHeight} ${showRightMenu ? `${pageWidth - rightCurvePoint},${mergeHeight}` : `${pageWidth - rightMargin - x / 2},40`} ${pageWidth - (showRightMenu ? rightCurvePoint : rightMargin)},40
                 L${pageWidth},40
                 L${pageWidth},0
                 Z
@@ -228,7 +238,7 @@ const StatusHeader = (props) => {
 
                         {(showRightMenu || newNotification) &&
                             <>
-                                <RightMenu showRightMenu={showRightMenu} newNotification={newNotification} />
+                                <RightMenu showRightMenu={showRightMenu} newNotification={newNotification} overlapStatus = {overlapStatus} />
                             </>
                         }
                     </>

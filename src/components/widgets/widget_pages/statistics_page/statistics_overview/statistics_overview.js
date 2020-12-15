@@ -21,7 +21,7 @@ import { getStationAnalytics } from '../../../../../redux/actions/stations_actio
 import { ResponsiveBar } from '@nivo/bar';
 
 // Import Utils
-import { getDateName, getDateFromString } from '../../../../../methods/utils/utils'
+import {getDateName, getDateFromString, convertArrayToObject} from '../../../../../methods/utils/utils'
 import {getReportEvents} from "../../../../../redux/actions/report_event_actions";
 
 const tempColors = ['#FF4B4B', '#56d5f5', '#50de76', '#f2ae41', '#c7a0fa']
@@ -31,6 +31,10 @@ const StatisticsOverview = (props) => {
 
     const themeContext = useContext(ThemeContext);
 
+    const params = useParams()
+    const stationID = params.stationID
+    let plotRef = useRef()
+
     const dispatch = useDispatch()
     const onGetReportEvents = () => dispatch(getReportEvents());
 
@@ -39,6 +43,7 @@ const StatisticsOverview = (props) => {
     const locations = useSelector(state => state.locationsReducer.locations)
     const devices = useSelector(state => state.devicesReducer.devices)
     const reportEvents = useSelector(state => { return state.reportEventsReducer.reportEvents }) || {}
+    const dashboards = useSelector(state => { return state.dashboardsReducer.dashboards }) || {}
 
     const [data, setData] = useState(null)
     const [timeSpan, setTimeSpan] = useState('day')
@@ -50,13 +55,25 @@ const StatisticsOverview = (props) => {
     const [isLoading, setIsLoading] = useState(false)
 
     const [isDevice, setIsDevice] = useState(false)
+    const [locationName, setLocationName] = useState("")
+    const [reportButtons, setReportButtons] = useState([])
 
-    const params = useParams()
-    const stationID = params.stationID
-    let plotRef = useRef()
+    // update location properties
+    useEffect(() => {
 
+        const location = locations[stationID]
+        setLocationName(location.name)
 
-    const locationName = locations[params.stationID].name
+        // get report buttons
+        const dashboardId= location.dashboards && Array.isArray(location.dashboards) && location.dashboards[0]
+        const dashboard = dashboards[dashboardId] ? dashboards[dashboardId] : {}
+        const currReportButtons = dashboard.report_buttons ? dashboard.report_buttons : []
+
+        // store as object of ids to prevent excessive looping
+        setReportButtons(convertArrayToObject(currReportButtons, "_id"))
+
+    }, [stationID, dashboards, locations])
+
 
     const colors = {
         taktTime: '#42e395',
@@ -200,12 +217,15 @@ const StatisticsOverview = (props) => {
     const renderReportChart = () => {
         // stationID = params.stationID
         var stationReportEventIds = reportEvents.station_id && reportEvents.station_id[stationID]
+        const isReportEventsArr = Array.isArray(stationReportEventIds)
 
-        let data = []
+        var data = {}
+
+        // track min/max event counts per report button - this is used for determining the axis tick values
         var minCount = 0
         var maxCount = 1
 
-        stationReportEventIds && Array.isArray(stationReportEventIds) && stationReportEventIds.forEach((currId, ind) => {
+        isReportEventsArr && stationReportEventIds.forEach((currId, ind) => {
             const currentEvent = reportEvents._id && reportEvents._id[currId]
 
             const {
@@ -213,19 +233,32 @@ const StatisticsOverview = (props) => {
                 dashboard_id,
                 station_id,
                 report_button_id,
-                event_count,
                 description,
-                label,
+                // label = "ind " + ind,
             } = currentEvent || {}
 
+            // extract data from actual report button
+            const reportButton = reportButtons[report_button_id]
+            const label = reportButton ? reportButton.label : "Unlabeled"
+
+            // get data obj for current report button
+            var currentData = data[report_button_id] ? data[report_button_id] : {} // empty obj if haven't created entry for this button yet
+
+            // get event count for current report button and increment by 1
+            var event_count = currentData["event_count"] ? currentData["event_count"] + 1 : 1 // default to 1 if no entry yet
+            currentData["event_count"] = event_count
+            currentData["_id"] = _id
+
+            if(!currentData["label"]) currentData["label"] = label
+
+            // check if minCount or maxCount need to be updated
             if(event_count < minCount) minCount = event_count
             if(event_count > maxCount) maxCount = event_count
 
-            if(label && event_count) data.push({
-                x: label,
-                y: event_count,
-            })
+            data[report_button_id] = currentData
         })
+
+        data = Object.values(data)
 
         const isData = data.length > 0
 
@@ -234,9 +267,11 @@ const StatisticsOverview = (props) => {
             let blankLabel = ""
             for(let i = data.length; i < 5; i++) {
                 data.push({
-                    x: blankLabel,
-                    y: 0
+                    _id: blankLabel,
+                    label: blankLabel,
+                    event_count: 0
                 })
+
                 blankLabel += " "
             }
 
@@ -253,8 +288,9 @@ const StatisticsOverview = (props) => {
 
         else {
             data.push({
-                x: "",
-                y: 0
+                _id: "",
+                label: "",
+                event_count: 0
             })
         }
 
@@ -294,12 +330,13 @@ const StatisticsOverview = (props) => {
 
                 <styled.PlotContainer minHeight={minHeight - 10}>
                 <BarChart
-
                     layout={isData ? "horizontal" : "vertical"}
                     data={data}
                     enableGridX={ isData ? true : false}
                     enableGridY={ !isData ? true : false}
                     mainTheme={themeContext}
+                    keys={['event_count']}
+                    indexBy={'label'}
                     axisBottom={{
                         legend: 'Count',
                         tickValues: list

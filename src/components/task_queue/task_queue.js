@@ -12,7 +12,7 @@ import { clone_object } from '../../methods/utils/utils';
 // import actions
 import { deleteTaskQueueAll } from '../../redux/actions/task_queue_actions';
 import { getStatus } from '../../redux/actions/status_actions';
-import { getTasks } from "../../redux/actions/tasks_actions";
+import { getTasks, setSelectedTask } from "../../redux/actions/tasks_actions";
 
 
 // components
@@ -29,6 +29,8 @@ const logger = log.getLogger("TaskQueueMenu");
 const TaskQueueMenu = (props) => {
 
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
+    let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
+
     const taskQueue = useSelector(state => {
 
         const taskQueue = state.taskQueueReducer.taskQueue
@@ -77,6 +79,7 @@ const TaskQueueMenu = (props) => {
         const { name } = item
         const id = item?._id?.$oid
         const status = item.mission_status
+        const task = tasks[item.task_id]
 
         // return the component with the items properties as props
         return (
@@ -86,6 +89,8 @@ const TaskQueueMenu = (props) => {
                 id={id}
                 key={key}
                 type={type}
+                item = {item}
+                task = {task}
             />
         )
     }

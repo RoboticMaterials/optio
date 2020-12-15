@@ -366,63 +366,30 @@ const ReportModal = (props) => {
             ...rest
         } = button
 
-        const reportEventId = reportEvents?.report_button_id[_id]
-        const existingReportEvent = reportEvents?._id &&  reportEvents?._id[reportEventId]
+        const reportEvent = {
+            // save identifying info
+            dashboard_id: dashboard._id.$oid,
+            station_id: dashboard.station,
+            report_button_id: _id,
+            date: new Date().getTime(),
 
-        // there is already an existing reportEvent for this button, update it
-        if(existingReportEvent) {
-
-            // create new event entry
-            const newEvent = {
-                date: new Date().getTime(),
-                name: "REPORT_SENT",
-            }
-
-            // update reportEvent
-            const updatedReportEvent = {
-                // spread original data
-                ...existingReportEvent,
-
-                // increment event count
-                event_count: existingReportEvent.event_count + 1,
-
-                // add new event to events list
-                events:  [
-                    ...existingReportEvent.events,
-                    newEvent
-                ]
-            }
-
-            onPutReportEvent(existingReportEvent._id, updatedReportEvent)
+            // spread rest of buttons data - commented out for now, get remaining data from actual report button when its needed
+            // ...rest
         }
 
-        // no existing reportEvent was found for this button, create new
+        // post reportEvent
+        const result = await onPostReportEvent(reportEvent)
+
+        // handle request failed
+        if(result instanceof Error) {
+
+            onSubmit(button.label, false)
+        }
+
+        // handle request success
         else {
-            const reportEvent = {
-                // save identifying info
-                dashboard_id: dashboard._id.$oid,
-                station_id: dashboard.station,
-                report_button_id: _id,
-
-                // add event_count
-                event_count: 1,
-
-                // add event list with initial event
-                events:  [{
-                    date: new Date().getTime(),
-                    name: "REPORT_SENT",
-                }],
-
-                // spread rest of buttons data
-                ...rest
-            }
-
-            onPostReportEvent(reportEvent)
-
+            onSubmit(button.label, true)
         }
-
-
-        onSubmit(button.label)
         setSubmitting(false)
         close()
     }

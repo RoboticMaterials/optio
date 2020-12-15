@@ -94,6 +94,7 @@ export const postReportEvent = (reportEvent) =>  async dispatch => {
 
     const callback = async () => {
         const createdReportEvent = await api.postReportEvent(reportEvent);
+        console.log("createdReportEvent",createdReportEvent)
         // const normalizedSchedules = normalize(createdSchedule, scheduleSchema);
 
         return {
