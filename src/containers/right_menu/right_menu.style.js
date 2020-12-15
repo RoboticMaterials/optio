@@ -15,7 +15,7 @@ export const NotificationsContainer = styled.div`
 
     align-items: center;
 
-    width: 20rem;
+    width: ${props => props.overlaping ?  '13.75rem' : '20rem'} ;
     height: auto;
     max-height: ${props => props.windowHeight};
     /* max-height: 10rem; */
