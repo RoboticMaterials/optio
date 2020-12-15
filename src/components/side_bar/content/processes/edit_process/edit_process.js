@@ -10,6 +10,8 @@ import Button from '../../../../basic/button/button'
 // Import components
 import EditTask from '../../tasks/edit_task/edit_task'
 import ContentHeader from '../../content_header/content_header'
+import ErrorModal from '../../../../basic/modals/error_modal/error_modal'
+
 
 // Import actions
 import { setSelectedTask, deselectTask, addTask, putTask, deleteTask } from '../../../../../redux/actions/tasks_actions'
@@ -53,6 +55,8 @@ const EditProcess = (props) => {
     const [isTransportTask, setIsTransportTask] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
     const [editingTask, setEditingTask] = useState(false) // Used to tell if a task is being edited
     const [newRoute, setNewRoute] = useState(null)
+    const [reportModal, setReportModal] = useState(false);
+
 
     useEffect(() => {
         console.log('QQQQ selected process', selectedProcessCopy)
@@ -213,7 +217,7 @@ const EditProcess = (props) => {
 
         onDeselectTask()
 
-        // If the id is new then post 
+        // If the id is new then post
         if (selectedProcessCopy.new) {
 
             await onPostProcess(selectedProcess)
@@ -238,7 +242,7 @@ const EditProcess = (props) => {
 
     }
 
-    const handleDelete = async () => {
+    const handleDeleteWithRoutes = async () => {
 
         // If there's routes in this process, delete the routes
         if (selectedProcess.routes.length > 0) {
@@ -253,7 +257,31 @@ const EditProcess = (props) => {
         toggleEditingProcess(false)
     }
 
+    const handleDeleteWithoutRoutes = async () => {
+
+        await onDeleteProcess(selectedProcessCopy._id)
+
+        onDeselectTask()
+        onSetSelectedProcess(null)
+        setSelectedProcessCopy(null)
+        toggleEditingProcess(false)
+    }
+
     return (
+      <>
+        <ErrorModal
+          isOpen = {!!reportModal}
+          title={"Are you sure you want to delete this process?"}
+          handleClose={() => setReportModal(null)}
+          handleDeleteWithRoutes = {() => {
+              handleDeleteWithRoutes()
+              setReportModal(null)
+          }}
+          handleDeleteWithoutRoutes = {() => {
+              handleDeleteWithoutRoutes()
+              setReportModal(null)
+          }}
+        />
         <styled.Container>
             <div style={{ marginBottom: '1rem' }}>
 
@@ -300,13 +328,14 @@ const EditProcess = (props) => {
                 style={{ marginBottom: '0rem' }}
                 secondary
                 onClick={() => {
-                    handleDelete()
+                    setReportModal(true)
                 }}
             >
                 Delete
             </Button>
 
         </styled.Container>
+        </>
 
     )
 }

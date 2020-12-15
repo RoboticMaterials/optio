@@ -213,7 +213,8 @@ const ApiContainer = (props) => {
                 break;
 
             case 'dashboards':
-                pageDataInterval = setInterval(() => loadDashboardsData(), 1000);
+                pageDataInterval = setInterval(() => loadDashboardsData(), 10000);
+                pageDataInterval = setInterval(() => loadTasksData(), 10000);
                 break;
 
             case 'tasks':
@@ -421,8 +422,8 @@ const ApiContainer = (props) => {
 
     /**
      * The dashboard is tied to a device that does not exist anymore, so delete the dashboard
-     * @param {*} devices 
-     * @param {*} dashboards 
+     * @param {*} devices
+     * @param {*} dashboards
      */
     const handleDashboardsWithBrokenDevice = (devices, dashboards) => {
 
@@ -672,8 +673,8 @@ const ApiContainer = (props) => {
     /**
      * This handles task queue items that belong to a broken task
      * A task would be broken because it has been deleted
-     * @param {*} taskQueue 
-     * @param {*} tasks 
+     * @param {*} taskQueue
+     * @param {*} tasks
      */
     const handleTaskQueueWithBrokenTasks = async (taskQueue, tasks) => {
         if(taskQueue === undefined) return
