@@ -27,7 +27,7 @@ const TaskStatistics = (props) => {
 
 
     const handleSingleTask = (task) => {
-        if(task === undefined) return null
+        if (task === undefined) return null
         const selectedTaskAnalysis = tasksAnalysis[task._id]
         if (selectedTaskAnalysis === undefined) return null
 
@@ -76,7 +76,10 @@ const TaskStatistics = (props) => {
 
         return (
             <styled.TaskStatisticsContainer xPosition={xPosition} yPosition={yPosition}>
-                <styled.TaskNameText>{task.name}</styled.TaskNameText>
+
+                <styled.TaskNameContainer>
+                    <styled.TaskNameText>{task.name}</styled.TaskNameText>
+                </styled.TaskNameContainer>
 
                 <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', marginTop: '.25rem' }}>
                     <styled.RowContainer>
@@ -100,8 +103,8 @@ const TaskStatistics = (props) => {
     }
 
     const handleProcessTasks = () => {
-        
-        if(!!selectedTask){
+
+        if (!!selectedTask) {
             return handleSingleTask(selectedTask)
         }
 

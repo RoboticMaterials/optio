@@ -30,10 +30,10 @@ export const titleCss = css`
 export const contentContainerCss = css`
     flex-direction: row;
     overflow: hidden;
-    text-overflow: ellipsis;-
-    white-space: nowrap;
+    text-overflow: ellipsis;
+    /* white-space: nowrap; */
 
-    justify-content: flex-start;
+    /* justify-content: flex-start; */
 `
 
 export const rightContentContainerCss = css`

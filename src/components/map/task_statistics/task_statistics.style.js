@@ -11,7 +11,7 @@ export const TaskStatisticsContainer = styled.div`
     top: ${props => props.yPosition};
     left: ${props => props.xPosition};
 
-    height: 4.5rem;
+    max-height: 6.5rem;
     width: 10rem;
     padding: .5rem;
 
@@ -21,18 +21,34 @@ export const TaskStatisticsContainer = styled.div`
     background-color: rgba(255, 255, 255, 0.9);
 
     overflow: hidden;
-    white-space: nowrap;
-
 
 `
 
-export const TaskNameText = styled.p`
+export const TaskNameText = styled.span`
     margin-bottom: 0rem;
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz3};
     font-weight: bold;
 
-    align-self: baseline;
+    overflow-wrap: break-word;
+    align-items: center;
+    box-align: center;
+    width: 100%;
+    height: 100%;
+    word-break: break-word;
+
+`
+
+export const TaskNameContainer = styled.div`
+	flex: 1;
+	display: flex;
+	justify-content: first baseline;
+    flex-direction: column;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    max-height: 4rem;
+
 
 `
 
