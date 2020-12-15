@@ -92,12 +92,13 @@ const CardEditor = (props) => {
 		}
 	}, [cardId])
 
-	let dropdownOptions = [{
-		name: "",
-		route_id: matchingRoute._id,
-		station_id: loadStationId,
-		_id: currRouteId + "+" + loadStationId
-	}]
+	// {
+	// 	name: "",
+	// 		route_id: matchingRoute._id,
+	// 	station_id: loadStationId,
+	// 	_id: currRouteId + "+" + loadStationId
+	// }
+	let dropdownOptions = []
 
 	routeIds.forEach((currRouteId) => {
 		const matchingRoute = routes[currRouteId]
