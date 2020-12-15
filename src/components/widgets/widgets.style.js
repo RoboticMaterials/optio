@@ -93,6 +93,8 @@ export const WidgetStationNameUnselectable = styled.h4`
     font-size: ${props => props.theme.fontSize.sz4};
     font-family: ${props => props.theme.font.primary};
     font-weight: 500;
+    justify-content: center;
+    text-align: center;
 
 
 `

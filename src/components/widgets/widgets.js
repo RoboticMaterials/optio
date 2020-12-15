@@ -81,7 +81,7 @@ const Widgets = (props) => {
         }
     }
 
-    const clickLocation = () => {
+    const onClickLocation = () => {
         history.push('/locations')
 
         if (!showSideBar) {
@@ -379,7 +379,7 @@ const Widgets = (props) => {
                                         <styled.EditIcon
                                             className='fas fa-edit'
                                             styled={{ color: '#ff1818' }}
-                                            onClick={() => clickLocation()}
+                                            onClick={() => onClickLocation()}
                                         />
                                         </styled.RowContainer>
 
