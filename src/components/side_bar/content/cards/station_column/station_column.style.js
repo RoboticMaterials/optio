@@ -10,7 +10,9 @@ import {Container} from "react-smooth-dnd";
 
 const minHeight = "10rem"
 export const RotatedRouteName = styled.span`
+// background: red;
 	transform: rotate(-90deg);
+	// transform: translateY(50%);
 `
 
 
@@ -96,4 +98,5 @@ export const BodyContainer = styled.div`
 	opacity: ${props => props.dragEnter ? 0.75 : 1};
 	border-bottom-right-radius: 1rem;
 	border-bottom-left-radius: 1rem;
+	justify-content: center;
 `

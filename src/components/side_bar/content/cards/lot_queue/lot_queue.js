@@ -132,7 +132,6 @@ const LotQueue = SortableContainer((props) => {
 						/>
 
 						<styled.LabelContainer>
-							<styled.StationLabel>Station</styled.StationLabel>
 							<styled.StationTitle>{stationName}</styled.StationTitle>
 						</styled.LabelContainer>
 
@@ -142,8 +141,6 @@ const LotQueue = SortableContainer((props) => {
 						>
 							+ Card
 						</Button>
-
-						<i className="fas fa-ellipsis-h"></i>
 				</styled.StationHeader>
 
 				{renderCards()}
