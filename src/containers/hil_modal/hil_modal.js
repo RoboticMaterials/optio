@@ -24,9 +24,16 @@ const HILModal = () => {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
     const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
+    const devices = useSelector(state => state.devicesReducer.devices)
+    let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
+    const localHumanTask = useSelector(state => state.taskQueueReducer.localHumanTask)
 
     const [statusTimerIntervals, setStatusTimerIntervals] = useState({})
 
+    const dashboardID = params.dashboardID
+    const stationID = params.stationID
+
+    const deviceDashboard = !!devices ? !!devices[stationID] : false
     /**
      * Handles any task that should be displaying a HIL
      * useMemo for performance reasons, should only rerender if taskQueue changes and dashbaordID params
@@ -41,6 +48,16 @@ const HILModal = () => {
             return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item} />
         }
 
+        else{ if (!!taskQueueItemClicked && taskQueue[taskQueueItemClicked]) {
+            const item = taskQueue[taskQueueItemClicked]
+            const type = tasks[item.task_id].device_type
+            const hilType = tasks[item.task_id].type
+              if(type=='human'){
+              return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item} />
+            }
+          }
+        }
+
         // Used to hide the HIL if success was clicked. (See HIL_Modals)
         if (hilResponse === 'success') return
 
@@ -49,9 +66,11 @@ const HILModal = () => {
             const item = taskQueue[id]
 
             // If the task queue item has a HIL and it's corresponding dashboard id is not in the activeHILDasbaords list then display HIL.
-            // Dashboards can only have 1 HIL at a time, if the task queue has 2 HILS for the same dashboards, then only read the 
-            // most recent in the list 
-            if (!!item.hil_station_id) {
+            // Dashboards can only have 1 HIL at a time, if the task queue has 2 HILS for the same dashboards, then only read the
+            // most recent in the list
+            //
+            // Do not display HIL if the tasks device type is human, if it's a human, and unload button will appear on the dashboard
+            if (!!item.hil_station_id && !!tasks[item.task_id] && tasks[item.task_id].device_type !== 'human') {
 
                 // Loops through all ascociated dashboards at that location
                 locations[item.hil_station_id].dashboards.map((dashboard, ind) => {
@@ -68,33 +87,48 @@ const HILModal = () => {
                 })
 
                 // If active hils matches the dashboard selected (found in params) then display hil
-                // if (params.dashboardID === item.hil_station_id && !dashboards[params.dashboardID].unsubcribedHILS.includes(item.hil.taskID)) {
-                if (Object.keys(activeHilDashboards).includes(params.dashboardID)) {
+                // if (dashboardID === item.hil_station_id && !dashboards[dashboardID].unsubcribedHILS.includes(item.hil.taskID)) {
+                if (Object.keys(activeHilDashboards).includes(dashboardID)) {
 
                     const hilType = tasks[item.task_id].type
 
                     return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={id} item={item} key={id} />
+                }
+
+                // If a device dashboard, then show all associated HILs
+                else if (deviceDashboard) {
+                    const hilType = tasks[item.task_id].type
+                    return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={id} item={item} />
                 }
                 else {
                     return null
                 }
             }
 
+            // Else if the task q item has a dashboardID and the dashboardID matches current dashboard, then show that dashboard
+            // The reason this happens is that it's a human task and the person hit a dashboard button (see dashboard_screen).
+            // The HIL modal needs to immediatly show because the backend will be too slow to respond to show that dashboard after button click
+            else if (!!item.dashboard && item.dashboard === dashboardID && localHumanTask){
+                console.log('QQQQ HUR BABY')
+                return <HILModals hilMessage={item.hil_message} hilType={'push'} taskQuantity={item.quantity} taskQueueID={id} item={item} />
+
+            }
+
 
         })
 
-    }, [taskQueue, params.dashboardID, taskQueueItemClicked, hilResponse])
+    }, [taskQueue, dashboardID, taskQueueItemClicked, hilResponse])
 
 
     /**
      * Handles HIL timers and adds them to Redux
-     * 
+     *
      * Logic in this function is a little confusing at first.
-     * 
+     *
      * What this does is map through each item in the task Q and give that Item an interval based on the times sent from the back end
      * But, if this item already has an interval, don't add a new one to it.
      * If the interval is running, but the Task Q item does not have a station ID, then a HIL should not be displaying so remove the current interval
-     * 
+     *
      * After the first maping loop there's an if statement to make sure that the interval's task Q item is still in the task Q, if it's not, then remove the interval
      */
     const handleHILTimers = useMemo(() => {
@@ -103,7 +137,7 @@ const HILModal = () => {
 
             const item = taskQueue[id]
 
-            // If the item in task queue has an ascociated station_id, a hil must be displaying 
+            // If the item in task queue has an ascociated station_id, a hil must be displaying
             if (!!item.hil_station_id) {
 
                 // If the state of timers running includes the task queue id, that means the timer is still running
@@ -137,7 +171,7 @@ const HILModal = () => {
                         ...statusTimerIntervals,
                         [id]: setInterval(() => {
 
-                            // Can change the timer interval 
+                            // Can change the timer interval
                             biasedTimer = biasedTimer - timerInterval
 
                             // Add the timer to redux

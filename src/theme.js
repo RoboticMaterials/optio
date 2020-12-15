@@ -37,47 +37,47 @@ const light = {
     octonary: '#000000',  // Black
 }
 
-const theme = {
-  main: {
-    bg: dark,
-    fg: {
-        primary: '#798fd9',
-        secondary: '#FF4B4B', // RM RED
-        tertiary: '',
-        quaternary: '',
-        quinary: '',
-        senary: '',
-        septenary: '',
-        octonary: '',
-        nonary: '',
-        denary: '',
-        red: '#FF4B4B',   // RM RED
+export const theme = {
+    main: {
+        bg: dark,
+        fg: {
+            primary: '#798fd9',
+            secondary: '#FF4B4B', // RM RED
+            tertiary: '',
+            quaternary: '',
+            quinary: '',
+            senary: '',
+            septenary: '',
+            octonary: '',
+            nonary: '',
+            denary: '',
+            red: '#FF4B4B',   // RM RED
 
-    },
-    error: {
-        borderColor: '#FF4B4B',
-    },
-    good: '#52B853',
-    okay: '#ffa200',
-    bad: '#FF4B4B',
-    disabled:  '#808080',           // light grey
-    radioButton: {
-        active: '#FF4B4B',          // RM RED
-        inactive: '#808080',        // light grey
-        hover: RGB_Linear_Shade(.2, hexToRGBA('#FF4B4B')),    // lighter RM RED
-        textColor: "#FFFFFF",        // white
-        fontWeight: 500,
-        borderColor: '#A8A8A8',      // light light grey
-    },
-      hoverHighlightPer: 0.4,
-    basicButton: {
-        backgroundColor: {
-            active: '#FF4B4B',             // RM RED
-            disabled: '#808080',           // light grey
         },
-        textColor: {
-            active: "#FFFFFF",
-        }
+        error: {
+            borderColor: '#FF4B4B',
+        },
+        good: '#52B853',
+        okay: '#ffa200',
+        bad: '#FF4B4B',
+        disabled: '#808080',           // light grey
+        radioButton: {
+            active: '#FF4B4B',          // RM RED
+            inactive: '#808080',        // light grey
+            hover: RGB_Linear_Shade(.2, hexToRGBA('#FF4B4B')),    // lighter RM RED
+            textColor: "#FFFFFF",        // white
+            fontWeight: 500,
+            borderColor: '#A8A8A8',      // light light grey
+        },
+        hoverHighlightPer: 0.4,
+        basicButton: {
+            backgroundColor: {
+                active: '#FF4B4B',             // RM RED
+                disabled: '#808080',           // light grey
+            },
+            textColor: {
+                active: "#FFFFFF",
+            }
         },
 
         font: {
@@ -157,6 +157,10 @@ const theme = {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 143, 217, 0.95) 0%, rgba(125, 89, 183, 0.95) 100%)',
                 solid: '#798fd9'
             },
+            dashboards: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 214, 0, 0.95) 0%, rgba(255, 138, 0, 0.95) 100%)',
+                solid: '#5294ff'
+            },
             objects: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 214, 0, 0.95) 0%, rgba(255, 138, 0, 0.95) 100%)',
                 solid: '#ffb62e'
@@ -168,6 +172,34 @@ const theme = {
             tasks: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
                 solid: '#79d99b'
+            },
+            routes: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
+                solid: '#79d99b',
+                iconName: "fas fa-route"
+            },
+            all: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
+                solid: '#1ae8a0'
+            },
+            kick_off: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(197, 155, 255) 0%, rgba(173, 115, 255, 0.95) 100%)',
+                solid: '#c59bff',
+                iconName: "fas fa-play"
+            },
+            error: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
+                solid: '#ff1900'
+            },
+            operations: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
+                solid: '#e81a69',
+                iconName: "fas fa-sticky-note"
+            },
+            report: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
+                solid: '#e81a69',
+                iconName: "fas fa-sticky-note"
             },
             devices: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 75, 75, 0.95) 0%, rgba(255, 61, 61, 0.95) 100%)',
@@ -184,6 +216,10 @@ const theme = {
             settings: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(197, 155, 255) 0%, rgba(173, 115, 255, 0.95) 100%)',
                 solid: '#c59bff'
+            },
+            delete: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 75, 75, 0.95) 0%, rgba(255, 61, 61, 0.95) 100%)',
+                solid: '#e36868'
             },
         }
     },

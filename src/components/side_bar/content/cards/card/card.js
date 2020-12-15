@@ -8,7 +8,9 @@ const Card = (props) => {
         name,
         index,
         id,
-        onClick
+        onClick,
+        count,
+        objectName
     } = props
 
 
@@ -20,8 +22,14 @@ const Card = (props) => {
                 <styled.ContentContainer>
                     {name}
                 </styled.ContentContainer>
-                <styled.FooterBar>
 
+
+                <styled.FooterBar>
+                    {objectName &&
+                        <styled.Count style={{marginRight: "1rem"}}>{objectName}:</styled.Count>
+                    }
+
+                    <styled.Count>{count}</styled.Count>
                 </styled.FooterBar>
 
             </styled.Container>

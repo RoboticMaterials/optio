@@ -16,8 +16,8 @@ import store from './redux/store/index.js'
 import './methods/css/fontawesome.min.css'
 import './graphics/icons/style.css'
 import 'nivo'
-import { AppContainer } from 'react-hot-loader';
-require('react-hot-loader/patch')
+// import { AppContainer } from 'react-hot-loader';
+// require('react-hot-loader/patch')
 
 /* uncomment to disable default logger
 console.log = () => {};
@@ -51,11 +51,11 @@ if(module.hot){
 // else {
     const rootElement = document.getElementById('root')
     ReactDOM.render(
-        <AppContainer>
+        // <AppContainer>
         <Provider store={store}>
             <App />
-        </Provider>
-            </AppContainer>,
+        </Provider>,
+            // </AppContainer>,
         rootElement
     )
 // }

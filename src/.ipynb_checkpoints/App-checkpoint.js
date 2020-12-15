@@ -48,7 +48,7 @@ const App = (props) => {
 
     const size = useWindowSize()
     const windowWidth = size.width
-
+console.log({showSideBar})
     const mobileMode = windowWidth < widthBreakPoint;
 
     /**
@@ -61,7 +61,8 @@ const App = (props) => {
             return (
                 <Route
                     path={["/locations/:stationID?/:widgetPage?", '/']}>
-                    <MapView mobileMode={mobileMode} />
+                    <MapView mobileMode={mobileMode} onClick = {()=>setShowSideBar(true)} />
+
                 </Route>
             )
         }

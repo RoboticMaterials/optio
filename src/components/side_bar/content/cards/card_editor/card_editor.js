@@ -42,7 +42,7 @@ const CardEditor = (props) => {
 		onAfterOpen,
 		close,
 		cardId,
-		objectId
+		// objectId
 
 	} = props
 
@@ -66,7 +66,10 @@ const CardEditor = (props) => {
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
 	const stations = useSelector(state => { return state.locationsReducer.stations })
 
+	const objects = useSelector(state => { return state.objectsReducer.objects })
+
 	console.log("processId",processId)
+	console.log("objects",objects)
 
 	const routeIds = processes[processId].routes
 
@@ -144,12 +147,16 @@ const CardEditor = (props) => {
 			name,
 			bin,
 			description,
-			count
+			count,
+			object
 		} = values
 
 		const start = values?.dates?.start || null
 		const end = values?.dates?.end || null
 
+		const objectId = (object && Array.isArray(object) && object.length > 0) ? object[0]._id : null
+
+		console.log("handleSubmit object",object)
 
 
 		// update (PUT)
@@ -159,6 +166,7 @@ const CardEditor = (props) => {
 				station_id: bin[0]?.station_id,
 				route_id: bin[0]?.route_id,
 				description,
+				object_id: objectId,
 				process_id: card.process_id,
 				start_date: start,
 				end_date: end,
@@ -176,6 +184,7 @@ const CardEditor = (props) => {
 				station_id: bin[0]?.station_id,
 				route_id: bin[0]?.route_id,
 				description,
+				object_id: objectId,
 				process_id: processId,
 				start_date: start,
 				end_date: end,
@@ -211,7 +220,8 @@ const CardEditor = (props) => {
 						start: card.start_date,
 						end: card.end_date,
 					} : null,
-					count: card ? card.count : 0
+					count: card ? card.count : 0,
+					object: (card && card.object_id) ?  [objects[card.object_id]] : []
 				}}
 
 				// validation control
@@ -234,7 +244,8 @@ const CardEditor = (props) => {
 				{formikProps => {
 
 					// extract common properties from formik
-					const {errors, values, touched, isSubmitting} = formikProps
+					const {errors, values, touched, isSubmitting, initialValues} = formikProps
+
 
 					const startDateText = (values?.dates?.start?.month && values?.dates?.start?.day && values?.dates?.start?.year) ?  values.dates.start.month + "/" + values.dates.start.day + "/" + values.dates.start.year : "Planned start"
 					// const startDateTime = (values?.startTime?.hours && values?.startTime?.minutes && values?.startTime?.seconds) ?  values.startTime.hours + ":" + values.startTime.minutes + ":" + values.startTime.seconds : "Start Time"
@@ -245,6 +256,7 @@ const CardEditor = (props) => {
 					logger.log("values",values)
 					logger.log("touched",touched)
 					logger.log("errors",errors)
+					logger.log("initialValues",initialValues)
 
 					// get number of field errors
 					const errorCount = Object.keys(errors).length > 0
@@ -282,21 +294,38 @@ const CardEditor = (props) => {
 					const renderContent = () => {
 						return(
 							<styled.BodyContainer>
-								<div style={{display: "flex", marginBottom: "1rem"}}>
+								{/*<div style={{display: "flex", marginBottom: "1rem"}}>*/}
 									<TextField
 										name="description"
 										type="text"
 										placeholder="Description..."
 										InputComponent={Textbox}
 										lines={5}
-										style={{marginRight: "1rem", flex: 1}}
+										style={{marginBottom: "1rem"}}
 										// ContentContainer={styled.InputContainer}
 									/>
+
 									<styled.ObjectInfoContainer>
-										<styled.ObjectTitleContainer style={{marginBottom: "1rem"}}>
+										{/*<styled.ObjectTitleContainer style={{marginBottom: "1rem"}}>*/}
+											{/*<styled.ObjectLabel>Object</styled.ObjectLabel>*/}
+											{/*<styled.ObjectName>{objectName}</styled.ObjectName>*/}
 											<styled.ObjectLabel>Object</styled.ObjectLabel>
-											<styled.ObjectName>{objectName}</styled.ObjectName>
-										</styled.ObjectTitleContainer>
+											<DropDownSearchField
+												// Container={styled.StationContainer}
+												containerSyle={{flex: 1}}
+												// containerSyle={{flex: 1}}
+												pattern={null}
+												name="object"
+												labelField={'name'}
+												options={Object.values(objects)}
+												valueField={"_id"}
+												// label={'Choose Station'}
+												onDropdownOpen={() => {
+												}}
+											/>
+											<div style={{margin: "0 1rem"}}/>
+										{/*</styled.ObjectTitleContainer>*/}
+
 										<styled.ObjectTitleContainer>
 											<styled.ObjectLabel>Count</styled.ObjectLabel>
 											<TextField
@@ -306,7 +335,7 @@ const CardEditor = (props) => {
 											/>
 										</styled.ObjectTitleContainer>
 									</styled.ObjectInfoContainer>
-								</div>
+								{/*</div>*/}
 
 								<span>
 									<styled.DatesContainer>
@@ -325,17 +354,17 @@ const CardEditor = (props) => {
 								</span>
 
 
-								<DropDownSearchField
-									Container={styled.StationContainer}
-									pattern={null}
-									name="bin"
-									labelField={'name'}
-									options={dropdownOptions}
-									valueField={"_id"}
-									label={'Choose Station'}
-									onDropdownOpen={() => {
-									}}
-								/>
+								{/*<DropDownSearchField*/}
+								{/*	Container={styled.StationContainer}*/}
+								{/*	pattern={null}*/}
+								{/*	name="bin"*/}
+								{/*	labelField={'name'}*/}
+								{/*	options={dropdownOptions}*/}
+								{/*	valueField={"_id"}*/}
+								{/*	label={'Choose Station'}*/}
+								{/*	onDropdownOpen={() => {*/}
+								{/*	}}*/}
+								{/*/>*/}
 
 
 

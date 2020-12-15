@@ -41,7 +41,7 @@ export const Container = styled.div`
     
     color: black;
 
-}
+
     
 `
 
@@ -49,9 +49,16 @@ export const ContentContainer = styled.div`
 	padding: 0.5rem 1rem 0.5rem 1rem;
 `
 
+export const Count = styled.span`
+	font-size: ${props => props.theme.fontSize.sz6};
+`
+
 export const FooterBar = styled.div`
 	height: 1rem;
 	background: ${props => props.theme.bg.septenary};
+	display: flex;
+	justify-content: flex-end;
+	padding: 0 1rem 0 0;
 `
 
 export const StyledDraggable = styled(Draggable)`

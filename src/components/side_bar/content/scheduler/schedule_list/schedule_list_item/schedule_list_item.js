@@ -35,8 +35,9 @@ const ScheduleListItem = (props) => {
 		time_interval,
 		interval_on,
 		stop_time,
-        start_time
-        
+    start_time,
+		next_time,
+
 	} = props
 
 
@@ -45,7 +46,6 @@ const ScheduleListItem = (props) => {
 
 	const width = useSelector(state => state.sidebarReducer.width)
 	const isSmall = width < widthBreakPoint
-
 	const hasError = Object.keys(error).length > 0
 	const errorMessage = getMessageFromError(error)
 

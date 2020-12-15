@@ -1,13 +1,14 @@
 import {SortableContainer} from "react-sortable-hoc";
 import {useDispatch, useSelector} from "react-redux";
 import {putCard} from "../../../../../redux/actions/card_actions";
-import * as styled from "../station_column/station_column.style";
+import * as styled from "./lot_queue.style";
 import {Container} from "react-smooth-dnd";
 import Card from "../card/card";
 import React, {useState} from "react";
 import {setCardDragging, setColumnHovering} from "../../../../../redux/actions/card_page_actions";
 import Button from "../../../../basic/button/button";
-
+import CalendarField from "../../../../basic/form/calendar_field/calendar_field";
+import PropTypes from 'prop-types';
 
 const LotQueue = SortableContainer((props) => {
 	const {
@@ -151,5 +152,23 @@ const LotQueue = SortableContainer((props) => {
 	}
 
 })
+
+// Specifies propTypes
+LotQueue.propTypes = {
+	stationName: PropTypes.string,
+	handleCardClick: PropTypes.func,
+	// cards: [],
+	setShowCardEditor: PropTypes.func,
+	showCardEditor: PropTypes.bool
+};
+
+// Specifies the default values for props:
+LotQueue.defaultProps = {
+	stationName: "Unnamed",
+	handleCardClick: ()=>{},
+	cards: [],
+	setShowCardEditor: ()=>{},
+	showCardEditor: false
+};
 
 export default LotQueue

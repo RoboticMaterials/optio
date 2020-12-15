@@ -8,7 +8,6 @@ import CardMenu from "./card_menu/card_menu";
 import CardZone from "./card_zone/card_zone";
 import TimelineZone from "./timeline_zone/timeline_zone";
 import Button from "../../../basic/button/button";
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import Portal from "../../../../higher_order_components/portal";
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
 import SummaryZone from "./summary_zone/summary_zone";
@@ -153,6 +152,8 @@ const Cards = (props) => {
                                 zoneRef={zoneRef}
                                 zoneSize={zoneSize}
                                 handleCardClick={handleCardClick}
+                                setShowCardEditor={setShowCardEditor}
+                                showCardEditor={showCardEditor}
                             />,
                         'timeline':
                             <TimelineZone
@@ -160,17 +161,15 @@ const Cards = (props) => {
                                 initialProcesses={[currentProcess]}
                             />
                     }[id] ||
-
-
-                                <CardZone
-                                    setShowCardEditor={setShowCardEditor}
-                                    showCardEditor={showCardEditor}
-                                    processId={id}
-                                    size={zoneSize}
-                                    handleCardClick={handleCardClick}
-                                />
-
-
+                        <styled.CardZoneContainer>
+                            <CardZone
+                                setShowCardEditor={setShowCardEditor}
+                                showCardEditor={showCardEditor}
+                                processId={id}
+                                size={zoneSize}
+                                handleCardClick={handleCardClick}
+                            />
+                        </styled.CardZoneContainer>
                 }
             </styled.Body>
         </styled.Container>

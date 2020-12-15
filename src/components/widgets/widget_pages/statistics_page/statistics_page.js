@@ -1,11 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import * as styled from './statistics_page.style'
 
+// Import Components
 import StatisticsOverview from './statistics_overview/statistics_overview'
 import StatisticsCharts from './statistics_charts/statistics_charts'
 
+// Import Actions
+import moduleName from '../../../../redux/actions/'
+
 const StatisticsPage = () => {
+
+    useEffect(() => {
+        
+        return () => {
+            
+        }
+    }, [])
 
     return (
         <styled.StatisticsContainer>

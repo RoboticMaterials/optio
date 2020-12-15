@@ -39,12 +39,15 @@ const HILModals = (props) => {
     const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
     const onSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
     const onPostEvents = (event) => dispatch(postEvents)
+    const onLocalHumanTask = (bol) => dispatch({type: 'LOCAL_HUMAN_TASK', payload: bol})
+
 
     const hilTimers = useSelector(state => { return state.taskQueueReducer.hilTimers })
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
-
+    const taskQueueItemClicked = useSelector(state=> state.taskQueueReducer.taskQueueItemClicked)
+    const dashboardOpen = useSelector(state=> state.dashboardsReducer.dashboardOpen)
     const [quantity, setQuantity] = useState(taskQuantity)
     const [hilLoadUnload, setHilLoadUnload] = useState('')
 
@@ -56,7 +59,7 @@ const HILModals = (props) => {
     // Use Effect for when page loads, handles wether the HIL is a load or unload
     useEffect(() => {
         // If the task's load location of the task q item matches the item's location then its a load hil, else its unload
-        if (tasks[item.task_id].load.station === item.hil_station_id) {
+        if (tasks[item.task_id].load.station === item.hil_station_id || !!item.dashboard) {
             // load
             setHilLoadUnload('load')
         } else {
@@ -64,15 +67,21 @@ const HILModals = (props) => {
             setHilLoadUnload('unload')
         }
 
-        if(item.quantity){
+        if (!!item.quantity) {
             setQuantity(item.quantity)
         } else {
             setQuantity(0)
         }
 
+        // On unmount, set the task q item to none
+        return () => {
+            onTaskQueueItemClicked('')
+            onLocalHumanTask(false)
+        }
+
     }, [])
 
-    // Posts HIL Success to API 
+    // Posts HIL Success to API
     const handleHilSuccess = async () => {
 
         onTaskQueueItemClicked('')
@@ -89,14 +98,16 @@ const HILModals = (props) => {
         const ID = deepCopy(taskQueueID)
 
         delete newItem._id
+        delete newItem.dashboard
 
-        // This is used to make the tap of the HIL button respond quickly 
+        // This is used to make the tap of the HIL button respond quickly
         onHILResponse('success')
         setTimeout(() => onHILResponse(''), 2000)
 
+        console.log('QQQQ task success', newItem)
         await onPutTaskQueue(newItem, ID)
 
-        // handleLogEvent()
+        // handleLogHumanEvent()
     }
 
     // Posts HIL Postpone to API
@@ -105,7 +116,7 @@ const HILModals = (props) => {
         onTaskQueueItemClicked('')
     }
 
-    // Posts HIL Failure to API 
+    // Posts HIL Failure to API
     const handleHilFailure = async () => {
 
         let newItem = {
@@ -119,72 +130,87 @@ const HILModals = (props) => {
     }
 
     // Posts event to back end for stats and tracking
-    const handleLogEvent = () => {
-        let event = {}
+    const handleLogHumanEvent = () => {
+
+        let event = {
+            object: null,
+            outgoing: false,
+            quantity: 0,
+            station: null,
+            time: null,
+        }
 
         //Get the time
         const time = Date.now() / 1000
-
-        const task = item.task_id
-        const object = task.obj
+        const object = tasks[item.task_id].obj
         const station = item.hil_station_id
 
-        // let quantity = 0
-        // if(!!item.quantity){
-        //     quantity = item.quantity
-        // }
+        let eventQuantity = 0
+        if(!!item.quantity){
+            eventQuantity = item.quantity
+        } else {
+            eventQuantity = quantity
+        }
 
-        const quantity = item.quantity
-
-        let incoming = ''
+        let outgoing = null
         if (hilLoadUnload === 'load') {
-            incoming = true
+            outgoing = true
         } else if (hilLoadUnload === 'unload') {
-            incoming = false
+            outgoing = false
         } else (
-            incoming = 'Unknown'
+            outgoing = 'Unknown'
         )
 
         event.time = time
-        event.task = task
         event.object = object
         event.station = station
-        event.quantity = quantity
+        event.quantity = eventQuantity
+        event.outgoing = outgoing
 
-
-        onPostEvents(event)
+        // onPostEvents(event)
     }
 
     /**
      * Conditioinally renders HIL Modal based on type.
-     * 
+     *
      * Type 1: HIL Load Pull
      * This type requires a quantity input, success, postpone, and cancel
-     * Requires a postpone becauses if someone requests (pulls) a object without 
+     * Requires a postpone becauses if someone requests (pulls) a object without
      * the person loading being ready, they should be able to postopen until they are ready
-     * 
+     *
      * Type 2: HIL Load Push
      * This type requires a quantity input, success and cancel
-     * No postpone because you're pushing objects to the next location. 
+     * No postpone because you're pushing objects to the next location.
      * Meaning that your objects should be ready since you said they were
-     * 
+     *
      * Type 3: HIL Unload
      * This type requires just a success button
-     * No Cancel, postpone or quantity button. 
+     * No Cancel, postpone or quantity button.
      * Quantity is already taken care of in the load section, no objects should be lost in transportation.
      * No postpone becasue your objects are already on the cart and ready to be taken off, plus the cart cant be used while objects are on it
      * No cancel becasue the cart cant be used with objects on it
-     * 
+     *
      * Type 4: HIL Check
      * This type requires a Yes of postpone button
-     * The purpose of a HIL check is to make sure the operator is ready to deliver parts. 
+     * The purpose of a HIL check is to make sure the operator is ready to deliver parts.
      * HIL Check will only show on a pull request
      */
 
     return (
         <styled.HilContainer >
+          {dashboardOpen ?
+              <></>
+              :
+              <styled.HilExitModal
+                  className='fas fa-times'
+                  onClick={()=>onTaskQueueItemClicked('')}
+              />
+            }
             <styled.HilBorderContainer >
-                <styled.HilMessage>{hilMessage}</styled.HilMessage>
+
+
+
+                <styled.HilMessage>{!!item.dashboard ? 'Enter Quantity' : hilMessage}</styled.HilMessage>
                 {/* Only Showing timers on load at the moment, will probably change in the future */}
                 {!!hilTimers[item._id.$oid] && hilLoadUnload === 'load' &&
                     <styled.HilTimer>{hilTimers[item._id.$oid]}</styled.HilTimer>
@@ -251,7 +277,7 @@ const HILModals = (props) => {
 
                         <styled.HilButton color={'#ff9898'} onClick={handleHilFailure}>
                             <styled.HilIcon
-                                // onClick={handleHilFailure} 
+                                // onClick={handleHilFailure}
                                 className='fas fa-times'
                                 color={'#ff1818'}
                             />

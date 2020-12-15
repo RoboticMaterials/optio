@@ -17,7 +17,7 @@ import modelsReducer from './models_reducer'
 import skillTemplatesReducer from './skill_templates_reducer'
 import posesReducer from './poses_reducer';
 import requestStatusReducer from './request_status_reducer';
-import TaskAnalysisReducer from './task_analysis_reducer'
+import taskAnalysisReducer from './task_analysis_reducer'
 import mapReducer from './map_reducer'
 import sidebarReducer from './sidebar_reducer'
 import widgetReducer from './widget_reducer'
@@ -26,6 +26,7 @@ import notificationsReducer from './notifications_reducer'
 import eventsReducer from './events_reducer'
 import authenticationReducer from './authentication_reducer'
 import processesReducer from './processes_reducer'
+import reportEventsReducer from './report_events_reducer'
 import cardsReducer from './cards_reducer'
 import testReducer from './test_reducer'
 import cardPageReducer from "./card_page_reducer"
@@ -33,6 +34,7 @@ import cardPageReducer from "./card_page_reducer"
 export default combineReducers({
     cardPageReducer,
     apiReducer,
+    reportEventsReducer,
     cardsReducer,
     schedulesReducer,
     skillsReducer,
@@ -51,7 +53,7 @@ export default combineReducers({
     skillTemplatesReducer,
     posesReducer,
     requestStatusReducer,
-    TaskAnalysisReducer,
+    taskAnalysisReducer,
     mapReducer,
     sidebarReducer,
     widgetReducer,

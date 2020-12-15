@@ -9,96 +9,98 @@ import Label from '../components/Label';
 import { valueExistInSelected, hexToRGBA } from '../util';
 
 const dropdownPosition = (props, methods) => {
-  const DropdownBoundingClientRect = methods.getSelectRef().getBoundingClientRect();
-  const dropdownHeight =
-    DropdownBoundingClientRect.bottom + parseInt(props.dropdownHeight, 10) + parseInt(props.dropdownGap, 10);
+    const DropdownBoundingClientRect = methods.getSelectRef().getBoundingClientRect();
+    const dropdownHeight =
+        DropdownBoundingClientRect.bottom + parseInt(props.dropdownHeight, 10) + parseInt(props.dropdownGap, 10);
 
-  if (props.dropdownPosition !== 'auto') {
-    return props.dropdownPosition;
-  }
+    if (props.dropdownPosition !== 'auto') {
+        return props.dropdownPosition;
+    }
 
-  if (dropdownHeight > window.innerHeight && dropdownHeight > DropdownBoundingClientRect.top) {
-    return 'top';
-  }
+    if (dropdownHeight > window.innerHeight && dropdownHeight > DropdownBoundingClientRect.top) {
+        return 'top';
+    }
 
-  return 'bottom';
+    return 'bottom';
 };
 
 const Dropdown = ({ ItemComponent, props, DropDownComponent, state, methods, TextComponent }) => {
-  // console.log('Dropdown props', props)
-  // console.log('Dropdown ItemComponent', ItemComponent)
-  return(
-    <DropDownComponent
-      tabIndex="-1"
-      aria-expanded="true"
-      role="list"
-      dropdownPosition={dropdownPosition(props, methods)}
-      selectBounds={state.selectBounds}
-      portal={props.portal}
-      dropdownGap={props.dropdownGap}
-      dropdownHeight={props.dropdownHeight}
-      className={`${LIB_NAME}-dropdown ${LIB_NAME}-dropdown-position-${dropdownPosition(
-        props,
-        methods
-      )}`}>
-      {props.dropdownRenderer ? (
-        props.dropdownRenderer({ props, state, methods })
-      ) : (
-        <React.Fragment>
-          {props.create && state.search && !valueExistInSelected(state.search, state.values, props) && (
-            <AddNew
+    // console.log('Dropdown props', props)
+    // console.log('Dropdown ItemComponent', ItemComponent)
+    return (
+        <DropDownComponent
+            tabIndex="-1"
+            aria-expanded="true"
+            role="list"
+            dropdownPosition={dropdownPosition(props, methods)}
+            selectBounds={state.selectBounds}
+            portal={props.portal}
+            dropdownGap={props.dropdownGap}
+            dropdownHeight={props.dropdownHeight}
+            className={`${LIB_NAME}-dropdown ${LIB_NAME}-dropdown-position-${dropdownPosition(
+                props,
+                methods
+            )}`}>
+            {props.dropdownRenderer ? (
+                props.dropdownRenderer({ props, state, methods })
+            ) : (
+                    <React.Fragment>
+                        {props.create && state.search && !valueExistInSelected(state.search, state.values, props) && (
+                            <AddNew
 
-              className={`${LIB_NAME}-dropdown-add-new`}
-              color={props.color}
-              onClick={() => methods.createNew(state.search)}>
-              {props.createNewLabel.replace('{search}', `"${state.search}"`)}
-            </AddNew>
-          )}
-          <Label LabelComponent={props.LabelComponent} label={props.label}></Label>
-          {methods.searchResults().length === 0 ? (
-            <NoData
-              className={`${LIB_NAME}-no-data`}
-              state={state}
-              props={props}
-              methods={methods}
-              NoDataComponent={props.NoDataComponent}
-            />
-          ) : (
-            methods
-              .searchResults()
-              .map((item, itemIndex) => (
-                <Item
-                  ItemComponent={ItemComponent}
-                  TextComponent={TextComponent}
-                  key={item[props.valueField]}
-                  item={item}
-                  itemIndex={itemIndex}
-                  state={state}
-                  props={props}
-                  methods={methods}
-                />
-              ))
-          )}
-        </React.Fragment>
-      )}
-    </DropDownComponent>
-  );
+                                className={`${LIB_NAME}-dropdown-add-new`}
+                                color={props.color}
+                                onClick={() => methods.createNew(state.search)}>
+                                {props.createNewLabel.replace('{search}', `"${state.search}"`)}
+                            </AddNew>
+                        )}
+                        <Label LabelComponent={props.LabelComponent} label={props.label}></Label>
+                        {methods.searchResults().length === 0 ? (
+                            <NoData
+                                className={`${LIB_NAME}-no-data`}
+                                state={state}
+                                props={props}
+                                methods={methods}
+                                NoDataComponent={props.NoDataComponent}
+                            />
+                        ) : (
+                                methods
+                                    .searchResults()
+                                    .map((item, itemIndex) => (
+                                        <Item
+                                            ItemComponent={ItemComponent}
+                                            TextComponent={TextComponent}
+                                            //   Fix for dropdown search error for elements with matching keys
+                                            //   key={item[props.valueField]}
+                                            key={itemIndex}
+                                            item={item}
+                                            itemIndex={itemIndex}
+                                            state={state}
+                                            props={props}
+                                            methods={methods}
+                                        />
+                                    ))
+                            )}
+                    </React.Fragment>
+                )}
+        </DropDownComponent>
+    );
 }
 
 export const DefaultDropDownComponent = styled.div`
   position: absolute;
   ${({ selectBounds, dropdownGap, dropdownPosition }) =>
-    dropdownPosition === 'top'
-      ? `bottom: ${selectBounds.height + 2 + dropdownGap}px`
-      : `top: ${selectBounds.height + 2 + dropdownGap}px`};
+        dropdownPosition === 'top'
+            ? `bottom: ${selectBounds.height + 2 + dropdownGap}px`
+            : `top: ${selectBounds.height + 2 + dropdownGap}px`};
 
   ${({ selectBounds, dropdownGap, portal }) =>
-    portal
-      ? `
+        portal
+            ? `
       position: fixed;
       top: ${selectBounds.bottom + dropdownGap}px;
       left: ${selectBounds.left - 1}px;`
-      : 'left: -1px;'};
+            : 'left: -1px;'};
   width: 100%;
   padding: 0;
   display: flex;
@@ -154,7 +156,7 @@ const AddNew = styled.div`
 `;
 
 Dropdown.defaultProps = {
-  DropDownComponent: DefaultDropDownComponent
+    DropDownComponent: DefaultDropDownComponent
 };
 
 export default Dropdown;

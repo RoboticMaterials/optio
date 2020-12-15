@@ -28,7 +28,8 @@ const CardZone = SortableContainer((props) => {
 		processId,
 		size,
 		setShowCardEditor,
-		showCardEditor
+		showCardEditor,
+		maxHeight
 	} = props
 
 	const width = size?.width
@@ -61,10 +62,20 @@ const CardZone = SortableContainer((props) => {
 		}
 	})
 
+	var queue = []
 	Object.values(cards).forEach((card) => {
 		console.log("cards mapping cards", card)
+
 		if(cardsSorted[card.route_id + "+" + card.station_id]) {
 			cardsSorted[card.route_id + "+" + card.station_id].cards.push(card)
+		}
+		else {
+			queue.push(card)
+			// cardsSorted[card.route_id + "+" + card.station_id] = {
+			// 	station_id: card.station_id,
+			// 	route_id: card.route_id,
+			// 	cards: []
+			// }
 		}
 	})
 
@@ -88,18 +99,7 @@ const CardZone = SortableContainer((props) => {
 
 
 		return(
-			<Container
-				style={{
-					overflow: "auto",
-					height: "100%",
-					display: "flex",
-					flexDirection: "row",
-					padding: "1rem",
-					justifyContent:" flex-start",
-				}}
-				// groupName="process-cards"
-			>
-			{/*<styled.Container width={width} height={height}>*/}
+			<styled.Container width={width} height={height}>
 				<LotQueue
 					// size={size}
 					// onDrop={handleDrop}
@@ -112,8 +112,8 @@ const CardZone = SortableContainer((props) => {
 					// station_id={station_id}
 					processId={processId}
 					// route_id={route_id}
-					// cards={cardsArr}
-					// handleCardClick={handleCardClick}
+					cards={queue}
+					handleCardClick={handleCardClick}
 				/>
 
 				{
@@ -147,14 +147,8 @@ const CardZone = SortableContainer((props) => {
 					})
 				}
 
-			{/*</styled.Container>*/}
-</Container>
+			</styled.Container>
 		)
-
-
-
-
-
 })
 
 export default CardZone

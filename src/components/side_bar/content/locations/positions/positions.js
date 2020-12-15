@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import * as styled from './positions.style'
 
@@ -14,6 +14,7 @@ import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 // Import Actions
 import locationsReducer from '../../../../../redux/reducers/locations_reducer';
 import * as locationActions from '../../../../../redux/actions/locations_actions'
+import { setSelectedLocationCopy } from '../../../../../redux/actions/locations_actions'
 import * as positionActions from '../../../../../redux/actions/positions_actions'
 import { deleteTask } from '../../../../../redux/actions/tasks_actions'
 import { deepCopy } from '../../../../../methods/utils/utils'
@@ -27,42 +28,47 @@ export default function Positions(props) {
 
     const {
         handleSetChildPositionToCartCoords,
-        type
     } = props
 
     const dispatch = useDispatch()
-    const [editingIndex, setEditingIndex] = useState(null)
+    const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
+
     const positions = useSelector(state => state.locationsReducer.positions)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
+    const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
-    const selectedPositions = Object.values(positions).filter(position =>  position.parent == selectedLocation._id)
+    const [editingIndex, setEditingIndex] = useState(null)
+    // const [selectedPositions, setSelectedPositions] = useState([])
 
 
-    const positionType = type
-    let positionTypeCamel = ''
-    let positionName = ''
+    const positionTypes = !!MiRMapEnabled ? ['human_position', 'cart_position', 'shelf_position',] : ['human_position']
+    const selectedPositions = Object.values(positions).filter(position => position.parent == selectedLocation._id)
 
-    // Sets of vairables based on position type
-    if (positionType === 'cart_position') {
-        positionTypeCamel = 'cartPosition'
-        positionName = 'Position'
-    }
-    if (positionType === 'shelf_position') {
-        positionTypeCamel = 'shelfPosition'
-        positionName = 'Shelf'
+    useEffect(() => {
+        // setSelectedPositions(Object.values(positions).filter(position => position.parent == selectedLocation._id))
+        return () => {
 
-    }
+        }
+    }, [])
+
+    useEffect(() => {
+        return () => {
+
+        }
+    }, [editingIndex])
 
     const onSortEnd = ({ oldIndex, newIndex }) => {
-        dispatch(locationActions.setLocationAttributes(selectedLocation._id, { positions: arrayMove(selectedLocation.positions, oldIndex, newIndex) }))
-        setEditingIndex(null)
+        // dispatch(locationActions.setLocationAttributes(selectedLocation._id, { positions: arrayMove(selectedLocation.positions, oldIndex, newIndex) }))
+        // setEditingIndex(null)
     };
 
     const DragHandle = sortableHandle(() => <styled.SortIcon className='fas fa-bars'></styled.SortIcon>);
 
     const SortableItem = SortableElement(({ position, i }) =>
+        // const SortableItem = ({ position, i }) => (
         <li style={{ listStyle: 'none' }}>
             <styled.PositionListItem>
                 <MinusButton onClick={() => {
@@ -80,11 +86,19 @@ export default function Positions(props) {
 
                     dispatch(positionActions.deletePosition(positions[position._id], position._id))
 
-                }}></MinusButton>
-                <Textbox style={{ flex: '1' }} schema="locations" focus={i == editingIndex} defaultValue={position.name} onChange={(e) => {
-                    setEditingIndex(i)
-                    dispatch(positionActions.setPositionAttributes(position._id, { name: e.target.value }))
-                }}></Textbox>
+                }}
+                />
+                <Textbox
+                    style={{ flex: '1' }}
+                    schema="locations"
+                    focus={i == editingIndex}
+                    defaultValue={position.name}
+                    onChange={(e) => {
+                        setEditingIndex(i)
+                        dispatch(positionActions.setPositionAttributes(position._id, { name: e.target.value }))
+                    }}
+
+                />
                 <styled.CartIcon className='icon-cart' onClick={() => handleSetChildPositionToCartCoords(position)} />
 
                 {/* Commenting out for now, not working with constent updating */}
@@ -95,29 +109,135 @@ export default function Positions(props) {
     );
 
     const SortableList = SortableContainer(({ positions }) => {
-        // if (positions[0] === undefined) return null
-        return (
-            <styled.PositionList>
-                {positions.map((position, index) => {
-                    if (position.type === positionType) {
-                        return (
-                            <SortableItem key={`position-item-${position._id}`} index={index} position={position} i={index} />
-                        )
-                    }
-                })}
-            </styled.PositionList>
-        );
+        // const SortableList = useMemo((positions) => {
+        if (positions === undefined) return null
+
+        return positionTypes.map((positionType) => {
+            return (
+                <styled.PositionList>
+                    {positions.map((position, index) => {
+                        if (position.type === positionType) {
+                            return (
+                                <SortableItem key={`position-item-${position._id}`} index={index} position={position} i={index} />
+                            )
+                        }
+                    })}
+                </styled.PositionList>
+            );
+        })
+
     });
+    // }, [selectedPositions]);
 
-    return (
-        // Takes care of error when selectedLocation is null, but shelves are still being rendered
-        selectedLocation == null ?
-            <></>
-            :
-            <styled.PositionsContainer>
+    /**
+     * Handles deleting positions
+     * Does some different things based on if the position is new or not (see comments bellow)
+     * @param {*} position 
+     * @param {*} i 
+     */
+    const handleDelete = async (position, i) => {
+        // If the position is new, just remove it from the local station
+        // Since the position is new, it does not exist in the backend and there can't be any associated tasks
+        if (!!position.new) {
 
-                {/* Cards for dragging a new position onto the map */}
-                <styled.Cards>
+            // Remove the position from the list of children
+            let locationPositionIDs = deepCopy(selectedLocation.children)
+            locationPositionIDs.splice(i, 1)
+            dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
+
+            // 
+            dispatch(positionActions.removePosition(position._id))
+        }
+
+        // Else remove from local copy, delete in backend and delete any associated tasks
+        else {
+            // Sees if any tasks are associated with the position
+            Object.values(tasks).filter(task => {
+                return task.load.position == position._id || task.unload.position == position._id
+            }).forEach(relevantTask => {
+                dispatch(deleteTask(relevantTask._id))
+            })
+
+            // TODO: Get rid of deep copy
+            let locationPositionIDs = deepCopy(selectedLocation.children)
+            locationPositionIDs.splice(i, 1)
+            await dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
+            
+            // If deleting an existing position, you also need to update the copy because it's a permenant delete, you cant undo a position delete
+            // TODO: Get rid of copy's....
+            onSetSelectedLocationCopy(deepCopy({
+                ...selectedLocation,
+                children: [...locationPositionIDs],
+            }))
+
+
+            dispatch(positionActions.deletePosition(positions[position._id], position._id))
+
+        }
+
+
+    }
+
+    const handleAssociatedPositions = (associatedPositions, positionType) => {
+
+        return associatedPositions.map((position, i) => {
+
+            if (position.type === positionType) {
+
+                return (
+                    <styled.PositionListItem  background={LocationTypes[positionType].color}>
+                        <MinusButton
+                            onClick={() => {
+                                handleDelete(position, i)
+                            }}
+                        />
+                        <Textbox
+                            style={{ flex: '1' }}
+                            schema="locations"
+                            focus={i == editingIndex}
+                            // defaultValue={position.name}
+                            value={position.name}
+                            onChange={(e) => {
+                                setEditingIndex(i)
+                                dispatch(positionActions.setPositionAttributes(position._id, { name: e.target.value }))
+                            }}
+
+                        />
+
+                        {/* If not a human position, then add ability to use cart location */}
+                        {position.type !== 'human_position' &&
+                            <styled.CartIcon className='icon-cart' onClick={() => handleSetChildPositionToCartCoords(position)} />
+                        }
+
+                        {/* Commenting out for now, not working with constent updating */}
+                        {/* <DragHandle></DragHandle> */}
+
+                    </styled.PositionListItem>
+                )
+            }
+        })
+
+    }
+
+    const handlePositionCards = () => {
+
+        return positionTypes.map((positionType) => {
+
+            let positionName
+            // Sets of vairables based on position type
+            if (positionType === 'cart_position') {
+                positionName = 'Cart'
+            }
+            if (positionType === 'shelf_position') {
+                positionName = 'Shelf'
+            }
+
+            if (positionType === 'human_position') {
+                positionName = 'Position'
+            }
+            return (
+                <styled.Card>
+
                     <styled.NewPositionCard style={{ transform: 'translate(-0.4rem, 0.4rem)' }} />
                     <styled.NewPositionCard style={{ transform: 'translate(-0.2rem, 0.2rem)' }} />
                     <styled.NewPositionCard draggable={false}
@@ -145,24 +265,52 @@ export default function Positions(props) {
                         }
                         }
                     >
-                        <styled.LocationTypeGraphic fill={LocationTypes[positionTypeCamel].color} stroke={LocationTypes[positionTypeCamel].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                            {LocationTypes[positionTypeCamel].svgPath}
+
+                        <styled.LocationTypeGraphic fill={LocationTypes[positionType].color} stroke={LocationTypes[positionType].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                            {LocationTypes[positionType].svgPath}
                         </styled.LocationTypeGraphic>
 
+                        <styled.LocationTypeLabel>
+                            {positionName}
+                        </styled.LocationTypeLabel>
+
                     </styled.NewPositionCard>
+                </styled.Card>
+            )
+        })
 
-                </styled.Cards>
+    }
 
-                <styled.Label>{'Associated ' + positionName} </styled.Label>
+    return (
+        // Takes care of error when selectedLocation is null, but shelves are still being rendered
+        selectedLocation == null ?
+            <></>
+            :
+            <styled.PositionsContainer>
+
+                {/* Cards for dragging a new position onto the map */}
+                <styled.CardContainer>
+                    {handlePositionCards()}
+                </styled.CardContainer>
+
+                <styled.Label>Associated Positions</styled.Label>
 
                 <styled.ListContainer>
-                    <SortableList positions={selectedPositions}
+                    {positionTypes.map((positionType) => {
+                        return (
+                            <>
+                                {/* <styled.Label style={{fontSize:'1.25rem'}}>{positionType}</styled.Label> */}
+                                {handleAssociatedPositions(selectedPositions, positionType)}
+                            </>
+                        )
+                    })}
+                    {/* <SortableList
+                        positions={selectedPositions}
                         onSortEnd={onSortEnd}
                         useDragHandle={true}
                         lockAxis={'y'}
                         axis={'y'}
-                        useDragHandle={true}
-                    />
+                    /> */}
                 </styled.ListContainer>
             </styled.PositionsContainer>
     )

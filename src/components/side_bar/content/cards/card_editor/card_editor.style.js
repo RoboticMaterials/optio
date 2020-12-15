@@ -128,12 +128,18 @@ export const Icon = styled.i`
 
 export const ObjectInfoContainer = styled.div`
 	display: flex;
-	flex-direction: column;
+	width: 100%;
+	//flex-direction: column;
+	align-items: center;
+	//background: red;
+	margin-bottom: 1rem;
 `
+
 
 export const ObjectTitleContainer = styled.div`
 	display: flex;
 	margin-right: 1rem;
+  flex: 1;
 `
 
 export const CountInput = styled.input`
@@ -141,9 +147,10 @@ export const CountInput = styled.input`
 `
 
 export const ObjectLabel = styled.span`
-	display: flex;
+	display: inline-flex;
 	margin-right: 1rem;
 	font-weight: bold;
+  align-items: center;
 `
 
 export const ObjectName = styled.span`

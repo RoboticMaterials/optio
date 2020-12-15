@@ -12,7 +12,10 @@ const SideBarButton = (props) => {
                 }}
                 currentMode={props.currentMode}
                 mode={props.mode}
-            />
+
+                >
+                  <style.SideBarButtonText>Locations</style.SideBarButtonText>
+                </style.SideBarButtonIcon>
         )
     }
 
@@ -25,7 +28,9 @@ const SideBarButton = (props) => {
                 }}
                 currentMode={props.currentMode}
                 mode={props.mode}
-            />
+                >
+                  <style.SideBarButtonText>Devices</style.SideBarButtonText>
+                </style.SideBarButtonIcon>
         )
     }
 
@@ -38,7 +43,9 @@ const SideBarButton = (props) => {
                 }}
                 currentMode={props.currentMode}
                 mode={props.mode}
-            />
+                >
+                  <style.SideBarButtonText>Processes</style.SideBarButtonText>
+                </style.SideBarButtonIcon>
         )
     }
 
@@ -51,11 +58,13 @@ const SideBarButton = (props) => {
                 }}
                 currentMode={props.currentMode}
                 mode={props.mode}
-            />
+                >
+                  <style.SideBarButtonText>Schedules</style.SideBarButtonText>
+                </style.SideBarButtonIcon>
         )
     }
 
-    else if (props.mode === 'taskQueue') {
+    else if (props.mode === 'tasks') {
         return (
             <style.SideBarButtonIcon
                 className={'fa fa-tasks'}
@@ -64,7 +73,9 @@ const SideBarButton = (props) => {
                 }}
                 currentMode={props.currentMode}
                 mode={props.mode}
-            />
+            >
+              <style.SideBarButtonText>Routes</style.SideBarButtonText>
+            </style.SideBarButtonIcon>
         )
     }
 
@@ -79,7 +90,9 @@ const SideBarButton = (props) => {
                 mode={props.mode}
                 style={{ position: 'absolute', bottom: '1rem' }}
 
-            />
+                >
+                  <style.SideBarButtonText>Settings</style.SideBarButtonText>
+                </style.SideBarButtonIcon>
         )
     }
 

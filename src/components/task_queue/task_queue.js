@@ -14,6 +14,7 @@ import { deleteTaskQueueAll } from '../../redux/actions/task_queue_actions';
 import { getStatus } from '../../redux/actions/status_actions';
 import { getTasks } from "../../redux/actions/tasks_actions";
 
+
 // components
 import TaskQueueItem from "./task_queue_item/task_queue_item"
 
@@ -28,7 +29,6 @@ const logger = log.getLogger("TaskQueueMenu");
 const TaskQueueMenu = (props) => {
 
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
-
     const taskQueue = useSelector(state => {
 
         const taskQueue = state.taskQueueReducer.taskQueue
@@ -37,7 +37,7 @@ const TaskQueueMenu = (props) => {
         if (taskQueue) {
             Object.values(taskQueue).forEach((queueItem, index) => {
                 let queueItemClone = clone_object(queueItem);
-                // Sees if task is a custom task 
+                // Sees if task is a custom task
                 let task = {}
                 if (queueItem.task_id == 'custom_task') {
                     task = {
@@ -64,6 +64,7 @@ const TaskQueueMenu = (props) => {
         return taskQueueClone
     })
 
+
     // dispatch
     const dispatch = useDispatch()
 
@@ -71,7 +72,7 @@ const TaskQueueMenu = (props) => {
 
         // get item from task queue based on index
         const item = taskQueue[index]
-
+        const type = item.task.device_type
         // extract properties
         const { name } = item
         const id = item?._id?.$oid
@@ -84,6 +85,7 @@ const TaskQueueMenu = (props) => {
                 status={status}
                 id={id}
                 key={key}
+                type={type}
             />
         )
     }

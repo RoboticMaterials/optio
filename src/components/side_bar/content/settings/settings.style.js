@@ -29,6 +29,12 @@ export const RowContainer = styled.div`
     align-items: center;
 `
 
+export const ColumnContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`
+
 export const Header = styled.p`
     color: ${props => props.theme.bg.octonary};
     font-family: ${props => props.theme.font.primary};

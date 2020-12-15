@@ -18,8 +18,9 @@ export const TimespanButton = styled.button`
     position: relative;
 
     display: inline-block;
-    width: 3.4rem;
+    width: 5rem;
     height: 2rem;
+    margin: 0rem .25rem;
     
     color: ${props => props.selected ? props.color : "white"};
     line-height: 2rem;

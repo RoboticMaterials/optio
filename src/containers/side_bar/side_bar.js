@@ -9,7 +9,7 @@ import { DraggableCore } from "react-draggable";
 import SideBarSwitcher from '../../components/side_bar/side_bar_switcher/side_bar_switcher'
 
 import { hoverStationInfo } from '../../redux/actions/stations_actions'
-
+import {sideBarBack} from '../../redux/actions/locations_actions'
 
 import LocationsContent from '../../components/side_bar/content/locations/locations_content'
 import ObjectsContent from '../../components/side_bar/content/objects/objects_content'
@@ -22,6 +22,10 @@ import Settings from '../../components/side_bar/content/settings/settings'
 import { setWidth, setMode } from "../../redux/actions/sidebar_actions";
 import * as sidebarActions from "../../redux/actions/sidebar_actions"
 import Cards from "../../components/side_bar/content/cards/cards";
+import * as locationActions from '../../redux/actions/locations_actions'
+import * as taskActions from '../../redux/actions/tasks_actions'
+
+
 
 const SideBar = (props) => {
 
@@ -47,7 +51,14 @@ const SideBar = (props) => {
 
     const mode = useSelector(state => state.sidebarReducer.mode)
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
+    const editing = useSelector(state => state.locationsReducer.editingLocation)
+    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
+    const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
+    const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
+    const locations = useSelector(state => state.locationsReducer.locations)
+    const positions = useSelector(state => state.locationsReducer.positions)
 
+    const onSideBarBack = (props) => dispatch(sideBarBack(props))
 
     const history = useHistory()
     const url = useLocation().pathname
@@ -109,6 +120,12 @@ const SideBar = (props) => {
         console.log("widgetPageLoaded",widgetPageLoaded)
         const hamburger = document.querySelector('.hamburger')
         hamburger.classList.toggle('is-active')
+        dispatch(locationActions.editing(false))
+        dispatch(locationActions.setSelectedLocationCopy(null))
+        dispatch(locationActions.setSelectedLocationChildrenCopy(null))
+        dispatch(locationActions.deselectLocation())    // Deselect
+
+        dispatch(taskActions.deselectTask())    // Deselect
 
         if (!showSideBar && url == '/') {
             history.push(`/locations`)
@@ -120,7 +137,6 @@ const SideBar = (props) => {
             dispatchHoverStationInfo(null)
         } else {
             const newSideBarState = !showSideBar
-
             setShowSideBar(newSideBarState)
             dispatch(sidebarActions.setOpen(newSideBarState))
         }

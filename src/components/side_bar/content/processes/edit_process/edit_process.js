@@ -38,6 +38,7 @@ const EditProcess = (props) => {
     const onSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
     const onPutTask = (task, ID) => dispatch(putTask(task, ID))
     const onDeleteTask = (ID) => dispatch(deleteTask(ID))
+    const onPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
 
     const onPostProcess = async (process) => await dispatch(postProcesses(process))
     const onPutProcess = async (process) => await dispatch(putProcesses(process))
@@ -62,8 +63,9 @@ const EditProcess = (props) => {
         }
     }, [])
 
-    const handleExecuteProcessTask = () => {
-        alert('Cool button eh? Well, its gonna be even cooler when we get it working!')
+    const handleExecuteProcessTask = (route) => {
+        onPostTaskQueue({ task_id: route })
+
     }
 
     const goToCardPage = () => {
@@ -115,22 +117,25 @@ const EditProcess = (props) => {
                         <styled.ListItemIcon
                             className='fas fa-play'
                             onClick={() => {
-                                handleExecuteProcessTask()
+                                handleExecuteProcessTask(route)
                             }}
                         />
 
                     </styled.ListItem>
-                    {editingTask && isEquivalent(routeTask, selectedTask) &&
-                        <EditTask
-                            selectedTaskCopy={selectedTaskCopy}
-                            setSelectedTaskCopy={props => setSelectedTaskCopy(props)}
-                            shift={shift}
-                            isTransportTask={isTransportTask}
-                            isProcessTask={true}
-                            toggleEditing={(props) => {
-                                setEditingTask(props)
-                            }}
-                        />
+                    {editingTask && selectedTask._id === route &&
+                        <styled.TaskContainer schema={'processes'}>
+
+                            <EditTask
+                                selectedTaskCopy={selectedTaskCopy}
+                                setSelectedTaskCopy={props => setSelectedTaskCopy(props)}
+                                shift={shift}
+                                isTransportTask={isTransportTask}
+                                isProcessTask={true}
+                                toggleEditing={(props) => {
+                                    setEditingTask(props)
+                                }}
+                            />
+                        </styled.TaskContainer>
                     }
                 </div>
             )
@@ -155,7 +160,8 @@ const EditProcess = (props) => {
                                     type: 'push',
                                     quantity: 1,
                                     new: true,
-                                    device_type: 'human',
+                                    // device_type: 'human',
+                                    device_type: 'MiR_100',
                                     map_id: currentMap._id,
                                     idle_location: null,
                                     // Makes the task/route a part of a process
@@ -164,7 +170,8 @@ const EditProcess = (props) => {
                                         position: null,
                                         station: null,
                                         sound: null,
-                                        instructions: 'Load'
+                                        instructions: 'Load',
+                                        timeout: '01:00'
                                     },
                                     unload: {
                                         position: null,
@@ -241,7 +248,7 @@ const EditProcess = (props) => {
     const handleDelete = async () => {
 
         // If there's routes in this process, delete the routes
-        if(selectedProcess.routes.length > 0){
+        if (selectedProcess.routes.length > 0) {
             selectedProcess.routes.forEach(route => onDeleteTask(route))
         }
 

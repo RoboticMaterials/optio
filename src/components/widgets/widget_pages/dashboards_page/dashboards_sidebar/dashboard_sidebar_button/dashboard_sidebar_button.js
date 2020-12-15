@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Draggable } from 'react-smooth-dnd';
 
-import DashboardButton from "../../dashboard_button/dashboard_button";
+import DashboardButton from "../../dashboard_buttons/dashboard_button/dashboard_button";
 
 import * as style from "./dashboard_sidebar_button.style"
 
@@ -26,7 +26,7 @@ const DashboardSidebarButton = (props) => {
                             width={"80%"}
                             clickable={clickable}
                             color={color}
-                            onClick={() => onTaskClick(task_id, name)}
+                            onClick={() => onTaskClick(task_id)}
                             disabled={disabled}
                         />
                 </style.Container>

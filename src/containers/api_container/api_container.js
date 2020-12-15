@@ -5,13 +5,14 @@ import { useParams } from "react-router-dom";
 
 // Import Actions
 import { getMaps } from '../../redux/actions/map_actions'
-import { getTaskQueue } from '../../redux/actions/task_queue_actions'
+import { getTaskQueue, deleteTaskQueueItem } from '../../redux/actions/task_queue_actions'
 import { getLocations } from '../../redux/actions/locations_actions'
 import { getObjects } from '../../redux/actions/objects_actions'
 import { getTasks, deleteTask } from '../../redux/actions/tasks_actions'
-import { getDashboards, deleteDashboard } from '../../redux/actions/dashboards_actions'
+import { getDashboards, deleteDashboard, postDashboard } from '../../redux/actions/dashboards_actions'
 import { getSounds } from '../../redux/actions/sounds_actions'
 import { getProcesses, putProcesses } from '../../redux/actions/processes_actions'
+import { getTasksAnalysis } from '../../redux/actions/task_analysis_actions'
 
 import { getSchedules } from '../../redux/actions/schedule_actions';
 import { getDevices, putDevices } from '../../redux/actions/devices_actions'
@@ -44,6 +45,7 @@ import SideBar from '../side_bar/side_bar';
 import localReducer from "../../redux/reducers/local_reducer";
 import {getCards, getProcessCards} from "../../redux/actions/card_actions";
 import apiReducer from "../../redux/reducers/api_reducer";
+import {getReportEvents} from "../../redux/actions/report_event_actions";
 
 const ApiContainer = (props) => {
 
@@ -56,12 +58,13 @@ const ApiContainer = (props) => {
     const onGetTasks = () => dispatch(getTasks())
     const onGetSounds = (api) => dispatch(getSounds(api))
     const onGetTaskQueue = () => dispatch(getTaskQueue())
+    const onGetTasksAnalysis = () => dispatch(getTasksAnalysis())
 
     const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
     const onGetCards = () => dispatch(getCards())
 
     const onGetProcesses = () => dispatch(getProcesses());
-    const onPutProcess = (process) => dispatch(putProcesses(process))
+    const onGetReportEvents = () => dispatch(getReportEvents());
 
     const onGetSchedules = () => dispatch(getSchedules())
     const onGetDevices = async () => await dispatch(getDevices())
@@ -69,24 +72,32 @@ const ApiContainer = (props) => {
 
     const onGetSettings = () => dispatch(getSettings())
     const onGetLocalSettings = () => dispatch(getLocalSettings())
+    const onPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+
     const onGetLoggers = () => dispatch(getLoggers())
     const onGetRefreshToken = () => dispatch(getRefreshToken())
 
     const onDeleteTask = (ID) => dispatch(deleteTask(ID))
     const onDeleteDashboard = (ID) => dispatch(deleteDashboard(ID))
     const onDeletePosition = (position, ID) => dispatch(deletePosition(position, ID))
-    const onPutDevice = (device, ID) => dispatch(putDevices(device, ID))
-    const onPutPosition = (position, ID) => dispatch(putPosition(position, ID))
+    // const onDeleteStation = async (ID) => await dispatch(deleteStation(ID))
+    const onDeleteTaskQItem = async (ID) => await dispatch(deleteTaskQueueItem(ID))
 
+    const onPutDevice = async (device, ID) => await dispatch(putDevices(device, ID))
+    const onPutPosition = (position, ID) => dispatch(putPosition(position, ID))
+    const onPutProcess = (process) => dispatch(putProcesses(process))
     const onPutStation = async (station, ID) => await dispatch(putStation(station, ID))
     const onDeleteStation = async (ID) => await dispatch(deleteStation(ID))
 
-    const onPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const onPostDashoard = (dashboard) => dispatch(postDashboard(dashboard))
+
 
     // Selectors
     const schedulerReducer = useSelector(state => state.schedulerReducer)
+    const devices = Object.values(useSelector(state => { return state.devicesReducer })?.devices || {})
+    const localReducer = useSelector(state => state.localReducer)
+    const MiRMapEnabled = localReducer?.localSettings?.MiRMapEnabled
     const apiPage = useSelector(state => state.apiReducer.page)
-    console.log("api container apiPage",apiPage)
 
     // States
     const [currentPage, setCurrentPage] = useState('')
@@ -102,7 +113,7 @@ const ApiContainer = (props) => {
         // loads essential info used on every page such as status and taskQueue
 
         const criticalDataInterval = setInterval(() => loadCriticalData(), 50000);
-        const mapDataInterval = setInterval(() => loadMapData(), 30000)
+        const mapDataInterval = setInterval(() => loadMapData(), 50000)
         return () => {
             // clear intervals
             clearInterval(pageDataInterval);
@@ -110,6 +121,33 @@ const ApiContainer = (props) => {
             // clearInterval(mapDataInterval)
         }
     }, [])
+
+    useEffect(() => {
+
+
+        // once MiR map is enabled, it's always enabled, so only need to do check if it isn't enabled
+        if(!MiRMapEnabled) {
+            let containsMirCart = false
+
+            // check each device
+            // in order for MiR mode to be enabled, there must be at least one device of MiR type
+            Object.values(devices).forEach((currDevice, index) => {
+                const device_model = currDevice?.device_model ? currDevice?.device_model : ""
+               // const x = currDevice?.position?.x
+               // const y = currDevice?.position?.y
+                if (
+                    device_model === "MiR100"
+                ) containsMirCart = true
+            })
+
+            // only update if MiRMapEnabled isn't currently set or MiRMapEnabled needs to be updated because it isn't equal to containsMirCart
+            if ((MiRMapEnabled === undefined) || (MiRMapEnabled !== containsMirCart)) onPostLocalSettings({
+                ...localReducer.localSettings,
+                MiRMapEnabled: containsMirCart,
+            })
+        }
+
+    }, [devices, MiRMapEnabled])
 
     useEffect(() => {
 
@@ -161,7 +199,7 @@ const ApiContainer = (props) => {
 
             // Not the best way to do this, but if the params have a locationId and it's undefined
             // then it's url is just locations and not a widget page
-            // This happens in app.js file in the route path. 
+            // This happens in app.js file in the route path.
             if (pageParams.widgetPage === undefined) {
                 pageName = 'locations'
 
@@ -182,7 +220,7 @@ const ApiContainer = (props) => {
         switch (pageName) {
 
             case 'objects':
-                pageDataInterval = setInterval(() => loadObjectsData(), 100000);
+                pageDataInterval = setInterval(() => loadObjectsData(), 10000);
                 break;
 
             case 'scheduler':
@@ -194,7 +232,7 @@ const ApiContainer = (props) => {
                 break;
 
             case 'tasks':
-                pageDataInterval = setInterval(() => loadTasksData(), 100000);
+                pageDataInterval = setInterval(() => loadTasksData(), 10000);
                 break;
 
             case 'settings':
@@ -215,11 +253,14 @@ const ApiContainer = (props) => {
                     loadCardsData() // initial call
                     pageDataInterval = setInterval(()=>loadCardsData(), 10000)
                 }
+                else {
+                    pageDataInterval = setInterval(() => loadTasksData(), 10000);
+                }
 
                 break
 
             case 'more':
-                pageDataInterval = setInterval(() => loadMoreData(), 100000);
+                pageDataInterval = setInterval(() => loadMoreData(), 10000);
                 break;
 
             default:
@@ -232,7 +273,7 @@ const ApiContainer = (props) => {
         // Local Settings must stay on top of initial data so that the correct API address is seleceted
         const localSettings = await onGetLocalSettings()
 
-        const refreshToken = await onGetRefreshToken()
+        // const refreshToken = await onGetRefreshToken()
         const devices = await onGetDevices()
         const maps = await onGetMaps()
 
@@ -247,24 +288,26 @@ const ApiContainer = (props) => {
         const objects = await onGetObjects()
         const sounds = await onGetSounds()
         const tasks = await onGetTasks()
-        // const cards = await onGetCards()
         const taskQueue = await onGetTaskQueue()
         const processes = await onGetProcesses()
+
+        const tasksAnalysis = await onGetTasksAnalysis()
 
         const status = await onGetStatus()
         const getSchedules = await onGetSchedules()
 
         const loggers = await onGetLoggers()
 
-
-        handleTasksWithBrokenPositions(tasks, locations)
-        handlePositionsWithBrokenParents(locations)
-        handleDevicesWithBrokenStations(devices, locations)
-        handleStationsWithBrokenDevices(devices, locations)
-        handleDashboardsWithBrokenStations(dashboards, locations)
-        handleStationsWithBrokenChildren(locations)
-        await handleTasksWithBrokenProcess(processes, tasks)
-        await handleProcessesWithBrokenRoutes(processes, tasks)
+        const funtion = await handleDeviceWithoutADashboard(devices, dashboards)
+        const funtion1 = await handleTasksWithBrokenPositions(tasks, locations)
+        const funtion2 = await handlePositionsWithBrokenParents(locations)
+        const funtion3 = await handleDevicesWithBrokenStations(devices, locations)
+        const funtion4 = await handleStationsWithBrokenDevices(devices, locations)
+        const funtion5 = await handleDashboardsWithBrokenStations(dashboards, locations)
+        const funtion6 = await handleStationsWithBrokenChildren(locations)
+        const funtion7 = await handleTasksWithBrokenProcess(processes, tasks)
+        const funtion8 = await handleProcessesWithBrokenRoutes(processes, tasks)
+        const funtion9 = await handleTaskQueueWithBrokenTasks(taskQueue, tasks)
 
         props.apiLoaded()
         props.onLoad()
@@ -305,6 +348,8 @@ const ApiContainer = (props) => {
         tasks
     */
     const loadTasksData = async () => {
+        // const tasks = await onGetTasks()
+        // const processes = await onGetProcesses()
     }
 
     /*
@@ -327,6 +372,7 @@ const ApiContainer = (props) => {
     */
     const loadDashboardsData = async () => {
         const dashboards = await onGetDashboards();
+        await onGetReportEvents()
 
     }
 
@@ -338,6 +384,7 @@ const ApiContainer = (props) => {
     */
     const loadMapData = async () => {
         const locations = await onGetLocations();
+        const tasksAnalysis = await onGetTasksAnalysis()
     }
 
     /*
@@ -381,6 +428,51 @@ const ApiContainer = (props) => {
 
     //  API DATA CLEAN UP (Ideally these functions should not exist... but it's not an ideal world...)
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+    /**
+     * Not the best place but it should still work
+     * This will either make a dashboard for the device or replace a lost dashboard
+     */
+    const handleDeviceWithoutADashboard = async (devices, dashboards) => {
+        Object.values(devices).map(async (device) => {
+            // if the device does not have a dashboard, add one
+            if (!device.dashboards) {
+
+                console.log('QQQQ Device does not have a dashboard', deepCopy(device))
+
+                const newDeviceDashboard = {
+                    name: `${device.device_name} Dashboard`,
+                    buttons: [],
+                    device: device._id,
+                }
+
+                const newDashboard = onPostDashoard(newDeviceDashboard)
+
+                return newDashboard.then(async (dashPromise) => {
+                    device.dashboards = [dashPromise._id.$oid]
+                    await onPutDevice(device, device._id)
+                })
+
+
+            }
+
+            // If the device does have a dashboard, but that dashboard has been lost for some reason, make a new dashboard
+            else if (!dashboards[device.dashboard]) {
+
+            }
+        })
+    }
+
+    /**
+     * The dashboard is tied to a device that does not exist anymore, so delete the dashboard
+     * @param {*} devices
+     * @param {*} dashboards
+     */
+    const handleDashboardsWithBrokenDevice = (devices, dashboards) => {
+
+    }
+
 
     /**
      * This deletes tasks that have broken positions
@@ -429,7 +521,7 @@ const ApiContainer = (props) => {
     /**
      * This deletes positions that have parents that are broken
      * A broken parent is a parent that has been deleted
-     * @param {*} locations 
+     * @param {*} locations
      */
     const handlePositionsWithBrokenParents = async (locations) => {
 
@@ -452,7 +544,7 @@ const ApiContainer = (props) => {
      * 1) This finds positions that have become disassociated with their parent stations and reassociates them
      * 2) Also finds stations that have children positions that have been deleted. Deletes those positions from the stations
      * This happens because it happens... I have no idea why this happens....
-     * @param {*} locations 
+     * @param {*} locations
      */
     const handleStationsWithBrokenChildren = (locations) => {
 
@@ -488,8 +580,8 @@ const ApiContainer = (props) => {
     /**
      * This deletes device station if the station is broken
      * A broken station would happen when a station has been deleted
-     * @param {*} devices 
-     * @param {*} locations 
+     * @param {*} devices
+     * @param {*} locations
      */
     const handleDevicesWithBrokenStations = async (devices, locations) => {
 
@@ -510,11 +602,11 @@ const ApiContainer = (props) => {
     /**
      * This adds station to device if the station has a device ID and the device does not have a station ID
      * Why this happens is unkown atm, but this fixes when a device comes back without a station ID but should have one
-     * 
+     *
      * It also deletes stations that should be associated with a device, but the device either does not exist or ID has changed
-     * 
-     * @param {*} devices 
-     * @param {*} locations 
+     *
+     * @param {*} devices
+     * @param {*} locations
      */
     const handleStationsWithBrokenDevices = (devices, locations) => {
 
@@ -544,8 +636,8 @@ const ApiContainer = (props) => {
 
     /**
      * This deletes dashboards that belong to stations that don't exist
-     * @param {*} dashboards 
-     * @param {*} locations 
+     * @param {*} dashboards
+     * @param {*} locations
      */
     const handleDashboardsWithBrokenStations = (dashboards, locations) => {
 
@@ -554,7 +646,7 @@ const ApiContainer = (props) => {
         const stations = locations.stations
 
         Object.values(dashboards).map((dashboard) => {
-            if (!!dashboard.location && !stations[dashboard.location]) {
+            if (!!dashboard.location && !dashboard.device && !stations[dashboard.location]) {
                 console.log('QQQQ dashboard belongs to a station that does not exist', dashboard)
                 onDeleteDashboard(dashboard._id.$oid)
             }
@@ -566,8 +658,8 @@ const ApiContainer = (props) => {
     /**
      * This handles broken Processes
      * A broken process would happen if a route/task that has been deleted but the process has not been updated
-     * @param {*} processes 
-     * @param {*} tasks 
+     * @param {*} processes
+     * @param {*} tasks
      */
     const handleProcessesWithBrokenRoutes = async (processes, tasks) => {
 
@@ -595,31 +687,49 @@ const ApiContainer = (props) => {
      * This handles tasks that belong to broken process
      * This would happen because either the process has been deleted and the task have not
      * or The task was created but the process was never saved
-     * @param {*} processes 
-     * @param {*} tasks 
+     * @param {*} processes
+     * @param {*} tasks
      */
     const handleTasksWithBrokenProcess = async (processes, tasks) => {
 
         Object.values(tasks).map(async (task) => {
-            if(!!task.process){
+            if (!!task.process) {
 
                 // If the task process is equal to true, then it should be deleted because it was never associated with a process
-                if(task.process === true){
+                if (task.process === true) {
                     console.log('QQQQ task never associated with a process', task)
                     await onDeleteTask(task._id)
                     return
                 }
 
                 // If process does not contain the task process, that means the process must have been deleted
-                else if (!processes[task.process]){
+                else if (!processes[task.process]) {
                     console.log('QQQQ tasks parent process has been deleted', task)
                     await onDeleteTask(task._id)
                     return
                 }
-                
+
             }
         })
 
+    }
+
+    /**
+     * This handles task queue items that belong to a broken task
+     * A task would be broken because it has been deleted
+     * @param {*} taskQueue
+     * @param {*} tasks
+     */
+    const handleTaskQueueWithBrokenTasks = async (taskQueue, tasks) => {
+        if(taskQueue === undefined) return
+
+        Object.values(taskQueue).map( async (Q, i) => {
+            if(tasks[Q.task_id] === undefined) {
+                console.log('QQQQ TaskQ associated task has been deleted')
+                await onDeleteTaskQItem(Q._id.$oid)
+            }
+
+        })
     }
 
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

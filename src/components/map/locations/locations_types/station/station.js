@@ -29,27 +29,27 @@ function Station(props) {
     const [rotating, setRotating] = useState(false)
     const [translating, setTranslating] = useState(false)
 
-
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const hoveringID = useSelector(state => state.locationsReducer.hoverLocationID)
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
     const devices = useSelector(state => state.devicesReducer.devices)
+    const editing = useSelector(state => state.locationsReducer.editingLocation)
+
 
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const onSelectLocation = (locationId) => dispatch(selectLocation(locationId))
     const onDeselectLocation = () => dispatch(deselectLocation())
-
     // Used to see if a widget Page is opened
     let params = useParams()
     useEffect(() => {
         window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         return () => {
-             window.removeEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
+            window.removeEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         }
 
-    },[])
+    }, [])
 
     /**
     * This runs on page load (thats mean location are mounted) and shows a widget page if it returns true.
@@ -155,10 +155,14 @@ function Station(props) {
                             dispatchHoverStationInfo(handleWidgetHover())
                             onSelectLocation(location._id)
                         }
+                      }
                     }
 
 
-                }}
+                }
+                // onClick={() => {
+                //     console.log('Station clicked')
+                // }}
 
                 transform={`translate(${location.x},${location.y}) rotate(${location.rotation}) scale(${d3.scale / d3.imgResolution})`}
             >
@@ -203,6 +207,9 @@ function Station(props) {
                         setHovering(true)
                     }}
                     onMouseDown={() => setTranslating(true)}
+                    // onClick={() => {
+                    //     console.log('Station clicked')
+                    // }}
                     transform={location.type === 'device' && 'scale(.07) translate(-180,-140)'}
                 >
 

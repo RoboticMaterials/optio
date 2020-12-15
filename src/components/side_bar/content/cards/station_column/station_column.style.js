@@ -16,13 +16,10 @@ export const RotatedRouteName = styled.span`
 `
 
 
-
-
-export const StationContainer = styled.div`
-    display: flex;
+export const StationContainerCss = css`
+	display: flex;
     flex-direction: column;
     min-height: ${minHeight};
-    max-height: 40rem;
     
     width: ${props => props.isCollapsed ? "2rem" : "15rem"};
     max-width: ${props => props.isCollapsed ? "2rem" : "15rem"};
@@ -33,8 +30,10 @@ export const StationContainer = styled.div`
     overflow: hidden;
     
     color: ${props => props.theme.bg.octonary};
-    
-    
+`
+
+export const StationContainer = styled.div`
+    ${StationContainerCss};
 `
 
 export const StationHeader = styled.div`

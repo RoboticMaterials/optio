@@ -45,7 +45,7 @@ import log from '../../../../../logger'
 const logger = log.getLogger("CreateScheduleForm", "Scheduler")
 logger.setLevel("silent")
 
-const widthBreakPoint =  525
+const widthBreakPoint = 525
 
 const CreateScheduleForm = (props) => {
 
@@ -98,12 +98,13 @@ const CreateScheduleForm = (props) => {
             interval_on,
             time_interval,
             stop_time,
-            map_id
+            map_id,
+            next_time
         } = values
 
         // eextract properties into new object for submission
         const submitItem = {
-            task_id: task[0]?._id?.$oid,
+            task_id: task[0]?._id,
             days_on,
             name: name,
             schedule_on: schedule_on,
@@ -111,6 +112,7 @@ const CreateScheduleForm = (props) => {
             interval_on: interval_on,
             time_interval: time_interval.format("HH:mm:ss"),
             stop_time: stop_time.format("HH:mm:ss"),
+            next_time: next_time,
             map_id: map_id,
         }
 
@@ -144,7 +146,7 @@ const CreateScheduleForm = (props) => {
         logger.log("getInitialValues selectedScheduleId", selectedScheduleId)
 
         // get initial values from schedule
-        if(selectedScheduleItem) {
+        if (selectedScheduleItem) {
 
             // convert days_on from object to array of indices (required for button group)
             const days_on = []
@@ -165,6 +167,7 @@ const CreateScheduleForm = (props) => {
                 schedule_on: selectedScheduleItem.schedule_on,
                 time_interval: selectedScheduleItem.time_interval ? moment(timeString24HrToDate(selectedScheduleItem.time_interval)) : nowTimeString,
                 interval_on: selectedScheduleItem.interval_on,
+                next_time: selectedScheduleItem.next_time,
                 map_id: currentMap._id,
                 stop_time: selectedScheduleItem.stop_time ? moment(timeString24HrToDate(selectedScheduleItem.stop_time)) : nowTimeString,
                 name: selectedScheduleItem.name ? selectedScheduleItem.name : '',
@@ -176,17 +179,17 @@ const CreateScheduleForm = (props) => {
                     // set task property to reflect this
                     selectedScheduleItem.task_id == 'TASK DELETED' ?
                         [{
-                            _id: {
-                                $oid: "TASK DELETED"
-                            },
+                            _id:
+                                "TASK DELETED"
+                            ,
                             name: 'TASK DELETED'
                         }]
                         :
                         // NO task, and task id isn't deleted, set set to default value that will prevent the dropdownsearch from throwing an error
                         [{
-                            _id: {
-                                $oid: "TEMP_NEW_SCHEDULE_ID"
-                            },
+                            _id:
+                                "TEMP_NEW_SCHEDULE_ID"
+                            ,
                             name: ''
                         }],
             }
@@ -295,9 +298,9 @@ const CreateScheduleForm = (props) => {
                                 content={'scheduler'}
                                 mode={'create'}
                                 onClickBack={hideScheduleCreator}
-                                onClickSave={() => formikProps.submitForm() }
+                                onClickSave={() => formikProps.submitForm()}
                                 disabled={submitDisabled}
-                                // Need to figure out how to submit formik using this method. No internet atm so this'll have to wait
+                            // Need to figure out how to submit formik using this method. No internet atm so this'll have to wait
 
                             />
 
@@ -323,7 +326,12 @@ const CreateScheduleForm = (props) => {
                                     <DropDownSearchField
                                         pattern={null}
                                         name="task"
-                                        options={tasksArr}
+                                        options={tasksArr
+                                            // Filters outs any tasks that don't belong to the current map
+                                            .filter(task => task.map_id === currentMap._id)
+                                            // Filter outs any human tasks that have associated tasks (AKA it only shows the associated device task)
+                                            .filter(task => !task.associated_task || (!!task.associated_task && task.device_type !== 'human'))
+                                        }
                                         // valueField={tasksArr.length > 0 ? "_id.$oid" : 'id'}
                                         valueField={tasksArr.length > 0 ? "_id" : 'id'}
                                         label={'Choose Task'}

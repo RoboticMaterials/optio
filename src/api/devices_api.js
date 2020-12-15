@@ -16,7 +16,7 @@ export async function getDevices() {
         // Success 🎉
         const data = response.data;
         const dataJson = JSON.parse(data)
-        return dataJson;
+        return dataJson;     
 
 
     } catch (error) {

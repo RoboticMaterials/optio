@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import * as styled from './locations_content.style'
 import { useSelector, useDispatch } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom'
@@ -16,8 +16,8 @@ import Positions from './positions/positions'
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 
 // Import actions
-import { setSelectedLocation, setSelectedLocationCopy, setSelectedLocationChildrenCopy, sideBarBack, deleteLocationProcess } from '../../../../redux/actions/locations_actions'
-import { addPosition } from '../../../../redux/actions/positions_actions'
+import { setSelectedLocation, setSelectedLocationCopy, setSelectedLocationChildrenCopy, sideBarBack, deleteLocationProcess, editing, deselectLocation } from '../../../../redux/actions/locations_actions'
+import { addPosition, removePosition, deletePosition, updatePosition } from '../../../../redux/actions/positions_actions'
 
 import * as locationActions from '../../../../redux/actions/locations_actions'
 import * as stationActions from '../../../../redux/actions/stations_actions'
@@ -28,17 +28,16 @@ import * as taskActions from '../../../../redux/actions/tasks_actions'
 // Import Utils
 import { setAction } from '../../../../redux/actions/sidebar_actions'
 import { deepCopy } from '../../../../methods/utils/utils'
-import { LocationTypes } from '../../../../methods/utils/locations_utils'
+import { LocationTypes, locationsSortedAlphabetically } from '../../../../methods/utils/locations_utils'
 
 import uuid from 'uuid'
 
 function locationTypeGraphic(type, isNotSelected) {
     switch (type) {
         case 'shelf_position':
-            return (
-                <styled.LocationTypeGraphic fill={LocationTypes['shelfPosition'].color} stroke={LocationTypes['shelfPosition'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                    {LocationTypes['shelfPosition'].svgPath}
-                </styled.LocationTypeGraphic>
+            return (<styled.LocationTypeGraphic fill={LocationTypes['shelf_position'].color} stroke={LocationTypes['shelf_position'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                {LocationTypes['shelf_position'].svgPath}
+            </styled.LocationTypeGraphic>
             )
 
         case 'workstation':
@@ -50,8 +49,16 @@ function locationTypeGraphic(type, isNotSelected) {
 
         case 'cart_position':
             return (
-                <styled.LocationTypeGraphic fill={LocationTypes['cartPosition'].color} stroke={LocationTypes['cartPosition'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                    {LocationTypes['cartPosition'].svgPath}
+                <styled.LocationTypeGraphic fill={LocationTypes['cart_position'].color} stroke={LocationTypes['cart_position'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                    {LocationTypes['cart_position'].svgPath}
+                </styled.LocationTypeGraphic>
+
+            )
+
+        case 'human_position':
+            return (
+                <styled.LocationTypeGraphic fill={LocationTypes['human_position'].color} stroke={LocationTypes['human_position'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                    {LocationTypes['human_position'].svgPath}
                 </styled.LocationTypeGraphic>
 
             )
@@ -59,7 +66,7 @@ function locationTypeGraphic(type, isNotSelected) {
 }
 
 // This adds a location selected info to the reducer
-export default function LocationContent(props) {
+export default function LocationContent() {
 
     const dispatch = useDispatch()
     const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
@@ -68,6 +75,7 @@ export default function LocationContent(props) {
     const onSideBarBack = (props) => dispatch(sideBarBack(props))
     const onDeleteLocationProcess = (props) => dispatch(deleteLocationProcess(props))
     const onAddPosition = (pos) => dispatch(addPosition(pos))
+    const onEditing = (props) => dispatch(locationActions.editing(props))
 
     const locations = useSelector(state => state.locationsReducer.locations)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
@@ -78,8 +86,10 @@ export default function LocationContent(props) {
     const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
     const devices = useSelector(state => state.devicesReducer.devices)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const editing = useSelector(state => state.locationsReducer.editingLocation)
 
-    const [editing, toggleEditing] = useState(false)
+    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
+
     const [mergeStation, setMergeStation] = useState(false)
 
     function LocationTypeButton({ type, selected }) {
@@ -91,11 +101,18 @@ export default function LocationContent(props) {
 
                 break
             case 'cart_position':
-                template = LocationTypes['cartPosition'].attributes
+                template = LocationTypes['cart_position'].attributes
 
                 break
+
+            case 'human_position':
+                template = LocationTypes['human_position'].attributes
+
+                break
+
+
             case 'shelf_position':
-                template = LocationTypes['shelfPosition'].attributes
+                template = LocationTypes['shelf_position'].attributes
 
                 break
 
@@ -126,9 +143,16 @@ export default function LocationContent(props) {
     }
 
     useEffect(() => {
-        if (selectedLocationCopy === null) {
-            toggleEditing(false)
+        return () => {
 
+        }
+    }, [])
+
+    useEffect(() => {
+
+        if (selectedLocationCopy === null) {
+
+            //onEditing(false)
             onSetSelectedLocationCopy(null)                   // Reset the local copy to null
             onSetSelectedLocationChildrenCopy(null)
         }
@@ -138,18 +162,20 @@ export default function LocationContent(props) {
     /**
      * This function is called when the back button is pressed. If the location is new, it is deleted;
      * otherwise, it is reverted to the state it was when editing begun.
+     * TODO: FIX THIS JUNKY JUNK (redo location logic, it sucks)
      */
     const onBack = () => {
 
-        toggleEditing(false)
 
-        onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy })
+        onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy, positions, locations })
+
+        onEditing(false)
     }
 
     /**
-     * This function is called when the save button is pressed. The location is POSTED or PUT to the backend. 
+     * This function is called when the save button is pressed. The location is POSTED or PUT to the backend.
      * If the location is new and is a station, this function also handles posting the default dashboard and
-     * tieing it to this location. Each child position for a station is also either POSTED or PUT. 
+     * tieing it to this location. Each child position for a station is also either POSTED or PUT.
      */
     const onSave = () => {
 
@@ -161,11 +187,10 @@ export default function LocationContent(props) {
                 child = positions[childID]
                 child.parent = locationID
                 if (child.new) { // If the position is new, post it and update its id in the location.children array
-                    postPositionPromise = dispatch(positionActions.postPosition(child))
-                    postPositionPromise.then(postedPosition => {
-                        selectedLocation.children[ind] = postedPosition._id
-                        dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
-                    })
+                    dispatch(positionActions.postPosition(child))
+                    selectedLocation.children[ind] = child._id
+                    dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
+
                 } else { //  If the position is not new, just update it
                     dispatch(positionActions.putPosition(child, child._id))
                 }
@@ -197,7 +222,7 @@ export default function LocationContent(props) {
             })
         } else { // If the location is not new, PUT it and update it's children
             dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
-            if (selectedLocation.schema == 'station') {
+            if (selectedLocation.schema === 'station') {
                 saveChildren(selectedLocation._id)
             }
         }
@@ -205,14 +230,14 @@ export default function LocationContent(props) {
         dispatch(locationActions.deselectLocation())    // Deselect
         onSetSelectedLocationCopy(null)                 // Reset the local copy to null
         onSetSelectedLocationChildrenCopy(null)         // Reset the local children copy to null
-        toggleEditing(false)                            // No longer editing
+        onEditing(false)                            // No longer editing
 
     }
 
     const onDelete = () => {
 
         onDeleteLocationProcess({ selectedLocation, locations, positions, tasks })
-        toggleEditing(false)
+        onEditing(false)
 
     }
 
@@ -242,7 +267,6 @@ export default function LocationContent(props) {
     const handleSetChildPositionToCartCoords = (position) => {
         Object.values(devices).map(async (device, ind) => {
             if (device.device_model === 'MiR100') {
-
                 const devicePosition = device.position
 
                 const updatedPosition = {
@@ -270,10 +294,35 @@ export default function LocationContent(props) {
     }
 
     // TODO: Probably can get rid of editing state, just see if there's a selectedLocation, if there is, you're editing
-    if (editing && !!selectedLocation) { // Editing Mode
+    if (editing) { // Editing Mode
+
+        let locationTypeName = ''
+        if (!!selectedLocation.type) {
+            switch (selectedLocation.type) {
+                case 'workstation':
+                    locationTypeName = 'Station'
+                    break;
+
+                case 'human_position':
+                    locationTypeName = 'Position'
+                    break;
+
+                case 'cart_position':
+                    locationTypeName = 'Cart Position'
+                    break;
+
+                case 'human_position':
+                    locationTypeName = 'Position'
+                    break;
+
+                default:
+                    locationTypeName = selectedLocation.type
+                    break;
+            }
+        }
         return (
             <styled.ContentContainer
-                // Delete any new positions that were never dragged onto the map
+                // Delete any newf positions that were never dragged onto the map
                 onMouseUp={e => {
 
                 }}
@@ -307,20 +356,47 @@ export default function LocationContent(props) {
                 {/* Location Type */}
                 <styled.DefaultTypesContainer>
 
-                    <styled.LocationTypeContainer>
-                        <LocationTypeButton type='workstation' selected={selectedLocation.type} />
-                        <styled.LocationTypeLabel>Station</styled.LocationTypeLabel>
-                    </styled.LocationTypeContainer>
 
-                    <styled.LocationTypeContainer>
-                        <LocationTypeButton type='cart_position' selected={selectedLocation.type} />
-                        <styled.LocationTypeLabel>Cart Position</styled.LocationTypeLabel>
-                    </styled.LocationTypeContainer>
+                    {!selectedLocation.type ?
+                        <>
+                            <styled.LocationTypeContainer>
+                                <LocationTypeButton type='workstation' selected={selectedLocation.type} />
+                                <styled.LocationTypeLabel>Station</styled.LocationTypeLabel>
+                            </styled.LocationTypeContainer>
 
-                    <styled.LocationTypeContainer>
-                        <LocationTypeButton type='shelf_position' selected={selectedLocation.type} />
-                        <styled.LocationTypeLabel>Shelf Position</styled.LocationTypeLabel>
-                    </styled.LocationTypeContainer>
+                            {MiRMapEnabled &&
+                                <>
+
+                                    {/* <styled.LocationTypeContainer>
+                                        <LocationTypeButton type='human_position' selected={selectedLocation.type} />
+                                        <styled.LocationTypeLabel>Position</styled.LocationTypeLabel>
+                                    </styled.LocationTypeContainer> */}
+
+                                    <styled.LocationTypeContainer>
+                                        <LocationTypeButton type='cart_position' selected={selectedLocation.type} />
+                                        <styled.LocationTypeLabel>Cart Position</styled.LocationTypeLabel>
+                                    </styled.LocationTypeContainer>
+
+                                    <styled.LocationTypeContainer>
+                                        <LocationTypeButton type='shelf_position' selected={selectedLocation.type} />
+                                        <styled.LocationTypeLabel>Shelf Position</styled.LocationTypeLabel>
+                                    </styled.LocationTypeContainer>
+
+                                </>
+                            }
+                            {/* :
+                                <styled.LocationTypeContainer>
+                                    <LocationTypeButton type='human_position' selected={selectedLocation.type} />
+                                    <styled.LocationTypeLabel>Position</styled.LocationTypeLabel>
+                                </styled.LocationTypeContainer>
+                                } */}
+                        </>
+                        :
+                        <styled.LocationTypeContainer>
+                            <LocationTypeButton type={selectedLocation.type} selected={selectedLocation.type} />
+                            <styled.LocationTypeLabel>{locationTypeName}</styled.LocationTypeLabel>
+                        </styled.LocationTypeContainer>
+                    }
 
                 </styled.DefaultTypesContainer>
                 {/* Will be used later for custom types (Lathe, Cut'it, etc.) */}
@@ -333,8 +409,19 @@ export default function LocationContent(props) {
 
                 {selectedLocation.schema === 'station' ?
                     <>
-                        <Positions type='cart_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
-                        <Positions type='shelf_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+
+                        <Positions handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+
+                        {/* {MiRMapEnabled ?
+                            <>
+                                <Positions type='cart_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+                                <Positions type='shelf_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+                            </>
+                            :
+                            <Positions type='human_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+                        } */}
+
+
                     </>
                     :
                     selectedLocation.type === 'cart_position' || selectedLocation.type === 'shelf_position' ?
@@ -426,21 +513,25 @@ export default function LocationContent(props) {
                 title={'Locations'}
                 schema={'locations'}
                 // Filters out devices from being displayed in locations
-                elements={Object.values(locations).filter(location => !location.parent && location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.name !== 'TempRightClickMoveLocation' && (location.map_id === currentMap._id))}
+                elements={
+                    locationsSortedAlphabetically(Object.values(locations))
+                        // Filters out devices, entry positions, other positions and right click to move positions
+                        .filter(location => !location.parent && location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.name !== 'TempRightClickMoveLocation' && (location.map_id === currentMap._id))
+                }
                 // elements={Object.values(locations)}
                 onMouseEnter={(location) => dispatch(locationActions.selectLocation(location._id))}
                 onMouseLeave={(location) => dispatch(locationActions.deselectLocation())}
                 onClick={(location) => {
                     // If location button is clicked, start editing it
                     onSetSelectedLocationCopy(deepCopy(selectedLocation))
-                    if (!!selectedLocation.children) {
+                    if (selectedLocation.children != null && selectedLocation.children != undefined) {
                         onSetSelectedLocationChildrenCopy(selectedLocation.children.map(positionID => deepCopy(positions[positionID])))
                     }
-                    toggleEditing(true)
+                    onEditing(true)
                 }}
                 onPlus={() => {
                     //// When a new location is created, set the selected location to be a placeholder
-                    //// that will be further filled out when the type is selected. 
+                    //// that will be further filled out when the type is selected.
                     dispatch(locationActions.setSelectedLocation({
                         name: '',
                         schema: null,
@@ -454,10 +545,9 @@ export default function LocationContent(props) {
                         map_id: currentMap._id
                     }))
 
-                    toggleEditing(true)
+                    onEditing(true)
                 }}
             />
         )
     }
 }
-

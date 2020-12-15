@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Option from './Option';
 import Input from './Input';
 import { LIB_NAME } from '../constants';
-import {getByPath} from '../util';
+import { getByPath } from '../util';
 
 const Content = ({ props, state, methods, ContentComponent, InputComponent }) => {
   return (
@@ -40,6 +40,40 @@ const Content = ({ props, state, methods, ContentComponent, InputComponent }) =>
       )}
     </ContentComponent>
   );
+    return (
+        <ContentComponent
+            className={`${LIB_NAME}-content ${props.multi ? `${LIB_NAME}-type-multi` : `${LIB_NAME}-type-single`
+                }`}
+            onClick={(event) => {
+                event.stopPropagation();
+                methods.dropDown('open');
+            }}>
+            {props.contentRenderer ? (
+                props.contentRenderer({ props, state, methods })
+            ) : (
+
+                    <React.Fragment>
+                        {(props.multi || props.showSelectedBox)
+                            ? state.values &&
+                            state.values.map((item, ind) => (
+                                <Option
+                                    // Fix for keys that have the same name
+                                    // key={`${getByPath(item, props.valueField)}${getByPath(item, props.labelField)}`}
+                                    key={ind}
+                                    item={item}
+                                    state={state}
+                                    props={props}
+                                    methods={methods}
+                                />
+                            ))
+                            : state.values &&
+                            state.values.length > 0 && <Value>{getByPath(state.values[0], props.labelField)}</Value>
+                        }
+                        <Input InputComponent={InputComponent} props={{ ...props, filled: state.values.length }} methods={methods} state={state} />
+                    </React.Fragment>
+                )}
+        </ContentComponent>
+    );
 };
 
 export const Value = styled.div`

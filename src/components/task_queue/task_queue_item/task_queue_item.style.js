@@ -3,35 +3,47 @@ import styled, {css} from "styled-components";
 import RemoveIcon from '@material-ui/icons/Remove';
 
 export const containerCss = css`
-	background-color: transparent;
-	border-color: ${props => props.theme.bg.quaternary};
-	color: ${props => props.theme.bg.quaternary};
-    height: 2rem;
+	background-color: #FFFFFF;
+	border-color: transparent;
+	border-width: 2px;
+	color: transparent;
+    height: 4.5rem;
     width: 100%;
     padding: .25rem;
+
+		&:hover{
+				border-color: #c58bff;
+
+		}
 
 `
 
 export const titleCss = css`
-    color: ${props => props.theme.bg.primary};
+    color: #000000;
     margin-right: .5rem;
+		width:100%;
+		word-break: break-word;
+
+
 `
 
 export const contentContainerCss = css`
     flex-direction: row;
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: ellipsis;-
     white-space: nowrap;
+
     justify-content: flex-start;
 `
 
 export const rightContentContainerCss = css`
 	width: auto;
-	margin-left: .25rem;
+	margin-left: .5rem;
 	margin-right: .25rem;
 	display: flex;
 	align-items: center;
 `
+
 
 export const StyledRemoveIcon = styled(RemoveIcon)`
 	padding: 0;

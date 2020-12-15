@@ -1,8 +1,9 @@
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useRef, useContext, useEffect } from 'react';
 
 // external functions
 import { ThemeContext } from "styled-components";
 import { useSelector, useDispatch } from 'react-redux'
+import { useParams, useHistory } from 'react-router-dom'
 
 // import external components
 import ReactList from "react-list";
@@ -56,6 +57,9 @@ const DashboardsList = (props) => {
     // dispatch
     const dispatch = useDispatch()
 
+    const params = useParams()
+    const history = useHistory()
+
     // Drop reference for new dashboard
     const [{ }, newDashDropRef] = useDrop({
         accept: "DashboardSidebarButton",
@@ -68,12 +72,32 @@ const DashboardsList = (props) => {
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const stations = useSelector(state => state.locationsReducer.stations)
     const tasks = useSelector(state => state.tasksReducer.tasks)
+    const devices = useSelector(state => state.devicesReducer.devices)
+    const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
 
     const station = stations[stationID]
-    const dashboardsArray = station.dashboards.map(dashboardID => dashboards[dashboardID])
+    const device = devices[stationID]
 
-    logger.log("DashboardsList dashboards", dashboards)
-    logger.log("DashboardsList dashboardsArray", dashboardsArray)
+    const selectedDashboardType = !!station ? station : device
+
+
+
+    // logger.log("DashboardsList dashboards", dashboards)
+    // logger.log("DashboardsList dashboardsArray", dashboardsArray)
+
+    useEffect(() => {
+        if (dashboards[params.dashboardID] === undefined && !dashboardOpen) {
+            history.push('/locations/')
+        }
+        return () => {
+
+        }
+    }, [])
+
+
+    // Hopefully fixes a bug when there is no dashboards for this type
+    const dashboardsArray = !!selectedDashboardType ? !!selectedDashboardType.dashboards ? selectedDashboardType.dashboards.map(dashboardID => dashboards[dashboardID]) : [] : []
+
 
     // handles event of button drag-and-drop onto a dashboard
     // adds the dropped button to the dashboard target
@@ -97,7 +121,7 @@ const DashboardsList = (props) => {
         while (exists) {
             exists = false
             i++
-            station.dashboards.forEach(dashboardID => {
+            selectedDashboardType.dashboards.forEach(dashboardID => {
                 if (dashboards[dashboardID].name == 'Untitled Dashboard ' + i) {
                     exists = true
                 }
@@ -118,7 +142,7 @@ const DashboardsList = (props) => {
         // Add this new dashboard to the station
         postDashboardPromise.then(async postedDashboard => {
 
-            let stationDashboards = station.dashboards
+            let stationDashboards = selectedDashboardType.dashboards
             stationDashboards.push(postedDashboard._id.$oid)
             await dispatch(stationActions.setStationAttributes(station._id, { dashboards: stationDashboards }))
             const stationID = station._id
@@ -147,7 +171,9 @@ const DashboardsList = (props) => {
             )
         } else {
             const currDashboard = dashboardsArray[index]
-
+            if (currDashboard === undefined) {
+                return null
+            }
 
             // get dashboard properties
             let name = currDashboard.name

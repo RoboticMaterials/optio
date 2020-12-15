@@ -7,17 +7,17 @@ const operator = 'analysis'
 export async function getTasksAnalysis() {
   try {
     const response = await axios({
-      method: 'get',
+      method: 'GET',
       url: apiIPAddress() + operator,
     });
 
     // Success 🎉
     // log.debug('getTasks :res:',response);
     const data = response.data;
-    const dataJson = JSON.parse(data)
+    // const dataJson = JSON.parse(data)
     // log.debug('getTasks: dataJson: ', dataJson)
 
-    return dataJson;
+    return data;
 
 } catch (error) {
 
@@ -52,7 +52,7 @@ export async function getTaskAnalysis(id) {
   // log.debug('getTask: id: ', id)
   try {
     const response = await axios({
-      method: 'get',
+      method: 'GET',
       url: apiIPAddress() + operator + '/' + id,
     });
     // Success 🎉

@@ -189,7 +189,7 @@ const StatusHeader = (props) => {
         try {
             pause_status = status.pause_status;
         } catch (e) {
-            pause_status = status.pause_status;
+            pause_status = false;
         }
 
         // Handles the icon type being displayed based on the pause_status in status

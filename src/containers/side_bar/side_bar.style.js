@@ -55,7 +55,7 @@ export const SidebarWrapper = styled.div`
     // flex-grow: 0;
 
     background: rgba(46, 47, 58, 0.97);
-    overflow: hidden;
+    overflow: auto;
 `
 
 export const SidebarContent = styled.div`
@@ -72,7 +72,7 @@ export const SidebarContent = styled.div`
 
     background-color: rgba(255, 255, 255, 0.1);
     
-    overflow: hidden;
+    overflow: auto;
    
 `
 

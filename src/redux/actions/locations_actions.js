@@ -7,6 +7,7 @@ import {
     SET_SELECTED_LOCATION_CHILDREN_COPY,
     DESELECT_LOCATION,
     WIDGET_LOADED,
+    EDITING_LOCATION,
 } from '../types/locations_types'
 
 import * as stationActions from './stations_actions.js'
@@ -86,8 +87,21 @@ export const updateLocation = (location) => {
         } else if (location.schema == 'position') {
             dispatch(positionActions.updatePosition(location))
         }
+
     }
 }
+
+export const updateChildren = (location) => {
+    return async dispatch => {
+
+
+
+        dispatch(stationActions.updateStation(location))
+        dispatch(positionActions.updatePosition(location))
+
+    }
+}
+
 
 export const updateLocations = (locations) => {
     return async dispatch => {
@@ -124,7 +138,6 @@ export const removeLocation = (location) => {
             dispatch(positionActions.removePosition(_id))
         }
     }
-
 }
 
 export const setLocationAttributes = (id, attr) => {
@@ -158,6 +171,10 @@ export const widgetLoaded = (bool) => {
     return { type: WIDGET_LOADED, payload: bool }
 }
 
+export const editing = (bool) => {
+    return { type: EDITING_LOCATION, payload: bool }
+}
+
 
 // ======================================== //
 //                                          //
@@ -172,6 +189,7 @@ export const widgetLoaded = (bool) => {
  * otherwise, it is reverted to the state it was when editing begun.
  * @param {*} props
  */
+
 export const sideBarBack = (props) => {
     // Does a quick check to make sure there is a location, if not then just return an arbitrary dispatch
     // Redux requires a dispatch here (I think...) so I just use setselectedDevice since it wont have any side effects (again... I think...)
@@ -185,20 +203,61 @@ export const sideBarBack = (props) => {
     const {
         selectedLocation,
         selectedLocationCopy,
-        selectedLocationChildrenCopy
+        selectedLocationChildrenCopy,
+        positions,
+        locations
     } = props
-
     return async dispatch => {
-
         //// Revert location
         if (selectedLocation.new == true) { // If the location was new, simply delete it
             dispatch(removeLocation(selectedLocation))
 
         } else { // If the location is not new, revert it to the old copy, and do the same to its children
-            dispatch(updateLocation(selectedLocationCopy))
-            if (selectedLocationChildrenCopy !== null) {
-                selectedLocationChildrenCopy.forEach(child => dispatch(positionActions.updatePosition(child)))
+            let upatedChildren = []
+            if (selectedLocationChildrenCopy != null) {
+
+                selectedLocation.children.map((child, ind) => {
+                    if( !!positions[child].new ){
+                        dispatch(positionActions.removePosition(child))
+                    }
+                })
+
+                selectedLocationChildrenCopy.forEach(async (child, ind) => {
+
+                    // If a child in the copy is udnefined (It's undefined because its been deleted from the backend)
+                    // then delete the location from the copy
+                    if (positions[child._id] === undefined) {
+                        selectedLocationChildrenCopy.splice(ind, 1)
+                        dispatch(positionActions.removePosition(child._id))
+
+
+                    }
+
+
+
+
+                    // Else keep the child
+                    else {
+                        upatedChildren.push(child._id)
+                    }
+
+
+                })
             }
+
+            // TODO: This is just sloppy... 
+            // The original copy should be stored in stations in the stations reducer
+            // And the edited copy should be the 'selectedLocation'
+            // For some reason, the station in stations is being edited as well
+            const selectedLocationCopyUpdated = {
+                ...selectedLocationCopy,
+                children: upatedChildren,
+            }
+            dispatch(deselectLocation())    // Deselect
+            dispatch(updateLocation(selectedLocationCopyUpdated))
+
+            // The old copy of the location should still be in redux since the edited location is the selectedLocation
+            // dispatch(updateLocation(locations[selectedLocation._id]))
         }
 
         dispatch(setSelectedLocationCopy(null))
@@ -209,6 +268,10 @@ export const sideBarBack = (props) => {
         dispatch(setSelectedDevice(null))
     }
 }
+
+
+
+
 
 /**
 * Called when the delete button is pressed. Deletes the location, its children, its dashboards,

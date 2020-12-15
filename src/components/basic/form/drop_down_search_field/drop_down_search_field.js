@@ -23,6 +23,7 @@ const DropDownSearchField = ({
 								 FieldDropdownContainer,
 								 Container,
 								 style,
+								 containerSyle,
 								 ...props
 							 }) => {
 
@@ -68,7 +69,9 @@ const DropDownSearchField = ({
 	const errorMessage = getMessageFromError(meta.error);
 
 	return (
-		<Container>
+		<Container
+			style={containerSyle}
+		>
 			{fieldLabel &&
 			<LabelComponent>{fieldLabel}</LabelComponent>
 			}

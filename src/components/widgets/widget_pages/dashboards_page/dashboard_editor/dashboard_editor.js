@@ -30,6 +30,7 @@ import { randomHash } from "../../../../../methods/utils/utils";
 // Import Actions
 import { putDashboard, deleteDashboard, postDashboard } from '../../../../../redux/actions/dashboards_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
+import { putStation } from '../../../../../redux/actions/stations_actions'
 
 import { dashboardSchema } from "../../../../../methods/utils/form_schemas";
 
@@ -55,6 +56,12 @@ const DashboardEditor = (props) => {
     const history = useHistory()
     const dispatch = useDispatch()
     const params = useParams()
+
+
+    const onDeleteDashboard = async (ID) => await dispatch(deleteDashboard(ID))
+    const onPutStation = async (station, ID) => await dispatch(putStation(station, ID))
+
+    const stations = useSelector(state => state.locationsReducer.stations)
 
     /*
     * Returns initialValues object for Formik
@@ -190,7 +197,6 @@ const DashboardEditor = (props) => {
 
                 // adds a button to buttons key in Formik values
                 const handleDrop = (dropResult) => {
-                  console.log("dropResult",dropResult)
                     const { removedIndex, addedIndex, payload, element } = dropResult;
                     console.log(removedIndex, addedIndex, payload, element)
                     const buttonsCopy = (values.buttons)
@@ -199,10 +205,10 @@ const DashboardEditor = (props) => {
                         const shiftedButtonsCopy = arrayMove(buttonsCopy, removedIndex, addedIndex)
                         formikProps.setFieldValue("buttons", shiftedButtonsCopy)
                     } else { // New button
-                        if(addedIndex !== null) {
-                          payload.id = randomHash()
-                          buttonsCopy.splice(addedIndex, 0, payload)
-                          formikProps.setFieldValue("buttons", buttonsCopy)
+                        if (addedIndex !== null) {
+                            payload.id = randomHash()
+                            buttonsCopy.splice(addedIndex, 0, payload)
+                            formikProps.setFieldValue("buttons", buttonsCopy)
                         }
 
                     }
@@ -225,6 +231,20 @@ const DashboardEditor = (props) => {
                     formikProps.setFieldValue("buttons", buttonsCopy)
                 }
 
+                const handleDeleteDashboard = async () => {
+
+                    const stationCopy = deepCopy(stations[params.stationID])
+
+                    const deleteDashboardIndex = stationCopy.dashboards.indexOf(params.dashboardID)
+
+                    stationCopy.dashboards.splice(deleteDashboardIndex, 1)
+
+                    history.push(`/locations/${params.stationID}/dashboards`)
+                    await onPutStation(stationCopy, stationCopy._id)
+                    await onDeleteDashboard(params.dashboardID)
+
+                }
+
                 return (
                     <style.StyledForm>
                         <DashboardsHeader
@@ -234,7 +254,9 @@ const DashboardEditor = (props) => {
                             showSaveButton={true}
                             setShowSidebar={setShowSidebar}
                             page={PAGES.EDITING}
-
+                            onDelete={() => {
+                                handleDeleteDashboard()
+                            }}
                             saveDisabled={submitDisabled}
                             onBack={() => history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)}
                         >

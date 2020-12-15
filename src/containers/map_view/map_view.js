@@ -1,6 +1,5 @@
-import React, { Component } from 'react'
-
-import ReactDOM from 'react-dom'
+import React, { Component, useState } from 'react'
+import {ReactDOM, Route} from 'react-dom'
 import { connect } from 'react-redux';
 import moduleName from 'react'
 import { withRouter } from "react-router-dom";
@@ -37,7 +36,7 @@ import Widgets from '../../components/widgets/widgets'
 
 // logging
 import log from "../../logger"
-import {setCurrentMap} from "../../redux/actions/map_actions";
+import { setCurrentMap } from "../../redux/actions/map_actions";
 
 const logger = log.getLogger("MapView")
 
@@ -46,6 +45,7 @@ export class MapView extends Component {
         super(props)
 
         this.mobileMode = this.props.mobileMode
+        this.onClick = this.props.onClick
 
         this.state = {
             showRightClickMenu: {},
@@ -84,28 +84,27 @@ export class MapView extends Component {
         // in the returned list (which will be the active map)
         // this.refreshMap()
         this.checkForMapLoad()
-
-        window.addEventListener('mousedown', () => this.mouseDown = true, {passive:false})
-        window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, {passive:false})
+        window.addEventListener('mousedown', () => this.mouseDown = true, { passive: false })
+        window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, { passive: false })
 
         // Event listener that will recalculate the map geometry when the screen size changes
         window.addEventListener('resize', () => {
             this.calculateD3Geometry()
             this.bindZoomListener()
-        }, {passive:false})
+        }, { passive: false })
     }
 
     checkForMapLoad = () => {
         const defaultMap = this.props.maps.find((map) => map._id === this.props.currentMapId)
-        if(this.props.currentMapId && this.props.currentMap._id) {
-            if(this.props.currentMapId !== this.props.currentMap._id) {
+        if (this.props.currentMapId && this.props.currentMap._id) {
+            if (this.props.currentMapId !== this.props.currentMap._id) {
                 this.props.onSetCurrentMap(defaultMap)
             }
 
-        } else if(this.props.currentMapId) {
+        } else if (this.props.currentMapId) {
             this.props.onSetCurrentMap(defaultMap)
 
-        } else if(this.props.currentMap && this.props.currentMap._id) {
+        } else if (this.props.currentMap && this.props.currentMap._id) {
             // do nothing
         } else {
             this.props.onSetCurrentMap(this.props.maps[0])
@@ -118,7 +117,6 @@ export class MapView extends Component {
         // if (prevProps.maps.length != this.props.maps.length) {
         //     this.refreshMap()
         // }
-
         this.checkForMapLoad()
 
 
@@ -146,7 +144,7 @@ export class MapView extends Component {
             document.removeEventListener("dragend", this.validateNewLocation)
         } else {
             // reattach event listeners if necessary
-            document.addEventListener('dragend', this.validateNewLocation, {capture:false, passive:true});
+            document.addEventListener('dragend', this.validateNewLocation, { capture: false, passive: true });
         }
 
         // if (this.props.currentMap != null && !isEquivalent(prevProps.locations, this.props.locations)) {
@@ -171,19 +169,26 @@ export class MapView extends Component {
         }
     }
 
+    openLocation = () => {
+      return  <Route path={["/locations"]}/>
+    }
+
+
+
     // ---------- Functionality for adding new location ---------- //
 
     dragNewEntity = e => {
         if (this.mouseDown == false || !this.props.selectedLocation) { return }
 
-        if (this.props.selectedLocation.temp == true) { //  Dragging current location onto the map
+        // TempRightClick... should not be moved here, this creates a weird rotation bug
+        if (this.props.selectedLocation.temp == true && this.props.selectedLocation.name !== "TempRightClickMoveLocation") { //  Dragging current location onto the map
             this.props.onSetLocationAttributes(this.props.selectedLocation._id, {
                 x: e.clientX,
                 y: e.clientY
             })
         } else {
             const draggingChild = Object.values(this.props.positions).find(position => position.temp == true)
-            if (!!draggingChild) {
+            if (!!draggingChild && this.props.selectedLocation.name !== "TempRightClickMoveLocation") {
                 this.props.onSetPositionAttributes(draggingChild._id, {
                     x: e.clientX,
                     y: e.clientY
@@ -195,7 +200,7 @@ export class MapView extends Component {
     validateNewEntity = () => {
         if (!this.props.selectedLocation) { return }
 
-        if (this.props.selectedLocation.temp == true) {
+        if (this.props.selectedLocation.temp == true && this.props.selectedLocation.name !== "TempRightClickMoveLocation") {
             const pos = convertD3ToReal([this.props.selectedLocation.x, this.props.selectedLocation.y], this.d3)
             this.props.onSetLocationAttributes(this.props.selectedLocation._id, {
                 pos_x: pos[0],
@@ -239,9 +244,9 @@ export class MapView extends Component {
                 .on('zoom', () => {
 
                     // Disables the ability to hover over location on mouse drag when a loction is selected that is not new or a right click
-                    if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation' && this.props.selectedLocation.type !== null) {
+                    if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation' && this.props.selectedLocation.type !== null && !this.props.editing) {
                         this.props.onHoverStationInfo(null)
-                        // this.props.onDeselectLocation()
+                        this.props.onDeselectLocation()
                     }
 
                     //// Saving the last event is usefull for saving d3 state when draggable is toggled (when moving locations)
@@ -450,14 +455,6 @@ export class MapView extends Component {
         if (this.props.currentMap == null) { return (<></>) }
         const { translate, scale } = this.d3;
 
-        // locations.filter()
-
-
-        // console.log(this.props.stations)
-        // console.log(this.props.locations)
-        // console.log(this.props.locations)
-        // console.log(this.props.selectedLocation)
-
         return (
             <div style={{ width: '100%', height: '100%' }} onMouseMove={this.dragNewEntity} onMouseUp={this.validateNewLocation} >
                 <styled.MapContainer ref={mc => (this.mapContainer = mc)} style={{ pointerEvents: this.widgetDraggable ? 'default' : 'none' }}>
@@ -485,7 +482,7 @@ export class MapView extends Component {
                             if (!!this.props.widgetLoaded) {
                                 // If there is a selected location and its not the right click menu location then hide
                                 // should always show widget if its the right click menu
-                                if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation') {
+                                if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation' && !this.props.editing) {
                                     this.props.onHoverStationInfo(null)
                                     this.props.onDeselectLocation()
                                 }
@@ -497,7 +494,10 @@ export class MapView extends Component {
                                 // should always show widget if its the right click menu
                                 if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation') {
                                     this.props.onHoverStationInfo(null)
+
+                                if(!this.props.editing){
                                     this.props.onDeselectLocation()
+                                  }
                                 }
                             }
                         }}
@@ -508,13 +508,14 @@ export class MapView extends Component {
 
                         >
                             {/* Foreign object allows an image to be put in the SVG container */}
-                            <foreignObject width='100%' height='100%' >
+                            <foreignObject width='200%' height='200%' >
                                 {!!this.props.currentMap &&
                                     <styled.MapImage ref={mi => (this.mapImage = mi)}
                                         tall={!!this.mapContainer && // Fixes the map sizing - cutoff issue
                                             this.mapContainer.getBoundingClientRect().height / this.naturalImageDimensions.height
                                             >
                                             this.mapContainer.getBoundingClientRect().width / this.naturalImageDimensions.width}
+
                                         src={'data:image/png;base64, ' + this.props.currentMap.map}
                                         onLoad={() => {
 
@@ -589,23 +590,26 @@ export class MapView extends Component {
 
                                         .filter(position => {
                                             // remove positions not associated with current map
-                                            if(position.map_id !== this.props.currentMap._id) return false
+                                            if (position.map_id !== this.props.currentMap._id) return false
 
                                             // This filters positions when making a process
                                             // If the process has routes, and you're adding a new route, you should only be able to add a route starting at the last station
                                             // This eliminates process with gaps between stations
                                             if (!!this.props.selectedTask && !!this.props.selectedProcess && this.props.selectedProcess.routes.length > 0 && this.props.selectedTask.load.position === null) {
-
                                                 // Gets the last route in the routes array
                                                 const previousRoute = this.props.selectedProcess.routes[this.props.selectedProcess.routes.length - 1]
 
                                                 const previousTask = this.props.tasks[previousRoute]
 
-                                                if (!!previousTask && !!previousTask.unload) {
+                                                if (!!previousTask.unload) {
+
                                                     const unloadStationID = previousTask.unload.station
                                                     const unloadStation = this.props.locations[unloadStationID]
 
-                                                    if (unloadStation.children.includes(position._id)) return true
+                                                    if (unloadStation.children.includes(position._id)) {
+                                                        return true
+
+                                                    }
                                                 }
 
                                                 // return true
@@ -650,9 +654,9 @@ export class MapView extends Component {
                         }
                     </svg>
 
-                    {/* {!!this.props.selectedTask &&
+                    {(!!this.props.selectedProcess || !!this.props.selectedTask) &&
                         <TaskStatistics d3={this.d3} />
-                    } */}
+                    }
 
                     {/* Widgets are here when not in mobile mode. If mobile mode, then they are in App.js.
                     The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons). */}
@@ -693,6 +697,7 @@ const mapStateToProps = function (state) {
         selectedProcess: state.processesReducer.selectedProcess,
 
         hoveringInfo: state.locationsReducer.hoverStationInfo,
+        editing: state.locationsReducer.editingLocation,
         widgetLoaded: state.locationsReducer.widgetLoaded,
     };
 }

@@ -7,17 +7,18 @@ export const Container = styled.div`
     flex-grow: 1;
     padding: 1rem;
     padding-top: 1.5rem;
-
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
+    margin-right: .5rem;
+
 
 `
 
 export const Header = styled.div`
-    display: flex; 
+    display: flex;
     flex-direction: row;
-    
+
 `
 
 export const Title = styled.h1`
@@ -41,9 +42,11 @@ export const ListItem = styled.div`
     align-items: center;
     width: auto;
     height: 2.4rem;
+    text-overflow: ellipsis;
 
     background: transparent;
-    padding-bottom: 0.4rem;
+    padding-bottom: .4rem;
+    padding-right:1.5rem;
 
 `
 
@@ -53,7 +56,7 @@ export const ListItemRect = styled.div`
 
     border-radius: 0.5rem;
     text-align: center;
-
+    padding-right:0.5rem;
     cursor: pointer;
     user-select: none;
 
@@ -67,19 +70,20 @@ export const ListItemRect = styled.div`
 `
 
 export const ListItemTitle = styled.div`
+    text-align: left;
     height: 2rem;
     line-height: 2rem;
     box-sizing: border-box;
     width: 100%;
     margin-top: -0.1rem;
-    padding-left: 1rem;
+    padding-left: 2rem;
     padding-right: 1rem;
 
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz4};
     font-weight: 500;
     color: ${props => props.theme.bg.octonary};
-    
+
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -97,7 +101,9 @@ export const ListItemIcon = styled.i`
     font-size: 1.25rem;
     color: lightgreen;
 
+
     &:hover {
         cursor: pointer;
+        color:green;
     }
 `

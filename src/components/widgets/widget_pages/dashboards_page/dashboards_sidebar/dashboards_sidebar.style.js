@@ -4,6 +4,17 @@ import {RGB_Linear_Shade, hexToRGBA, LightenDarkenColor} from "../../../../../me
 import * as pageStyle from "../dashboards_header/dashboards_header.style"
 
 
+export const FooterContainer = styled.div`
+	width: 100%;
+	display: flex;
+	overflow-x: scroll;
+	overflow-y: hidden;
+	padding: 1rem;
+	border-top: 1px solid ${props => props.theme.bg.quaternary};
+	background: ${props => props.theme.bg.tertiary + "B1"};
+`
+
+// export const
 
 export const Title = styled(pageStyle.Title)`
     margin: 0;
@@ -29,7 +40,7 @@ export const Container = styled.div`
     z-index: 1;
 
     flex: 1;
-    background: green;
+    background: ${props => LightenDarkenColor(props.theme.bg.quaternary, 20)};
     
 `
 

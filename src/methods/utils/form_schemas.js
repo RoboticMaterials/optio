@@ -26,6 +26,14 @@ export const scheduleSchema = Yup.object().shape({
     stop_time: Yup.string() // not required
 });
 
+export const reportEventSchema = Yup.object().shape({
+    label: Yup.string()
+        .min(1, '1 character minimum.')
+        .max(50, '50 character maximum.')
+        .required('Please enter a label.'),
+    description: Yup.string()
+});
+
 export const objectSchema = Yup.object().shape({
     name: Yup.string()
         .min(1, '1 character minimum.')
@@ -202,8 +210,18 @@ export const cardSchema = Yup.object().shape({
         Yup.object().shape({
             name: Yup.string()
                 .required('Please select a station.'),
-        })
+        }),
+
     ).required('Required'),
+    // object: Yup.array().of(
+    //     Yup.object().shape({
+    //         _id: Yup.string()
+    //             .required('Please select a station.'),
+    //
+    //     }),
+    //
+    // ).required('Required'),
+
 
 });
 

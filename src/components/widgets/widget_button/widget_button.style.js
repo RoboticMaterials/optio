@@ -1,13 +1,16 @@
 import styled from 'styled-components'
 
 export const WidgetButtonButton = styled.button`
+    display:flex;
+    flex-direction: column;
     border: none;
     border-radius: 1rem;
     text-align: center;
-    width: 4rem;
+    width: 6rem;
     height: 4rem;
     outline:none;
-    margin: 0rem .5rem;
+    margin: 0rem .3rem;
+    padding-top:.5rem;
 
     /* margin-top: 0.5rem; */
 
@@ -31,10 +34,9 @@ export const WidgetButtonButton = styled.button`
     }
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
-        width: 3.5rem;
-        height: 3.5rem;
-        border-radius: .5rem;
-        
+        width: 6rem;
+        height: 4rem;
+
     }
 `;
 
@@ -45,14 +47,41 @@ export const WidgetButtonLabel = styled.label`
     text-align: center;
 `;
 
+export const WidgetButtonText = styled.h4`
+    font-size: ${props => props.theme.fontSize.sz6};
+    font-family: ${props => props.theme.font.primary};
+
+    text-align: center;
+    align-self:center;
+
+    @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
+
+    }
+`;
+
+export const WidgetStationName = styled.h4`
+    font-size: ${props => props.theme.fontSize.sz4};
+    font-family: ${props => props.theme.font.primary};
+
+    text-align: center;
+    align-self:center;
+
+    @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
+      font-size: ${props => props.theme.fontSize.sz6};
+
+    }
+`;
+
 export const WidgetButtonIcon = styled.i`
     font-size: 2.2rem;
+    margin-bottom:0.3rem;
+    align-self:center;
     color: ${props => props.pageID === props.currentPage ? props.theme.fg.primary : props.theme.bg.primary};
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
         font-size: 2rem;
 
-        
+
     }
 `
 

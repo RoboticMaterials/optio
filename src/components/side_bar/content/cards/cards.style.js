@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import {Calendar} from "react-calendar";
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+// import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import '../../../../index.css';
 export const Container = styled.div`
     display: flex;
@@ -23,12 +23,20 @@ export const Header = styled.div`
 export const Body = styled.div`
 	display: flex;
 	flex: 1;
+  //width: 100%;
 	// max-width: 50%;
 	overflow: hidden;
 	position: relative;
 	
 	
 	background: ${props => props.theme.bg.tertiary};
+`
+
+export const CardZoneContainer = styled.div`
+	overflow: auto;
+  flex: 1;
+	//width: 100%;
+	//height: 100%;
 `
 
 export const MenuButton = styled.i`

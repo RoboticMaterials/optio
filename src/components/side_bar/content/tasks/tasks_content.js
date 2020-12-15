@@ -8,6 +8,8 @@ import Textbox from '../../../basic/textbox/textbox.js'
 import Button from '../../../basic/button/button'
 import DropDownSearch from '../../../basic/drop_down_search_v2/drop_down_search'
 import TextBoxSearch from '../../../basic/textbox_search/textbox_search'
+import HILModals from '../../../../components/hil_modals/hil_modals'
+
 
 import ContentList from '../content_list/content_list'
 import EditTask from './edit_task/edit_task'
@@ -16,10 +18,13 @@ import EditTask from './edit_task/edit_task'
 import * as taskActions from '../../../../redux/actions/tasks_actions'
 import * as dashboardActions from '../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../redux/actions/objects_actions'
+import * as taskQueueActions from '../../../../redux/actions/task_queue_actions'
+
 import { postTaskQueue } from '../../../../redux/actions/task_queue_actions'
 
 // Import Utils
 import { deepCopy } from '../../../../methods/utils/utils'
+import { tasksSortedAlphabetically } from '../../../../methods/utils/task_utils'
 import uuid from 'uuid'
 
 
@@ -28,6 +33,8 @@ export default function TaskContent(props) {
     // Connect redux reducers
     const dispatch = useDispatch()
     const onPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
+    const onTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
+
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -39,13 +46,13 @@ export default function TaskContent(props) {
     const stations = useSelector(state => state.locationsReducer.stations)
     const positions = useSelector(state => state.locationsReducer.positions)
     const locations = useSelector(state => state.locationsReducer.locations)
+    const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
 
     // State definitions
     const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
     const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)  // Current task
     const [shift, setShift] = useState(false) // Is shift key pressed ?
     const [isTransportTask, setIsTransportTask] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
-
     // To be able to remove the listeners, the function needs to be stored in state
     const [shiftCallback] = useState(() => e => {
         setShift(e.shiftKey)
@@ -86,6 +93,28 @@ export default function TaskContent(props) {
         }
     }, [selectedTask])
 
+
+    const handleHumanHil = async() => {
+      if(selectedTask!=null){
+
+        if (selectedTask.device_type == 'human') {
+          const dashboardId = stations[selectedTask.load.station].dashboards[0]
+
+          const postToQueue = dispatch(postTaskQueue({ task_id: selectedTask._id, 'task_id': selectedTask._id, dashboard: dashboardId, hil_response:null}))
+                postToQueue.then(item=>{
+                const id = item?._id?.$oid
+                onTaskQueueItemClicked(id)
+          })
+        }
+        else {
+          onPostTaskQueue({ task_id: selectedTask._id })
+        }
+      }
+    }
+
+
+
+
     if (editing && selectedTask !== null) { // Editing Mode
         return (
             <EditTask
@@ -102,12 +131,14 @@ export default function TaskContent(props) {
                 title={'Routes'}
                 schema={'tasks'}
                 elements={
-                    
-                    Object.values(tasks)
-                    // Filters outs any tasks that don't belong to the current map or apart of a process
-                    .filter(task => !task.process && (task.map_id === currentMap._id))
-                    // Filter outs any human tasks that have associated tasks (AKA it only shows the associated device task)
-                    .filter(task => !task.associated_task || (!!task.associated_task && task.device_type !== 'human'))
+
+                    tasksSortedAlphabetically(Object.values(tasks))
+                        // Filters outs any tasks that don't belong to the current map or apart of a process
+                        // .filter(task => !task.process && (task.map_id === currentMap._id))
+                        // .filter(task => task.map_id === currentMap._id)
+                        .filter(task => task.map_id === currentMap._id)
+                        // Filter outs any human tasks that have associated tasks (AKA it only shows the associated device task)
+                        .filter(task => !task.associated_task || (!!task.associated_task && task.device_type !== 'human'))
 
                 }
                 onMouseEnter={(task) => dispatch(taskActions.selectTask(task._id))}
@@ -117,23 +148,23 @@ export default function TaskContent(props) {
                     setSelectedTaskCopy(deepCopy(selectedTask))
                     toggleEditing(true)
                 }}
-                executeTask={() => {
-                    onPostTaskQueue({ task_id: selectedTask._id })
-                }}
+                executeTask={()=>handleHumanHil()}
                 onPlus={() => {
                     const newTask = {
                         name: '',
                         obj: null,
                         type: 'push',
                         quantity: 1,
-                        device_type: 'human',
+                        device_type: 'MiR_100',
+                        // device_type: 'human',
                         map_id: currentMap._id,
                         new: true,
                         load: {
                             position: null,
                             station: null,
                             sound: null,
-                            instructions: 'Load'
+                            instructions: 'Load',
+                            timeout: '01:00'
                         },
                         unload: {
                             position: null,

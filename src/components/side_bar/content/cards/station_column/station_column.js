@@ -27,6 +27,8 @@ const StationsColumn = SortableContainer((props) => {
 	const dispatch = useDispatch()
 	const station = useSelector(state => { return state.locationsReducer.stations[station_id] })
 	const route = useSelector(state => { return state.tasksReducer.tasks[route_id] })
+	const objects = useSelector(state => { return state.objectsReducer.objects })
+
 	const [isCollapsed, setCollapsed] = useState(false)
 	const [dragEnter, setDragEnter] = useState(false)
 	const [dragLeave, setDragLeave] = useState(false)
@@ -84,12 +86,19 @@ const StationsColumn = SortableContainer((props) => {
 						{cards.map((card, index) => {
 							console.log("card",card)
 							const {
-								_id
+								_id,
+								count = 0,
+								name,
+								object_id
 							} = card
+
+							const objectName = objects[object_id] ? objects[object_id].name : null
 
 							return(
 								<Card
-									name={card.name}
+									name={name}
+									objectName={objectName}
+									count={count}
 									id={index}
 									index={index}
 									onClick={()=>handleCardClick(_id)}
