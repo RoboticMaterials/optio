@@ -33,7 +33,6 @@ export const getLocalSettings = async () => {
 
     if (localSettings) {
         localSettings = JSON.parse(localSettings);
-        localSettings.MiRMapEnabled = true
         return localSettings;
     }
     // Posts settigns to the backend if there's nothing there

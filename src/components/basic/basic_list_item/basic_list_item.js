@@ -11,7 +11,7 @@ function BasicListItem(props) {
 		RightContentContainer, rightContentContainerCss, rightContentContainerProps, rightContent,
 		ContentContainer, contentContainerCss, contentContainerProps,
 		Container, containerCss, containerProps,
-		title, Title, titleCss, titleProps, onClick, Status, status
+		title, Title, titleCss, titleProps, onClick, onMouseEnter, Status, status
 	} = props
 
 	return (
@@ -27,6 +27,7 @@ function BasicListItem(props) {
 				{...contentContainerProps}
 				css={contentContainerCss}
 				onClick={onClick}
+				onMouseEnter = {onMouseEnter}
 			>
 				<Title css={titleCss}{...titleProps}>
 					{title}

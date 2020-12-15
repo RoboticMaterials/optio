@@ -366,7 +366,15 @@ const Widgets = (props) => {
                                     {selectedLocation.schema == "positions" ?
                                         <styled.WidgetStationNameUnselectable>{selectedLocation.name}</styled.WidgetStationNameUnselectable>
                                         :
-                                        <styled.WidgetStationName onClick={() => clickLocation()}>{selectedLocation.name}</styled.WidgetStationName>
+                                        <styled.RowContainer>
+                                        <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>
+                                        <styled.EditIcon
+                                            className='fas fa-edit'
+                                            styled={{ color: '#ff1818' }}
+                                            onClick={() => clickLocation()}
+                                        />
+                                        </styled.RowContainer>
+
                                     }
                                 </>
                             }

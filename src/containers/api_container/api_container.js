@@ -80,14 +80,13 @@ const ApiContainer = (props) => {
     const onDeleteTask = (ID) => dispatch(deleteTask(ID))
     const onDeleteDashboard = (ID) => dispatch(deleteDashboard(ID))
     const onDeletePosition = (position, ID) => dispatch(deletePosition(position, ID))
-    // const onDeleteStation = async (ID) => await dispatch(deleteStation(ID))
+    const onDeleteStation = async (ID) => await dispatch(deleteStation(ID))
     const onDeleteTaskQItem = async (ID) => await dispatch(deleteTaskQueueItem(ID))
 
     const onPutDevice = async (device, ID) => await dispatch(putDevices(device, ID))
     const onPutPosition = (position, ID) => dispatch(putPosition(position, ID))
     const onPutProcess = (process) => dispatch(putProcesses(process))
     const onPutStation = async (station, ID) => await dispatch(putStation(station, ID))
-    const onDeleteStation = async (ID) => await dispatch(deleteStation(ID))
 
     const onPostDashoard = (dashboard) => dispatch(postDashboard(dashboard))
 
@@ -229,6 +228,7 @@ const ApiContainer = (props) => {
 
             case 'dashboards':
                 pageDataInterval = setInterval(() => loadDashboardsData(), 100000);
+                // pageDataInterval = setInterval(() => loadTasksData(), 10000);
                 break;
 
             case 'tasks':

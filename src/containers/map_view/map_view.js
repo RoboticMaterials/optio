@@ -95,18 +95,21 @@ export class MapView extends Component {
     }
 
     checkForMapLoad = () => {
-        const defaultMap = this.props.maps.find((map) => map._id === this.props.currentMapId)
-        if (this.props.currentMapId && this.props.currentMap._id) {
+        var defaultMap = this.props.maps.find((map) => map._id === this.props.currentMapId)
+
+        if (this.props.currentMapId && this.props.currentMap && this.props.currentMap._id && defaultMap) {
             if (this.props.currentMapId !== this.props.currentMap._id) {
                 this.props.onSetCurrentMap(defaultMap)
             }
 
-        } else if (this.props.currentMapId) {
+        } else if (this.props.currentMapId && defaultMap) {
             this.props.onSetCurrentMap(defaultMap)
 
         } else if (this.props.currentMap && this.props.currentMap._id) {
             // do nothing
         } else {
+
+            // default to first map found
             this.props.onSetCurrentMap(this.props.maps[0])
         }
     }

@@ -23,7 +23,7 @@ import {
 const RightMenu = (props) => {
 
     // This values are defined in Status Header
-    const { showRightMenu, newNotification } = props;
+    const { showRightMenu, newNotification, overlapStatus } = props;
 
     const size = useWindowSize();
 
@@ -79,6 +79,7 @@ const RightMenu = (props) => {
 
                 <styled.NotificationsContainer
                     windowHeight={size.height + "px"}
+                    overlaping = {overlapStatus}
                 >
 
                     {/* Commented out for the time being. As of Aug 31 2020 notifications have not been impleneted */}
