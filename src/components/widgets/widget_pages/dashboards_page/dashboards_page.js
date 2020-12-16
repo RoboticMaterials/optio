@@ -140,6 +140,7 @@ const DashboardsPage = (props) => {
 
                 <div style={{ width: showSidebar && window.innerWidth > 1000 ? sidebarWidth : 0 }}>
                     <DashboardsSidebar
+                        dashboardId={dashboardID}
                         stationID={stationID}
                         width={showSidebar ? sidebarWidth : 0}
                         setWidth={setSidebarWidth}
