@@ -38,7 +38,7 @@ export const Header = styled.div`
 	align-items: center;
 	padding: 0;
 	margin: 0;
-	height: 3rem;
+	//height: 3rem;
 	background: ${props => props.theme.bg.quinary};
 	
 `
@@ -55,7 +55,7 @@ export const CloseButton = styled.button`
 
 `
 
-export const Title = styled.span`
+export const Title = styled.div`
 	flex: 2;
 	height: 100%;
 	min-height: 100%;
@@ -65,10 +65,14 @@ export const Title = styled.span`
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
-	
+	display: flex;
+  flex-direction: column;
 	font-size: ${props => props.theme.fontSize.sz2};
 	font-weight: ${props => props.theme.fontWeight.bold};
 	
+`
+export const TitleText = styled.span`
+
 `
 
 

@@ -22,7 +22,7 @@ import log from "../../logger"
 import {convertArrayToObject} from "../../methods/utils/utils";
 import * as api from "../../api/lots_api";
 
-const logger = log.getLogger("Cards", "Redux")
+const logger = log.getLogger("Lots", "Redux")
 logger.setLevel("debug")
 // get
 // ******************************
@@ -73,10 +73,8 @@ export const getLots = () =>  async (dispatch) => {
 
         // make request
         const lots = await api.getLots();
-        console.log("getCards lots",lots)
 
-        const lotsObj = convertArrayToObject(cards, "_id")
-        console.log("getCards lotsObj",lotsObj)
+        const lotsObj = convertArrayToObject(lots, "_id")
 
         // format response
         // const normalizedSchedules = normalize(schedules, schedulesSchema);
@@ -135,7 +133,7 @@ export const getLots = () =>  async (dispatch) => {
 
 // create
 // ******************************
-export const postLot = (log) =>  async dispatch => {
+export const postLot = (lot) =>  async dispatch => {
 
     const callback = async () => {
         const createdLot = await api.postLot(lot);
@@ -149,9 +147,9 @@ export const postLot = (log) =>  async dispatch => {
     //
     const actionName = POST + LOT;
 
-    const payload = await api_action(actionName, callback, dispatch, card);
+    const payload = await api_action(actionName, callback, dispatch, lot);
 
-    // return Object.values(payload.createdCards)[0];
+    return payload.lot
 
 };
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -170,7 +168,7 @@ export const deleteLot = (lotId, processId) => async (dispatch) => {
     }
     //
     const actionName = DELETE + LOT;
-    const payload = await api_action(actionName, callback, dispatch, cardId);
+    const payload = await api_action(actionName, callback, dispatch, lotId);
     return payload;
 
 };
@@ -191,7 +189,7 @@ export const putLot = (lot, lotId) => async dispatch => {
     }
 
     const actionName = PUT + LOT;
-    const payload = await api_action(actionName, callback, dispatch, { card});
+    const payload = await api_action(actionName, callback, dispatch, { lot});
     return lot;
 };
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

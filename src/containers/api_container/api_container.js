@@ -46,6 +46,7 @@ import localReducer from "../../redux/reducers/local_reducer";
 import {getCards, getProcessCards} from "../../redux/actions/card_actions";
 import apiReducer from "../../redux/reducers/api_reducer";
 import {getReportEvents} from "../../redux/actions/report_event_actions";
+import {getLots} from "../../redux/actions/lot_actions";
 
 const ApiContainer = (props) => {
 
@@ -61,6 +62,7 @@ const ApiContainer = (props) => {
     const onGetTasksAnalysis = () => dispatch(getTasksAnalysis())
 
     const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
+    const dispatchGetLots = () => dispatch(getLots())
     const onGetCards = () => dispatch(getCards())
 
     const onGetProcesses = () => dispatch(getProcesses());
@@ -412,6 +414,7 @@ const ApiContainer = (props) => {
         } else {
             onGetCards()
         }
+        dispatchGetLots()
 
     }
 

@@ -23,6 +23,7 @@ import Calendar from 'react-calendar'
 import CalendarField from "../../../../basic/form/calendar_field/calendar_field";
 import TimePickerField from "../../../../basic/form/time_picker_field/time_picker_field";
 import CustomTimePickerField from "../../../../basic/form/custom_time_picker_field/custom_time_picker_field";
+import {getLot, postLot, putLot} from "../../../../../redux/actions/lot_actions";
 
 const logger = log.getLogger("CardEditor")
 
@@ -33,6 +34,7 @@ const CONTENT = {
 	CALENDAR_START: "CALENDAR_START",
 	CALENDAR_END: "CALENDAR_END",
 	CALENDAR_RANGE: "CALENDAR_RANGE",
+	MOVE: "MOVE"
 
 }
 
@@ -56,12 +58,21 @@ const CardEditor = (props) => {
 
 	const processes = useSelector(state => { return state.processesReducer.processes })
 	const processIds = Object.keys(processes)
-	const card = useSelector(state => { return state.cardsReducer.cards[cardId] })
+	const cards = useSelector(state => { return state.cardsReducer.cards })
+	const lots = useSelector(state => { return state.lotsReducer.lots })
+
+	const card = cards[cardId]
 	const {
 		station_id: stationId,
 		process_id: processId = processIds[0],
-		route_id: routeId
+		route_id: routeId,
+		lot_id: lotId
 	} = card || {}
+
+	const lot = lots[lotId]
+
+
+
 	const cardHistory = useSelector(state => { return state.cardsReducer.cardHistories[cardId] })
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
 	const stations = useSelector(state => { return state.locationsReducer.stations })
@@ -74,9 +85,15 @@ const CardEditor = (props) => {
 	const routeIds = processes[processId].routes
 
 	const dispatch = useDispatch()
+
 	const onPostCard = async (card) => await dispatch(postCard(card))
 	const onGetCard = async (cardId) => await dispatch(getCard(cardId))
 	const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
+
+	const DispatchPostLot = async (lot) => await dispatch(postLot(lot))
+	const DispatchPutLot = async (lot, lotId) => await dispatch(putLot(lot, lotId))
+	const onGetLot = async (lotId) => await dispatch(getLot(lotId))
+
 	const onGetCardHistory = async (cardId) => await dispatch(getCardHistory(cardId))
 	const onDeleteCard = async (cardId, processId) => await dispatch(deleteCard(cardId, processId))
 
@@ -101,7 +118,14 @@ const CardEditor = (props) => {
 	// 	station_id: loadStationId,
 	// 	_id: currRouteId + "+" + loadStationId
 	// }
-	let dropdownOptions = []
+	let dropdownOptions = [
+		{
+			name: "Queue",
+			route_id: "QUEUE",
+			station_id: "QUEUE",
+			_id: "QUEUE" + "+" + "QUEUE"
+		}
+	]
 
 	routeIds.forEach((currRouteId) => {
 		const matchingRoute = routes[currRouteId]
@@ -140,7 +164,7 @@ const CardEditor = (props) => {
 	    }
 	}, [isOpen])
 
-	const handleSubmit = (values, formMode) => {
+	const handleSubmit = async (values, formMode) => {
 		logger.log("cardEditor values", values)
 
 		const {
@@ -148,7 +172,9 @@ const CardEditor = (props) => {
 			bin,
 			description,
 			count,
-			object
+			object,
+			moveCount,
+			moveLocation
 		} = values
 
 		const start = values?.dates?.start || null
@@ -161,33 +187,128 @@ const CardEditor = (props) => {
 
 		// update (PUT)
 		if(formMode === FORM_MODES.UPDATE) {
-			const submitItem = {
+
+			// if(lotId) {
+			// 	DispatchPutLot({
+			// 		...lots[lotId],
+			// 		name
+			// 	}, lotId)
+			// }
+
+
+
+			var submitItem = {
 				name,
 				station_id: bin[0]?.station_id,
 				route_id: bin[0]?.route_id,
 				description,
 				object_id: objectId,
 				process_id: card.process_id,
+				lot_id: card.lot_id,
 				start_date: start,
 				end_date: end,
 				count,
 			}
+
+
+
+			if(moveCount && moveLocation) {
+
+				const moveCountVal = moveCount[0].value
+				const {
+					name: moveName,
+					route_id: moveRouteId,
+					station_id: moveStationId,
+					_id: moveId,
+				} = moveLocation[0]
+
+
+				var destinationCardId = null
+				Object.values(cards).forEach((currCard, cardIndex) => {
+
+					// card is in same lot
+					if(currCard.lot_id === card.lot_id) {
+
+						// card exists at the station / route combo. update instead of create
+						if((currCard.route_id === moveRouteId) && (currCard.station_id === moveStationId)) {
+							destinationCardId = currCard._id
+						}
+					}
+				})
+
+				submitItem.count = submitItem.count - moveCountVal
+
+				// PUT destination card
+				if(destinationCardId) {
+					const destinationItem = {
+						...cards[destinationCardId],
+						count: cards[destinationCardId].count + moveCountVal
+					}
+
+					onPutCard(destinationItem, destinationCardId)
+
+				}
+
+			 	// post destination card
+				else {
+					onPostCard({
+						name,
+						count: moveCountVal,
+						station_id: moveStationId,
+						route_id: moveRouteId,
+						description,
+						object_id: objectId,
+						process_id: processId,
+						start_date: start,
+						end_date: end,
+						lot_id: lotId
+					})
+				}
+			}
+
+
+
+			// update
+			// const submitItem = {
+			// 	name,
+			// 	station_id: bin[0]?.station_id,
+			// 	route_id: bin[0]?.route_id,
+			// 	description,
+			// 	object_id: objectId,
+			// 	process_id: card.process_id,
+			// 	lot_id: card.lot_id,
+			// 	start_date: start,
+			// 	end_date: end,
+			// 	count,
+			// }
 
 			onPutCard(submitItem, card._id)
 		}
 
 		// create (POST)
 		else {
+			const createdLot = await DispatchPostLot({
+				process_id: processId,
+				name
+			})
+
+			const {
+				_id: lotId
+			} = createdLot
+
 			const submitItem = {
 				name,
 				count,
-				station_id: bin[0]?.station_id,
-				route_id: bin[0]?.route_id,
+				// station_id: bin[0]?.station_id,
+				// route_id: bin[0]?.route_id,
+				station_id: "QUEUE",
+				route_id: "QUEUE",
 				description,
 				object_id: objectId,
 				process_id: processId,
 				start_date: start,
 				end_date: end,
+				lot_id: lotId
 			}
 
 			onPostCard(submitItem)
@@ -267,6 +388,56 @@ const CardEditor = (props) => {
 
 					const submitDisabled = (errorCount > 0) || (touchedCount === 0) || isSubmitting
 
+					const renderMove = () => {
+						const {
+							count = 0
+						} = values
+
+						var list = [];
+						for (var i = 0; i <= count; i++) {
+							list.push({
+								value: i
+							});
+						}
+
+						return(
+							<styled.BodyContainer>
+								<styled.ContentHeader style={{}}>
+									<styled.ContentTitle>Move lot</styled.ContentTitle>
+								</styled.ContentHeader>
+
+								<div style={{height: "10rem"}}>
+									<DropDownSearchField
+										containerSyle={{flex: 1}}
+										pattern={null}
+										name="moveLocation"
+										labelField={'name'}
+										options={dropdownOptions}
+										valueField={"_id"}
+									/>
+								</div>
+
+								<div style={{height: "10rem"}}>
+									<DropDownSearchField
+										containerSyle={{flex: 1}}
+										pattern={null}
+										name="moveCount"
+										labelField={'value'}
+										options={list}
+										valueField={"value"}
+									/>
+								</div>
+
+
+								<Button
+									onClick={()=>setContent(null)}
+									schema={"processes"}
+								>
+									Ok
+								</Button>
+							</styled.BodyContainer>
+						)
+					}
 					const renderCalendar = () => {
 						return(
 							<styled.BodyContainer>
@@ -457,6 +628,17 @@ const CardEditor = (props) => {
 
 											Delete
 										</Button>
+										<Button
+											schema={'processes'}
+											style={{ marginBottom: '0rem', marginTop: 0 }}
+											secondary
+											type={"button"}
+											onClick={async () => {
+												setContent(CONTENT.MOVE)
+											}}
+										>
+											Move
+										</Button>
 									</styled.ButtonContainer>
 								}
 							</styled.BodyContainer>
@@ -509,8 +691,8 @@ const CardEditor = (props) => {
 
 												modifiedData = {
 													...rest, "station": {
-														new: stations[newStationId].name,
-														old: stations[oldStationId].name,
+														new: stations[newStationId] ? stations[newStationId].name : "",
+														old: stations[oldStationId] ? stations[oldStationId].name : "",
 													}
 												}
 											}
@@ -527,8 +709,8 @@ const CardEditor = (props) => {
 
 												modifiedData = {
 													...rest, "route": {
-														new: routes[newRouteId].name,
-														old: routes[oldRouteId].name,
+														new: routes[newRouteId] ? routes[newRouteId].name : "",
+														old: routes[oldRouteId] ? routes[newRouteId].name : "",
 													}
 												}
 
@@ -574,7 +756,13 @@ const CardEditor = (props) => {
 									</Button>
 								}
 
-								<styled.Title>Card Editor</styled.Title>
+								<styled.Title>
+									Card Editor
+									{(lot && lot.name) &&
+										<span>{lot.name}</span>
+									}
+								</styled.Title>
+
 								<Button
 									onClick={close}
 									schema={'processes'}
@@ -594,13 +782,17 @@ const CardEditor = (props) => {
 							</styled.NameContainer>
 
 
-							{!(content === CONTENT.HISTORY) ?
-								!((content === CONTENT.CALENDAR_END) || (content === CONTENT.CALENDAR_START)) ?
-									renderContent()
-									:
-									renderCalendar()
-								:
+							{(content === null) &&
+								renderContent()
+							}
+							{(((content === CONTENT.CALENDAR_END) || (content === CONTENT.CALENDAR_START))) &&
+								renderCalendar()
+							}
+							{(content === CONTENT.HISTORY) &&
 								renderHistory()
+							}
+							{(content === CONTENT.MOVE) &&
+							renderMove()
 							}
 
 

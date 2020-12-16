@@ -12,6 +12,7 @@ export const Container = styled.div`
         
     background: white;
     border-radius: 0.6rem;
+  	border: 1px solid ${props => props.color};
         
     // margins
     margin: 0 0 0.5rem 0;
@@ -53,12 +54,15 @@ export const Count = styled.span`
 	font-size: ${props => props.theme.fontSize.sz6};
 `
 
+export const LotName = styled.span``
+
 export const FooterBar = styled.div`
 	height: 1rem;
 	background: ${props => props.theme.bg.septenary};
 	display: flex;
 	justify-content: flex-end;
 	padding: 0 1rem 0 0;
+  font-size: ${props => props.theme.fontSize.sz6};
 `
 
 export const StyledDraggable = styled(Draggable)`
