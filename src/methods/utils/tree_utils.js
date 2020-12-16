@@ -1,15 +1,24 @@
 import { randomHash, deepCopy } from './utils.js'
 
 
+/**
+ * This searchs a tree for the given ID
+ */
 export function treeSearch(tree, id) {
   for (let i = 0; i < tree.children.length; i++) {
+    // If the _id of the child matches the ID of the item searching for, then thats the child you are looking for
+    // Suck it obi wan 
      if (tree.children[i]._id === id) {
        return tree.children[i];
      }
+
+    //  Else if the child has children then search those children
      else if (tree.children[i].children.length) {
        const result = treeSearch(tree.children[i].children, id);
        if(result) return result;
      }
+
+    // Else, the child has no children and the childs ID is not the id you're looking for so search the next child
    }
 }
 

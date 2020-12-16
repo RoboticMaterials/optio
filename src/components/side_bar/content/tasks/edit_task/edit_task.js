@@ -489,7 +489,44 @@ const EditTask = (props) => {
         }
 
         // If this task is part of a process and not already in the array of routes, then add the task to the selected process
-        if (isProcessTask && !selectedProcess.routes.includes(selectedTask._id)) {
+        // if (isProcessTask && !selectedProcess.routes.includes(selectedTask._id)) {
+        if (isProcessTask) {
+
+            let lastNode = false
+            let selectedProcessNode = selectedProcess
+            let updatedTree = selectedProcess
+
+            const newChild = {
+                name: selectedProcess.name,
+                _id: uuid.v4(),
+                route: selectedTask._id,
+                parent: null,
+                children: [],
+            }
+
+            while(!lastNode) {
+
+                // If the children length is 0 then you're at the last node so add the child
+                if(selectedProcessNode.children.length === 0) {
+
+                    newChild.parent = selectedProcessNode._id
+                    selectedProcessNode.children = [newChild]
+                    lastNode = true
+
+                }
+
+                // If the child is the selected task, then dont add the task
+                else if(selectedProcessNode.children[0].route === selectedTask._id) lastNode = true
+
+                // Else your not at the last node, so keep going down
+                else {
+                    selectedProcessNode = selectedProcessNode.children[0]
+                    updatedTree.children.push(deepCopy(selectedProcessNode))
+
+                }
+
+            }
+            // selectedProcess.child
             onSetSelectedProcess({
                 ...selectedProcess,
                 routes: [...selectedProcess.routes, selectedTask._id]

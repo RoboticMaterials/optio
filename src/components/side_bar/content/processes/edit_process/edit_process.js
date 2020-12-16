@@ -32,17 +32,17 @@ const EditProcess = (props) => {
     } = props
 
     const dispatch = useDispatch()
-    const onSetSelectedTask = (task) => dispatch(setSelectedTask(task))
-    const onAddTask = (task) => dispatch(addTask(task))
-    const onDeselectTask = () => dispatch(deselectTask())
-    const onSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
-    const onPutTask = (task, ID) => dispatch(putTask(task, ID))
-    const onDeleteTask = (ID) => dispatch(deleteTask(ID))
-    const onPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
+    const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
+    const dispatchAddTask = (task) => dispatch(addTask(task))
+    const dispatchDeselectTask = () => dispatch(deselectTask())
+    const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
+    const dispatchPutTask = (task, ID) => dispatch(putTask(task, ID))
+    const dispatchDeleteTask = (ID) => dispatch(deleteTask(ID))
+    const dispatchPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
 
-    const onPostProcess = async (process) => await dispatch(postProcesses(process))
-    const onPutProcess = async (process) => await dispatch(putProcesses(process))
-    const onDeleteProcess = async (ID) => await dispatch(deleteProcesses(ID))
+    const dispatchPostProcess = async (process) => await dispatch(postProcesses(process))
+    const dispatchPutProcess = async (process) => await dispatch(putProcesses(process))
+    const dispatchDeleteProcess = async (ID) => await dispatch(deleteProcesses(ID))
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -66,16 +66,19 @@ const EditProcess = (props) => {
     }, [])
 
     const handleExecuteProcessTask = (route) => {
-        onPostTaskQueue({ task_id: route })
+        dispatchPostTaskQueue({ task_id: route })
 
     }
 
     // Maps through the list of existing routes
     const handleExistingRoutes = () => {
 
-        return selectedProcess.routes.map((route, ind) => {
+        return selectedProcess.children.map((child, ind) => {
 
-            const routeTask = tasks[route]
+            const routeID = child.route
+
+            const routeTask = tasks[routeID]
+
             if (routeTask === undefined) {
                 console.log('QQQQ undefined')
                 return
@@ -89,13 +92,13 @@ const EditProcess = (props) => {
                         <styled.ListItemRect
                             onMouseEnter={() => {
                                 if (!selectedTask && !editingTask) {
-                                    onSetSelectedTask(routeTask)
+                                    dispatchSetSelectedTask(routeTask)
                                 }
 
                             }}
                             onMouseLeave={() => {
                                 if (selectedTask !== null && !editingTask) {
-                                    onDeselectTask()
+                                    dispatchDeselectTask()
                                 }
                             }}
                         >
@@ -104,7 +107,7 @@ const EditProcess = (props) => {
                                 schema={'processes'}
                                 onClick={() => {
                                     setEditingTask(true)
-                                    onSetSelectedTask(routeTask)
+                                    dispatchSetSelectedTask(routeTask)
                                 }}
                             >
                                 {routeTask.name}
@@ -114,12 +117,12 @@ const EditProcess = (props) => {
                         <styled.ListItemIcon
                             className='fas fa-play'
                             onClick={() => {
-                                handleExecuteProcessTask(route)
+                                handleExecuteProcessTask(routeID)
                             }}
                         />
 
                     </styled.ListItem>
-                    {editingTask && selectedTask._id === route &&
+                    {editingTask && selectedTask._id === routeID &&
                         <styled.TaskContainer schema={'processes'}>
 
                             <EditTask
@@ -144,8 +147,8 @@ const EditProcess = (props) => {
         return (
             <>
                 <styled.ListItem
-                // onMouseEnter={() => onSetSelectedTask(routeTask)}
-                // onMouseLeave={() => onDeselectTask()}
+                // onMouseEnter={() => dispatchSetSelectedTask(routeTask)}
+                // onMouseLeave={() => dispatchDeselectTask()}
                 >
                     <styled.ListItemRect>
                         <styled.ListItemTitle
@@ -178,9 +181,9 @@ const EditProcess = (props) => {
                                     },
                                     _id: uuid.v4(),
                                 }
-                                onAddTask(newTask)
+                                dispatchAddTask(newTask)
                                 setNewRoute(newTask)
-                                onSetSelectedTask(newTask)
+                                dispatchSetSelectedTask(newTask)
                                 setEditingTask(true)
                             }}
                         >
@@ -215,28 +218,28 @@ const EditProcess = (props) => {
 
     const handleSave = async () => {
 
-        onDeselectTask()
+        dispatchDeselectTask()
 
         // If the id is new then post
         if (selectedProcessCopy.new) {
 
-            await onPostProcess(selectedProcess)
+            await dispatchPostProcess(selectedProcess)
 
         }
 
         // Else put
         else {
-            await onPutProcess(selectedProcess)
+            await dispatchPutProcess(selectedProcess)
         }
 
-        onSetSelectedProcess(null)
+        dispatchSetSelectedProcess(null)
         setSelectedProcessCopy(null)
         toggleEditingProcess(false)
     }
 
     const handleBack = () => {
-        onDeselectTask()
-        onSetSelectedProcess(null)
+        dispatchDeselectTask()
+        dispatchSetSelectedProcess(null)
         setSelectedProcessCopy(null)
         toggleEditingProcess(false)
 
@@ -246,23 +249,23 @@ const EditProcess = (props) => {
 
         // If there's routes in this process, delete the routes
         if (selectedProcess.routes.length > 0) {
-            selectedProcess.routes.forEach(route => onDeleteTask(route))
+            selectedProcess.routes.forEach(route => dispatchDeleteTask(route))
         }
 
-        await onDeleteProcess(selectedProcessCopy._id)
+        await dispatchDeleteProcess(selectedProcessCopy._id)
 
-        onDeselectTask()
-        onSetSelectedProcess(null)
+        dispatchDeselectTask()
+        dispatchSetSelectedProcess(null)
         setSelectedProcessCopy(null)
         toggleEditingProcess(false)
     }
 
     const handleDeleteWithoutRoutes = async () => {
 
-        await onDeleteProcess(selectedProcessCopy._id)
+        await dispatchDeleteProcess(selectedProcessCopy._id)
 
-        onDeselectTask()
-        onSetSelectedProcess(null)
+        dispatchDeselectTask()
+        dispatchSetSelectedProcess(null)
         setSelectedProcessCopy(null)
         toggleEditingProcess(false)
     }
@@ -305,7 +308,7 @@ const EditProcess = (props) => {
                 defaultValue={selectedProcessCopy.name}
                 schema={'processes'}
                 onChange={(e) => {
-                    onSetSelectedProcess({
+                    dispatchSetSelectedProcess({
                         ...selectedProcess,
                         name: e.target.value,
                     })
