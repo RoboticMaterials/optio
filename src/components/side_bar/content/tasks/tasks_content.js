@@ -55,6 +55,7 @@ export default function TaskContent(props) {
     const [shift, setShift] = useState(false) // Is shift key pressed ?
     const [isTransportTask, setIsTransportTask] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
     // To be able to remove the listeners, the function needs to be stored in state
+
     const [shiftCallback] = useState(() => e => {
         setShift(e.shiftKey)
     })

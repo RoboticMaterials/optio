@@ -8,6 +8,8 @@ import Textbox from '../../../../basic/textbox/textbox.js'
 import Button from '../../../../basic/button/button'
 import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
 import TextBoxSearch from '../../../../basic/textbox_search/textbox_search'
+import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
+
 import Switch from 'react-ios-switch';
 // import TimePicker from '../../../../basic/time_picker/TimePicker'
 import moment from 'moment';
@@ -68,6 +70,8 @@ const EditTask = (props) => {
 
     const [obj, setObject] = useState({}) // The current object (may or may not be on backend, but if not it will be posted when task is saved)
     // const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)
+    const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
+
 
     useEffect(() => {
         console.log('QQQQ Selected Task', selectedTask)
@@ -567,6 +571,19 @@ const EditTask = (props) => {
     return (
         <styled.ContentContainer>
 
+            <ConfirmDeleteModal
+              isOpen = {!!confirmDeleteModal}
+              title={"Are you sure you want to delete this Route?"}
+              button_1_text={"Yes"}
+              handleOnClick1 = {()=>{
+                handleDelete()
+                setConfirmDeleteModal(null)
+              }}
+              button_2_text={"No"}
+              handleOnClick2 = {()=> setConfirmDeleteModal(null)}
+              handleClose={() => setConfirmDeleteModal(null)}
+            />
+
             <div style={{ marginBottom: '1rem' }}>
                 <ContentHeader
                     content={'tasks'}
@@ -583,7 +600,7 @@ const EditTask = (props) => {
                 />
             </div>
 
-            {/* 
+            {/*
                 If it's a process route and its a new route then add the ability to select alread existing routes.
                 Some filtering is done based on certain conditions, see 'options' key
             */}
@@ -773,7 +790,7 @@ const EditTask = (props) => {
                 disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
                 secondary
                 onClick={() => {
-                    handleDelete()
+                    setConfirmDeleteModal(true)
                 }}
             >
                 Delete
