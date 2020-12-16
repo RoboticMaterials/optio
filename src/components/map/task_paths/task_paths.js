@@ -12,6 +12,7 @@ export default function TaskPaths(props) {
 
     const selectedTaskReducer = useSelector(state => state.tasksReducer.selectedTask)
     const positions = useSelector(state => state.locationsReducer.positions)
+    const stations = useSelector(state => state.locationsReducer.stations)
     const dispatch = useDispatch()
 
     let selectedTask = null
@@ -55,12 +56,14 @@ export default function TaskPaths(props) {
     useEffect(() => {
         if (selectedTask !== null) {
             if (selectedTask.load.position !== null) {
-                const startPos = positions[selectedTask.load.position]
+                // Check to see if its a station or position
+                const startPos = !!positions[selectedTask.load.position] ? positions[selectedTask.load.position] : stations[selectedTask.load.position]
                 setX1(startPos.x)
                 setY1(startPos.y)
             }
             if (selectedTask.unload.position !== null) {
-                const endPos = positions[selectedTask.unload.position]
+                // Check to see if its a station or position
+                const endPos = !!positions[selectedTask.unload.position] ? positions[selectedTask.unload.position] : stations[selectedTask.unload.position]
                 setX2(endPos.x)
                 setY2(endPos.y)
             }

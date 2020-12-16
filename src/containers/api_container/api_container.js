@@ -478,9 +478,9 @@ const ApiContainer = (props) => {
 
 
     /**
-     * This deletes tasks that have broken positions
-     * A broken position can be:
-     * a deleted position
+     * This deletes tasks that have broken positions/stations
+     * A broken position/station can be:
+     * a deleted position/station
      * a position thats parent station has been deleted
      *  */
     const handleTasksWithBrokenPositions = async (tasks, locations) => {
@@ -494,16 +494,16 @@ const ApiContainer = (props) => {
 
             // console.log('QQQQ Task', positions[task.load.position], positions[task.unload.position])
 
-            // Deletes the task if the load/unload position has been deleted from the positon list
-            if (!positions[task.load.position] || !positions[task.unload.position]) {
+            // Deletes the task if the load/unload position/station has been deleted from the positon list
+            if ((!positions[task.load.position] && !stations[task.load.position]) || (!positions[task.unload.position]) && !stations[task.unload.position]) {
                 console.log('QQQQ Position doesnt exist in positions, DELETE TASK', task._id)
                 await onDeleteTask(task._id)
                 return
             }
 
             // Deletes the task if the load/unload position has a change_key 'deleted'. This means the back end has not deleted the position yet
-            if ((!!positions[task.load.position].change_key && positions[task.load.position].change_key === 'deleted') ||
-                (!!positions[task.unload.position].change_key && positions[task.unload.position].change_key === 'deleted')) {
+            if ((!!positions[task.load.position] && !!positions[task.load.position].change_key && positions[task.load.position].change_key === 'deleted') ||
+                (!!positions[task.unload.position] && !!positions[task.unload.position].change_key && positions[task.unload.position].change_key === 'deleted')) {
                 console.log('QQQQ Position is deleted, waiting on back end, DELETE TASK')
                 await onDeleteTask(task._id)
                 return
@@ -558,6 +558,8 @@ const ApiContainer = (props) => {
 
         Object.values(stations).map((station) => {
 
+            // if(station.children === undefined) onDeleteStation(station._id)
+        
             station.children.map(async (position, ind) => {
                 if (!!positions[position] && positions[position].parent === null) {
 

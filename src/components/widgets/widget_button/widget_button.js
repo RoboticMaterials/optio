@@ -188,6 +188,12 @@ const WidgetButton = (props) => {
                         <styled.WidgetButtonText>{"Cancel"}</styled.WidgetButtonText>
                     </>
                     :
+                    type === 'lots' ?
+                    <>
+                        <styled.WidgetButtonIcon className="far fa-clone" pageID={type} currentPage={currentPage} />
+                        <styled.WidgetButtonText>{label}</styled.WidgetButtonText>
+                    </>
+                    :
                     <>
                         <styled.WidgetButtonIcon style={{ fontSize: type === 'cart' && '1.2rem', paddingTop: type === 'cart' && '.8rem' }} className={"icon-" + type} pageID={type} currentPage={currentPage} />
                         <styled.WidgetButtonText>{label}</styled.WidgetButtonText>
