@@ -491,7 +491,7 @@ const ApiContainer = (props) => {
         const positions = locations.positions
 
         Object.values(tasks).map(async (task) => {
-
+            console.log(task)
             // console.log('QQQQ Task', positions[task.load.position], positions[task.unload.position])
 
             // Deletes the task if the load/unload position/station has been deleted from the positon list

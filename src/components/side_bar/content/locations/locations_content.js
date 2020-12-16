@@ -8,6 +8,7 @@ import ContentHeader from '../content_header/content_header'
 import Textbox from '../../../basic/textbox/textbox.js'
 import Button from '../../../basic/button/button'
 import DropDownSearch from '../../../basic/drop_down_search_v2/drop_down_search'
+import ConfirmDeleteModal from '../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 
 // Import components
 import ContentList from '../content_list/content_list'
@@ -105,6 +106,7 @@ export default function LocationContent() {
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
     const [mergeStation, setMergeStation] = useState(false)
+    const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
     function LocationTypeButton({ type, selected }) {
 
@@ -340,11 +342,26 @@ export default function LocationContent() {
         }
         return (
             <styled.ContentContainer
+
                 // Delete any newf positions that were never dragged onto the map
                 onMouseUp={e => {
 
                 }}
             >
+
+              <ConfirmDeleteModal
+                isOpen = {!!confirmDeleteModal}
+                title={"Are you sure you want to delete this Location?"}
+                button_1_text={"Yes"}
+                handleOnClick1 = {()=>{
+                  onDelete()
+                  setConfirmDeleteModal(null)
+                }}
+                button_2_text={"No"}
+                handleOnClick2 = {()=> setConfirmDeleteModal(null)}
+                handleClose={() => setConfirmDeleteModal(null)}
+              />
+
                 <div style={{ marginBottom: '1rem' }}>
 
                     <ContentHeader
@@ -516,7 +533,7 @@ export default function LocationContent() {
                 }
 
                 {/* Delete Location Button */}
-                <Button schema={'locations'} secondary onClick={onDelete}>Delete</Button>
+                <Button schema={'locations'} secondary onClick={() => setConfirmDeleteModal(true)} >Delete</Button>
             </styled.ContentContainer>
         )
     } else if (locations === null || locations === undefined) {
