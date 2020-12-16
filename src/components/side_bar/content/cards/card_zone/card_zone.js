@@ -43,23 +43,34 @@ const CardZone = SortableContainer((props) => {
 	const stations = useSelector(state => { return state.locationsReducer.stations })
 
 	let cardsSorted = {}
+	var prevLoadStationId
+	var prevUnloadStationId
 	currentProcess.routes && currentProcess.routes.forEach((currRouteId) => {
 		const currRoute =  routes[currRouteId]
+
 
 		const loadStationId = currRoute?.load?.station
 		const unloadStationId = currRoute?.unload?.station
 		console.log("currRoute",currRoute)
 
-		cardsSorted[currRouteId + "+" + loadStationId] = {
-			station_id: loadStationId,
-			route_id: currRouteId,
-			cards: []
+		if(prevUnloadStationId !== loadStationId) {
+			cardsSorted[currRouteId + "+" + loadStationId] = {
+				station_id: loadStationId,
+				route_id: currRouteId,
+				cards: []
+			}
 		}
-		cardsSorted[currRouteId + "+" + unloadStationId] = {
-			station_id: unloadStationId,
-			route_id: currRouteId,
-			cards: []
+
+		if(prevLoadStationId !== unloadStationId ) {
+			cardsSorted[currRouteId + "+" + unloadStationId] = {
+				station_id: unloadStationId,
+				route_id: currRouteId,
+				cards: []
+			}
 		}
+
+		prevLoadStationId = loadStationId
+		prevUnloadStationId = unloadStationId
 	})
 
 	var queue = []
