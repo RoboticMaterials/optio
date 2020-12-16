@@ -45,18 +45,26 @@ const Card = (props) => {
                 onClick={onClick}
                 color={lotColor}
             >
+                <styled.HeaderBar
+                    color={lotColor}
+                >
+                    {lotName &&
+                    <styled.LotName style={{marginRight: "1rem"}}>Lot: {lotName}:</styled.LotName>
+                    }
+                </styled.HeaderBar>
                 <styled.ContentContainer>
 
-                    {name &&
+
+
+
                     <span>{name}</span>
-                    }
                 </styled.ContentContainer>
 
 
-                <styled.FooterBar>
-                    {lotName&&
-                    <span>Lot:{lotName}</span>
-                    }
+                <styled.FooterBar
+                    color={lotColor}
+                >
+
                     {objectName &&
                         <styled.Count style={{marginRight: "1rem"}}>{objectName}:</styled.Count>
                     }

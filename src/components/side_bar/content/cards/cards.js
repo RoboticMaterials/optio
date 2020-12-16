@@ -113,14 +113,14 @@ const Cards = (props) => {
                 />
 
                 <styled.Title>{title}</styled.Title>
-                {showAddCard &&
-                    <Button
-                        onClick={()=>setShowCardEditor(!showCardEditor)}
-                        schema={'processes'}
-                    >
-                        + Card
-                    </Button>
-                }
+                {/*{showAddCard &&*/}
+                {/*    <Button*/}
+                {/*        onClick={()=>setShowCardEditor(!showCardEditor)}*/}
+                {/*        schema={'processes'}*/}
+                {/*    >*/}
+                {/*        + Card*/}
+                {/*    </Button>*/}
+                {/*}*/}
                 {showGanttViewButton &&
                     <Button
                         schema={'processes'}

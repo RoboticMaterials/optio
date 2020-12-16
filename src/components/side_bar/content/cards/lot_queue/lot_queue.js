@@ -32,6 +32,7 @@ const LotQueue = SortableContainer((props) => {
 	const station = useSelector(state => { return state.locationsReducer.stations[station_id] })
 	const route = useSelector(state => { return state.tasksReducer.tasks[route_id] })
 	const objects = useSelector(state => { return state.objectsReducer.objects })
+	const lots = useSelector(state => { return state.lotsReducer.lots })
 
 	const [isCollapsed, setCollapsed] = useState(false)
 	const [dragEnter, setDragEnter] = useState(false)
@@ -98,10 +99,12 @@ const LotQueue = SortableContainer((props) => {
 							} = card
 
 							const objectName = objects[object_id] ? objects[object_id].name : null
+							const lotName = lots[lot_id] ? lots[lot_id].name : null
 
 							return(
 								<Card
 									lotId={lot_id}
+									lotName={lotName}
 									name={name}
 									objectName={objectName}
 									count={count}

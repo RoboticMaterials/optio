@@ -12,7 +12,7 @@ export const Container = styled.div`
         
     background: white;
     border-radius: 0.6rem;
-  	border: 1px solid ${props => props.color};
+  	border: 3px solid ${props => props.color};
         
     // margins
     margin: 0 0 0.5rem 0;
@@ -47,21 +47,37 @@ export const Container = styled.div`
 `
 
 export const ContentContainer = styled.div`
-	padding: 0.5rem 1rem 0.5rem 1rem;
+	padding: 0.5rem .25rem 0.5rem .25rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 `
 
 export const Count = styled.span`
 	font-size: ${props => props.theme.fontSize.sz6};
 `
 
-export const LotName = styled.span``
+export const LotName = styled.span`
+  font-size: ${props => props.theme.fontSize.sz6};
+`
 
 export const FooterBar = styled.div`
 	height: 1rem;
 	background: ${props => props.theme.bg.septenary};
+	// background: ${props => props.color};
 	display: flex;
 	justify-content: flex-end;
 	padding: 0 1rem 0 0;
+  font-size: ${props => props.theme.fontSize.sz6};
+`
+
+export const HeaderBar = styled.div`
+	height: 1rem;
+	background: ${props => props.theme.bg.septenary};
+  	//background: ${props => props.color};
+	display: flex;
+	justify-content: flex-start;
+	padding: 0 0rem 0 1rem;
   font-size: ${props => props.theme.fontSize.sz6};
 `
 
