@@ -23,6 +23,7 @@ const DropDownSearchField = ({
 								 FieldDropdownContainer,
 								 Container,
 								 style,
+								 containerSyle,
 								 ...props
 							 }) => {
 
@@ -54,6 +55,10 @@ const DropDownSearchField = ({
 		// set
 		if(updatingValue) setUpdatingValue(false)
 
+		return () => {
+			setTouched(false)
+		}
+
 	}, [touched])
 
 	let ReactDropdownSelectStyle = {
@@ -64,7 +69,9 @@ const DropDownSearchField = ({
 	const errorMessage = getMessageFromError(meta.error);
 
 	return (
-		<Container>
+		<Container
+			style={containerSyle}
+		>
 			{fieldLabel &&
 			<LabelComponent>{fieldLabel}</LabelComponent>
 			}

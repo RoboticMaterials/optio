@@ -12,10 +12,12 @@ import './methods/css/all.css';
 import * as popper from 'popper.js'
 import 'xmlrpc'
 import { Provider } from 'react-redux'
-import {store} from './redux/store/index.js'
+import store from './redux/store/index.js'
 import './methods/css/fontawesome.min.css'
 import './graphics/icons/style.css'
 import 'nivo'
+// import { AppContainer } from 'react-hot-loader';
+// require('react-hot-loader/patch')
 
 /* uncomment to disable default logger
 console.log = () => {};
@@ -25,17 +27,39 @@ console.warn = () => {};
 */
 //
 
+if(module.hot){
+    module.hot.accept()
+}
+
 // if(module.hot){
-//     module.hot.accept()
+//     console.log("module hot")
+//
+//     module.hot.accept('./App', () => {
+//         console.log("inside callback")
+//
+//         const NextApp = require('./App');
+//
+//         ReactDOM.render(
+//             <Provider store={store}>
+//                 <App />
+//             </Provider>,
+//             document.getElementById('root')
+//         );
+//
+//     });
+// }
+// else {
+    const rootElement = document.getElementById('root')
+    ReactDOM.render(
+        // <AppContainer>
+        <Provider store={store}>
+            <App />
+        </Provider>,
+            // </AppContainer>,
+        rootElement
+    )
 // }
 
-const rootElement = document.getElementById('root')
-  ReactDOM.render(
-    <Provider store={store}>
-      <App />
-    </Provider>,
-  rootElement
-)
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

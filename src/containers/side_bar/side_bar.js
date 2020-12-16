@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
-import { useLocation } from 'react-router-dom'
+import {useLocation, useParams} from 'react-router-dom'
 import { useHistory } from 'react-router-dom'
 
 import * as styled from './side_bar.style'
@@ -21,6 +21,7 @@ import Settings from '../../components/side_bar/content/settings/settings'
 
 import { setWidth, setMode } from "../../redux/actions/sidebar_actions";
 import * as sidebarActions from "../../redux/actions/sidebar_actions"
+import Cards from "../../components/side_bar/content/cards/cards";
 import * as locationActions from '../../redux/actions/locations_actions'
 import * as taskActions from '../../redux/actions/tasks_actions'
 
@@ -33,8 +34,20 @@ const SideBar = (props) => {
         setShowSideBar
     } = props
 
+    let params = useParams()
+    const {
+        page,
+        subpage,
+        id
+    } = params
+
+    const dispatch = useDispatch()
+    const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
+
     const [width, setWidth] = useState(450)
+    const [prevWidth, setPrevWidth] = useState(width)
     const [buttonActive, setButtonActive] = useState(false)
+    const [prevParams, setPrevParams] = useState(params)
 
     const mode = useSelector(state => state.sidebarReducer.mode)
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
@@ -45,8 +58,6 @@ const SideBar = (props) => {
     const locations = useSelector(state => state.locationsReducer.locations)
     const positions = useSelector(state => state.locationsReducer.positions)
 
-    const dispatch = useDispatch()
-    const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const onSideBarBack = (props) => dispatch(sideBarBack(props))
 
     const history = useHistory()
@@ -66,10 +77,47 @@ const SideBar = (props) => {
         }
     }, [])
 
+    // sets width to full screen if card subpage is open in processes
+    useEffect(() => {
+        const {
+
+        } = prevParams
+
+        const prevPage = prevParams.page
+        const prevSubpage = prevParams.subpage
+        const prevId = prevParams.id
+
+
+        const time = Date.now()
+
+        if(page === "processes" && ((subpage === "card")) || (id === "timeline") || (id === "summary")) {
+
+            if(!prevWidth) setPrevWidth(width) // store previous width to restore when card page is left
+            setWidth(window.innerWidth)
+            dispatch(sidebarActions.setWidth(window.innerWidth))
+
+        }
+        else if((((prevSubpage === "card") || (prevId === "timeline") || (prevId === "summary")) && prevPage === "processes") && ((subpage !== "card") || (id === "timeline") || (id === "summary")) ) {
+            console.log("prevWidth",prevWidth)
+            setWidth(prevWidth)
+            dispatch(sidebarActions.setWidth(prevWidth))
+            setPrevWidth(null)
+        }
+
+        setPrevParams(params)
+
+        // update prev params
+
+
+        return () => {}
+
+    }, [page, subpage, id, width])
+
     /**
      * Handles the hamburger icon transformation
      */
     const handleSideBarOpenCloseButtonClick = () => {
+        console.log("widgetPageLoaded",widgetPageLoaded)
         const hamburger = document.querySelector('.hamburger')
         hamburger.classList.toggle('is-active')
         dispatch(locationActions.editing(false))
@@ -126,8 +174,9 @@ const SideBar = (props) => {
     }
 
     let content
-    switch (url) {
-        case '/locations':
+    console.log("page",page)
+    switch (page) {
+        case 'locations':
             content = <LocationsContent />
             break
 
@@ -136,27 +185,36 @@ const SideBar = (props) => {
         //     content = <ObjectsContent />
         //     break
 
-        case '/processes':
-            content = <ProcessesContent />
+        case 'processes':
+            console.log("subpage",subpage)
+            console.log("id",id)
+            if(subpage === "card" || (id === "summary") || (id === "timeline"))   {
+                content = <Cards id={id}/>
+            }
+            else {
+                content = <ProcessesContent subpage={subpage} id={id} />
+            }
+
             break
 
-        case '/tasks':
+        case 'tasks':
             content = <TasksContent />
             break
 
-        case '/scheduler':
+        case 'scheduler':
             content = <SchedulerContent />
             break
 
-        case '/devices':
+        case 'devices':
             content = <DevicesContent />
             break
 
-        case '/settings':
+        case 'settings':
             content = <Settings />
             break
 
         default:
+            console.log("DEFAULT")
             content = null
             if (showSideBar) {
                 handleSideBarOpenCloseButtonClick()

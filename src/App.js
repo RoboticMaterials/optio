@@ -25,6 +25,7 @@ import HILModal from './containers/hil_modal/hil_modal'
 import Authentication from './containers/authentication/authentication'
 import Widgets from './components/widgets/widgets'
 import ListView from "./components/list_view/list_view";
+import TestsContainer from "./containers/api_container/tests_container";
 
 const widthBreakPoint = 1000;
 
@@ -40,6 +41,7 @@ const App = (props) => {
     const positions = useSelector(state => state.locationsReducer.positions)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
+
     // Set to true for the time being, authentication is not 100% complete as of 09/14/2020
     const [authenticated, setAuthenticated] = useState(true)
 
@@ -76,6 +78,7 @@ const App = (props) => {
     return (
         <>
             <Logger />
+            {/*<TestsContainer/>*/}
 
             {/* <ThemeProvider theme={theme[this.state.theme]}> */}
             <ThemeProvider theme={theme[stateTheme]}>
@@ -85,7 +88,7 @@ const App = (props) => {
 
 
                         <Route
-                            path={["/locations/:stationID?/:widgetPage?", '/:sidebar?', '/']}
+                            path={["/locations/:stationID?/:widgetPage?", '/:sidebar?/:data1?/:data2?', '/', ]}
                         >
                             <ApiContainer styleMode={null} apiMode={null} mode={null} logMode={"DEV"} onLoad={() => setLoaded(true)} apiLoaded={() => setApiLoaded(true)} isApiLoaded={apiLoaded} />
                         </Route>
@@ -115,10 +118,28 @@ const App = (props) => {
                                 <styled.BodyContainer>
                                     {/* Hides Side bar when in a dashboard in mobile mode */}
                                     {mapViewEnabled ?
-                                        <SideBar
-                                            showSideBar={sideBarOpen}
-                                            setShowSideBar={setShowSideBar}
-                                        />
+                                        // mobileMode ?
+                                        // dashboardOpen ?
+                                        //     <></>
+                                        //     :
+
+                                            <Route
+                                                path={["/:page?/:id?/:subpage?", '/']}
+                                            >
+                                                <SideBar
+                                                    showSideBar={sideBarOpen}
+                                                    setShowSideBar={setShowSideBar}
+                                                />
+                                            </Route>
+                                        // :
+                                        //     <Route
+                                        //         path={["/:page?/:id?/:subpage?", '/']}
+                                        //     >
+                                        //         <SideBar
+                                        //             showSideBar={sideBarOpen}
+                                        //             setShowSideBar={setShowSideBar}
+                                        //         />
+                                        //     </Route>
                                         :
                                         <></>
                                     }
