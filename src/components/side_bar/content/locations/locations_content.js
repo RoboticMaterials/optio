@@ -379,7 +379,7 @@ export default function LocationContent() {
                         <>
                             <>
                                 <styled.LocationTypeContainer>
-                                    <LocationTypeButton type='workstation' selected={selectedLocation.type} />
+                                    <LocationTypeButton type='human' selected={selectedLocation.type} />
                                     <styled.LocationTypeLabel>Station</styled.LocationTypeLabel>
                                 </styled.LocationTypeContainer>
 
@@ -389,13 +389,13 @@ export default function LocationContent() {
                                 </styled.LocationTypeContainer>
                             </>
 
-                            {MiRMapEnabled ?
+                            {MiRMapEnabled &&
                                 <>
 
-                                    <styled.LocationTypeContainer>
+                                    {/* <styled.LocationTypeContainer>
                                         <LocationTypeButton type='human' selected={selectedLocation.type} />
                                         <styled.LocationTypeLabel>Human Station</styled.LocationTypeLabel>
-                                    </styled.LocationTypeContainer>
+                                    </styled.LocationTypeContainer> */}
 
                                     <styled.LocationTypeContainer>
                                         <LocationTypeButton type='cart_position' selected={selectedLocation.type} />
@@ -407,14 +407,6 @@ export default function LocationContent() {
                                         <styled.LocationTypeLabel>Shelf Position</styled.LocationTypeLabel>
                                     </styled.LocationTypeContainer>
                                 </>
-
-
-                                :
-                                <styled.LocationTypeContainer>
-                                    <LocationTypeButton type='human' selected={selectedLocation.type} />
-                                    <styled.LocationTypeLabel>Human Station</styled.LocationTypeLabel>
-                                </styled.LocationTypeContainer>
-
                             }
                         </>
 
