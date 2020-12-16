@@ -257,6 +257,8 @@ const Location = (props) => {
         switch (location.type) {
             case 'workstation':
             case 'device':
+            case 'warehouse':
+            case 'human':
                 return (
                     <React.Fragment key={`frag-loc-${location._id}`}>
                         <Station isSelected={isSelected} color={color} {...props} />

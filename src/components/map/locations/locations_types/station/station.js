@@ -8,10 +8,12 @@ import * as styled from './station.style'
 // Import actions
 import { hoverStationInfo } from '../../../../../redux/actions/stations_actions'
 import { selectLocation, deselectLocation } from '../../../../../redux/actions/locations_actions'
+import { setTaskAttributes } from '../../../../../redux/actions/tasks_actions'
 
 // Import Utils
 import { DeviceItemTypes } from '../../../../../methods/utils/device_utils'
-import { handleWidgetHoverCoord } from '../../../../../methods/utils/locations_utils'
+import { LocationTypes, handleWidgetHoverCoord } from '../../../../../methods/utils/locations_utils'
+import { deepCopy } from '../../../../../methods/utils/utils'
 
 function Station(props) {
 
@@ -39,8 +41,9 @@ function Station(props) {
 
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
-    const onSelectLocation = (locationId) => dispatch(selectLocation(locationId))
-    const onDeselectLocation = () => dispatch(deselectLocation())
+    const dispatchSelectLocation = (locationId) => dispatch(selectLocation(locationId))
+    const dispatchSetTaskAttributes = (id, load) => dispatch(setTaskAttributes(id, load))
+
     // Used to see if a widget Page is opened
     let params = useParams()
     useEffect(() => {
@@ -72,7 +75,7 @@ function Station(props) {
     }
 
     // Handles if URL has widget page open
-    const handleWidgetPageOpen = () => {
+    const onWidgetPageOpen = () => {
         // If widget page is open, hovering is false and the open widget page locations id matches the location ID, set it to true so
         // that the widget page doesn't disappear when mouse goes out of page
         if (!!params.widgetPage && !hovering && params.locationID === location._id) {
@@ -87,8 +90,10 @@ function Station(props) {
         }
     }
 
+    const shouldGlow = hovering && !props.isSelected && selectedTask == null
+
     // Handles what type of svg to return based on the device model
-    const handleDeviceSVG = () => {
+    const onDeviceSVG = () => {
 
         // This will gray out devices that arent selected. The device becomes selected either on hover in device side bar list or editing device
         let selected = true
@@ -141,6 +146,79 @@ function Station(props) {
         }
     }
 
+    /**
+     * Handles SVG for normal stations
+     */
+    const onStationSVG = () => {
+
+        return (
+            <svg id={`${rd3tClassName}-station`} x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400" style={{ filter: shouldGlow ? 'url(#glow2)' : 'none' }}>
+
+                {LocationTypes[location.type].svgPath}
+            </svg>
+
+        )
+    }
+
+    /**
+     * This handles when a station is selected for a task
+     * Can only add a station to a task if the station is a warehouse or a human
+     * 
+     * For a warehouse, the thing to remember is that you push to a warehouse and pull from a warehouse
+     */
+    const onSetStationTask = () => {
+
+        // Make sure there is a slected task and
+        if (selectedTask !== null && (location.type === 'human' || location.type === 'warehouse')) {
+
+            // If the load location has been defined but the unload position hasnt, assign the unload position
+
+            if (selectedTask.load.position !== null && selectedTask.unload.position === null) {
+                let unload = deepCopy(selectedTask.unload)
+                let type = selectedTask.type
+
+                // Since it's a station, set both the position and station to the location ID
+                unload.position = location._id
+                unload.station = location._id
+
+                // If it's a warehouse and the load station has been selected, then the task type has to be a push
+                // You can only push to a ware house
+                type = location.type === 'warehouse' ? 'push' : type
+
+                // if (location.parent !== null) {
+                //     unload.station = location._id
+                // } else {
+                //     type = 'push'
+                // }
+                dispatchSetTaskAttributes(selectedTask._id, { unload, type })
+            }
+
+            // Otherwise assign the load position and clear the unload position (to define a new unload)
+            else {
+                let load = deepCopy(selectedTask.load)
+                let unload = deepCopy(selectedTask.unload)
+                let type = selectedTask.type
+
+                // Since it's a station, set both the position and station to the location ID
+                load.position = location._id
+                load.station = location._id
+
+                // If it's a warehouse and the load position has not been selected then the task type is a pull
+                // You can only pull from a ware house
+                type = location.type === 'warehouse' ? 'pull' : type
+
+                // if (location.parent !== null) {
+                //     load.station = location._id
+                // } else {
+                //     type = 'pull'
+                // }
+                unload.position = null
+                unload.station = null
+                dispatchSetTaskAttributes(selectedTask._id, { load, unload, type })
+            }
+        }
+    }
+
     return (
         <>
             <styled.WorkstationGroup
@@ -153,13 +231,14 @@ function Station(props) {
 
                         if (!rotating && !translating && selectedLocation == null && selectedTask == null) {
                             dispatchHoverStationInfo(handleWidgetHover())
-                            onSelectLocation(location._id)
+                            dispatchSelectLocation(location._id)
                         }
-                      }
                     }
-
-
                 }
+                }
+                onMouseDown={() => {
+                    onSetStationTask()
+                }}
                 // onClick={() => {
                 //     console.log('Station clicked')
                 // }}
@@ -214,14 +293,10 @@ function Station(props) {
                 >
 
                     {location.type === 'device' ?
-                        handleDeviceSVG()
+                        onDeviceSVG()
 
                         :
-                        <>
-                            <rect x="-7" y="-7" rx="0" ry="0" width="14" height="14" />
-                            <rect id={`${props.rd3tClassName}-rectQ`} x="-8" y="-8" rx="0.2" ry="0.2" width="16" height="16" fill="transparent" strokeWidth="1" style={{ filter: hovering && !props.isSelected && selectedTask == null ? 'url(#glow2)' : 'none' }} />
-                        </>
-
+                        onStationSVG()
                     }
 
                 </g>
@@ -242,7 +317,7 @@ function Station(props) {
                 </g> */}
 
             </styled.WorkstationGroup>
-            {handleWidgetPageOpen()}
+            {onWidgetPageOpen()}
 
         </>
     )

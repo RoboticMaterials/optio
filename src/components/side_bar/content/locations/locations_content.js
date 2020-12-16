@@ -47,6 +47,20 @@ function locationTypeGraphic(type, isNotSelected) {
                 </styled.LocationTypeGraphic>
             )
 
+        case 'warehouse':
+            return (
+                <styled.LocationTypeGraphic fill={LocationTypes['warehouse'].color} stroke={LocationTypes['warehouse'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                    {LocationTypes['warehouse'].svgPath}
+                </styled.LocationTypeGraphic>
+            )
+
+        case 'human':
+            return (
+                <styled.LocationTypeGraphic fill={LocationTypes['human'].color} stroke={LocationTypes['human'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                    {LocationTypes['human'].svgPath}
+                </styled.LocationTypeGraphic>
+            )
+
         case 'cart_position':
             return (
                 <styled.LocationTypeGraphic fill={LocationTypes['cart_position'].color} stroke={LocationTypes['cart_position'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
@@ -98,22 +112,26 @@ export default function LocationContent() {
         switch (type) {
             case 'workstation':
                 template = LocationTypes['workstation'].attributes
-
                 break
+
             case 'cart_position':
                 template = LocationTypes['cart_position'].attributes
-
                 break
 
             case 'human_position':
                 template = LocationTypes['human_position'].attributes
-
                 break
-
 
             case 'shelf_position':
                 template = LocationTypes['shelf_position'].attributes
+                break
 
+            case 'warehouse':
+                template = LocationTypes['warehouse'].attributes
+                break
+
+            case 'human':
+                template = LocationTypes['human'].attributes
                 break
 
         }
@@ -359,18 +377,25 @@ export default function LocationContent() {
 
                     {!selectedLocation.type ?
                         <>
-                            <styled.LocationTypeContainer>
-                                <LocationTypeButton type='workstation' selected={selectedLocation.type} />
-                                <styled.LocationTypeLabel>Station</styled.LocationTypeLabel>
-                            </styled.LocationTypeContainer>
+                            <>
+                                <styled.LocationTypeContainer>
+                                    <LocationTypeButton type='workstation' selected={selectedLocation.type} />
+                                    <styled.LocationTypeLabel>Station</styled.LocationTypeLabel>
+                                </styled.LocationTypeContainer>
 
-                            {MiRMapEnabled &&
+                                <styled.LocationTypeContainer>
+                                    <LocationTypeButton type='warehouse' selected={selectedLocation.type} />
+                                    <styled.LocationTypeLabel>Warehouse</styled.LocationTypeLabel>
+                                </styled.LocationTypeContainer>
+                            </>
+
+                            {MiRMapEnabled ?
                                 <>
 
-                                    {/* <styled.LocationTypeContainer>
-                                        <LocationTypeButton type='human_position' selected={selectedLocation.type} />
-                                        <styled.LocationTypeLabel>Position</styled.LocationTypeLabel>
-                                    </styled.LocationTypeContainer> */}
+                                    <styled.LocationTypeContainer>
+                                        <LocationTypeButton type='human' selected={selectedLocation.type} />
+                                        <styled.LocationTypeLabel>Human Station</styled.LocationTypeLabel>
+                                    </styled.LocationTypeContainer>
 
                                     <styled.LocationTypeContainer>
                                         <LocationTypeButton type='cart_position' selected={selectedLocation.type} />
@@ -381,16 +406,18 @@ export default function LocationContent() {
                                         <LocationTypeButton type='shelf_position' selected={selectedLocation.type} />
                                         <styled.LocationTypeLabel>Shelf Position</styled.LocationTypeLabel>
                                     </styled.LocationTypeContainer>
-
                                 </>
-                            }
-                            {/* :
+
+
+                                :
                                 <styled.LocationTypeContainer>
-                                    <LocationTypeButton type='human_position' selected={selectedLocation.type} />
-                                    <styled.LocationTypeLabel>Position</styled.LocationTypeLabel>
+                                    <LocationTypeButton type='human' selected={selectedLocation.type} />
+                                    <styled.LocationTypeLabel>Human Station</styled.LocationTypeLabel>
                                 </styled.LocationTypeContainer>
-                                } */}
+
+                            }
                         </>
+
                         :
                         <styled.LocationTypeContainer>
                             <LocationTypeButton type={selectedLocation.type} selected={selectedLocation.type} />

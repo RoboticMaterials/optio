@@ -60,13 +60,52 @@ export const LocationTypes = {
 
     },
 
+    warehouse: {
+        svgPath:
+            <svg y="50" x='50'>
+
+                {/* <path d="M63.74,128.08v43.71H236.26V128h-69c0,2.79,0,5.34,0,7.89-.06,3.58-1.85,5.23-5.86,5.25q-11.43.07-22.86,0c-4,0-5.81-1.66-5.87-5.24,0-2.62,0-5.25,0-7.8Z" />
+                <path d="M261.06,97.3H38.92v4.08H261.06Z" />
+                <path d="M261,171.79v-61.3H39.05v61.38H53.61v-3.25q0-21.75,0-43.5c0-4.68,1.51-6,6.82-6H239.57c5.3,0,6.81,1.34,6.81,6q0,21.9,0,43.78v2.89Z" />
+                <path d="M157.27,128.11H142.73v4.06h14.54Z" />
+                <path d="M26.33,18C23.36,18,24,20.48,24,22.24q0,128.43,0,256.88v3h4.9v-3.18q0-128.31,0-256.61C28.88,20.5,29.61,17.88,26.33,18Z" />
+                <path d="M236.3,31.27H216.73c0,2.69,0,5.16,0,7.63,0,3.82-1.73,5.36-6,5.38q-8.79,0-17.6,0c-4.41,0-6-1.53-6.07-5.56,0-2.52,0-5,0-7.6H167.52V88.17H236.3Z" />
+                <path d="M206.78,31.22h-9.61v4h9.61Z" />
+                <path d="M38.86,268.67H261v-4H38.86Z" />
+                <path d="M132.53,31.23H112.92c0,2.74,0,5.29,0,7.85,0,3.61-1.79,5.18-5.85,5.2q-9,.06-17.92,0c-4.07,0-5.81-1.58-5.87-5.19,0-2.62,0-5.24,0-7.81H63.59V88.11h68.94Z" />
+                <path d="M102.84,31.25H93.29v4.07h9.55Z" />
+                <path d="M39,185H261.13v-4H39Z" />
+                <path d="M261,255.49V194.14H39v61.44H53.62v-3.2q0-17.48,0-35c0-4.33,1.62-5.76,6.48-5.76H146c4.9,0,6.5,1.4,6.51,5.72q0,17.63,0,35.25v2.86H167.3v-3.14q0-24,0-47.91c0-4.68,1.51-6,6.81-6h65.48c5.29,0,6.79,1.34,6.79,6q0,24,0,47.91v3.12Z" />
+                <path d="M107.85,220.61H98.28v4.08h9.57Z" />
+                <path d="M270,0H30A30,30,0,0,0,0,30V270a30,30,0,0,0,30,30H270a30,30,0,0,0,30-30V30A30,30,0,0,0,270,0Zm15.92,219.88q0,32.76,0,65.52c0,4-1.72,5.55-6.1,5.58q-6.33,0-12.66,0c-4.19,0-5.9-1.62-5.94-5.43,0-2.54,0-5.08,0-7.65H38.79c0,2.84.05,5.49,0,8.14-.07,3.25-1.89,4.87-5.55,4.93s-7.62,0-11.43,0c-6.43,0-7.67-1.12-7.67-7q0-130.77-.12-261.55C14,15.73,16.72,11.2,24,9h4.94c7.25,2.17,10,6.69,10,13.45-.22,20.83-.08,41.66-.08,62.49v3.15H53.62V28.43c0-4.85,1.52-6.19,7-6.19h75.05c5.43,0,6.93,1.35,6.93,6.23V88.11h14.83V28.47c0-4.88,1.5-6.23,6.93-6.23h75c5.47,0,7,1.34,7,6.18v59.7H261.2V84.94c0-20.83.14-41.66-.08-62.49-.07-6.76,2.73-11.28,10-13.45H276c7.39,2.24,10,6.93,10,13.75Q285.79,121.32,285.92,219.88Z" />
+                <path d="M273.45,18c-3,.05-2.35,2.53-2.35,4.28q0,128.46,0,256.91V282H276V279q0-128.32,0-256.64C276,20.49,276.71,17.89,273.45,18Z" />
+                <path d="M177.45,207.42v48.17h58.83V207.37H222.12c-.22.21-.35.27-.35.34,0,2.57,0,5.13-.11,7.7-.08,3.4-1.88,5-5.74,5.05q-9.1.06-18.21,0c-3.84,0-5.62-1.66-5.69-5.1-.05-2.63,0-5.26,0-7.93Z" />
+                <path d="M63.71,220.58v34.95h78.68V220.69H117.87c0,2.79,0,5.36,0,7.92-.07,3.42-1.87,5-5.74,5.06q-9.11.08-18.22,0c-3.83,0-5.62-1.67-5.68-5.11,0-2.63,0-5.26,0-8Z" />
+                <path d="M211.61,207.41H202v4.11h9.59Z" /> */}
+
+
+                <rect width="300" height="300" rx="30" />
+                <path fill='#3B3C43' d="M271.1,9H276c7.39,2.24,10,6.93,10,13.75q-.21,98.57-.08,197.12,0,32.77,0,65.53c0,4-1.72,5.55-6.1,5.58q-6.33,0-12.66,0c-4.19,0-5.9-1.62-5.94-5.43,0-2.54,0-5.08,0-7.65H38.79c0,2.84.05,5.49,0,8.14-.07,3.25-1.89,4.87-5.55,4.93s-7.62,0-11.43,0c-6.43,0-7.67-1.12-7.67-7q0-130.77-.12-261.55C14,15.73,16.72,11.2,24,9h4.94c7.25,2.17,10,6.69,10,13.45-.22,20.83-.08,41.66-.08,62.49v3.15H53.62V28.43c0-4.85,1.52-6.19,7-6.19h75.05c5.43,0,6.93,1.35,6.93,6.23V88.11h14.83V28.47c0-4.88,1.5-6.23,6.93-6.23h75c5.47,0,7,1.34,7,6.18v59.7H261.2V84.94c0-20.83.14-41.66-.08-62.49C261.05,15.69,263.85,11.17,271.1,9ZM167.3,128c0,2.79,0,5.34,0,7.89-.06,3.58-1.85,5.23-5.86,5.25q-11.43.07-22.86,0c-4,0-5.81-1.66-5.87-5.24,0-2.62,0-5.25,0-7.8h-69v43.71H236.26V128ZM53.62,255.58v-3.2q0-17.48,0-35c0-4.33,1.62-5.76,6.48-5.76H146c4.9,0,6.5,1.4,6.51,5.72q0,17.63,0,35.25v2.86H167.3v-3.14q0-24,0-47.91c0-4.68,1.51-6,6.81-6h65.48c5.29,0,6.79,1.34,6.79,6q0,24,0,47.91v3.12H261V194.14H39v61.44Zm10-167.47h68.94V31.23H112.92c0,2.74,0,5.29,0,7.85,0,3.61-1.79,5.18-5.85,5.2q-9,.06-17.92,0c-4.07,0-5.81-1.58-5.87-5.19,0-2.62,0-5.24,0-7.81H63.59Zm103.93-57V88.17H236.3V31.27H216.73c0,2.69,0,5.16,0,7.63,0,3.82-1.73,5.36-6,5.38q-8.79,0-17.6,0c-4.41,0-6-1.53-6.07-5.56,0-2.52,0-5,0-7.6ZM53.61,171.87v-3.25q0-21.75,0-43.5c0-4.68,1.51-6,6.82-6H239.57c5.3,0,6.81,1.34,6.81,6q0,21.9,0,43.78v2.89H261v-61.3H39.05v61.38Zm182.67,83.72V207.37H222.12c-.22.21-.35.27-.35.34,0,2.57,0,5.13-.11,7.7-.08,3.4-1.88,5-5.74,5.05q-9.1.06-18.21,0c-3.84,0-5.62-1.66-5.69-5.1-.05-2.63,0-5.26,0-7.93H177.45v48.17Zm-172.57-35v34.95h78.68V220.69H117.87c0,2.79,0,5.36,0,7.92-.07,3.42-1.87,5-5.74,5.06q-9.11.08-18.22,0c-3.83,0-5.62-1.67-5.68-5.11,0-2.63,0-5.26,0-8ZM28.9,282.1v-3.18q0-128.31,0-256.61c0-1.81.73-4.43-2.55-4.36C23.36,18,24,20.48,24,22.24q0,128.43,0,256.88v3ZM276,282V279q0-128.32,0-256.64c0-1.82.7-4.42-2.56-4.36-3,.05-2.35,2.53-2.35,4.28q0,128.46,0,256.91V282Zm-15-184.74H38.92v4.08H261.06Zm.07,83.68H39v4H261.13ZM38.86,268.67H261v-4H38.86ZM157.27,128.11H142.73v4.06h14.54Zm-64-92.79h9.55V31.25H93.29Zm113.49-4.1h-9.61v4h9.61ZM202,211.52h9.59v-4.11H202Zm-94.17,9.09H98.28v4.08h9.57Z" />
+            </svg>,
+
+        attributes:
+        {
+            schema: 'station',
+            type: 'warehouse',
+            children: [],
+            dashboards: [],
+            new: true,
+        },
+        color: '#f4a460'
+    },
+
     // charger_position: charge_position,
 
     workstation: {
         svgPath:
             <>
-                <rect x="100" y="40" width="200" height="320" rx="10" transform="translate(400) rotate(90)" fill="none" strokeMiterlimit="10" strokeWidth="20" />
-                <rect x="120" y="60" width="160" height="280" rx="2" transform="translate(400) rotate(90)" />
+                <rect x="100" y="40" width="300" height="300" rx="10" transform="translate(390 -50) rotate(90)" fill="none" strokeMiterlimit="10" strokeWidth="20" />
+                <rect x="120" y="60" width="260" height="260" rx="2" transform="translate(390 -50) rotate(90)" />
             </>,
         attributes:
         {
@@ -98,47 +137,47 @@ export const LocationTypes = {
         color: '#6283f0',
     },
 
-    human_position: {
+    human: {
         svgPath:
-            <svg y="70">
-                <rect fill='transparent' strokeMiterlimit='10' strokeWidth='20px' x="10" y="10" width="378" height="236" rx="30" />
-                <path d="M194,123a49.63,49.63,0,1,0-49.62-49.63A49.62,49.62,0,0,0,194,123Zm34.74,12.41h-6.48a67.51,67.51,0,0,1-56.52,0h-6.48a52.12,52.12,0,0,0-52.1,52.1v16.13a18.61,18.61,0,0,0,18.61,18.61H262.23a18.61,18.61,0,0,0,18.61-18.61V187.51A52.12,52.12,0,0,0,228.74,135.41Z" />
+            // <svg y="70">
+            //     <rect fill='transparent' strokeMiterlimit='10' strokeWidth='20px' x="10" y="10" width="378" height="236" rx="30" />
+            //     <path d="M194,123a49.63,49.63,0,1,0-49.62-49.63A49.62,49.62,0,0,0,194,123Zm34.74,12.41h-6.48a67.51,67.51,0,0,1-56.52,0h-6.48a52.12,52.12,0,0,0-52.1,52.1v16.13a18.61,18.61,0,0,0,18.61,18.61H262.23a18.61,18.61,0,0,0,18.61-18.61V187.51A52.12,52.12,0,0,0,228.74,135.41Z" />
+            // </svg>,
+            <svg y="50" x='50'>
+                <rect width="300" height="300" rx="30" />
+                <path fill='#3B3C43' d="M150,150A56.07,56.07,0,1,0,93.94,93.94,56.05,56.05,0,0,0,150,150Zm39.24,14h-7.31a76.32,76.32,0,0,1-63.86,0h-7.31a58.88,58.88,0,0,0-58.87,58.86V241.1a21,21,0,0,0,21,21H227.09a21,21,0,0,0,21-21V222.88A58.88,58.88,0,0,0,189.24,164Z" />
             </svg>,
         attributes:
         {
-            schema: 'position',
-            type: 'human_position',
+            schema: 'station',
+            type: 'human',
+            children: [],
+            dashboards: [],
+            new: true,
+        },
+        color: '#5eec33',
+    },
+
+    human_position: {
+        svgPath:
+            // <svg y="70">
+            //     <rect fill='transparent' strokeMiterlimit='10' strokeWidth='20px' x="10" y="10" width="378" height="236" rx="30" />
+            //     <path d="M194,123a49.63,49.63,0,1,0-49.62-49.63A49.62,49.62,0,0,0,194,123Zm34.74,12.41h-6.48a67.51,67.51,0,0,1-56.52,0h-6.48a52.12,52.12,0,0,0-52.1,52.1v16.13a18.61,18.61,0,0,0,18.61,18.61H262.23a18.61,18.61,0,0,0,18.61-18.61V187.51A52.12,52.12,0,0,0,228.74,135.41Z" />
+            // </svg>,
+            <svg y="50" x='50'>
+                <rect width="300" height="300" rx="30" />
+                <path fill='#3B3C43' d="M150,150A56.07,56.07,0,1,0,93.94,93.94,56.05,56.05,0,0,0,150,150Zm39.24,14h-7.31a76.32,76.32,0,0,1-63.86,0h-7.31a58.88,58.88,0,0,0-58.87,58.86V241.1a21,21,0,0,0,21,21H227.09a21,21,0,0,0,21-21V222.88A58.88,58.88,0,0,0,189.24,164Z" />
+            </svg>,
+        attributes:
+        {
+            schema: 'station',
+            type: 'human',
             parent: null,
             new: true,
         },
         color: '#5eec33',
     },
 
-    warehouse_position: {
-        // < defs >
-        // <style>.cls-1{fill:#4d4d4d;}.cls-2{fill:url(#linear-gradient);}
-        // </style>
-        // <linearGradient id="linear-gradient" x1="97.76" y1="120.43" x2="262.84" y2="120.43" gradientUnits="userSpaceOnUse">
-        //     <stop offset="0" stop-color="#c69c6d"/>
-        //     <stop offset="1" stop-color="#a67c52"/>
-        // </linearGradient></defs> 
-        // <g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1">
-        svgPath:
-            <>
-                <rect class="cls-1" width="360" height="240" rx="30" />
-                <path class="cls-2" d="M253.79,24.62h3c4.49,1.52,6,4.71,6,9.34q-.13,67,0,134,0,22.26,0,44.52c0,2.72-1,3.78-3.7,3.8s-5.12,0-7.69,0-3.58-1.09-3.6-3.68c0-1.73,0-3.46,0-5.2h-135c0,1.93,0,3.73,0,5.53,0,2.21-1.14,3.31-3.37,3.35s-4.62,0-6.93,0c-3.91,0-4.66-.77-4.66-4.73q0-88.87-.07-177.73c0-4.59,1.65-7.67,6-9.16h3c4.39,1.48,6.09,4.55,6,9.14-.13,14.15,0,28.31,0,42.46v2.15h9V37.82c0-3.29.92-4.2,4.24-4.2h45.55c3.29,0,4.2.91,4.2,4.23q0,19.26,0,38.54v2h9V76.2q0-19.17,0-38.35c0-3.32.91-4.23,4.2-4.23h45.55c3.32,0,4.24.91,4.24,4.2V78.38h9V76.22c0-14.15.08-28.31,0-42.46C247.69,29.16,249.39,26.1,253.79,24.62Zm-63,80.85c0,1.9,0,3.63,0,5.36,0,2.44-1.12,3.56-3.56,3.57q-6.93,0-13.87,0c-2.45,0-3.53-1.13-3.56-3.56,0-1.78,0-3.56,0-5.3H128v29.7h104.7V105.47Zm-69,86.71V166.25c0-2.94,1-3.91,3.94-3.91h52.11c3,0,4,1,4,3.89q0,12,0,23.95v2h9V190q0-16.28,0-32.55c0-3.18.91-4.09,4.13-4.09h39.74c3.21,0,4.12.91,4.12,4.1q0,16.27,0,32.56v2.12h8.85V150.43H113v41.75Zm6-113.8H169.7V39.73H157.79c0,1.86,0,3.59,0,5.33,0,2.45-1.09,3.52-3.56,3.53q-5.43,0-10.87,0c-2.47,0-3.53-1.07-3.56-3.52,0-1.78,0-3.57,0-5.31h-12Zm63.08-38.73V78.42h41.74V39.75H220.79c0,1.83,0,3.51,0,5.19,0,2.59-1,3.64-3.63,3.65-3.56,0-7.12,0-10.68,0-2.68,0-3.67-1.05-3.69-3.78,0-1.72,0-3.43,0-5.17ZM121.8,135.29v-2.2q0-14.79,0-29.56c0-3.18.91-4.09,4.13-4.09H234.66c3.21,0,4.13.91,4.13,4.09q0,14.88,0,29.75v2h8.85V93.59H113v41.7Zm110.86,56.9V159.42h-8.59c-.13.14-.21.19-.21.23,0,1.75,0,3.49-.07,5.23,0,2.32-1.14,3.41-3.49,3.43-3.68,0-7.37,0-11.05,0-2.33,0-3.41-1.13-3.45-3.46,0-1.79,0-3.58,0-5.4H197v32.74ZM127.93,168.4v23.75h47.75V168.47H160.79c0,1.9,0,3.64,0,5.38,0,2.33-1.14,3.43-3.48,3.44-3.69,0-7.38,0-11.06,0-2.33,0-3.41-1.13-3.45-3.47,0-1.79,0-3.58,0-5.42ZM106.8,210.2V208q0-87.19,0-174.38c0-1.23.44-3-1.55-3-1.8,0-1.43,1.72-1.43,2.91q0,87.29,0,174.57v2Zm150,0v-2.1q0-87.19,0-174.39c0-1.24.41-3-1.56-3-1.81,0-1.43,1.72-1.43,2.91q0,87.3,0,174.58v2ZM247.7,84.62H112.88v2.77H247.7Zm0,56.86H112.91v2.71H247.74ZM112.85,201.07H247.68v-2.7H112.85Zm71.86-95.51h-8.83v2.76h8.83Zm-38.83-63h5.79V39.74h-5.79Zm68.88-2.79h-5.84v2.75h5.84Zm-2.89,122.52h5.82v-2.79h-5.82Zm-57.15,6.18h-5.81v2.77h5.81Z" />
-            </>,
-
-        attributes:
-        {
-            schema: 'station',
-            type: 'workstation',
-            children: [],
-            dashboards: [],
-            new: true,
-        },
-        color: '#6283f0'
-    }
 }
 
 /**
@@ -161,75 +200,43 @@ export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
 
     // Sets real scale to be used with the widget hover area
     widgetInfo.realScale = d3.scale
-    // If schema is a station, else it's a position
-    if (location.schema === 'station') {
-        // If the type is a device
-        if (location.type === 'device') {
-            // Gets the height of the device
-            const el = document.getElementById(`${rd3tClassName}-device`)
-            let bBox = null
+
+    // If type is a device
+    if (location.type === 'device') {
+        // Gets the height of the device
+        const el = document.getElementById(`${rd3tClassName}-device`)
+        let bBox = null
 
 
-            // Try catch for when page refreshses when in a widget. When refreshing in a widget, the elements is unmounted and cant get the bounding because of an unmounted element
-            try {
-                bBox = el.getBoundingClientRect()
-            } catch (error) {
-                return widgetInfo
-            }
-
-            // Stops the widget from getting to0 small and keeping the widget relative to the location size
-            if (d3.scale < .8) {
-                widgetInfo.scale = .8
-                widgetInfo.yPosition = location.y + bBox.height / 2 - 71
-                widgetInfo.xPosition = location.x - 12
-
-
-            }
-
-            // Stops the widget from getting to0 large and keeping the widget relative to the location size
-            else if (d3.scale > 1.3) {
-                widgetInfo.scale = 1.3
-                widgetInfo.yPosition = location.y + bBox.height / 2 - 86
-                widgetInfo.xPosition = location.x + 30
-
-            }
+        // Try catch for when page refreshses when in a widget. When refreshing in a widget, the elements is unmounted and cant get the bounding because of an unmounted element
+        try {
+            bBox = el.getBoundingClientRect()
+        } catch (error) {
+            return widgetInfo
         }
 
-        // If the type is not a device it's a workstation.
-        else {
-            // Gets the height of the workstation
-            const el = document.getElementById(`${rd3tClassName}-rectQ`)
-            let bBox = null
+        // Stops the widget from getting to0 small and keeping the widget relative to the location size
+        if (d3.scale < .8) {
+            widgetInfo.scale = .8
+            widgetInfo.yPosition = location.y + bBox.height / 2 - 71
+            widgetInfo.xPosition = location.x - 12
 
-            // Try catch for when page refreshses when in a widget. When refreshing in a widget, the elements is unmounted and cant get the bounding because of an unmounted element
-            try {
-                bBox = el.getBoundingClientRect()
-            } catch (error) {
-                return widgetInfo
-            }
 
-            // Stops the widget from getting to small and keeping the widget relative to the location size
-            if (d3.scale < .8) {
-                widgetInfo.scale = .8
-                widgetInfo.yPosition = location.y + bBox.height / 2 - 68
-                widgetInfo.xPosition = location.x - 19
+        }
 
-            }
-
-            // Stops the widget from getting to large and keeping the widget relatice to the location size
-            else if (d3.scale > 1.3) {
-                widgetInfo.scale = 1.3
-                widgetInfo.yPosition = location.y + bBox.height / 2 - 75
-                widgetInfo.xPosition = location.x + 30
-
-            }
+        // Stops the widget from getting to0 large and keeping the widget relative to the location size
+        else if (d3.scale > 1.3) {
+            widgetInfo.scale = 1.3
+            widgetInfo.yPosition = location.y + bBox.height / 2 - 86
+            widgetInfo.xPosition = location.x + 30
 
         }
     }
 
+    // Else its a postion/station
     else {
-        // Gets the height of the workstation
-        const el = document.getElementById(`${rd3tClassName}-trans`)
+        // Gets the element based on whether its a station or not
+        const el = location.schema === 'station' ? document.getElementById(`${rd3tClassName}-station`) : document.getElementById(`${rd3tClassName}-trans`)
         let bBox = null
 
         // Try catch for when page refreshses when in a widget. When refreshing in a widget, the elements is unmounted and cant get the bounding because of an unmounted element
@@ -241,7 +248,7 @@ export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
 
         widgetInfo.scale = 1.3
         widgetInfo.yPosition = location.y + bBox.height / 2 - 75
-        widgetInfo.xPosition = location.x + 12
+        widgetInfo.xPosition = location.schema === 'station' ? location.x + 25 : location.x + 12
 
         // Stops the widget from getting to small and keeping the widget relative to the location size
         if (d3.scale < .8) {
@@ -254,7 +261,7 @@ export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
         else if (d3.scale > 1.3) {
             widgetInfo.scale = 1.3
             widgetInfo.yPosition = location.y + bBox.height / 2 - 75
-            widgetInfo.xPosition = location.x + 12
+            widgetInfo.xPosition = location.schema === 'station' ? location.x + 25 : location.x + 12
 
         }
     }

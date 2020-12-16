@@ -81,9 +81,9 @@ const EditTask = (props) => {
     const loadUnloadFields = () => {
 
         // This handles if any position of a route is a human position, then it cant be done by a robot
-        let humanPosition = false
-        if (positions[selectedTask.load.position].type === 'human_position' || positions[selectedTask.unload.position].type === 'human_position') {
-            humanPosition = true
+        let humanLocation = false
+        if ((!!stations[selectedTask.load.position] && stations[selectedTask.load.position].type === 'human') || (!!stations[selectedTask.unload.position] && stations[selectedTask.unload.position].type === 'human')) {
+            humanLocation = true
 
             if (selectedTask.device_type !== 'human') {
                 onSetSelectedTask({
@@ -96,7 +96,7 @@ const EditTask = (props) => {
 
         return (
             <>
-                {!humanPosition &&
+                {!humanLocation &&
                     <>
                         <styled.RowContainer>
                             <styled.Header>Robot Enabled</styled.Header>
@@ -126,7 +126,7 @@ const EditTask = (props) => {
 
                     <styled.Header style={{ marginTop: '0rem' }}>Load</styled.Header>
 
-                    {!humanPosition &&
+                    {!humanLocation &&
 
                         <styled.RowContainer style={{ justifyContent: 'flex-end', alignItems: 'baseline' }}>
                             <styled.HelpText style={{ fontSize: '1rem', marginRight: '.5rem' }}>TimeOut: </styled.HelpText>

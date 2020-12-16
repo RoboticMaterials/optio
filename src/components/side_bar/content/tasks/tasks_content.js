@@ -95,22 +95,22 @@ export default function TaskContent(props) {
     }, [selectedTask])
 
 
-    const handleHumanHil = async() => {
-      if(selectedTask!=null){
+    const handleHumanHil = async () => {
+        if (selectedTask != null) {
 
-        if (selectedTask.device_type == 'human') {
-          const dashboardId = stations[selectedTask.load.station].dashboards[0]
+            if (selectedTask.device_type == 'human') {
+                const dashboardId = stations[selectedTask.load.station].dashboards[0]
 
-          const postToQueue = dispatch(postTaskQueue({ task_id: selectedTask._id, 'task_id': selectedTask._id, dashboard: dashboardId, hil_response:null}))
-                postToQueue.then(item=>{
-                const id = item?._id?.$oid
-                onTaskQueueItemClicked(id)
-          })
+                const postToQueue = dispatch(postTaskQueue({ task_id: selectedTask._id, 'task_id': selectedTask._id, dashboard: dashboardId, hil_response: null }))
+                postToQueue.then(item => {
+                    const id = item?._id?.$oid
+                    onTaskQueueItemClicked(id)
+                })
+            }
+            else {
+                onPostTaskQueue({ task_id: selectedTask._id })
+            }
         }
-        else {
-          onPostTaskQueue({ task_id: selectedTask._id })
-        }
-      }
     }
 
 
@@ -142,9 +142,8 @@ export default function TaskContent(props) {
                         .filter(task => !task.associated_task || (!!task.associated_task && task.device_type !== 'human'))
 
                 }
-                onMouseEnter={(task) => {dispatch(taskActions.selectTask(task._id))
-                                        console.log(selectedTask)
-
+                onMouseEnter={(task) => {
+                    dispatch(taskActions.selectTask(task._id))
                 }}
                 onMouseLeave={(task) => dispatch(taskActions.deselectTask())}
                 onClick={(task) => {
@@ -152,7 +151,7 @@ export default function TaskContent(props) {
                     setSelectedTaskCopy(deepCopy(selectedTask))
                     toggleEditing(true)
                 }}
-                executeTask={()=>handleHumanHil()}
+                executeTask={() => handleHumanHil()}
                 onPlus={() => {
                     const newTask = {
                         name: '',

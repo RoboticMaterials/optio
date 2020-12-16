@@ -44,7 +44,7 @@ export default function Positions(props) {
     // const [selectedPositions, setSelectedPositions] = useState([])
 
 
-    const positionTypes = !!MiRMapEnabled ? ['human_position', 'cart_position', 'shelf_position',] : ['human_position']
+    const positionTypes = !!MiRMapEnabled ? ['cart_position', 'shelf_position',] : []
     const selectedPositions = Object.values(positions).filter(position => position.parent == selectedLocation._id)
 
     useEffect(() => {

@@ -30,9 +30,9 @@ function Position(props) {
     const [translating, setTranslating] = useState(false)
 
     const dispatch = useDispatch()
-    const onSetTaskAttributes = (id, load) => dispatch(setTaskAttributes(id, load))
+    const dispatchSetTaskAttributes = (id, load) => dispatch(setTaskAttributes(id, load))
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
-    const onSelectLocation = (locationId) => dispatch(selectLocation(locationId))
+    const dispatchSelectLocation = (locationId) => dispatch(selectLocation(locationId))
 
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
@@ -51,7 +51,7 @@ function Position(props) {
         if (location !== null && location.name === 'TempRightClickMoveLocation') {
             setHovering(true)
             dispatchHoverStationInfo(handleWidgetHover())
-            onSelectLocation(location._id)
+            dispatchSelectLocation(location._id)
         }
     }, [])
 
@@ -65,6 +65,7 @@ function Position(props) {
 
     }
 
+    // Tells the location to glow
     const shouldGlow = selectedTask !== null &&
         ((selectedTask.load.position == location._id && selectedTask.type == 'push') ||
             (selectedTask.unload.position == location._id && selectedTask.type == 'pull') ||
@@ -81,7 +82,7 @@ function Position(props) {
                     setHovering(true)
                     if (!rotating && !translating && selectedLocation == null && selectedTask == null) {
                         dispatchHoverStationInfo(handleWidgetHover())
-                        onSelectLocation(location._id)
+                        dispatchSelectLocation(location._id)
 
                     }
                 }
@@ -100,7 +101,7 @@ function Position(props) {
                         } else {
                             type = 'push'
                         }
-                        onSetTaskAttributes(selectedTask._id, { unload, type })
+                        dispatchSetTaskAttributes(selectedTask._id, { unload, type })
                     } else { // Otherwise assign the load position and clear the unload position (to define a new unload)
                         let load = deepCopy(selectedTask.load)
                         let unload = deepCopy(selectedTask.unload)
@@ -113,7 +114,7 @@ function Position(props) {
                         }
                         unload.position = null
                         unload.station = null
-                        onSetTaskAttributes(selectedTask._id, { load, unload, type })
+                        dispatchSetTaskAttributes(selectedTask._id, { load, unload, type })
                     }
                 }
             }}
