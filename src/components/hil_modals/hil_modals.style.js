@@ -110,6 +110,22 @@ export const HilMessage = styled.h3`
     font-size: ${props => props.theme.fontSize.sz1};
     text-align: center;
 `
+export const LotDropdownContainer = styled.div`
+  width: 50%;
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+`
+
+export const LotTitle = styled.span`
+  display: inline-flex;
+  font-family: ${props => props.theme.font.primary};
+  justify-content: center;
+  align-self: center;
+  align-items: center;
+  font-size: ${props => props.theme.fontSize.sz1};
+  text-align: center;
+`
 
 export const HilTimer = styled.p`
     display: flex;

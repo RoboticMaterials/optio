@@ -17,6 +17,9 @@ import { putTaskQueueItem } from '../../api/task_queue_api'
 
 // Import Utils
 import { deepCopy } from '../../methods/utils/utils'
+import DropDownSearch from "../basic/drop_down_search_v2/drop_down_search";
+import {getCards} from "../../redux/actions/card_actions";
+import DropDownSearchField from "../basic/form/drop_down_search_field/drop_down_search_field";
 
 
 /**
@@ -32,8 +35,13 @@ const HILModals = (props) => {
         item
     } = props
 
+    const {
+        dashboard: dashboardId
+    } = item || {}
+
     const dispatch = useDispatch()
     const onPostTaskQueue = (response) => dispatch(postTaskQueue(response))
+    const dispatchGetCards = () => dispatch(getCards())
     const onTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
     const onHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
     const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
@@ -42,19 +50,57 @@ const HILModals = (props) => {
     const onLocalHumanTask = (bol) => dispatch({type: 'LOCAL_HUMAN_TASK', payload: bol})
 
 
+
     const hilTimers = useSelector(state => { return state.taskQueueReducer.hilTimers })
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
     const taskQueueItemClicked = useSelector(state=> state.taskQueueReducer.taskQueueItemClicked)
     const dashboardOpen = useSelector(state=> state.dashboardsReducer.dashboardOpen)
+    const dashboards = useSelector(state=> state.dashboardsReducer.dashboards)
+    const objects = useSelector(state=> state.objectsReducer.objects)
+    const cards = useSelector(state=> state.cardsReducer.cards)
     const [quantity, setQuantity] = useState(taskQuantity)
+    const [selectedCard, setSelectedCard] = useState(null)
     const [hilLoadUnload, setHilLoadUnload] = useState('')
+
+    // get dashboard info from item
+    const selectedDashboard = dashboards[dashboardId]
+    const {
+        name: dashboardName,
+        station: stationId, //"c754a665-f756-4c74-a7c5-e8c014039ba3"
+    } = selectedDashboard || {}
+
+    /*
+    * Get dropdownsearch options for cards
+    *
+    * Filter out cards that don't belong to the same station
+    * Each option only needs to contain the card's id and a label to display, the extaneous information can be left out
+    *
+    * */
+    const stationCards = Object.values(cards).filter((currCard) => currCard.station_id === stationId).map((currCard) => {
+        const {
+            _id,
+            object_id
+        } = currCard
+        const objectName = objects[object_id] ? objects[object_id].name : null
+
+        return {
+            _id,
+            label: objectName ? currCard.name + " - " + objectName : currCard.name
+        }
+    })
+
 
     // If the qty goes below 0, then set to 0. You can never send negative parts
     if (quantity < 0) {
         setQuantity(0)
     }
+
+    // load card data on load for selecting lot
+    useEffect(() => {
+        dispatchGetCards()
+    }, [])
 
     // Use Effect for when page loads, handles wether the HIL is a load or unload
     useEffect(() => {
@@ -84,12 +130,14 @@ const HILModals = (props) => {
     // Posts HIL Success to API
     const handleHilSuccess = async () => {
 
+
         onTaskQueueItemClicked('')
 
         let newItem = {
             ...item,
             hil_response: true,
             quantity: quantity,
+            card_id: selectedCard
         }
 
         // Deletes the dashboard id from active list for the hil that has been responded too
@@ -104,7 +152,6 @@ const HILModals = (props) => {
         onHILResponse('success')
         setTimeout(() => onHILResponse(''), 2000)
 
-        console.log('QQQQ task success', newItem)
         await onPutTaskQueue(newItem, ID)
 
         // handleLogHumanEvent()
@@ -241,6 +288,25 @@ const HILModals = (props) => {
 
 
                     </styled.HilInputContainer>
+
+                }
+
+                {(hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
+                    <styled.LotDropdownContainer>
+                        <styled.LotTitle>Select Lot</styled.LotTitle>
+                        <DropDownSearch
+                            theme={{}}
+                            // style={{flex: 1, width: "100%"}}
+                            // containerStyle={{flex: 1, width: "100%"}}
+                            options={stationCards}
+                            pattern={null}
+                            labelField={'label'}
+                            valueField={"_id"}
+                            onChange={(values) => {
+                                if(values && Array.isArray(values)) setSelectedCard(values[0]._id)
+                            }}
+                        />
+                    </styled.LotDropdownContainer>
                 }
 
 
