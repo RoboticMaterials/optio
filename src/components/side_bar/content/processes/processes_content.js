@@ -41,8 +41,9 @@ const ProcessesContent = () => {
     const [shift, setShift] = useState(false) // Is shift key pressed ?
     const [isTransportTask, setIsTransportTask] = useState(true)
 
+
     useEffect(() => {
-        
+
         return () => {
             onSetSelectedProcess(null)
         }
