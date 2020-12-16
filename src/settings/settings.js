@@ -1,4 +1,4 @@
-import { store } from "../redux/store/index";
+import  store  from "../redux/store/index";
 
 // import logger
 import log from "../logger.js";

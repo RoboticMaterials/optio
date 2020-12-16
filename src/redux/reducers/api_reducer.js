@@ -9,6 +9,14 @@ import {
   SET_TASKS_API
 } from '../types/api_types';
 
+import {
+  SET
+} from "../types/prefixes"
+
+import {
+  DATA_PAGE
+} from "../types/data_types"
+
 const defaultState = {
   conditionsApi: null,
   schedulesApi: null,
@@ -18,11 +26,18 @@ const defaultState = {
   statusApi: null,
   taskQueueApi: null,
   tasksApi: null,
+  page: null
 };
 
 export default function apiReducer(state = defaultState, action) {
 
   switch (action.type) {
+
+    case SET + DATA_PAGE:
+      return {
+        ...state,
+        page: action.payload,
+      }
 
     case SET_CONDITIONS_API:
       return  Object.assign({}, state, {

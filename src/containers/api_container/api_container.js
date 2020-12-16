@@ -43,7 +43,10 @@ import logger from '../../logger.js';
 import { getMap } from '../../api/map_api';
 import SideBar from '../side_bar/side_bar';
 import localReducer from "../../redux/reducers/local_reducer";
+import {getCards, getProcessCards} from "../../redux/actions/card_actions";
+import apiReducer from "../../redux/reducers/api_reducer";
 import {getReportEvents} from "../../redux/actions/report_event_actions";
+import {getLots} from "../../redux/actions/lot_actions";
 
 const ApiContainer = (props) => {
 
@@ -57,6 +60,10 @@ const ApiContainer = (props) => {
     const onGetSounds = (api) => dispatch(getSounds(api))
     const onGetTaskQueue = () => dispatch(getTaskQueue())
     const onGetTasksAnalysis = () => dispatch(getTasksAnalysis())
+
+    const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
+    const dispatchGetLots = () => dispatch(getLots())
+    const onGetCards = () => dispatch(getCards())
 
     const onGetProcesses = () => dispatch(getProcesses());
     const onGetReportEvents = () => dispatch(getReportEvents());
@@ -91,6 +98,7 @@ const ApiContainer = (props) => {
     const devices = Object.values(useSelector(state => { return state.devicesReducer })?.devices || {})
     const localReducer = useSelector(state => state.localReducer)
     const MiRMapEnabled = localReducer?.localSettings?.MiRMapEnabled
+    const apiPage = useSelector(state => state.apiReducer.page)
 
     // States
     const [currentPage, setCurrentPage] = useState('')
@@ -105,8 +113,8 @@ const ApiContainer = (props) => {
         // this interval is always on
         // loads essential info used on every page such as status and taskQueue
 
-        const criticalDataInterval = setInterval(() => loadCriticalData(), 500);
-        const mapDataInterval = setInterval(() => loadMapData(), 5000)
+        const criticalDataInterval = setInterval(() => loadCriticalData(), 50000);
+        const mapDataInterval = setInterval(() => loadMapData(), 50000)
         return () => {
             // clear intervals
             clearInterval(pageDataInterval);
@@ -179,9 +187,14 @@ const ApiContainer = (props) => {
     let pageDataInterval = null
     const setDataInterval = (pageParams) => {
         let pageName = ''
+        const {
+            data1,
+            data2
+        } = pageParams
 
         if (Object.keys(pageParams)[0] === 'sidebar') {
             pageName = pageParams.sidebar
+
 
         } else if (Object.keys(pageParams)[0] === 'stationID') {
 
@@ -201,6 +214,9 @@ const ApiContainer = (props) => {
         // clear current interval
         clearInterval(pageDataInterval);
 
+        console.log("api_container pageName",pageName)
+        console.log("api_container pageParams",pageParams)
+
         // set new interval for specific page
         switch (pageName) {
 
@@ -209,25 +225,41 @@ const ApiContainer = (props) => {
                 break;
 
             case 'scheduler':
-                pageDataInterval = setInterval(() => loadSchedulerData(), 10000);
+                pageDataInterval = setInterval(() => loadSchedulerData(), 100000);
                 break;
 
             case 'dashboards':
-                pageDataInterval = setInterval(() => loadDashboardsData(), 10000);
-                pageDataInterval = setInterval(() => loadTasksData(), 10000);
+                pageDataInterval = setInterval(() => loadDashboardsData(), 100000);
+                // pageDataInterval = setInterval(() => loadTasksData(), 10000);
                 break;
 
             case 'tasks':
                 pageDataInterval = setInterval(() => loadTasksData(), 10000);
                 break;
 
-            case 'processes':
-                pageDataInterval = setInterval(() => loadTasksData(), 10000);
-                break;
-
             case 'settings':
                 pageDataInterval = setInterval(() => loadSettingsData(), 10000);
                 break;
+
+            case 'processes':
+                if(data2 === "card") {
+                    console.log("api container apiPage",apiPage)
+                    loadCardsData(data1) // initial call
+                    pageDataInterval = setInterval(()=>loadCardsData(data1), 10000) // set interval
+                }
+                else if(data1 === "timeline") {
+                    loadCardsData() // initial call
+                    pageDataInterval = setInterval(()=>loadCardsData(), 10000)
+                }
+                else if(data1 === "summary") {
+                    loadCardsData() // initial call
+                    pageDataInterval = setInterval(()=>loadCardsData(), 10000)
+                }
+                else {
+                    pageDataInterval = setInterval(() => loadTasksData(), 10000);
+                }
+
+                break
 
             case 'more':
                 pageDataInterval = setInterval(() => loadMoreData(), 10000);
@@ -248,7 +280,6 @@ const ApiContainer = (props) => {
         const maps = await onGetMaps()
 
         if (maps.length === undefined) {
-            console.log('QQQQ Map is undefined')
             props.onLoad()
             setApiError(true)
             return
@@ -372,6 +403,22 @@ const ApiContainer = (props) => {
     }
 
     /*
+        Loads data pertinent to process card view
+
+        required data:
+        cards
+    */
+    const loadCardsData = async (processId) => {
+        if(processId) {
+            await onGetProcessCards(processId)
+        } else {
+            onGetCards()
+        }
+        dispatchGetLots()
+
+    }
+
+    /*
         Loads data pertinent to More page
     */
     const loadMoreData = async () => {
@@ -444,7 +491,7 @@ const ApiContainer = (props) => {
         const positions = locations.positions
 
         Object.values(tasks).map(async (task) => {
-
+            console.log(task)
             // console.log('QQQQ Task', positions[task.load.position], positions[task.unload.position])
 
             // Deletes the task if the load/unload position/station has been deleted from the positon list

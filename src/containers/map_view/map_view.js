@@ -33,11 +33,13 @@ import Zones from '../../components/map/zones/zones'
 import RightClickMenu from '../../components/map/right_click_menu/right_click_menu'
 import TaskStatistics from '../../components/map/task_statistics/task_statistics'
 import Widgets from '../../components/widgets/widgets'
+
 // logging
 import log from "../../logger"
 import { setCurrentMap } from "../../redux/actions/map_actions";
 
 const logger = log.getLogger("MapView")
+
 export class MapView extends Component {
     constructor(props) {
         super(props)

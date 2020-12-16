@@ -9,9 +9,9 @@ import Textbox from "../../../basic/textbox/textbox";
 // actions
 
 // styles
-import * as styled from './error_modal.style'
+import * as styled from './confirm_delete_modal.style'
 
-const ErrorModal = (props) => {
+const ConfirmDeleteModal = (props) => {
 
     const {
         isOpen,
@@ -20,8 +20,10 @@ const ErrorModal = (props) => {
         dashboard,
         onSubmit,
         handleClose,
-        handleDeleteWithRoutes,
-        handleDeleteWithoutRoutes,
+        handleOnClick1,
+        handleOnClick2,
+        button_1_text,
+        button_2_text
     } = props
 
 
@@ -64,15 +66,15 @@ const ErrorModal = (props) => {
                             <Button
                                 tertiary
                                 schema={"delete"}
-                                onClick={handleDeleteWithoutRoutes}
-                                label={"Delete process and KEEP associated routes"}
+                                onClick={handleOnClick1}
+                                label={button_1_text}
                                 type="button"
                             />
                             <Button
-                                primary
+                                tertiary
                                 schema={"delete"}
-                                onClick={handleDeleteWithRoutes}
-                                label={"Delete process and DELETE associated routes"}
+                                onClick={handleOnClick2}
+                                label={button_2_text}
                                 type="button"
                             />
 
@@ -83,4 +85,4 @@ const ErrorModal = (props) => {
     );
 };
 
-export default ErrorModal
+export default ConfirmDeleteModal

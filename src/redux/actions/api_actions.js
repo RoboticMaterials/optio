@@ -9,6 +9,22 @@ import {
   SET_TASKS_API,
 } from '../types/api_types';
 
+import {
+  SET
+} from "../types/prefixes"
+
+import {
+  DATA_PAGE
+} from "../types/data_types"
+
+// set page
+// ******************************
+export const setDataPage = (page) => {
+  return async dispatch => {
+    dispatch({ type: SET + DATA_PAGE, payload: page });
+  };
+};
+
 // setConditionsApi
 // ******************************
 export const setConditionsApi = (api) => {

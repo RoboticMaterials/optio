@@ -10,7 +10,7 @@ import Button from '../../../../basic/button/button'
 // Import components
 import EditTask from '../../tasks/edit_task/edit_task'
 import ContentHeader from '../../content_header/content_header'
-import ErrorModal from '../../../../basic/modals/error_modal/error_modal'
+import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 
 
 // Import actions
@@ -21,6 +21,7 @@ import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 // Import Utils
 import { isEquivalent, deepCopy } from '../../../../../methods/utils/utils'
 import uuid from 'uuid'
+import {useHistory} from "react-router-dom";
 
 const EditProcess = (props) => {
 
@@ -31,6 +32,7 @@ const EditProcess = (props) => {
 
     } = props
 
+    const history = useHistory()
     const dispatch = useDispatch()
     const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
     const dispatchAddTask = (task) => dispatch(addTask(task))
@@ -55,7 +57,7 @@ const EditProcess = (props) => {
     const [isTransportTask, setIsTransportTask] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
     const [editingTask, setEditingTask] = useState(false) // Used to tell if a task is being edited
     const [newRoute, setNewRoute] = useState(null)
-    const [reportModal, setReportModal] = useState(false);
+    const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
 
     useEffect(() => {
@@ -68,6 +70,11 @@ const EditProcess = (props) => {
     const handleExecuteProcessTask = (route) => {
         dispatchPostTaskQueue({ task_id: route })
 
+    }
+
+    const goToCardPage = () => {
+        const currentPath = history.location.pathname
+        history.push(currentPath + '/' + selectedProcessCopy._id + "/card")
     }
 
     // Maps through the list of existing routes
@@ -272,17 +279,19 @@ const EditProcess = (props) => {
 
     return (
       <>
-        <ErrorModal
-          isOpen = {!!reportModal}
+        <ConfirmDeleteModal
+          isOpen = {!!confirmDeleteModal}
           title={"Are you sure you want to delete this process?"}
-          handleClose={() => setReportModal(null)}
-          handleDeleteWithRoutes = {() => {
-              handleDeleteWithRoutes()
-              setReportModal(null)
-          }}
-          handleDeleteWithoutRoutes = {() => {
+          button_1_text={"Delete process and KEEP associated routes"}
+          button_2_text={"Delete process and DELETE associated routes"}
+          handleClose={() => setConfirmDeleteModal(null)}
+          handleOnClick1 = {() => {
               handleDeleteWithoutRoutes()
-              setReportModal(null)
+              setConfirmDeleteModal(null)
+          }}
+          handleOnClick2 = {() => {
+              handleDeleteWithRoutes()
+              setConfirmDeleteModal(null)
           }}
         />
         <styled.Container>
@@ -331,11 +340,21 @@ const EditProcess = (props) => {
                 style={{ marginBottom: '0rem' }}
                 secondary
                 onClick={() => {
-                    setReportModal(true)
+                    setConfirmDeleteModal(true)
                 }}
             >
                 Delete
             </Button>
+
+
+            {!selectedProcessCopy.new && // only allow viewing card page if process has been created
+            <Button
+                onClick={goToCardPage}
+            >
+                View Card Zone
+            </Button>
+            }
+
 
         </styled.Container>
         </>

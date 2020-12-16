@@ -32,4 +32,14 @@ const enhancer = composeEnhancers(
   // other store enhancers if any
 );
 
-export const store = createStore(reducers, enhancer);
+const store = createStore(reducers, enhancer);
+
+if (module.hot) {
+  module.hot.accept('../reducers/index.js', () => {
+    // const nextReducer = combineReducers(require('../reducers'))
+    // store.replaceReducer(nextReducer)
+    store.replaceReducer(require('../reducers/index.js').default)
+  })
+}
+
+export default store
