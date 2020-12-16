@@ -53,12 +53,22 @@ export const ContentContainer = styled.div`
   flex: 1;
 `
 
+export const CardName = styled.span`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
 export const Count = styled.span`
 	font-size: ${props => props.theme.fontSize.sz6};
 `
 
 export const LotName = styled.span`
   font-size: ${props => props.theme.fontSize.sz6};
+  //overflow: hidden;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 export const FooterBar = styled.div`
