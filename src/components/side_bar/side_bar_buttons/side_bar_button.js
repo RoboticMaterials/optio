@@ -17,7 +17,6 @@ const SideBarButton = (props) => {
   const taskEditing = useSelector(state => state.tasksReducer.editingTask)
   const processEditing = useSelector(state => state.processesReducer.editingProcess)
 
-
   const dispatch = useDispatch()
   const onLocationEditing = (props) => dispatch(locationActions.editing(props))
   const onTaskEditing = (props) => dispatch(tasksActions.editingTask(props))
@@ -58,7 +57,7 @@ const SideBarButton = (props) => {
             <style.SideBarButtonIcon
                 className='fas fa-map-marker-alt'
                 onClick={() => {
-                  if(locationEditing==true || taskEditing == true || processEditing == true && props.mode!=props.currentMode){
+                  if(locationEditing || taskEditing || processEditing){
                     setConfirmDeleteModal(true)
                   }
                   else{props.setShowSideBarPage(props.mode)}
@@ -79,7 +78,7 @@ const SideBarButton = (props) => {
             <style.SideBarButtonIcon
                 className={'icon-rmLogo'}
                 onClick={() => {
-                  if(locationEditing==true || taskEditing == true || processEditing == true && props.mode!=props.currentMode){
+                  if(locationEditing || taskEditing || processEditing){
                     setConfirmDeleteModal(true)
                   }
                   else{props.setShowSideBarPage(props.mode)}
@@ -100,7 +99,7 @@ const SideBarButton = (props) => {
             <style.SideBarButtonIcon
                 className={'fas fa-route'}
                 onClick={() => {
-                  if(locationEditing==true || taskEditing == true || processEditing == true && props.mode!=props.currentMode){
+                  if(locationEditing || taskEditing || processEditing){
                     setConfirmDeleteModal(true)
                   }
                   else{props.setShowSideBarPage(props.mode)}
@@ -120,7 +119,7 @@ const SideBarButton = (props) => {
             <style.SideBarButtonIcon
                 className={'far fa-calendar-alt'}
                 onClick={() => {
-                  if(locationEditing==true || taskEditing == true || processEditing == true && props.mode!=props.currentMode){
+                  if(locationEditing || taskEditing || processEditing){
                     setConfirmDeleteModal(true)
                   }
                   else{props.setShowSideBarPage(props.mode)}
@@ -141,7 +140,7 @@ const SideBarButton = (props) => {
             <style.SideBarButtonIcon
                 className={'fa fa-tasks'}
                   onClick={() => {
-                    if(locationEditing==true || taskEditing == true || processEditing == true && props.mode!=props.currentMode){
+                    if(locationEditing || taskEditing || processEditing){
                       setConfirmDeleteModal(true)
                     }
                     else{props.setShowSideBarPage(props.mode)}
@@ -162,7 +161,7 @@ const SideBarButton = (props) => {
             <style.SideBarButtonIcon
                 className={'fas fa-cog'}
                 onClick={() => {
-                  if(locationEditing==true || taskEditing == true || processEditing == true && props.mode!=props.currentMode){
+                  if(locationEditing || taskEditing || processEditing){
                     setConfirmDeleteModal(true)
                   }
                   else{props.setShowSideBarPage(props.mode)}
