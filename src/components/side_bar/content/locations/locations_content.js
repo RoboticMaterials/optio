@@ -317,7 +317,7 @@ export default function LocationContent() {
     if (editing) { // Editing Mode
 
         let locationTypeName = ''
-        if (!!selectedLocation.type) {
+        if (!!selectedLocation) {
             switch (selectedLocation.type) {
                 case 'workstation':
                     locationTypeName = 'Station'

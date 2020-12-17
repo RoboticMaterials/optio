@@ -18,6 +18,7 @@ import {
     DELETE_PROCESSES_STARTED,
     DELETE_PROCESSES_SUCCESS,
     DELETE_PROCESSES_FAILURE,
+    EDITING_PROCESS,
 } from '../types/processes_types'
 
 import { deepCopy } from '../../methods/utils/utils';
@@ -179,6 +180,12 @@ const processesReducer = (state = defaultState, action) => {
                 ...state,
                 selectedProcess: action.payload
 
+            }
+
+        case EDITING_PROCESS:
+            return {
+                ...state,
+                editingProcess: action.payload,
             }
 
         default:

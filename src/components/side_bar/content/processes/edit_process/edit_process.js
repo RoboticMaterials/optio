@@ -21,7 +21,7 @@ import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 // Import Utils
 import { isEquivalent, deepCopy } from '../../../../../methods/utils/utils'
 import uuid from 'uuid'
-import {useHistory} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 const EditProcess = (props) => {
 
@@ -34,17 +34,17 @@ const EditProcess = (props) => {
 
     const history = useHistory()
     const dispatch = useDispatch()
-    const onSetSelectedTask = (task) => dispatch(setSelectedTask(task))
-    const onAddTask = (task) => dispatch(addTask(task))
-    const onDeselectTask = () => dispatch(deselectTask())
-    const onSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
-    const onPutTask = (task, ID) => dispatch(putTask(task, ID))
-    const onDeleteTask = (ID) => dispatch(deleteTask(ID))
-    const onPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
+    const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
+    const dispatchAddTask = (task) => dispatch(addTask(task))
+    const dispatchDeselectTask = () => dispatch(deselectTask())
+    const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
+    const dispatchPutTask = (task, ID) => dispatch(putTask(task, ID))
+    const dispatchDeleteTask = (ID) => dispatch(deleteTask(ID))
+    const dispatchPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
 
-    const onPostProcess = async (process) => await dispatch(postProcesses(process))
-    const onPutProcess = async (process) => await dispatch(putProcesses(process))
-    const onDeleteProcess = async (ID) => await dispatch(deleteProcesses(ID))
+    const dispatchPostProcess = async (process) => await dispatch(postProcesses(process))
+    const dispatchPutProcess = async (process) => await dispatch(putProcesses(process))
+    const dispatchDeleteProcess = async (ID) => await dispatch(deleteProcesses(ID))
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -68,7 +68,7 @@ const EditProcess = (props) => {
     }, [])
 
     const handleExecuteProcessTask = (route) => {
-        onPostTaskQueue({ task_id: route })
+        dispatchPostTaskQueue({ task_id: route })
 
     }
 
@@ -80,70 +80,76 @@ const EditProcess = (props) => {
     // Maps through the list of existing routes
     const handleExistingRoutes = () => {
 
-        return selectedProcess.routes.map((route, ind) => {
+        return Object.keys(selectedProcess.routes).map((station, ind) => {
 
-            const routeTask = tasks[route]
-            if (routeTask === undefined) {
-                console.log('QQQQ undefined')
-                return
-            }
 
-            return (
-                <div key={`li-${ind}`}>
-                    <styled.ListItem
-                        key={`li-${ind}`}
-                    >
-                        <styled.ListItemRect
-                            onMouseEnter={() => {
-                                if (!selectedTask && !editingTask) {
-                                    onSetSelectedTask(routeTask)
-                                }
+            return selectedProcess.routes[station].map((route, ind) => {
 
-                            }}
-                            onMouseLeave={() => {
-                                if (selectedTask !== null && !editingTask) {
-                                    onDeselectTask()
-                                }
-                            }}
+                const routeTask = tasks[route]
+
+                if (routeTask === undefined) {
+                    console.log('QQQQ undefined')
+                    return
+                }
+
+                return (
+                    <div key={`li-${ind}`}>
+                        <styled.ListItem
+                            key={`li-${ind}`}
                         >
-                            {/* <styled.ListItemTitle schema={props.schema} onClick={() => props.onClick(element)}>{element.name}</styled.ListItemTitle> */}
-                            <styled.ListItemTitle
-                                schema={'processes'}
-                                onClick={() => {
-                                    setEditingTask(true)
-                                    onSetSelectedTask(routeTask)
+                            <styled.ListItemRect
+                                onMouseEnter={() => {
+                                    if (!selectedTask && !editingTask) {
+                                        dispatchSetSelectedTask(routeTask)
+                                    }
+
+                                }}
+                                onMouseLeave={() => {
+                                    if (selectedTask !== null && !editingTask) {
+                                        dispatchDeselectTask()
+                                    }
                                 }}
                             >
-                                {routeTask.name}
-                            </styled.ListItemTitle>
-                        </styled.ListItemRect>
+                                {/* <styled.ListItemTitle schema={props.schema} onClick={() => props.onClick(element)}>{element.name}</styled.ListItemTitle> */}
+                                <styled.ListItemTitle
+                                    schema={'processes'}
+                                    onClick={() => {
+                                        setEditingTask(true)
+                                        dispatchSetSelectedTask(routeTask)
+                                    }}
+                                >
+                                    {routeTask.name}
+                                </styled.ListItemTitle>
+                            </styled.ListItemRect>
 
-                        <styled.ListItemIcon
-                            className='fas fa-play'
-                            onClick={() => {
-                                handleExecuteProcessTask(route)
-                            }}
-                        />
-
-                    </styled.ListItem>
-                    {editingTask && selectedTask._id === route &&
-                        <styled.TaskContainer schema={'processes'}>
-
-                            <EditTask
-                                selectedTaskCopy={selectedTaskCopy}
-                                setSelectedTaskCopy={props => setSelectedTaskCopy(props)}
-                                shift={shift}
-                                isTransportTask={isTransportTask}
-                                isProcessTask={true}
-                                toggleEditing={(props) => {
-                                    setEditingTask(props)
+                            <styled.ListItemIcon
+                                className='fas fa-play'
+                                onClick={() => {
+                                    handleExecuteProcessTask(route)
                                 }}
                             />
-                        </styled.TaskContainer>
-                    }
-                </div>
-            )
+
+                        </styled.ListItem>
+                        {editingTask && selectedTask._id === route &&
+                            <styled.TaskContainer schema={'processes'}>
+
+                                <EditTask
+                                    selectedTaskCopy={selectedTaskCopy}
+                                    setSelectedTaskCopy={props => setSelectedTaskCopy(props)}
+                                    shift={shift}
+                                    isTransportTask={isTransportTask}
+                                    isProcessTask={true}
+                                    toggleEditing={(props) => {
+                                        setEditingTask(props)
+                                    }}
+                                />
+                            </styled.TaskContainer>
+                        }
+                    </div>
+                )
+            })
         })
+
     }
 
     const handleAddRoute = () => {
@@ -151,8 +157,8 @@ const EditProcess = (props) => {
         return (
             <>
                 <styled.ListItem
-                // onMouseEnter={() => onSetSelectedTask(routeTask)}
-                // onMouseLeave={() => onDeselectTask()}
+                // onMouseEnter={() => dispatchSetSelectedTask(routeTask)}
+                // onMouseLeave={() => dispatchDeselectTask()}
                 >
                     <styled.ListItemRect>
                         <styled.ListItemTitle
@@ -185,9 +191,9 @@ const EditProcess = (props) => {
                                     },
                                     _id: uuid.v4(),
                                 }
-                                onAddTask(newTask)
+                                dispatchAddTask(newTask)
                                 setNewRoute(newTask)
-                                onSetSelectedTask(newTask)
+                                dispatchSetSelectedTask(newTask)
                                 setEditingTask(true)
                             }}
                         >
@@ -222,28 +228,28 @@ const EditProcess = (props) => {
 
     const handleSave = async () => {
 
-        onDeselectTask()
+        dispatchDeselectTask()
 
         // If the id is new then post
         if (selectedProcessCopy.new) {
 
-            await onPostProcess(selectedProcess)
+            await dispatchPostProcess(selectedProcess)
 
         }
 
         // Else put
         else {
-            await onPutProcess(selectedProcess)
+            await dispatchPutProcess(selectedProcess)
         }
 
-        onSetSelectedProcess(null)
+        dispatchSetSelectedProcess(null)
         setSelectedProcessCopy(null)
         toggleEditingProcess(false)
     }
 
     const handleBack = () => {
-        onDeselectTask()
-        onSetSelectedProcess(null)
+        dispatchDeselectTask()
+        dispatchSetSelectedProcess(null)
         setSelectedProcessCopy(null)
         toggleEditingProcess(false)
 
@@ -253,107 +259,107 @@ const EditProcess = (props) => {
 
         // If there's routes in this process, delete the routes
         if (selectedProcess.routes.length > 0) {
-            selectedProcess.routes.forEach(route => onDeleteTask(route))
+            selectedProcess.routes.forEach(route => dispatchDeleteTask(route))
         }
 
-        await onDeleteProcess(selectedProcessCopy._id)
+        await dispatchDeleteProcess(selectedProcessCopy._id)
 
-        onDeselectTask()
-        onSetSelectedProcess(null)
+        dispatchDeselectTask()
+        dispatchSetSelectedProcess(null)
         setSelectedProcessCopy(null)
         toggleEditingProcess(false)
     }
 
     const handleDeleteWithoutRoutes = async () => {
 
-        await onDeleteProcess(selectedProcessCopy._id)
+        await dispatchDeleteProcess(selectedProcessCopy._id)
 
-        onDeselectTask()
-        onSetSelectedProcess(null)
+        dispatchDeselectTask()
+        dispatchSetSelectedProcess(null)
         setSelectedProcessCopy(null)
         toggleEditingProcess(false)
     }
 
     return (
-      <>
-        <ConfirmDeleteModal
-          isOpen = {!!confirmDeleteModal}
-          title={"Are you sure you want to delete this process?"}
-          button_1_text={"Delete process and KEEP associated routes"}
-          button_2_text={"Delete process and DELETE associated routes"}
-          handleClose={() => setConfirmDeleteModal(null)}
-          handleOnClick1 = {() => {
-              handleDeleteWithoutRoutes()
-              setConfirmDeleteModal(null)
-          }}
-          handleOnClick2 = {() => {
-              handleDeleteWithRoutes()
-              setConfirmDeleteModal(null)
-          }}
-        />
-        <styled.Container>
-            <div style={{ marginBottom: '1rem' }}>
-
-                <ContentHeader
-                    content={'processes'}
-                    mode={'create'}
-                    disabled={!!selectedTask && !!editingTask}
-                    onClickSave={() => {
-                        handleSave()
-                    }}
-
-                    onClickBack={() => {
-                        handleBack()
-                    }}
-
-                />
-
-            </div>
-            <Textbox
-                placeholder='Process Name'
-                defaultValue={selectedProcessCopy.name}
-                schema={'processes'}
-                onChange={(e) => {
-                    onSetSelectedProcess({
-                        ...selectedProcess,
-                        name: e.target.value,
-                    })
+        <>
+            <ConfirmDeleteModal
+                isOpen={!!confirmDeleteModal}
+                title={"Are you sure you want to delete this process?"}
+                button_1_text={"Delete process and KEEP associated routes"}
+                button_2_text={"Delete process and DELETE associated routes"}
+                handleClose={() => setConfirmDeleteModal(null)}
+                handleOnClick1={() => {
+                    handleDeleteWithoutRoutes()
+                    setConfirmDeleteModal(null)
                 }}
-                style={{ fontSize: '1.2rem', fontWeight: '600', marginBottom: '1rem' }}
+                handleOnClick2={() => {
+                    handleDeleteWithRoutes()
+                    setConfirmDeleteModal(null)
+                }}
             />
-            <styled.Title schema={'processes'}>Associated Routes</styled.Title>
-            <styled.SectionContainer>
-                {handleExistingRoutes()}
-            </styled.SectionContainer>
+            <styled.Container>
+                <div style={{ marginBottom: '1rem' }}>
 
-            {handleAddRoute()}
+                    <ContentHeader
+                        content={'processes'}
+                        mode={'create'}
+                        disabled={!!selectedTask && !!editingTask}
+                        onClickSave={() => {
+                            handleSave()
+                        }}
 
-            <div style={{ height: "100%", paddingTop: "1rem" }} />
+                        onClickBack={() => {
+                            handleBack()
+                        }}
 
-            {/* Delete Task Button */}
-            <Button
-                schema={'processes'}
-                disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
-                style={{ marginBottom: '0rem' }}
-                secondary
-                onClick={() => {
-                    setConfirmDeleteModal(true)
-                }}
-            >
-                Delete
+                    />
+
+                </div>
+                <Textbox
+                    placeholder='Process Name'
+                    defaultValue={selectedProcessCopy.name}
+                    schema={'processes'}
+                    onChange={(e) => {
+                        dispatchSetSelectedProcess({
+                            ...selectedProcess,
+                            name: e.target.value,
+                        })
+                    }}
+                    style={{ fontSize: '1.2rem', fontWeight: '600', marginBottom: '1rem' }}
+                />
+                <styled.Title schema={'processes'}>Associated Routes</styled.Title>
+                <styled.SectionContainer>
+                    {handleExistingRoutes()}
+                </styled.SectionContainer>
+
+                {handleAddRoute()}
+
+                <div style={{ height: "100%", paddingTop: "1rem" }} />
+
+                {/* Delete Task Button */}
+                <Button
+                    schema={'processes'}
+                    disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
+                    style={{ marginBottom: '0rem' }}
+                    secondary
+                    onClick={() => {
+                        setConfirmDeleteModal(true)
+                    }}
+                >
+                    Delete
             </Button>
 
 
-            {!selectedProcessCopy.new && // only allow viewing card page if process has been created
-            <Button
-                onClick={goToCardPage}
-            >
-                View Card Zone
+                {!selectedProcessCopy.new && // only allow viewing card page if process has been created
+                    <Button
+                        onClick={goToCardPage}
+                    >
+                        View Card Zone
             </Button>
-            }
+                }
 
 
-        </styled.Container>
+            </styled.Container>
         </>
 
     )

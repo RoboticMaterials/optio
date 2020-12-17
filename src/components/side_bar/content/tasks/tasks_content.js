@@ -34,9 +34,10 @@ export default function TaskContent(props) {
     const dispatch = useDispatch()
     const onPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
     const onTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
-
+    const onEditing = (props) => dispatch(taskActions.editingTask(props))
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
+
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const sounds = useSelector(state => state.soundsReducer.sounds)
@@ -47,10 +48,10 @@ export default function TaskContent(props) {
     const positions = useSelector(state => state.locationsReducer.positions)
     const locations = useSelector(state => state.locationsReducer.locations)
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
-
+    const editing = useSelector(state => state.tasksReducer.editingTask) //Moved to redux so the variable can be accesed in the sideBar files for confirmation modal
 
     // State definitions
-    const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
+    //const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
     const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)  // Current task
     const [shift, setShift] = useState(false) // Is shift key pressed ?
     const [isTransportTask, setIsTransportTask] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
@@ -124,7 +125,7 @@ export default function TaskContent(props) {
                 setSelectedTaskCopy={props => setSelectedTaskCopy(props)}
                 shift={shift}
                 isTransportTask={isTransportTask}
-                toggleEditing={props => toggleEditing(props)}
+                toggleEditing={props => onEditing(props)}
             />
         )
     } else {    // List Mode
@@ -150,7 +151,7 @@ export default function TaskContent(props) {
                 onClick={(task) => {
                     // If task button is clicked, start editing it
                     setSelectedTaskCopy(deepCopy(selectedTask))
-                    toggleEditing(true)
+                    onEditing(true)
                 }}
                 executeTask={() => handleHumanHil()}
                 onPlus={() => {
@@ -180,7 +181,7 @@ export default function TaskContent(props) {
                     }
                     dispatch(taskActions.addTask(newTask))
                     dispatch(taskActions.setSelectedTask(newTask))
-                    toggleEditing(true)
+                    onEditing(true)
                 }}
             />
         )
