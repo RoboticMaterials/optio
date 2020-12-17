@@ -148,7 +148,7 @@ const StationsColumn = SortableContainer((props) => {
 									count={count}
 									id={index}
 									index={index}
-									onClick={()=>handleCardClick(_id)}
+									onClick={()=>handleCardClick(_id, processId)}
 								/>
 							)
 						})}

@@ -35,7 +35,6 @@ const CardZone = SortableContainer((props) => {
 	const width = size?.width
 	const height = size?.height
 
-	console.log("CardZone height",height)
 
 	const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] }) || {}
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
@@ -51,7 +50,6 @@ const CardZone = SortableContainer((props) => {
 
 		const loadStationId = currRoute?.load?.station
 		const unloadStationId = currRoute?.unload?.station
-		console.log("currRoute",currRoute)
 
 		if(prevUnloadStationId !== loadStationId) {
 			cardsSorted[currRouteId + "+" + loadStationId] = {
@@ -75,7 +73,6 @@ const CardZone = SortableContainer((props) => {
 
 	var queue = []
 	Object.values(cards).forEach((card) => {
-		console.log("cards mapping cards", card)
 
 		if(cardsSorted[card.route_id + "+" + card.station_id]) {
 			cardsSorted[card.route_id + "+" + card.station_id].cards.push(card)
@@ -89,8 +86,6 @@ const CardZone = SortableContainer((props) => {
 			// }
 		}
 	})
-
-	console.log("cardsSorted",cardsSorted)
 
 
 
@@ -106,7 +101,6 @@ const CardZone = SortableContainer((props) => {
 	}, [])
 
 
-	console.log("CardZone cards",cards)
 
 
 		return(

@@ -186,8 +186,6 @@ const SideBar = (props) => {
         //     break
 
         case 'processes':
-            console.log("subpage",subpage)
-            console.log("id",id)
             if(subpage === "card" || (id === "summary") || (id === "timeline"))   {
                 content = <Cards id={id}/>
             }
