@@ -15,7 +15,7 @@ import EditProcess from './edit_process/edit_process'
 
 // Import actions
 import * as taskActions from '../../../../redux/actions/tasks_actions'
-import { setSelectedProcess } from '../../../../redux/actions/processes_actions'
+import { setSelectedProcess, editingProcess } from '../../../../redux/actions/processes_actions'
 import * as dashboardActions from '../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../redux/actions/objects_actions'
 import { postTaskQueue } from '../../../../redux/actions/task_queue_actions'
@@ -30,14 +30,16 @@ const ProcessesContent = () => {
     const dispatch = useDispatch()
     const onPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
     const onSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
+    const onEditing = (props) => dispatch(editingProcess(props))
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const processes = useSelector(state => state.processesReducer.processes)
+    const editing = useSelector(state => state.processesReducer.editingProcess)
 
     // State definitions
-    const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
+    //const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
     const [selectedProcessCopy, setSelectedProcessCopy] = useState(null)  // Current task
     const [shift, setShift] = useState(false) // Is shift key pressed ?
     const [isTransportTask, setIsTransportTask] = useState(true)
@@ -55,7 +57,7 @@ const ProcessesContent = () => {
             <EditProcess
                 selectedProcessCopy={selectedProcessCopy}
                 setSelectedProcessCopy={props => setSelectedProcessCopy(props)}
-                toggleEditingProcess={props => toggleEditing(props)}
+                toggleEditingProcess={props => onEditing(props)}
             />
         )
     } else {    // List Mode
@@ -71,7 +73,7 @@ const ProcessesContent = () => {
                     // If task button is clicked, start editing it
                     setSelectedProcessCopy(deepCopy(process))
                     onSetSelectedProcess(process)
-                    toggleEditing(true)
+                    onEditing(true)
                 }}
                 onPlus={() => {
                     const newProcess = {
@@ -84,7 +86,7 @@ const ProcessesContent = () => {
                     // dispatch(taskActions.addTask(newTask))
                     onSetSelectedProcess(newProcess)
                     setSelectedProcessCopy(deepCopy(newProcess))
-                    toggleEditing(true)
+                    onEditing(true)
                 }}
             />
         )

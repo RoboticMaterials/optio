@@ -20,6 +20,7 @@ import {
     DELETE_PROCESSES_STARTED,
     DELETE_PROCESSES_SUCCESS,
     DELETE_PROCESSES_FAILURE,
+    EDITING_PROCESS,
 } from '../types/processes_types'
 
 import * as api from '../../api/processes_api'
@@ -136,4 +137,8 @@ export const updateProcesses = (processes, d3) => {
 
 export const setSelectedProcess = (process) => {
     return { type: 'SET_SELECTED_PROCESS', payload: process }
+}
+
+export const editingProcess = (bool) => {
+    return { type: EDITING_PROCESS, payload: bool }
 }

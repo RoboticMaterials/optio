@@ -33,6 +33,8 @@ import {
     SELECT_TASK,
     SET_SELECTED_TASK,
     DESELECT_TASK,
+    EDITING_TASK,
+
 } from '../types/tasks_types'
 
 import { deepCopy } from '../../methods/utils/utils';
@@ -265,6 +267,11 @@ export default function tasksReducer(state = defaultState, action) {
                 selectedTask: null,
             }
 
+            case EDITING_TASK:
+                return {
+                    ...state,
+                    editingTask: action.payload,
+                }
         default:
             return state;
     }

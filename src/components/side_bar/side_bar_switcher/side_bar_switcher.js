@@ -10,12 +10,20 @@ import { setMode } from '../../../redux/actions/sidebar_actions'
 import { deselectLocation, sideBarBack } from '../../../redux/actions/locations_actions'
 import { deselectTask } from '../../../redux/actions/tasks_actions'
 import { setSelectedDevice } from '../../../redux/actions/devices_actions'
+import {editingTask} from '../../../redux/actions/tasks_actions'
+import {editingProcess} from '../../../redux/actions/processes_actions'
+
+
 
 const SideBarSwitcher = (props) => {
 
     const dispatch = useDispatch()
     const onSetSelectedDevice = (selectedDevice) => dispatch(setSelectedDevice(selectedDevice))
     const onSideBarBack = (props) => dispatch(sideBarBack(props))
+
+    const onTaskEditing = (props) => dispatch(editingTask(props))
+    const onProcessEditing = (props) => dispatch(editingProcess(props))
+
     const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
     const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
@@ -29,13 +37,15 @@ const SideBarSwitcher = (props) => {
 
     return (
         <styled.SideBarContainer ref={wrapperRef}>
+
             <SideBarButton
                 mode={'locations'}
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
                     onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy })
-
+                    onTaskEditing(false)
+                    onProcessEditing(false)
                 }}
                 currentMode={url}
             />
@@ -47,6 +57,8 @@ const SideBarSwitcher = (props) => {
                     history.push(`/${page}`)
                     dispatch(deselectLocation())
                     dispatch(deselectTask())
+                    onProcessEditing(false)
+                    onTaskEditing(false)
                 }}
                 currentMode={url}
             />
@@ -58,6 +70,8 @@ const SideBarSwitcher = (props) => {
                     history.push(`/${page}`)
                     dispatch(deselectLocation())
                     dispatch(deselectTask())
+                    onTaskEditing(false)
+                    onProcessEditing(false)
                 }}
                 currentMode={url}
             />
@@ -83,7 +97,7 @@ const SideBarSwitcher = (props) => {
                       dispatch(deselectTask())
                   }}
                   currentMode={url}
-              />  
+              />
             } */}
 
 
@@ -93,6 +107,7 @@ const SideBarSwitcher = (props) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
                     onSideBarBack({ selectedLocation })
+                    onTaskEditing(false)
                 }}
                 currentMode={url}
             />
@@ -104,6 +119,7 @@ const SideBarSwitcher = (props) => {
                     history.push(`/${page}`)
                     dispatch(deselectLocation())
                     dispatch(deselectTask())
+                    onTaskEditing(false)
                 }}
                 currentMode={url}
             />
