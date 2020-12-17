@@ -43,10 +43,10 @@ import logger from '../../logger.js';
 import { getMap } from '../../api/map_api';
 import SideBar from '../side_bar/side_bar';
 import localReducer from "../../redux/reducers/local_reducer";
-import {getCards, getProcessCards} from "../../redux/actions/card_actions";
+import { getCards, getProcessCards } from "../../redux/actions/card_actions";
 import apiReducer from "../../redux/reducers/api_reducer";
-import {getReportEvents} from "../../redux/actions/report_event_actions";
-import {getLots} from "../../redux/actions/lot_actions";
+import { getReportEvents } from "../../redux/actions/report_event_actions";
+import { getLots } from "../../redux/actions/lot_actions";
 
 const ApiContainer = (props) => {
 
@@ -127,15 +127,15 @@ const ApiContainer = (props) => {
 
 
         // once MiR map is enabled, it's always enabled, so only need to do check if it isn't enabled
-        if(!MiRMapEnabled) {
+        if (!MiRMapEnabled) {
             let containsMirCart = false
 
             // check each device
             // in order for MiR mode to be enabled, there must be at least one device of MiR type
             Object.values(devices).forEach((currDevice, index) => {
                 const device_model = currDevice?.device_model ? currDevice?.device_model : ""
-               // const x = currDevice?.position?.x
-               // const y = currDevice?.position?.y
+                // const x = currDevice?.position?.x
+                // const y = currDevice?.position?.y
                 if (
                     device_model === "MiR100"
                 ) containsMirCart = true
@@ -214,8 +214,8 @@ const ApiContainer = (props) => {
         // clear current interval
         clearInterval(pageDataInterval);
 
-        console.log("api_container pageName",pageName)
-        console.log("api_container pageParams",pageParams)
+        console.log("api_container pageName", pageName)
+        console.log("api_container pageParams", pageParams)
 
         // set new interval for specific page
         switch (pageName) {
@@ -242,18 +242,18 @@ const ApiContainer = (props) => {
                 break;
 
             case 'processes':
-                if(data2 === "card") {
-                    console.log("api container apiPage",apiPage)
+                if (data2 === "card") {
+                    console.log("api container apiPage", apiPage)
                     loadCardsData(data1) // initial call
-                    pageDataInterval = setInterval(()=>loadCardsData(data1), 10000) // set interval
+                    pageDataInterval = setInterval(() => loadCardsData(data1), 10000) // set interval
                 }
-                else if(data1 === "timeline") {
+                else if (data1 === "timeline") {
                     loadCardsData() // initial call
-                    pageDataInterval = setInterval(()=>loadCardsData(), 10000)
+                    pageDataInterval = setInterval(() => loadCardsData(), 10000)
                 }
-                else if(data1 === "summary") {
+                else if (data1 === "summary") {
                     loadCardsData() // initial call
-                    pageDataInterval = setInterval(()=>loadCardsData(), 10000)
+                    pageDataInterval = setInterval(() => loadCardsData(), 10000)
                 }
                 else {
                     pageDataInterval = setInterval(() => loadTasksData(), 10000);
@@ -409,7 +409,7 @@ const ApiContainer = (props) => {
         cards
     */
     const loadCardsData = async (processId) => {
-        if(processId) {
+        if (processId) {
             await onGetProcessCards(processId)
         } else {
             onGetCards()
@@ -491,7 +491,6 @@ const ApiContainer = (props) => {
         const positions = locations.positions
 
         Object.values(tasks).map(async (task) => {
-            console.log(task)
             // console.log('QQQQ Task', positions[task.load.position], positions[task.unload.position])
 
             // Deletes the task if the load/unload position/station has been deleted from the positon list
@@ -559,7 +558,7 @@ const ApiContainer = (props) => {
         Object.values(stations).map((station) => {
 
             // if(station.children === undefined) onDeleteStation(station._id)
-        
+
             station.children.map(async (position, ind) => {
                 if (!!positions[position] && positions[position].parent === null) {
 
@@ -670,21 +669,26 @@ const ApiContainer = (props) => {
 
         Object.values(processes).map((process) => {
 
-            process.routes.map(async (route) => {
-                if (!tasks[route]) {
-                    // Removes the task from the array of routes
-                    let processRoutes = deepCopy(process.routes)
-                    const index = processRoutes.indexOf(route)
-                    processRoutes.splice(index, 1)
-                    const updatedProcess = {
-                        ...process,
-                        routes: [...processRoutes]
-                    }
-                    console.log('QQQQ route does not exist in anymore, delete from process', deepCopy(updatedProcess))
+            Object.keys(process.routes).map(async (station) => {
 
-                    await onPutProcess(updatedProcess)
-                }
+                process.routes[station].map(async (route) => {
+
+                    if (!tasks[route]) {
+                        // Removes the task from the array of routes
+                        let processRoutes = deepCopy(process.routes)
+                        const index = processRoutes.indexOf(route)
+                        processRoutes.splice(index, 1)
+                        const updatedProcess = {
+                            ...process,
+                            routes: [...processRoutes]
+                        }
+                        console.log('QQQQ route does not exist in anymore, delete from process', deepCopy(updatedProcess))
+
+                        await onPutProcess(updatedProcess)
+                    }
+                })
             })
+
         })
     }
 
@@ -726,10 +730,10 @@ const ApiContainer = (props) => {
      * @param {*} tasks
      */
     const handleTaskQueueWithBrokenTasks = async (taskQueue, tasks) => {
-        if(taskQueue === undefined) return
+        if (taskQueue === undefined) return
 
-        Object.values(taskQueue).map( async (Q, i) => {
-            if(tasks[Q.task_id] === undefined) {
+        Object.values(taskQueue).map(async (Q, i) => {
+            if (tasks[Q.task_id] === undefined) {
                 console.log('QQQQ TaskQ associated task has been deleted')
                 await onDeleteTaskQItem(Q._id.$oid)
             }

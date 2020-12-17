@@ -492,48 +492,53 @@ const EditTask = (props) => {
 
         }
 
-        // If this task is part of a process and not already in the array of routes, then add the task to the selected process
-        // if (isProcessTask && !selectedProcess.routes.includes(selectedTask._id)) {
+        // If this task is part of a process and not already in the graph of routes, then add the task to the selected process
         if (isProcessTask) {
 
-            let lastNode = false
-            let selectedProcessNode = selectedProcess
-            let updatedTree = selectedProcess
+            /**
+             * The structure of a routes that belong to a process is a directed graph
+             * The way it works is the all stations involved with a process are added as keys
+             * The values of each station are routes that have that station as the unload station
+             * 
+             * This means that the very first station in a process wont have a route associated with it because it only loads and doesnt unload
+             * 
+             * EX:
+             * 
+             * Station 1 has a route that goes to Station 2 (route1) and Station 3 (route2)
+             * Station 2 has a route that goes to Station 3 (route3)
+             * Station 3 has no routes that leave the station
+             * 
+             * So the data structure would look like this:
+             * {
+             *  station1: [], // No routes that unload here
+             *  station2: [route1] // Route 1 unloads here
+             *  station3: [route2, route3] // Route 2 and 3 unload here
+             * }
+             */
 
-            const newChild = {
-                name: selectedProcess.name,
-                _id: uuid.v4(),
-                route: selectedTask._id,
-                parent: null,
-                children: [],
+            let processRoutes = selectedProcess.routes
+
+            // If the task is already incuded in the process then skip over
+            if (Object.keys(processRoutes).includes(selectedTask.unload.station) && processRoutes[selectedTask.unload.station].includes(selectedTask._id)) return
+
+            // Else if the process includes the station, then add task to the station
+            else if (Object.keys(processRoutes).includes(selectedTask.unload.station)) {
+                processRoutes[selectedTask.unload.station].push(selectedTask._id)
             }
 
-            while(!lastNode) {
-
-                // If the children length is 0 then you're at the last node so add the child
-                if(selectedProcessNode.children.length === 0) {
-
-                    newChild.parent = selectedProcessNode._id
-                    selectedProcessNode.children = [newChild]
-                    lastNode = true
-
-                }
-
-                // If the child is the selected task, then dont add the task
-                else if(selectedProcessNode.children[0].route === selectedTask._id) lastNode = true
-
-                // Else your not at the last node, so keep going down
-                else {
-                    selectedProcessNode = selectedProcessNode.children[0]
-                    updatedTree.children.push(deepCopy(selectedProcessNode))
-
-                }
-
+            // Else the process does not include station, so add station and route
+            else {
+                processRoutes[selectedTask.unload.station] = [selectedTask._id]
             }
-            // selectedProcess.child
+
+            // If the process does not include the load station then add it with no attatched routes (See directed graph explanation above)
+            if(!processRoutes[selectedTask.load.station]) {
+                processRoutes[selectedTask.load.station] = []
+            }
+
             onSetSelectedProcess({
                 ...selectedProcess,
-                routes: [...selectedProcess.routes, selectedTask._id]
+                route: processRoutes,
             })
         }
 
@@ -609,16 +614,16 @@ const EditTask = (props) => {
         <styled.ContentContainer>
 
             <ConfirmDeleteModal
-              isOpen = {!!confirmDeleteModal}
-              title={"Are you sure you want to delete this Route?"}
-              button_1_text={"Yes"}
-              handleOnClick1 = {()=>{
-                handleDelete()
-                setConfirmDeleteModal(null)
-              }}
-              button_2_text={"No"}
-              handleOnClick2 = {()=> setConfirmDeleteModal(null)}
-              handleClose={() => setConfirmDeleteModal(null)}
+                isOpen={!!confirmDeleteModal}
+                title={"Are you sure you want to delete this Route?"}
+                button_1_text={"Yes"}
+                handleOnClick1={() => {
+                    handleDelete()
+                    setConfirmDeleteModal(null)
+                }}
+                button_2_text={"No"}
+                handleOnClick2={() => setConfirmDeleteModal(null)}
+                handleClose={() => setConfirmDeleteModal(null)}
             />
 
             <div style={{ marginBottom: '1rem' }}>
