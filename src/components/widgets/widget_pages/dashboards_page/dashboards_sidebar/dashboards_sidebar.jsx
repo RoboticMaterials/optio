@@ -67,7 +67,8 @@ const DashboardsSidebar = (props) => {
         minWidth,
         showSideBar,
         stationID,
-        clickable
+        clickable,
+        dashboardId
     } = props
 
 
@@ -100,7 +101,8 @@ const DashboardsSidebar = (props) => {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const stations = useSelector(state => state.locationsReducer.stations)
     const code409 = useSelector(state => { return state.taskQueueReducer.error })
-
+    const kickOffEnabled = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] })
+    console.log("kickOffEnabled", kickOffEnabled)
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null)
 
@@ -175,6 +177,8 @@ const DashboardsSidebar = (props) => {
         return Object.entries(OPERATION_TYPES).filter((currEntry, ind) => {
             const currKey = currEntry[0]
             if(currKey !== OPERATION_TYPES.KICK_OFF.key) return true // KICK_OFF currently disabled
+
+            if((currKey === OPERATION_TYPES.KICK_OFF.key) && kickOffEnabled) return true
 
         }).map((currEntry, ind) => {
 

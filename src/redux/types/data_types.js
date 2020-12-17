@@ -10,3 +10,5 @@ export const DATA_PAGE = 'DATA_PAGE';
 export const JUNK = 'JUNK';
 export const REPORT_EVENT = 'REPORT_EVENT';
 export const REPORT_EVENTS = 'REPORT_EVENTS';
+export const DASHBOARDS = 'DASHBOARDS';
+export const DASHBOARD = 'DASHBOARD';

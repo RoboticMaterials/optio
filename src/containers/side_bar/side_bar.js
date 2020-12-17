@@ -186,7 +186,6 @@ const SideBar = (props) => {
     }
 
     let content
-    console.log("page",page)
     switch (page) {
         case 'locations':
             content = <LocationsContent />
@@ -198,8 +197,6 @@ const SideBar = (props) => {
         //     break
 
         case 'processes':
-            console.log("subpage",subpage)
-            console.log("id",id)
             if(subpage === "card" || (id === "summary") || (id === "timeline"))   {
                 content = <Cards id={id}/>
             }

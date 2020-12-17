@@ -48,14 +48,15 @@ const HILModal = () => {
             return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item} />
         }
 
-        else{ if (!!taskQueueItemClicked && taskQueue[taskQueueItemClicked]) {
-            const item = taskQueue[taskQueueItemClicked]
-            const type = tasks[item.task_id].device_type
-            const hilType = tasks[item.task_id].type
-              if(type=='human'){
-              return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item} />
+        else {
+            if (!!taskQueueItemClicked && taskQueue[taskQueueItemClicked]) {
+                const item = taskQueue[taskQueueItemClicked]
+                const type = tasks[item.task_id].device_type
+                const hilType = tasks[item.task_id].type
+                if (type == 'human') {
+                    return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item} />
+                }
             }
-          }
         }
 
         // Used to hide the HIL if success was clicked. (See HIL_Modals)
@@ -108,8 +109,7 @@ const HILModal = () => {
             // Else if the task q item has a dashboardID and the dashboardID matches current dashboard, then show that dashboard
             // The reason this happens is that it's a human task and the person hit a dashboard button (see dashboard_screen).
             // The HIL modal needs to immediatly show because the backend will be too slow to respond to show that dashboard after button click
-            else if (!!item.dashboard && item.dashboard === dashboardID && localHumanTask){
-                console.log('QQQQ HUR BABY')
+            else if (!!item.dashboard && item.dashboard === dashboardID && localHumanTask) {
                 return <HILModals hilMessage={item.hil_message} hilType={'push'} taskQuantity={item.quantity} taskQueueID={id} item={item} />
 
             }

@@ -49,7 +49,7 @@ const Card = (props) => {
                     color={lotColor}
                 >
                     {lotName &&
-                    <styled.LotName style={{marginRight: "1rem"}}>Lot: {lotName}:</styled.LotName>
+                    <styled.LotName style={{marginRight: "1rem"}}>Lot: {lotName}</styled.LotName>
                     }
                 </styled.HeaderBar>
                 <styled.ContentContainer>
@@ -57,7 +57,7 @@ const Card = (props) => {
 
 
 
-                    <span>{name}</span>
+                    <styled.CardName>{name}</styled.CardName>
                 </styled.ContentContainer>
 
 

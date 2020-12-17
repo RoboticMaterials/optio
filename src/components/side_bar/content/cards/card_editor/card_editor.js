@@ -44,6 +44,7 @@ const CardEditor = (props) => {
 		onAfterOpen,
 		close,
 		cardId,
+		processId
 		// objectId
 
 	} = props
@@ -64,7 +65,7 @@ const CardEditor = (props) => {
 	const card = cards[cardId]
 	const {
 		station_id: stationId,
-		process_id: processId = processIds[0],
+		// process_id: processId = processIds[0],
 		route_id: routeId,
 		lot_id: lotId
 	} = card || {}
@@ -79,10 +80,7 @@ const CardEditor = (props) => {
 
 	const objects = useSelector(state => { return state.objectsReducer.objects })
 
-	console.log("processId",processId)
-	console.log("objects",objects)
-
-	const routeIds = processes[processId].routes
+	const routeIds = processes[processId] ? processes[processId].routes : []
 
 	const dispatch = useDispatch()
 
@@ -100,9 +98,6 @@ const CardEditor = (props) => {
 	const [cardDataInterval, setCardDataInterval] = useState(null)
 	const [calendarValue, setCalendarValue] = useState(null)
 	const [showTimePicker, setShowTimePicker] = useState(false)
-
-	console.log("calendarValue",calendarValue)
-	console.log("typeof calendarValue",typeof calendarValue)
 
 	useEffect( () => {
 		clearInterval(cardDataInterval)
@@ -181,8 +176,6 @@ const CardEditor = (props) => {
 		const end = values?.dates?.end || null
 
 		const objectId = (object && Array.isArray(object) && object.length > 0) ? object[0]._id : null
-
-		console.log("handleSubmit object",object)
 
 
 		// update (PUT)
@@ -649,8 +642,6 @@ const CardEditor = (props) => {
 						const {
 							events = []
 						} = cardHistory || {}
-
-						console.log("cardHistory",cardHistory)
 
 						return(
 							<styled.BodyContainer>

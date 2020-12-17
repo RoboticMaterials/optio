@@ -22,7 +22,7 @@ import { postStatus } from '../../../../../api/status_api'
 
 // Import Actions
 import { postTaskQueue, putTaskQueue } from '../../../../../redux/actions/task_queue_actions'
-import { dashboardOpen } from '../../../../../redux/actions/dashboards_actions'
+import {dashboardOpen, setSelectedValueAttr} from '../../../../../redux/actions/dashboards_actions'
 
 // Import styles
 import * as pageStyle from '../dashboards_header/dashboards_header.style'
@@ -57,10 +57,13 @@ const DashboardScreen = (props) => {
     const positions = useSelector(state => state.locationsReducer.positions)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
+    const processes = useSelector(state => { return state.processesReducer.processes })
+    const routes = useSelector(state => { return state.tasksReducer.tasks })
 
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
     const [reportModal, setReportModal] = useState(null);
+    const [allowKickOff, setAllowKickOff] = useState(false);
 
     // actions
     const dispatch = useDispatch()
@@ -68,6 +71,7 @@ const DashboardScreen = (props) => {
     const onHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
     const onLocalHumanTask = (bol) => dispatch({type: 'LOCAL_HUMAN_TASK', payload: bol})
     const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
+    const dispatchSetSelectedValueAttr = async (dashboardId, kickOffEnabled) => await dispatch(setSelectedValueAttr(dashboardId, kickOffEnabled))
 
     const history = useHistory()
     const params = useParams()
@@ -93,6 +97,39 @@ const DashboardScreen = (props) => {
             onDashboardOpen(false)
         }
     }, [])
+
+    /**
+     * Whenever processes updates, check if this dashboard's station is the first station in any process
+     *
+     * Used for determining whether or not to enable the KICK OFF button
+     */
+    useEffect(() => {
+
+        var isFirstStation = false
+        // loop through processes and check if the load station of the first route of any process matches the current dashboards station
+        Object.values(processes).forEach((currProcess) => {
+
+            // get first routes id, default to null
+            const firstRouteId = (currProcess && currProcess.routes && Array.isArray(currProcess.routes))  ? currProcess.routes[0] : null
+
+            // get route from route id, default to null
+            const currRoute = firstRouteId ? routes[firstRouteId] : null
+
+            // get station id from load key of route
+            const loadStationId = currRoute?.load?.station
+
+            // if the loadStationId matches the current dashboard's stationId, then allow kick off
+            if(loadStationId === stationID) isFirstStation = true
+
+        })
+
+        // setAllowKickOff(isFirstStation)
+        // dispatchSetSelectedValueAttr(dashbo)
+        dispatchSetSelectedValueAttr(dashboardId, isFirstStation)
+
+        console.log("isFirstStation",isFirstStation)
+
+    }, [processes])
 
     // If current dashboard is undefined, it probably has been deleted. So go back to locations just incase the station has been deleted too
     if (currentDashboard === undefined) {
