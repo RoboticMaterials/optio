@@ -24,6 +24,19 @@ import {
     DASHBOARD_OPEN,
 } from '../types/dashboards_types'
 
+import {
+    DASHBOARD,
+    DASHBOARDS
+} from "../types/data_types"
+
+import {
+    SET
+} from "../types/prefixes"
+
+import {
+    KICK_OFF_ENABLED
+} from "../types/suffixes"
+
 import * as api from '../../api/dashboards_api'
 import { dashboardsSchema } from '../../normalizr/schema';
 
@@ -132,4 +145,8 @@ export const deleteDashboard = (ID) => {
 
 export const dashboardOpen = (bol) => {
     return { type: DASHBOARD_OPEN, payload: bol }
+}
+
+export const setSelectedValueAttr = (dashboardId, kickOffEnabled) => {
+    return { type: SET + DASHBOARD + KICK_OFF_ENABLED, payload: {dashboardId, kickOffEnabled} }
 }

@@ -17,7 +17,7 @@ const LotQueue = SortableContainer((props) => {
 		stationName = "Unnamed",
 		route_id = "QUEUE",
 		handleCardClick,
-		cards = [],
+		cards,
 		size,
 		processId,
 		setShowCardEditor,
@@ -44,8 +44,6 @@ const LotQueue = SortableContainer((props) => {
 
 
 	const handleDrop = (dropResult) => {
-		console.log("handleDrop dropResult", dropResult)
-		console.log("handleDrop id", id)
 		const { removedIndex, addedIndex, payload, element } = dropResult;
 
 		if (payload === null) { //  No new button, only reorder
@@ -54,7 +52,6 @@ const LotQueue = SortableContainer((props) => {
 
 		} else {
 			if(addedIndex !== null) {
-				console.log("posting payload", payload)
 				onPutCard({...payload, station_id: station_id, route_id: route_id, process_id: processId}, payload._id)
 			}
 		}
@@ -66,7 +63,7 @@ const LotQueue = SortableContainer((props) => {
 				dragEnter={dragEnter}
 				onMouseEnter={()=>onSetColumnHovering(true)}
 				onTouchStart={()=>onSetCardDragging(true)}
-				onScroll={()=>console.log("scroll")}
+				// onScroll={()=>console.log("scroll")}
 				onMouseLeave={()=>onSetColumnHovering(false)}
 				onTouchEnd={()=>onSetCardDragging(false)}
 			>
@@ -89,7 +86,6 @@ const LotQueue = SortableContainer((props) => {
 					style={{overflow: "auto",height: "100%", padding: "1rem 1rem 2rem 1rem" }}
 				>
 						{cards.map((card, index) => {
-							console.log("card",card)
 							const {
 								_id,
 								count = 0,
@@ -110,7 +106,7 @@ const LotQueue = SortableContainer((props) => {
 									count={count}
 									id={index}
 									index={index}
-									onClick={()=>handleCardClick(_id)}
+									onClick={()=>handleCardClick(_id, processId)}
 								/>
 							)
 						})}
@@ -151,7 +147,11 @@ const LotQueue = SortableContainer((props) => {
 						</styled.LabelContainer>
 
 						<Button
-							onClick={()=>setShowCardEditor(!showCardEditor)}
+							onClick={()=> {
+								handleCardClick(null, processId)
+								setShowCardEditor(!showCardEditor)
+
+							}}
 							schema={'processes'}
 						>
 							+ Card

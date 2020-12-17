@@ -39,10 +39,14 @@ import {
 } from '../types/dashboards_types'
 
 import { deepCopy } from '../../methods/utils/utils';
+import {SET} from "../types/prefixes";
+import {DASHBOARD} from "../types/data_types";
+import {KICK_OFF_ENABLED} from "../types/suffixes";
 
 
 const defaultState = {
     dashboards: null,
+    kickOffEnabledDashboards: {},
 
     error: {},
     pending: false,
@@ -54,6 +58,17 @@ export default function dashboardsReducer(state = defaultState, action) {
     let dashboardsCopy = {}
 
     switch (action.type) {
+
+        case SET + DASHBOARD + KICK_OFF_ENABLED:
+            const {
+                dashboardId,
+                kickOffEnabled
+            } = action.payload
+
+            return {
+                ...state,
+                kickOffEnabledDashboards: {...state.kickOffEnabledDashboards, [dashboardId]: kickOffEnabled},
+            }
 
         case DASHBOARD_OPEN:
             return {

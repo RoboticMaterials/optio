@@ -35,7 +35,6 @@ const CardZone = SortableContainer((props) => {
 	const width = size?.width
 	const height = size?.height
 
-	console.log("CardZone height",height)
 
 	const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] }) || {}
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
@@ -43,28 +42,37 @@ const CardZone = SortableContainer((props) => {
 	const stations = useSelector(state => { return state.locationsReducer.stations })
 
 	let cardsSorted = {}
+	var prevLoadStationId
+	var prevUnloadStationId
 	currentProcess.routes && currentProcess.routes.forEach((currRouteId) => {
 		const currRoute =  routes[currRouteId]
 
+
 		const loadStationId = currRoute?.load?.station
 		const unloadStationId = currRoute?.unload?.station
-		console.log("currRoute",currRoute)
 
-		cardsSorted[currRouteId + "+" + loadStationId] = {
-			station_id: loadStationId,
-			route_id: currRouteId,
-			cards: []
+		if(prevUnloadStationId !== loadStationId) {
+			cardsSorted[currRouteId + "+" + loadStationId] = {
+				station_id: loadStationId,
+				route_id: currRouteId,
+				cards: []
+			}
 		}
-		cardsSorted[currRouteId + "+" + unloadStationId] = {
-			station_id: unloadStationId,
-			route_id: currRouteId,
-			cards: []
+
+		if(prevLoadStationId !== unloadStationId ) {
+			cardsSorted[currRouteId + "+" + unloadStationId] = {
+				station_id: unloadStationId,
+				route_id: currRouteId,
+				cards: []
+			}
 		}
+
+		prevLoadStationId = loadStationId
+		prevUnloadStationId = unloadStationId
 	})
 
 	var queue = []
 	Object.values(cards).forEach((card) => {
-		console.log("cards mapping cards", card)
 
 		if(cardsSorted[card.route_id + "+" + card.station_id]) {
 			cardsSorted[card.route_id + "+" + card.station_id].cards.push(card)
@@ -78,8 +86,6 @@ const CardZone = SortableContainer((props) => {
 			// }
 		}
 	})
-
-	console.log("cardsSorted",cardsSorted)
 
 
 
@@ -95,7 +101,6 @@ const CardZone = SortableContainer((props) => {
 	}, [])
 
 
-	console.log("CardZone cards",cards)
 
 
 		return(
