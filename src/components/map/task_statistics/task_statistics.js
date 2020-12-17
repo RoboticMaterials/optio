@@ -108,12 +108,12 @@ const TaskStatistics = (props) => {
             return handleSingleTask(selectedTask)
         }
 
-        return Object.keys(selectedProcess.routes).map((station) => {
-            return selectedProcess.routes[station].map((route) => {
-                return handleSingleTask(tasks[route])
+        // return Object.keys(selectedProcess.routes).map((station) => {
+        return selectedProcess.routes.map((route) => {
+            return handleSingleTask(tasks[route])
 
-            })
         })
+        // })
     }
 
 

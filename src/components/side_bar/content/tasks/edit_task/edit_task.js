@@ -33,6 +33,7 @@ import * as objectActions from '../../../../../redux/actions/objects_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import { putProcesses, setSelectedProcess } from '../../../../../redux/actions/processes_actions'
 import { putStation } from '../../../../../redux/actions/stations_actions'
+import { select } from 'd3-selection'
 
 const EditTask = (props) => {
 
@@ -493,7 +494,7 @@ const EditTask = (props) => {
         }
 
         // If this task is part of a process and not already in the graph of routes, then add the task to the selected process
-        if (isProcessTask) {
+        if (isProcessTask && !selectedProcess.routes.includes(selectedTask._id)) {
 
             /**
              * The structure of a routes that belong to a process is a directed graph
@@ -516,30 +517,30 @@ const EditTask = (props) => {
              * }
              */
 
-            let processRoutes = selectedProcess.routes
+            //  Commented out for now
+            // let processRoutes = selectedProcess.routes
 
-            // If the task is already incuded in the process then skip over
-            if (Object.keys(processRoutes).includes(selectedTask.unload.station) && processRoutes[selectedTask.unload.station].includes(selectedTask._id)) return
+            // // If the task is already incuded in the process then skip over
+            // if (Object.keys(processRoutes).includes(selectedTask.unload.station) && processRoutes[selectedTask.unload.station].includes(selectedTask._id)) return
 
-            // Else if the process includes the station, then add task to the station
-            else if (Object.keys(processRoutes).includes(selectedTask.unload.station)) {
-                processRoutes[selectedTask.unload.station].push(selectedTask._id)
-            }
+            // // Else if the process includes the station, then add task to the station
+            // else if (Object.keys(processRoutes).includes(selectedTask.unload.station)) {
+            //     processRoutes[selectedTask.unload.station].push(selectedTask._id)
+            // }
 
-            // Else the process does not include station, so add station and route
-            else {
-                processRoutes[selectedTask.unload.station] = [selectedTask._id]
-            }
+            // // Else the process does not include station, so add station and route
+            // else {
+            //     processRoutes[selectedTask.unload.station] = [selectedTask._id]
+            // }
 
-            // If the process does not include the load station then add it with no attatched routes (See directed graph explanation above)
-            if(!processRoutes[selectedTask.load.station]) {
-                processRoutes[selectedTask.load.station] = []
-            }
-
-            onSetSelectedProcess({
-                ...selectedProcess,
-                route: processRoutes,
-            })
+            // // If the process does not include the load station then add it with no attatched routes (See directed graph explanation above)
+            // if(!processRoutes[selectedTask.load.station]) {
+            //     processRoutes[selectedTask.load.station] = []
+            // }
+            selectedProcess.routes.push(selectedTask._id);
+            onSetSelectedProcess(
+                selectedProcess
+            )
         }
 
         dispatch(taskActions.deselectTask())    // Deselect
