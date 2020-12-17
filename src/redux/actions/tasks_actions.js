@@ -32,6 +32,7 @@ import {
     SELECT_TASK,
     SET_SELECTED_TASK,
     DESELECT_TASK,
+    EDITING_TASK,
 } from '../types/tasks_types'
 
 import { deepCopy } from '../../methods/utils/utils';
@@ -219,4 +220,8 @@ export const setSelectedTask = (task) => {
 
 export const deselectTask = () => {
     return { type: DESELECT_TASK }
+}
+
+export const editingTask = (bool) => {
+    return { type: EDITING_TASK, payload: bool }
 }

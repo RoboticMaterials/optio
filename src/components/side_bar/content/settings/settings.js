@@ -210,7 +210,7 @@ const Settings = () => {
                         placeholder="MiR IP Address"
                         value={serverSettingsState.mir_ip}
                         onChange={(event) => {
-                            setServerSettingsState({ 
+                            setServerSettingsState({
                                 ...serverSettingsState,
                                 mir_ip: event.target.value
                             })

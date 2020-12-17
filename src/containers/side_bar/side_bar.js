@@ -9,7 +9,9 @@ import { DraggableCore } from "react-draggable";
 import SideBarSwitcher from '../../components/side_bar/side_bar_switcher/side_bar_switcher'
 
 import { hoverStationInfo } from '../../redux/actions/stations_actions'
-import {sideBarBack} from '../../redux/actions/locations_actions'
+import {sideBarBack, editing} from '../../redux/actions/locations_actions'
+import {editingTask} from '../../redux/actions/tasks_actions'
+import {editingProcess} from '../../redux/actions/processes_actions'
 
 import LocationsContent from '../../components/side_bar/content/locations/locations_content'
 import ObjectsContent from '../../components/side_bar/content/objects/objects_content'
@@ -18,6 +20,8 @@ import DevicesContent from '../../components/side_bar/content/devices/devices_co
 import SchedulerContent from '../../components/side_bar/content/scheduler/scheduler_content'
 import ProcessesContent from '../../components/side_bar/content/processes/processes_content'
 import Settings from '../../components/side_bar/content/settings/settings'
+import ConfirmDeleteModal from '../../components/basic/modals/confirm_delete_modal/confirm_delete_modal'
+
 
 import { setWidth, setMode } from "../../redux/actions/sidebar_actions";
 import * as sidebarActions from "../../redux/actions/sidebar_actions"
@@ -48,10 +52,15 @@ const SideBar = (props) => {
     const [prevWidth, setPrevWidth] = useState(width)
     const [buttonActive, setButtonActive] = useState(false)
     const [prevParams, setPrevParams] = useState(params)
+    const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
+
 
     const mode = useSelector(state => state.sidebarReducer.mode)
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
-    const editing = useSelector(state => state.locationsReducer.editingLocation)
+    const locationEditing = useSelector(state => state.locationsReducer.editingLocation)
+    const taskEditing = useSelector(state => state.tasksReducer.editingTask)
+    const processEditing = useSelector(state => state.processesReducer.editingProcess)
+
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
     const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
@@ -120,7 +129,10 @@ const SideBar = (props) => {
         console.log("widgetPageLoaded",widgetPageLoaded)
         const hamburger = document.querySelector('.hamburger')
         hamburger.classList.toggle('is-active')
-        dispatch(locationActions.editing(false))
+        dispatch(editing(false)) //location editing need to rename
+        dispatch(editingTask(false))
+        dispatch(editingProcess(false))
+
         dispatch(locationActions.setSelectedLocationCopy(null))
         dispatch(locationActions.setSelectedLocationChildrenCopy(null))
         dispatch(locationActions.deselectLocation())    // Deselect
@@ -223,11 +235,32 @@ const SideBar = (props) => {
 
     return (
         <>
+
+            <ConfirmDeleteModal
+              isOpen = {!!confirmDeleteModal}
+              title={"Are you sure you want to leave this page? Any changes will not be saved"}
+              button_1_text={"Yes"}
+              button_2_text={"No"}
+              handleClose={() => setConfirmDeleteModal(null)}
+              handleOnClick1 = {() => {
+                  handleSideBarOpenCloseButtonClick()
+                  setConfirmDeleteModal(null)
+              }}
+              handleOnClick2 = {() => {
+                  setConfirmDeleteModal(null)
+              }}
+            />
+
             <styled.SideBarOpenCloseButton
                 className="hamburger hamburger--slider"
                 type='button'
                 id='sideBarButton'
-                onClick={() => handleSideBarOpenCloseButtonClick()}
+                onClick={() => {
+                  if(locationEditing || taskEditing || processEditing){
+                    setConfirmDeleteModal(true)
+                  }
+                  else{handleSideBarOpenCloseButtonClick()}
+                }}
             // showSideBar={showSideBar}
             >
                 <span className='hamburger-box' id='sideBarButton' style={{ display: 'flex', justifyContent: 'center', width: 'auto' }}>
