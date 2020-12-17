@@ -160,7 +160,6 @@ const CardEditor = (props) => {
 	}, [isOpen])
 
 	const handleSubmit = async (values, formMode) => {
-		logger.log("cardEditor values", values)
 
 		const {
 			name,
@@ -366,11 +365,6 @@ const CardEditor = (props) => {
 
 					const endDateText = (values?.dates?.end?.month && values?.dates?.end?.day && values?.dates?.end?.year) ?  values.dates?.end.month + "/" + values.dates?.end.day + "/" + values.dates?.end.year : "Planned end"
 					// const endDateTime = (values?.endTime?.hours && values?.endTime?.minutes && values?.endTime?.seconds) ?  values.endTime.hours + ":" + values.endTime.minutes + ":" + values.endTime.seconds : "Start Time"
-
-					logger.log("values",values)
-					logger.log("touched",touched)
-					logger.log("errors",errors)
-					logger.log("initialValues",initialValues)
 
 					// get number of field errors
 					const errorCount = Object.keys(errors).length > 0
@@ -701,7 +695,7 @@ const CardEditor = (props) => {
 												modifiedData = {
 													...rest, "route": {
 														new: routes[newRouteId] ? routes[newRouteId].name : "",
-														old: routes[oldRouteId] ? routes[newRouteId].name : "",
+														old: routes[oldRouteId] ? routes[oldRouteId].name : "",
 													}
 												}
 

@@ -220,8 +220,6 @@ export async function postCard(card) {
 }
 
 export async function putCard(card, ID) {
-    console.log("cards_api putCard card",card)
-    console.log("cards_api putCard ID",ID)
     try {
         const response = await axios({
             method: 'PUT',
@@ -237,7 +235,6 @@ export async function putCard(card, ID) {
         // log.debug('response',response);
         const data = response.data;
         const dataJson = JSON.parse(data)
-        console.log("cards_api putCard dataJson",dataJson)
         return dataJson;
 
 

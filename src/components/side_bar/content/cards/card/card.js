@@ -37,7 +37,6 @@ const Card = (props) => {
     } = props
 
     const lotColor= "#" + intToRGB(hashCode(lotId))
-    console.log("lotColor",lotColor)
 
     return(
         <styled.StyledDraggable key={id} index={index}>
