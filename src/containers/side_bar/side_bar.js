@@ -174,7 +174,6 @@ const SideBar = (props) => {
     }
 
     let content
-    console.log("page",page)
     switch (page) {
         case 'locations':
             content = <LocationsContent />
