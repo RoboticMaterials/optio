@@ -78,7 +78,7 @@ const ProcessesContent = () => {
                         name: '',
                         _id: uuid.v4(),
                         new: true,
-                        routes: {},
+                        routes: [],
                     }
                     // TODO: May have to do this with processes
                     // dispatch(taskActions.addTask(newTask))
