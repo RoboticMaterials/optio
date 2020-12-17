@@ -101,7 +101,10 @@ const DashboardsSidebar = (props) => {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const stations = useSelector(state => state.locationsReducer.stations)
     const code409 = useSelector(state => { return state.taskQueueReducer.error })
-    const kickOffEnabled = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] })
+
+    const kickOffEnabledInfo = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] })
+    const kickOffEnabled = kickOffEnabledInfo && Array.isArray(kickOffEnabledInfo) && kickOffEnabledInfo.length > 0
+
     console.log("kickOffEnabled", kickOffEnabled)
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null)

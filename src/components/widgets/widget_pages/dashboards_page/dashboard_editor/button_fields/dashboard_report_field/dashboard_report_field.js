@@ -56,7 +56,7 @@ const DashboardReportField = props => {
 			</buttonFieldStyles.DashboardEditButton>
 
 			<buttonFieldStyles.RightContentContainer>
-				<buttonFieldStyles.SchemaIcon className={iconClassName} color={schema.solid}></buttonFieldStyles.SchemaIcon>
+				<buttonFieldStyles.SchemaIcon className={iconClassName} color={button.color ? button.color : schema.color} ></buttonFieldStyles.SchemaIcon>
 
 				<DeleteFieldButton
 					name={`buttons`}
