@@ -30,7 +30,7 @@ const SideBarButton = (props) => {
       return (
         <ConfirmDeleteModal
           isOpen = {!!confirmDeleteModal}
-          title={"Are you sure you want to leave this page? Your changes will not be saved"}
+          title={"Are you sure you want to leave this page? Any changes will not be saved"}
           button_1_text={"Yes"}
           button_2_text={"No"}
           handleClose={() => setConfirmDeleteModal(null)}
@@ -51,7 +51,6 @@ const SideBarButton = (props) => {
 
 
     if (props.mode === 'locations') {
-      console.log(locationEditing)
 
         return (
           <>
