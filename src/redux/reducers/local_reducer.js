@@ -22,6 +22,7 @@ import {
   POST_LOCAL_SETTINGS_FAILURE,
 
 } from '../types/local_types';
+import {defaultLocalSettings} from "../../constants/local_settings_constants";
 
 const defaultState = {
     loggers: {
@@ -64,14 +65,7 @@ const defaultState = {
         */
     },
 
-    localSettings: {
-        non_local_api_ip: '',
-        non_local_api: false,
-        mapViewEnabled: true,
-        toggleDevOptions: true,
-        currentMapId: null,
-        MiRMapEnabled: false
-    },
+    localSettings: defaultLocalSettings,
 
     disableAll: false,
     enableAll: false,
