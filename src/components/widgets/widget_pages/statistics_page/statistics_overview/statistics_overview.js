@@ -212,6 +212,22 @@ const StatisticsOverview = (props) => {
         }
     }
 
+    const renderHeader = () => {
+        return (
+            <styled.PlotHeader style={{ marginBottom: '1rem' }}>
+                {
+                    <>
+                        <TimeSpans color={colors[selector]} setTimeSpan={(timeSpan) => handleTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
+
+                        {/* Commented out for now, only need through put bar chart */}
+                        {/* {handleGaugeCharts()} */}
+                    </>
+                }
+                {renderDateSelector()}
+            </styled.PlotHeader>
+        )
+    }
+
     const renderReportChart = () => {
         // stationID = params.stationID
         var stationReportEventIds = reportEvents.station_id && reportEvents.station_id[stationID]
@@ -320,34 +336,41 @@ const StatisticsOverview = (props) => {
                                 {/* {handleGaugeCharts()} */}
                             </>
                         }
-                        {handleDateSelector()}
+                        {renderDateSelector()}
                     </div>
 
                 </styled.PlotHeader>
 
+                {isLoading ?
+                    <styled.PlotContainer>
+                        <styled.LoadingIcon className="fas fa-circle-notch fa-spin" style={{ fontSize: '3rem', marginTop: '5rem' }} />
+                    </styled.PlotContainer>
+                    :
 
-                <styled.PlotContainer minHeight={minHeight - 10}>
-                    <BarChart
-                        layout={isData ? "horizontal" : "vertical"}
-                        data={data}
-                        enableGridX={isData ? true : false}
-                        enableGridY={!isData ? true : false}
-                        mainTheme={themeContext}
-                        keys={['event_count']}
-                        indexBy={'label'}
-                        axisBottom={{
-                            legend: 'Count',
-                            tickValues: list
-                        }}
-                        axisLeft={{
-                            legend: 'Label'
-                        }}
-                    />
 
-                    {!isData &&
-                        <styled.NoDataText>No Data</styled.NoDataText>
-                    }
-                </styled.PlotContainer>
+                    <styled.PlotContainer minHeight={minHeight - 10}>
+                        <BarChart
+                            layout={isData ? "horizontal" : "vertical"}
+                            data={data}
+                            enableGridX={isData ? true : false}
+                            enableGridY={!isData ? true : false}
+                            mainTheme={themeContext}
+                            keys={['event_count']}
+                            indexBy={'label'}
+                            axisBottom={{
+                                legend: 'Count',
+                                tickValues: list
+                            }}
+                            axisLeft={{
+                                legend: 'Label'
+                            }}
+                        />
+
+                        {!isData &&
+                            <styled.NoDataText>No Data</styled.NoDataText>
+                        }
+                    </styled.PlotContainer>
+                }
             </styled.SinglePlotContainer>
         )
     }
@@ -375,52 +398,50 @@ const StatisticsOverview = (props) => {
             >
                 <styled.PlotHeader>
                     <styled.PlotTitle>Throughput</styled.PlotTitle>
-                    {
-                        <>
-                            <TimeSpans color={colors[selector]} setTimeSpan={(timeSpan) => handleTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
-
-                            {/* Commented out for now, only need through put bar chart */}
-                            {/* {handleGaugeCharts()} */}
-                        </>
-                    }
-                    {handleDateSelector()}
                 </styled.PlotHeader>
 
+                {isLoading ?
+                    <styled.PlotContainer>
+                        <styled.LoadingIcon className="fas fa-circle-notch fa-spin" style={{ fontSize: '3rem', marginTop: '5rem' }} />
+                    </styled.PlotContainer>
+                    :
 
 
-                <styled.PlotContainer
-                    minHeight={minHeight}
-                >
-                    <BarChart
-                        data={filteredData ? filteredData : []}
-                        // data={{throughPut: []}}
-                        enableGridY={true}
-                        // enableGridX={true}
-                        // selector={selector}
-                        mainTheme={themeContext}
-                        timeSpan={timeSpan}
-                        axisBottom={{
-                            tickValues: tickValues,
-                            tickRotation: -90,
-                        }}
-                        axisLeft={{
-                            enable: true,
-                            // tickValues: [0, 1],
-                            // tickRotation: -90,
-                        }}
-                    />
 
-                    {!data &&
-                        <styled.NoDataText>No Data</styled.NoDataText>
-                    }
-                </styled.PlotContainer>
+                    <styled.PlotContainer
+                        minHeight={minHeight}
+                    >
+                        <BarChart
+                            data={filteredData ? filteredData : []}
+                            // data={{throughPut: []}}
+                            enableGridY={true}
+                            // enableGridX={true}
+                            // selector={selector}
+                            mainTheme={themeContext}
+                            timeSpan={timeSpan}
+                            axisBottom={{
+                                tickValues: tickValues,
+                                tickRotation: -90,
+                            }}
+                            axisLeft={{
+                                enable: true,
+                                // tickValues: [0, 1],
+                                // tickRotation: -90,
+                            }}
+                        />
+
+                        {!data &&
+                            <styled.NoDataText>No Data</styled.NoDataText>
+                        }
+                    </styled.PlotContainer>
+                }
 
             </styled.SinglePlotContainer>
         )
     }
 
     // Handles the date selector at the top of the charts
-    const handleDateSelector = () => {
+    const renderDateSelector = () => {
 
         if (data === null) return null
 
@@ -474,8 +495,8 @@ const StatisticsOverview = (props) => {
 
                 }
 
-                {/* If the current dateIndex is 0, hide go to next day button. Can't go to the future now can we dummy */}
-                {dateIndex !== 0 &&
+                {/* If the current dateIndex is 0, then have a blank icon that does nothing. Can't go to the future now can we dummy */}
+                {dateIndex !== 0 ?
                     <styled.DateSelectorIcon
                         className='fas fa-chevron-right'
                         onClick={() => {
@@ -483,6 +504,8 @@ const StatisticsOverview = (props) => {
                             handleTimeSpan(timeSpan, index)
                         }}
                     />
+                    :
+                    <styled.DateSelectorIcon />
 
                 }
             </styled.RowContainer>
@@ -532,18 +555,16 @@ const StatisticsOverview = (props) => {
             {/* Commented out for now, only need through put bar chart */}
             {/* <DataSelector selector={selector} setSelector={setSelector} /> */}
 
-            {isLoading ?
-                <styled.LoadingIcon className="fas fa-circle-notch fa-spin" style={{ fontSize: '3rem', marginTop: '5rem' }} />
-                :
-                <styled.PlotsContainer
-                    ref={pc => plotRef = pc}
-                    // onMouseMove={findSlice}
-                    onMouseLeave={() => { setSlice(null) }}
-                >
-                    {renderThroughputChart()}
-                    {renderReportChart()}
-                </styled.PlotsContainer>
-            }
+
+            <styled.PlotsContainer
+                ref={pc => plotRef = pc}
+                // onMouseMove={findSlice}
+                onMouseLeave={() => { setSlice(null) }}
+            >
+                {renderHeader()}
+                {renderThroughputChart()}
+                {renderReportChart()}
+            </styled.PlotsContainer>
 
 
 
