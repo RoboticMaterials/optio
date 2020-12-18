@@ -24,9 +24,6 @@ import CalendarField from "../../../../basic/form/calendar_field/calendar_field"
 import TimePickerField from "../../../../basic/form/time_picker_field/time_picker_field";
 import CustomTimePickerField from "../../../../basic/form/custom_time_picker_field/custom_time_picker_field";
 import {getLot, postLot, putLot} from "../../../../../redux/actions/lot_actions";
-import PropTypes from "prop-types";
-import * as style from "../../scheduler/schedule_list/schedule_list_item/schedule_list_item.style";
-import ButtonGroup from "../../../../basic/button_group/button_group";
 
 const logger = log.getLogger("CardEditor")
 
@@ -47,22 +44,18 @@ const CardEditor = (props) => {
 		onAfterOpen,
 		close,
 		cardId,
-		processId,
-		binId
+		processId
 		// objectId
 
 	} = props
 
-	console.log("cardeditor binId",binId)
-
-
-	// const object = {
-	// 	_id: 123,
-	// 	name: "hopper"
-	// }
-	// const {
-	// 	name: objectName
-	// } = object
+	const object = {
+		_id: 123,
+		name: "hopper"
+	}
+	const {
+		name: objectName
+	} = object
 
 	const processes = useSelector(state => { return state.processesReducer.processes })
 	const processIds = Object.keys(processes)
@@ -74,15 +67,8 @@ const CardEditor = (props) => {
 		station_id: stationId,
 		// process_id: processId = processIds[0],
 		route_id: routeId,
-		lot_id: lotId,
-		bins
+		lot_id: lotId
 	} = card || {}
-
-	const binEntries = bins ? Object.entries(bins) : null
-
-	const availableBins = bins ? Object.keys(bins) : ["QUEUE"]
-
-	console.log("card editor card", card)
 
 	const lot = lots[lotId]
 
@@ -92,7 +78,7 @@ const CardEditor = (props) => {
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
 	const stations = useSelector(state => { return state.locationsReducer.stations })
 
-	// const objects = useSelector(state => { return state.objectsReducer.objects })
+	const objects = useSelector(state => { return state.objectsReducer.objects })
 
 	const routeIds = processes[processId] ? processes[processId].routes : []
 
@@ -113,167 +99,208 @@ const CardEditor = (props) => {
 	const [calendarValue, setCalendarValue] = useState(null)
 	const [showTimePicker, setShowTimePicker] = useState(false)
 
-
-
-	const handleGetCard = async (cardId) => {
-		if(cardId) {
-			const result = await onGetCard(cardId)
-			if(result) {
-				setFormMode(FORM_MODES.UPDATE)
-				setShowLotInfo(false)
-			}
-			else {
-
-			}
-			console.log("handleGetCard resualt",result)
-
-		}
-		setCardDataInterval(setInterval(()=>onGetCard(cardId),5000))
-	}
 	useEffect( () => {
 		clearInterval(cardDataInterval)
-		handleGetCard(cardId)
-
+		if(cardId) {
+			onGetCard(cardId)
+			setCardDataInterval(setInterval(()=>onGetCard(cardId),5000))
+		}
 	}, [cardId])
 
-	useEffect( () => {
-		setSelectedBin(binId)
-	}, [binId])
+	// {
+	// 	name: "",
+	// 		route_id: matchingRoute._id,
+	// 	station_id: loadStationId,
+	// 	_id: currRouteId + "+" + loadStationId
+	// }
+	let dropdownOptions = [
+		{
+			name: "Queue",
+			route_id: "QUEUE",
+			station_id: "QUEUE",
+			_id: "QUEUE" + "+" + "QUEUE"
+		}
+	]
 
-	// const formMode = card ? FORM_MODES.UPDATE : FORM_MODES.CREATE
+	routeIds.forEach((currRouteId) => {
+		const matchingRoute = routes[currRouteId]
+		let loadStationId = matchingRoute?.load?.station
+		let unloadStationId = matchingRoute?.unload?.station
+
+		loadStationId && dropdownOptions.push({
+			name: "Route: " + matchingRoute.name + " - Station: " + stations[loadStationId]?.name,
+			route_id: matchingRoute._id,
+			station_id: loadStationId,
+			_id: currRouteId + "+" + loadStationId
+		})
+
+		unloadStationId && dropdownOptions.push({
+			name: "Route: " + matchingRoute.name + " - Station: " + stations[unloadStationId]?.name,
+			route_id: matchingRoute._id,
+			station_id: unloadStationId,
+			_id: currRouteId + "+" + unloadStationId
+		})
+
+	})
+
+
+
 
 	const [content, setContent] = useState(null)
-	const [selectedBin, setSelectedBin] = useState(binId)
-	const [formMode, setFormMode] = useState(FORM_MODES.CREATE)
-	const [showLotInfo, setShowLotInfo] = useState(formMode === FORM_MODES.CREATE)
 
-	const selectedBinName = stations[selectedBin] ? stations[selectedBin].name : "Queue"
-
-
+	const formMode = card ? FORM_MODES.UPDATE : FORM_MODES.CREATE
 
 	useEffect(() => {
 
 		if(!isOpen && content) setContent(null)
 		if(showTimePicker) setShowTimePicker(false)
 
-		return () => {
-		}
+	    return () => {
+	    }
 	}, [isOpen])
 
 	const handleSubmit = async (values, formMode) => {
 
 		const {
 			name,
-			bins,
+			bin,
 			description,
+			count,
+			object,
 			moveCount,
 			moveLocation
 		} = values
 
-
 		const start = values?.dates?.start || null
 		const end = values?.dates?.end || null
+
+		const objectId = (object && Array.isArray(object) && object.length > 0) ? object[0]._id : null
+
 
 		// update (PUT)
 		if(formMode === FORM_MODES.UPDATE) {
 
+			// if(lotId) {
+			// 	DispatchPutLot({
+			// 		...lots[lotId],
+			// 		name
+			// 	}, lotId)
+			// }
+
+
 
 			var submitItem = {
 				name,
-				bins,
+				station_id: bin[0]?.station_id,
+				route_id: bin[0]?.route_id,
 				description,
+				object_id: objectId,
 				process_id: card.process_id,
+				lot_id: card.lot_id,
 				start_date: start,
 				end_date: end,
+				count,
 			}
 
 
-			// moving card need to update count for correct bins
+
 			if(moveCount && moveLocation) {
 
-				/*
-				* if lot items are being moved to a different bin, the submitItem's bins key needs to be updated
-				* namely, the count field for the destination and origin bins needs to updated
-				*
-				* The destination bin's count should be incremented by the number of items being moved
-				* The current bin's count should be decremented by the number of items being moved
-				*
-				* */
-
-				// get count and location info for move from form values
 				const moveCountVal = moveCount[0].value
 				const {
 					name: moveName,
-					_id: destinationBinId,
+					route_id: moveRouteId,
+					station_id: moveStationId,
+					_id: moveId,
 				} = moveLocation[0]
 
-				// extract destination, current, and remaining bins
-				const {
-					[destinationBinId]: destinationBin,
-					[selectedBin]: currentBin,
-					...unalteredBins
-				} = bins
 
-				// update counts of current and destination bins
-				const currentBinCount = parseInt(currentBin ? currentBin.count : 0) - moveCountVal
-				const destinationBinCount = parseInt(destinationBin ? destinationBin.count : 0) + moveCountVal
+				var destinationCardId = null
+				Object.values(cards).forEach((currCard, cardIndex) => {
 
-				// update bins
-				var updatedBins
+					// card is in same lot
+					if(currCard.lot_id === card.lot_id) {
 
-				if(currentBinCount) {
-					// both the current bin and the destination bin have items, so update both lots and spread the remaining
-
-					updatedBins = {
-						...unalteredBins, 			// spread remaining bins
-						[destinationBinId]: {		// update destination bin's count, keep remaining attributes
-							...destinationBin,
-							count: destinationBinCount
-						},
-						[selectedBin]: {			// update current bin's count, keep remaining attributes
-							...currentBin,
-							count: currentBinCount
+						// card exists at the station / route combo. update instead of create
+						if((currCard.route_id === moveRouteId) && (currCard.station_id === moveStationId)) {
+							destinationCardId = currCard._id
 						}
 					}
+				})
+
+				submitItem.count = submitItem.count - moveCountVal
+
+				// PUT destination card
+				if(destinationCardId) {
+					const destinationItem = {
+						...cards[destinationCardId],
+						count: cards[destinationCardId].count + moveCountVal
+					}
+
+					onPutCard(destinationItem, destinationCardId)
+
 				}
 
+			 	// post destination card
 				else {
-					// if currentBinCount is 0, the bin no longer has any items associated with the lot, so remove it
-					updatedBins = {
-						...unalteredBins,
-						[destinationBinId]: {
-							...destinationBin,
-							count: destinationBinCount
-						}
-					}
+					onPostCard({
+						name,
+						count: moveCountVal,
+						station_id: moveStationId,
+						route_id: moveRouteId,
+						description,
+						object_id: objectId,
+						process_id: processId,
+						start_date: start,
+						end_date: end,
+						lot_id: lotId
+					})
 				}
-
-				// update submit items bins
-				submitItem = {
-					...submitItem,
-					bins: updatedBins
-				}
-
-				// update card
-				onPutCard(submitItem, cardId)
 			}
 
-			// no lot item move, so just normal update
-			else {
-				onPutCard(submitItem, cardId)
-			}
+
+
+			// update
+			// const submitItem = {
+			// 	name,
+			// 	station_id: bin[0]?.station_id,
+			// 	route_id: bin[0]?.route_id,
+			// 	description,
+			// 	object_id: objectId,
+			// 	process_id: card.process_id,
+			// 	lot_id: card.lot_id,
+			// 	start_date: start,
+			// 	end_date: end,
+			// 	count,
+			// }
+
+			onPutCard(submitItem, card._id)
 		}
 
 		// create (POST)
 		else {
+			const createdLot = await DispatchPostLot({
+				process_id: processId,
+				name
+			})
+
+			const {
+				_id: lotId
+			} = createdLot
 
 			const submitItem = {
 				name,
-				bins,
+				count,
+				// station_id: bin[0]?.station_id,
+				// route_id: bin[0]?.route_id,
+				station_id: "QUEUE",
+				route_id: "QUEUE",
 				description,
+				object_id: objectId,
 				process_id: processId,
 				start_date: start,
 				end_date: end,
+				lot_id: lotId
 			}
 
 			onPostCard(submitItem)
@@ -282,11 +309,12 @@ const CardEditor = (props) => {
 
 	}
 
+
 	return(
 		<styled.Container
 			isOpen={isOpen}
 			onRequestClose={close}
-			contentLabel="Lot Editor Form"
+			contentLabel="Confirm Delete Modal"
 			style={{
 				overlay: {
 					zIndex: 500
@@ -299,21 +327,14 @@ const CardEditor = (props) => {
 			<Formik
 				initialValues={{
 					name: card ? card.name : "",
+					bin: card ? dropdownOptions.filter((currOption) => (currOption.station_id === card.station_id) && (currOption.route_id === card.route_id)) : [dropdownOptions[0]],
 					description: card ? card.description : "",
-					bins: card && card.bins ?
-						card.bins
-						:
-						{
-							"QUEUE": {
-								count: 0
-							},
-						},
 					dates: card ? {
 						start: card.start_date,
 						end: card.end_date,
 					} : null,
 					count: card ? card.count : 0,
-					// object: (card && card.object_id) ?  [objects[card.object_id]] : []
+					object: (card && card.object_id) ?  [objects[card.object_id]] : []
 				}}
 
 				// validation control
@@ -331,7 +352,6 @@ const CardEditor = (props) => {
 					setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
 					setSubmitting(false)
 					resetForm()
-					// close()
 				}}
 			>
 				{formikProps => {
@@ -339,9 +359,6 @@ const CardEditor = (props) => {
 					// extract common properties from formik
 					const {errors, values, touched, isSubmitting, initialValues} = formikProps
 
-					console.log("cardEditor errors",errors)
-					console.log("cardEditor values",values)
-					console.log("cardEditor touched",touched)
 
 					const startDateText = (values?.dates?.start?.month && values?.dates?.start?.day && values?.dates?.start?.year) ?  values.dates.start.month + "/" + values.dates.start.day + "/" + values.dates.start.year : "Planned start"
 					// const startDateTime = (values?.startTime?.hours && values?.startTime?.minutes && values?.startTime?.seconds) ?  values.startTime.hours + ":" + values.startTime.minutes + ":" + values.startTime.seconds : "Start Time"
@@ -353,85 +370,54 @@ const CardEditor = (props) => {
 					const errorCount = Object.keys(errors).length > 0
 
 					// get number of touched fields
-					// const touchedReducer = (accumulator, currentValue) => (currentValue === true) ? accumulator + 1 : accumulator
-					// const touchedCount = Object.values(touched).reduce(touchedReducer, 0)
-					const touchedCount = Object.values(touched).length
+					const touchedReducer = (accumulator, currentValue) => (currentValue === true) ? accumulator + 1 : accumulator
+					const touchedCount = Object.values(touched).reduce(touchedReducer, 0)
+
 					const submitDisabled = (errorCount > 0) || (touchedCount === 0) || isSubmitting
 
-					const onDeleteClick = async () => {
-
-						const {
-							[selectedBin]: currentBin,
-							...remainingBins
-						} = bins
-
-						var submitItem = {
-							...card,
-							bins: {...remainingBins},
-						}
-
-						onPutCard(submitItem, cardId)
-						close()
-					}
-
 					const renderMove = () => {
-						const binCount = values.bins[selectedBin].count
-
-						console.log("binCount",binCount)
+						const {
+							count = 0
+						} = values
 
 						var list = [];
-						for (var i = 0; i <= binCount; i++) {
+						for (var i = 0; i <= count; i++) {
 							list.push({
 								value: i
 							});
 						}
 
-						const moveLocationOptions = [{name: "Queue", _id: "QUEUE"},...Object.values(stations).filter((currStation) => currStation._id !== selectedBin)]
-
 						return(
-							<styled.BodyContainer
-								minHeight={"20rem"}
-							>
-								<div>
-									<styled.ContentHeader style={{}}>
-										<styled.ContentTitle>Move lot</styled.ContentTitle>
-									</styled.ContentHeader>
-									<div style={{display: "flex", alignItems: "center", marginBottom: "1rem"}}>
-										<styled.InfoText>Move</styled.InfoText>
-										<DropDownSearchField
-											containerSyle={{marginRight: "1rem"}}
-											pattern={null}
-											name="moveCount"
-											labelField={'value'}
-											options={list}
-											valueField={"value"}
-										/>
-										<styled.InfoText>items</styled.InfoText>
-									</div>
+							<styled.BodyContainer>
+								<styled.ContentHeader style={{}}>
+									<styled.ContentTitle>Move lot</styled.ContentTitle>
+								</styled.ContentHeader>
 
-									<div style={{ display: "flex", alignItems: "center"}}>
-										<styled.InfoText>from</styled.InfoText>
-										<styled.InfoText highlight={true}>{selectedBinName}</styled.InfoText>
-										<styled.InfoText>To</styled.InfoText>
-										<DropDownSearchField
-											containerSyle={{minWidth: "10rem"}}
-											pattern={null}
-											name="moveLocation"
-											labelField={'name'}
-											options={moveLocationOptions}
-											valueField={"_id"}
-										/>
-									</div>
+								<div style={{height: "10rem"}}>
+									<DropDownSearchField
+										containerSyle={{flex: 1}}
+										pattern={null}
+										name="moveLocation"
+										labelField={'name'}
+										options={dropdownOptions}
+										valueField={"_id"}
+									/>
+								</div>
+
+								<div style={{height: "10rem"}}>
+									<DropDownSearchField
+										containerSyle={{flex: 1}}
+										pattern={null}
+										name="moveCount"
+										labelField={'value'}
+										options={list}
+										valueField={"value"}
+									/>
 								</div>
 
 
-
-
 								<Button
-									onClick={()=> {
-										formikProps.submitForm()
-										close()
-									}}
+									onClick={()=>setContent(null)}
 									schema={"processes"}
 								>
 									Ok
@@ -439,7 +425,6 @@ const CardEditor = (props) => {
 							</styled.BodyContainer>
 						)
 					}
-
 					const renderCalendar = () => {
 						return(
 							<styled.BodyContainer>
@@ -467,41 +452,80 @@ const CardEditor = (props) => {
 					const renderContent = () => {
 						return(
 							<styled.BodyContainer>
-								<styled.FieldTitle>Station</styled.FieldTitle>
+								{/*<div style={{display: "flex", marginBottom: "1rem"}}>*/}
+									<TextField
+										name="description"
+										type="text"
+										placeholder="Description..."
+										InputComponent={Textbox}
+										lines={5}
+										style={{marginBottom: "1rem"}}
+										// ContentContainer={styled.InputContainer}
+									/>
 
-								<ButtonGroup
-									buttonViewCss={styled.buttonViewCss}
-									buttons={
-										availableBins.map((currBinId) => {
-											if(currBinId === "QUEUE") return "Queue"
-											if(stations[currBinId]) return stations[currBinId].name
-											return ""
-										})
-									}
-									selectedIndex={availableBins.findIndex((ele) => ele === selectedBin)}
-									onPress={(selectedIndex)=>{
-										setSelectedBin(availableBins[selectedIndex])
-									}}
-									containerCss={styled.buttonGroupContainerCss}
-									buttonViewSelectedCss={styled.buttonViewSelectedCss}
-									buttonCss={styled.buttonCss}
-								/>
-
-								<styled.RowContainer>
 									<styled.ObjectInfoContainer>
+										{/*<styled.ObjectTitleContainer style={{marginBottom: "1rem"}}>*/}
+											{/*<styled.ObjectLabel>Object</styled.ObjectLabel>*/}
+											{/*<styled.ObjectName>{objectName}</styled.ObjectName>*/}
+											<styled.ObjectLabel>Object</styled.ObjectLabel>
+											<DropDownSearchField
+												// Container={styled.StationContainer}
+												containerSyle={{flex: 1}}
+												// containerSyle={{flex: 1}}
+												pattern={null}
+												name="object"
+												labelField={'name'}
+												options={Object.values(objects)}
+												valueField={"_id"}
+												// label={'Choose Station'}
+												onDropdownOpen={() => {
+												}}
+											/>
+											<div style={{margin: "0 1rem"}}/>
+										{/*</styled.ObjectTitleContainer>*/}
+
 										<styled.ObjectTitleContainer>
 											<styled.ObjectLabel>Count</styled.ObjectLabel>
-
 											<TextField
-												name={`bins.${selectedBin}.count`}
+												name="count"
 												type="number"
 												InputComponent={styled.CountInput}
 											/>
 										</styled.ObjectTitleContainer>
 									</styled.ObjectInfoContainer>
-								</styled.RowContainer>
+								{/*</div>*/}
 
-								{formMode === FORM_MODES.UPDATE &&
+								<span>
+									<styled.DatesContainer>
+										<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_START)}>
+											<styled.DateText>{startDateText}</styled.DateText>
+											{/*<styled.TimeText>{startDateTime}</styled.TimeText>*/}
+										</styled.DateItem>
+
+										<styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
+
+										<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_END)}>
+											<styled.DateText>{endDateText}</styled.DateText>
+											{/*<styled.TimeText>{endDateTime}</styled.TimeText>*/}
+										</styled.DateItem>
+									</styled.DatesContainer>
+								</span>
+
+
+								{/*<DropDownSearchField*/}
+								{/*	Container={styled.StationContainer}*/}
+								{/*	pattern={null}*/}
+								{/*	name="bin"*/}
+								{/*	labelField={'name'}*/}
+								{/*	options={dropdownOptions}*/}
+								{/*	valueField={"_id"}*/}
+								{/*	label={'Choose Station'}*/}
+								{/*	onDropdownOpen={() => {*/}
+								{/*	}}*/}
+								{/*/>*/}
+
+
+
 								<styled.WidgetContainer>
 									<styled.Icon
 										className="fas fa-history"
@@ -516,9 +540,11 @@ const CardEditor = (props) => {
 											}
 										}}
 									/>
-								</styled.WidgetContainer>
-								}
 
+									<styled.Icon color={"grey"} className="fas fa-thermometer-half"/>
+
+									<styled.Icon color={"grey"} className="fas fa-heart"/>
+								</styled.WidgetContainer>
 
 
 								{formMode === FORM_MODES.CREATE ?
@@ -569,7 +595,7 @@ const CardEditor = (props) => {
 											style={{ marginBottom: '0rem', marginTop: 0 }}
 											secondary
 											onClick={async () => {
-												await formikProps.submitForm({close: false})
+												await formikProps.submitForm()
 											}}
 										>
 											Save
@@ -580,7 +606,10 @@ const CardEditor = (props) => {
 											style={{ marginBottom: '0rem', marginTop: 0 }}
 											secondary
 											type={"button"}
-											onClick={onDeleteClick}
+											onClick={async () => {
+												onDeleteCard(card._id, processId)
+												close()
+											}}
 										>
 											<i className="fa fa-trash" aria-hidden="true"/>
 
@@ -611,7 +640,7 @@ const CardEditor = (props) => {
 						return(
 							<styled.BodyContainer>
 								<styled.ContentHeader style={{}}>
-									<styled.ContentTitle>History</styled.ContentTitle>
+										<styled.ContentTitle>History</styled.ContentTitle>
 								</styled.ContentHeader>
 
 
@@ -704,19 +733,18 @@ const CardEditor = (props) => {
 						<styled.StyledForm>
 							<styled.Header>
 								{((content === CONTENT.CALENDAR_START) || (content === CONTENT.CALENDAR_END) || (content === CONTENT.HISTORY))  &&
-								<Button
-									onClick={()=>setContent(null)}
-									schema={'processes'}
-								>
-									<styled.Icon className="fas fa-arrow-left"></styled.Icon>
-								</Button>
+									<Button
+										onClick={()=>setContent(null)}
+										schema={'processes'}
+									>
+										<styled.Icon className="fas fa-arrow-left"></styled.Icon>
+									</Button>
 								}
 
 								<styled.Title>
-									{formMode === FORM_MODES.CREATE ?
-										"Create Lot"
-										:
-										"Edit Lot"
+									Card Editor
+									{(lot && lot.name) &&
+										<span>{lot.name}</span>
 									}
 								</styled.Title>
 
@@ -728,78 +756,25 @@ const CardEditor = (props) => {
 								</Button>
 							</styled.Header>
 
-							<styled.SectionContainer>
-								{formMode === FORM_MODES.UPDATE &&
-								<styled.ContentHeader>
-									<styled.ContentTitle>Lot Info</styled.ContentTitle>
-								</styled.ContentHeader>
-								}
+							<styled.NameContainer>
+								<TextField
+									name="name"
+									type="text"
+									placeholder="Enter name..."
+									InputComponent={Textbox}
+									// ContentContainer={styled.InputContainer}
+								/>
+							</styled.NameContainer>
 
-								<styled.NameContainer>
-									<TextField
-										name="name"
-										type="text"
-										placeholder="Enter name..."
-										InputComponent={Textbox}
-									/>
-								</styled.NameContainer>
-
-								{((content === null)) &&
-								<>
-									{showLotInfo &&
-									<>
-										<styled.NameContainer>
-											<TextField
-												name="description"
-												type="text"
-												placeholder="Description..."
-												InputComponent={Textbox}
-												lines={5}
-											/>
-										</styled.NameContainer>
-
-										<styled.DatesContainer>
-											<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_START)}>
-												<styled.DateText>{startDateText}</styled.DateText>
-											</styled.DateItem>
-
-											<styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
-
-											<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_END)}>
-												<styled.DateText>{endDateText}</styled.DateText>
-											</styled.DateItem>
-										</styled.DatesContainer>
-									</>
-									}
-
-
-									{formMode === FORM_MODES.UPDATE &&
-									<Button
-										secondary
-										style={{margin: "0 0 1rem 0", width: "fit-content"}}
-										type={"button"}
-										onClick={()=>setShowLotInfo(!showLotInfo)}
-										schema={"processes"}
-									>
-										{showLotInfo ? "Hide Lot Info" : "Show Lot Info"}
-									</Button>
-									}
-
-								</>
-
-								}
-
-
-							</styled.SectionContainer>
 
 							{(content === null) &&
-							renderContent()
+								renderContent()
 							}
 							{(((content === CONTENT.CALENDAR_END) || (content === CONTENT.CALENDAR_START))) &&
-							renderCalendar()
+								renderCalendar()
 							}
 							{(content === CONTENT.HISTORY) &&
-							renderHistory()
+								renderHistory()
 							}
 							{(content === CONTENT.MOVE) &&
 							renderMove()
@@ -815,15 +790,5 @@ const CardEditor = (props) => {
 		</styled.Container>
 	)
 }
-
-// Specifies propTypes
-CardEditor.propTypes = {
-	binId: PropTypes.string,
-};
-
-// Specifies the default values for props:
-CardEditor.defaultProps = {
-	binId: "QUEUE"
-};
 
 export default CardEditor

@@ -33,6 +33,7 @@ const LotQueue = SortableContainer((props) => {
 	const route = useSelector(state => { return state.tasksReducer.tasks[route_id] })
 	const objects = useSelector(state => { return state.objectsReducer.objects })
 	const lots = useSelector(state => { return state.lotsReducer.lots })
+	const reduxCards = useSelector(state => { return state.cardsReducer.processCards[processId] })
 
 	const [isCollapsed, setCollapsed] = useState(false)
 	const [dragEnter, setDragEnter] = useState(false)
@@ -47,12 +48,55 @@ const LotQueue = SortableContainer((props) => {
 		const { removedIndex, addedIndex, payload, element } = dropResult;
 
 		if (payload === null) { //  No new button, only reorder
-			//     const shiftedButtonsCopy = arrayMove(buttonsCopy, removedIndex, addedIndex)
-			//     formikProps.setFieldValue("buttons", shiftedButtonsCopy)
 
 		} else {
 			if(addedIndex !== null) {
-				onPutCard({...payload, station_id: station_id, route_id: route_id, process_id: processId}, payload._id)
+
+				const {
+					binId,
+					cardId,
+					...remainingPayload
+				} = payload
+
+				const droppedCard = reduxCards[cardId]
+
+				const oldBins = droppedCard.bins
+				const {
+					[binId]: movedBin,
+					...remainingOldBins
+				} = oldBins
+
+				// already contains items in bin
+				if(oldBins[station_id]) {
+
+					onPutCard({
+						...remainingPayload,
+						bins: {
+							...remainingOldBins,
+							[station_id]: {
+								...oldBins[station_id],
+								count: parseInt(oldBins[station_id].count) + parseInt(movedBin.count)
+							},
+							// [binId]: {
+							// 	...bins[binId],
+							// 	count:
+							// }
+						}
+					}, cardId)
+				}
+
+				// no items in bin
+				else {
+					onPutCard({
+						...remainingPayload,
+						bins: {
+							...remainingOldBins,
+							[station_id]: {
+								...movedBin,
+							}
+						}
+					}, cardId)
+				}
 			}
 		}
 	}
@@ -87,7 +131,7 @@ const LotQueue = SortableContainer((props) => {
 				>
 						{cards.map((card, index) => {
 							const {
-								_id,
+								cardId,
 								count = 0,
 								name,
 								object_id,
@@ -106,7 +150,7 @@ const LotQueue = SortableContainer((props) => {
 									count={count}
 									id={index}
 									index={index}
-									onClick={()=>handleCardClick(_id, processId)}
+									onClick={()=>handleCardClick(cardId, processId, station_id)}
 								/>
 							)
 						})}

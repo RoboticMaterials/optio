@@ -87,24 +87,29 @@ const Cards = (props) => {
             break
     }
 
-    const handleCardClick = (cardId, processId) => {
+    const handleCardClick = (cardId, processId, binId) => {
         setShowCardEditor(true)
-        setSelectedCard({cardId, processId})
+        setSelectedCard({cardId, processId, binId})
     }
 
 
     return(
         <styled.Container>
+            {showCardEditor &&
             <CardEditor
                 isOpen={showCardEditor}
                 onAfterOpen={null}
                 cardId={selectedCard ? selectedCard.cardId : null}
                 processId={selectedCard ? selectedCard.processId : null}
+                binId={selectedCard ? selectedCard.binId : null}
                 close={()=>{
                     setShowCardEditor(false)
                     setSelectedCard(null)
                 }}
             />
+            }
+
+
 
             <styled.Header>
                 <styled.MenuButton
