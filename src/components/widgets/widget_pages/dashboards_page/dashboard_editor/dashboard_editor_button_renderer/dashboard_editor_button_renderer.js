@@ -48,8 +48,12 @@ const DashboardEditorButtonRenderer = SortableContainer((props) => {
                             {...props}
                         />
                     }
-                    { // KICK_OFF currently disabled
-
+                    { (button.type === OPERATION_TYPES.KICK_OFF.key) &&
+                        <DashboardReportField
+                            button={button}
+                            ind={ind}
+                            {...props}
+                        />
                     }
                 </Draggable>
             )}

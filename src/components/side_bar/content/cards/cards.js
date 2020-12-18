@@ -24,7 +24,6 @@ const Cards = (props) => {
         id
     } = props
 
-    console.log("idid id",id)
     const history = useHistory()
     const processes = useSelector(state => { return state.processesReducer.processes })
     const isCardDragging = useSelector(state => { return state.cardPageReducer.isCardDragging })

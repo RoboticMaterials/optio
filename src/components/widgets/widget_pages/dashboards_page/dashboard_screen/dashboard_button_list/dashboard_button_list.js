@@ -79,7 +79,6 @@ const DashboardButtonList = ((props) => {
 				break
 
 			case OPERATION_TYPES.KICK_OFF.key:
-				disabled = true
 				error = null
 				onClick = () => {
 					onTaskClick(type)

@@ -15,7 +15,7 @@ import DashboardsSidebar from "./dashboards_sidebar/dashboards_sidebar.jsx"
 
 import { PAGES } from "../../../../constants/dashboard_contants";
 
-import { getDashboards } from '../../../../redux/actions/dashboards_actions'
+import {getDashboards, setSelectedValueAttr} from '../../../../redux/actions/dashboards_actions'
 
 // Import Styles
 import * as style from './dashboards_page.style'
@@ -29,9 +29,14 @@ const DashboardsPage = (props) => {
 
     // redux state
     const dispatch = useDispatch()
+    const dispatchSetSelectedValueAttr = async (dashboardId, kickOffEnabled) => await dispatch(setSelectedValueAttr(dashboardId, kickOffEnabled))
+
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const stations = useSelector(state => state.locationsReducer.stations)
     const devices = useSelector(state => state.devicesReducer.devices)
+    const processes = useSelector(state => { return state.processesReducer.processes })
+    const routes = useSelector(state => { return state.tasksReducer.tasks })
+
     // self contained state
     const [selectedDashboard, setSelectedDashboard] = useState(null);
     const [editingDashboard, setEditingDashboard] = useState(null);
@@ -41,6 +46,35 @@ const DashboardsPage = (props) => {
 
     // extract url params
     const { stationID, dashboardID, editing } = props.match.params
+
+    /**
+     * Whenever processes updates, check if this dashboard's station is the first station in any process
+     *
+     * Used for determining whether or not to enable the KICK OFF button
+     */
+    useEffect(() => {
+
+        var firstStationProcesses = []
+        // loop through processes and check if the load station of the first route of any process matches the current dashboards station
+        Object.values(processes).forEach((currProcess) => {
+
+            // get first routes id, default to null
+            const firstRouteId = (currProcess && currProcess.routes && Array.isArray(currProcess.routes))  ? currProcess.routes[0] : null
+
+            // get route from route id, default to null
+            const currRoute = firstRouteId ? routes[firstRouteId] : null
+
+            // get station id from load key of route
+            const loadStationId = currRoute?.load?.station
+
+            // if the loadStationId matches the current dashboard's stationId, then allow kick off
+            if(loadStationId === stationID) firstStationProcesses.push(currProcess._id)
+
+        })
+
+        dispatchSetSelectedValueAttr(dashboardID, firstStationProcesses)
+
+    }, [processes])
 
     // On page load, load the first and only dashboard with this station
     // Leaving the rest of the code in for adding dashboards and dashboard list view because we may need it in the future
