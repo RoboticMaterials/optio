@@ -45,8 +45,9 @@ import {KICK_OFF_ENABLED} from "../types/suffixes";
 
 
 const defaultState = {
+
     dashboards: null,
-    kickOffEnabledDashboards: {},
+    kickOffEnabledDashboards: {}, // key = dashboard id - value = list of processes where the processes first station is the same as the dashboard's station
 
     error: {},
     pending: false,

@@ -22,7 +22,7 @@ import { postStatus } from '../../../../../api/status_api'
 
 // Import Actions
 import { postTaskQueue, putTaskQueue } from '../../../../../redux/actions/task_queue_actions'
-import {dashboardOpen, setSelectedValueAttr} from '../../../../../redux/actions/dashboards_actions'
+import {dashboardOpen, setDashboardKickOffProcesses} from '../../../../../redux/actions/dashboards_actions'
 
 // Import styles
 import * as pageStyle from '../dashboards_header/dashboards_header.style'

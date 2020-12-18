@@ -147,6 +147,6 @@ export const dashboardOpen = (bol) => {
     return { type: DASHBOARD_OPEN, payload: bol }
 }
 
-export const setSelectedValueAttr = (dashboardId, kickOffEnabled) => {
+export const setDashboardKickOffProcesses = (dashboardId, kickOffEnabled) => {
     return { type: SET + DASHBOARD + KICK_OFF_ENABLED, payload: {dashboardId, kickOffEnabled} }
 }
