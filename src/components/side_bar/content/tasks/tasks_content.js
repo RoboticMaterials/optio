@@ -88,7 +88,7 @@ export default function TaskContent(props) {
     const handleHumanHil = async () => {
         if (selectedTask != null) {
 
-            if (selectedTask.device_type == 'human') {
+            if (selectedTask.device_type === 'human') {
                 const dashboardId = stations[selectedTask.load.station].dashboards[0]
 
                 const postToQueue = dispatch(postTaskQueue({ task_id: selectedTask._id, 'task_id': selectedTask._id, dashboard: dashboardId, hil_response: null }))

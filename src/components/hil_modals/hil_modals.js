@@ -233,7 +233,7 @@ const HILModals = (props) => {
     }
 
     const onFractionResponse = (fraction) => {
-        console.log('QQQQ Fraction response')
+        console.log('QQQQ Fraction response', fraction)
     }
 
     const renderFractionOptions = () => {

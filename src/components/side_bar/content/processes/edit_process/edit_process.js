@@ -41,12 +41,14 @@ const EditProcess = (props) => {
     const dispatchPutTask = (task, ID) => dispatch(putTask(task, ID))
     const dispatchDeleteTask = (ID) => dispatch(deleteTask(ID))
     const dispatchPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
+    const dispatchTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
 
     const dispatchPostProcess = async (process) => await dispatch(postProcesses(process))
     const dispatchPutProcess = async (process) => await dispatch(putProcesses(process))
     const dispatchDeleteProcess = async (ID) => await dispatch(deleteProcesses(ID))
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
+    const stations = useSelector(state => state.locationsReducer.stations)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
@@ -69,7 +71,21 @@ const EditProcess = (props) => {
     }, [])
 
     const handleExecuteProcessTask = (route) => {
-        dispatchPostTaskQueue({ task_id: route })
+
+        const task = tasks[route]
+
+        if (task.device_type === 'human') {
+            const dashboardId = stations[task.load.station].dashboards[0]
+
+            const postToQueue = dispatch(postTaskQueue({ task_id: task._id, 'task_id': task._id, dashboard: dashboardId, hil_response: null }))
+            postToQueue.then(item => {
+                const id = item?._id?.$oid
+                dispatchTaskQueueItemClicked(id)
+            })
+        }
+        else {
+            dispatchPostTaskQueue({ task_id: task._id })
+        }
 
     }
 
