@@ -107,7 +107,6 @@ const SideBar = (props) => {
 
         }
         else if((((prevSubpage === "card") || (prevId === "timeline") || (prevId === "summary")) && prevPage === "processes") && ((subpage !== "card") || (id === "timeline") || (id === "summary")) ) {
-            console.log("prevWidth",prevWidth)
             setWidth(prevWidth)
             dispatch(sidebarActions.setWidth(prevWidth))
             setPrevWidth(null)
@@ -126,7 +125,6 @@ const SideBar = (props) => {
      * Handles the hamburger icon transformation
      */
     const handleSideBarOpenCloseButtonClick = () => {
-        console.log("widgetPageLoaded",widgetPageLoaded)
         const hamburger = document.querySelector('.hamburger')
         hamburger.classList.toggle('is-active')
         dispatch(editing(false)) //location editing need to rename
@@ -223,7 +221,6 @@ const SideBar = (props) => {
             break
 
         default:
-            console.log("DEFAULT")
             content = null
             if (showSideBar) {
                 handleSideBarOpenCloseButtonClick()

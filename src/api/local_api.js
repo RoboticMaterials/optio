@@ -1,6 +1,15 @@
 //This API is used to handle calls to the local storage
 
 import logger from '../logger'
+import {
+    BrowserView,
+    MobileView,
+    isBrowser,
+    isMobile
+} from "react-device-detect";
+import {defaultLocalSettings} from "../constants/local_settings_constants";
+
+
 
 const log = logger.getLogger('LocalStorage')
 
@@ -37,16 +46,7 @@ export const getLocalSettings = async () => {
     }
     // Posts settigns to the backend if there's nothing there
     else {
-        const settings = {
-            non_local_api_ip: '',
-            non_local_api: false,
-            mapViewEnabled: true,
-            toggleDevOptions:false,
-            currentMapId: null,
-
-        }
-        await postLocalSettings(settings)
-        getLocalSettings()
+        const settings = defaultLocalSettings
         return settings
     }
 }
