@@ -78,7 +78,16 @@ const HILModals = (props) => {
     * Each option only needs to contain the card's id and a label to display, the extaneous information can be left out
     *
     * */
-    const stationCards = Object.values(cards).filter((currCard) => currCard.station_id === stationId).map((currCard) => {
+    const stationCards = Object.values(cards).filter((currCard) => {
+        const {
+            bins
+        } = currCard
+
+        if(bins) {
+            if(bins[stationId] && bins[stationId].count > 0) return true
+        }
+
+    }).map((currCard) => {
         const {
             _id,
             object_id
