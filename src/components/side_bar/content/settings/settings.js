@@ -50,7 +50,6 @@ const Settings = () => {
     const [localSettingsState, setLocalSettingsState] = useState({})
     const [mapSettingsState, setMapSettingsState] = useState(currentMap)
     const [mirUpdated, setMirUpdated] = useState(false)
-    console.log(setLocalSettingsState.toggleDevOptions)
     /**
      *  Sets current settings to state so that changes can be discarded or saved
      * */
