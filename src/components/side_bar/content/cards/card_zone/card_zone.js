@@ -110,7 +110,6 @@ const CardZone = SortableContainer((props) => {
 					})
 				}
 
-				console.log("binEntry",binEntry)
 			})
 		}
 

@@ -44,47 +44,22 @@ const CONTENT = {
 const CardEditor = (props) => {
 	const {
 		isOpen,
-		onAfterOpen,
 		close,
 		cardId,
 		processId,
 		binId
-		// objectId
 
 	} = props
 
-	console.log("cardeditor binId",binId)
-
-
-	// const object = {
-	// 	_id: 123,
-	// 	name: "hopper"
-	// }
-	// const {
-	// 	name: objectName
-	// } = object
-
 	const processes = useSelector(state => { return state.processesReducer.processes })
-	const processIds = Object.keys(processes)
 	const cards = useSelector(state => { return state.cardsReducer.cards })
-	const lots = useSelector(state => { return state.lotsReducer.lots })
 
 	const card = cards[cardId]
 	const {
-		station_id: stationId,
-		// process_id: processId = processIds[0],
-		route_id: routeId,
-		lot_id: lotId,
 		bins
 	} = card || {}
 
-	const binEntries = bins ? Object.entries(bins) : null
-
 	const availableBins = bins ? Object.keys(bins) : ["QUEUE"]
-
-	console.log("card editor card", card)
-
-	const lot = lots[lotId]
 
 
 
@@ -92,12 +67,7 @@ const CardEditor = (props) => {
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
 	const stations = useSelector(state => { return state.locationsReducer.stations })
 
-	// const objects = useSelector(state => { return state.objectsReducer.objects })
-
-	const routeIds = processes[processId] ? processes[processId].routes : []
-
 	const dispatch = useDispatch()
-
 	const onPostCard = async (card) => await dispatch(postCard(card))
 	const onGetCard = async (cardId) => await dispatch(getCard(cardId))
 	const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
@@ -125,8 +95,6 @@ const CardEditor = (props) => {
 			else {
 
 			}
-			console.log("handleGetCard resualt",result)
-
 		}
 		setCardDataInterval(setInterval(()=>onGetCard(cardId),5000))
 	}
@@ -339,10 +307,6 @@ const CardEditor = (props) => {
 					// extract common properties from formik
 					const {errors, values, touched, isSubmitting, initialValues} = formikProps
 
-					console.log("cardEditor errors",errors)
-					console.log("cardEditor values",values)
-					console.log("cardEditor touched",touched)
-
 					const startDateText = (values?.dates?.start?.month && values?.dates?.start?.day && values?.dates?.start?.year) ?  values.dates.start.month + "/" + values.dates.start.day + "/" + values.dates.start.year : "Planned start"
 					// const startDateTime = (values?.startTime?.hours && values?.startTime?.minutes && values?.startTime?.seconds) ?  values.startTime.hours + ":" + values.startTime.minutes + ":" + values.startTime.seconds : "Start Time"
 
@@ -376,8 +340,6 @@ const CardEditor = (props) => {
 
 					const renderMove = () => {
 						const binCount = values.bins[selectedBin].count
-
-						console.log("binCount",binCount)
 
 						var list = [];
 						for (var i = 0; i <= binCount; i++) {

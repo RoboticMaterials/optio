@@ -103,7 +103,7 @@ const KickOffModal = (props) => {
                     ...unalteredBins,                   // spread unaltered bins
                     [loadStation]: {
                         ...firstStationBin,              // spread unaltered attributes of station bin if it exists
-                        count: queueBinCount + firstStationCount    // increment first station's count by the count of the queue
+                        count: parseInt(queueBinCount) + parseInt(firstStationCount)    // increment first station's count by the count of the queue
                     }
                 },
             }
