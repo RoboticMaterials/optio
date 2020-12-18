@@ -50,6 +50,7 @@ const EditProcess = (props) => {
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
     // State definitions
     const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)  // Current task
@@ -169,13 +170,12 @@ const EditProcess = (props) => {
                                     obj: null,
                                     type: 'push',
                                     quantity: 1,
-                                    new: true,
-                                    // device_type: 'human',
-                                    device_type: 'MiR_100',
+                                    device_type: !!MiRMapEnabled ? 'MiR_100' : 'human',
+                                    handoff: false,
+                                    track_quantity: true,
                                     map_id: currentMap._id,
-                                    idle_location: null,
-                                    // Makes the task/route a part of a process
-                                    process: selectedProcessCopy._id,
+                                    new: true,
+                                    process: false,
                                     load: {
                                         position: null,
                                         station: null,
@@ -347,7 +347,7 @@ const EditProcess = (props) => {
                     }}
                 >
                     Delete
-            </Button>
+                </Button>
 
 
                 {!selectedProcessCopy.new && // only allow viewing card page if process has been created
@@ -355,7 +355,7 @@ const EditProcess = (props) => {
                         onClick={goToCardPage}
                     >
                         View Card Zone
-            </Button>
+                    </Button>
                 }
 
 

@@ -3,14 +3,6 @@ import * as styled from './tasks_content.style'
 import { useSelector, useDispatch } from 'react-redux'
 
 // Import Components
-import ContentHeader from '../content_header/content_header'
-import Textbox from '../../../basic/textbox/textbox.js'
-import Button from '../../../basic/button/button'
-import DropDownSearch from '../../../basic/drop_down_search_v2/drop_down_search'
-import TextBoxSearch from '../../../basic/textbox_search/textbox_search'
-import HILModals from '../../../../components/hil_modals/hil_modals'
-
-
 import ContentList from '../content_list/content_list'
 import EditTask from './edit_task/edit_task'
 
@@ -25,6 +17,7 @@ import { postTaskQueue } from '../../../../redux/actions/task_queue_actions'
 // Import Utils
 import { deepCopy } from '../../../../methods/utils/utils'
 import { tasksSortedAlphabetically } from '../../../../methods/utils/task_utils'
+import RouteTask from './tasks_templates/route_task'
 import uuid from 'uuid'
 
 
@@ -160,6 +153,7 @@ export default function TaskContent(props) {
                         track_quantity: true,
                         map_id: currentMap._id,
                         new: true,
+                        process: false,
                         load: {
                             position: null,
                             station: null,

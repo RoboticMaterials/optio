@@ -42,6 +42,9 @@ const TaskStatistics = (props) => {
         // const xPosition = (startPos.x + endPos.x) / 2 + 'px'
         // const yPosition = (startPos.y + endPos.y) / 2 - 30 + 'px'
 
+        // Some fancy calculation to find a common offset from a task path
+        // Doesnt work because it doesnt
+
         const x1 = startPos.x
         const y1 = startPos.y
         const x2 = endPos.x
@@ -71,8 +74,11 @@ const TaskStatistics = (props) => {
 
         const theta = Math.atan(numerator / denominator)
 
-        const xPosition = (midX - height() * Math.sin(theta)) - 80 + 'px'
-        const yPosition = (midY + height() * Math.cos(theta)) - 40 + 'px'
+        // const xPosition = (midX - height() * Math.sin(theta)) - 80 + 'px'
+        // const yPosition = (midY + height() * Math.cos(theta)) - 40 + 'px'
+
+        const xPosition = midX -80 + 'px'
+        const yPosition = midY + 'px'
 
         return (
             <styled.TaskStatisticsContainer xPosition={xPosition} yPosition={yPosition}>

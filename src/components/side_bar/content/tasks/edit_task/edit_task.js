@@ -20,7 +20,7 @@ import { deepCopy } from '../../../../../methods/utils/utils'
 
 // Import actions
 import * as taskActions from '../../../../../redux/actions/tasks_actions'
-import { setSelectedTask, deleteTask, getTasks } from '../../../../../redux/actions/tasks_actions'
+import { setSelectedTask, deleteTask, getTasks, putTask } from '../../../../../redux/actions/tasks_actions'
 import * as dashboardActions from '../../../../../redux/actions/dashboards_actions'
 import { putDashboard } from '../../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../../redux/actions/objects_actions'
@@ -49,6 +49,7 @@ const EditTask = (props) => {
     const onGetTasks = () => dispatch(getTasks())
     const onPutStation = (station, ID) => dispatch(putStation(station, ID))
     const onPutDashboard = (dashboard, ID) => dispatch(putDashboard(dashboard, ID))
+    const dispatchPutTask = (task, id) => dispatch(putTask(task, id))
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -56,6 +57,7 @@ const EditTask = (props) => {
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const objects = useSelector(state => state.objectsReducer.objects)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const processes = useSelector(state => state.processesReducer.processes)
 
     const stations = useSelector(state => state.locationsReducer.stations)
 
@@ -339,6 +341,12 @@ const EditTask = (props) => {
             onSetSelectedProcess(
                 selectedProcess
             )
+
+            // Associated the process with the task
+            onSetSelectedTask({
+                ...selectedTask,
+                process: selectedProcess._id
+            })
         }
 
         dispatch(taskActions.deselectTask())    // Deselect
@@ -414,7 +422,11 @@ const EditTask = (props) => {
 
             <ConfirmDeleteModal
                 isOpen={!!confirmDeleteModal}
-                title={"Are you sure you want to delete this Route?"}
+                title={
+                    `Are you sure you want to delete this Route? 
+                    ${!!selectedTask.process ? `This task is a part of process '${!!processes[selectedTask.process] && processes[selectedTask.process].name}', and will be removed from this process if deleted` : ''}
+                    `
+                }
                 button_1_text={"Yes"}
                 handleOnClick1={() => {
                     handleDelete()
@@ -485,6 +497,9 @@ const EditTask = (props) => {
                                     }
                                 })
 
+                                // Filter outs any human tasks that have associated tasks (AKA it only shows the associated device task)
+                                .filter(task => !task.associated_task || (!!task.associated_task && task.device_type !== 'human'))
+
                         }
                         // values={!!selectedTask.idle_location ? [positions[selectedTask.idle_location]] : []}
                         dropdownGap={5}
@@ -500,6 +515,13 @@ const EditTask = (props) => {
                                     ...selectedProcess,
                                     routes: [...selectedProcess.routes, newRoute]
                                 })
+
+                                dispatchPutTask(
+                                    {
+                                        ...values[0],
+                                        process: selectedProcess._id
+                                    }
+                                    , values[0]._id)
                             }
 
                             dispatch(taskActions.deselectTask())    // Deselect
@@ -545,7 +567,6 @@ const EditTask = (props) => {
                         textboxGap={0}
                         closeOnSelect="true"
                         onChange={(values) => {
-                            // console.log('QQQQ object', values)
                             setObject(values[0])
                             // onSetSelectedTask({
                             //     ...selectedTask,
@@ -573,7 +594,7 @@ const EditTask = (props) => {
                     {(!!selectedTask.obj || !!obj) &&
                         <>
                             <styled.Label>Track Using Quantity or Fractions</styled.Label>
-                            <styled.RowContainer style={{justifyContent: 'center'}}>
+                            <styled.RowContainer style={{ justifyContent: 'center' }}>
                                 <styled.DualSelectionButton
                                     style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
                                     onClick={() => {
