@@ -39,15 +39,10 @@ export default function TaskContent(props) {
     let tasks = useSelector(state => state.tasksReducer.tasks)
 
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
-    const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
-    const sounds = useSelector(state => state.soundsReducer.sounds)
-    const objects = useSelector(state => state.objectsReducer.objects)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
     const stations = useSelector(state => state.locationsReducer.stations)
-    const positions = useSelector(state => state.locationsReducer.positions)
-    const locations = useSelector(state => state.locationsReducer.locations)
-    const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const editing = useSelector(state => state.tasksReducer.editingTask) //Moved to redux so the variable can be accesed in the sideBar files for confirmation modal
 
     // State definitions
@@ -160,8 +155,9 @@ export default function TaskContent(props) {
                         obj: null,
                         type: 'push',
                         quantity: 1,
-                        device_type: 'MiR_100',
-                        // device_type: 'human',
+                        device_type: !!MiRMapEnabled ? 'MiR_100' : 'human',
+                        handoff: false,
+                        track_quantity: true,
                         map_id: currentMap._id,
                         new: true,
                         load: {
