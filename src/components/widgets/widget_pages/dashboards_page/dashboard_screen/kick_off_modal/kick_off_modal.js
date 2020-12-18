@@ -57,17 +57,10 @@ const KickOffModal = (props) => {
 
         // extract card attributes
         const {
-            count,              //0
-            description,        // ""
-            end_date,           //null
-            lot_id,             //"5fdaa65e5a8a68e6a887f832"
-            name: cardName,               //"n"
-            object_id,          //null
-            process_id,         // "f5cc9fc7-08f2-4082-b1d4-b23f211e3cab"
-            route_id,           // "QUEUE"
-            start_date,         // null
-            station_id,         // "QUEUE"
-            _id: cardId,                // "5fdaa65e5a8a68e6a887f833"
+            bins,
+            name: cardName,
+            process_id,
+            _id: cardId,
         } = card
 
         // get process of card
@@ -93,11 +86,26 @@ const KickOffModal = (props) => {
         // update card
         if(firstRouteId && firstRoute && loadStation) {
 
+            // extract first station's bin and queue bin from bins
+            const {
+                [loadStation]: firstStationBin,
+                ["QUEUE"]: queueBin,
+               ...unalteredBins
+            } = bins || {}
+
+            const queueBinCount = queueBin?.count ? queueBin.count : 0
+            const firstStationCount = firstStationBin?.count ? firstStationBin.count : 0
+
             // udpated card will maintain all of the cards previous attributes with the station_id and route_id updated
             const updatedCard = {
-                ...card,
-                station_id: loadStation,
-                route_id: firstRouteId
+                ...card,                                // spread unaltered attributes
+                bins: {
+                    ...unalteredBins,                   // spread unaltered bins
+                    [loadStation]: {
+                        ...firstStationBin,              // spread unaltered attributes of station bin if it exists
+                        count: parseInt(queueBinCount) + parseInt(firstStationCount)    // increment first station's count by the count of the queue
+                    }
+                },
             }
 
             // send update action
@@ -143,13 +151,10 @@ const KickOffModal = (props) => {
             />
             )
         })
-
-
-
     }
 
     /**
-     * When modal is opened, get cards for processes
+     * When modal is opened, get all cards associated with the processes
      *
      *
      */
@@ -161,8 +166,18 @@ const KickOffModal = (props) => {
     }, [])
 
     /**
-     * When modal is opened, get cards for processes
+     * Get the cards actually available for kick off
      *
+     * For a card to be available for kick off, it must have at least 1 item in the 'queue' bin
+     *
+     * This function creates a temporary array for storing kick off cards as it checks each card of each process associated with the station
+     *
+     * This function loops through every card belonging to a process that the current station is the first station of
+     * Each card's bins attribute is checked to see if it contains any items in the "QUEUE" bin
+     *
+     * if a card is found to have items in the "QUEUE" bin, it is added to the list of kick off cards
+     *
+     * finally, local state variable availableKickOffCards is set to the list of kick off cards for later use
      *
      */
     useEffect(() => {
@@ -172,7 +187,10 @@ const KickOffModal = (props) => {
             const currProcessCards = processCards[currProcessId]
 
             var filteredCards = []
-            if(currProcessCards) filteredCards = Object.values(currProcessCards).filter((currCard) => currCard.station_id === "QUEUE")
+            if(currProcessCards) filteredCards = Object.values(currProcessCards).filter((currCard) => {
+                // currCard.station_id === "QUEUE"
+                if(currCard.bins && currCard.bins["QUEUE"]) return true
+            })
             tempAvailableCards = tempAvailableCards.concat(filteredCards)
         })
 

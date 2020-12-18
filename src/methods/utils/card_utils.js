@@ -3,6 +3,9 @@ const EVENT_NAMES = {
 	UPDATE: "update"
 }
 
+export const generateBinId = (index, stationId) => {
+	return index + "+" + stationId
+}
 export const parseMessageFromEvent = (eventName, username, data) => {
 	switch(eventName) {
 

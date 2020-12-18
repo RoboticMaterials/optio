@@ -40,15 +40,13 @@ export const Header = styled.div`
 	margin: 0;
 	//height: 3rem;
 	background: ${props => props.theme.bg.quinary};
-  margin-bottom: 1rem;
 	
 `
 
 export const NameContainer = styled.div`
 	background: ${props => props.theme.bg.quaternary};
 	width: 100%;
-	//padding: 0rem 1rem;
-  	margin-bottom: 1rem;
+	padding: 1rem;
 `
 
 export const CloseButton = styled.button`
@@ -77,28 +75,6 @@ export const TitleText = styled.span`
 
 `
 
-export const FieldTitle = styled.span`
-  font-size: ${props => props.theme.fontSize.sz3};
-  font-weight: ${props => props.theme.fontWeight.bold};
-  align-self: center;
-`
-
-export const InfoText = styled.span`
-  font-size: ${props => props.theme.fontSize.sz3};
-  // font-weight: ${props => props.theme.fontWeight.bold};
-  margin-right: 1rem;
-  color: ${props => props.highlight ? props.theme.schema["processes"].solid : "white"};
-`
-
-export const SectionContainer = styled.div`
-	border-bottom: 1px solid ${props => props.theme.bg.quinary};
-  padding: 0 1rem;
-  //display: flex;
-  
-  //background: green;
-  display: flex;
-  flex-direction: column;
-`
 
 export const StyledForm = styled(Form)`
     display: flex;
@@ -112,7 +88,6 @@ export const StyledForm = styled(Form)`
     position: relative;
     
     overflow: hidden;
-  background: ${props => props.theme.bg.quaternary};
     
    
     flex: 1;
@@ -137,7 +112,6 @@ export const BodyContainer = styled.div`
 	flex: 1;
 	justify-content: space-between;
 	overflow: auto;
-  min-height: ${props => props.minHeight};
 	
 	background: ${props => props.theme.bg.quaternary};
 `
@@ -158,7 +132,7 @@ export const Icon = styled.i`
 
 export const ObjectInfoContainer = styled.div`
 	display: flex;
-	//width: 100%;
+	width: 100%;
 	//flex-direction: column;
 	align-items: center;
 	//background: red;
@@ -173,7 +147,7 @@ export const ObjectTitleContainer = styled.div`
 `
 
 export const CountInput = styled.input`
-	width: fit-content;
+
 `
 
 export const ObjectLabel = styled.span`
@@ -206,11 +180,10 @@ export const DatesContainer = styled.span`
 	justify-content: center;
 	padding: .75rem;
 	border-radius: 1rem;
-  width: fit-content;
-  margin: 0;
 	
 	
-	//${rowCss};
+	
+	${rowCss};
 `
 
 export const DateItem = styled.div`
@@ -255,13 +228,10 @@ export const ContentHeader = styled.div`
 	display: flex;
 	justify-content: space-between;
 	width: 100%;
-  	margin-bottom: 1rem;
-	//padding: 1rem;
-`
-
-export const ContentTitle = styled.span`
-	font-size: ${props => props.theme.fontSize.sz3};
-	font-weight: ${props => props.theme.fontWeight.bold};
+	padding: 1rem;
+	
+	
+	
 `
 
 export const CalendarContainer = styled.div`
@@ -270,12 +240,10 @@ export const CalendarContainer = styled.div`
 	${rowCss};
 `
 
-export const RowContainer = styled.div`
-	display: flex;
-	margin-bottom: 1rem;
+export const ContentTitle = styled.span`
+	font-size: ${props => props.theme.fontSize.sz3};
+	font-weight: ${props => props.theme.fontWeight.bold};
 `
-
-
 
 export const HistoryBodyContainer = styled.div`
 	display: flex;
@@ -356,56 +324,6 @@ export const TimePickerContainer = styled.div`
 	flex-direction: column;
 	display: flex;
 	overflow: hidden;
-`
-
-
-
-
-export const buttonViewCss = css`
-	// border-right: ${props => !props.isLast && `solid ${props.theme.bg.quaternary} thin`}; // dont show border on last item
-	color: ${props => props.theme.bg.quinary};
-	padding: 0;
-	margin: 0;
-	padding-left: .5rem;
-	padding-right: .5rem;
-	font-size: ${props => props.theme.fontSize.sz3};
-	font-family: ${props => props.theme.font.primary};
-`
-
-
-export const buttonViewSelectedCss = css`
-	background: transparent;
-	color: ${props => props.theme.schema["processes"].solid};
-`
-
-
-export const buttonGroupContainerCss = css`
-	display: flex;
-	flex-direction: row;
-	align-self: center;
-	padding: 0;
-	margin: 0 0 1rem 0;
-  width: fit-content;
-  
-	
-`
-
-
-export const buttonCss = css`
-	margin: 0;
-	padding: 0;
-  
-	
-	&:focus{
-	}
-	
-	&:active{
-	}
-	
-	&:hover{
-		cursor: default;
-	}
-	
 `
 
 

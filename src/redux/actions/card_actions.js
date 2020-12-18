@@ -55,7 +55,7 @@ export const getCard = (cardId) =>  async (dispatch) => {
     const actionName = GET + CARD;
 
     // payload is returned back
-    const payload = await api_action(actionName, callback, dispatch);
+    const payload = await api_action(actionName, callback, dispatch, cardId);
 
     return payload;
 
