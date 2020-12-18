@@ -743,7 +743,7 @@ const CardEditor = (props) => {
 										onClick={()=>setShowLotInfo(!showLotInfo)}
 										schema={"processes"}
 									>
-										{showLotInfo ? "Hide Lot Info" : "Show Lot Info"}
+										{showLotInfo ? "Hide Lot Details" : "Show Lot Details"}
 									</Button>
 									}
 
