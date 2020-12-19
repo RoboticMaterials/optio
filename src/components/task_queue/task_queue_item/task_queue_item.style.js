@@ -12,7 +12,7 @@ export const containerCss = css`
     padding: .25rem;
 
 		&:hover{
-				border-color: #c58bff;
+				border-color: #798fd9;
 
 		}
 

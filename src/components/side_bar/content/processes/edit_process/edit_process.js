@@ -41,6 +41,7 @@ const EditProcess = (props) => {
     const dispatchPutTask = (task, ID) => dispatch(putTask(task, ID))
     const dispatchDeleteTask = (ID) => dispatch(deleteTask(ID))
     const dispatchPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
+    const onTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
 
     const dispatchPostProcess = async (process) => await dispatch(postProcesses(process))
     const dispatchPutProcess = async (process) => await dispatch(putProcesses(process))
@@ -50,6 +51,8 @@ const EditProcess = (props) => {
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const stations = useSelector(state => state.locationsReducer.stations)
+
 
     // State definitions
     const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)  // Current task
@@ -67,10 +70,29 @@ const EditProcess = (props) => {
         }
     }, [])
 
-    const handleExecuteProcessTask = (route) => {
-        dispatchPostTaskQueue({ task_id: route })
 
+
+    const handleExecuteProcessTask = async (route) => {
+        if (tasks[route] != null) {
+            if (tasks[route].device_type == 'human') {
+                const dashboardId = stations[tasks[route].load.station].dashboards[0]
+
+                const postToQueue = dispatch(postTaskQueue({ task_id: route, 'task_id': route, dashboard: dashboardId, hil_response: null }))
+                postToQueue.then(item => {
+                    const id = item?._id?.$oid
+                    onTaskQueueItemClicked(id)
+                })
+            }
+            else {
+              dispatchPostTaskQueue({ task_id: route })
+            }
+        }
     }
+
+  //  const handleExecuteProcessTask = (route) => {
+    //    dispatchPostTaskQueue({ task_id: route })
+
+  //  }
 
     const goToCardPage = () => {
         const currentPath = history.location.pathname

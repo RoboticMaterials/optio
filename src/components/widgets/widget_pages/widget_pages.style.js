@@ -11,13 +11,13 @@ export const Container = styled.div`
     top: 5rem;
     bottom: 1rem;
     left: 1rem;
-    right: 1rem;
-    
+    right: ${props => !!props.taskQueueOpen ? '21rem' : '1rem'};
+
 
     display: flex;
     /* background-color: ${props => hexToRGBA(props.theme.bg.tertiary, !!props.showWidgetPage ? 0.97 : 0)}; */
     flex-direction: column;
-    
+
     /* // styles when showWidgetPage is true */;
     visibility: ${props => !!props.showWidgetPage ? 'visible' : 'hidden'};
 
@@ -34,7 +34,7 @@ export const Container = styled.div`
         left: .5rem;
         right: .5rem;
     }
-    
+
 `
 
 export const WidgetPageContainer = styled.div`
@@ -42,7 +42,7 @@ export const WidgetPageContainer = styled.div`
     width: 100%;
     z-index: 3;
     position: relative;
-   
+
     border-radius: 1rem;
     box-shadow: 0 0.2rem 0.4rem 0rem #303030;
     // background-color: transparent;
@@ -64,4 +64,3 @@ export const WidgetsContainer = styled.div`
         margin: 0;
     }
 `
-

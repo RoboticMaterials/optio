@@ -26,6 +26,8 @@ import {
     DELETE_TASK_QUEUE_STARTED,
     DELETE_TASK_QUEUE_SUCCESS,
     DELETE_TASK_QUEUE_FAILURE,
+
+    TASK_QUEUE_OPEN,
 } from '../types/task_queue_types';
 
 import {
@@ -50,6 +52,7 @@ const defaultState = {
     hilResponse: '',
     activeHilDashboards: {},
     localHumanTask: false,
+    taskQueueOpen: false,
 };
 
 export default function taskQueueReducer(state = defaultState, action) {
@@ -72,7 +75,7 @@ export default function taskQueueReducer(state = defaultState, action) {
                 hilTimers: action.payload,
             }
 
-        // Used for immediate HIL response input 
+        // Used for immediate HIL response input
         case 'HIL_RESPONSE':
             return {
                 ...state,
@@ -222,6 +225,12 @@ export default function taskQueueReducer(state = defaultState, action) {
             return Object.assign({}, state, {
                 pending: true
             });
+
+        case TASK_QUEUE_OPEN:
+            return {
+                ...state,
+                taskQueueOpen: action.payload,
+            }
         // ~~~~~~~~~~~~~~~
 
         default:

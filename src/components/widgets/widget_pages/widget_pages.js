@@ -30,6 +30,7 @@ const WidgetPages = (props) => {
     const mobileMode = windowWidth < widthBreakPoint;
 
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
+    const taskQueueOpen = useSelector(state => state.taskQueueReducer.taskQueueOpen)
 
     const { locationID, widgetPage } = props.match.params
     const showWidgetPage = widgetPage
@@ -57,7 +58,7 @@ const WidgetPages = (props) => {
 
 
     return (
-        <styled.Container showWidgetPage={showWidgetPage} dashboardOpen={dashboardOpen} mobileMode={mobileMode} id={'widgetPage'}>
+        <styled.Container taskQueueOpen = {taskQueueOpen} showWidgetPage={showWidgetPage} dashboardOpen={dashboardOpen} mobileMode={mobileMode} id={'widgetPage'}>
 
             <styled.WidgetPageContainer
                 showWidgetPage={showWidgetPage}
