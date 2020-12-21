@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useHistory } from "react-router-dom";
 
 import * as styled from './edit_process.style'
 import { useSelector, useDispatch } from 'react-redux'
@@ -21,7 +22,6 @@ import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 // Import Utils
 import { isEquivalent, deepCopy } from '../../../../../methods/utils/utils'
 import uuid from 'uuid'
-import { useHistory } from "react-router-dom";
 
 const EditProcess = (props) => {
 
@@ -113,38 +113,52 @@ const EditProcess = (props) => {
                 <div key={`li-${ind}`}>
                     <styled.ListItem
                         key={`li-${ind}`}
-                    >
-                        <styled.ListItemRect
-                            onMouseEnter={() => {
-                                if (!selectedTask && !editingTask) {
-                                    dispatchSetSelectedTask(routeTask)
-                                }
+                        onMouseEnter={() => {
+                            if (!selectedTask && !editingTask) {
+                                dispatchSetSelectedTask(routeTask)
+                            }
 
-                            }}
-                            onMouseLeave={() => {
-                                if (selectedTask !== null && !editingTask) {
-                                    dispatchDeselectTask()
-                                }
+                        }}
+                        onMouseLeave={() => {
+                            if (selectedTask !== null && !editingTask) {
+                                dispatchDeselectTask()
+                            }
+                        }}
+                    >
+
+                        <styled.ListItemIconContainer style={{ width: '15%' }}>
+                            <styled.ListItemIcon
+                                className='fas fa-play'
+                                onClick={() => {
+                                    handleExecuteProcessTask(route)
+                                }}
+                            />
+                        </styled.ListItemIconContainer>
+
+                        {/* <styled.ListItemTitle schema={props.schema} onClick={() => props.onClick(element)}>{element.name}</styled.ListItemTitle> */}
+                        <styled.ListItemTitle
+                            schema={'processes'}
+                            onClick={() => {
+                                setEditingTask(true)
+                                dispatchSetSelectedTask(routeTask)
                             }}
                         >
-                            {/* <styled.ListItemTitle schema={props.schema} onClick={() => props.onClick(element)}>{element.name}</styled.ListItemTitle> */}
-                            <styled.ListItemTitle
-                                schema={'processes'}
+                            {routeTask.name}
+                        </styled.ListItemTitle>
+
+                        <styled.ListItemIconContainer>
+
+                            <styled.ListItemIcon
+                                className='fas fa-cog'
                                 onClick={() => {
                                     setEditingTask(true)
                                     dispatchSetSelectedTask(routeTask)
                                 }}
-                            >
-                                {routeTask.name}
-                            </styled.ListItemTitle>
-                        </styled.ListItemRect>
+                                style={{ color: '#c6ccd3' }}
+                            />
 
-                        <styled.ListItemIcon
-                            className='fas fa-play'
-                            onClick={() => {
-                                handleExecuteProcessTask(route)
-                            }}
-                        />
+
+                        </styled.ListItemIconContainer>
 
                     </styled.ListItem>
                     {editingTask && selectedTask._id === route &&
@@ -174,48 +188,45 @@ const EditProcess = (props) => {
         return (
             <>
                 <styled.ListItem
-                // onMouseEnter={() => dispatchSetSelectedTask(routeTask)}
-                // onMouseLeave={() => dispatchDeselectTask()}
+                    // onMouseEnter={() => dispatchSetSelectedTask(routeTask)}
+                    // onMouseLeave={() => dispatchDeselectTask()}
+                    schema={'processes'}
+                    onClick={() => {
+                        const newTask = {
+                            name: '',
+                            obj: null,
+                            type: 'push',
+                            quantity: 1,
+                            device_type: !!MiRMapEnabled ? 'MiR_100' : 'human',
+                            handoff: false,
+                            track_quantity: true,
+                            map_id: currentMap._id,
+                            new: true,
+                            process: false,
+                            load: {
+                                position: null,
+                                station: null,
+                                sound: null,
+                                instructions: 'Load',
+                                timeout: '01:00'
+                            },
+                            unload: {
+                                position: null,
+                                station: null,
+                                sound: null,
+                                instructions: 'Unload'
+                            },
+                            _id: uuid.v4(),
+                        }
+                        dispatchAddTask(newTask)
+                        setNewRoute(newTask)
+                        dispatchSetSelectedTask(newTask)
+                        setEditingTask(true)
+                    }}
                 >
-                    <styled.ListItemRect>
-                        <styled.ListItemTitle
-                            schema={'processes'}
-                            onClick={() => {
-                                const newTask = {
-                                    name: '',
-                                    obj: null,
-                                    type: 'push',
-                                    quantity: 1,
-                                    device_type: !!MiRMapEnabled ? 'MiR_100' : 'human',
-                                    handoff: false,
-                                    track_quantity: true,
-                                    map_id: currentMap._id,
-                                    new: true,
-                                    process: false,
-                                    load: {
-                                        position: null,
-                                        station: null,
-                                        sound: null,
-                                        instructions: 'Load',
-                                        timeout: '01:00'
-                                    },
-                                    unload: {
-                                        position: null,
-                                        station: null,
-                                        sound: null,
-                                        instructions: 'Unload'
-                                    },
-                                    _id: uuid.v4(),
-                                }
-                                dispatchAddTask(newTask)
-                                setNewRoute(newTask)
-                                dispatchSetSelectedTask(newTask)
-                                setEditingTask(true)
-                            }}
-                        >
-                            Add Route
+                    <styled.ListItemTitle style={{lineHeight:'3rem'}}>
+                        Add Route
                     </styled.ListItemTitle>
-                    </styled.ListItemRect>
 
                 </styled.ListItem>
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { useHistory } from "react-router-dom";
 
 import * as styled from './processes_content.style'
 
@@ -27,6 +28,8 @@ import {uuidv4} from "../../../../methods/utils/utils";
 
 const ProcessesContent = () => {
 
+    const history = useHistory()
+
     const dispatch = useDispatch()
     const onPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
     const onSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
@@ -52,6 +55,12 @@ const ProcessesContent = () => {
         }
     }, [])
 
+
+    const onCardView = (element) => {
+        const currentPath = history.location.pathname
+        history.push(currentPath + '/' + element._id + "/card")
+    }
+
     if (editing && selectedProcess !== null) { // Editing Mode
         return (
             <EditProcess
@@ -69,6 +78,7 @@ const ProcessesContent = () => {
                 elements={Object.values(processes)}
                 onMouseEnter={(process) => onSetSelectedProcess(process)}
                 onMouseLeave={() => onSetSelectedProcess(null)}
+                handleCardView={(element) => onCardView(element)}
                 onClick={(process) => {
                     // If task button is clicked, start editing it
                     setSelectedProcessCopy(deepCopy(process))

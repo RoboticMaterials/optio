@@ -41,12 +41,18 @@ export const ListItem = styled.div`
     display: flex;
     align-items: center;
     width: auto;
-    height: 2.4rem;
+    height: 3rem;
     text-overflow: ellipsis;
+    justify-content: space-between;
 
     background: transparent;
-    padding-bottom: .4rem;
-    padding-right:1.5rem;
+    padding: 0rem 1rem;
+
+    border-radius: 0.5rem;
+    border: 0.1rem solid white;
+
+    margin-bottom: 1rem;
+
 
 `
 
@@ -69,18 +75,11 @@ export const ListItemRect = styled.div`
 
 `
 
-export const ListItemTitle = styled.div`
-    text-align: left;
-    height: 2rem;
-    line-height: 2rem;
-    box-sizing: border-box;
-    width: 100%;
-    margin-top: -0.1rem;
-    padding-left: 2rem;
-    padding-right: 1rem;
+export const ListItemTitle = styled.h1`
 
     font-family: ${props => props.theme.font.primary};
-    font-size: ${props => props.theme.fontSize.sz4};
+    /* font-size: ${props => props.theme.fontSize.sz3}; */
+    font-size: 1rem;
     font-weight: 500;
     color: ${props => props.theme.bg.octonary};
 
@@ -88,23 +87,24 @@ export const ListItemTitle = styled.div`
     overflow: hidden;
     text-overflow: ellipsis;
 
-    &:hover {
-        background: ${props => props.theme.schema[props.schema].gradient};
-        -webkit-text-fill-color: transparent;
-        -webkit-background-clip: text;
-        display:block;
-    }
+    margin-bottom: 0rem;
+    width: 75%;
 `
 
 export const ListItemIcon = styled.i`
-    margin-left: 1rem;
-    font-size: 1.25rem;
+    
+    font-size: 1.3rem;
     color: lightgreen;
-    margin-right:2rem;
 
 
     &:hover {
         cursor: pointer;
         color:green;
     }
+`
+
+export const ListItemIconContainer = styled.div`
+    display: flex;
+    width: 10%;
+
 `

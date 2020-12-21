@@ -12,7 +12,8 @@ export default function ContentList(props) {
 
     const {
         executeTask,
-        hideHeader
+        hideHeader,
+        handleCardView
     } = props
 
 
@@ -30,18 +31,45 @@ export default function ContentList(props) {
                         onMouseEnter={() => props.onMouseEnter(element)}
                         onMouseLeave={() => props.onMouseLeave(element)}
                     >
-                        <styled.ListItemRect>
-                            <styled.ListItemTitle schema={props.schema} onClick={() => props.onClick(element)}>{element.name}</styled.ListItemTitle>
-                        </styled.ListItemRect>
 
-                        {props.schema === 'tasks' &&
+
+                        <styled.ListItemIconContainer style={{width:'15%'}}>
+
+                            {props.schema === 'tasks' &&
+                                <styled.ListItemIcon
+                                    className='fas fa-play'
+                                    onClick={() => {
+                                        executeTask()
+                                    }}
+                                />
+                            }
+
+                            {props.schema === 'processes' &&
+                                <styled.ListItemIcon
+                                    className='far fa-clone'
+                                    onClick={() => {
+                                        handleCardView(element)
+                                    }}
+                                />
+                            }
+
+                        </styled.ListItemIconContainer>
+
+
+                        <styled.ListItemTitle schema={props.schema}>{element.name}</styled.ListItemTitle>
+
+
+
+                        <styled.ListItemIconContainer>
+
                             <styled.ListItemIcon
-                                className='fas fa-play'
-                                onClick={() => {
-                                    executeTask()                                    
-                                }}
+                                className='fas fa-cog'
+                                onClick={() => props.onClick(element)}
+                                style={{color:'#c6ccd3'}}
                             />
-                        }
+
+
+                        </styled.ListItemIconContainer>
 
                     </styled.ListItem>
                 )}
