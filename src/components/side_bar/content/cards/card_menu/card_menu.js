@@ -49,17 +49,6 @@ const CardMenu = (props) => {
 			>
 				Summary Zone
 			</Button>
-
-			<Button
-				schema={'processes'}
-				style={{ margin: 0, marginBottom: "1rem" }}
-				onClick={async () => {
-					history.replace ('/processes/timeline')
-				}}
-			>
-				Timeline Zone
-			</Button>
-
 			<styled.Title style={{marginBottom: "1rem"}}>Processes</styled.Title>
 			<DropDownSearch
 				values={currentProcess ? [currentProcess] : []}
