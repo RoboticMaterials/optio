@@ -666,27 +666,27 @@ const ApiContainer = (props) => {
 
         Object.values(processes).map((process) => {
 
-            Object.keys(process.routes).map(async (station) => {
+            // Object.keys(process.routes).map(async (station) => {
 
-                process.routes[station].map(async (route) => {
+            process.routes.map(async (route) => {
 
-                    if (!tasks[route]) {
-                        // Removes the task from the array of routes
-                        let processRoutes = deepCopy(process.routes)
-                        const index = processRoutes.indexOf(route)
-                        processRoutes.splice(index, 1)
-                        const updatedProcess = {
-                            ...process,
-                            routes: [...processRoutes]
-                        }
-                        console.log('QQQQ route does not exist in anymore, delete from process', deepCopy(updatedProcess))
-
-                        await onPutProcess(updatedProcess)
+                if (!tasks[route]) {
+                    // Removes the task from the array of routes
+                    let processRoutes = deepCopy(process.routes)
+                    const index = processRoutes.indexOf(route)
+                    processRoutes.splice(index, 1)
+                    const updatedProcess = {
+                        ...process,
+                        routes: [...processRoutes]
                     }
-                })
-            })
+                    console.log('QQQQ route does not exist in anymore, delete from process', deepCopy(updatedProcess))
 
+                    await onPutProcess(updatedProcess)
+                }
+            })
         })
+
+        // })
     }
 
     /**

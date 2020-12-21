@@ -19,7 +19,7 @@ export const AddTaskAlertContainer = styled.div`
     transform: translate(-50%,-50%);
     
     padding-top: 1rem;  
-    z-index: 100000;
+    z-index: 10000;
 `
 
 export const AddTaskAlertLabel = styled.span`

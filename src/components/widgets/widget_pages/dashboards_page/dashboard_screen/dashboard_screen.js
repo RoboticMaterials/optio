@@ -22,7 +22,7 @@ import { postStatus } from '../../../../../api/status_api'
 
 // Import Actions
 import { postTaskQueue, putTaskQueue } from '../../../../../redux/actions/task_queue_actions'
-import {dashboardOpen, setSelectedValueAttr} from '../../../../../redux/actions/dashboards_actions'
+import {dashboardOpen, setDashboardKickOffProcesses} from '../../../../../redux/actions/dashboards_actions'
 
 // Import styles
 import * as pageStyle from '../dashboards_header/dashboards_header.style'
@@ -34,6 +34,7 @@ import DashboardsHeader from "../dashboards_header/dashboards_header";
 import log from "../../../../../logger";
 import { OPERATION_TYPES, TYPES } from "../dashboards_sidebar/dashboards_sidebar";
 import ReportModal from "./report_modal/report_modal";
+import KickOffModal from "./kick_off_modal/kick_off_modal";
 
 const logger = log.getLogger("DashboardsPage");
 
@@ -57,8 +58,7 @@ const DashboardScreen = (props) => {
     const positions = useSelector(state => state.locationsReducer.positions)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
-    const processes = useSelector(state => { return state.processesReducer.processes })
-    const routes = useSelector(state => { return state.tasksReducer.tasks })
+
 
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
@@ -71,7 +71,7 @@ const DashboardScreen = (props) => {
     const onHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
     const onLocalHumanTask = (bol) => dispatch({type: 'LOCAL_HUMAN_TASK', payload: bol})
     const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
-    const dispatchSetSelectedValueAttr = async (dashboardId, kickOffEnabled) => await dispatch(setSelectedValueAttr(dashboardId, kickOffEnabled))
+
 
     const history = useHistory()
     const params = useParams()
@@ -98,38 +98,6 @@ const DashboardScreen = (props) => {
         }
     }, [])
 
-    /**
-     * Whenever processes updates, check if this dashboard's station is the first station in any process
-     *
-     * Used for determining whether or not to enable the KICK OFF button
-     */
-    useEffect(() => {
-
-        var isFirstStation = false
-        // loop through processes and check if the load station of the first route of any process matches the current dashboards station
-        Object.values(processes).forEach((currProcess) => {
-
-            // get first routes id, default to null
-            const firstRouteId = (currProcess && currProcess.routes && Array.isArray(currProcess.routes))  ? currProcess.routes[0] : null
-
-            // get route from route id, default to null
-            const currRoute = firstRouteId ? routes[firstRouteId] : null
-
-            // get station id from load key of route
-            const loadStationId = currRoute?.load?.station
-
-            // if the loadStationId matches the current dashboard's stationId, then allow kick off
-            if(loadStationId === stationID) isFirstStation = true
-
-        })
-
-        // setAllowKickOff(isFirstStation)
-        // dispatchSetSelectedValueAttr(dashbo)
-        dispatchSetSelectedValueAttr(dashboardId, isFirstStation)
-
-        console.log("isFirstStation",isFirstStation)
-
-    }, [processes])
 
     // If current dashboard is undefined, it probably has been deleted. So go back to locations just incase the station has been deleted too
     if (currentDashboard === undefined) {
@@ -154,12 +122,6 @@ const DashboardScreen = (props) => {
     const handleDashboardButtons = () => {
         let { buttons } = currentDashboard	// extract buttons from dashboard
 
-        // remove KICK_OFF for now, currently disabled
-        buttons = buttons.filter((currButton) => {
-            const type = currButton.type
-
-            return type  !== OPERATION_TYPES.KICK_OFF.key
-        })
 
         // If this dashboard belongs to a device and the device is a cart, add some unique buttons
         if (!!devices[stationID] && devices[stationID].device_model === 'MiR100') {
@@ -263,6 +225,9 @@ const DashboardScreen = (props) => {
                 break
             case OPERATION_TYPES.REPORT.key:
                 setReportModal(OPERATION_TYPES.REPORT.key)
+                break
+            case OPERATION_TYPES.KICK_OFF.key:
+                setReportModal(OPERATION_TYPES.KICK_OFF.key)
                 break
             default:
                 break
@@ -394,7 +359,7 @@ const DashboardScreen = (props) => {
         // convenient to be able to clear the alert instead of having to wait for the timeout to clear it automatically
         // onClick={() => setAddTaskAlert(null)}
         >
-            {reportModal &&
+            {(reportModal === OPERATION_TYPES.REPORT.key) &&
                 <ReportModal
                     isOpen={!!reportModal}
                     title={"Send Report"}
@@ -405,7 +370,7 @@ const DashboardScreen = (props) => {
                         // set alert
                         setAddTaskAlert({
                             type: success ? ADD_TASK_ALERT_TYPE.REPORT_SEND_SUCCESS : ADD_TASK_ALERT_TYPE.REPORT_SEND_FAILURE,
-                            label: success ? "Report sent" : "Failed to send report",
+                            label: success ? "Report Sent" : "Failed to Send Report",
                             message: name ? `"` + name + `"` : null
                         })
 
@@ -413,6 +378,27 @@ const DashboardScreen = (props) => {
                         setTimeout(() => setAddTaskAlert(null), 1800)
                     }}
                 />
+            }
+
+            {(reportModal === OPERATION_TYPES.KICK_OFF.key) &&
+            <KickOffModal
+                isOpen={true}
+                stationId={stationID}
+                title={"Kick Off"}
+                close={() => setReportModal(null)}
+                dashboard={currentDashboard}
+                onSubmit={(name, success) => {
+                    // set alert
+                    setAddTaskAlert({
+                        type: success ? ADD_TASK_ALERT_TYPE.KICK_OFF_SUCCESS : ADD_TASK_ALERT_TYPE.KICK_OFF_FAILURE,
+                        label: success ? "Lot Kick Off Successful" : "Lot Kick Off Failed",
+                        message: name ? `"` + name + `"` : null
+                    })
+
+                    // clear alert
+                    setTimeout(() => setAddTaskAlert(null), 1800)
+                }}
+            />
             }
             <DashboardsHeader
                 showTitle={false}

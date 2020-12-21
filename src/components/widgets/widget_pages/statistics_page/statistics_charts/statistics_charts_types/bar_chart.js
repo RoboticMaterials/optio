@@ -138,7 +138,6 @@ const BarChart = (props) => {
     }
 
 
-    console.log("Barchart data",data)
     // if (data === null || data === undefined) { return null }
     return (
         <ResponsiveBar

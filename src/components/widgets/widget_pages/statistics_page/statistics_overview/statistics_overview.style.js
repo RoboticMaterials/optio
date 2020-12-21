@@ -50,11 +50,16 @@ export const PlotsContainer = styled.div`
     //     flex-direction: column;
     // }
 
-	@media (min-width: ${props => props.theme.widthBreakpoint.laptopL}){
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: center;
+
+	/* @media (min-width: ${props => props.theme.widthBreakpoint.laptopL}){
       display: flex;
       flex-direction: row;
       flex: 1;
-	}
+	} */
 `
 
 export const PlotHeader = styled.div`
@@ -71,8 +76,15 @@ export const SinglePlotContainer = styled.div`
 	padding: 1rem;
 	min-width: 60rem;
 	overflow: hidden;
+
+    width: 100%;
+    max-width: 60%;
+    margin-bottom: 1rem;
+    // min-height: ${props => (props.minHeight && props.minHeight > 25) ? props.minHeight.toString() + "rem" : "30rem"};
+    height: fit-content;
+    min-height: fit-content;
   
-  	// row layout
+  	/* // row layout
 	@media (min-width: ${props => props.theme.widthBreakpoint.laptopL}){
 		//flex: 1;
 		width: 100%;
@@ -88,7 +100,7 @@ export const SinglePlotContainer = styled.div`
 		// min-height: ${props => (props.minHeight && props.minHeight > 25) ? props.minHeight.toString() + "rem" : "30rem"};
 		height: fit-content;
 		min-height: fit-content;
-	}
+	} */
 `
 
 export const PlotContainer = styled.div`

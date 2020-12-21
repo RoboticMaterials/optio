@@ -164,6 +164,9 @@ export const HilButton = styled.button`
     background-color: ${props => props.color};
 
     margin-bottom: 2rem;
+
+    filter: brightness(${props => props.filter});
+
     &:focus{
         outline: 0 !important
     }

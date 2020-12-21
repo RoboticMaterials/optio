@@ -15,7 +15,7 @@ import DashboardsSidebar from "./dashboards_sidebar/dashboards_sidebar.jsx"
 
 import { PAGES } from "../../../../constants/dashboard_contants";
 
-import { getDashboards } from '../../../../redux/actions/dashboards_actions'
+import {getDashboards, setDashboardKickOffProcesses} from '../../../../redux/actions/dashboards_actions'
 
 // Import Styles
 import * as style from './dashboards_page.style'
@@ -29,9 +29,14 @@ const DashboardsPage = (props) => {
 
     // redux state
     const dispatch = useDispatch()
+    const dispatchSetDashboardKickOffProcesses = async (dashboardId, kickOffEnabled) => await dispatch(setDashboardKickOffProcesses(dashboardId, kickOffEnabled))
+
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const stations = useSelector(state => state.locationsReducer.stations)
     const devices = useSelector(state => state.devicesReducer.devices)
+    const processes = useSelector(state => { return state.processesReducer.processes })
+    const routes = useSelector(state => { return state.tasksReducer.tasks })
+
     // self contained state
     const [selectedDashboard, setSelectedDashboard] = useState(null);
     const [editingDashboard, setEditingDashboard] = useState(null);
@@ -41,6 +46,44 @@ const DashboardsPage = (props) => {
 
     // extract url params
     const { stationID, dashboardID, editing } = props.match.params
+
+    /**
+     * This useEffect checks whether the current dashboard is kick off enabled
+     *
+     * In order to be kick off enabled, the dashboard's station must be the first station in a process
+     *
+     * To check if the dashboard's station is the first station in a process,
+     * it checks the load station of the first route in each process.
+     * For any process where the first station's id matches the current dashboard's station id, the process id is added to list.
+     * This list is then dispatched to redux with the key being the dashboard's ID and value is the list
+     *
+     * This information is used for determining whether or not to enable the KICK OFF button for a given dashboard
+     */
+    useEffect(() => {
+
+        // list of all processes that the station is the first station of the process
+        var firstStationProcesses = []
+
+        // loop through processes and check if the load station of the first route of any process matches the current dashboards station
+        Object.values(processes).forEach((currProcess) => {
+
+            // get first routes id, default to null
+            const firstRouteId = (currProcess && currProcess.routes && Array.isArray(currProcess.routes))  ? currProcess.routes[0] : null
+
+            // get route from route id, default to null
+            const currRoute = firstRouteId ? routes[firstRouteId] : null
+
+            // get station id from load key of route
+            const loadStationId = currRoute?.load?.station
+
+            // if the loadStationId matches the current dashboard's stationId, add the process's id to the list
+            if(loadStationId === stationID) firstStationProcesses.push(currProcess._id)
+
+        })
+
+        dispatchSetDashboardKickOffProcesses(dashboardID, firstStationProcesses)
+
+    }, [processes])
 
     // On page load, load the first and only dashboard with this station
     // Leaving the rest of the code in for adding dashboards and dashboard list view because we may need it in the future

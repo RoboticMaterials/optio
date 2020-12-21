@@ -70,7 +70,6 @@ export default function cardsReducer(state = defaultState, action) {
       }
 
     case PUT + CARD + SUCCESS:
-      console.log("PUT + CARD + SUCCESS action", action)
       return {
         ...state,
         cards: {...state.cards, [action.payload.card._id]: action.payload.card},
@@ -81,7 +80,6 @@ export default function cardsReducer(state = defaultState, action) {
       }
 
     case POST + CARD + SUCCESS:
-      console.log("PUT + CARD + SUCCESS action", action)
       return {
         ...state,
         cards: {...state.cards, [action.payload.card._id]: action.payload.card},
@@ -92,7 +90,6 @@ export default function cardsReducer(state = defaultState, action) {
       }
 
     case DELETE + CARD + SUCCESS:
-      console.log("DELETE + CARD + SUCCESS action", action)
       const { [action.payload.cardId]: value, ...rest } = state.cards; // extracts payload card from rest
       const {
 

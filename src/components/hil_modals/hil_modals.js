@@ -18,7 +18,7 @@ import { putTaskQueueItem } from '../../api/task_queue_api'
 // Import Utils
 import { deepCopy } from '../../methods/utils/utils'
 import DropDownSearch from "../basic/drop_down_search_v2/drop_down_search";
-import {getCards} from "../../redux/actions/card_actions";
+import { getCards } from "../../redux/actions/card_actions";
 import DropDownSearchField from "../basic/form/drop_down_search_field/drop_down_search_field";
 
 
@@ -40,14 +40,14 @@ const HILModals = (props) => {
     } = item || {}
 
     const dispatch = useDispatch()
-    const onPostTaskQueue = (response) => dispatch(postTaskQueue(response))
+    const dispatchPostTaskQueue = (response) => dispatch(postTaskQueue(response))
     const dispatchGetCards = () => dispatch(getCards())
-    const onTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
-    const onHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
-    const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
-    const onSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
-    const onPostEvents = (event) => dispatch(postEvents)
-    const onLocalHumanTask = (bol) => dispatch({type: 'LOCAL_HUMAN_TASK', payload: bol})
+    const dispatchTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
+    const disptachHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
+    const disptachPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
+    const dispatchSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
+    const dispatchPostEvents = (event) => dispatch(postEvents)
+    const dispatchLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
 
 
 
@@ -55,12 +55,14 @@ const HILModals = (props) => {
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
-    const taskQueueItemClicked = useSelector(state=> state.taskQueueReducer.taskQueueItemClicked)
-    const dashboardOpen = useSelector(state=> state.dashboardsReducer.dashboardOpen)
-    const dashboards = useSelector(state=> state.dashboardsReducer.dashboards)
-    const objects = useSelector(state=> state.objectsReducer.objects)
-    const cards = useSelector(state=> state.cardsReducer.cards)
+    const taskQueueItemClicked = useSelector(state => state.taskQueueReducer.taskQueueItemClicked)
+    const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
+    const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
+    const objects = useSelector(state => state.objectsReducer.objects)
+    const cards = useSelector(state => state.cardsReducer.cards)
     const [quantity, setQuantity] = useState(taskQuantity)
+
+    const [selectedTask, setSelectedTask] = useState(null)
     const [selectedCard, setSelectedCard] = useState(null)
     const [hilLoadUnload, setHilLoadUnload] = useState('')
 
@@ -78,7 +80,16 @@ const HILModals = (props) => {
     * Each option only needs to contain the card's id and a label to display, the extaneous information can be left out
     *
     * */
-    const stationCards = Object.values(cards).filter((currCard) => currCard.station_id === stationId).map((currCard) => {
+    const stationCards = Object.values(cards).filter((currCard) => {
+        const {
+            bins
+        } = currCard
+
+        if(bins) {
+            if(bins[stationId] && bins[stationId].count > 0) return true
+        }
+
+    }).map((currCard) => {
         const {
             _id,
             object_id
@@ -104,6 +115,10 @@ const HILModals = (props) => {
 
     // Use Effect for when page loads, handles wether the HIL is a load or unload
     useEffect(() => {
+
+        setSelectedTask(tasks[item.task_id])
+        console.log('QQQQ Selected Task', tasks[item.task_id])
+
         // If the task's load location of the task q item matches the item's location then its a load hil, else its unload
         if (tasks[item.task_id].load.station === item.hil_station_id || !!item.dashboard) {
             // load
@@ -121,17 +136,17 @@ const HILModals = (props) => {
 
         // On unmount, set the task q item to none
         return () => {
-            onTaskQueueItemClicked('')
-            onLocalHumanTask(false)
+            dispatchTaskQueueItemClicked('')
+            dispatchLocalHumanTask(false)
         }
 
     }, [])
 
     // Posts HIL Success to API
-    const handleHilSuccess = async () => {
+    const onHilSuccess = async () => {
 
 
-        onTaskQueueItemClicked('')
+        dispatchTaskQueueItemClicked('')
 
         let newItem = {
             ...item,
@@ -141,7 +156,7 @@ const HILModals = (props) => {
         }
 
         // Deletes the dashboard id from active list for the hil that has been responded too
-        onSetActiveHilDashboards(delete (activeHilDashboards[item.hil_station_id]))
+        dispatchSetActiveHilDashboards(delete (activeHilDashboards[item.hil_station_id]))
 
         const ID = deepCopy(taskQueueID)
 
@@ -149,22 +164,22 @@ const HILModals = (props) => {
         delete newItem.dashboard
 
         // This is used to make the tap of the HIL button respond quickly
-        onHILResponse('success')
-        setTimeout(() => onHILResponse(''), 2000)
+        disptachHILResponse('success')
+        setTimeout(() => disptachHILResponse(''), 2000)
 
-        await onPutTaskQueue(newItem, ID)
+        await disptachPutTaskQueue(newItem, ID)
 
-        // handleLogHumanEvent()
+        // onLogHumanEvent()
     }
 
     // Posts HIL Postpone to API
     // HIL Postpone will place the current task after the next task in the queue. (Delays task by 1 task)
-    const handleHilPostpone = () => {
-        onTaskQueueItemClicked('')
+    const onHilPostpone = () => {
+        dispatchTaskQueueItemClicked('')
     }
 
     // Posts HIL Failure to API
-    const handleHilFailure = async () => {
+    const onHilFailure = async () => {
 
         let newItem = {
             ...item,
@@ -173,11 +188,11 @@ const HILModals = (props) => {
         delete newItem._id
         await putTaskQueueItem(newItem, taskQueueID)
 
-        onTaskQueueItemClicked('')
+        dispatchTaskQueueItemClicked('')
     }
 
     // Posts event to back end for stats and tracking
-    const handleLogHumanEvent = () => {
+    const onLogHumanEvent = () => {
 
         let event = {
             object: null,
@@ -193,7 +208,7 @@ const HILModals = (props) => {
         const station = item.hil_station_id
 
         let eventQuantity = 0
-        if(!!item.quantity){
+        if (!!item.quantity) {
             eventQuantity = item.quantity
         } else {
             eventQuantity = quantity
@@ -214,7 +229,186 @@ const HILModals = (props) => {
         event.quantity = eventQuantity
         event.outgoing = outgoing
 
-        // onPostEvents(event)
+        // dispatchPostEvents(event)
+    }
+
+    const onFractionResponse = (fraction) => {
+        console.log('QQQQ Fraction response', fraction)
+    }
+
+    const renderFractionOptions = () => {
+
+        const fractionOptions = ['1', '3/4', '1/2', '1/4']
+
+
+
+        return (
+            <>
+                <styled.HilMessage>{!!item.dashboard ? 'Enter Fraction' : hilMessage}</styled.HilMessage>
+                {/* Only Showing timers on load at the moment, will probably change in the future */}
+                {
+                    !!hilTimers[item._id.$oid] && hilLoadUnload === 'load' &&
+                    <styled.HilTimer>{hilTimers[item._id.$oid]}</styled.HilTimer>
+                }
+                <styled.HilButtonContainer>
+
+
+                    {fractionOptions.map((value) => {
+                        return (
+                            <styled.HilButton
+                                color={'#90eaa8'}
+                                filter={Math.cbrt(eval(value))}
+                                onClick={() => {
+                                    onFractionResponse(value)
+                                }}
+                            >
+                                {/* <styled.HilIcon
+                                className='fas fa-check'
+                                color={'#1c933c'}
+                            /> */}
+                                <styled.HilButtonText style={{ fontSize: '3rem' }} color={'#1c933c'}>{value}</styled.HilButtonText>
+                            </styled.HilButton>
+                        )
+                    })}
+
+
+
+                    {hilLoadUnload === 'unload' &&
+                        <styled.HilButton color={'#90eaa8'}
+                            onClick={() => {
+                                onHilSuccess()
+                            }}
+                        >
+                            <styled.HilIcon
+                                className='fas fa-check'
+                                color={'#1c933c'}
+                            />
+                            <styled.HilButtonText color={'#1c933c'}>1</styled.HilButtonText>
+                        </styled.HilButton>
+                    }
+
+                    {(hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
+
+                        <styled.HilButton color={'#ff9898'} onClick={onHilFailure}>
+                            <styled.HilIcon
+                                className='fas fa-times'
+                                color={'#ff1818'}
+                            />
+                            <styled.HilButtonText color={'#ff1818'}>Cancel</styled.HilButtonText>
+                        </styled.HilButton>
+                    }
+
+                </styled.HilButtonContainer>
+            </>
+        )
+
+
+    }
+
+    const renderQuantityOptions = () => {
+
+        return (
+            <>
+                <styled.HilMessage>{!!item.dashboard ? 'Enter Quantity' : hilMessage}</styled.HilMessage>
+                {/* Only Showing timers on load at the moment, will probably change in the future */}
+                {
+                    !!hilTimers[item._id.$oid] && hilLoadUnload === 'load' &&
+                    <styled.HilTimer>{hilTimers[item._id.$oid]}</styled.HilTimer>
+                }
+
+                {
+                    (hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
+                    <styled.HilInputContainer>
+
+                        <styled.HilInputIcon
+                            className='fas fa-minus-circle'
+                            styled={{ color: '#ff1818' }}
+                            onClick={() => setQuantity(quantity - 1)}
+                        />
+
+                        <styled.HilInput
+                            type="number"
+                            onChange={(e) => {
+                                setQuantity(e.target.value)
+                            }}
+                            value={quantity}
+                        />
+
+                        <styled.HilInputIcon
+                            className='fas fa-plus-circle'
+                            styled={{ color: '#1c933c' }}
+                            onClick={() => setQuantity(quantity + 1)}
+                        />
+
+
+                    </styled.HilInputContainer>
+
+                }
+
+                {
+                    (hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
+                    <styled.LotDropdownContainer>
+                        <styled.LotTitle>Select Lot</styled.LotTitle>
+                        <DropDownSearch
+                            theme={{}}
+                            // style={{flex: 1, width: "100%"}}
+                            // containerStyle={{flex: 1, width: "100%"}}
+                            options={stationCards}
+                            pattern={null}
+                            labelField={'label'}
+                            valueField={"_id"}
+                            onChange={(values) => {
+                                if (values && Array.isArray(values)) setSelectedCard(values[0]._id)
+                            }}
+                        />
+                    </styled.LotDropdownContainer>
+                }
+
+
+                <styled.HilButtonContainer>
+
+                    <styled.HilButton color={'#90eaa8'}
+                        onClick={() => {
+                            onHilSuccess()
+                        }}
+                    >
+                        <styled.HilIcon
+                            // onClick={() => {
+                            //     onHilSuccess()
+                            // }}
+                            className='fas fa-check'
+                            color={'#1c933c'}
+                        />
+                        <styled.HilButtonText color={'#1c933c'}>Confirm</styled.HilButtonText>
+                    </styled.HilButton>
+
+                    {((hilType === 'pull' && hilLoadUnload === 'load') || hilType === 'check') &&
+                        <styled.HilButton color={'#f7cd89'} onClick={onHilPostpone}>
+                            <styled.HilIcon
+                                // onClick={onHilPostpone}
+                                className='icon-postpone'
+                                color={'#ff7700'}
+                                styled={{ marginTop: '.5rem' }}
+                            />
+                            <styled.HilButtonText color={'#ff7700'}>Postpone</styled.HilButtonText>
+                        </styled.HilButton>
+                    }
+
+                    {(hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
+
+                        <styled.HilButton color={'#ff9898'} onClick={onHilFailure}>
+                            <styled.HilIcon
+                                // onClick={onHilFailure}
+                                className='fas fa-times'
+                                color={'#ff1818'}
+                            />
+                            <styled.HilButtonText color={'#ff1818'}>Cancel</styled.HilButtonText>
+                        </styled.HilButton>
+                    }
+
+                </styled.HilButtonContainer>
+            </>
+        )
     }
 
     /**
@@ -245,113 +439,17 @@ const HILModals = (props) => {
 
     return (
         <styled.HilContainer >
-          {dashboardOpen ?
-              <></>
-              :
-              <styled.HilExitModal
-                  className='fas fa-times'
-                  onClick={()=>onTaskQueueItemClicked('')}
-              />
+            {dashboardOpen ?
+                <></>
+                :
+                <styled.HilExitModal
+                    className='fas fa-times'
+                    onClick={() => dispatchTaskQueueItemClicked('')}
+                />
             }
             <styled.HilBorderContainer >
 
-
-
-                <styled.HilMessage>{!!item.dashboard ? 'Enter Quantity' : hilMessage}</styled.HilMessage>
-                {/* Only Showing timers on load at the moment, will probably change in the future */}
-                {!!hilTimers[item._id.$oid] && hilLoadUnload === 'load' &&
-                    <styled.HilTimer>{hilTimers[item._id.$oid]}</styled.HilTimer>
-                }
-
-                {(hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
-                    <styled.HilInputContainer>
-
-                        <styled.HilInputIcon
-                            className='fas fa-minus-circle'
-                            styled={{ color: '#ff1818' }}
-                            onClick={() => setQuantity(quantity - 1)}
-                        />
-
-                        <styled.HilInput
-                            type="number"
-                            onChange={(e) => {
-                                setQuantity(e.target.value)
-                            }}
-                            value={quantity}
-                        />
-
-                        <styled.HilInputIcon
-                            className='fas fa-plus-circle'
-                            styled={{ color: '#1c933c' }}
-                            onClick={() => setQuantity(quantity + 1)}
-                        />
-
-
-                    </styled.HilInputContainer>
-
-                }
-
-                {(hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
-                    <styled.LotDropdownContainer>
-                        <styled.LotTitle>Select Lot</styled.LotTitle>
-                        <DropDownSearch
-                            theme={{}}
-                            // style={{flex: 1, width: "100%"}}
-                            // containerStyle={{flex: 1, width: "100%"}}
-                            options={stationCards}
-                            pattern={null}
-                            labelField={'label'}
-                            valueField={"_id"}
-                            onChange={(values) => {
-                                if(values && Array.isArray(values)) setSelectedCard(values[0]._id)
-                            }}
-                        />
-                    </styled.LotDropdownContainer>
-                }
-
-
-                <styled.HilButtonContainer>
-
-                    <styled.HilButton color={'#90eaa8'}
-                        onClick={() => {
-                            handleHilSuccess()
-                        }}
-                    >
-                        <styled.HilIcon
-                            // onClick={() => {
-                            //     handleHilSuccess()
-                            // }}
-                            className='fas fa-check'
-                            color={'#1c933c'}
-                        />
-                        <styled.HilButtonText color={'#1c933c'}>Confirm</styled.HilButtonText>
-                    </styled.HilButton>
-
-                    {((hilType === 'pull' && hilLoadUnload === 'load') || hilType === 'check') &&
-                        <styled.HilButton color={'#f7cd89'} onClick={handleHilPostpone}>
-                            <styled.HilIcon
-                                // onClick={handleHilPostpone}
-                                className='icon-postpone'
-                                color={'#ff7700'}
-                                styled={{ marginTop: '.5rem' }}
-                            />
-                            <styled.HilButtonText color={'#ff7700'}>Postpone</styled.HilButtonText>
-                        </styled.HilButton>
-                    }
-
-                    {(hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
-
-                        <styled.HilButton color={'#ff9898'} onClick={handleHilFailure}>
-                            <styled.HilIcon
-                                // onClick={handleHilFailure}
-                                className='fas fa-times'
-                                color={'#ff1818'}
-                            />
-                            <styled.HilButtonText color={'#ff1818'}>Cancel</styled.HilButtonText>
-                        </styled.HilButton>
-                    }
-
-                </styled.HilButtonContainer>
+                {!!selectedTask && selectedTask.track_quantity ? renderQuantityOptions() : renderFractionOptions()}
 
             </styled.HilBorderContainer>
         </styled.HilContainer>

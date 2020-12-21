@@ -6,6 +6,7 @@ import {Container} from "react-smooth-dnd";
 import Card from "../card/card";
 import React, {useState} from "react";
 import {setCardDragging, setColumnHovering} from "../../../../../redux/actions/card_page_actions";
+import {generateBinId} from "../../../../../methods/utils/card_utils";
 
 
 const StationsColumn = SortableContainer((props) => {
@@ -17,7 +18,8 @@ const StationsColumn = SortableContainer((props) => {
 		handleCardClick,
 		cards = [],
 		size,
-		processId
+		processId,
+		step
 	} = props
 
 	const width = size?.width
@@ -28,8 +30,7 @@ const StationsColumn = SortableContainer((props) => {
 	const station = useSelector(state => { return state.locationsReducer.stations[station_id] })
 	const route = useSelector(state => { return state.tasksReducer.tasks[route_id] })
 	const objects = useSelector(state => { return state.objectsReducer.objects })
-	const reduxCards = useSelector(state => { return state.cardsReducer.cards })
-	const lots = useSelector(state => { return state.lotsReducer.lots })
+	const reduxCards = useSelector(state => { return state.cardsReducer.processCards[processId] })
 
 	const [isCollapsed, setCollapsed] = useState(false)
 	const [dragEnter, setDragEnter] = useState(false)
@@ -42,58 +43,58 @@ const StationsColumn = SortableContainer((props) => {
 
 
 	const handleDrop = (dropResult) => {
-		console.log("handleDrop dropResult", dropResult)
-		console.log("handleDrop id", id)
 		const { removedIndex, addedIndex, payload, element } = dropResult;
 
 		if (payload === null) { //  No new button, only reorder
-			//     const shiftedButtonsCopy = arrayMove(buttonsCopy, removedIndex, addedIndex)
-			//     formikProps.setFieldValue("buttons", shiftedButtonsCopy)
 
 		} else {
 			if(addedIndex !== null) {
-				console.log("posting payload", payload)
 
-				var destinationCardId = null
-				Object.values(reduxCards).forEach((currCard, cardIndex) => {
+				const {
+					binId,
+					cardId,
+					...remainingPayload
+				} = payload
 
-					// card is in same lot
-					if(currCard.lot_id === payload.lot_id) {
+				const droppedCard = reduxCards[cardId]
 
-						// card exists at the station / route combo. update instead of create
-						if((currCard.route_id === route_id) && (currCard.station_id === station_id)) {
-							destinationCardId = currCard._id
-						}
-					}
-				})
+				const oldBins = droppedCard.bins
+				const {
+					[binId]: movedBin,
+					...remainingOldBins
+				} = oldBins
 
-				if(destinationCardId) {
-					const destinationCard = reduxCards[destinationCardId]
-					dispatchDeleteCard(destinationCardId, processId)
+				// already contains items in bin
+				if(oldBins[station_id]) {
 
 					onPutCard({
-						...payload,
-						count: parseInt(destinationCard.count) + parseInt(payload.count),
-						station_id: station_id,
-						route_id: route_id,
-						process_id: processId
-					}, payload._id)
+						...remainingPayload,
+						bins: {
+							...remainingOldBins,
+							[station_id]: {
+								...oldBins[station_id],
+								count: parseInt(oldBins[station_id].count) + parseInt(movedBin.count)
+							},
+							// [binId]: {
+							// 	...bins[binId],
+							// 	count:
+							// }
+						}
+					}, cardId)
 				}
 
+				// no items in bin
 				else {
 					onPutCard({
-						...payload,
-						station_id: station_id,
-						route_id: route_id,
-						process_id: processId
-					}, payload._id)
-
+						...remainingPayload,
+						bins: {
+							...remainingOldBins,
+							[station_id]: {
+								...movedBin,
+							}
+						}
+					}, cardId)
 				}
-
-
-
-
-
 			}
 		}
 	}
@@ -104,7 +105,7 @@ const StationsColumn = SortableContainer((props) => {
 				dragEnter={dragEnter}
 				onMouseEnter={()=>onSetColumnHovering(true)}
 				onTouchStart={()=>onSetCardDragging(true)}
-				onScroll={()=>console.log("scroll")}
+				// onScroll={()=>console.log("scroll")}
 				onMouseLeave={()=>onSetColumnHovering(false)}
 				onTouchEnd={()=>onSetCardDragging(false)}
 			>
@@ -127,28 +128,25 @@ const StationsColumn = SortableContainer((props) => {
 					style={{overflow: "auto",height: "100%", padding: "1rem 1rem 2rem 1rem" }}
 				>
 						{cards.map((card, index) => {
-							console.log("card",card)
 							const {
 								_id,
 								count = 0,
 								name,
 								object_id,
-								lot_id
+								cardId
 							} = card
 
-							const lotName = lots[lot_id] ? lots[lot_id].name : null
+							// const lotName = lots[lot_id] ? lots[lot_id].name : null
 							const objectName = objects[object_id] ? objects[object_id].name : null
 
 							return(
 								<Card
-									lotId={lot_id}
-									lotName={lotName}
 									name={name}
 									objectName={objectName}
 									count={count}
 									id={index}
 									index={index}
-									onClick={()=>handleCardClick(_id, processId)}
+									onClick={()=>handleCardClick(cardId, processId, station_id)}
 								/>
 							)
 						})}

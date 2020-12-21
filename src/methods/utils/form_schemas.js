@@ -2,6 +2,9 @@ import * as Yup from 'yup';
 
 import { notBrokenRegex, notTaskDeletedRegex } from "./regex_utils";
 
+const { object, lazy, string, number } = require('yup')
+const mapValues = require('lodash/mapValues')
+
 export const scheduleSchema = Yup.object().shape({
     name: Yup.string()
         .min(1, '1 character minimum.')
@@ -194,34 +197,23 @@ export const signInSchema = Yup.object().shape({
 })
 
 
+const binsSchema = lazy(obj => object(
+    mapValues(obj, (value, key) => {
+        return Yup.object().shape({
+                    count: Yup.string()
+                        .required('Count required.'),
+                })
+    })
+));
+
 export const cardSchema = Yup.object().shape({
     name: Yup.string()
         .min(1, '1 character minimum.')
         .max(50, '50 character maximum.')
         .required('Please enter a name.'),
-    count: Yup.number()
-        .integer()
-        .min(0)
-        .required('Please enter count.'),
     description: Yup.string()
         .min(1, '1 character minimum.')
         .max(50, '250 character maximum.'),
-    bin: Yup.array().of(
-        Yup.object().shape({
-            name: Yup.string()
-                .required('Please select a station.'),
-        }),
-
-    ).required('Required'),
-    // object: Yup.array().of(
-    //     Yup.object().shape({
-    //         _id: Yup.string()
-    //             .required('Please select a station.'),
-    //
-    //     }),
-    //
-    // ).required('Required'),
-
-
+    bins: binsSchema
 });
 

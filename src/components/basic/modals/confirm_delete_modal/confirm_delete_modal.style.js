@@ -115,7 +115,7 @@ export const Header = styled.div`
 	align-items: center;
 	padding: 0;
 	margin: 0;
-	height: 3rem;
+	max-height: 5rem;
 	background: #FF4B4B;
 
 `
@@ -129,7 +129,7 @@ export const Title = styled.h2`
 	flex: 2;
 	height: 100%;
 	min-height: 100%;
-	margin: 0;
+	margin: 1rem;
 	padding: 0;
 	text-align: center;
 	display: inline-flex;

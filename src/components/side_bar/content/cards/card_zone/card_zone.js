@@ -44,7 +44,9 @@ const CardZone = SortableContainer((props) => {
 	let cardsSorted = {}
 	var prevLoadStationId
 	var prevUnloadStationId
-	currentProcess.routes && currentProcess.routes.forEach((currRouteId) => {
+
+	var step = 0
+	currentProcess.routes && currentProcess.routes.forEach((currRouteId, index) => {
 		const currRoute =  routes[currRouteId]
 
 
@@ -52,39 +54,68 @@ const CardZone = SortableContainer((props) => {
 		const unloadStationId = currRoute?.unload?.station
 
 		if(prevUnloadStationId !== loadStationId) {
-			cardsSorted[currRouteId + "+" + loadStationId] = {
+			cardsSorted[loadStationId] = {
 				station_id: loadStationId,
-				route_id: currRouteId,
+				step: step,
 				cards: []
 			}
 		}
 
-		if(prevLoadStationId !== unloadStationId ) {
-			cardsSorted[currRouteId + "+" + unloadStationId] = {
+		// if(prevLoadStationId !== unloadStationId ) {
+			cardsSorted[unloadStationId] = {
 				station_id: unloadStationId,
-				route_id: currRouteId,
+				step: step,
 				cards: []
-			}
 		}
+
+		step = step + 1
 
 		prevLoadStationId = loadStationId
 		prevUnloadStationId = unloadStationId
 	})
 
+
 	var queue = []
 	Object.values(cards).forEach((card) => {
 
-		if(cardsSorted[card.route_id + "+" + card.station_id]) {
-			cardsSorted[card.route_id + "+" + card.station_id].cards.push(card)
+		const {
+			bins,
+			_id,
+			...rest
+		} = card
+
+		if(card.bins) {
+			Object.entries(card.bins).forEach((binEntry) => {
+				const binId = binEntry[0]
+				const binValue = binEntry[1]
+
+				const {
+					count
+				} = binValue
+
+				if(cardsSorted[binId]) {
+					cardsSorted[binId].cards.push({
+						...rest,
+						binId,
+						count,
+						cardId: _id
+					})
+				}
+				else if(binId === "QUEUE") {
+					queue.push({
+						...rest,
+						count,
+						binId,
+						cardId: _id
+					})
+				}
+
+			})
 		}
-		else {
-			queue.push(card)
-			// cardsSorted[card.route_id + "+" + card.station_id] = {
-			// 	station_id: card.station_id,
-			// 	route_id: card.route_id,
-			// 	cards: []
-			// }
-		}
+
+
+
+
 	})
 
 
@@ -127,6 +158,7 @@ const CardZone = SortableContainer((props) => {
 						const {
 							station_id,
 							route_id,
+							step,
 							cards: cardsArr
 						} = obj
 
@@ -137,6 +169,7 @@ const CardZone = SortableContainer((props) => {
 
 						return (
 							<StationsColumn
+								step={step}
 								size={size}
 								// onDrop={handleDrop}
 								key={station_id + index}

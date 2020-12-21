@@ -24,7 +24,6 @@ const Cards = (props) => {
         id
     } = props
 
-    console.log("idid id",id)
     const history = useHistory()
     const processes = useSelector(state => { return state.processesReducer.processes })
     const isCardDragging = useSelector(state => { return state.cardPageReducer.isCardDragging })
@@ -88,24 +87,29 @@ const Cards = (props) => {
             break
     }
 
-    const handleCardClick = (cardId, processId) => {
+    const handleCardClick = (cardId, processId, binId) => {
         setShowCardEditor(true)
-        setSelectedCard({cardId, processId})
+        setSelectedCard({cardId, processId, binId})
     }
 
 
     return(
         <styled.Container>
+            {showCardEditor &&
             <CardEditor
                 isOpen={showCardEditor}
                 onAfterOpen={null}
                 cardId={selectedCard ? selectedCard.cardId : null}
                 processId={selectedCard ? selectedCard.processId : null}
+                binId={selectedCard ? selectedCard.binId : null}
                 close={()=>{
                     setShowCardEditor(false)
                     setSelectedCard(null)
                 }}
             />
+            }
+
+
 
             <styled.Header>
                 <styled.MenuButton

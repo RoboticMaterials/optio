@@ -29,7 +29,6 @@ logger.setLevel("debug")
 // get
 // ******************************
 export const getCard = (cardId) =>  async (dispatch) => {
-    logger.log("actions getCard cardId",cardId)
 
     /*
         Invoked in api_action()
@@ -40,7 +39,6 @@ export const getCard = (cardId) =>  async (dispatch) => {
 
         // make request
         const card = await api.getCard(cardId);
-        console.log("getCard card",card)
 
         // const cardsObj = convertArrayToObject(cards, "_id")
         // console.log("getCard cardsObj",cardsObj)
@@ -57,7 +55,7 @@ export const getCard = (cardId) =>  async (dispatch) => {
     const actionName = GET + CARD;
 
     // payload is returned back
-    const payload = await api_action(actionName, callback, dispatch);
+    const payload = await api_action(actionName, callback, dispatch, cardId);
 
     return payload;
 
@@ -77,10 +75,8 @@ export const getCards = () =>  async (dispatch) => {
 
         // make request
         const cards = await api.getCards();
-        console.log("getCards cards",cards)
 
         const cardsObj = convertArrayToObject(cards, "_id")
-        console.log("getCards cardsObj",cardsObj)
 
         // format response
         // const normalizedSchedules = normalize(schedules, schedulesSchema);
@@ -114,10 +110,8 @@ export const getProcessCards = (processId) =>  async (dispatch) => {
 
         // make request
         const cards = await api.getProcessCards(processId);
-        console.log("getProcessCards cards",cards)
 
         const cardsObj = convertArrayToObject(cards, "_id")
-        console.log("getProcessCards cardsObj",cardsObj)
 
         // return payload for redux
         return {
@@ -143,8 +137,6 @@ export const postCard = (card) =>  async dispatch => {
 
     const callback = async () => {
         const createdCard = await api.postCard(card);
-        console.log("postCard createdCard",createdCard)
-        console.log("postCard card",card)
         // const normalizedSchedules = normalize(createdSchedule, scheduleSchema);
 
         return {
@@ -185,12 +177,9 @@ export const deleteCard = (cardId, processId) => async (dispatch) => {
 // update
 // ******************************
 export const putCard = (card, cardID) => async dispatch => {
-    console.log("putCard card", card)
-    console.log("putCard  cardID",  cardID)
 
     const callback = async () => {
         const response = await api.putCard(card, cardID);
-        console.log("putCard response",response)
         // const normalizedSchedule = normalize(response, scheduleSchema);
         //
         return {

@@ -56,7 +56,7 @@ const DashboardButton = (props => {
                 <style.ConditionText style={titleStyle}>{title}</style.ConditionText>
                 {(iconColor && iconClassName) &&
                 <style.IconContainer>
-                    <SchemaIcon className={iconClassName} color={iconColor}></SchemaIcon>
+                    <SchemaIcon className={iconClassName} color={color ? color : iconColor}></SchemaIcon>
                 </style.IconContainer>
 
                 }

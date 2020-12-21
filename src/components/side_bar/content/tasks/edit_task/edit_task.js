@@ -8,17 +8,11 @@ import Textbox from '../../../../basic/textbox/textbox.js'
 import Button from '../../../../basic/button/button'
 import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
 import TextBoxSearch from '../../../../basic/textbox_search/textbox_search'
-import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
-
-import Switch from 'react-ios-switch';
-// import TimePicker from '../../../../basic/time_picker/TimePicker'
-import moment from 'moment';
-
-// import TimePickerField from '../../../../basic/form/time_picker_field/time_picker_field';
-
-import TimePicker from 'rc-time-picker';
-
 import ContentList from '../../content_list/content_list'
+
+// Import Components
+import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
+import LoadUnloadFields from './fields/load_unload_fields'
 
 // Import utils
 import uuid from 'uuid'
@@ -26,13 +20,14 @@ import { deepCopy } from '../../../../../methods/utils/utils'
 
 // Import actions
 import * as taskActions from '../../../../../redux/actions/tasks_actions'
-import { setSelectedTask, deleteTask, getTasks } from '../../../../../redux/actions/tasks_actions'
+import { setSelectedTask, deleteTask, getTasks, putTask } from '../../../../../redux/actions/tasks_actions'
 import * as dashboardActions from '../../../../../redux/actions/dashboards_actions'
 import { putDashboard } from '../../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../../redux/actions/objects_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import { putProcesses, setSelectedProcess } from '../../../../../redux/actions/processes_actions'
 import { putStation } from '../../../../../redux/actions/stations_actions'
+import { select } from 'd3-selection'
 
 const EditTask = (props) => {
 
@@ -54,19 +49,17 @@ const EditTask = (props) => {
     const onGetTasks = () => dispatch(getTasks())
     const onPutStation = (station, ID) => dispatch(putStation(station, ID))
     const onPutDashboard = (dashboard, ID) => dispatch(putDashboard(dashboard, ID))
+    const dispatchPutTask = (task, id) => dispatch(putTask(task, id))
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
-    const sounds = useSelector(state => state.soundsReducer.sounds)
     const objects = useSelector(state => state.objectsReducer.objects)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
+    const processes = useSelector(state => state.processesReducer.processes)
 
     const stations = useSelector(state => state.locationsReducer.stations)
-    const positions = useSelector(state => state.locationsReducer.positions)
-    const locations = useSelector(state => state.locationsReducer.locations)
-
 
     const [obj, setObject] = useState({}) // The current object (may or may not be on backend, but if not it will be posted when task is saved)
     // const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)
@@ -81,199 +74,6 @@ const EditTask = (props) => {
         }
     }, [])
 
-
-    const loadUnloadFields = () => {
-
-        // This handles if any position of a route is a human position, then it cant be done by a robot
-        let humanLocation = false
-        if ((!!stations[selectedTask.load.position] && stations[selectedTask.load.position].type === 'human') || (!!stations[selectedTask.unload.position] && stations[selectedTask.unload.position].type === 'human')) {
-            humanLocation = true
-
-            if (selectedTask.device_type !== 'human') {
-                onSetSelectedTask({
-                    ...selectedTask,
-                    device_type: 'human',
-                })
-            }
-
-        }
-
-        return (
-            <>
-                {!humanLocation &&
-                    <>
-                        <styled.RowContainer>
-                            <styled.Header>Robot Enabled</styled.Header>
-                            <Switch
-                                checked={selectedTask.device_type !== 'human'}
-                                onChange={() => {
-
-                                    const device_type = selectedTask.device_type !== 'human' ? 'human' : 'MiR_100'
-                                    onSetSelectedTask({
-                                        ...selectedTask,
-                                        // Just setting this to MiR100 for now. Need to expand in the future for other devices
-                                        device_type: device_type
-                                    })
-                                }}
-                                onColor='red'
-                                style={{ marginRight: '1rem' }}
-                            />
-
-                        </styled.RowContainer>
-                        <styled.HelpText>Do you want a robot to perform this task? If selected, there will be an option for a person to take over the task when the button is placed onto the dashboard.</styled.HelpText>
-                    </>
-                }
-
-
-
-                <styled.RowContainer style={{ marginTop: '2rem' }}>
-
-                    <styled.Header style={{ marginTop: '0rem' }}>Load</styled.Header>
-
-                    {!humanLocation &&
-
-                        <styled.RowContainer style={{ justifyContent: 'flex-end', alignItems: 'baseline' }}>
-                            <styled.HelpText style={{ fontSize: '1rem', marginRight: '.5rem' }}>TimeOut: </styled.HelpText>
-
-                            <TimePicker
-                                // format={'mm:ss'}
-                                style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                                showHour={false}
-                                className="xxx"
-                                allowEmpty={false}
-                                defaultOpenValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
-                                defaultValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
-                                onChange={(time) => {
-                                    onSetSelectedTask({
-                                        ...selectedTask,
-                                        load: {
-                                            ...selectedTask.load,
-                                            timeout: time.format("mm:ss")
-                                        }
-                                    })
-                                }}
-
-                            />
-                        </styled.RowContainer>
-                    }
-
-                </styled.RowContainer>
-
-                <Textbox
-                    value={!!selectedTask && selectedTask.load.instructions}
-                    schema={'tasks'}
-                    focus={!!selectedTask && selectedTask.type == null}
-                    onChange={e => {
-                        let load = selectedTask.load
-                        load.instructions = e.target.value
-                        dispatch(taskActions.setTaskAttributes(selectedTask._id, { load }))
-                    }}
-                    lines={2}>
-                </Textbox>
-
-                {selectedTask.device_type !== 'human' &&
-                    <div style={{ display: "flex", flexDirection: "row", marginTop: "0.5rem" }}>
-                        <styled.Label>Sound </styled.Label>
-                        <DropDownSearch
-                            placeholder="Select Sound"
-                            label="Sound to be played upon arrival"
-                            labelField="name"
-                            valueField="name"
-                            options={Object.values(sounds)}
-                            values={!!selectedTask.load.sound ? [sounds[selectedTask.load.sound]] : []}
-                            dropdownGap={5}
-                            noDataLabel="No matches found"
-                            closeOnSelect="true"
-                            onChange={values => {
-                                onSetSelectedTask({
-                                    ...selectedTask,
-                                    load: {
-                                        ...selectedTask.load,
-                                        sound: values[0]._id,
-                                    }
-                                })
-                            }}
-                            className="w-100"
-                            schema="tasks" />
-                    </div>
-                }
-
-                <styled.Header>Unload</styled.Header>
-                <Textbox
-                    value={!!selectedTask && selectedTask.unload.instructions}
-                    schema={'tasks'}
-                    focus={!!selectedTask && selectedTask.type == null}
-                    onChange={e => {
-                        let unload = selectedTask.unload
-                        unload.instructions = e.target.value
-                        dispatch(taskActions.setTaskAttributes(selectedTask._id, { unload }))
-                    }}
-                    lines={2}>
-                </Textbox>
-
-                {selectedTask.device_type !== 'human' &&
-
-                    <div style={{ display: "flex", flexDirection: "row", marginTop: "0.5rem" }}>
-                        <styled.Label>Sound </styled.Label>
-                        <DropDownSearch
-                            placeholder="Select Sound"
-                            label="Sound to be played upon arrival"
-                            labelField="name"
-                            valueField="name"
-                            options={Object.values(sounds)}
-                            values={!!selectedTask.unload.sound ? [sounds[selectedTask.unload.sound]] : []}
-                            dropdownGap={5}
-                            noDataLabel="No matches found"
-                            closeOnSelect="true"
-                            onChange={values => {
-
-                                onSetSelectedTask({
-                                    ...selectedTask,
-                                    unload: {
-                                        ...selectedTask.unload,
-                                        sound: values[0]._id,
-                                    }
-                                })
-
-                            }}
-                            className="w-100"
-                            schema="tasks" />
-                    </div>
-                }
-
-
-                {/* {selectedTask.device_type === 'MiR_100' &&
-                    <>
-                        <styled.Header>Idle Location</styled.Header>
-                        <DropDownSearch
-                            placeholder="Select Location"
-                            label="Idle Location for MiR Cart"
-                            labelField="name"
-                            valueField="name"
-                            options={Object.values(positions)}
-                            values={!!selectedTask.idle_location ? [positions[selectedTask.idle_location]] : []}
-                            dropdownGap={5}
-                            noDataLabel="No matches found"
-                            closeOnSelect="true"
-                            onChange={values => {
-
-                                const idleLocation = values[0]._id
-
-                                onSetSelectedTask({
-                                    ...selectedTask,
-                                    idle_location: idleLocation,
-                                })
-                            }}
-                            className="w-100"
-                            schema="tasks"
-                        />
-                    </>
-                } */}
-
-
-            </>
-        )
-    }
 
     const handleLoadUnloadParameters = () => {
         if (selectedTask.load.position === null) {
@@ -299,7 +99,8 @@ const EditTask = (props) => {
                 return <styled.HelpText>Since the end position is not tied to a station, this task is no longer a transport task</styled.HelpText>
             } else {
                 // Load AND Unload positions have been defined. Display load/unload parameter fields
-                return loadUnloadFields()
+                return <LoadUnloadFields />
+
             }
         }
     }
@@ -493,7 +294,7 @@ const EditTask = (props) => {
         }
 
         // If this task is part of a process and not already in the graph of routes, then add the task to the selected process
-        if (isProcessTask) {
+        if (isProcessTask && !selectedProcess.routes.includes(selectedTask._id)) {
 
             /**
              * The structure of a routes that belong to a process is a directed graph
@@ -516,29 +317,35 @@ const EditTask = (props) => {
              * }
              */
 
-            let processRoutes = selectedProcess.routes
+            //  Commented out for now
+            // let processRoutes = selectedProcess.routes
 
-            // If the task is already incuded in the process then skip over
-            if (Object.keys(processRoutes).includes(selectedTask.unload.station) && processRoutes[selectedTask.unload.station].includes(selectedTask._id)) return
+            // // If the task is already incuded in the process then skip over
+            // if (Object.keys(processRoutes).includes(selectedTask.unload.station) && processRoutes[selectedTask.unload.station].includes(selectedTask._id)) return
 
-            // Else if the process includes the station, then add task to the station
-            else if (Object.keys(processRoutes).includes(selectedTask.unload.station)) {
-                processRoutes[selectedTask.unload.station].push(selectedTask._id)
-            }
+            // // Else if the process includes the station, then add task to the station
+            // else if (Object.keys(processRoutes).includes(selectedTask.unload.station)) {
+            //     processRoutes[selectedTask.unload.station].push(selectedTask._id)
+            // }
 
-            // Else the process does not include station, so add station and route
-            else {
-                processRoutes[selectedTask.unload.station] = [selectedTask._id]
-            }
+            // // Else the process does not include station, so add station and route
+            // else {
+            //     processRoutes[selectedTask.unload.station] = [selectedTask._id]
+            // }
 
-            // If the process does not include the load station then add it with no attatched routes (See directed graph explanation above)
-            if(!processRoutes[selectedTask.load.station]) {
-                processRoutes[selectedTask.load.station] = []
-            }
+            // // If the process does not include the load station then add it with no attatched routes (See directed graph explanation above)
+            // if(!processRoutes[selectedTask.load.station]) {
+            //     processRoutes[selectedTask.load.station] = []
+            // }
+            selectedProcess.routes.push(selectedTask._id);
+            onSetSelectedProcess(
+                selectedProcess
+            )
 
-            onSetSelectedProcess({
-                ...selectedProcess,
-                route: processRoutes,
+            // Associated the process with the task
+            onSetSelectedTask({
+                ...selectedTask,
+                process: selectedProcess._id
             })
         }
 
@@ -615,7 +422,11 @@ const EditTask = (props) => {
 
             <ConfirmDeleteModal
                 isOpen={!!confirmDeleteModal}
-                title={"Are you sure you want to delete this Route?"}
+                title={
+                    `Are you sure you want to delete this Route? 
+                    ${!!selectedTask.process ? `This task is a part of process '${!!processes[selectedTask.process] && processes[selectedTask.process].name}', and will be removed from this process if deleted` : ''}
+                    `
+                }
                 button_1_text={"Yes"}
                 handleOnClick1={() => {
                     handleDelete()
@@ -686,6 +497,9 @@ const EditTask = (props) => {
                                     }
                                 })
 
+                                // Filter outs any human tasks that have associated tasks (AKA it only shows the associated device task)
+                                .filter(task => !task.associated_task || (!!task.associated_task && task.device_type !== 'human'))
+
                         }
                         // values={!!selectedTask.idle_location ? [positions[selectedTask.idle_location]] : []}
                         dropdownGap={5}
@@ -695,14 +509,19 @@ const EditTask = (props) => {
 
                             const newRoute = values[0]._id
 
-                            console.log('QQQQ route', newRoute)
-
                             // If this task is part of a process and not already in the array of routes, then add the task to the selected process
                             if (!selectedProcess.routes.includes(selectedTask._id)) {
                                 onSetSelectedProcess({
                                     ...selectedProcess,
                                     routes: [...selectedProcess.routes, newRoute]
                                 })
+
+                                dispatchPutTask(
+                                    {
+                                        ...values[0],
+                                        process: selectedProcess._id
+                                    }
+                                    , values[0]._id)
                             }
 
                             dispatch(taskActions.deselectTask())    // Deselect
@@ -748,7 +567,6 @@ const EditTask = (props) => {
                         textboxGap={0}
                         closeOnSelect="true"
                         onChange={(values) => {
-                            // console.log('QQQQ object', values)
                             setObject(values[0])
                             // onSetSelectedTask({
                             //     ...selectedTask,
@@ -765,11 +583,48 @@ const EditTask = (props) => {
                         className="w-100"
                         schema="tasks"
                         disbaled={!isTransportTask}
-                        style={{ marginTop: '1rem' }} />
+                        style={{ marginTop: '1rem' }}
+                    />
+
                     <styled.HelpText>
                         Select the object that will be transported. Either search & select an existing object, or type the
                         name of a new object to create one.
                     </styled.HelpText>
+
+                    {(!!selectedTask.obj || !!obj) &&
+                        <>
+                            <styled.Label>Track Using Quantity or Fractions</styled.Label>
+                            <styled.RowContainer style={{ justifyContent: 'center' }}>
+                                <styled.DualSelectionButton
+                                    style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                                    onClick={() => {
+                                        onSetSelectedTask({
+                                            ...selectedTask,
+                                            track_quantity: !selectedTask.track_quantity
+                                        })
+                                    }}
+                                    selected={selectedTask.track_quantity}
+                                >
+                                    Quantity
+                            </styled.DualSelectionButton>
+
+                                <styled.DualSelectionButton
+                                    style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                                    onClick={() => {
+                                        onSetSelectedTask({
+                                            ...selectedTask,
+                                            track_quantity: !selectedTask.track_quantity
+                                        })
+                                    }}
+                                    selected={!selectedTask.track_quantity}
+
+                                >
+                                    Fraction
+                            </styled.DualSelectionButton>
+
+                            </styled.RowContainer>
+                        </>
+                    }
                 </>
             }
 

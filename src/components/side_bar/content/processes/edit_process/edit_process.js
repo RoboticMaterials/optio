@@ -48,11 +48,11 @@ const EditProcess = (props) => {
     const dispatchDeleteProcess = async (ID) => await dispatch(deleteProcesses(ID))
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
+    const stations = useSelector(state => state.locationsReducer.stations)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
-    const stations = useSelector(state => state.locationsReducer.stations)
-
+    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
     // State definitions
     const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)  // Current task
@@ -102,75 +102,75 @@ const EditProcess = (props) => {
     // Maps through the list of existing routes
     const handleExistingRoutes = () => {
 
-        return Object.keys(selectedProcess.routes).map((station, ind) => {
+        // return Object.keys(selectedProcess.routes).map((station, ind) => {
 
 
-            return selectedProcess.routes[station].map((route, ind) => {
+        return selectedProcess.routes.map((route, ind) => {
 
-                const routeTask = tasks[route]
+            const routeTask = tasks[route]
 
-                if (routeTask === undefined) {
-                    console.log('QQQQ undefined')
-                    return
-                }
+            if (routeTask === undefined) {
+                console.log('QQQQ undefined')
+                return
+            }
 
-                return (
-                    <div key={`li-${ind}`}>
-                        <styled.ListItem
-                            key={`li-${ind}`}
+            return (
+                <div key={`li-${ind}`}>
+                    <styled.ListItem
+                        key={`li-${ind}`}
+                    >
+                        <styled.ListItemRect
+                            onMouseEnter={() => {
+                                if (!selectedTask && !editingTask) {
+                                    dispatchSetSelectedTask(routeTask)
+                                }
+
+                            }}
+                            onMouseLeave={() => {
+                                if (selectedTask !== null && !editingTask) {
+                                    dispatchDeselectTask()
+                                }
+                            }}
                         >
-                            <styled.ListItemRect
-                                onMouseEnter={() => {
-                                    if (!selectedTask && !editingTask) {
-                                        dispatchSetSelectedTask(routeTask)
-                                    }
-
-                                }}
-                                onMouseLeave={() => {
-                                    if (selectedTask !== null && !editingTask) {
-                                        dispatchDeselectTask()
-                                    }
+                            {/* <styled.ListItemTitle schema={props.schema} onClick={() => props.onClick(element)}>{element.name}</styled.ListItemTitle> */}
+                            <styled.ListItemTitle
+                                schema={'processes'}
+                                onClick={() => {
+                                    setEditingTask(true)
+                                    dispatchSetSelectedTask(routeTask)
                                 }}
                             >
-                                {/* <styled.ListItemTitle schema={props.schema} onClick={() => props.onClick(element)}>{element.name}</styled.ListItemTitle> */}
-                                <styled.ListItemTitle
-                                    schema={'processes'}
-                                    onClick={() => {
-                                        setEditingTask(true)
-                                        dispatchSetSelectedTask(routeTask)
-                                    }}
-                                >
-                                    {routeTask.name}
-                                </styled.ListItemTitle>
-                            </styled.ListItemRect>
+                                {routeTask.name}
+                            </styled.ListItemTitle>
+                        </styled.ListItemRect>
 
-                            <styled.ListItemIcon
-                                className='fas fa-play'
-                                onClick={() => {
-                                    handleExecuteProcessTask(route)
+                        <styled.ListItemIcon
+                            className='fas fa-play'
+                            onClick={() => {
+                                handleExecuteProcessTask(route)
+                            }}
+                        />
+
+                    </styled.ListItem>
+                    {editingTask && selectedTask._id === route &&
+                        <styled.TaskContainer schema={'processes'}>
+
+                            <EditTask
+                                selectedTaskCopy={selectedTaskCopy}
+                                setSelectedTaskCopy={props => setSelectedTaskCopy(props)}
+                                shift={shift}
+                                isTransportTask={isTransportTask}
+                                isProcessTask={true}
+                                toggleEditing={(props) => {
+                                    setEditingTask(props)
                                 }}
                             />
-
-                        </styled.ListItem>
-                        {editingTask && selectedTask._id === route &&
-                            <styled.TaskContainer schema={'processes'}>
-
-                                <EditTask
-                                    selectedTaskCopy={selectedTaskCopy}
-                                    setSelectedTaskCopy={props => setSelectedTaskCopy(props)}
-                                    shift={shift}
-                                    isTransportTask={isTransportTask}
-                                    isProcessTask={true}
-                                    toggleEditing={(props) => {
-                                        setEditingTask(props)
-                                    }}
-                                />
-                            </styled.TaskContainer>
-                        }
-                    </div>
-                )
-            })
+                        </styled.TaskContainer>
+                    }
+                </div>
+            )
         })
+        // })
 
     }
 
@@ -191,13 +191,12 @@ const EditProcess = (props) => {
                                     obj: null,
                                     type: 'push',
                                     quantity: 1,
-                                    new: true,
-                                    // device_type: 'human',
-                                    device_type: 'MiR_100',
+                                    device_type: !!MiRMapEnabled ? 'MiR_100' : 'human',
+                                    handoff: false,
+                                    track_quantity: true,
                                     map_id: currentMap._id,
-                                    idle_location: null,
-                                    // Makes the task/route a part of a process
-                                    process: selectedProcessCopy._id,
+                                    new: true,
+                                    process: false,
                                     load: {
                                         position: null,
                                         station: null,
@@ -369,7 +368,7 @@ const EditProcess = (props) => {
                     }}
                 >
                     Delete
-            </Button>
+                </Button>
 
 
                 {!selectedProcessCopy.new && // only allow viewing card page if process has been created
@@ -377,7 +376,7 @@ const EditProcess = (props) => {
                         onClick={goToCardPage}
                     >
                         View Card Zone
-            </Button>
+                    </Button>
                 }
 
 
