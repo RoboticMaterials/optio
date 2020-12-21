@@ -3,8 +3,8 @@ import React, {useEffect, useState} from "react";
 
 
 // components
-import StationsColumn from "../station_column/station_column";
-import LotQueue from "../lot_queue/lot_queue";
+import StationsColumn from "../columns/station_column/station_column";
+import LotQueue from "../columns/lot_queue/lot_queue";
 import Button from "../../../../basic/button/button";
 
 // external components
@@ -19,6 +19,7 @@ import {setDataPage} from "../../../../../redux/actions/api_actions";
 
 // styles
 import * as styled from "./card_zone.style";
+import FinishColumn from "../columns/finish_column/finish_column";
 
 const CardZone = SortableContainer((props) => {
 
@@ -76,6 +77,7 @@ const CardZone = SortableContainer((props) => {
 
 
 	var queue = []
+	var finished = []
 	Object.values(cards).forEach((card) => {
 
 		const {
@@ -103,6 +105,14 @@ const CardZone = SortableContainer((props) => {
 				}
 				else if(binId === "QUEUE") {
 					queue.push({
+						...rest,
+						count,
+						binId,
+						cardId: _id
+					})
+				}
+				else if(binId === "FINISH") {
+					finished.push({
 						...rest,
 						count,
 						binId,
@@ -137,17 +147,12 @@ const CardZone = SortableContainer((props) => {
 		return(
 			<styled.Container width={width} height={height}>
 				<LotQueue
-					// size={size}
-					// onDrop={handleDrop}
-					key={null}
+					key={"QUEUE"}
+					station_id={"QUEUE"}
 					setShowCardEditor={setShowCardEditor}
 					showCardEditor={showCardEditor}
-
 					stationName={"Queue"}
-					// id={route_id+"+"+station_id}
-					// station_id={station_id}
 					processId={processId}
-					// route_id={route_id}
 					cards={queue}
 					handleCardClick={handleCardClick}
 				/>
@@ -184,6 +189,17 @@ const CardZone = SortableContainer((props) => {
 						)
 					})
 				}
+
+				<FinishColumn
+					key={"FINISH"}
+					station_id={"FINISH"}
+					setShowCardEditor={setShowCardEditor}
+					showCardEditor={showCardEditor}
+					stationName={"Finished"}
+					processId={processId}
+					cards={finished}
+					handleCardClick={handleCardClick}
+				/>
 
 			</styled.Container>
 		)

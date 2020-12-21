@@ -41,13 +41,14 @@ import {
 import { deepCopy } from '../../methods/utils/utils';
 import {SET} from "../types/prefixes";
 import {DASHBOARD} from "../types/data_types";
-import {KICK_OFF_ENABLED} from "../types/suffixes";
+import {FINISH_ENABLED, KICK_OFF_ENABLED} from "../types/suffixes";
 
 
 const defaultState = {
 
     dashboards: null,
     kickOffEnabledDashboards: {}, // key = dashboard id - value = list of processes where the processes first station is the same as the dashboard's station
+    finishEnabledDashboards: {}, // key = dashboard id - value = list of processes where the processes first station is the same as the dashboard's station
 
     error: {},
     pending: false,
@@ -60,7 +61,7 @@ export default function dashboardsReducer(state = defaultState, action) {
 
     switch (action.type) {
 
-        case SET + DASHBOARD + KICK_OFF_ENABLED:
+        case SET + DASHBOARD + KICK_OFF_ENABLED: {
             const {
                 dashboardId,
                 kickOffEnabled
@@ -70,6 +71,22 @@ export default function dashboardsReducer(state = defaultState, action) {
                 ...state,
                 kickOffEnabledDashboards: {...state.kickOffEnabledDashboards, [dashboardId]: kickOffEnabled},
             }
+        }
+
+
+        case SET + DASHBOARD + FINISH_ENABLED: {
+            const {
+                dashboardId,
+                finishEnabled
+            } = action.payload
+
+            return {
+                ...state,
+                finishEnabledDashboards: {...state.finishEnabledDashboards, [dashboardId]: finishEnabled},
+            }
+        }
+
+
 
         case DASHBOARD_OPEN:
             return {

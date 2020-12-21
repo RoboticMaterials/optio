@@ -15,7 +15,7 @@ import DashboardsSidebar from "./dashboards_sidebar/dashboards_sidebar.jsx"
 
 import { PAGES } from "../../../../constants/dashboard_contants";
 
-import {getDashboards, setDashboardKickOffProcesses} from '../../../../redux/actions/dashboards_actions'
+import {getDashboards, setDashboardKickOffProcesses, setDashboardFinishProcesses} from '../../../../redux/actions/dashboards_actions'
 
 // Import Styles
 import * as style from './dashboards_page.style'
@@ -30,6 +30,7 @@ const DashboardsPage = (props) => {
     // redux state
     const dispatch = useDispatch()
     const dispatchSetDashboardKickOffProcesses = async (dashboardId, kickOffEnabled) => await dispatch(setDashboardKickOffProcesses(dashboardId, kickOffEnabled))
+    const dispatchSetDashboardFinishProcesses = async (dashboardId, finishEnabled) => await dispatch(setDashboardFinishProcesses(dashboardId, finishEnabled))
 
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const stations = useSelector(state => state.locationsReducer.stations)
@@ -63,25 +64,47 @@ const DashboardsPage = (props) => {
 
         // list of all processes that the station is the first station of the process
         var firstStationProcesses = []
+        var lastStationProcesses = []
 
         // loop through processes and check if the load station of the first route of any process matches the current dashboards station
         Object.values(processes).forEach((currProcess) => {
+            if(currProcess && currProcess.routes && Array.isArray(currProcess.routes)) {
+                // get first routes id, default to null
+                const firstRouteId = currProcess.routes[0]
 
-            // get first routes id, default to null
-            const firstRouteId = (currProcess && currProcess.routes && Array.isArray(currProcess.routes))  ? currProcess.routes[0] : null
+                // get route from route id, default to null
+                const currRoute = firstRouteId ? routes[firstRouteId] : null
 
-            // get route from route id, default to null
-            const currRoute = firstRouteId ? routes[firstRouteId] : null
+                // get station id from load key of route
+                const loadStationId = currRoute?.load?.station
 
-            // get station id from load key of route
-            const loadStationId = currRoute?.load?.station
+                // if the loadStationId matches the current dashboard's stationId, add the process's id to the list
+                if(loadStationId === stationID) firstStationProcesses.push(currProcess._id)
 
-            // if the loadStationId matches the current dashboard's stationId, add the process's id to the list
-            if(loadStationId === stationID) firstStationProcesses.push(currProcess._id)
+                // now check if station is last route of any process
+                // get last routes id
+                const lastRouteId = currProcess.routes[currProcess.routes.length - 1]
 
+                // get route from route id, default to null
+                const lastRoute = lastRouteId ? routes[lastRouteId] : null
+
+                // get station id from unload key of route
+                const unloadStationId = lastRoute?.unload?.station
+
+                // if the unloadStationId matches the current dashboard's stationId, add the process's id to the list of last stations
+                if(unloadStationId === stationID) lastStationProcesses.push(currProcess._id)
+
+
+            }
         })
 
-        dispatchSetDashboardKickOffProcesses(dashboardID, firstStationProcesses)
+        if(firstStationProcesses.length > 0 ) {
+            dispatchSetDashboardKickOffProcesses(dashboardID, firstStationProcesses)
+        }
+
+        if(lastStationProcesses.length > 0) {
+            dispatchSetDashboardFinishProcesses(dashboardID, lastStationProcesses)
+        }
 
     }, [processes])
 

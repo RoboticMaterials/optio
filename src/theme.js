@@ -187,6 +187,11 @@ export const theme = {
                 solid: '#c59bff',
                 iconName: "fas fa-play"
             },
+            finish: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(197, 155, 255) 0%, rgba(173, 115, 255, 0.95) 100%)',
+                solid: '#fc5e03',
+                iconName: "fas fa-flag-checkered"
+            },
             error: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
                 solid: '#ff1900'
