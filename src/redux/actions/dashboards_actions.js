@@ -34,7 +34,8 @@ import {
 } from "../types/prefixes"
 
 import {
-    KICK_OFF_ENABLED
+    KICK_OFF_ENABLED,
+    FINISH_ENABLED
 } from "../types/suffixes"
 
 import * as api from '../../api/dashboards_api'
@@ -149,4 +150,8 @@ export const dashboardOpen = (bol) => {
 
 export const setDashboardKickOffProcesses = (dashboardId, kickOffEnabled) => {
     return { type: SET + DASHBOARD + KICK_OFF_ENABLED, payload: {dashboardId, kickOffEnabled} }
+}
+
+export const setDashboardFinishProcesses = (dashboardId, finishEnabled) => {
+    return { type: SET + DASHBOARD + FINISH_ENABLED, payload: {dashboardId, finishEnabled} }
 }

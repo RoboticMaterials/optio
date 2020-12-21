@@ -78,6 +78,14 @@ const DashboardButtonList = ((props) => {
 				}
 				break
 
+			case OPERATION_TYPES.FINISH.key:
+				disabled = addedTaskAlert || currentButton.deleted || broken
+				error = null
+				onClick = () => {
+					onTaskClick(OPERATION_TYPES.FINISH.key, currentButton.key)
+				}
+				break
+
 			case OPERATION_TYPES.KICK_OFF.key:
 				error = null
 				onClick = () => {

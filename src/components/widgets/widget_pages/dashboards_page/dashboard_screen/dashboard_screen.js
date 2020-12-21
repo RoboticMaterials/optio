@@ -35,6 +35,7 @@ import log from "../../../../../logger";
 import { OPERATION_TYPES, TYPES } from "../dashboards_sidebar/dashboards_sidebar";
 import ReportModal from "./report_modal/report_modal";
 import KickOffModal from "./kick_off_modal/kick_off_modal";
+import FinishModal from "./finish_modal/finish_modal";
 
 const logger = log.getLogger("DashboardsPage");
 
@@ -229,6 +230,9 @@ const DashboardScreen = (props) => {
             case OPERATION_TYPES.KICK_OFF.key:
                 setReportModal(OPERATION_TYPES.KICK_OFF.key)
                 break
+            case OPERATION_TYPES.FINISH.key:
+                setReportModal(OPERATION_TYPES.FINISH.key)
+                break
             default:
                 break
         }
@@ -392,6 +396,26 @@ const DashboardScreen = (props) => {
                     setAddTaskAlert({
                         type: success ? ADD_TASK_ALERT_TYPE.KICK_OFF_SUCCESS : ADD_TASK_ALERT_TYPE.KICK_OFF_FAILURE,
                         label: success ? "Lot Kick Off Successful" : "Lot Kick Off Failed",
+                        message: name ? `"` + name + `"` : null
+                    })
+
+                    // clear alert
+                    setTimeout(() => setAddTaskAlert(null), 1800)
+                }}
+            />
+            }
+            {(reportModal === OPERATION_TYPES.FINISH.key) &&
+            <FinishModal
+                isOpen={true}
+                stationId={stationID}
+                title={"Finish"}
+                close={() => setReportModal(null)}
+                dashboard={currentDashboard}
+                onSubmit={(name, success) => {
+                    // set alert
+                    setAddTaskAlert({
+                        type: success ? ADD_TASK_ALERT_TYPE.FINISH_SUCCESS : ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
+                        label: success ? "Finish Successful" : "Finish Failed",
                         message: name ? `"` + name + `"` : null
                     })
 

@@ -1,25 +1,26 @@
 import {SortableContainer} from "react-sortable-hoc";
 import {useDispatch, useSelector} from "react-redux";
-import {deleteCard, putCard} from "../../../../../redux/actions/card_actions";
-import * as styled from "./station_column.style";
+import {deleteCard, putCard} from "../../../../../../redux/actions/card_actions";
+import * as styled from "./column.style";
 import {Container} from "react-smooth-dnd";
-import Card from "../card/card";
+import Card from "../../card/card";
 import React, {useState} from "react";
-import {setCardDragging, setColumnHovering} from "../../../../../redux/actions/card_page_actions";
-import {generateBinId} from "../../../../../methods/utils/card_utils";
+import {setCardDragging, setColumnHovering} from "../../../../../../redux/actions/card_page_actions";
+import {generateBinId} from "../../../../../../methods/utils/card_utils";
 
 
-const StationsColumn = SortableContainer((props) => {
+const Column = SortableContainer((props) => {
 	const {
-		id,
 		station_id,
 		stationName = "Unnamed",
-		route_id,
 		handleCardClick,
 		cards = [],
 		size,
 		processId,
-		step
+		HeaderContent,
+		isCollapsed,
+		maxWidth
+
 	} = props
 
 	const width = size?.width
@@ -27,12 +28,11 @@ const StationsColumn = SortableContainer((props) => {
 
 
 	const dispatch = useDispatch()
-	const station = useSelector(state => { return state.locationsReducer.stations[station_id] })
-	const route = useSelector(state => { return state.tasksReducer.tasks[route_id] })
+
 	const objects = useSelector(state => { return state.objectsReducer.objects })
 	const reduxCards = useSelector(state => { return state.cardsReducer.processCards[processId] })
 
-	const [isCollapsed, setCollapsed] = useState(false)
+
 	const [dragEnter, setDragEnter] = useState(false)
 	const [dragLeave, setDragLeave] = useState(false)
 
@@ -74,11 +74,7 @@ const StationsColumn = SortableContainer((props) => {
 							[station_id]: {
 								...oldBins[station_id],
 								count: parseInt(oldBins[station_id].count) + parseInt(movedBin.count)
-							},
-							// [binId]: {
-							// 	...bins[binId],
-							// 	count:
-							// }
+							}
 						}
 					}, cardId)
 				}
@@ -159,12 +155,11 @@ const StationsColumn = SortableContainer((props) => {
 
 	if(isCollapsed) {
 		return(
-			<styled.StationContainer isCollapsed={isCollapsed}>
-				<styled.StationHeader>
-					<i className="fa fa-chevron-right" aria-hidden="true"
-					   onClick={() => setCollapsed(false)}
-					/>
-				</styled.StationHeader>
+			<styled.StationContainer
+				isCollapsed={isCollapsed}
+				maxWidth={maxWidth}
+			>
+				{HeaderContent}
 
 				<styled.BodyContainer>
 					<styled.RotatedRouteName>{stationName}</styled.RotatedRouteName>
@@ -175,29 +170,18 @@ const StationsColumn = SortableContainer((props) => {
 
 	else {
 		return(
-			<styled.StationContainer height={height} isCollapsed={isCollapsed}>
-				<styled.StationHeader>
-						<i className="fa fa-chevron-down" aria-hidden="true"
-						   onClick={() => setCollapsed(true)}
-						/>
-
-
-
-						<styled.LabelContainer>
-							<styled.StationLabel>Station</styled.StationLabel>
-							<styled.StationTitle>{stationName}</styled.StationTitle>
-						</styled.LabelContainer>
-
-						<i className="fas fa-ellipsis-h"></i>
-				</styled.StationHeader>
+			<styled.StationContainer
+				height={height}
+				isCollapsed={isCollapsed}
+				maxWidth={maxWidth}
+			>
+				{HeaderContent}
 
 				{renderCards()}
-
-
 			</styled.StationContainer>
 		)
 	}
 
 })
 
-export default StationsColumn
+export default Column

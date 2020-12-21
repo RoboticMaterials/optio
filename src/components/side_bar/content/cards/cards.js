@@ -6,7 +6,7 @@ import * as styled from './cards.style'
 import CardEditor from "./card_editor/card_editor";
 import CardMenu from "./card_menu/card_menu";
 import CardZone from "./card_zone/card_zone";
-import TimelineZone from "./timeline_zone/timeline_zone";
+// import TimelineZone from "./timeline_zone/timeline_zone";
 import Button from "../../../basic/button/button";
 import Portal from "../../../../higher_order_components/portal";
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
@@ -162,7 +162,7 @@ const Cards = (props) => {
                                 showCardEditor={showCardEditor}
                             />,
                         'timeline':
-                            <TimelineZone
+                            <div
                                 handleCardClick={handleCardClick}
                                 initialProcesses={[currentProcess]}
                             />

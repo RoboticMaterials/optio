@@ -21,9 +21,9 @@ export const StationContainerCss = css`
     flex-direction: column;
     min-height: ${minHeight};
     
-    width: ${props => props.isCollapsed ? "2rem" : "15rem"};
-    max-width: ${props => props.isCollapsed ? "2rem" : "15rem"};
-    min-width: ${props => props.isCollapsed ? "2rem" : "15rem"};
+    width: ${props => props.isCollapsed ? "2rem" : "fit-content"};
+    max-width: ${props => props.isCollapsed ? "2rem" : "fit-content"};
+    min-width: ${props => props.isCollapsed ? "2rem" : "fit-content"};
     margin-right: 1rem;
     
     border-radius: 1rem;
@@ -40,10 +40,10 @@ export const StationHeader = styled.div`
     display: flex;
     flex-direction: row;
     width: 100%;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     background: ${props => props.theme.bg.quinary};
-    padding: 1rem;
+    padding: 0.5rem 1rem;
     
     // border-top-right-radius: 1rem;
 	// border-top-left-radius: 1rem;  
@@ -66,6 +66,7 @@ export const RouteContainer = styled.div`
 export const LabelContainer = styled.div`
 	display: flex;
 	align-items: center;
+    margin: 0 2rem;
 	// justify-content: space-between;
 `
 

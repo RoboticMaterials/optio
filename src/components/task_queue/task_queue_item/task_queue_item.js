@@ -46,16 +46,22 @@ const TaskQueueListItem = (props) => {
         dispatch({type: 'TASK_QUEUE_ITEM_CLICKED', payload: id})
     }
 
+		const handleMouseEnter = async() => {
+			await dispatch(taskActions.selectTask(item.task_id))
+    }
+
+		const handleMouseLeave = async() => {
+			await dispatch(taskActions.deselectTask())
+		}
+
 	return (
 		<style.ItemDiv>
 			<BasicListItem
                 {...rest}
 				onClick={handleTaskItemClicked}
-			//	onMouseEnter={
-					//(task) => dispatch(taskActions.setSelectedTask(task)),
-				//	console.log(item.task)
-				//	(item) => dispatch(taskActions.selectTask(item.task_id))
-			//	}
+				onMouseEnter={handleMouseEnter}
+				onMouseLeave={handleMouseLeave}
+
 				titleCss={style.titleCss}
 				containerCss={style.containerCss}
                 rightContentContainerCss={style.rightContentContainerCss}

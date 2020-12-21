@@ -22,6 +22,8 @@ import {
     DELETE_TASK_QUEUE_STARTED,
     DELETE_TASK_QUEUE_SUCCESS,
     DELETE_TASK_QUEUE_FAILURE,
+
+    TASK_QUEUE_OPEN,
 } from '../types/task_queue_types';
 
 import {
@@ -187,5 +189,9 @@ export const deleteTaskQueueItem = (id) => {
             return onError(error);
         }
     };
+};
+
+export const taskQueueOpen = (bool) => {
+    return { type: TASK_QUEUE_OPEN, payload: bool }
 };
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
