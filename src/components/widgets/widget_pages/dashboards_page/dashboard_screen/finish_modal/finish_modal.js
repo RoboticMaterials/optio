@@ -212,7 +212,7 @@ const FinishModal = (props) => {
                                 {isButtons ?
                                     renderKickOffButtons()
                                     :
-                                    <styled.NoButtonsText>No finished lots.</styled.NoButtonsText>
+                                    <styled.NoButtonsText>No available lots.</styled.NoButtonsText>
                                 }
 
                             </styled.ReportButtonsContainer>

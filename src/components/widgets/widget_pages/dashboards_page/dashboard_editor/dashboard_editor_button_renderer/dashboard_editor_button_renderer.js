@@ -41,7 +41,7 @@ const DashboardEditorButtonRenderer = SortableContainer((props) => {
                             {...props}
                         />
                         :
-                        ((button.type === TYPES.ROUTES.key) || ((button.type !== OPERATION_TYPES.KICK_OFF.key)) || (!button.type)) &&
+                        ((button.type === TYPES.ROUTES.key) || (!button.type)) &&
                         <DashboardEditTasksField
                             button={button}
                             ind={ind}
@@ -54,6 +54,13 @@ const DashboardEditorButtonRenderer = SortableContainer((props) => {
                             ind={ind}
                             {...props}
                         />
+                    }
+                    { (button.type === OPERATION_TYPES.FINISH.key) &&
+                    <DashboardReportField
+                        button={button}
+                        ind={ind}
+                        {...props}
+                    />
                     }
                 </Draggable>
             )}
