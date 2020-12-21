@@ -23,6 +23,8 @@ import { postTaskQueue } from '../../../../redux/actions/task_queue_actions'
 
 // Import Utils
 import { deepCopy } from '../../../../methods/utils/utils'
+import { isBrokenProcess } from '../../../../methods/utils/processes_utils'
+
 import uuid from 'uuid'
 import {uuidv4} from "../../../../methods/utils/utils";
 
@@ -49,7 +51,9 @@ const ProcessesContent = () => {
 
 
     useEffect(() => {
-
+        Object.values(processes).map((process) => {
+            isBrokenProcess(process, tasks)
+        })
         return () => {
             onSetSelectedProcess(null)
         }

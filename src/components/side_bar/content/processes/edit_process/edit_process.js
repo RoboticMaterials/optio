@@ -207,7 +207,7 @@ const EditProcess = (props) => {
                             track_quantity: true,
                             map_id: currentMap._id,
                             new: true,
-                            process: false,
+                            processes: [],
                             load: {
                                 position: null,
                                 station: null,
