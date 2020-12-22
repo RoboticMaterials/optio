@@ -76,7 +76,7 @@ const EditTask = (props) => {
     }, [])
 
 
-    const handleLoadUnloadParameters = () => {
+    const renderLoadUnloadParameters = () => {
         if (selectedTask.load.position === null) {
             // No load position has been defined - ask user to define load (start) position
             return <styled.DirectionText>Click a position on the map to be the load (or start) postion.</styled.DirectionText>
@@ -106,7 +106,7 @@ const EditTask = (props) => {
         }
     }
 
-    const handleDelete = async () => {
+    const onDelete = async () => {
         // Delete all dashboard buttons associated with that task
         Object.values(dashboards)
             .filter(dashboard =>
@@ -156,7 +156,7 @@ const EditTask = (props) => {
         toggleEditing(false)
     }
 
-    const handleSave = async () => {
+    const onSave = async () => {
         // Save object
         let objectId
         if ('name' in obj) {
@@ -458,7 +458,7 @@ const EditTask = (props) => {
                 }
                 button_1_text={"Yes"}
                 handleOnClick1={() => {
-                    handleDelete()
+                    onDelete()
                     setConfirmDeleteModal(null)
                 }}
                 button_2_text={"No"}
@@ -473,7 +473,7 @@ const EditTask = (props) => {
                     // Disables the button if load and unloads have not been selected for a task/route in a process
                     disabled={selectedTask !== null && (!selectedTask.load.position || selectedTask.unload.position === null)}
                     onClickSave={async () => {
-                        await handleSave()
+                        await onSave()
                     }}
 
                     onClickBack={() => {
@@ -690,7 +690,7 @@ const EditTask = (props) => {
 
             {/* Load and Unload Parameters */}
             <div style={{ height: "100%", paddingTop: "1rem" }}>
-                {handleLoadUnloadParameters()}
+                {renderLoadUnloadParameters()}
             </div>
 
             <hr />
