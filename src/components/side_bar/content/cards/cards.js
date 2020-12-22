@@ -12,6 +12,8 @@ import Portal from "../../../../higher_order_components/portal";
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
 import SummaryZone from "./summary_zone/summary_zone";
 
+import {showEditor} from '../../../../redux/actions/card_actions'
+
 
 const PAGES = {
     CARDS: "CARDS",
@@ -28,9 +30,13 @@ const Cards = (props) => {
     const processes = useSelector(state => { return state.processesReducer.processes })
     const isCardDragging = useSelector(state => { return state.cardPageReducer.isCardDragging })
     const isHoveringOverColumn = useSelector(state => { return state.cardPageReducer.isHoveringOverColumn })
+    const showCardEditor = useSelector(state=> {return state.cardsReducer.showEditor})
     const processIds = Object.keys(processes)
 
-    const [showCardEditor, setShowCardEditor] = useState(false)
+    const dispatch = useDispatch()
+    const onShowCardEditor = (bool) => dispatch(showEditor(bool))
+
+    //const [showCardEditor, setShowCardEditor] = useState(false)
     const [selectedCard, setSelectedCard] = useState(null)
     const [showMenu, setShowMenu] = useState(false)
     const [zoneSize, setZoneSize] = useState({
@@ -88,10 +94,9 @@ const Cards = (props) => {
     }
 
     const handleCardClick = (cardId, processId, binId) => {
-        setShowCardEditor(true)
+        onShowCardEditor(true)
         setSelectedCard({cardId, processId, binId})
     }
-
 
     return(
         <styled.Container>
@@ -103,7 +108,7 @@ const Cards = (props) => {
                 processId={selectedCard ? selectedCard.processId : null}
                 binId={selectedCard ? selectedCard.binId : null}
                 close={()=>{
-                    setShowCardEditor(false)
+                    onShowCardEditor(false)
                     setSelectedCard(null)
                 }}
             />
@@ -158,7 +163,7 @@ const Cards = (props) => {
                                 zoneRef={zoneRef}
                                 zoneSize={zoneSize}
                                 handleCardClick={handleCardClick}
-                                setShowCardEditor={setShowCardEditor}
+                                setShowCardEditor={onShowCardEditor}
                                 showCardEditor={showCardEditor}
                             />,
                         'timeline':
@@ -169,7 +174,7 @@ const Cards = (props) => {
                     }[id] ||
                         <styled.CardZoneContainer>
                             <CardZone
-                                setShowCardEditor={setShowCardEditor}
+                                setShowCardEditor={onShowCardEditor}
                                 showCardEditor={showCardEditor}
                                 processId={id}
                                 size={zoneSize}

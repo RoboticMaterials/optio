@@ -2,6 +2,7 @@ export const SCHEDULES = 'SCHEDULES';
 export const SCHEDULE = 'SCHEDULE';
 export const CARD = 'CARD';
 export const CARDS = 'CARDS';
+export const SHOW_EDITOR = 'CARDS';
 export const LOT = 'LOT';
 export const LOTS = 'LOTS';
 export const PROCESS_CARDS = 'PROCESS_CARDS';

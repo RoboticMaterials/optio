@@ -38,7 +38,7 @@ export default function ContentList(props) {
                             <styled.ListItemIcon
                                 className='fas fa-play'
                                 onClick={() => {
-                                    executeTask()                                    
+                                    executeTask()
                                 }}
                             />
                         }
