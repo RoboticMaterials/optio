@@ -20,6 +20,7 @@ import { deepCopy } from '../../methods/utils/utils'
 import DropDownSearch from "../basic/drop_down_search_v2/drop_down_search";
 import { getCards } from "../../redux/actions/card_actions";
 import DropDownSearchField from "../basic/form/drop_down_search_field/drop_down_search_field";
+import Button from "../basic/button/button";
 
 
 /**
@@ -34,6 +35,12 @@ const HILModals = (props) => {
         taskQueueID,
         item
     } = props
+
+    console.log("hilMessage",hilMessage)
+    console.log("hilType",hilType)
+    console.log("taskQuantity",taskQuantity)
+    console.log("taskQueueID",taskQueueID)
+    console.log("item",item)
 
     const {
         dashboard: dashboardId
@@ -57,50 +64,32 @@ const HILModals = (props) => {
     const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
     const taskQueueItemClicked = useSelector(state => state.taskQueueReducer.taskQueueItemClicked)
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
-    const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
+    const dashboards = useSelector(state => state.dashboardsReducer.dashboards) || {}
     const objects = useSelector(state => state.objectsReducer.objects)
     const cards = useSelector(state => state.cardsReducer.cards)
     const [quantity, setQuantity] = useState(taskQuantity)
 
     const [selectedTask, setSelectedTask] = useState(null)
-    const [selectedCard, setSelectedCard] = useState(null)
+    const [selectedLot, setSelectedLot] = useState(null)
+    const [editLotClicked, setEditLotClicked] = useState(false)
+    const [availableLots, setAvailableLots] = useState([])
+    const [selectedDashboard, setSelectedDashboard] = useState(null)
+    const [cardsLoaded, setCardsLoaded] = useState([false])
+    const [showLotSelector, setShowLotSelector] = useState(false)
     const [hilLoadUnload, setHilLoadUnload] = useState('')
 
-    // get dashboard info from item
-    const selectedDashboard = dashboards[dashboardId]
     const {
         name: dashboardName,
         station: stationId, //"c754a665-f756-4c74-a7c5-e8c014039ba3"
     } = selectedDashboard || {}
 
-    /*
-    * Get dropdownsearch options for cards
-    *
-    * Filter out cards that don't belong to the same station
-    * Each option only needs to contain the card's id and a label to display, the extaneous information can be left out
-    *
-    * */
-    const stationCards = Object.values(cards).filter((currCard) => {
-        const {
-            bins
-        } = currCard
+    const {
+        name: selectedLotName,
+        _id: selectedLotId
+    } = selectedLot || {}
 
-        if(bins) {
-            if(bins[stationId] && bins[stationId].count > 0) return true
-        }
 
-    }).map((currCard) => {
-        const {
-            _id,
-            object_id
-        } = currCard
-        const objectName = objects[object_id] ? objects[object_id].name : null
 
-        return {
-            _id,
-            label: objectName ? currCard.name + " - " + objectName : currCard.name
-        }
-    })
 
 
     // If the qty goes below 0, then set to 0. You can never send negative parts
@@ -111,16 +100,67 @@ const HILModals = (props) => {
     // load card data on load for selecting lot
     useEffect(() => {
         dispatchGetCards()
+        setCardsLoaded(true)
     }, [])
+
+    // load card data on load for selecting lot
+    useEffect(() => {
+        // get dashboard info from item
+        const dashboard = dashboards[dashboardId]
+        setSelectedDashboard(dashboard)
+    }, [dashboards])
+
+    // load card data on load for selecting lot
+    useEffect(() => {
+        if(cardsLoaded && availableLots.length > 0) setShowLotSelector(true)
+    }, [cardsLoaded, availableLots])
+
+    /*
+    * Get dropdownsearch options for cards
+    *
+    * Filter out cards that don't belong to the same station
+    * Each option only needs to contain the card's id and a label to display, the extaneous information can be left out
+    *
+    * */
+    useEffect(() => {
+
+        console.log("mapping cards")
+        const stationCards = Object.values(cards).filter((currCard) => {
+            const {
+                bins
+            } = currCard
+            console.log("currCard",currCard)
+            console.log("stationId",stationId)
+            console.log("dashboardId",dashboardId)
+
+            if(bins) {
+                if(bins[stationId] && bins[stationId].count > 0) return true
+            }
+
+        })
+
+        console.log("stationCards",stationCards)
+
+        if(stationCards && Array.isArray(stationCards) && stationCards.length > 0) {
+            if((stationCards.length === 1) && !selectedLot) setSelectedLot(stationCards[0])
+            setAvailableLots(stationCards)
+        }
+
+
+    }, [cards, stationId])
+
+    console.log("availableLots", availableLots)
 
     // Use Effect for when page loads, handles wether the HIL is a load or unload
     useEffect(() => {
 
-        setSelectedTask(tasks[item.task_id])
-        console.log('QQQQ Selected Task', tasks[item.task_id])
+        const currentTask = tasks[item.task_id]
+        setSelectedTask(currentTask)
+        console.log('QQQQ Selected Task', currentTask)
+        console.log('QQQQ Selected Task', currentTask)
 
         // If the task's load location of the task q item matches the item's location then its a load hil, else its unload
-        if (tasks[item.task_id].load.station === item.hil_station_id || !!item.dashboard) {
+        if (currentTask && currentTask?.load?.station === item.hil_station_id || !!item.dashboard) {
             // load
             setHilLoadUnload('load')
         } else {
@@ -140,7 +180,7 @@ const HILModals = (props) => {
             dispatchLocalHumanTask(false)
         }
 
-    }, [])
+    }, [tasks])
 
     // Posts HIL Success to API
     const onHilSuccess = async () => {
@@ -152,7 +192,7 @@ const HILModals = (props) => {
             ...item,
             hil_response: true,
             quantity: quantity,
-            card_id: selectedCard
+            card_id: selectedLot
         }
 
         // Deletes the dashboard id from active list for the hil that has been responded too
@@ -345,26 +385,6 @@ const HILModals = (props) => {
 
                 }
 
-                {
-                    (hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
-                    <styled.LotDropdownContainer>
-                        <styled.LotTitle>Select Lot</styled.LotTitle>
-                        <DropDownSearch
-                            theme={{}}
-                            // style={{flex: 1, width: "100%"}}
-                            // containerStyle={{flex: 1, width: "100%"}}
-                            options={stationCards}
-                            pattern={null}
-                            labelField={'label'}
-                            valueField={"_id"}
-                            onChange={(values) => {
-                                if (values && Array.isArray(values)) setSelectedCard(values[0]._id)
-                            }}
-                        />
-                    </styled.LotDropdownContainer>
-                }
-
-
                 <styled.HilButtonContainer>
 
                     <styled.HilButton color={'#90eaa8'}
@@ -411,6 +431,68 @@ const HILModals = (props) => {
         )
     }
 
+
+    const renderLotSelector = () => {
+        return (
+            <styled.LotSelectorContainer>
+                <styled.LotsContainer>
+                {availableLots.map((currLot) => {
+                    const {
+                        name,
+                        _id: lotId,
+                        bins
+                    } = currLot
+
+                    console.log("mapadawda currLot",currLot)
+
+                    const isSelected = selectedLotId === lotId
+
+                    return(
+                        <styled.LotButton
+                            isSelected={isSelected}
+                            color={'orange'}
+                            schema={"lots"}
+                            onClick={()=> {
+                                setSelectedLot(currLot)
+
+                                if(!editLotClicked) setShowLotSelector(false)
+                            }}
+                        >
+
+                            {isSelected &&
+                            <styled.DeselectLotIcon
+                                className='fas fa-times-circle'
+                                onClick={(e)=> {
+                                    e.stopPropagation()
+                                    e.preventDefault()
+                                    setSelectedLot(null)
+                                }}
+                            />
+                            }
+                            <styled.LotButtonText isSelected={isSelected} color={'#32a897'}>{name}</styled.LotButtonText>
+                        </styled.LotButton>
+                    )
+                })}
+                </styled.LotsContainer>
+
+                <styled.LotFooter>
+                    <Button
+                        stype={"button"}
+                        schema={"lots"}
+                        secondary
+                        onClick={()=>setShowLotSelector(false)}
+                        // disabled={selectedLot}
+                    >
+                        {selectedLot ? "Continue" : "Continue Without Lot"}
+
+                    </Button>
+                </styled.LotFooter>
+
+
+            </styled.LotSelectorContainer>
+        )
+    }
+
     /**
      * Conditioinally renders HIL Modal based on type.
      *
@@ -442,14 +524,60 @@ const HILModals = (props) => {
             {dashboardOpen ?
                 <></>
                 :
-                <styled.HilExitModal
-                    className='fas fa-times'
-                    onClick={() => dispatchTaskQueueItemClicked('')}
-                />
+                <styled.Header>
+
+                    <styled.HilExitModal
+                        className='fas fa-times'
+                        onClick={() => dispatchTaskQueueItemClicked('')}
+                    />
+
+
+                        <styled.SelectedLotContainer>
+                            {selectedLotName ?
+                                    <styled.LotTitleDescription>Selected Lot:</styled.LotTitleDescription>
+                                :
+                                availableLots.length > 0 ?
+                                <styled.LotTitleName>Select Lot</styled.LotTitleName>
+                                    :
+                                    <styled.LotTitleName>No lots available</styled.LotTitleName>
+                            }
+
+                            {( selectedLot) &&
+                            <styled.SelectedLotName>
+                                {selectedLotName &&
+                                <styled.LotTitleName>{selectedLotName}</styled.LotTitleName>
+                                }
+                                {!showLotSelector &&
+                                <styled.EditLotIcon
+                                    className="fas fa-edit"
+                                    onClick={()=> {
+                                        setEditLotClicked(true)
+                                        setShowLotSelector(true)
+                                    }}
+                                />
+                                }
+                            </styled.SelectedLotName>
+                            }
+
+
+
+
+                        </styled.SelectedLotContainer>
+
+
+
+                    <styled.InvisibleItem/>
+
+                </styled.Header>
+
             }
             <styled.HilBorderContainer >
+                {showLotSelector ?
+                    renderLotSelector()
+                    :
+                    !!selectedTask && selectedTask.track_quantity ? renderQuantityOptions() : renderFractionOptions()
+                }
 
-                {!!selectedTask && selectedTask.track_quantity ? renderQuantityOptions() : renderFractionOptions()}
 
             </styled.HilBorderContainer>
         </styled.HilContainer>

@@ -182,6 +182,11 @@ export const theme = {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
                 solid: '#1ae8a0'
             },
+            lots: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(38, 212, 53) 0%, rgba(80, 250, 95, 0.95) 100%)',
+                solid: '#26d435',
+                iconName: "fas fa-play"
+            },
             kick_off: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(197, 155, 255) 0%, rgba(173, 115, 255, 0.95) 100%)',
                 solid: '#c59bff',
