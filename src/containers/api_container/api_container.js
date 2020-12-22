@@ -290,6 +290,7 @@ const ApiContainer = (props) => {
         const tasks = await onGetTasks()
         const taskQueue = await onGetTaskQueue()
         const processes = await onGetProcesses()
+        const cards = onGetCards()
 
         const tasksAnalysis = await onGetTasksAnalysis()
 
