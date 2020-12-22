@@ -17,6 +17,10 @@ export const ListItem = styled(stylec.ListItem)`
 export const Container = styled(stylec.Container)`
 `
 
+export const ListItemIconContainer = styled(stylec.ListItemIconContainer)`
+
+`
+
 export const Title = styled.h1`
     font-family: ${props => props.theme.font.primary};
     font-size: 1.5rem;

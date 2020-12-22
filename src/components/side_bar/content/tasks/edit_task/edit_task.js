@@ -17,15 +17,16 @@ import LoadUnloadFields from './fields/load_unload_fields'
 // Import utils
 import uuid from 'uuid'
 import { deepCopy } from '../../../../../methods/utils/utils'
+import { willRouteDeleteBreakProcess } from '../../../../../methods/utils/processes_utils'
 
 // Import actions
 import * as taskActions from '../../../../../redux/actions/tasks_actions'
 import { setSelectedTask, deleteTask, getTasks, putTask } from '../../../../../redux/actions/tasks_actions'
 import * as dashboardActions from '../../../../../redux/actions/dashboards_actions'
-import { putDashboard } from '../../../../../redux/actions/dashboards_actions'
+import { putDashboard, postDashboard } from '../../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../../redux/actions/objects_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
-import { putProcesses, setSelectedProcess } from '../../../../../redux/actions/processes_actions'
+import { putProcesses, setSelectedProcess, fixingProcess } from '../../../../../redux/actions/processes_actions'
 import { putStation } from '../../../../../redux/actions/stations_actions'
 import { select } from 'd3-selection'
 
@@ -41,15 +42,16 @@ const EditTask = (props) => {
     } = props
 
     const dispatch = useDispatch()
-    const onPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
-    const onPutProcesses = (process) => dispatch(putProcesses(process))
-    const onSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
-    const onSetSelectedTask = (task) => dispatch(setSelectedTask(task))
-    const onDeleteTask = (ID) => dispatch(deleteTask(ID))
-    const onGetTasks = () => dispatch(getTasks())
-    const onPutStation = (station, ID) => dispatch(putStation(station, ID))
-    const onPutDashboard = (dashboard, ID) => dispatch(putDashboard(dashboard, ID))
+    const dispatchPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
+    const dispatchPutProcesses = (process) => dispatch(putProcesses(process))
+    const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
+    const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
+    const dispatchDeleteTask = (ID) => dispatch(deleteTask(ID))
+    const dispatchPutStation = (station, ID) => dispatch(putStation(station, ID))
+    const dispatchPutDashboard = (dashboard, ID) => dispatch(putDashboard(dashboard, ID))
     const dispatchPutTask = (task, id) => dispatch(putTask(task, id))
+    const dispatchPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
+    const dispatchFixingProcess = async (bool) => await dispatch(fixingProcess(bool))
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -69,8 +71,11 @@ const EditTask = (props) => {
     useEffect(() => {
         console.log('QQQQ Selected Task', selectedTask)
         setSelectedTaskCopy(selectedTask)
-        return () => {
 
+        return () => {
+            // When unmounting edit task, always set fixing process to false
+            // This will take care of when it's set to true in edit process
+            dispatchFixingProcess(false)
         }
     }, [])
 
@@ -119,22 +124,30 @@ const EditTask = (props) => {
             }
             )
 
-        if (!!isProcessTask) {
+        // If the task has associated processes, then remove that task from that process
+        if (selectedTask.processes.length > 0) {
 
-            // Removes the task from the array of routes
-            const copyProcess = deepCopy(selectedProcess)
-            const index = copyProcess.routes.indexOf(selectedTask._id)
-            copyProcess.routes.splice(index, 1)
+            selectedTask.processes.map((process) => {
+                let updatedProcess = processes[process]
+                // Removes the task from the array of routes
+                const index = updatedProcess.routes.indexOf(selectedTask._id)
+                updatedProcess.routes.splice(index, 1)
 
-            onSetSelectedProcess({
-                ...copyProcess,
-            })
-            onPutProcesses({
-                ...copyProcess,
+                // Update the process if need be
+                if (selectedProcess._id === updatedProcess._id) {
+                    dispatchSetSelectedProcess({
+                        ...updatedProcess,
+                    })
+                }
+
+                dispatchPutProcesses({
+                    ...updatedProcess,
+                })
+
             })
         }
 
-        // If the selected task has an associated task, (usually and device and human task)
+        // If the selected task has an associated task, (usually for device and human task)
         // Delete the associated task
         if (!!selectedTask.associated_task) {
             dispatch(taskActions.deleteTask(selectedTask.associated_task));
@@ -143,7 +156,7 @@ const EditTask = (props) => {
         dispatch(taskActions.deleteTask(selectedTask._id));
 
         // dispatch(taskActions.deselectTask());
-        onSetSelectedTask(null)
+        dispatchSetSelectedTask(null)
         toggleEditing(false)
     }
 
@@ -213,7 +226,27 @@ const EditTask = (props) => {
             // Add the task automatically to the associated load station dashboard
             // Since as of now the only type of task we are doing is push, only need to add it to the load location
             let updatedStation = deepCopy(stations[selectedTask.load.station])
+            console.log('QQQQ Station', updatedStation)
+
             let updatedDashboard = dashboards[updatedStation.dashboards[0]]
+            console.log('QQQQ Dashboard', updatedDashboard)
+
+            if (updatedDashboard === undefined) {
+                let defaultDashboard = {
+                    name: updatedStation.name + ' Dashboard',
+                    buttons: [],
+                    station: updatedStation._id
+                }
+                const postDashboardPromise = dispatchPostDashboard(defaultDashboard)
+                postDashboardPromise.then(async postedDashboard => {
+                    alert('Added dashboard to location. There already should be a dashboard tied to this location, so this is an temp fix')
+                    console.log('QQQQ Posted dashboard', postedDashboard)
+                    updatedStation.dashboards = [postedDashboard._id.$oid]
+                    await dispatchPutStation(updatedStation, updatedStation._id)
+                    
+                })
+            }
+
             const newDashboardButton = {
                 color: '#bcbcbc',
                 id: selectedTask._id,
@@ -221,7 +254,7 @@ const EditTask = (props) => {
                 task_id: selectedTask._id
             }
             updatedDashboard.buttons.push(newDashboardButton)
-            onPutDashboard(updatedDashboard, updatedDashboard._id.$oid)
+            dispatchPutDashboard(updatedDashboard, updatedDashboard._id.$oid)
 
 
             // dispatch(taskActions.removeTask(selectedTask._id)) // Remove the temporary task from the local copy of tasks
@@ -242,7 +275,7 @@ const EditTask = (props) => {
                 delete updatedHumanTask.associated_task
 
                 dispatch(taskActions.putTask(updatedHumanTask, updatedHumanTask._id))
-                onDeleteTask(selectedTask._id)
+                dispatchDeleteTask(selectedTask._id)
 
             }
 
@@ -337,16 +370,15 @@ const EditTask = (props) => {
             // if(!processRoutes[selectedTask.load.station]) {
             //     processRoutes[selectedTask.load.station] = []
             // }
+
+            selectedTask.processes.push(selectedProcess._id);
+            dispatch(taskActions.putTask(selectedTask, selectedTask._id))
+
             selectedProcess.routes.push(selectedTask._id);
-            onSetSelectedProcess(
+            dispatchSetSelectedProcess(
                 selectedProcess
             )
 
-            // Associated the process with the task
-            onSetSelectedTask({
-                ...selectedTask,
-                process: selectedProcess._id
-            })
         }
 
         dispatch(taskActions.deselectTask())    // Deselect
@@ -359,15 +391,22 @@ const EditTask = (props) => {
      */
     const handleRemove = () => {
 
+        // Remove the route from the process
         const index = selectedProcess.routes.indexOf(selectedTask._id)
         const updatedRoutes = deepCopy(selectedProcess.routes)
 
         updatedRoutes.splice(index, 1)
 
-        onSetSelectedProcess({
+        dispatchSetSelectedProcess({
             ...selectedProcess,
             routes: updatedRoutes
         })
+
+        // Remove from the Route
+        const routeIndex = selectedTask.processes.indexOf(selectedProcess._id)
+        selectedTask.processes.splice(routeIndex, 1)
+
+        dispatchPutTask(selectedTask, selectedTask._id)
 
         dispatch(taskActions.deselectTask()) // Deselect
         setSelectedTaskCopy(null) // Reset the local copy to null
@@ -423,8 +462,22 @@ const EditTask = (props) => {
             <ConfirmDeleteModal
                 isOpen={!!confirmDeleteModal}
                 title={
+
                     `Are you sure you want to delete this Route? 
-                    ${!!selectedTask.process ? `This task is a part of process '${!!processes[selectedTask.process] && processes[selectedTask.process].name}', and will be removed from this process if deleted` : ''}
+                    
+
+                    ${selectedTask.processes.length > 0 ?
+                        `This task is a part of processes: 
+
+                        ${selectedTask.processes.map((process) => {
+                            return `'${processes[process].name}', `
+                        })}
+
+                        and will be removed from these processes if deleted.
+                        `
+                        :
+                        ''
+                    }
                     `
                 }
                 button_1_text={"Yes"}
@@ -511,7 +564,7 @@ const EditTask = (props) => {
 
                             // If this task is part of a process and not already in the array of routes, then add the task to the selected process
                             if (!selectedProcess.routes.includes(selectedTask._id)) {
-                                onSetSelectedProcess({
+                                dispatchSetSelectedProcess({
                                     ...selectedProcess,
                                     routes: [...selectedProcess.routes, newRoute]
                                 })
@@ -519,7 +572,7 @@ const EditTask = (props) => {
                                 dispatchPutTask(
                                     {
                                         ...values[0],
-                                        process: selectedProcess._id
+                                        processes: [...values[0].processes, selectedProcess._id]
                                     }
                                     , values[0]._id)
                             }
@@ -568,7 +621,7 @@ const EditTask = (props) => {
                         closeOnSelect="true"
                         onChange={(values) => {
                             setObject(values[0])
-                            // onSetSelectedTask({
+                            // dispatchSetSelectedTask({
                             //     ...selectedTask,
                             //     load: {
                             //         ...selectedTask.load,
@@ -598,7 +651,7 @@ const EditTask = (props) => {
                                 <styled.DualSelectionButton
                                     style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
                                     onClick={() => {
-                                        onSetSelectedTask({
+                                        dispatchSetSelectedTask({
                                             ...selectedTask,
                                             track_quantity: !selectedTask.track_quantity
                                         })
@@ -611,7 +664,7 @@ const EditTask = (props) => {
                                 <styled.DualSelectionButton
                                     style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
                                     onClick={() => {
-                                        onSetSelectedTask({
+                                        dispatchSetSelectedTask({
                                             ...selectedTask,
                                             track_quantity: !selectedTask.track_quantity
                                         })

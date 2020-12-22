@@ -39,6 +39,12 @@ export const OPERATION_TYPES = {
         key: "KICK_OFF",
         name: "Kick off",
         _id: 1
+    },
+    FINISH: {
+        schema: "finish",
+        key: "FINISH",
+        name: "Finish",
+        _id: 2
     }
 }
 
@@ -104,6 +110,9 @@ const DashboardsSidebar = (props) => {
 
     const kickOffEnabledInfo = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] })
     const kickOffEnabled = kickOffEnabledInfo && Array.isArray(kickOffEnabledInfo) && kickOffEnabledInfo.length > 0
+
+    const finishEnabledProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] })
+    const finsihedEnabled = finishEnabledProcesses && Array.isArray(finishEnabledProcesses) && finishEnabledProcesses.length > 0
 
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null)
@@ -178,9 +187,16 @@ const DashboardsSidebar = (props) => {
     const getReportButtons = () => {
         return Object.entries(OPERATION_TYPES).filter((currEntry, ind) => {
             const currKey = currEntry[0]
-            if(currKey !== OPERATION_TYPES.KICK_OFF.key) return true // KICK_OFF currently disabled
+
+            if(currKey === null) return true // allows old routes that were created without a type to still be rendered
+
+            if(currKey === null) return true // allows old routes that were created without a type to still be rendered
+
+            if(currKey === OPERATION_TYPES.REPORT.key) return true
 
             if((currKey === OPERATION_TYPES.KICK_OFF.key) && kickOffEnabled) return true
+
+            if((currKey === OPERATION_TYPES.FINISH.key) && finsihedEnabled) return true
 
         }).map((currEntry, ind) => {
 
