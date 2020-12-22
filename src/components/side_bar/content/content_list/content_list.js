@@ -13,7 +13,7 @@ export default function ContentList(props) {
     const {
         executeTask,
         hideHeader,
-        handleCardView
+        handleCardView,
     } = props
 
 
@@ -25,55 +25,70 @@ export default function ContentList(props) {
             }
 
             <styled.List>
-                {props.elements.map((element, ind) =>
-                    <styled.ListItem
-                        key={`li-${ind}`}
-                        onMouseEnter={() => props.onMouseEnter(element)}
-                        onMouseLeave={() => props.onMouseLeave(element)}
-                    >
+                {props.elements.map((element, ind) => {
+                    const error = (props.schema === 'processes' && element.broken) ? true : false
+                    return (
+                        <>
+                            <styled.ListItem
+                                key={`li-${ind}`}
+                                error={error}
+                                onMouseEnter={() => props.onMouseEnter(element)}
+                                onMouseLeave={() => props.onMouseLeave(element)}
+                            >
 
 
-                        <styled.ListItemIconContainer style={{width:'15%'}}>
+                                <styled.ListItemIconContainer style={{ width: '15%' }} >
 
-                            {props.schema === 'tasks' &&
-                                <styled.ListItemIcon
-                                    className='fas fa-play'
-                                    onClick={() => {
-                                        executeTask()
-                                    }}
-                                />
-                            }
+                                    {props.schema === 'tasks' &&
+                                        <styled.ListItemIcon
+                                            className='fas fa-play'
+                                            onClick={() => {
+                                                executeTask()
+                                            }}
+                                        />
+                                    }
 
-                            {props.schema === 'processes' &&
-                                <styled.ListItemIcon
-                                    className='far fa-clone'
-                                    onClick={() => {
-                                        handleCardView(element)
-                                    }}
-                                />
-                            }
+                                    {props.schema === 'processes' && error ?
+                                        <styled.ListItemIcon
+                                            style={{ color: 'red' }}
+                                            className='fas fa-exclamation-triangle'
+                                            onClick={() => props.onClick(element)}
 
-                        </styled.ListItemIconContainer>
+                                        />
+                                        :
 
+                                        <styled.ListItemIcon
+                                            className='far fa-clone'
+                                            onClick={() => {
+                                                handleCardView(element)
+                                            }}
+                                        />
+                                    }
 
-                        <styled.ListItemTitle schema={props.schema}>{element.name}</styled.ListItemTitle>
-
-
-
-                        <styled.ListItemIconContainer>
-
-                            <styled.ListItemIcon
-                                className='fas fa-cog'
-                                onClick={() => props.onClick(element)}
-                                style={{color:'#c6ccd3'}}
-                            />
+                                </styled.ListItemIconContainer>
 
 
-                        </styled.ListItemIconContainer>
+                                <styled.ListItemTitle schema={props.schema}>{element.name}</styled.ListItemTitle>
 
-                    </styled.ListItem>
-                )}
+
+
+                                <styled.ListItemIconContainer>
+
+                                    <styled.ListItemIcon
+                                        className='fas fa-cog'
+                                        onClick={() => props.onClick(element)}
+                                        style={{ color: '#c6ccd3' }}
+                                    />
+
+
+                                </styled.ListItemIconContainer>
+
+                            </styled.ListItem>
+                        </>
+                    )
+                })}
             </styled.List>
         </styled.Container>
+
     )
 }

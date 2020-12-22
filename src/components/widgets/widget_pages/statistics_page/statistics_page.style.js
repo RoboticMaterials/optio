@@ -13,10 +13,10 @@ export const StatisticsSectionsContainer = styled.div`
     position: absolute;
     text-align: center;
     justify-content: center;
-    left: 0; 
-    right: 0; 
+    left: 0;
+    right: 0;
     top: .5rem;
-    margin-left: auto; 
+    margin-left: auto;
     margin-right: auto;
     margin-top: 0.5rem;
     width: 15rem;
@@ -28,7 +28,7 @@ export const StatisticsSectionsButton = styled.button`
     width: 10rem;
     border: none;
     font-family: ${props => props.theme.font.primary};
-    
+
     box-shadow: ${props => props.selected ? 'none' : '0 0.1rem 0.2rem 0rem #303030'};
 
     z-index: ${props => props.selected ? '0' : '1'};
@@ -50,7 +50,7 @@ export const StatisticsSectionsButton = styled.button`
 
 export const StatisticsDownloadButton = styled.button`
     display: auto;
-    position: absolute; 
+    position: absolute;
     right: 1rem;
     top: 1rem;
     border: none;
@@ -80,4 +80,3 @@ export const StatisticsDownloadButton = styled.button`
         display: none;
     }
 `
-

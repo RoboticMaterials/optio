@@ -13,6 +13,7 @@ import ObjectsPage from './objects_page/objects_page'
 import StatisticsPage from './statistics_page/statistics_page'
 import TasksPage from './tasks_page/tasks_page'
 import ViewerPage from './viewer_page/viewer_page'
+import LotsPage from './lots_page/lots_page'
 
 import log from "../../../logger"
 
@@ -74,6 +75,10 @@ const WidgetPages = (props) => {
                 <Route
                     path="/locations/:stationID/statistics"
                     component={StatisticsPage}
+                />
+                <Route
+                    path="/locations/:stationID/lots"
+                    component={LotsPage}
                 />
                 <Route
                     path="/locations/:stationID/tasks"

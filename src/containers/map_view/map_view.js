@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react'
-import {ReactDOM, Route} from 'react-dom'
+import { ReactDOM, Route } from 'react-dom'
 import { connect } from 'react-redux';
 import moduleName from 'react'
 import { withRouter } from "react-router-dom";
@@ -173,7 +173,7 @@ export class MapView extends Component {
     }
 
     openLocation = () => {
-      return  <Route path={["/locations"]}/>
+        return <Route path={["/locations"]} />
     }
 
 
@@ -498,9 +498,9 @@ export class MapView extends Component {
                                 if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation') {
                                     this.props.onHoverStationInfo(null)
 
-                                if(!this.props.editing){
-                                    this.props.onDeselectLocation()
-                                  }
+                                    if (!this.props.editing) {
+                                        this.props.onDeselectLocation()
+                                    }
                                 }
                             }
                         }}
@@ -595,10 +595,29 @@ export class MapView extends Component {
                                             // remove positions not associated with current map
                                             if (position.map_id !== this.props.currentMap._id) return false
 
+                                            // This filters out positions when fixing a process
+                                            // If the process is broken, then you can only start the task at the 
+                                            if (!!this.props.selectedTask && !!this.props.selectedProcess && !!this.props.fixingProcess) {
+
+                                                // Gets the route before break
+                                                const routeBeforeBreak = this.props.selectedProcess.routes[this.props.selectedProcess.broken - 1]
+                                                const taskBeforeBreak = this.props.tasks[routeBeforeBreak]
+
+                                                if (!!taskBeforeBreak.unload) {
+                                                    const unloadStationID = taskBeforeBreak.unload.station
+                                                    const unloadStation = this.props.locations[unloadStationID]
+
+                                                    if (unloadStation.children.includes(position._id)) {
+                                                        return true
+
+                                                    }
+                                                }
+                                            }
+
                                             // This filters positions when making a process
                                             // If the process has routes, and you're adding a new route, you should only be able to add a route starting at the last station
                                             // This eliminates process with gaps between stations
-                                            if (!!this.props.selectedTask && !!this.props.selectedProcess && this.props.selectedProcess.routes.length > 0 && this.props.selectedTask.load.position === null) {
+                                            else if (!!this.props.selectedTask && !!this.props.selectedProcess && this.props.selectedProcess.routes.length > 0 && this.props.selectedTask.load.position === null) {
                                                 // Gets the last route in the routes array
                                                 const previousRoute = this.props.selectedProcess.routes[this.props.selectedProcess.routes.length - 1]
 
@@ -698,10 +717,12 @@ const mapStateToProps = function (state) {
         selectedLocation: state.locationsReducer.selectedLocation,
         selectedTask: state.tasksReducer.selectedTask,
         selectedProcess: state.processesReducer.selectedProcess,
+        fixingProcess: state.processesReducer.fixingProcess,
 
         hoveringInfo: state.locationsReducer.hoverStationInfo,
         editing: state.locationsReducer.editingLocation,
         widgetLoaded: state.locationsReducer.widgetLoaded,
+
     };
 }
 

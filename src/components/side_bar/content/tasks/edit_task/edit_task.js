@@ -23,10 +23,10 @@ import { willRouteDeleteBreakProcess } from '../../../../../methods/utils/proces
 import * as taskActions from '../../../../../redux/actions/tasks_actions'
 import { setSelectedTask, deleteTask, getTasks, putTask } from '../../../../../redux/actions/tasks_actions'
 import * as dashboardActions from '../../../../../redux/actions/dashboards_actions'
-import { putDashboard } from '../../../../../redux/actions/dashboards_actions'
+import { putDashboard, postDashboard } from '../../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../../redux/actions/objects_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
-import { putProcesses, setSelectedProcess } from '../../../../../redux/actions/processes_actions'
+import { putProcesses, setSelectedProcess, fixingProcess } from '../../../../../redux/actions/processes_actions'
 import { putStation } from '../../../../../redux/actions/stations_actions'
 import { select } from 'd3-selection'
 
@@ -50,6 +50,8 @@ const EditTask = (props) => {
     const dispatchPutStation = (station, ID) => dispatch(putStation(station, ID))
     const dispatchPutDashboard = (dashboard, ID) => dispatch(putDashboard(dashboard, ID))
     const dispatchPutTask = (task, id) => dispatch(putTask(task, id))
+    const dispatchPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
+    const dispatchFixingProcess = async (bool) => await dispatch(fixingProcess(bool))
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -71,7 +73,9 @@ const EditTask = (props) => {
         setSelectedTaskCopy(selectedTask)
 
         return () => {
-
+            // When unmounting edit task, always set fixing process to false
+            // This will take care of when it's set to true in edit process
+            dispatchFixingProcess(false)
         }
     }, [])
 
@@ -222,7 +226,27 @@ const EditTask = (props) => {
             // Add the task automatically to the associated load station dashboard
             // Since as of now the only type of task we are doing is push, only need to add it to the load location
             let updatedStation = deepCopy(stations[selectedTask.load.station])
+            console.log('QQQQ Station', updatedStation)
+
             let updatedDashboard = dashboards[updatedStation.dashboards[0]]
+            console.log('QQQQ Dashboard', updatedDashboard)
+
+            if (updatedDashboard === undefined) {
+                let defaultDashboard = {
+                    name: updatedStation.name + ' Dashboard',
+                    buttons: [],
+                    station: updatedStation._id
+                }
+                const postDashboardPromise = dispatchPostDashboard(defaultDashboard)
+                postDashboardPromise.then(async postedDashboard => {
+                    alert('Added dashboard to location. There already should be a dashboard tied to this location, so this is an temp fix')
+                    console.log('QQQQ Posted dashboard', postedDashboard)
+                    updatedStation.dashboards = [postedDashboard._id.$oid]
+                    await dispatchPutStation(updatedStation, updatedStation._id)
+                    
+                })
+            }
+
             const newDashboardButton = {
                 color: '#bcbcbc',
                 id: selectedTask._id,
