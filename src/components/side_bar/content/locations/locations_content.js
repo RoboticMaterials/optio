@@ -198,7 +198,7 @@ export default function LocationContent() {
      * tieing it to this location. Each child position for a station is also either POSTED or PUT.
      */
     const onSave = () => {
-
+        console.log('QQQQ Saving this location', deepCopy(selectedLocation))
         const saveChildren = (locationID) => {
             //// Function to save the children of a posted station
             // Since the child has a .parent attribute, this function needs to be given the station's id
@@ -232,6 +232,7 @@ export default function LocationContent() {
                     //// Now post the dashboard, and on return tie that dashboard to location.dashboards and put the location
                     const postDashboardPromise = dispatch(dashboardActions.postDashboard(defaultDashboard))
                     postDashboardPromise.then(postedDashboard => {
+                        console.log('QQQQ Posted dashboard', postedDashboard)
                         postedLocation.dashboards = [postedDashboard._id.$oid]
                         dispatch(stationActions.putStation(postedLocation, postedLocation._id))
                     })

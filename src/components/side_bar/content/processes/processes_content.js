@@ -15,10 +15,7 @@ import ContentList from '../content_list/content_list'
 import EditProcess from './edit_process/edit_process'
 
 // Import actions
-import * as taskActions from '../../../../redux/actions/tasks_actions'
-import { setSelectedProcess, editingProcess } from '../../../../redux/actions/processes_actions'
-import * as dashboardActions from '../../../../redux/actions/dashboards_actions'
-import * as objectActions from '../../../../redux/actions/objects_actions'
+import { setSelectedProcess, editingProcess, putProcesses } from '../../../../redux/actions/processes_actions'
 import { postTaskQueue } from '../../../../redux/actions/task_queue_actions'
 
 // Import Utils
@@ -26,16 +23,17 @@ import { deepCopy } from '../../../../methods/utils/utils'
 import { isBrokenProcess } from '../../../../methods/utils/processes_utils'
 
 import uuid from 'uuid'
-import {uuidv4} from "../../../../methods/utils/utils";
+import { uuidv4 } from "../../../../methods/utils/utils";
 
 const ProcessesContent = () => {
 
     const history = useHistory()
 
     const dispatch = useDispatch()
-    const onPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
-    const onSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
-    const onEditing = (props) => dispatch(editingProcess(props))
+    const dispatchPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
+    const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
+    const dispatchEditing = (props) => dispatch(editingProcess(props))
+    const dispatchPutProcess = (process) => dispatch(putProcesses(process))
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -51,11 +49,26 @@ const ProcessesContent = () => {
 
 
     useEffect(() => {
+
+        // Maps through all process and sees if they're broken
         Object.values(processes).map((process) => {
-            isBrokenProcess(process, tasks)
+
+            // If it was previously broken, but not anymore, then correct that ish
+            if (!!process.broken && !isBrokenProcess(process, tasks)) {
+                console.log('Process was broken but now fixed')
+                process.broken = null
+                dispatchPutProcess(process)
+            }
+
+            // Else if the process is broken, so fix that ish
+            else if (!!isBrokenProcess(process, tasks) && process.broken === null) {
+                console.log('QQQQ Process is broken')
+                process.broken = isBrokenProcess(process, tasks)
+                dispatchPutProcess(process)
+            }
         })
         return () => {
-            onSetSelectedProcess(null)
+            dispatchSetSelectedProcess(null)
         }
     }, [])
 
@@ -70,7 +83,7 @@ const ProcessesContent = () => {
             <EditProcess
                 selectedProcessCopy={selectedProcessCopy}
                 setSelectedProcessCopy={props => setSelectedProcessCopy(props)}
-                toggleEditingProcess={props => onEditing(props)}
+                toggleEditingProcess={props => dispatchEditing(props)}
             />
         )
     } else {    // List Mode
@@ -80,14 +93,14 @@ const ProcessesContent = () => {
                 schema={'processes'}
                 // elements={Object.values(tasks)}
                 elements={Object.values(processes)}
-                onMouseEnter={(process) => onSetSelectedProcess(process)}
-                onMouseLeave={() => onSetSelectedProcess(null)}
+                onMouseEnter={(process) => dispatchSetSelectedProcess(process)}
+                onMouseLeave={() => dispatchSetSelectedProcess(null)}
                 handleCardView={(element) => onCardView(element)}
                 onClick={(process) => {
                     // If task button is clicked, start editing it
                     setSelectedProcessCopy(deepCopy(process))
-                    onSetSelectedProcess(process)
-                    onEditing(true)
+                    dispatchSetSelectedProcess(process)
+                    dispatchEditing(true)
                 }}
                 onPlus={() => {
                     const newProcess = {
@@ -95,12 +108,13 @@ const ProcessesContent = () => {
                         _id: uuid.v4(),
                         new: true,
                         routes: [],
+                        broken: null,
                     }
                     // TODO: May have to do this with processes
                     // dispatch(taskActions.addTask(newTask))
-                    onSetSelectedProcess(newProcess)
+                    dispatchSetSelectedProcess(newProcess)
                     setSelectedProcessCopy(deepCopy(newProcess))
-                    onEditing(true)
+                    dispatchEditing(true)
                 }}
             />
         )

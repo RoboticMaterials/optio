@@ -49,7 +49,8 @@ export const ListItem = styled.div`
     padding: 0rem 1rem;
 
     border-radius: 0.5rem;
-    border: 0.1rem solid white;
+    border: 0.1rem solid;
+    border-color: ${props => props.error ? 'red' : 'white'};
 
     margin-bottom: 1rem;
 

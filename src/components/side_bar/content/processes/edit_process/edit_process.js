@@ -16,7 +16,7 @@ import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/co
 
 // Import actions
 import { setSelectedTask, deselectTask, addTask, putTask, deleteTask } from '../../../../../redux/actions/tasks_actions'
-import { setSelectedProcess, postProcesses, putProcesses, deleteProcesses } from '../../../../../redux/actions/processes_actions'
+import { setSelectedProcess, postProcesses, putProcesses, deleteProcesses, fixingProcess } from '../../../../../redux/actions/processes_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 
 // Import Utils
@@ -46,6 +46,7 @@ const EditProcess = (props) => {
     const dispatchPostProcess = async (process) => await dispatch(postProcesses(process))
     const dispatchPutProcess = async (process) => await dispatch(putProcesses(process))
     const dispatchDeleteProcess = async (ID) => await dispatch(deleteProcesses(ID))
+    const dispatchFixingProcess = async (bool) => await dispatch(fixingProcess(bool))
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const stations = useSelector(state => state.locationsReducer.stations)
@@ -84,15 +85,15 @@ const EditProcess = (props) => {
                 })
             }
             else {
-              dispatchPostTaskQueue({ task_id: route })
+                dispatchPostTaskQueue({ task_id: route })
             }
         }
     }
 
-  //  const handleExecuteProcessTask = (route) => {
+    //  const handleExecuteProcessTask = (route) => {
     //    dispatchPostTaskQueue({ task_id: route })
 
-  //  }
+    //  }
 
     const goToCardPage = () => {
         const currentPath = history.location.pathname
@@ -181,6 +182,56 @@ const EditProcess = (props) => {
                             />
                         </styled.TaskContainer>
                     }
+
+                    {!!selectedProcess.broken && ind === selectedProcess.broken - 1 &&
+
+                        <styled.ListItem
+                            schema={'processes'}
+                            style={{borderColor: 'red'}}
+                            onClick={() => {
+                                const newTask = {
+                                    name: '',
+                                    obj: null,
+                                    type: 'push',
+                                    quantity: 1,
+                                    device_type: !!MiRMapEnabled ? 'MiR_100' : 'human',
+                                    handoff: false,
+                                    track_quantity: true,
+                                    map_id: currentMap._id,
+                                    new: true,
+                                    processes: [],
+                                    load: {
+                                        position: null,
+                                        station: null,
+                                        sound: null,
+                                        instructions: 'Load',
+                                        timeout: '01:00'
+                                    },
+                                    unload: {
+                                        position: null,
+                                        station: null,
+                                        sound: null,
+                                        instructions: 'Unload'
+                                    },
+                                    _id: uuid.v4(),
+                                }
+                                dispatchAddTask(newTask)
+                                setNewRoute(newTask)
+                                dispatchSetSelectedTask(newTask)
+
+                                // Tells the map that the new task is supposed to be fixing the process
+                                // This means instead of only allowing to to pick a location that belongs to the last route
+                                // Now you must pick a location that is connected to the location before the broken route occurs
+                                dispatchFixingProcess(true)
+                                setEditingTask(true)
+                            }}
+                        >
+                            <styled.ListItemTitle style={{ lineHeight: '3rem', width: '100%', color:'red' }}>
+                                Add Route to fix broken process
+                            </styled.ListItemTitle>
+
+                        </styled.ListItem>
+                    }
                 </div>
             )
         })
@@ -229,7 +280,7 @@ const EditProcess = (props) => {
                         setEditingTask(true)
                     }}
                 >
-                    <styled.ListItemTitle style={{lineHeight:'3rem'}}>
+                    <styled.ListItemTitle style={{ lineHeight: '3rem' }}>
                         Add Route
                     </styled.ListItemTitle>
 
