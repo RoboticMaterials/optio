@@ -189,7 +189,7 @@ const processesReducer = (state = defaultState, action) => {
                 editingProcess: action.payload,
             }
 
-        case 'FIXING_PROCESS':
+        case 'SET_FIXING_PROCESS':
             return {
                 ...state,
                 fixingProcess: action.payload

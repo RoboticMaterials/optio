@@ -48,7 +48,7 @@ export default function ContentList(props) {
                                         />
                                     }
 
-                                    {props.schema === 'processes' && error ?
+                                    {props.schema === 'processes' ? error ?
                                         <styled.ListItemIcon
                                             style={{ color: 'red' }}
                                             className='fas fa-exclamation-triangle'
@@ -63,6 +63,9 @@ export default function ContentList(props) {
                                                 handleCardView(element)
                                             }}
                                         />
+                                        :
+                                        <>
+                                        </>
                                     }
 
                                 </styled.ListItemIconContainer>

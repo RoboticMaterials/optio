@@ -26,7 +26,7 @@ import * as dashboardActions from '../../../../../redux/actions/dashboards_actio
 import { putDashboard, postDashboard } from '../../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../../redux/actions/objects_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
-import { putProcesses, setSelectedProcess, fixingProcess } from '../../../../../redux/actions/processes_actions'
+import { putProcesses, setSelectedProcess, setFixingProcess } from '../../../../../redux/actions/processes_actions'
 import { putStation } from '../../../../../redux/actions/stations_actions'
 import { select } from 'd3-selection'
 
@@ -51,7 +51,7 @@ const EditTask = (props) => {
     const dispatchPutDashboard = (dashboard, ID) => dispatch(putDashboard(dashboard, ID))
     const dispatchPutTask = (task, id) => dispatch(putTask(task, id))
     const dispatchPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
-    const dispatchFixingProcess = async (bool) => await dispatch(fixingProcess(bool))
+    const dispatchSetFixingProcess = (bool) => dispatch(setFixingProcess(bool))
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -60,6 +60,7 @@ const EditTask = (props) => {
     const objects = useSelector(state => state.objectsReducer.objects)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const processes = useSelector(state => state.processesReducer.processes)
+    const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
 
     const stations = useSelector(state => state.locationsReducer.stations)
 
@@ -75,7 +76,7 @@ const EditTask = (props) => {
         return () => {
             // When unmounting edit task, always set fixing process to false
             // This will take care of when it's set to true in edit process
-            dispatchFixingProcess(false)
+            dispatchSetFixingProcess(false)
         }
     }, [])
 
@@ -243,7 +244,7 @@ const EditTask = (props) => {
                     console.log('QQQQ Posted dashboard', postedDashboard)
                     updatedStation.dashboards = [postedDashboard._id.$oid]
                     await dispatchPutStation(updatedStation, updatedStation._id)
-                    
+
                 })
             }
 
@@ -371,13 +372,20 @@ const EditTask = (props) => {
             //     processRoutes[selectedTask.load.station] = []
             // }
 
-            selectedTask.processes.push(selectedProcess._id);
-            dispatch(taskActions.putTask(selectedTask, selectedTask._id))
+            if (!!fixingProcess) {
+                selectedProcess.routes.splice(selectedProcess.broken, 0, selectedTask._id)
+            } else {
+                selectedProcess.routes.push(selectedTask._id);
 
-            selectedProcess.routes.push(selectedTask._id);
+            }
+
             dispatchSetSelectedProcess(
                 selectedProcess
             )
+
+            // Add the process to the task
+            selectedTask.processes.push(selectedProcess._id);
+            dispatch(taskActions.putTask(selectedTask, selectedTask._id))
 
         }
 
