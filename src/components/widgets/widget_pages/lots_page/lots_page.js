@@ -4,6 +4,7 @@ import { useParams, useHistory } from 'react-router-dom'
 
 
 import ReactList from 'react-list';
+import CardEditor from "../../../side_bar/content/cards/card_editor/card_editor";
 
 // Import styles
 import * as styled from './lots_page.style'
@@ -35,10 +36,11 @@ const LotsPage = (props) => {
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
     const locations = useSelector(state => state.locationsReducer.locations)
     const cards = useSelector(state=>state.cardsReducer.cards)
-    console.log(cards)
+    const showCardEditor = useSelector(state=>state.cardsReducer.showEditor)
     const [locationName, setLocationName] = useState("")
     const location = locations[stationID]
-
+    const [selectedCard, setSelectedCard] = useState(null)
+    console.log(cards)
 
     // update location properties
     useEffect(() => {
@@ -54,15 +56,29 @@ const LotsPage = (props) => {
         history.push('/processes/summary')
     }
 
-    const openEditor = (card) => {
-
+    const openEditor = (cardId, processId, binId) => {
       onShowCardEditor(true)
-      //setSelectedCard({cardId, processId, binId})
+      setSelectedCard({cardId, processId, binId})
     }
 
     return (
 
       <styled.LotsContainer>
+
+        {showCardEditor &&
+        <CardEditor
+            isOpen={showCardEditor}
+            onAfterOpen={null}
+            cardId={selectedCard ? selectedCard.cardId : null}
+            processId={selectedCard ? selectedCard.processId : null}
+            binId={selectedCard ? selectedCard.binId : null}
+            close={()=>{
+                onShowCardEditor(false)
+                setSelectedCard(null)
+            }}
+        />
+        }
+
         <styled.HeaderContainer>
             <styled.Header>
                 <styled.StationName>{locationName}</styled.StationName>
@@ -90,15 +106,15 @@ const LotsPage = (props) => {
                     </styled.ColumnContainer1>
 
                     <styled.ColumnContainer2>
-                    <styled.ListSubtitle>Quantity:</styled.ListSubtitle>
-                    <styled.ListContent>{card.bins[location._id].count}</styled.ListContent>
-                  </styled.ColumnContainer2>
+                      <styled.ListSubtitle>Quantity:</styled.ListSubtitle>
+                      <styled.ListContent>{card.bins[location._id].count}</styled.ListContent>
+                    </styled.ColumnContainer2>
 
                   <styled.ListItemIcon
                       className={'fas fa-edit'}
                       onClick = {()=>{
-                        goToCardPage()
-                        openEditor()
+                        console.log(card.bins[location._id])
+                        openEditor(card._id, card.process_id, location._id)
 
                       }}
                       />
