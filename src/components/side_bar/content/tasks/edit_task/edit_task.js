@@ -17,7 +17,7 @@ import LoadUnloadFields from './fields/load_unload_fields'
 // Import utils
 import uuid from 'uuid'
 import { deepCopy } from '../../../../../methods/utils/utils'
-import { willRouteDeleteBreakProcess } from '../../../../../methods/utils/processes_utils'
+import { willRouteDeleteBreakProcess, isBrokenProcess, willRouteAdditionFixProcess } from '../../../../../methods/utils/processes_utils'
 
 // Import actions
 import * as taskActions from '../../../../../redux/actions/tasks_actions'
@@ -130,6 +130,12 @@ const EditTask = (props) => {
 
             selectedTask.processes.map((process) => {
                 let updatedProcess = processes[process]
+
+                // If the route removal breaks the process then updatte the process
+                if (!!willRouteDeleteBreakProcess(updatedProcess, selectedTask, tasks)) {
+                    updatedProcess.broken = willRouteDeleteBreakProcess(updatedProcess, selectedTask, tasks)
+                }
+
                 // Removes the task from the array of routes
                 const index = updatedProcess.routes.indexOf(selectedTask._id)
                 updatedProcess.routes.splice(index, 1)
@@ -373,7 +379,20 @@ const EditTask = (props) => {
             // }
 
             if (!!fixingProcess) {
-                selectedProcess.routes.splice(selectedProcess.broken, 0, selectedTask._id)
+
+                // If the route addition fixes, process check to see if the process is still broken
+                // If it fixes the process, it returns false because if it breaks the process it returns an int which is truethy
+                if (!willRouteAdditionFixProcess(selectedProcess, selectedTask, tasks)) {
+                    selectedProcess.broken = null
+                }
+                else {
+                    // Update the broken location with the new array position
+                    selectedProcess.broken = willRouteAdditionFixProcess(selectedProcess, selectedTask, tasks)
+                }
+
+                // Splice in the new route into the correct position
+                selectedProcess.routes.splice(selectedProcess.broken - 1, 0, selectedTask._id)
+
             } else {
                 selectedProcess.routes.push(selectedTask._id);
 
@@ -399,16 +418,15 @@ const EditTask = (props) => {
      */
     const handleRemove = () => {
 
+        // If the route removal breaks the process then updatte the process
+        if (!!willRouteDeleteBreakProcess(selectedProcess, selectedTask, tasks)) {
+            selectedProcess.broken = willRouteDeleteBreakProcess(selectedProcess, selectedTask, tasks)
+        }
         // Remove the route from the process
         const index = selectedProcess.routes.indexOf(selectedTask._id)
-        const updatedRoutes = deepCopy(selectedProcess.routes)
+        selectedProcess.routes.splice(index, 1)
 
-        updatedRoutes.splice(index, 1)
-
-        dispatchSetSelectedProcess({
-            ...selectedProcess,
-            routes: updatedRoutes
-        })
+        dispatchSetSelectedProcess(selectedProcess)
 
         // Remove from the Route
         const routeIndex = selectedTask.processes.indexOf(selectedProcess._id)
@@ -478,7 +496,13 @@ const EditTask = (props) => {
                         `This task is a part of processes: 
 
                         ${selectedTask.processes.map((process) => {
-                            return `'${processes[process].name}', `
+                            // Try catch for error with editing an existing task that belongs to a new process
+                            try {
+                                return `'${processes[process].name}', `
+                                
+                            } catch (error) {
+                                return ``                             
+                            }
                         })}
 
                         and will be removed from these processes if deleted.
@@ -536,9 +560,27 @@ const EditTask = (props) => {
 
                                 .filter(task => {
 
+                                    // This filters out tasks when fixing a process
+                                    // If the process is broken, then you can only select tasks that are associated with the last route before break's unload station
+                                    if (!!fixingProcess) {
+
+                                        // Gets the route before break
+                                        const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
+                                        const taskBeforeBreak = tasks[routeBeforeBreak]
+
+                                        if (!!taskBeforeBreak.unload) {
+                                            const unloadStationID = taskBeforeBreak.unload.station
+
+                                            if (task.load.station === unloadStationID) {
+                                                return true
+
+                                            }
+                                        }
+                                    }
+
                                     // If the selected process has routes, then filter out tasks that have load stations that arent the last route's unload station
                                     // This eliminates 'broken' processes with tasks that are between non-connected stations
-                                    if (selectedProcess.routes.length > 0) {
+                                    else if (selectedProcess.routes.length > 0) {
 
                                         // Gets the previous route
                                         const previousRouteID = selectedProcess.routes[selectedProcess.routes.length - 1]
@@ -570,12 +612,30 @@ const EditTask = (props) => {
 
                             const newRoute = values[0]._id
 
+
+
                             // If this task is part of a process and not already in the array of routes, then add the task to the selected process
                             if (!selectedProcess.routes.includes(selectedTask._id)) {
-                                dispatchSetSelectedProcess({
-                                    ...selectedProcess,
-                                    routes: [...selectedProcess.routes, newRoute]
-                                })
+
+                                if (!!fixingProcess) {
+
+                                    // If the route addition fixes, process check to see if the process is still broken
+                                    // If it fixes the process, it returns false because if it breaks the process it returns an int which is truethy
+                                    if (!willRouteAdditionFixProcess(selectedProcess, values[0], tasks)) {
+                                        selectedProcess.broken = null
+                                    }
+                                    else {
+                                        selectedProcess.broken = willRouteAdditionFixProcess(selectedProcess, values[0], tasks)
+                                    }
+
+                                    // Splice in the new route into the correct position
+                                    selectedProcess.routes.splice(selectedProcess.broken - 1, 0, values[0]._id)
+
+                                } else {
+                                    selectedProcess.routes.push(values[0]._id);
+                                }
+
+                                dispatchSetSelectedProcess(selectedProcess)
 
                                 dispatchPutTask(
                                     {
