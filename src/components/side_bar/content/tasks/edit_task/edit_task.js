@@ -26,7 +26,7 @@ import * as dashboardActions from '../../../../../redux/actions/dashboards_actio
 import { putDashboard, postDashboard } from '../../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../../redux/actions/objects_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
-import { putProcesses, setSelectedProcess, fixingProcess } from '../../../../../redux/actions/processes_actions'
+import { putProcesses, setSelectedProcess, setFixingProcess } from '../../../../../redux/actions/processes_actions'
 import { putStation } from '../../../../../redux/actions/stations_actions'
 import { select } from 'd3-selection'
 
@@ -51,7 +51,7 @@ const EditTask = (props) => {
     const dispatchPutDashboard = (dashboard, ID) => dispatch(putDashboard(dashboard, ID))
     const dispatchPutTask = (task, id) => dispatch(putTask(task, id))
     const dispatchPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
-    const dispatchFixingProcess = async (bool) => await dispatch(fixingProcess(bool))
+    const dispatchSetFixingProcess = (bool) => dispatch(setFixingProcess(bool))
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -60,6 +60,7 @@ const EditTask = (props) => {
     const objects = useSelector(state => state.objectsReducer.objects)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const processes = useSelector(state => state.processesReducer.processes)
+    const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
 
     const stations = useSelector(state => state.locationsReducer.stations)
 
@@ -75,12 +76,12 @@ const EditTask = (props) => {
         return () => {
             // When unmounting edit task, always set fixing process to false
             // This will take care of when it's set to true in edit process
-            dispatchFixingProcess(false)
+            dispatchSetFixingProcess(false)
         }
     }, [])
 
 
-    const handleLoadUnloadParameters = () => {
+    const renderLoadUnloadParameters = () => {
         if (selectedTask.load.position === null) {
             // No load position has been defined - ask user to define load (start) position
             return <styled.DirectionText>Click a position on the map to be the load (or start) postion.</styled.DirectionText>
@@ -110,7 +111,7 @@ const EditTask = (props) => {
         }
     }
 
-    const handleDelete = async () => {
+    const onDelete = async () => {
         // Delete all dashboard buttons associated with that task
         Object.values(dashboards)
             .filter(dashboard =>
@@ -160,7 +161,7 @@ const EditTask = (props) => {
         toggleEditing(false)
     }
 
-    const handleSave = async () => {
+    const onSave = async () => {
         // Save object
         let objectId
         if ('name' in obj) {
@@ -243,7 +244,7 @@ const EditTask = (props) => {
                     console.log('QQQQ Posted dashboard', postedDashboard)
                     updatedStation.dashboards = [postedDashboard._id.$oid]
                     await dispatchPutStation(updatedStation, updatedStation._id)
-                    
+
                 })
             }
 
@@ -371,13 +372,20 @@ const EditTask = (props) => {
             //     processRoutes[selectedTask.load.station] = []
             // }
 
-            selectedTask.processes.push(selectedProcess._id);
-            dispatch(taskActions.putTask(selectedTask, selectedTask._id))
+            if (!!fixingProcess) {
+                selectedProcess.routes.splice(selectedProcess.broken, 0, selectedTask._id)
+            } else {
+                selectedProcess.routes.push(selectedTask._id);
 
-            selectedProcess.routes.push(selectedTask._id);
+            }
+
             dispatchSetSelectedProcess(
                 selectedProcess
             )
+
+            // Add the process to the task
+            selectedTask.processes.push(selectedProcess._id);
+            dispatch(taskActions.putTask(selectedTask, selectedTask._id))
 
         }
 
@@ -482,7 +490,7 @@ const EditTask = (props) => {
                 }
                 button_1_text={"Yes"}
                 handleOnClick1={() => {
-                    handleDelete()
+                    onDelete()
                     setConfirmDeleteModal(null)
                 }}
                 button_2_text={"No"}
@@ -497,7 +505,7 @@ const EditTask = (props) => {
                     // Disables the button if load and unloads have not been selected for a task/route in a process
                     disabled={selectedTask !== null && (!selectedTask.load.position || selectedTask.unload.position === null)}
                     onClickSave={async () => {
-                        await handleSave()
+                        await onSave()
                     }}
 
                     onClickBack={() => {
@@ -714,7 +722,7 @@ const EditTask = (props) => {
 
             {/* Load and Unload Parameters */}
             <div style={{ height: "100%", paddingTop: "1rem" }}>
-                {handleLoadUnloadParameters()}
+                {renderLoadUnloadParameters()}
             </div>
 
             <hr />

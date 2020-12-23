@@ -308,7 +308,9 @@ const ApiContainer = (props) => {
         const funtion6 = await handleStationsWithBrokenChildren(locations)
         const funtion7 = await handleTasksWithBrokenProcess(processes, tasks)
         const funtion8 = await handleProcessesWithBrokenRoutes(processes, tasks)
-        const funtion9 = await handleTaskQueueWithBrokenTasks(taskQueue, tasks)
+
+        // Commented out for now. Was causing an issue when sending a cart to a location using simple move. Since its just a one off task, the task is never added to the backend so if the page was refreshed, the task q item would be deleted 
+        // const funtion9 = await handleTaskQueueWithBrokenTasks(taskQueue, tasks)
 
         props.apiLoaded()
         props.onLoad()

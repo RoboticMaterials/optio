@@ -148,6 +148,6 @@ export const editingProcess = (bool) => {
  * It will force you to select a location that is tied with the location before the process breaks
  * @param {bool} bool 
  */
-export const fixingProcess = (bool) => {
-    return { type: 'FIXING_PROCESS', payload: bool }
+export const setFixingProcess = (bool) => {
+    return { type: 'SET_FIXING_PROCESS', payload: bool }
 }
