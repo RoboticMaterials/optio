@@ -496,7 +496,13 @@ const EditTask = (props) => {
                         `This task is a part of processes: 
 
                         ${selectedTask.processes.map((process) => {
-                            return `'${processes[process].name}', `
+                            // Try catch for error with editing an existing task that belongs to a new process
+                            try {
+                                return `'${processes[process].name}', `
+                                
+                            } catch (error) {
+                                return ``                             
+                            }
                         })}
 
                         and will be removed from these processes if deleted.
