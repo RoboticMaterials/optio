@@ -77,8 +77,6 @@ export const ListItemRect = styled.div`
 `
 export const LocationTypeGraphic = styled.svg`
     height: 1.5rem;
-
-
 `
 export const ListItemTitle = styled.h1`
 

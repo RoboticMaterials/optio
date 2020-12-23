@@ -33,7 +33,7 @@ export const SideBarOpenCloseButton = styled.button`
     //     width: 3.5rem;
     //     height: 3.5rem;
     //     margin-left: .5rem;
-        
+
     // }
 `
 
@@ -45,7 +45,7 @@ export const SidebarWrapper = styled.div`
     position: absolute;
     top: 4rem;
     bottom: 0rem;
-    
+
     display: flex;
     align-items: stretch;
     flex-flow: row nowrap;
@@ -71,9 +71,9 @@ export const SidebarContent = styled.div`
     // border-right: 8px solid ${props => props.theme.bg.quinary};
 
     background-color: rgba(255, 255, 255, 0.1);
-    
+
     overflow: auto;
-   
+
 `
 
 export const ResizeBar = styled.div`
@@ -86,7 +86,7 @@ export const ResizeBar = styled.div`
     align-items: center ;
     align-content: center ;
     justify-content: center;
-    
+
 `
 
 export const ResizeHandle = styled.div`

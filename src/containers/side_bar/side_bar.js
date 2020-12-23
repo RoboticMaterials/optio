@@ -22,14 +22,11 @@ import ProcessesContent from '../../components/side_bar/content/processes/proces
 import Settings from '../../components/side_bar/content/settings/settings'
 import ConfirmDeleteModal from '../../components/basic/modals/confirm_delete_modal/confirm_delete_modal'
 
-
 import { setWidth, setMode } from "../../redux/actions/sidebar_actions";
 import * as sidebarActions from "../../redux/actions/sidebar_actions"
 import Cards from "../../components/side_bar/content/cards/cards";
 import * as locationActions from '../../redux/actions/locations_actions'
 import * as taskActions from '../../redux/actions/tasks_actions'
-
-
 
 const SideBar = (props) => {
 
@@ -53,7 +50,6 @@ const SideBar = (props) => {
     const [buttonActive, setButtonActive] = useState(false)
     const [prevParams, setPrevParams] = useState(params)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
-
 
     const mode = useSelector(state => state.sidebarReducer.mode)
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
