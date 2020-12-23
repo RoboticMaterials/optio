@@ -50,6 +50,12 @@ const ProcessesContent = () => {
 
     useEffect(() => {
 
+        return () => {
+            dispatchSetSelectedProcess(null)
+        }
+    }, [])
+
+    useEffect(() => {
         // Maps through all process and sees if they're broken
         Object.values(processes).map((process) => {
 
@@ -68,9 +74,8 @@ const ProcessesContent = () => {
             }
         })
         return () => {
-            dispatchSetSelectedProcess(null)
         }
-    }, [])
+    }, [processes])
 
 
     const onCardView = (element) => {

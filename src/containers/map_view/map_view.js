@@ -596,7 +596,7 @@ export class MapView extends Component {
                                             if (position.map_id !== this.props.currentMap._id) return false
 
                                             // This filters out positions when fixing a process
-                                            // If the process is broken, then you can only start the task at the 
+                                            // If the process is broken, then you can only start the task at the route before break's unload location
                                             if (!!this.props.selectedTask && !!this.props.selectedProcess && !!this.props.fixingProcess) {
 
                                                 // Gets the route before break
