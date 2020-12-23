@@ -40,7 +40,6 @@ const LotsPage = (props) => {
     const [locationName, setLocationName] = useState("")
     const location = locations[stationID]
     const [selectedCard, setSelectedCard] = useState(null)
-    console.log(cards)
 
     // update location properties
     useEffect(() => {
@@ -113,7 +112,6 @@ const LotsPage = (props) => {
                   <styled.ListItemIcon
                       className={'fas fa-edit'}
                       onClick = {()=>{
-                        console.log(card.bins[location._id])
                         openEditor(card._id, card.process_id, location._id)
 
                       }}

@@ -75,7 +75,11 @@ export const ListItemRect = styled.div`
     }
 
 `
+export const LocationTypeGraphic = styled.svg`
+    height: 1.5rem;
 
+
+`
 export const ListItemTitle = styled.h1`
 
     font-family: ${props => props.theme.font.primary};
@@ -93,7 +97,7 @@ export const ListItemTitle = styled.h1`
 `
 
 export const ListItemIcon = styled.i`
-    
+
     font-size: 1.3rem;
     color: lightgreen;
 
