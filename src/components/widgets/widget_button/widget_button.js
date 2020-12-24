@@ -164,7 +164,7 @@ const WidgetButton = (props) => {
 
 
     return (
-        <styled.WidgetButtonButton
+        <styled.WidgetButtonButton style = {{justifyContent: type == 'cart' && 'center'}}
             onClick={() => {
                 handleOnClick()
 

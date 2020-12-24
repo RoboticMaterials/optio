@@ -98,6 +98,7 @@ export default function ContentList(props) {
 
                                         <styled.ListItemIcon
                                             className='far fa-clone'
+                                            style={{ color: '#ffb62e'}}
                                             onClick={() => {
                                                 handleCardView(element)
                                             }}
@@ -119,7 +120,7 @@ export default function ContentList(props) {
                                     <styled.ListItemIcon
                                         className='fas fa-cog'
                                         onClick={() => props.onClick(element)}
-                                        style={{ color: '#c6ccd3', width: '5rem' }}
+                                        style={{ color: '#c6ccd3'}}
                                     />
 
 

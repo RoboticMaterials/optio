@@ -35,6 +35,7 @@ export const WidgetLocationContainer = styled.div`
 
 export const WidgetContainer = styled.div`
     align-content:center;
+    justify-content:center;
     margin: ${props => !!props.widgetPage ? '.25rem auto' : 'auto'};
     padding-top:.3rem;
     padding-bottom:.3rem;
@@ -44,6 +45,8 @@ export const WidgetContainer = styled.div`
 
     /* width: ${props => !!props.widgetPage ? '32rem' : '30rem'}; */
     width: ${props => !!props.widgetPage ? '20rem' : 'fit-content'};
+    max-width: ${props => props.type == 'cart_position' || props.type == 'shelf_position' ? '13rem' : '30rem'};
+
     height: ${props => !!props.widgetPage ? 'auto' : '6rem'};
 
     box-shadow: ${props => !!props.widgetPage ? 'none' : '0 0.1rem 0.2rem 0rem #303030'};
@@ -87,15 +90,9 @@ export const WidgetStationName = styled.h4`
     text-align: center;
     padding-left: 2rem;
 
-`
-
-export const WidgetStationNameUnselectable = styled.h4`
-    font-size: ${props => props.theme.fontSize.sz4};
-    font-family: ${props => props.theme.font.primary};
-    font-weight: 500;
-    justify-content: center;
-    text-align: center;
-
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
 `
 
@@ -133,7 +130,7 @@ export const WidgetPageButtonContainer = styled.div`
 export const WidgetButtonContainer = styled.div`
     width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
 
 `
 
@@ -170,6 +167,7 @@ export const EditIcon = styled.i`
     font-size: 1rem;
     text-align: right;
     flex:1;
+    margin-left:0.5rem;
     &:hover {
       color: #798fd9;
     }

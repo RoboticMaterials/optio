@@ -364,15 +364,17 @@ const Widgets = (props) => {
 
                     />
                 }
-                <styled.WidgetContainer widgetPage={widgetPage}>
+                <styled.WidgetContainer widgetPage={widgetPage} type = {selectedLocation.type} >
                     {!widgetPage && !!selectedLocation &&
                         <>
                             {selectedLocation.name == "TempRightClickMoveLocation" ?
-                                <styled.WidgetStationNameUnselectable>{"Send Cart To Location"}</styled.WidgetStationNameUnselectable>
+                              <styled.RowContainer>
+                                <styled.WidgetStationName>{"Send Cart To Location"}</styled.WidgetStationName>
+                              </styled.RowContainer>
                                 :
                                 <>
                                     {selectedLocation.schema == "positions" ?
-                                        <styled.WidgetStationNameUnselectable>{selectedLocation.name}</styled.WidgetStationNameUnselectable>
+                                        <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>
                                         :
                                         <styled.RowContainer>
                                         <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>
