@@ -9,7 +9,7 @@ import { DraggableCore } from "react-draggable";
 import SideBarSwitcher from '../../components/side_bar/side_bar_switcher/side_bar_switcher'
 
 import { hoverStationInfo } from '../../redux/actions/stations_actions'
-import {sideBarBack, editing} from '../../redux/actions/locations_actions'
+import { setSelectedLocation, setSelectedLocationCopy, setSelectedLocationChildrenCopy, sideBarBack, deleteLocationProcess, editing, deselectLocation } from '../../redux/actions/locations_actions'
 import {editingTask} from '../../redux/actions/tasks_actions'
 import {editingProcess} from '../../redux/actions/processes_actions'
 
@@ -44,6 +44,8 @@ const SideBar = (props) => {
 
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
+    const onSideBarBack = (props) => dispatch(sideBarBack(props))
+
 
     const [width, setWidth] = useState(450)
     const [prevWidth, setPrevWidth] = useState(width)
@@ -62,8 +64,6 @@ const SideBar = (props) => {
     const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
     const locations = useSelector(state => state.locationsReducer.locations)
     const positions = useSelector(state => state.locationsReducer.positions)
-
-    const onSideBarBack = (props) => dispatch(sideBarBack(props))
 
     const history = useHistory()
     const url = useLocation().pathname
@@ -127,9 +127,7 @@ const SideBar = (props) => {
         dispatch(editingTask(false))
         dispatch(editingProcess(false))
 
-        dispatch(locationActions.setSelectedLocationCopy(null))
-        dispatch(locationActions.setSelectedLocationChildrenCopy(null))
-        dispatch(locationActions.deselectLocation())    // Deselect
+        onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy, positions, locations })
 
         dispatch(taskActions.deselectTask())    // Deselect
 
