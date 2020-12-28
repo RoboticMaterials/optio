@@ -349,7 +349,8 @@ const CardEditor = (props) => {
 							});
 						}
 
-						const moveLocationOptions = [{name: "Queue", _id: "QUEUE"},...Object.values(stations).filter((currStation) => currStation._id !== selectedBin)]
+						const moveLocationOptions = [...Object.values(stations).filter((currStation) => currStation._id !== selectedBin)]
+						if(selectedBin !== "QUEUE") moveLocationOptions.unshift({name: "Queue", _id: "QUEUE"})
 
 						return(
 							<styled.BodyContainer
