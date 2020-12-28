@@ -144,7 +144,7 @@ const Cards = (props) => {
                         schema={'lots'}
                         onClick={()=>history.replace ('/processes/' + processIds[0] + "/lots")}
                     >
-                        Leave Zone
+                        Leave Summary
                     </Button>
                 }
             </styled.Header>
