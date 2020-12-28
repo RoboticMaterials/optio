@@ -94,20 +94,13 @@ export default function ContentList(props) {
                                     }
 
                                     {props.schema === 'processes' ? error ?
-                                        <>
-                                            {/* <styled.ListItemIcon
-                                                style={{ color: 'red' }}
-                                                className='fas fa-exclamation-triangle'
-                                                onClick={() => props.onClick(element)}
+                                        <ErrorTooltip
+                                            visible={true}
+                                            text={'Process is broken, click to fix'}
+                                            ContainerComponent={styled.ErrorContainer}
+                                            onClick={() => props.onClick(element)}
 
-                                            /> */}
-
-                                            <ErrorTooltip 
-                                                visible={'Test'}  
-                                                text={'Test HELLO!!!!!!!!!!!!!!'}
-                                                ContainerComponent={styled.ErrorContainer}
-                                            />
-                                        </>
+                                        />
                                         :
 
                                         <styled.ListItemIcon

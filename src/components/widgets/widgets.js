@@ -374,7 +374,7 @@ const Widgets = (props) => {
                                 :
                                 <>
                                     {selectedLocation.schema == "positions" ?
-                                        <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>
+                                        <styled.WidgetPositionName>{selectedLocation.name}</styled.WidgetPositionName>
                                         :
                                         <styled.RowContainer>
                                         <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>

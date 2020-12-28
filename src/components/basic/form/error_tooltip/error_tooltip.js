@@ -10,7 +10,14 @@ import { uuidv4 } from '../../../../methods/utils/utils'
 import * as styled from './error_tooltip.style';
 import DropDownSearchField from "../drop_down_search_field/drop_down_search_field";
 
-const ErrorTooltip = ({ ContainerComponent, text, visible }) => {
+const ErrorTooltip = (props) => {
+
+    const {
+        ContainerComponent,
+        text,
+        visible,
+        onClick,
+    } = props
 
     // target input for initial display of tooltip
     const inputRef = useRef(null);
@@ -89,6 +96,7 @@ const ErrorTooltip = ({ ContainerComponent, text, visible }) => {
                 className="fas fa-exclamation-triangle"
                 data-tip
                 data-for={id}
+                onClick={onClick}
             />
         </ContainerComponent>
 

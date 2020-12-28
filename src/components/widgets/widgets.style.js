@@ -96,6 +96,18 @@ export const WidgetStationName = styled.h4`
 
 `
 
+export const WidgetPositionName = styled.h4`
+    font-size: ${props => props.theme.fontSize.sz4};
+    font-family: ${props => props.theme.font.primary};
+    font-weight: 500;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+`
+
 export const WidgetHoverArea = styled.div`
     margin-top: -12.7rem;
     width: 3rem;
