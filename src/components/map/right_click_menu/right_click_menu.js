@@ -91,7 +91,7 @@ const RightClickMenu = (props) => {
                 new: true,
                 name: '',
                 schema: 'station',
-                type: 'workstation',
+                type: 'human',
                 pos_x: pos[0],
                 pos_y: pos[1],
                 rotation: 0,

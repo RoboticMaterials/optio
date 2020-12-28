@@ -12,7 +12,8 @@ import {
     CARDS,
     CARD,
     CARD_HISTORY,
-    PROCESS_CARDS
+    PROCESS_CARDS,
+    SHOW_EDITOR
 } from '../types/data_types';
 
 import { api_action } from './index';
@@ -192,5 +193,8 @@ export const putCard = (card, cardID) => async dispatch => {
     const payload = await api_action(actionName, callback, dispatch, { card});
     return card;
 };
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+export const showEditor = (bool) => {
+    return { type: SHOW_EDITOR, payload: bool }
+}
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

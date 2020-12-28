@@ -122,6 +122,11 @@ const Settings = () => {
 
         if (!localChange) {
             await onPostLocalSettings(localSettingsState)
+            if(localSettingsState.mapViewEnabled){
+              const hamburger = document.querySelector('.hamburger')
+              hamburger.classList.toggle('is-active')
+            }
+
         }
 
         if (!serverChange) {
@@ -245,6 +250,7 @@ const Settings = () => {
 
                 {localSettingsState.toggleDevOptions ?
                     <>
+
                         <styled.Header>Non Local API IP Address</styled.Header>
 
                         <styled.RowContainer>

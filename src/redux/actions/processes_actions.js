@@ -50,7 +50,7 @@ export const getProcesses = () => {
             if (normalizedProcesses.entities.processes === undefined) {
                 return onSuccess(normalizedProcesses.entities)
             }
-            else{
+            else {
                 return onSuccess(normalizedProcesses.entities.processes)
             }
         } catch (error) {
@@ -141,4 +141,13 @@ export const setSelectedProcess = (process) => {
 
 export const editingProcess = (bool) => {
     return { type: EDITING_PROCESS, payload: bool }
+}
+
+/**
+ * This is to tell the map that you are fixing a process vs adding a new route to the process
+ * It will force you to select a location that is tied with the location before the process breaks
+ * @param {bool} bool 
+ */
+export const setFixingProcess = (bool) => {
+    return { type: 'SET_FIXING_PROCESS', payload: bool }
 }

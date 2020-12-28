@@ -8,7 +8,7 @@ import { getMaps } from '../../redux/actions/map_actions'
 import { getTaskQueue, deleteTaskQueueItem } from '../../redux/actions/task_queue_actions'
 import { getLocations } from '../../redux/actions/locations_actions'
 import { getObjects } from '../../redux/actions/objects_actions'
-import { getTasks, deleteTask } from '../../redux/actions/tasks_actions'
+import { getTasks, deleteTask, putTask } from '../../redux/actions/tasks_actions'
 import { getDashboards, deleteDashboard, postDashboard } from '../../redux/actions/dashboards_actions'
 import { getSounds } from '../../redux/actions/sounds_actions'
 import { getProcesses, putProcesses } from '../../redux/actions/processes_actions'
@@ -89,6 +89,7 @@ const ApiContainer = (props) => {
     const onPutPosition = (position, ID) => dispatch(putPosition(position, ID))
     const onPutProcess = (process) => dispatch(putProcesses(process))
     const onPutStation = async (station, ID) => await dispatch(putStation(station, ID))
+    const dispatchPutTask = async (task, ID) => await dispatch(putTask(task, ID))
 
     const onPostDashoard = (dashboard) => dispatch(postDashboard(dashboard))
 
@@ -289,6 +290,7 @@ const ApiContainer = (props) => {
         const tasks = await onGetTasks()
         const taskQueue = await onGetTaskQueue()
         const processes = await onGetProcesses()
+        const cards = onGetCards()
 
         const tasksAnalysis = await onGetTasksAnalysis()
 
@@ -306,7 +308,9 @@ const ApiContainer = (props) => {
         const funtion6 = await handleStationsWithBrokenChildren(locations)
         const funtion7 = await handleTasksWithBrokenProcess(processes, tasks)
         const funtion8 = await handleProcessesWithBrokenRoutes(processes, tasks)
-        const funtion9 = await handleTaskQueueWithBrokenTasks(taskQueue, tasks)
+
+        // Commented out for now. Was causing an issue when sending a cart to a location using simple move. Since its just a one off task, the task is never added to the backend so if the page was refreshed, the task q item would be deleted 
+        // const funtion9 = await handleTaskQueueWithBrokenTasks(taskQueue, tasks)
 
         props.apiLoaded()
         props.onLoad()
@@ -440,6 +444,7 @@ const ApiContainer = (props) => {
             if (!device.dashboards) {
 
                 console.log('QQQQ Device does not have a dashboard', deepCopy(device))
+                alert('Device does not have a dashboard')
 
                 const newDeviceDashboard = {
                     name: `${device.device_name} Dashboard`,
@@ -493,6 +498,7 @@ const ApiContainer = (props) => {
             // Deletes the task if the load/unload position/station has been deleted from the positon list
             if ((!positions[task.load.position] && !stations[task.load.position]) || (!positions[task.unload.position]) && !stations[task.unload.position]) {
                 console.log('QQQQ Position doesnt exist in positions, DELETE TASK', task._id)
+                alert('Position doesnt exist in positions, DELETE TASK')
                 await onDeleteTask(task._id)
                 return
             }
@@ -501,6 +507,7 @@ const ApiContainer = (props) => {
             if ((!!positions[task.load.position] && !!positions[task.load.position].change_key && positions[task.load.position].change_key === 'deleted') ||
                 (!!positions[task.unload.position] && !!positions[task.unload.position].change_key && positions[task.unload.position].change_key === 'deleted')) {
                 console.log('QQQQ Position is deleted, waiting on back end, DELETE TASK')
+                alert('Position is deleted, waiting on back end, DELETE TASK')
                 await onDeleteTask(task._id)
                 return
             }
@@ -533,6 +540,7 @@ const ApiContainer = (props) => {
 
             if (!!position.parent && !Object.keys(stations).includes(position.parent)) {
                 console.log('QQQQ This position should be deleted', position)
+                alert('This position should be deleted')
                 onDeletePosition(position, position._id)
             }
 
@@ -561,6 +569,8 @@ const ApiContainer = (props) => {
 
                     const brokenPosition = positions[position]
                     console.log('QQQQ Stations with broken position', brokenPosition)
+                    alert('Stations with broken position')
+
                     brokenPosition.parent = station._id
 
                     onPutPosition(brokenPosition, brokenPosition._id)
@@ -570,6 +580,8 @@ const ApiContainer = (props) => {
                 else if (!positions[position]) {
                     let brokenStation = deepCopy(station)
                     console.log('QQQQ Stations with deleted position', deepCopy(brokenStation), deepCopy(positions))
+                    alert('Stations with deleted position')
+
                     brokenStation.children.splice(ind, 1)
                     await onPutStation(brokenStation, brokenStation._id)
                 }
@@ -593,6 +605,7 @@ const ApiContainer = (props) => {
         Object.values(devices).map(async (device) => {
             if (!!device.station_id && !Object.keys(stations).includes(device.station_id)) {
                 console.log('QQQQ Device has a station ID that needs to be deleted', device)
+                alert('Device has a station ID that needs to be deleted')
                 delete device.station_id
                 onPutDevice(device, device._id)
             }
@@ -620,12 +633,16 @@ const ApiContainer = (props) => {
             // Delete station
             if (!!station.device_id && devices[station.device_id] === undefined) {
                 console.log('QQQQ Station has a device that is deleted')
+                alert('Station has a device that is deleted')
+
                 onDeleteStation(station._id)
             }
 
             // Add station to device
             else if (!!station.device_id && !devices[station.device_id].station_id) {
                 console.log('QQQQ Station has a broken device')
+                alert('Station has a broken device')
+
                 const device = devices[station.device_id]
                 device.station_id = station._id
                 onPutDevice(device, device._id)
@@ -649,6 +666,7 @@ const ApiContainer = (props) => {
         Object.values(dashboards).map((dashboard) => {
             if (!!dashboard.location && !dashboard.device && !stations[dashboard.location]) {
                 console.log('QQQQ dashboard belongs to a station that does not exist', dashboard)
+                alert('Dashboard belongs to a station that does not exist')
                 onDeleteDashboard(dashboard._id.$oid)
             }
         })
@@ -680,6 +698,7 @@ const ApiContainer = (props) => {
                         routes: [...processRoutes]
                     }
                     console.log('QQQQ route does not exist in anymore, delete from process', deepCopy(updatedProcess))
+                    alert('Route does not exist in anymore, delete from process')
 
                     await onPutProcess(updatedProcess)
                 }
@@ -699,23 +718,34 @@ const ApiContainer = (props) => {
     const handleTasksWithBrokenProcess = async (processes, tasks) => {
 
         Object.values(tasks).map(async (task) => {
-            if (!!task.process) {
 
-                // If the task process is equal to true, then it should be deleted because it was never associated with a process
-                if (task.process === true) {
-                    console.log('QQQQ task never associated with a process', task)
-                    await onDeleteTask(task._id)
-                    return
-                }
+            if (task.processes.length > 0) {
+                task.processes.map((process) => {
 
-                // If process does not contain the task process, that means the process must have been deleted
-                else if (!processes[task.process]) {
-                    console.log('QQQQ tasks parent process has been deleted', task)
-                    await onDeleteTask(task._id)
-                    return
-                }
+                    // If processes does no contain the process, then the process was deleted so remove it from the task
+                    if (!processes[process]) {
+                        const index = task.processes.indexOf(process)
+                        task.processes.splice(index, 1)
 
+                        console.log('QQQQ Process does not exist anymore, removing from task', task)
+                        alert('Process does not exist anymore, removing from task')
+                        dispatchPutTask(task, task._id)
+
+                    }
+
+                    else if(!processes[process].routes.includes(task._id)) {
+                        console.log('QQQQ Task is associated with a process that is not associated with the task anymore', task, process)
+                        alert('Task is associated with a process that is not associated with the task anymore')
+
+                        const index = task.processes.indexOf(process)
+                        task.processes.splice(index, 1)
+                        dispatchPutTask(task, task._id)
+
+                    }
+
+                })
             }
+
         })
 
     }
@@ -732,6 +762,7 @@ const ApiContainer = (props) => {
         Object.values(taskQueue).map(async (Q, i) => {
             if (tasks[Q.task_id] === undefined) {
                 console.log('QQQQ TaskQ associated task has been deleted')
+                alert('TaskQ associated task has been deleted')
                 await onDeleteTaskQItem(Q._id.$oid)
             }
 

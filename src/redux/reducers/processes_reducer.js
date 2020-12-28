@@ -35,6 +35,7 @@ const defaultState = {
     // },},
     processes: {},
     selectedProcess: null,
+    fixingProcess: false,
 }
 
 const processesReducer = (state = defaultState, action) => {
@@ -186,6 +187,12 @@ const processesReducer = (state = defaultState, action) => {
             return {
                 ...state,
                 editingProcess: action.payload,
+            }
+
+        case 'SET_FIXING_PROCESS':
+            return {
+                ...state,
+                fixingProcess: action.payload
             }
 
         default:
