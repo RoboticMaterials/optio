@@ -30,7 +30,7 @@ const Column = SortableContainer((props) => {
 	const dispatch = useDispatch()
 
 	const objects = useSelector(state => { return state.objectsReducer.objects })
-	const reduxCards = useSelector(state => { return state.cardsReducer.processCards[processId] })
+	const reduxCards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || {}
 
 
 	const [dragEnter, setDragEnter] = useState(false)
@@ -41,6 +41,17 @@ const Column = SortableContainer((props) => {
 	const onSetCardDragging = async (isDragging) => await dispatch(setCardDragging(isDragging))
 	const onSetColumnHovering = async (isHoveringOverColumn) => await dispatch(setColumnHovering(isHoveringOverColumn))
 
+	const shouldAcceptDrop = (sourceContainerOptions, payload) => {
+		const {
+			binId,
+			cardId,
+			process_id: oldProcessId,
+			...remainingPayload
+		} = payload
+
+		if(oldProcessId !== processId) return false
+		return true
+	}
 
 	const handleDrop = (dropResult) => {
 		const { removedIndex, addedIndex, payload, element } = dropResult;
@@ -53,16 +64,19 @@ const Column = SortableContainer((props) => {
 				const {
 					binId,
 					cardId,
+					// process_id: oldProcessId,
 					...remainingPayload
 				} = payload
 
-				const droppedCard = reduxCards[cardId]
+				console.log("remainingPayload",remainingPayload)
 
-				const oldBins = droppedCard.bins
+				const droppedCard = reduxCards[cardId] ? reduxCards[cardId] : {}
+
+				const oldBins = droppedCard.bins ? droppedCard.bins : {}
 				const {
 					[binId]: movedBin,
 					...remainingOldBins
-				} = oldBins
+				} = oldBins || {}
 
 				// already contains items in bin
 				if(oldBins[station_id]) {
@@ -111,6 +125,7 @@ const Column = SortableContainer((props) => {
 						handleDrop(DropResult)
 						setDragEnter(false)
 					}}
+					shouldAcceptDrop={shouldAcceptDrop}
 					getGhostParent={()=>document.body}
 					onDragStart={()=>onSetCardDragging(true)}
 					onDragEnd={()=>onSetCardDragging(false)}

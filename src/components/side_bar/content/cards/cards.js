@@ -142,7 +142,7 @@ const Cards = (props) => {
                 {(id === "summary" || id === "timeline") &&
                     <Button
                         schema={'lots'}
-                        onClick={()=>history.replace ('/processes/' + processIds[0] + "/card")}
+                        onClick={()=>history.replace ('/processes/' + processIds[0] + "/lots")}
                     >
                         Leave Zone
                     </Button>
