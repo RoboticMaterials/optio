@@ -203,10 +203,12 @@ const HILModals = (props) => {
 
         dispatchTaskQueueItemClicked('')
 
+        console.log("selectedLot",selectedLot)
+
         let newItem = {
             ...item,
             hil_response: true,
-            lot_id: selectedLot
+            lot_id: selectedLotId
         }
 
         // If track quantity then add quantity
