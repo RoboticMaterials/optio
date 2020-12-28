@@ -125,7 +125,7 @@ export default function ContentList(props) {
                                 <styled.ListItemIconContainer>
 
                                     <styled.ListItemIcon
-                                        className='fas fa-cog'
+                                        className='fas fa-edit'
                                         onClick={() => props.onClick(element)}
                                         style={{ color: '#c6ccd3' }}
                                     />
