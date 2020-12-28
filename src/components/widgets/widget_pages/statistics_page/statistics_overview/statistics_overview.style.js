@@ -42,6 +42,7 @@ export const PlotsContainer = styled.div`
     //flex-direction: row;
     //flex: 1;
     width: 100%;
+    // background: red;
     overflow: auto;
     padding: 1rem 1rem 0rem 1rem;
   
@@ -50,10 +51,10 @@ export const PlotsContainer = styled.div`
     //     flex-direction: column;
     // }
 
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    align-items: center;
+    // display: flex;
+    // flex-direction: column;
+    // flex: 1;
+    // align-items: center;
 
 	/* @media (min-width: ${props => props.theme.widthBreakpoint.laptopL}){
       display: flex;
@@ -76,31 +77,32 @@ export const SinglePlotContainer = styled.div`
 	padding: 1rem;
 	min-width: 60rem;
 	overflow: hidden;
+	
 
     width: 100%;
-    max-width: 60%;
+    // max-width: 60%;
     margin-bottom: 1rem;
     // min-height: ${props => (props.minHeight && props.minHeight > 25) ? props.minHeight.toString() + "rem" : "30rem"};
     height: fit-content;
     min-height: fit-content;
   
-  	/* // row layout
-	@media (min-width: ${props => props.theme.widthBreakpoint.laptopL}){
-		//flex: 1;
-		width: 100%;
-		margin: 0 5rem;
-		height: fit-content;
-		min-height: fit-content;
-	}
-  
-  	// column layout
-	@media (max-width: ${props => props.theme.widthBreakpoint.laptopL}){
-		width: 100%;
-		margin-bottom: 1rem;
-		// min-height: ${props => (props.minHeight && props.minHeight > 25) ? props.minHeight.toString() + "rem" : "30rem"};
-		height: fit-content;
-		min-height: fit-content;
-	} */
+  	// /* // row layout
+	// @media (min-width: ${props => props.theme.widthBreakpoint.laptopL}){
+	// 	//flex: 1;
+	// 	width: 100%;
+	// 	margin: 0 5rem;
+	// 	height: fit-content;
+	// 	min-height: fit-content;
+	// }
+    //
+  	// // column layout
+	// @media (max-width: ${props => props.theme.widthBreakpoint.laptopL}){
+	// 	width: 100%;
+	// 	margin-bottom: 1rem;
+	// 	// min-height: ${props => (props.minHeight && props.minHeight > 25) ? props.minHeight.toString() + "rem" : "30rem"};
+	// 	height: fit-content;
+	// 	min-height: fit-content;
+	// } */
 `
 
 export const PlotContainer = styled.div`

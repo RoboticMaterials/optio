@@ -187,7 +187,7 @@ const HILModals = (props) => {
         let newItem = {
             ...item,
             hil_response: true,
-            lot_id: selectedLot
+            lot_id: selectedLotId
         }
 
         // If its a load, then add a quantity to the response

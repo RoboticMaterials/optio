@@ -22,7 +22,7 @@ import { ResponsiveBar } from '@nivo/bar';
 
 // Import Utils
 import { getDateName, getDateFromString, convertArrayToObject } from '../../../../../methods/utils/utils'
-import { getReportEvents } from "../../../../../redux/actions/report_event_actions";
+import {getReportAnalytics, getReportEvents} from "../../../../../redux/actions/report_event_actions";
 
 const tempColors = ['#FF4B4B', '#56d5f5', '#50de76', '#f2ae41', '#c7a0fa']
 
@@ -45,14 +45,17 @@ const StatisticsOverview = (props) => {
     const reportEvents = useSelector(state => { return state.reportEventsReducer.reportEvents }) || {}
     const dashboards = useSelector(state => { return state.dashboardsReducer.dashboards }) || {}
 
-    const [data, setData] = useState(null)
+    const [throughputData, setThroughputData] = useState(null)
+    const [reportData, setReportData] = useState(null)
+
     const [timeSpan, setTimeSpan] = useState('day')
     const [dateIndex, setDateIndex] = useState(0)
     const [format, setFormat] = useState('%m-%d %H:%M')
     const [selector, setSelector] = useState('throughPut')
     const [slice, setSlice] = useState(null)
     const [defaultTicks, setDefaultTicks] = useState([])
-    const [isLoading, setIsLoading] = useState(false)
+    const [isThroughputLoading, setIsThroughputLoading] = useState(false)
+    const [isReportsLoading, setIsReportsLoading] = useState(false)
 
     const [isDevice, setIsDevice] = useState(false)
     const [locationName, setLocationName] = useState("")
@@ -106,10 +109,21 @@ const StatisticsOverview = (props) => {
         const dataPromise = getStationAnalytics(stationID, body)
         dataPromise.then(response => {
             if (response === undefined) return
-            setData(response)
+            setThroughputData(response)
 
         })
+
+        getReportData(body)
     }, [])
+
+    const getReportData = async (body) => {
+        const reportAnalyticsResponse = await getReportAnalytics(stationID, body)
+
+        if(reportAnalyticsResponse && !(reportAnalyticsResponse instanceof Error)) {
+            setReportData(reportAnalyticsResponse)
+            setIsReportsLoading(false)
+        }
+    }
 
     const handleDeviceStatistics = () => {
 
@@ -170,16 +184,24 @@ const StatisticsOverview = (props) => {
         setTimeSpan(newTimeSpan)
         setDateIndex(newDateIndex)
 
-        setIsLoading(true)
+        setIsThroughputLoading(true)
+        setIsReportsLoading(true)
 
         const body = { timespan: newTimeSpan, index: newDateIndex }
         const dataPromise = getStationAnalytics(stationID, body)
+        const reportAnalyticsResponse = await getReportAnalytics(stationID, body)
+
+        if(reportAnalyticsResponse && !(reportAnalyticsResponse instanceof Error)) {
+            setReportData(reportAnalyticsResponse)
+            setIsReportsLoading(false)
+        }
+
         dataPromise.then(response => {
 
-            if (response === undefined) return setIsLoading(false)
+            if (response === undefined) return setIsThroughputLoading(false)
 
-            setData(response)
-            setIsLoading(false)
+            setThroughputData(response)
+            setIsThroughputLoading(false)
         })
 
         // Usses a regex to take all characters before a '['
@@ -214,7 +236,7 @@ const StatisticsOverview = (props) => {
 
     const renderHeader = () => {
         return (
-            <styled.PlotHeader style={{ marginBottom: '1rem' }}>
+            <div style={{ marginBottom: '1rem', alignItems: "center", display: "flex", flexDirection: "column" }}>
                 {
                     <>
                         <TimeSpans color={colors[selector]} setTimeSpan={(timeSpan) => handleTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
@@ -224,100 +246,18 @@ const StatisticsOverview = (props) => {
                     </>
                 }
                 {renderDateSelector()}
-            </styled.PlotHeader>
+            </div>
         )
     }
 
     const renderReportChart = () => {
-        // stationID = params.stationID
-        var stationReportEventIds = reportEvents.station_id && reportEvents.station_id[stationID]
-        const isReportEventsArr = Array.isArray(stationReportEventIds)
 
-        var data = {}
+        const reportButtonIds = (reportEvents && reportEvents.report_button_id) ? Object.keys(reportEvents.report_button_id) : []
 
-        // track min/max event counts per report button - this is used for determining the axis tick values
-        var minCount = 0
-        var maxCount = 1
+        const filteredData = (reportData && reportData.reports && Array.isArray(reportData.reports))  ? reportData.reports : []
 
-        isReportEventsArr && stationReportEventIds.forEach((currId, ind) => {
-            const currentEvent = reportEvents._id && reportEvents._id[currId]
-
-            const {
-                _id,
-                dashboard_id,
-                station_id,
-                report_button_id,
-                description,
-                // label = "ind " + ind,
-            } = currentEvent || {}
-
-            // extract data from actual report button
-            const reportButton = reportButtons[report_button_id]
-            const label = reportButton ? reportButton.label : "Unlabeled"
-
-            // get data obj for current report button
-            var currentData = data[report_button_id] ? data[report_button_id] : {} // empty obj if haven't created entry for this button yet
-
-            // get event count for current report button and increment by 1
-            var event_count = currentData["event_count"] ? currentData["event_count"] + 1 : 1 // default to 1 if no entry yet
-            currentData["event_count"] = event_count
-            currentData["_id"] = _id
-
-            if (!currentData["label"]) currentData["label"] = label
-
-            // check if minCount or maxCount need to be updated
-            if (event_count < minCount) minCount = event_count
-            if (event_count > maxCount) maxCount = event_count
-
-            data[report_button_id] = currentData
-        })
-
-        data = Object.values(data)
-
-        const isData = data.length > 0
-
-        if (isData) {
-            // add blank entries if there are less than 5 so the chart looks better
-            let blankLabel = ""
-            for (let i = data.length; i < 5; i++) {
-                data.push({
-                    _id: blankLabel,
-                    label: blankLabel,
-                    event_count: 0
-                })
-
-                blankLabel += " "
-            }
-
-            // sort by event_count, which is stored under the key 'y'
-            data.sort(function (a, b) {
-                var keyA = a.y,
-                    keyB = b.y;
-                // Compare the 2 dates
-                if (keyA < keyB) return -1;
-                if (keyA > keyB) return 1;
-                return 0;
-            });
-        }
-
-        else {
-            data.push({
-                _id: "",
-                label: "",
-                event_count: 0
-            })
-        }
-
-        var list = [];
-        for (var i = minCount; i <= maxCount; i++) {
-            if ((maxCount - minCount) > 15) {
-                if (i % 2 === 0) list.push(i)
-            } else {
-                list.push(i)
-            }
-        }
-
-        const minHeight = data.length * 5
+        // set min height based on number of entries so chart won't squeeze rows too close together
+        const minHeight = (filteredData && Array.isArray(filteredData)) ?  filteredData.length * 2 : 0
 
         return (
             <styled.SinglePlotContainer
@@ -325,72 +265,53 @@ const StatisticsOverview = (props) => {
             >
                 <styled.PlotHeader>
                     <styled.PlotTitle>Reports</styled.PlotTitle>
-
-                    {/* hide this for now*/}
-                    <div style={{ opacity: 0 }}>
-                        {
-                            <>
-                                <TimeSpans color={colors[selector]} setTimeSpan={(timeSpan) => handleTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
-
-                                {/* Commented out for now, only need through put bar chart */}
-                                {/* {handleGaugeCharts()} */}
-                            </>
-                        }
-                        {renderDateSelector()}
-                    </div>
-
                 </styled.PlotHeader>
 
-                {isLoading ?
+                {isThroughputLoading ?
                     <styled.PlotContainer>
                         <styled.LoadingIcon className="fas fa-circle-notch fa-spin" style={{ fontSize: '3rem', marginTop: '5rem' }} />
                     </styled.PlotContainer>
                     :
-
-
-                    <styled.PlotContainer minHeight={minHeight - 10}>
+                    <styled.PlotContainer
+                        minHeight={minHeight}
+                    >
                         <BarChart
-                            layout={isData ? "horizontal" : "vertical"}
-                            data={data}
-                            enableGridX={isData ? true : false}
-                            enableGridY={!isData ? true : false}
+                            data={filteredData ? filteredData : []}
+                            keys={reportButtonIds}
+                            indexBy={'lable'}
+                            colorBy={"id"}
                             mainTheme={themeContext}
-                            keys={['event_count']}
-                            indexBy={'label'}
+                            timeSpan={timeSpan}
+                            layout={true ? "horizontal" : "vertical"}
+                            enableGridX={true ? true : false}
+                            enableGridY={!true ? true : false}
                             axisBottom={{
                                 legend: 'Count',
-                                tickValues: list
                             }}
                             axisLeft={{
-                                legend: 'Label'
+                                legend: 'Time'
                             }}
                         />
 
-                        {!isData &&
-                            <styled.NoDataText>No Data</styled.NoDataText>
+                        {!throughputData &&
+                        <styled.NoDataText>No Data</styled.NoDataText>
                         }
                     </styled.PlotContainer>
                 }
+
             </styled.SinglePlotContainer>
         )
     }
 
     const renderThroughputChart = () => {
 
-        const filteredData = data?.throughPut.filter((item, index) => {
-            // return item.y > 0
-            return true
-        })
-
-        var tickValues
-        if (filteredData && filteredData.length > 7) {
-            tickValues = filteredData && filteredData.filter((item, index) => {
-                // return index % 2 === 0
-                return true
-            }).map((item) => item.x)
-        }
+        const filteredData = throughputData?.throughPut
 
         const minHeight = 0
+
+        const isData = (filteredData && Array.isArray(filteredData) && filteredData.length > 0)
+
+        console.log("filteredData",filteredData)
 
         return (
             <styled.SinglePlotContainer
@@ -400,37 +321,29 @@ const StatisticsOverview = (props) => {
                     <styled.PlotTitle>Throughput</styled.PlotTitle>
                 </styled.PlotHeader>
 
-                {isLoading ?
+                {isThroughputLoading ?
                     <styled.PlotContainer>
                         <styled.LoadingIcon className="fas fa-circle-notch fa-spin" style={{ fontSize: '3rem', marginTop: '5rem' }} />
                     </styled.PlotContainer>
                     :
-
-
 
                     <styled.PlotContainer
                         minHeight={minHeight}
                     >
                         <BarChart
                             data={filteredData ? filteredData : []}
-                            // data={{throughPut: []}}
-                            enableGridY={true}
-                            // enableGridX={true}
-                            // selector={selector}
+                            enableGridY={isData ? true : false}
                             mainTheme={themeContext}
                             timeSpan={timeSpan}
                             axisBottom={{
-                                tickValues: tickValues,
                                 tickRotation: -90,
                             }}
                             axisLeft={{
                                 enable: true,
-                                // tickValues: [0, 1],
-                                // tickRotation: -90,
                             }}
                         />
 
-                        {!data &&
+                        {!throughputData &&
                             <styled.NoDataText>No Data</styled.NoDataText>
                         }
                     </styled.PlotContainer>
@@ -443,9 +356,9 @@ const StatisticsOverview = (props) => {
     // Handles the date selector at the top of the charts
     const renderDateSelector = () => {
 
-        if (data === null) return null
+        if (throughputData === null) return null
 
-        const throughPut = data.throughPut
+        const throughPut = throughputData.throughPut
 
         let dateSelectorTitle = ''
         let date
@@ -488,10 +401,10 @@ const StatisticsOverview = (props) => {
                         handleTimeSpan(timeSpan, index)
                     }}
                 />
-                {isLoading ?
+                {isThroughputLoading ?
                     <styled.LoadingIcon className="fas fa-circle-notch fa-spin" />
                     :
-                    <styled.DateSelectorTitle>{data.date_title}</styled.DateSelectorTitle>
+                    <styled.DateSelectorTitle>{throughputData.date_title}</styled.DateSelectorTitle>
 
                 }
 
@@ -516,21 +429,21 @@ const StatisticsOverview = (props) => {
     const handleGaugeCharts = () => {
         return (
             <styled.StatsSection>
-                <ApexGaugeChart max={Math.min(...data.taktTime.map(point => point.y))} min={Math.max(...data.taktTime.map(point => point.y))} value={data.taktTime[data.taktTime.length - 1].y}
+                <ApexGaugeChart max={Math.min(...throughputData.taktTime.map(point => point.y))} min={Math.max(...throughputData.taktTime.map(point => point.y))} value={throughputData.taktTime[throughputData.taktTime.length - 1].y}
                     formatValue={() => {
                         // const val = data.taktTime[data.taktTime.length - 1].y
                         // return String(Math.floor(val)) + ':' + String(Math.round((val % 1) * 60))
                         return '1:23'
                     }}
                     name='Takt Time' color={colors.taktTime} onClick={() => setSelector('taktTime')} selected={selector == 'taktTime'} />
-                <ApexGaugeChart min={Math.min(...data.pYield.map(point => point.y))} max={Math.max(...data.pYield.map(point => point.y))} value={data.pYield[data.pYield.length - 1].y}
+                <ApexGaugeChart min={Math.min(...throughputData.pYield.map(point => point.y))} max={Math.max(...throughputData.pYield.map(point => point.y))} value={throughputData.pYield[throughputData.pYield.length - 1].y}
                     formatValue={() =>
-                        Math.round(10 * data.pYield[data.pYield.length - 1].y) / 10
+                        Math.round(10 * throughputData.pYield[throughputData.pYield.length - 1].y) / 10
                     }
                     name='Quality' color={colors.pYield} onClick={() => setSelector('pYield')} selected={selector == 'pYield'} />
-                <ApexGaugeChart min={Math.min(...data.throughPut.map(point => point.y))} max={Math.max(...data.throughPut.map(point => point.y))} value={data.throughPut[data.throughPut.length - 1].y}
+                <ApexGaugeChart min={Math.min(...throughputData.throughPut.map(point => point.y))} max={Math.max(...throughputData.throughPut.map(point => point.y))} value={throughputData.throughPut[throughputData.throughPut.length - 1].y}
                     formatValue={() =>
-                        data.throughPut[data.throughPut.length - 1].y
+                        throughputData.throughPut[throughputData.throughPut.length - 1].y
                     }
                     name='Throughput' color={colors.throughPut} onClick={() => setSelector('throughPut')} selected={selector == 'throughPut'} />
             </styled.StatsSection>
@@ -551,10 +464,8 @@ const StatisticsOverview = (props) => {
             } */}
 
 
-
             {/* Commented out for now, only need through put bar chart */}
             {/* <DataSelector selector={selector} setSelector={setSelector} /> */}
-
 
             <styled.PlotsContainer
                 ref={pc => plotRef = pc}
@@ -565,8 +476,6 @@ const StatisticsOverview = (props) => {
                 {renderThroughputChart()}
                 {renderReportChart()}
             </styled.PlotsContainer>
-
-
 
         </styled.OverviewContainer>
     )
