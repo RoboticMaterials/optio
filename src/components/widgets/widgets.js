@@ -364,7 +364,7 @@ const Widgets = (props) => {
 
                     />
                 }
-                <styled.WidgetContainer widgetPage={widgetPage} type = {selectedLocation.type} >
+                <styled.WidgetContainer widgetPage={widgetPage} type = {!!selectedLocation && selectedLocation.type} >
                     {!widgetPage && !!selectedLocation &&
                         <>
                             {selectedLocation.name == "TempRightClickMoveLocation" ?
