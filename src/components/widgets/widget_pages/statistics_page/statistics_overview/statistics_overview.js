@@ -251,10 +251,42 @@ const StatisticsOverview = (props) => {
     }
 
     const renderReportChart = () => {
+        // get array of report buttons for current station
+        const reportButtonsArr = Object.values(reportButtons)
 
-        const reportButtonIds = (reportEvents && reportEvents.report_button_id) ? Object.keys(reportEvents.report_button_id) : []
+        // get just the names of the buttons as an array
+        const reportButtonNames = (reportButtonsArr && Array.isArray(reportButtonsArr)) ? reportButtonsArr.map((currButton) => currButton.label) : []
 
-        const filteredData = (reportData && reportData.reports && Array.isArray(reportData.reports))  ? reportData.reports : []
+        // data comes from back end with the key of the button as the key and the value as the count, but we want the name of the button
+        // therefore, must map through each item and replace the button's id with its name
+        const filteredData = (reportData && reportData.reports && Array.isArray(reportData.reports))  ?
+            reportData.reports.map((currReport) => {
+
+                const {
+                    lable, // extract label
+                    ...currReportEntries // this contains the button keys followed by their count as the value
+                } = currReport
+
+                // create object for storing new key value paies (buttonName: count)
+                var updatedReport = {
+                    lable
+                }
+
+                const currReportButtonIds = Object.keys(currReportEntries)
+
+                currReportButtonIds.forEach((currButtonId) => {
+
+                    // if there is a button with the corresponding id
+                    if(reportButtons[currButtonId]) {
+                        // get the label from the actual button, and get the count from the entry, then add it to the updated report
+                        updatedReport[reportButtons[currButtonId].label] =  currReportEntries[currButtonId] ? currReportEntries[currButtonId] : 0
+                    }
+                })
+
+                return updatedReport
+            })
+            :
+            []
 
         // set min height based on number of entries so chart won't squeeze rows too close together
         const minHeight = (filteredData && Array.isArray(filteredData)) ?  filteredData.length * 2 : 0
@@ -277,7 +309,7 @@ const StatisticsOverview = (props) => {
                     >
                         <BarChart
                             data={filteredData ? filteredData : []}
-                            keys={reportButtonIds}
+                            keys={reportButtonNames}
                             indexBy={'lable'}
                             colorBy={"id"}
                             mainTheme={themeContext}
@@ -310,8 +342,6 @@ const StatisticsOverview = (props) => {
         const minHeight = 0
 
         const isData = (filteredData && Array.isArray(filteredData) && filteredData.length > 0)
-
-        console.log("filteredData",filteredData)
 
         return (
             <styled.SinglePlotContainer
