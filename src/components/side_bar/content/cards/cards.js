@@ -76,7 +76,7 @@ const Cards = (props) => {
     let currentProcess
     switch(id) {
         case "summary":
-            title = "Summary Zone"
+            title = "Lots Summary"
             showAddCard = false
             currentProcess = processes[processIds[0]]
             break
@@ -134,14 +134,14 @@ const Cards = (props) => {
                 {/*}*/}
                 {showGanttViewButton &&
                     <Button
-                        schema={'processes'}
+                        schema={'lots'}
                     >
                         Gantt View
                     </Button>
                 }
                 {(id === "summary" || id === "timeline") &&
                     <Button
-                        schema={'processes'}
+                        schema={'lots'}
                         onClick={()=>history.replace ('/processes/' + processIds[0] + "/card")}
                     >
                         Leave Zone

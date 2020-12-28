@@ -45,9 +45,9 @@ const LotQueue = SortableContainer((props) => {
 								setShowCardEditor(!showCardEditor)
 
 							}}
-							schema={'processes'}
+							schema={'lots'}
 						>
-							+ Card
+							+ Lot
 						</Button>
 					</styled.StationHeader>
 					:

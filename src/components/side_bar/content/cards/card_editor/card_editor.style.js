@@ -87,7 +87,7 @@ export const InfoText = styled.span`
   font-size: ${props => props.theme.fontSize.sz3};
   // font-weight: ${props => props.theme.fontWeight.bold};
   margin-right: 1rem;
-  color: ${props => props.highlight ? props.theme.schema["processes"].solid : "white"};
+  color: ${props => props.highlight ? props.theme.schema[props.schema].solid : "white"};
 `
 
 export const SectionContainer = styled.div`
@@ -375,7 +375,7 @@ export const buttonViewCss = css`
 
 export const buttonViewSelectedCss = css`
 	background: transparent;
-	color: ${props => props.theme.schema["processes"].solid};
+	color: ${props => props.theme.schema["lots"].solid};
 `
 
 

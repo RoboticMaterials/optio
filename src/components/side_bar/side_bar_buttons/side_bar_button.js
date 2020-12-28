@@ -106,7 +106,7 @@ const SideBarButton = (props) => {
                         // }
                         // else{props.setShowSideBarPage(props.mode)}
                             const currentPath = history.location.pathname
-                            history.push('/processes/summary')
+                            history.push('/lots/summary')
                     }}
                     currentMode={props.currentMode}
                     mode={props.mode}

@@ -24,9 +24,6 @@ const CardMenu = (props) => {
 		subpage
 	} = params
 
-	console.log("CardMenu params",params)
-	console.log("CardMenu history",history)
-
 	return(
 		<styled.Container>
 			<styled.Header>
@@ -44,10 +41,10 @@ const CardMenu = (props) => {
 				schema={'processes'}
 				style={{ margin: 0, marginBottom: "1rem" }}
 				onClick={async () => {
-					history.replace ('/processes/summary')
+					history.replace ('/lots/summary')
 				}}
 			>
-				Summary Zone
+				Lots Summary
 			</Button>
 			<styled.Title style={{marginBottom: "1rem"}}>Processes</styled.Title>
 			<DropDownSearch

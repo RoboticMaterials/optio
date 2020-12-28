@@ -95,14 +95,14 @@ const SideBar = (props) => {
 
         const time = Date.now()
 
-        if(page === "processes" && ((subpage === "card")) || (id === "timeline") || (id === "summary")) {
+        if((page === "processes" || page === "lots") && ((subpage === "lots")) || (id === "timeline") || (id === "summary")) {
 
             if(!prevWidth) setPrevWidth(width) // store previous width to restore when card page is left
             setWidth(window.innerWidth)
             dispatch(sidebarActions.setWidth(window.innerWidth))
 
         }
-        else if((((prevSubpage === "card") || (prevId === "timeline") || (prevId === "summary")) && prevPage === "processes") && ((subpage !== "card") || (id === "timeline") || (id === "summary")) ) {
+        else if((((prevSubpage === "lots") || (prevId === "timeline") || (prevId === "summary")) && (prevPage === "processes" || prevPage === "lots")) && ((subpage !== "lots") || (id === "timeline") || (id === "summary")) ) {
             setWidth(prevWidth)
             dispatch(sidebarActions.setWidth(prevWidth))
             setPrevWidth(null)
@@ -189,13 +189,19 @@ const SideBar = (props) => {
         //     break
 
         case 'processes':
-            if(subpage === "card" || (id === "summary") || (id === "timeline"))   {
+            if(subpage === "lots")   {
                 content = <Cards id={id}/>
             }
             else {
                 content = <ProcessesContent subpage={subpage} id={id} />
             }
 
+            break
+
+        case 'lots':
+            if((id === "summary") || (id === "timeline"))   {
+                content = <Cards id={id}/>
+            }
             break
 
         case 'tasks':

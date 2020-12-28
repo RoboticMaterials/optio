@@ -373,7 +373,7 @@ const CardEditor = (props) => {
 
 									<div style={{ display: "flex", alignItems: "center"}}>
 										<styled.InfoText>from</styled.InfoText>
-										<styled.InfoText highlight={true}>{selectedBinName}</styled.InfoText>
+										<styled.InfoText schema={"lots"} highlight={true}>{selectedBinName}</styled.InfoText>
 										<styled.InfoText>To</styled.InfoText>
 										<DropDownSearchField
 											containerSyle={{minWidth: "10rem"}}
@@ -394,7 +394,7 @@ const CardEditor = (props) => {
 										formikProps.submitForm()
 										close()
 									}}
-									schema={"processes"}
+									schema={"lots"}
 								>
 									Ok
 								</Button>
@@ -418,7 +418,7 @@ const CardEditor = (props) => {
 
 								<Button
 									onClick={()=>setContent(null)}
-									schema={"processes"}
+									schema={"lots"}
 								>
 									Ok
 								</Button>
@@ -486,7 +486,7 @@ const CardEditor = (props) => {
 								{formMode === FORM_MODES.CREATE ?
 									<styled.ButtonContainer>
 										<Button
-											schema={'processes'}
+											schema={'lots'}
 											disabled={submitDisabled}
 											style={{ marginBottom: '0rem', marginTop: 0 }}
 											secondary
@@ -499,7 +499,7 @@ const CardEditor = (props) => {
 										</Button>
 
 										<Button
-											schema={'processes'}
+											schema={'lots'}
 											disabled={submitDisabled}
 											style={{ marginBottom: '0rem', marginTop: 0 }}
 											secondary
@@ -512,7 +512,7 @@ const CardEditor = (props) => {
 										</Button>
 
 										<Button
-											schema={'processes'}
+											schema={'lots'}
 											disabled={submitDisabled}
 											style={{ marginBottom: '0rem', marginTop: 0 }}
 											secondary
@@ -526,7 +526,7 @@ const CardEditor = (props) => {
 									:
 									<styled.ButtonContainer>
 										<Button
-											schema={'processes'}
+											schema={'lots'}
 											disabled={submitDisabled}
 											style={{ marginBottom: '0rem', marginTop: 0 }}
 											secondary
@@ -538,7 +538,7 @@ const CardEditor = (props) => {
 										</Button>
 
 										<Button
-											schema={'processes'}
+											schema={'lots'}
 											style={{ marginBottom: '0rem', marginTop: 0 }}
 											secondary
 											type={"button"}
@@ -549,7 +549,7 @@ const CardEditor = (props) => {
 											Delete
 										</Button>
 										<Button
-											schema={'processes'}
+											schema={'lots'}
 											style={{ marginBottom: '0rem', marginTop: 0 }}
 											secondary
 											type={"button"}
@@ -668,7 +668,7 @@ const CardEditor = (props) => {
 								{((content === CONTENT.CALENDAR_START) || (content === CONTENT.CALENDAR_END) || (content === CONTENT.HISTORY))  &&
 								<Button
 									onClick={()=>setContent(null)}
-									schema={'processes'}
+									schema={'lots'}
 								>
 									<styled.Icon className="fas fa-arrow-left"></styled.Icon>
 								</Button>
@@ -684,7 +684,7 @@ const CardEditor = (props) => {
 
 								<Button
 									onClick={close}
-									schema={'processes'}
+									schema={'lots'}
 								>
 									<i className="fa fa-times" aria-hidden="true"/>
 								</Button>
@@ -741,7 +741,7 @@ const CardEditor = (props) => {
 										style={{margin: "0 0 1rem 0", width: "fit-content"}}
 										type={"button"}
 										onClick={()=>setShowLotInfo(!showLotInfo)}
-										schema={"processes"}
+										schema={"lots"}
 									>
 										{showLotInfo ? "Hide Lot Details" : "Show Lot Details"}
 									</Button>
