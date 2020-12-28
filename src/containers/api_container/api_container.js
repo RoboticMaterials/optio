@@ -272,6 +272,7 @@ const ApiContainer = (props) => {
     const loadInitialData = async () => {
         // Local Settings must stay on top of initial data so that the correct API address is seleceted
         const localSettings = await onGetLocalSettings()
+        const settings = await onGetSettings();
 
         // const refreshToken = await onGetRefreshToken()
         const devices = await onGetDevices()
