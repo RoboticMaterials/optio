@@ -1,16 +1,16 @@
 // import external dependencies
-import React, {useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ReactTooltip from "react-tooltip";
 
 import Portal from "../../../../higher_order_components/portal";
 
-import {uuidv4} from '../../../../methods/utils/utils'
+import { uuidv4 } from '../../../../methods/utils/utils'
 
 // import styles
 import * as styled from './error_tooltip.style';
 import DropDownSearchField from "../drop_down_search_field/drop_down_search_field";
 
-const ErrorTooltip = ({ContainerComponent, text, visible}) => {
+const ErrorTooltip = ({ ContainerComponent, text, visible }) => {
 
     // target input for initial display of tooltip
     const inputRef = useRef(null);
@@ -24,7 +24,7 @@ const ErrorTooltip = ({ContainerComponent, text, visible}) => {
     // input is initially focused to show tooltip, then blurred after timeout to hide it
     useEffect(
         () => {
-            if(autoFocus) {
+            if (autoFocus) {
                 let timer1 = setTimeout(() => setAutoFocus(false), 3000)
 
                 // this will clear Timeout when component unmount like in willComponentUnmount
@@ -47,41 +47,41 @@ const ErrorTooltip = ({ContainerComponent, text, visible}) => {
     //     }
     // }, [autoFocus]);
 
-    return(
+    return (
 
         <ContainerComponent>
             {/*initial display on load*/}
             {autoFocus && visible &&
-            //wrap in portal to avoid clipping issues
-            <Portal>
-                <ReactTooltip style={{zIndex: 20}} delayShow={250} event={'focus'} eventOff={'blur'} id={id}>
-                    <span>{text}</span>
-                </ReactTooltip>
-            </Portal>
+                //wrap in portal to avoid clipping issues
+                <Portal>
+                    <ReactTooltip style={{ zIndex: 20 }} delayShow={250} event={'focus'} eventOff={'blur'} id={id}>
+                        <span>{text}</span>
+                    </ReactTooltip>
+                </Portal>
 
             }
 
             {/* only show on hover after initial display */}
             {!autoFocus && visible &&
-            //wrap in portal to avoid clipping issues
-            <Portal>
-                <ReactTooltip eventOff={'mouseout'} id={id}>
-                    <span>{text}</span>
-                </ReactTooltip>
-            </Portal>
+                //wrap in portal to avoid clipping issues
+                <Portal>
+                    <ReactTooltip eventOff={'mouseout'} id={id}>
+                        <span>{text}</span>
+                    </ReactTooltip>
+                </Portal>
             }
 
             {autoFocus &&
-            <styled.StyledInput
-                visible={visible}
-                ref={inputRef}
-                readOnly={true}
-                // hidden={true}
-                // autoFocus={autoFocus}
-                event={'focus'}
-                data-tip
-                data-for={id}
-            />
+                <styled.StyledInput
+                    visible={visible}
+                    ref={inputRef}
+                    readOnly={true}
+                    // hidden={true}
+                    // autoFocus={autoFocus}
+                    event={'focus'}
+                    data-tip
+                    data-for={id}
+                />
             }
 
             <styled.WarningIcon
@@ -89,7 +89,6 @@ const ErrorTooltip = ({ContainerComponent, text, visible}) => {
                 className="fas fa-exclamation-triangle"
                 data-tip
                 data-for={id}
-
             />
         </ContainerComponent>
 

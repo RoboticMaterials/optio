@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
+
+// Import Styles
 import * as styled from './content_list.style'
-import { useSelector, useDispatch } from 'react-redux'
-import { useHistory, useLocation } from 'react-router-dom'
 
+// Import Components
 import ContentHeader from '../content_header/content_header'
-import {LocationTypes} from '../../../../methods/utils/locations_utils'
+import ErrorTooltip from '../../../basic/form/error_tooltip/error_tooltip'
 
-
+// Import Utils
+import { LocationTypes } from '../../../../methods/utils/locations_utils'
 import { deepCopy } from '../../../../methods/utils/utils'
 
 
@@ -21,32 +23,36 @@ export default function ContentList(props) {
 
     const renderLocationTypeIcon = (element) => {
 
-          switch(element.type){
+        switch (element.type) {
             case 'shelf_position':
-                return (<styled.LocationTypeGraphic fill={LocationTypes['shelf_position'].color} stroke={LocationTypes['shelf_position'].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                      {LocationTypes['shelf_position'].svgPath}
+                return (
+                    <styled.LocationTypeGraphic fill={LocationTypes['shelf_position'].color} stroke={LocationTypes['shelf_position'].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                        {LocationTypes['shelf_position'].svgPath}
                     </styled.LocationTypeGraphic>
-                    )
+                )
 
             case 'warehouse':
-              return (<styled.LocationTypeGraphic fill={LocationTypes['warehouse'].color} stroke={LocationTypes['warehouse'].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                    {LocationTypes['warehouse'].svgPath}
-                  </styled.LocationTypeGraphic>
-                  )
+                return (
+                    <styled.LocationTypeGraphic fill={LocationTypes['warehouse'].color} stroke={LocationTypes['warehouse'].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                        {LocationTypes['warehouse'].svgPath}
+                    </styled.LocationTypeGraphic>
+                )
 
             case 'human':
-            return (<styled.LocationTypeGraphic fill={LocationTypes['human'].color} stroke={LocationTypes['human'].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                  {LocationTypes['human'].svgPath}
-                </styled.LocationTypeGraphic>
+                return (
+                    <styled.LocationTypeGraphic fill={LocationTypes['human'].color} stroke={LocationTypes['human'].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                        {LocationTypes['human'].svgPath}
+                    </styled.LocationTypeGraphic>
                 )
 
             case 'cart_position':
-            return (<styled.LocationTypeGraphic fill={LocationTypes['cart_position'].color} stroke={LocationTypes['cart_position'].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                  {LocationTypes['cart_position'].svgPath}
-                </styled.LocationTypeGraphic>
+                return (
+                    <styled.LocationTypeGraphic fill={LocationTypes['cart_position'].color} stroke={LocationTypes['cart_position'].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                        {LocationTypes['cart_position'].svgPath}
+                    </styled.LocationTypeGraphic>
                 )
         }
-      }
+    }
 
 
     return (
@@ -72,9 +78,9 @@ export default function ContentList(props) {
                                 <styled.ListItemIconContainer style={{ width: '15%' }} >
 
                                     {props.schema === 'locations' &&
-                                      <>
-                                        {renderLocationTypeIcon(element)}
-                                      </>
+                                        <>
+                                            {renderLocationTypeIcon(element)}
+                                        </>
                                     }
 
 
@@ -88,17 +94,25 @@ export default function ContentList(props) {
                                     }
 
                                     {props.schema === 'processes' ? error ?
-                                        <styled.ListItemIcon
-                                            style={{ color: 'red' }}
-                                            className='fas fa-exclamation-triangle'
-                                            onClick={() => props.onClick(element)}
+                                        <>
+                                            {/* <styled.ListItemIcon
+                                                style={{ color: 'red' }}
+                                                className='fas fa-exclamation-triangle'
+                                                onClick={() => props.onClick(element)}
 
-                                        />
+                                            /> */}
+
+                                            <ErrorTooltip 
+                                                visible={'Test'}  
+                                                text={'Test HELLO!!!!!!!!!!!!!!'}
+                                                ContainerComponent={styled.ErrorContainer}
+                                            />
+                                        </>
                                         :
 
                                         <styled.ListItemIcon
                                             className='far fa-clone'
-                                            style={{ color: '#ffb62e'}}
+                                            style={{ color: '#ffb62e' }}
                                             onClick={() => {
                                                 handleCardView(element)
                                             }}
@@ -120,7 +134,7 @@ export default function ContentList(props) {
                                     <styled.ListItemIcon
                                         className='fas fa-cog'
                                         onClick={() => props.onClick(element)}
-                                        style={{ color: '#c6ccd3'}}
+                                        style={{ color: '#c6ccd3' }}
                                     />
 
 

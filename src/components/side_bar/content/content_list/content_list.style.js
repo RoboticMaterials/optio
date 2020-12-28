@@ -109,5 +109,8 @@ export const ListItemIcon = styled.i`
 export const ListItemIconContainer = styled.div`
     display: flex;
     width: 10%;
+`
 
+export const ErrorContainer = styled.div`
+	position: relative;
 `
