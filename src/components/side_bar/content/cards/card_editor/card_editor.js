@@ -39,8 +39,12 @@ const CONTENT = {
 	CALENDAR_END: "CALENDAR_END",
 	CALENDAR_RANGE: "CALENDAR_RANGE",
 	MOVE: "MOVE"
-
 }
+
+// overwrite default button text color since it's hard to see on the lots background color
+// const buttonStyle = {color: "black"}
+const buttonStyle = {}
+
 
 const CardEditor = (props) => {
 	const {
@@ -386,6 +390,7 @@ const CardEditor = (props) => {
 
 
 								<Button
+									style={buttonStyle}
 									onClick={()=> {
 										formikProps.submitForm()
 										close()
@@ -413,6 +418,7 @@ const CardEditor = (props) => {
 								</styled.CalendarContainer>
 
 								<Button
+									style={buttonStyle}
 									onClick={()=>setContent(null)}
 									schema={"lots"}
 								>
@@ -484,7 +490,7 @@ const CardEditor = (props) => {
 										<Button
 											schema={'lots'}
 											disabled={submitDisabled}
-											style={{ marginBottom: '0rem', marginTop: 0 }}
+											style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
 											secondary
 											onClick={async () => {
 												await formikProps.submitForm()
@@ -497,7 +503,7 @@ const CardEditor = (props) => {
 										<Button
 											schema={'lots'}
 											disabled={submitDisabled}
-											style={{ marginBottom: '0rem', marginTop: 0 }}
+											style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
 											secondary
 											onClick={async () => {
 												await formikProps.submitForm()
@@ -510,7 +516,7 @@ const CardEditor = (props) => {
 										<Button
 											schema={'lots'}
 											disabled={submitDisabled}
-											style={{ marginBottom: '0rem', marginTop: 0 }}
+											style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
 											secondary
 											onClick={async () => {
 												await formikProps.submitForm()
@@ -524,7 +530,7 @@ const CardEditor = (props) => {
 										<Button
 											schema={'lots'}
 											disabled={submitDisabled}
-											style={{ marginBottom: '0rem', marginTop: 0 }}
+											style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
 											secondary
 											onClick={async () => {
 												await formikProps.submitForm({close: false})
@@ -535,7 +541,7 @@ const CardEditor = (props) => {
 
 										<Button
 											schema={'lots'}
-											style={{ marginBottom: '0rem', marginTop: 0 }}
+											style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
 											secondary
 											type={"button"}
 											onClick={onDeleteClick}
@@ -546,7 +552,7 @@ const CardEditor = (props) => {
 										</Button>
 										<Button
 											schema={'lots'}
-											style={{ marginBottom: '0rem', marginTop: 0 }}
+											style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
 											secondary
 											type={"button"}
 											onClick={async () => {
@@ -665,6 +671,7 @@ const CardEditor = (props) => {
 								<Button
 									onClick={()=>setContent(null)}
 									schema={'lots'}
+									style={buttonStyle}
 								>
 									<styled.Icon className="fas fa-arrow-left"></styled.Icon>
 								</Button>
@@ -681,6 +688,7 @@ const CardEditor = (props) => {
 								<Button
 									onClick={close}
 									schema={'lots'}
+									style={buttonStyle}
 								>
 									<i className="fa fa-times" aria-hidden="true"/>
 								</Button>
@@ -734,7 +742,7 @@ const CardEditor = (props) => {
 									{formMode === FORM_MODES.UPDATE &&
 									<Button
 										secondary
-										style={{margin: "0 0 1rem 0", width: "fit-content"}}
+										style={{...buttonStyle, margin: "0 0 1rem 0", width: "fit-content"}}
 										type={"button"}
 										onClick={()=>setShowLotInfo(!showLotInfo)}
 										schema={"lots"}

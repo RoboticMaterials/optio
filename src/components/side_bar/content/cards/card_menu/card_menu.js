@@ -38,7 +38,7 @@ const CardMenu = (props) => {
 
 
 			<Button
-				schema={'processes'}
+				schema={'lots'}
 				style={{ margin: 0, marginBottom: "1rem" }}
 				onClick={async () => {
 					history.replace ('/lots/summary')
