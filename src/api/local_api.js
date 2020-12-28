@@ -37,6 +37,11 @@ export const postLocalSettings = async (settings) => {
     return localSettings
 }
 
+export const deleteLocalSettings = async () => {
+    localStorage.removeItem("local-settings-config")
+    
+}
+
 export const getLocalSettings = async () => {
     var localSettings = localStorage.getItem("local-settings-config");
 
