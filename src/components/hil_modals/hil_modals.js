@@ -36,12 +36,6 @@ const HILModals = (props) => {
         item
     } = props
 
-    console.log("hilMessage", hilMessage)
-    console.log("hilType", hilType)
-    console.log("taskQuantity", taskQuantity)
-    console.log("taskQueueID", taskQueueID)
-    console.log("item", item)
-
     const {
         dashboard: dashboardId
     } = item || {}
@@ -130,22 +124,16 @@ const HILModals = (props) => {
     * */
     useEffect(() => {
 
-        console.log("mapping cards")
         const stationCards = Object.values(cards).filter((currCard) => {
             const {
                 bins
             } = currCard
-            console.log("currCard", currCard)
-            console.log("stationId", stationId)
-            console.log("dashboardId", dashboardId)
 
             if (bins) {
                 if (bins[stationId] && bins[stationId].count > 0) return true
             }
 
         })
-
-        console.log("stationCards", stationCards)
 
         if (stationCards && Array.isArray(stationCards) && stationCards.length > 0) {
             if ((stationCards.length === 1) && !selectedLot) setSelectedLot(stationCards[0])
@@ -161,18 +149,11 @@ const HILModals = (props) => {
 
     }, [selectedLot])
 
-
-
-
-    console.log("availableLots", availableLots)
-
     // Use Effect for when page loads, handles wether the HIL is a load or unload
     useEffect(() => {
 
         const currentTask = tasks[item.task_id]
         setSelectedTask(currentTask)
-        console.log('QQQQ Selected Task', currentTask)
-        console.log('QQQQ Selected Task', currentTask)
 
         // If the task's load location of the task q item matches the item's location then its a load hil, else its unload
         if (currentTask && currentTask?.load?.station === item.hil_station_id || !!item.dashboard) {
@@ -209,18 +190,18 @@ const HILModals = (props) => {
             lot_id: selectedLotId
         }
 
-        // If track quantity then add quantity
-        if (!!selectedTask.track_quantity) {
-            newItem.quantity = quantity
+        // If its a load, then add a quantity to the response
+        if (hilLoadUnload === 'load') {
+            // If track quantity then add quantity
+            if (!!selectedTask.track_quantity) {
+                newItem.quantity = quantity
+            }
+
+            // Else it's a fraction so tell the fraction amount
+            else {
+                newItem.fraction = fraction
+            }
         }
-
-        // Else it's a fraction so tell the fraction amount
-        else {
-            newItem.fraction = fraction
-        }
-
-        console.log('QQQQ Responding with this', newItem)
-
 
         // Deletes the dashboard id from active list for the hil that has been responded too
         dispatchSetActiveHilDashboards(delete (activeHilDashboards[item.hil_station_id]))
@@ -360,11 +341,10 @@ const HILModals = (props) => {
             </styled.SelectedLotContainer>
         )
     }
+
     const renderFractionOptions = () => {
 
         const fractionOptions = ['1', '3/4', '1/2', '1/4']
-
-
 
         return (
             <>
@@ -377,7 +357,7 @@ const HILModals = (props) => {
 
 
                     <styled.ColumnContainer>
-                        <styled.HilMessage>{!!item.dashboard ? 'Enter Fraction' : hilMessage}</styled.HilMessage>
+                        <styled.HilMessage>{hilMessage}</styled.HilMessage>
                         {/* Only Showing timers on load at the moment, will probably change in the future */}
                         {
                             !!hilTimers[item._id.$oid] && hilLoadUnload === 'load' &&
@@ -471,7 +451,7 @@ const HILModals = (props) => {
 
 
                     <styled.ColumnContainer>
-                        <styled.HilMessage>{!!item.dashboard ? 'Enter Quantity' : hilMessage}</styled.HilMessage>
+                        <styled.HilMessage>{hilMessage}</styled.HilMessage>
 
                         {/* Only Showing timers on load at the moment, will probably change in the future */}
                         {
@@ -492,77 +472,83 @@ const HILModals = (props) => {
                         <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
                             {
                                 (hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
-                                <styled.HilInputContainer>
+                                <>
+                                    <styled.HilMessage style={{ marginBottom: '1rem' }}>Enter Quantity</styled.HilMessage>
 
-                                    <styled.HilInputIcon
-                                        className='fas fa-minus-circle'
-                                        styled={{ color: '#ff1818' }}
-                                        onClick={() => {
+                                    <styled.HilInputContainer>
 
-                                            if (count) {
-                                                if (quantity > count) {
-                                                    // quantity should not exceed count, it may have been set higher before a lot was selected
-                                                    // reduce quantity to lot count
-                                                    setQuantity(count)
+
+                                        <styled.HilInputIcon
+                                            className='fas fa-minus-circle'
+                                            styled={{ color: '#ff1818' }}
+                                            onClick={() => {
+
+                                                if (count) {
+                                                    if (quantity > count) {
+                                                        // quantity should not exceed count, it may have been set higher before a lot was selected
+                                                        // reduce quantity to lot count
+                                                        setQuantity(count)
+                                                    }
+                                                    else {
+                                                        // quantity cannot be negative
+                                                        if (quantity > 0) setQuantity(quantity - 1)
+                                                    }
                                                 }
                                                 else {
                                                     // quantity cannot be negative
                                                     if (quantity > 0) setQuantity(quantity - 1)
                                                 }
-                                            }
-                                            else {
-                                                // quantity cannot be negative
-                                                if (quantity > 0) setQuantity(quantity - 1)
-                                            }
 
-                                        }}
-                                    />
+                                            }}
+                                        />
 
-                                    <styled.HilInput
-                                        type="number"
-                                        onChange={(e) => {
-                                            // get value and parse to int to avoid string concat instead of addition / subtraction
-                                            const value = parseInt(e.target.value)
+                                        <styled.HilInput
+                                            type="number"
+                                            onChange={(e) => {
+                                                // get value and parse to int to avoid string concat instead of addition / subtraction
+                                                const value = parseInt(e.target.value)
 
-                                            // if there is a lot with a count, the quantity cannot exceed the count
-                                            if (count) {
-                                                if (value <= count) setQuantity(value)
-                                            }
+                                                // if there is a lot with a count, the quantity cannot exceed the count
+                                                if (count) {
+                                                    if (value <= count) setQuantity(value)
+                                                }
 
-                                            // otherwise the value can be anything
-                                            else {
-                                                setQuantity(value)
-                                            }
-                                        }}
-                                        value={quantity}
-                                    />
+                                                // otherwise the value can be anything
+                                                else {
+                                                    setQuantity(value)
+                                                }
+                                            }}
+                                            value={quantity}
+                                        />
 
-                                    <styled.HilInputIcon
-                                        className='fas fa-plus-circle'
-                                        styled={{ color: '#1c933c' }}
-                                        onClick={() => {
-                                            // if there is a lot count, quantity cannot exceed lot count
-                                            if (count) {
-                                                if (quantity < count) {
+                                        <styled.HilInputIcon
+                                            className='fas fa-plus-circle'
+                                            styled={{ color: '#1c933c' }}
+                                            onClick={() => {
+                                                // if there is a lot count, quantity cannot exceed lot count
+                                                if (count) {
+                                                    if (quantity < count) {
+                                                        setQuantity(quantity + 1)
+                                                    }
+
+                                                    // quantity is greater than count (probably was set before lot was selected), reduce to count
+                                                    else {
+                                                        setQuantity(parseInt(count))
+                                                    }
+
+                                                }
+                                                // otherwise quantity can be anything
+                                                else {
                                                     setQuantity(quantity + 1)
                                                 }
 
-                                                // quantity is greater than count (probably was set before lot was selected), reduce to count
-                                                else {
-                                                    setQuantity(parseInt(count))
-                                                }
-
-                                            }
-                                            // otherwise quantity can be anything
-                                            else {
-                                                setQuantity(quantity + 1)
-                                            }
-
-                                        }}
-                                    />
+                                            }}
+                                        />
 
 
-                                </styled.HilInputContainer>
+                                    </styled.HilInputContainer>
+                                    {renderSelectedLot()}
+                                </>
 
                             }
 
@@ -570,7 +556,6 @@ const HILModals = (props) => {
                             {count &&
                                 <styled.HilSubText style={{ marginBottom: "1rem" }}>Available Lot Items: {count}</styled.HilSubText>
                             }
-                            {renderSelectedLot()}
                         </div>
 
                         <styled.HilButtonContainer>
@@ -689,8 +674,6 @@ const HILModals = (props) => {
                                 _id: lotId,
                                 bins
                             } = currLot
-
-                            console.log("mapadawda currLot", currLot)
 
                             const isSelected = selectedLotId === lotId
 
