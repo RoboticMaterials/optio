@@ -117,7 +117,7 @@ export const ErrorContainerComponent = styled.div`
     position: absolute;
     top: 50%;
     right: 1rem;
-    transform: translateY(-50 %);
+    transform: translateY(-50%);
     margin: 0;
     padding: 0;
 `;

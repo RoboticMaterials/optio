@@ -60,14 +60,16 @@ const DashboardButton = (props => {
                 </style.IconContainer>
 
                 }
+
+                {children && children}
+                <ErrorTooltip
+                    visible={error}
+                    text={error}
+                    ContainerComponent={dashboard_buttons_style.ErrorContainerComponent}
+                />
             </div>
 
-            {children && children}
-            <ErrorTooltip
-                visible={error}
-                text={error}
-                ContainerComponent={dashboard_buttons_style.ErrorContainerComponent}
-            />
+
 
 
         </style.Container>
