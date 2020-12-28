@@ -203,8 +203,6 @@ const HILModals = (props) => {
 
         dispatchTaskQueueItemClicked('')
 
-        console.log("selectedLot",selectedLot)
-
         let newItem = {
             ...item,
             hil_response: true,

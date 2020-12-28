@@ -90,7 +90,7 @@ const CardEditor = (props) => {
 			const result = await onGetCard(cardId)
 			if(result) {
 				setFormMode(FORM_MODES.UPDATE)
-				setShowLotInfo(false)
+				// setShowLotInfo(false)
 			}
 			else {
 
@@ -113,7 +113,8 @@ const CardEditor = (props) => {
 	const [content, setContent] = useState(null)
 	const [selectedBin, setSelectedBin] = useState(binId)
 	const [formMode, setFormMode] = useState(FORM_MODES.CREATE)
-	const [showLotInfo, setShowLotInfo] = useState(formMode === FORM_MODES.CREATE)
+	const [showLotInfo, setShowLotInfo] = useState(true)
+	// const [showLotInfo, setShowLotInfo] = useState(formM?ode === FORM_MODES.CREATE)
 
 	const selectedBinName = stations[selectedBin] ? stations[selectedBin].name : "Queue"
 
