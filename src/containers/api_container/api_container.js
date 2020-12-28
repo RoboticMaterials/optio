@@ -62,7 +62,7 @@ const ApiContainer = (props) => {
     const onGetTasksAnalysis = () => dispatch(getTasksAnalysis())
 
     const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
-    const dispatchGetLots = () => dispatch(getLots())
+    // const dispatchGetLots = () => dispatch(getLots())
     const onGetCards = () => dispatch(getCards())
 
     const onGetProcesses = () => dispatch(getProcesses());
@@ -239,11 +239,14 @@ const ApiContainer = (props) => {
                 pageDataInterval = setInterval(() => loadSettingsData(), 10000);
                 break;
 
+            case 'lots':
+                pageDataInterval = setInterval(() => loadCardsData(), 1000)
+                break
+
             case 'processes':
-                if (data2 === "card") {
-                    console.log("api container apiPage", apiPage)
+                if (data2 === "lots") {
                     loadCardsData(data1) // initial call
-                    pageDataInterval = setInterval(() => loadCardsData(data1), 10000) // set interval
+                    pageDataInterval = setInterval(() => loadCardsData(data1), 1000) // set interval
                 }
                 else if (data1 === "timeline") {
                     loadCardsData() // initial call
@@ -416,7 +419,7 @@ const ApiContainer = (props) => {
         } else {
             onGetCards()
         }
-        dispatchGetLots()
+        // dispatchGetLots()
 
     }
 
