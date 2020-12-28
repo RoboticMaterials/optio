@@ -100,9 +100,19 @@ const SideBarSwitcher = (props) => {
               />
             } */}
 
-
             <SideBarButton
                 mode={'devices'}
+                setShowSideBarPage={(page) => {
+                    dispatch(setMode(page));
+                    history.push(`/${page}`)
+                    onSideBarBack({ selectedLocation })
+                    onTaskEditing(false)
+                }}
+                currentMode={url}
+            />
+
+            <SideBarButton
+                mode={'lots'}
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)

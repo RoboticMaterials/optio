@@ -375,7 +375,7 @@ const EditProcess = (props) => {
                     <Button
                         onClick={goToCardPage}
                     >
-                        View Card Zone
+                        View Lots
                     </Button>
                 }
 

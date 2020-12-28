@@ -34,6 +34,7 @@ export const SideBarButtonText = styled.h1`
   font-weight: 100;
   font-size:1rem;
   color: ${props => props.theme.schema.locations};
+  text-align: center;
 
   @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
       font-size: .7rem;
