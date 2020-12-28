@@ -155,7 +155,7 @@ const EditProcess = (props) => {
                         <styled.ListItemIconContainer>
 
                             <styled.ListItemIcon
-                                className='fas fa-cog'
+                                className='fas fa-edit'
                                 onClick={() => {
                                     setEditingTask(true)
                                     dispatchSetSelectedTask(routeTask)
@@ -183,11 +183,15 @@ const EditProcess = (props) => {
                         </styled.TaskContainer>
                     }
 
+                    {/* If the process is broken and it's at the broken index, then show a button there to fix it */}
                     {!!selectedProcess.broken && ind === selectedProcess.broken - 1 &&
 
-                        <styled.ListItem
-                            schema={'processes'}
-                            style={{borderColor: 'red'}}
+                        <Button
+                            schema={'devices'}
+                            disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
+                            style={{marginBottom: '1rem'}}
+                            secondary
+                            disabled={selectedTask?.new}
                             onClick={() => {
                                 const newTask = {
                                     name: '',
@@ -226,11 +230,9 @@ const EditProcess = (props) => {
                                 setEditingTask(true)
                             }}
                         >
-                            <styled.ListItemTitle style={{ lineHeight: '3rem', width: '100%', color:'red' }}>
-                                Add Route to fix broken process
-                            </styled.ListItemTitle>
+                            Add Route To Fix Process
+                        </Button>
 
-                        </styled.ListItem>
                     }
                 </div>
             )
@@ -243,10 +245,12 @@ const EditProcess = (props) => {
 
         return (
             <>
-                <styled.ListItem
-                    // onMouseEnter={() => dispatchSetSelectedTask(routeTask)}
-                    // onMouseLeave={() => dispatchDeselectTask()}
+
+                <Button
                     schema={'processes'}
+                    disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
+                    secondary
+                    disabled={selectedTask?.new}
                     onClick={() => {
                         const newTask = {
                             name: '',
@@ -280,11 +284,8 @@ const EditProcess = (props) => {
                         setEditingTask(true)
                     }}
                 >
-                    <styled.ListItemTitle style={{ lineHeight: '3rem' }}>
-                        Add Route
-                    </styled.ListItemTitle>
-
-                </styled.ListItem>
+                    Add Route
+                </Button>
 
                 {!!newRoute &&
                     <styled.TaskContainer schema={'processes'}>
@@ -423,7 +424,7 @@ const EditProcess = (props) => {
                 <Button
                     schema={'processes'}
                     disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
-                    style={{ marginBottom: '0rem' }}
+                    style={{ marginBottom: '0rem', borderColor: 'red' }}
                     secondary
                     onClick={() => {
                         setConfirmDeleteModal(true)
