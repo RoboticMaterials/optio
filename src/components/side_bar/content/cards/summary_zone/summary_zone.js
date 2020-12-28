@@ -30,14 +30,22 @@ const SummaryZone = SortableContainer((props) => {
 			/>
 			<styled.ProcessesContainer ref={zoneRef}>
 				{selectedProcesses.map((currProcess, processIndex) => {
+					const {
+						name: processName,
+						_id: processId
+					} = currProcess
 					return	(
+						<styled.ZoneContainer>
+
+						<styled.ProcessName>{processName}</styled.ProcessName>
 						<CardZone
 							setShowCardEditor={setShowCardEditor}
 							showCardEditor={showCardEditor}
 							maxHeight={"30rem"}
-							processId={currProcess._id}
+							processId={processId}
 							handleCardClick={handleCardClick}
 						/>
+						</styled.ZoneContainer>
 					)
 				})}
 			</styled.ProcessesContainer>

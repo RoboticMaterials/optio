@@ -20,13 +20,15 @@ const LotQueue = SortableContainer((props) => {
 		size,
 		processId,
 		setShowCardEditor,
-		showCardEditor
+		showCardEditor,
+		maxHeight
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
 
 	return(
 		<Column
+			maxHeight={maxHeight}
 			maxWidth={"fit-content"}
 			HeaderContent={
 				!isCollapsed ?
