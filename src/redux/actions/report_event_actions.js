@@ -148,3 +148,11 @@ export const putReportEvent = (id, reportEvent) => async dispatch => {
     return payload;
 };
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+export const getReportAnalytics = async (stationId, timeSpan) => {
+    try {
+        const stationAnalytics = await api.getReportAnalytics(stationId, timeSpan);
+        return stationAnalytics
+    } catch (error) {
+    }
+};

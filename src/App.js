@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Route, IndexRoute, Link, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, IndexRoute, Link, Switch, useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux'
 
 import { ThemeProvider } from "styled-components";
@@ -13,6 +13,9 @@ import useWindowSize from './hooks/useWindowSize'
 import logger, { disableAll } from './logger.js';
 
 import * as styled from './App.style'
+
+// Import API
+import { deleteLocalSettings } from './api/local_api'
 
 // import containers
 import ApiContainer from './containers/api_container/api_container';
@@ -54,6 +57,8 @@ const App = (props) => {
     const size = useWindowSize()
     const windowWidth = size.width
 
+    const history = useHistory()
+
     const mobileMode = windowWidth < widthBreakPoint;
 
     /**
@@ -75,6 +80,15 @@ const App = (props) => {
             return null
         }
 
+    }
+
+    // Used to clear local settings just in case the page cant be loaded anymore
+    const handleClearLocalSettings = () => {
+        deleteLocalSettings()
+        return (
+            <>
+            </>
+        )
     }
     return (
         <>
@@ -107,9 +121,17 @@ const App = (props) => {
                         {/*    // key={id}*/}
                         {/*/>*/}
 
+                        <Route
+                            path={"/clear_local"}
+                        >
+                            {
+                                handleClearLocalSettings()
+                            }
+                        </Route>
+
 
                         <Route
-                            path={["/locations/:stationID?/:widgetPage?", '/:sidebar?/:data1?/:data2?', '/', ]}
+                            path={["/locations/:stationID?/:widgetPage?", '/:sidebar?/:data1?/:data2?', '/',]}
                         >
                             <ApiContainer styleMode={null} apiMode={null} mode={null} logMode={"DEV"} onLoad={() => setLoaded(true)} apiLoaded={() => setApiLoaded(true)} isApiLoaded={apiLoaded} />
                         </Route>
@@ -144,14 +166,14 @@ const App = (props) => {
                                         //     <></>
                                         //     :
 
-                                            <Route
-                                                path={["/:page?/:id?/:subpage?", '/']}
-                                            >
-                                                <SideBar
-                                                    showSideBar={sideBarOpen}
-                                                    setShowSideBar={setShowSideBar}
-                                                />
-                                            </Route>
+                                        <Route
+                                            path={["/:page?/:id?/:subpage?", '/']}
+                                        >
+                                            <SideBar
+                                                showSideBar={sideBarOpen}
+                                                setShowSideBar={setShowSideBar}
+                                            />
+                                        </Route>
                                         // :
                                         //     <Route
                                         //         path={["/:page?/:id?/:subpage?", '/']}

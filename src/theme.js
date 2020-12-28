@@ -198,8 +198,12 @@ export const theme = {
                 iconName: "fas fa-flag-checkered"
             },
             error: {
-                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(250, 67, 47, 0.95) 0%, rgba(217, 21, 0, 0.95) 100%)',
                 solid: '#ff1900'
+            },
+            ok: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(10, 189, 0, 0.95) 0%, rgba(77, 196, 71, 0.95) 100%)',
+                solid: '#0dff00'
             },
             operations: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',

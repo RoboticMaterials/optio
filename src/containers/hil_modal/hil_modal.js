@@ -53,8 +53,17 @@ const HILModal = () => {
                 const item = taskQueue[taskQueueItemClicked]
                 const type = tasks[item.task_id].device_type
                 const hilType = tasks[item.task_id].type
-                if (type == 'human') {
-                    return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item} />
+
+                // Sets the HIL Message, the reason why it would undefined is that its a human load task
+                // Since a human load task needs to immediatly show, its immediatly put into the task Q vs telling the backend to put it into the task Q
+                // since it doesnt come from the backend, there's no hil message in the task Q Item
+                let hilMessage = item.hil_message
+                if(!hilMessage) {
+                    hilMessage = tasks[item.task_id].load.instructions
+                }
+                
+                if (type === 'human') {
+                    return <HILModals hilMessage={hilMessage} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item} />
                 }
             }
         }

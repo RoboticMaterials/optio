@@ -288,7 +288,7 @@ const DashboardScreen = (props) => {
             // If the task is a human task, its handled a little differently compared to a normal task
             // Set hil_response to null because the backend does not dictate the load hil message
             // Since the task is put into the q but automatically assigned to the person that clicks the button
-            if (tasks[Id].device_type === 'human') {
+            if (tasks[Id]?.device_type === 'human') {
                 onLocalHumanTask(true)
                 // dispatch action to add task to queue
                 await dispatch(postTaskQueue(

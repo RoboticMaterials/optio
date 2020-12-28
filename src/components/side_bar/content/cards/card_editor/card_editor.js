@@ -90,7 +90,7 @@ const CardEditor = (props) => {
 			const result = await onGetCard(cardId)
 			if(result) {
 				setFormMode(FORM_MODES.UPDATE)
-				setShowLotInfo(false)
+				// setShowLotInfo(false)
 			}
 			else {
 
@@ -113,7 +113,8 @@ const CardEditor = (props) => {
 	const [content, setContent] = useState(null)
 	const [selectedBin, setSelectedBin] = useState(binId)
 	const [formMode, setFormMode] = useState(FORM_MODES.CREATE)
-	const [showLotInfo, setShowLotInfo] = useState(formMode === FORM_MODES.CREATE)
+	const [showLotInfo, setShowLotInfo] = useState(true)
+	// const [showLotInfo, setShowLotInfo] = useState(formM?ode === FORM_MODES.CREATE)
 
 	const selectedBinName = stations[selectedBin] ? stations[selectedBin].name : "Queue"
 
@@ -348,7 +349,8 @@ const CardEditor = (props) => {
 							});
 						}
 
-						const moveLocationOptions = [{name: "Queue", _id: "QUEUE"},...Object.values(stations).filter((currStation) => currStation._id !== selectedBin)]
+						const moveLocationOptions = [...Object.values(stations).filter((currStation) => currStation._id !== selectedBin)]
+						if(selectedBin !== "QUEUE") moveLocationOptions.unshift({name: "Queue", _id: "QUEUE"})
 
 						return(
 							<styled.BodyContainer
@@ -388,17 +390,28 @@ const CardEditor = (props) => {
 
 
 
+								<div style={{display: "flex", flexDirection: "column", width: "100%"}}>
+									<Button
+										style={buttonStyle}
+										onClick={()=> {
+											formikProps.submitForm()
+											close()
+										}}
+										schema={"ok"}
+										secondary
+									>
+										Ok
+									</Button>
+									<Button
+										style={buttonStyle}
+										onClick={()=>setContent(null)}
+										schema={"error"}
+										// secondary
+									>
+										Cancel
+									</Button>
+								</div>
 
-								<Button
-									style={buttonStyle}
-									onClick={()=> {
-										formikProps.submitForm()
-										close()
-									}}
-									schema={"lots"}
-								>
-									Ok
-								</Button>
 							</styled.BodyContainer>
 						)
 					}
@@ -420,9 +433,18 @@ const CardEditor = (props) => {
 								<Button
 									style={buttonStyle}
 									onClick={()=>setContent(null)}
-									schema={"lots"}
+									schema={"ok"}
+									secondary
 								>
 									Ok
+								</Button>
+								<Button
+									style={buttonStyle}
+									onClick={()=>setContent(null)}
+									schema={"error"}
+									// secondary
+								>
+									Cancel
 								</Button>
 							</styled.BodyContainer>
 						)
@@ -594,50 +616,75 @@ const CardEditor = (props) => {
 										const diffTime = Math.abs(currentDate - jsDate);
 										const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-										var modifiedData = data
+										var {
+											bins,
+											...modifiedData
+										} = data
+										console.log("modifiedData",modifiedData)
 
-										// maps id value changes to names (eg if station_id changed, replaces the station_ids with the corresponding station names)
-										if(Object.keys(modifiedData).includes("station_id") || Object.keys(modifiedData).includes("route_id")) {
 
-											// handle station_id change
-											if(Object.keys(modifiedData).includes("station_id")) {
-												const {
-													station_id: {
-														new: newStationId,
-														old: oldStationId
-													},
-													...rest
-												} = modifiedData
 
-												modifiedData = {
-													...rest, "station": {
-														new: stations[newStationId] ? stations[newStationId].name : "",
-														old: stations[oldStationId] ? stations[oldStationId].name : "",
-													}
+										// handle route_id change
+										if(Object.keys(modifiedData).includes("route_id")) {
+											const {
+												route_id: {
+													new: newRouteId,
+													old: oldRouteId
+												},
+												...rest
+											} = modifiedData
+
+											modifiedData = {
+												...rest, "route": {
+													new: routes[newRouteId] ? routes[newRouteId].name : "",
+													old: routes[oldRouteId] ? routes[oldRouteId].name : "",
 												}
 											}
 
-											// handle route_id change
-											if(Object.keys(modifiedData).includes("route_id")) {
-												const {
-													route_id: {
-														new: newRouteId,
-														old: oldRouteId
-													},
-													...rest
-												} = modifiedData
-
-												modifiedData = {
-													...rest, "route": {
-														new: routes[newRouteId] ? routes[newRouteId].name : "",
-														old: routes[oldRouteId] ? routes[oldRouteId].name : "",
-													}
-												}
-
-											}
 										}
 
 										let messages = parseMessageFromEvent(name, username, modifiedData)
+
+										// handle bins change
+										// if(Object.keys(modifiedData).includes("bins")) {
+										// 	const {
+										// 		bins: {
+										// 			new: newBins,
+										// 			old: oldBins
+										// 		},
+										// 		...rest
+										// 	} = modifiedData
+										//
+										// 	var oldVals = {}
+										// 	var newVals = {}
+										// 	Object.entries(newBins).forEach((currEntry) => {
+										// 		const currKey = currEntry[0]
+										// 		const currValue = currEntry[1]
+										//
+										// 		if(oldBins[currKey]) {
+										// 			if(oldBins[currKey].count !== newBins[currKey].count) {
+										// 				messages.push(`Changed count in ${currKey} from ${oldBins[currKey].count} to ${newBins[currKey].count}`)
+										// 			}
+										//
+										// 			// oldVals[stations[currKey].name] = oldBins[currKey].count
+										// 			// newVals[stations[currKey].name] = newBins[currKey].count
+										//
+										// 		}
+										// 		else {
+										// 			messages.push(`Set count to ${newBins[currKey].count} in ${currKey} `)
+										// 			// entries[modifiedData]
+										// 			// modifiedData = {
+										// 			// 	...rest, "bins": {
+										// 			// 		new: stations[newStationId] ? stations[newStationId].name : "",
+										// 			// 		old: stations[oldStationId] ? stations[oldStationId].name : "",
+										// 			// 	}
+										// 			// }
+										// 		}
+										// 	})
+										//
+										// }
+
+										if(messages.length === 0) return null
 
 										return(
 											<styled.HistoryItemContainer>
@@ -660,6 +707,14 @@ const CardEditor = (props) => {
 										)
 									})}
 								</styled.HistoryBodyContainer>
+								<Button
+									style={{marginTop: "1rem"}}
+									onClick={()=>setContent(null)}
+									schema={"error"}
+									// secondary
+								>
+									Go Back
+								</Button>
 							</styled.BodyContainer>
 						)
 					}
@@ -667,11 +722,12 @@ const CardEditor = (props) => {
 					return (
 						<styled.StyledForm>
 							<styled.Header>
-								{((content === CONTENT.CALENDAR_START) || (content === CONTENT.CALENDAR_END) || (content === CONTENT.HISTORY))  &&
+								{((content === CONTENT.CALENDAR_START) || (content === CONTENT.CALENDAR_END) || (content === CONTENT.HISTORY) || (content === CONTENT.MOVE))  &&
 								<Button
 									onClick={()=>setContent(null)}
-									schema={'lots'}
+									schema={'error'}
 									style={buttonStyle}
+									// secondary
 								>
 									<styled.Icon className="fas fa-arrow-left"></styled.Icon>
 								</Button>
@@ -686,8 +742,9 @@ const CardEditor = (props) => {
 								</styled.Title>
 
 								<Button
+									secondary
 									onClick={close}
-									schema={'lots'}
+									schema={'error'}
 									style={buttonStyle}
 								>
 									<i className="fa fa-times" aria-hidden="true"/>
@@ -741,7 +798,7 @@ const CardEditor = (props) => {
 
 									{formMode === FORM_MODES.UPDATE &&
 									<Button
-										secondary
+										// secondary
 										style={{...buttonStyle, margin: "0 0 1rem 0", width: "fit-content"}}
 										type={"button"}
 										onClick={()=>setShowLotInfo(!showLotInfo)}

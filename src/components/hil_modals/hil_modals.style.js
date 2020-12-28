@@ -204,14 +204,7 @@ export const DeselectLotIcon = styled.button`
     top: 0;
     left: 0;
     transform: translate(-25%,-25%);
-    color: red;
-    
-    
-
-    
-    
-    
-    
+    color: red;    
 `
 
 export const LotTitle = styled.span`
