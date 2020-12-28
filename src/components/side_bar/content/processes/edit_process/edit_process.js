@@ -189,7 +189,7 @@ const EditProcess = (props) => {
                         <Button
                             schema={'devices'}
                             disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
-                            style={{marginBottom: '1rem'}}
+                            style={{marginBottom: '1rem', width: '100%', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden'}}
                             secondary
                             disabled={selectedTask?.new}
                             onClick={() => {
@@ -199,7 +199,7 @@ const EditProcess = (props) => {
                                     type: 'push',
                                     quantity: 1,
                                     device_type: !!MiRMapEnabled ? 'MiR_100' : 'human',
-                                    handoff: false,
+                                    handoff: true,
                                     track_quantity: true,
                                     map_id: currentMap._id,
                                     new: true,
@@ -258,7 +258,7 @@ const EditProcess = (props) => {
                             type: 'push',
                             quantity: 1,
                             device_type: !!MiRMapEnabled ? 'MiR_100' : 'human',
-                            handoff: false,
+                            handoff: true,
                             track_quantity: true,
                             map_id: currentMap._id,
                             new: true,
