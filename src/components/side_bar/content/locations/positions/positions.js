@@ -7,6 +7,8 @@ import { sortableElement, sortableHandle } from 'react-sortable-hoc';
 // Import Components
 import MinusButton from '../../../../basic/minus_button/minus_button'
 import Textbox from '../../../../basic/textbox/textbox'
+import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
+
 
 import arrayMove from 'array-move';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
@@ -41,6 +43,11 @@ export default function Positions(props) {
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
     const [editingIndex, setEditingIndex] = useState(null)
+    const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
+    const [deletingIndex, setDeletingIndex] = useState()
+    const [deletingPosition, setDeletingPosition] = useState()
+
+
     // const [selectedPositions, setSelectedPositions] = useState([])
 
 
@@ -132,8 +139,8 @@ export default function Positions(props) {
     /**
      * Handles deleting positions
      * Does some different things based on if the position is new or not (see comments bellow)
-     * @param {*} position 
-     * @param {*} i 
+     * @param {*} position
+     * @param {*} i
      */
     const handleDelete = async (position, i) => {
         // If the position is new, just remove it from the local station
@@ -145,7 +152,7 @@ export default function Positions(props) {
             locationPositionIDs.splice(i, 1)
             dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
 
-            // 
+            //
             dispatch(positionActions.removePosition(position._id))
         }
 
@@ -162,7 +169,7 @@ export default function Positions(props) {
             let locationPositionIDs = deepCopy(selectedLocation.children)
             locationPositionIDs.splice(i, 1)
             await dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
-            
+
             // If deleting an existing position, you also need to update the copy because it's a permenant delete, you cant undo a position delete
             // TODO: Get rid of copy's....
             onSetSelectedLocationCopy(deepCopy({
@@ -175,7 +182,6 @@ export default function Positions(props) {
 
         }
 
-
     }
 
     const handleAssociatedPositions = (associatedPositions, positionType) => {
@@ -186,9 +192,13 @@ export default function Positions(props) {
 
                 return (
                     <styled.PositionListItem  background={LocationTypes[positionType].color}>
+
+
                         <MinusButton
                             onClick={() => {
-                                handleDelete(position, i)
+                                setConfirmDeleteModal(true)
+                                setDeletingIndex(i)
+                                setDeletingPosition(position)
                             }}
                         />
                         <Textbox
@@ -204,6 +214,7 @@ export default function Positions(props) {
 
                         />
 
+
                         {/* If not a human position, then add ability to use cart location */}
                         {position.type !== 'human_position' &&
                             <styled.CartIcon className='icon-cart' onClick={() => handleSetChildPositionToCartCoords(position)} />
@@ -211,6 +222,7 @@ export default function Positions(props) {
 
                         {/* Commenting out for now, not working with constent updating */}
                         {/* <DragHandle></DragHandle> */}
+
 
                     </styled.PositionListItem>
                 )
@@ -287,6 +299,20 @@ export default function Positions(props) {
             <></>
             :
             <styled.PositionsContainer>
+
+              <ConfirmDeleteModal
+                isOpen = {!!confirmDeleteModal}
+                title={"Are you sure you want to delete this Position?"}
+                button_1_text={"Yes"}
+                handleOnClick1 = {()=>{
+                  handleDelete(deletingPosition, deletingIndex)
+                  setConfirmDeleteModal(null)
+                }}
+                button_2_text={"No"}
+                handleOnClick2 = {()=> setConfirmDeleteModal(null)}
+                handleClose={() => setConfirmDeleteModal(null)}
+              />
+
 
                 {/* Cards for dragging a new position onto the map */}
                 <styled.CardContainer>

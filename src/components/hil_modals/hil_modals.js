@@ -70,6 +70,8 @@ const HILModals = (props) => {
     const [selectedDashboard, setSelectedDashboard] = useState(null)
     const [cardsLoaded, setCardsLoaded] = useState([false])
     const [showLotSelector, setShowLotSelector] = useState(false)
+    const [didDisplayLots, setDidDisplayLots] = useState(false)
+    const [didSelectInitialLot, setDidSelectInitialLot] = useState(false)
     const [hilLoadUnload, setHilLoadUnload] = useState('')
 
     const {
@@ -112,8 +114,12 @@ const HILModals = (props) => {
 
     // load card data on load for selecting lot
     useEffect(() => {
-        if (cardsLoaded && availableLots.length > 0) setShowLotSelector(true)
-    }, [cardsLoaded, availableLots])
+        if (cardsLoaded && !didDisplayLots && availableLots.length > 0) {
+            setShowLotSelector(true)
+            setDidDisplayLots(true)
+        }
+
+    }, [cardsLoaded, availableLots, didDisplayLots])
 
     /*
     * Get dropdownsearch options for cards
@@ -136,7 +142,10 @@ const HILModals = (props) => {
         })
 
         if (stationCards && Array.isArray(stationCards) && stationCards.length > 0) {
-            if ((stationCards.length === 1) && !selectedLot) setSelectedLot(stationCards[0])
+            if ((stationCards.length === 1) && !selectedLot &&!didSelectInitialLot) {
+                setSelectedLot(stationCards[0])
+                setDidSelectInitialLot(true)
+            }
             setAvailableLots(stationCards)
         }
 
