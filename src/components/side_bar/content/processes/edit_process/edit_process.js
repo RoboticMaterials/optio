@@ -280,7 +280,7 @@ const EditProcess = (props) => {
                         setEditingTask(true)
                     }}
                 >
-                    <styled.ListItemTitle style={{ lineHeight: '3rem' }}>
+                    <styled.ListItemTitle style={{ lineHeight: '3rem', cursor: 'pointer'}}>
                         Add Route
                     </styled.ListItemTitle>
 

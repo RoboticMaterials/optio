@@ -44,7 +44,6 @@ export const ListItem = styled.div`
     height: 3rem;
     text-overflow: ellipsis;
     justify-content: space-between;
-
     background: transparent;
     padding: 0rem 1rem;
 
