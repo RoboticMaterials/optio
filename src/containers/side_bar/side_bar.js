@@ -58,6 +58,7 @@ const SideBar = (props) => {
     const locationEditing = useSelector(state => state.locationsReducer.editingLocation)
     const taskEditing = useSelector(state => state.tasksReducer.editingTask)
     const processEditing = useSelector(state => state.processesReducer.editingProcess)
+    const sideBarOpen = useSelector(state => state.sidebarReducer.open)
 
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
@@ -123,8 +124,14 @@ const SideBar = (props) => {
      * Handles the hamburger icon transformation
      */
     const handleSideBarOpenCloseButtonClick = () => {
+      console.log(widgetPageLoaded)
+
+      if(!widgetPageLoaded || widgetPageLoaded && !sideBarOpen){
         const hamburger = document.querySelector('.hamburger')
         hamburger.classList.toggle('is-active')
+      }
+
+
         dispatch(editing(false)) //location editing need to rename
         dispatch(editingTask(false))
         dispatch(editingProcess(false))
