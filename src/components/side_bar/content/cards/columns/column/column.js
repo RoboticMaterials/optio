@@ -50,7 +50,10 @@ const Column = SortableContainer((props) => {
 			...remainingPayload
 		} = payload
 
+		console.log("shouldAcceptDrop payload",payload)
+
 		if(oldProcessId !== processId) return false
+		// if(binId === station_id) return false
 		return true
 	}
 
@@ -61,7 +64,6 @@ const Column = SortableContainer((props) => {
 
 		} else {
 			if(addedIndex !== null) {
-
 				const {
 					binId,
 					cardId,
@@ -69,42 +71,45 @@ const Column = SortableContainer((props) => {
 					...remainingPayload
 				} = payload
 
-				console.log("remainingPayload",remainingPayload)
+				if(!(binId === station_id)) {
 
-				const droppedCard = reduxCards[cardId] ? reduxCards[cardId] : {}
+					console.log("remainingPayload",remainingPayload)
 
-				const oldBins = droppedCard.bins ? droppedCard.bins : {}
-				const {
-					[binId]: movedBin,
-					...remainingOldBins
-				} = oldBins || {}
+					const droppedCard = reduxCards[cardId] ? reduxCards[cardId] : {}
 
-				// already contains items in bin
-				if(oldBins[station_id]) {
+					const oldBins = droppedCard.bins ? droppedCard.bins : {}
+					const {
+						[binId]: movedBin,
+						...remainingOldBins
+					} = oldBins || {}
 
-					onPutCard({
-						...remainingPayload,
-						bins: {
-							...remainingOldBins,
-							[station_id]: {
-								...oldBins[station_id],
-								count: parseInt(oldBins[station_id].count) + parseInt(movedBin.count)
+					// already contains items in bin
+					if(oldBins[station_id]) {
+
+						onPutCard({
+							...remainingPayload,
+							bins: {
+								...remainingOldBins,
+								[station_id]: {
+									...oldBins[station_id],
+									count: parseInt(oldBins[station_id].count) + parseInt(movedBin.count)
+								}
 							}
-						}
-					}, cardId)
-				}
+						}, cardId)
+					}
 
-				// no items in bin
-				else {
-					onPutCard({
-						...remainingPayload,
-						bins: {
-							...remainingOldBins,
-							[station_id]: {
-								...movedBin,
+					// no items in bin
+					else {
+						onPutCard({
+							...remainingPayload,
+							bins: {
+								...remainingOldBins,
+								[station_id]: {
+									...movedBin,
+								}
 							}
-						}
-					}, cardId)
+						}, cardId)
+					}
 				}
 			}
 		}
