@@ -32,6 +32,7 @@ const WidgetButton = (props) => {
 
     const history = useHistory()
     const params = useParams()
+    const widgetPage = params.widgetPage
 
     const dispatch = useDispatch()
     const onPostTaskQueue = (q) => dispatch(postTaskQueue(q))
@@ -164,14 +165,14 @@ const WidgetButton = (props) => {
 
 
     return (
-        <styled.WidgetButtonButton style = {{justifyContent: type == 'cart' && 'center'}}
+        <styled.WidgetButtonButton style = {{marginLeft: type == 'cart' && '2rem'}}
             onClick={() => {
-                handleOnClick()
-
-                if (showSideBar) {
+                if (showSideBar && !widgetPage) {
                     const hamburger = document.querySelector('.hamburger')
                     hamburger.classList.toggle('is-active')
                 }
+
+                handleOnClick()
 
                 //const hamburger = document.querySelector('.hamburger')
                 //hamburger.classList.toggle(false)
