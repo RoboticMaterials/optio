@@ -398,7 +398,7 @@ export const InvisibleItem = styled.div`
 `
 
 export const LotTitleName = styled.span`
-    color:  white;
+    // color:  white;
     font-size: 2rem;
     margin: 0;
     padding: 0;

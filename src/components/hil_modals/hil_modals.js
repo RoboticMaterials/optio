@@ -796,8 +796,7 @@ const HILModals = (props) => {
                 {showLotSelector ?
                     renderLotSelector()
                     :
-                    // !!selectedTask && selectedTask.track_quantity ? renderQuantityOptions() : renderFractionOptions()
-                    renderQuantityOptions()
+                    !!selectedTask && selectedTask.track_quantity ? renderQuantityOptions() : renderFractionOptions()
                 }
 
 
