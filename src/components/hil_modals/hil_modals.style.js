@@ -6,9 +6,9 @@ export const HilContainer = styled.div`
     // top: .5rem;
     // left: 1rem;
     // bottom: 2rem;
-    margin: .5rem 1rem 2rem 1rem;
-    width: 90%;
-    height: 90%;
+    //margin: .5rem 1rem 2rem 1rem;
+    width: 98%;
+    height: 98%;
     top: 50%;
     left: 50%;
     transform: translate(-50%,-50%);
@@ -21,8 +21,8 @@ export const HilContainer = styled.div`
     flex-direction: column;
     background-color: white;
 
-    overflow-y: scroll;
-    // overflow: hidden;
+    //overflow-y: scroll;
+     overflow: hidden;
 
     ::-webkit-scrollbar {
         display: none;  /* Safari and Chrome */
@@ -39,6 +39,7 @@ export const HilContainer = styled.div`
 export const HilInputContainer = styled.div`
     display: flex;
     flex-direction: row;
+    margin-bottom: 1rem;
 `
 
 export const HilInput = styled.input`
@@ -74,8 +75,8 @@ export const HilExitModal = styled.i`
     font-size: 5rem;
     text-shadow: 0.05rem 0.05rem 0.2rem #303030;
     transition: text-shadow 0.1s ease, filter 0.1s ease;
-    padding-left:2rem;
-    padding-top:1rem;
+    //padding-left:2rem;
+    //padding-top:1rem;
     margin-right: auto;
     
     &:hover {
@@ -120,13 +121,7 @@ export const LotSelectorContainer = styled.div`
     flex-direction: column;
     flex: 1;
     
-    
     width: 100%;
-
-
-    @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
-        // padding: 0rem 2rem;
-    }
     
     overflow: hidden;
 `
@@ -138,12 +133,13 @@ export const LotsContainer = styled.div`
     width: 100%;
     overflow: auto;
     flex: 1;
-    padding: 1rem 1rem 1rem 1rem;
+    padding: 2rem 1rem 1rem 1rem;
+    align-items: center;
     
     
 `
 
-export const LotFooter = styled.div`
+export const FooterContainer = styled.div`
     background: ${props => props.theme.bg.septenary};
     border-top: 1px solid ${props => props.theme.bg.tertiary};
     width: 100%;
@@ -151,6 +147,7 @@ export const LotFooter = styled.div`
     justify-content: center;
     align-items: center;
     padding: .5rem;
+    flex-direction: column;
 `
 
 
@@ -158,11 +155,19 @@ export const HilMessage = styled.h3`
     display: flex;
     font-family: ${props => props.theme.font.primary};
     justify-content: center;
-    padding-top: 1rem;
-    margin-top: 3rem;
+    //padding-top: 1rem;
+    //margin-top: 3rem;
+    padding: 0;
+    margin: 0;
     font-size: ${props => props.theme.fontSize.sz1};
     text-align: center;
 `
+
+export const HilSubText = styled.span`
+    font-family: ${props => props.theme.font.primary};
+    font-size: ${props => props.theme.fontSize.sz3};
+`
+
 export const LotDropdownContainer = styled.div`
   width: 50%;
   margin-top: 2rem;
@@ -170,34 +175,43 @@ export const LotDropdownContainer = styled.div`
   flex-direction: column;
 `
 
+const iconButtonCss = css`
+    text-shadow: 0.05rem 0.05rem 0.2rem #303030;
+    //transition: text-shadow 0.1s ease, filter 0.1s ease;
+    &:hover {
+        cursor: pointer;
+        filter: brightness(85%);
+    }
+
+    &:active{
+        filter: brightness(85%);
+        text-shadow: none;
+    }
+
+    background: none;
+    outline: none;
+    border: none;
+
+    &:focus {
+        outline: none;
+    }
+`
 
 export const DeselectLotIcon = styled.button`
+    ${iconButtonCss};
     font-size: 3rem;
-    text-shadow: 0.05rem 0.05rem 0.2rem #303030;
-    transition: text-shadow 0.1s ease, filter 0.1s ease;
     position: absolute;
     top: 0;
     left: 0;
     transform: translate(-25%,-25%);
     color: red;
+    
+    
 
-    &:hover {
-        cursor: pointer;
-        filter: brightness(85%);
-    }
-    z-index: 200;
-    &:active{
-        filter: brightness(85%);
-        text-shadow: none;
-    }
     
-    background: none;
-    outline: none;
-    border: none;
     
-    &:focus {
-    outline: none;
-    }
+    
+    
 `
 
 export const LotTitle = styled.span`
@@ -211,6 +225,8 @@ export const LotTitle = styled.span`
 `
 
 export const HilTimer = styled.p`
+    padding: 0;
+    margin: 0;
     display: flex;
     justify-content: center;
     font-family: ${props => props.theme.font.primary};
@@ -221,13 +237,17 @@ export const HilTimer = styled.p`
 
 
 const HilButtonCss = css`
-border: none;
+  border: none;
 
     border-radius: 1rem;
     box-shadow: 0 0.1rem 0.2rem 0rem #303030;
-    height: 10rem;
-    min-height: 10rem;
-    max-height: 10rem;
+    height: 7rem;
+    min-height: 7rem;
+    max-height: 7rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     transition: background-color 0.25s ease, filter 0.1s ease;
     background-color: ${props => props.color};
@@ -249,6 +269,10 @@ border: none;
         height: 9rem;
     }
 `
+export const ColumnContainer = styled.div`
+  display: flex;
+    flex-direction: column;
+`
 
 export const Header = styled.div`
     display: flex;
@@ -258,16 +282,18 @@ export const Header = styled.div`
     align-items: center;
     justify-content: center;
   align-items: center;
+    padding: .5rem 1rem;
 `
 
 export const HilIcon = styled.i`
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: auto auto;
+    //margin: auto auto;
     color:  ${props => props.color};
     fill: green;
-    font-size: 5rem;
+    font-size: 2.5rem;
+    margin-right: 1rem;
     &:hover {
         cursor: pointer;
     }
@@ -279,6 +305,20 @@ export const HilIcon = styled.i`
 
 export const HilButton = styled.button`
     ${HilButtonCss};
+    align-items: center;
+    justify-content: center;
+
+    //min-height: 5rem;
+    //height: 5rem;
+    //max-height: 5rem;
+    //width: fit-content;
+    display: flex;
+    flex-direction: row;
+    padding: 0rem 3rem;
+    align-items: center;
+    justify-content: center;
+    
+    
 `
 
 export const LotButton = styled.button`
@@ -287,15 +327,31 @@ export const LotButton = styled.button`
     justify-content: center;
     min-height: 5rem;
     height: 5rem;
+    width: 100%;
     color: black;
-    border: ${props => props.isSelected ? "1px solid cyan" : "none"};
-    
-    background-color: ${props => props.theme.schema[props.schema].solid};
-    filter: brightness(${props => props.filter});
-    margin-bottom: 2rem;
     ${props => !props.isSelected && "filter: grayscale(80%)"};
-    // filter: brightness(${props => props.filter});
+    // border: ${props => props.isSelected ? "1px solid cyan" : "none"};
+    
+     background-color: #805858;
+    margin-bottom: 2rem;
 `
+
+export const FooterButton = styled.button`
+    ${HilButtonCss};
+    
+    min-height: 5rem;
+    height: 5rem;
+    max-height: 5rem;
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    padding: 0rem 3rem;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+`
+
+
 
 export const LotButtonText = styled.p`
     color:  black;
@@ -314,19 +370,22 @@ color:  black;
 export const SelectedLotContainer = styled.div`
     // background: red;
     display: flex;
-    padding: .5rem;
+    //padding: .5rem;
     align-items: center;
-  
-    padding: .25 2.5rem;
+    //margin-bottom: 1rem;
+    //padding: .25rem 2.5rem;
+    //m
     
 `
 
 export const SelectedLotName = styled.div`
-
-    background: ${props => props.theme.bg.senary};
+    display: flex;
+    align-items: center;
+    background: ${props => props.theme.bg.quinary};
     padding: .5rem;
     border-radius: 1rem;
-    padding: .25 2.5rem;
+    padding: .25rem 2.5rem;
+    min-height: 3.5rem;
     
 `
 
@@ -335,24 +394,29 @@ export const InvisibleItem = styled.div`
     margin-left: auto;
     height: 1rem;
     width: 1rem;
-    // background: blue;
 
 `
 
 export const LotTitleName = styled.span`
-    color:  black;
+    color:  white;
     font-size: 2rem;
     margin: 0;
     padding: 0;
     
 `
 
-export const EditLotIcon = styled.i`
+export const EditLotIcon = styled.button`
+    ${iconButtonCss};
+    color: white;
     margin-left: 2rem;
     font-size: 1.5rem;
+    
+    
 `
 
 export const HilButtonText = styled.p`
     color:  ${props => props.color};
     font-size: 2rem;
+    margin: 0;
+    padding: 0;
 `

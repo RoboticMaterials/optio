@@ -184,7 +184,7 @@ export const theme = {
             },
             lots: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(38, 212, 53) 0%, rgba(80, 250, 95, 0.95) 100%)',
-                solid: '#26d435',
+                solid: '#805858',
                 iconName: "fas fa-play"
             },
             kick_off: {
