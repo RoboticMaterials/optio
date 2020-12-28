@@ -1,35 +1,36 @@
 import React, {useState, useEffect} from "react";
 
-import * as styled from "./card_editor.style"
-import {cardSchema} from "../../../../../methods/utils/form_schemas";
+// external functions
+import PropTypes from "prop-types";
+import {Formik} from "formik";
+import {useDispatch, useSelector} from "react-redux";
+
+// internal components
+import CalendarField from "../../../../basic/form/calendar_field/calendar_field";
 import TextField from "../../../../basic/form/text_field/text_field";
 import Textbox from "../../../../basic/textbox/textbox";
 import DropDownSearchField from "../../../../basic/form/drop_down_search_field/drop_down_search_field";
 import Button from "../../../../basic/button/button";
-import {Formik} from "formik";
-import {useDispatch, useSelector} from "react-redux";
-import uuid from 'uuid'
+import ButtonGroup from "../../../../basic/button_group/button_group";
 
+// actions
+import {deleteCard, getCard, postCard, putCard} from "../../../../../redux/actions/card_actions";
+import {getCardHistory} from "../../../../../redux/actions/card_history_actions";
+
+// constants
+import {FORM_MODES} from "../../../../../constants/scheduler_constants";
+
+// utils
+import {parseMessageFromEvent} from "../../../../../methods/utils/card_utils";
+import {cardSchema} from "../../../../../methods/utils/form_schemas";
+
+// import styles
+import * as styled from "./card_editor.style"
 
 // logger
 import log from '../../../../../logger'
-import {deleteCard, getCard, postCard, putCard} from "../../../../../redux/actions/card_actions";
-import {FORM_MODES} from "../../../../../constants/scheduler_constants";
-import { TextField as Cal } from '@material-ui/core';
-import {getCardHistory} from "../../../../../redux/actions/card_history_actions";
-import {parseMessageFromEvent} from "../../../../../methods/utils/card_utils";
-import TimePicker from "../../../../basic/timer_picker/timer_picker";
-import Calendar from 'react-calendar'
-import CalendarField from "../../../../basic/form/calendar_field/calendar_field";
-import TimePickerField from "../../../../basic/form/time_picker_field/time_picker_field";
-import CustomTimePickerField from "../../../../basic/form/custom_time_picker_field/custom_time_picker_field";
-import {getLot, postLot, putLot} from "../../../../../redux/actions/lot_actions";
-import PropTypes from "prop-types";
-import * as style from "../../scheduler/schedule_list/schedule_list_item/schedule_list_item.style";
-import ButtonGroup from "../../../../basic/button_group/button_group";
 
 const logger = log.getLogger("CardEditor")
-
 logger.setLevel("debug")
 
 const CONTENT = {
@@ -48,10 +49,9 @@ const CardEditor = (props) => {
 		cardId,
 		processId,
 		binId
-
 	} = props
 
-	const processes = useSelector(state => { return state.processesReducer.processes })
+	// extract redux state
 	const cards = useSelector(state => { return state.cardsReducer.cards })
 
 	const card = cards[cardId]
@@ -61,27 +61,23 @@ const CardEditor = (props) => {
 
 	const availableBins = bins ? Object.keys(bins) : ["QUEUE"]
 
-
-
 	const cardHistory = useSelector(state => { return state.cardsReducer.cardHistories[cardId] })
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
 	const stations = useSelector(state => { return state.locationsReducer.stations })
 
+	// define actions
 	const dispatch = useDispatch()
 	const onPostCard = async (card) => await dispatch(postCard(card))
 	const onGetCard = async (cardId) => await dispatch(getCard(cardId))
 	const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
-
-	const DispatchPostLot = async (lot) => await dispatch(postLot(lot))
-	const DispatchPutLot = async (lot, lotId) => await dispatch(putLot(lot, lotId))
-	const onGetLot = async (lotId) => await dispatch(getLot(lotId))
-
 	const onGetCardHistory = async (cardId) => await dispatch(getCardHistory(cardId))
 	const onDeleteCard = async (cardId, processId) => await dispatch(deleteCard(cardId, processId))
 
+	// define component state
 	const [cardDataInterval, setCardDataInterval] = useState(null)
 	const [calendarValue, setCalendarValue] = useState(null)
 	const [showTimePicker, setShowTimePicker] = useState(false)
+
 
 
 

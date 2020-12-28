@@ -148,6 +148,7 @@ const CardZone = SortableContainer((props) => {
 			<styled.Container width={width} height={height}>
 				<LotQueue
 					key={"QUEUE"}
+					maxHeight={maxHeight}
 					station_id={"QUEUE"}
 					setShowCardEditor={setShowCardEditor}
 					showCardEditor={showCardEditor}
@@ -176,6 +177,7 @@ const CardZone = SortableContainer((props) => {
 							<StationsColumn
 								step={step}
 								size={size}
+								maxHeight={maxHeight}
 								// onDrop={handleDrop}
 								key={station_id + index}
 								id={route_id+"+"+station_id}
@@ -192,6 +194,7 @@ const CardZone = SortableContainer((props) => {
 
 				<FinishColumn
 					key={"FINISH"}
+					maxHeight={maxHeight}
 					station_id={"FINISH"}
 					setShowCardEditor={setShowCardEditor}
 					showCardEditor={showCardEditor}

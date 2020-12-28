@@ -19,7 +19,8 @@ const Column = SortableContainer((props) => {
 		processId,
 		HeaderContent,
 		isCollapsed,
-		maxWidth
+		maxWidth,
+		maxHeight
 
 	} = props
 
@@ -171,6 +172,7 @@ const Column = SortableContainer((props) => {
 	if(isCollapsed) {
 		return(
 			<styled.StationContainer
+				maxHeight={maxHeight}
 				isCollapsed={isCollapsed}
 				maxWidth={maxWidth}
 			>
@@ -189,6 +191,7 @@ const Column = SortableContainer((props) => {
 				height={height}
 				isCollapsed={isCollapsed}
 				maxWidth={maxWidth}
+				maxHeight={maxHeight}
 			>
 				{HeaderContent}
 

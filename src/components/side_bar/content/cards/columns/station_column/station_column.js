@@ -14,7 +14,7 @@ const StationsColumn = SortableContainer((props) => {
 		cards = [],
 		size,
 		processId,
-
+		maxHeight
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
@@ -22,6 +22,7 @@ const StationsColumn = SortableContainer((props) => {
 	return(
 		<Column
 			maxWidth={"15rem"}
+			maxHeight={maxHeight}
 			HeaderContent={
 				!isCollapsed ?
 				<styled.StationHeader>

@@ -52,7 +52,7 @@ const LotsPage = (props) => {
         onShowSideBar(true)
         onHoverStationInfo(null)
         const currentPath = history.location.pathname
-        history.push('/processes/summary')
+        history.push('/lots/summary')
     }
 
     const openEditor = (cardId, processId, binId) => {

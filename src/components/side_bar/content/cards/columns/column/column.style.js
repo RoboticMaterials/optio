@@ -29,6 +29,7 @@ export const StationContainer = styled.div`
     max-width: ${props => props.isCollapsed ? "2rem" : props.maxWidth};
     min-width: ${props => props.isCollapsed ? "2rem" : props.maxWidth};
     margin-right: 1rem;
+    max-height: ${props => props.maxHeight};
     
     border-radius: 1rem;
     overflow: hidden;
