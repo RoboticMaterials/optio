@@ -161,7 +161,7 @@ const LoadUnloadFields = () => {
                             style={{ marginRight: '1rem' }}
                         />
                     </styled.RowContainer>
-                    <styled.HelpText>If toggled on, then a prompt will appear on the unload dashboard to confirm that the objects have arrived. If toggled off, then a confirmation won't be required, but, you will not be able to track transit time.</styled.HelpText>
+                    <styled.HelpText>Do you want to track transit time? This will display a Unload Button at the Unload Station</styled.HelpText>
                 </styled.ContentContainer>
             }
 

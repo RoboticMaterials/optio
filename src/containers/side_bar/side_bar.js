@@ -111,12 +111,14 @@ const SideBar = (props) => {
 
         setPrevParams(params)
 
-        // update prev params
-
+        if(!showSideBar) {
+            setWidth(450)
+            dispatch(sidebarActions.setWidth(450))
+        }
 
         return () => {}
 
-    }, [page, subpage, id, width])
+    }, [page, subpage, id, width, showSideBar])
 
     /**
      * Handles the hamburger icon transformation
