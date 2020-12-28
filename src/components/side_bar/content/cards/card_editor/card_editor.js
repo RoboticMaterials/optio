@@ -616,50 +616,75 @@ const CardEditor = (props) => {
 										const diffTime = Math.abs(currentDate - jsDate);
 										const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-										var modifiedData = data
+										var {
+											bins,
+											...modifiedData
+										} = data
+										console.log("modifiedData",modifiedData)
 
-										// maps id value changes to names (eg if station_id changed, replaces the station_ids with the corresponding station names)
-										if(Object.keys(modifiedData).includes("station_id") || Object.keys(modifiedData).includes("route_id")) {
 
-											// handle station_id change
-											if(Object.keys(modifiedData).includes("station_id")) {
-												const {
-													station_id: {
-														new: newStationId,
-														old: oldStationId
-													},
-													...rest
-												} = modifiedData
 
-												modifiedData = {
-													...rest, "station": {
-														new: stations[newStationId] ? stations[newStationId].name : "",
-														old: stations[oldStationId] ? stations[oldStationId].name : "",
-													}
+										// handle route_id change
+										if(Object.keys(modifiedData).includes("route_id")) {
+											const {
+												route_id: {
+													new: newRouteId,
+													old: oldRouteId
+												},
+												...rest
+											} = modifiedData
+
+											modifiedData = {
+												...rest, "route": {
+													new: routes[newRouteId] ? routes[newRouteId].name : "",
+													old: routes[oldRouteId] ? routes[oldRouteId].name : "",
 												}
 											}
 
-											// handle route_id change
-											if(Object.keys(modifiedData).includes("route_id")) {
-												const {
-													route_id: {
-														new: newRouteId,
-														old: oldRouteId
-													},
-													...rest
-												} = modifiedData
-
-												modifiedData = {
-													...rest, "route": {
-														new: routes[newRouteId] ? routes[newRouteId].name : "",
-														old: routes[oldRouteId] ? routes[oldRouteId].name : "",
-													}
-												}
-
-											}
 										}
 
 										let messages = parseMessageFromEvent(name, username, modifiedData)
+
+										// handle bins change
+										// if(Object.keys(modifiedData).includes("bins")) {
+										// 	const {
+										// 		bins: {
+										// 			new: newBins,
+										// 			old: oldBins
+										// 		},
+										// 		...rest
+										// 	} = modifiedData
+										//
+										// 	var oldVals = {}
+										// 	var newVals = {}
+										// 	Object.entries(newBins).forEach((currEntry) => {
+										// 		const currKey = currEntry[0]
+										// 		const currValue = currEntry[1]
+										//
+										// 		if(oldBins[currKey]) {
+										// 			if(oldBins[currKey].count !== newBins[currKey].count) {
+										// 				messages.push(`Changed count in ${currKey} from ${oldBins[currKey].count} to ${newBins[currKey].count}`)
+										// 			}
+										//
+										// 			// oldVals[stations[currKey].name] = oldBins[currKey].count
+										// 			// newVals[stations[currKey].name] = newBins[currKey].count
+										//
+										// 		}
+										// 		else {
+										// 			messages.push(`Set count to ${newBins[currKey].count} in ${currKey} `)
+										// 			// entries[modifiedData]
+										// 			// modifiedData = {
+										// 			// 	...rest, "bins": {
+										// 			// 		new: stations[newStationId] ? stations[newStationId].name : "",
+										// 			// 		old: stations[oldStationId] ? stations[oldStationId].name : "",
+										// 			// 	}
+										// 			// }
+										// 		}
+										// 	})
+										//
+										// }
+
+										if(messages.length === 0) return null
 
 										return(
 											<styled.HistoryItemContainer>

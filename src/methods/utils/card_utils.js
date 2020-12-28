@@ -32,7 +32,7 @@ export const parseMessageFromEvent = (eventName, username, data) => {
 
 			})
 
-			if(msgs.length === 0) msgs.push("No info found")
+			// if(msgs.length === 0) msgs.push("No info found")
 
 			return msgs
 

@@ -67,6 +67,7 @@ const Column = SortableContainer((props) => {
 				const {
 					binId,
 					cardId,
+					count,
 					// process_id: oldProcessId,
 					...remainingPayload
 				} = payload
