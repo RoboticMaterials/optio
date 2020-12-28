@@ -389,17 +389,28 @@ const CardEditor = (props) => {
 
 
 
+								<div style={{display: "flex", flexDirection: "column", width: "100%"}}>
+									<Button
+										style={buttonStyle}
+										onClick={()=> {
+											formikProps.submitForm()
+											close()
+										}}
+										schema={"ok"}
+										secondary
+									>
+										Ok
+									</Button>
+									<Button
+										style={buttonStyle}
+										onClick={()=>setContent(null)}
+										schema={"error"}
+										// secondary
+									>
+										Cancel
+									</Button>
+								</div>
 
-								<Button
-									style={buttonStyle}
-									onClick={()=> {
-										formikProps.submitForm()
-										close()
-									}}
-									schema={"lots"}
-								>
-									Ok
-								</Button>
 							</styled.BodyContainer>
 						)
 					}
@@ -421,9 +432,18 @@ const CardEditor = (props) => {
 								<Button
 									style={buttonStyle}
 									onClick={()=>setContent(null)}
-									schema={"lots"}
+									schema={"ok"}
+									secondary
 								>
 									Ok
+								</Button>
+								<Button
+									style={buttonStyle}
+									onClick={()=>setContent(null)}
+									schema={"error"}
+									// secondary
+								>
+									Cancel
 								</Button>
 							</styled.BodyContainer>
 						)
@@ -661,6 +681,14 @@ const CardEditor = (props) => {
 										)
 									})}
 								</styled.HistoryBodyContainer>
+								<Button
+									style={{marginTop: "1rem"}}
+									onClick={()=>setContent(null)}
+									schema={"error"}
+									// secondary
+								>
+									Go Back
+								</Button>
 							</styled.BodyContainer>
 						)
 					}
@@ -668,11 +696,12 @@ const CardEditor = (props) => {
 					return (
 						<styled.StyledForm>
 							<styled.Header>
-								{((content === CONTENT.CALENDAR_START) || (content === CONTENT.CALENDAR_END) || (content === CONTENT.HISTORY))  &&
+								{((content === CONTENT.CALENDAR_START) || (content === CONTENT.CALENDAR_END) || (content === CONTENT.HISTORY) || (content === CONTENT.MOVE))  &&
 								<Button
 									onClick={()=>setContent(null)}
-									schema={'lots'}
+									schema={'error'}
 									style={buttonStyle}
+									// secondary
 								>
 									<styled.Icon className="fas fa-arrow-left"></styled.Icon>
 								</Button>
@@ -687,8 +716,9 @@ const CardEditor = (props) => {
 								</styled.Title>
 
 								<Button
+									secondary
 									onClick={close}
-									schema={'lots'}
+									schema={'error'}
 									style={buttonStyle}
 								>
 									<i className="fa fa-times" aria-hidden="true"/>
@@ -742,7 +772,7 @@ const CardEditor = (props) => {
 
 									{formMode === FORM_MODES.UPDATE &&
 									<Button
-										secondary
+										// secondary
 										style={{...buttonStyle, margin: "0 0 1rem 0", width: "fit-content"}}
 										type={"button"}
 										onClick={()=>setShowLotInfo(!showLotInfo)}
