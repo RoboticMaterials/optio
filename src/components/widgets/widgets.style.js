@@ -34,7 +34,6 @@ export const WidgetLocationContainer = styled.div`
 `
 
 export const WidgetContainer = styled.div`
-    align-content:center;
     justify-content:center;
     margin: ${props => !!props.widgetPage ? '.25rem auto' : 'auto'};
     padding-top:.3rem;
@@ -105,7 +104,6 @@ export const WidgetPositionName = styled.h4`
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-
 `
 
 export const WidgetHoverArea = styled.div`
@@ -143,6 +141,7 @@ export const WidgetButtonContainer = styled.div`
     width: 100%;
     display: flex;
     justify-content: center;
+    align-content:center;
 
 `
 
