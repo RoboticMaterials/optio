@@ -33,6 +33,7 @@ function Station(props) {
 
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
+    const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const hoveringID = useSelector(state => state.locationsReducer.hoverLocationID)
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
     const devices = useSelector(state => state.devicesReducer.devices)
@@ -168,11 +169,14 @@ function Station(props) {
      */
     const onSetStationTask = () => {
 
-        // Make sure there is a slected task and
+        // Make sure there is a selected task and that its a station you can assign a task too
         if (selectedTask !== null && (location.type === 'human' || location.type === 'warehouse')) {
 
-            // If the load location has been defined but the unload position hasnt, assign the unload position
+            // Commented out for now
+            // // If there's a selected process and the process has routes and the station is not selected, then disable it from being selected
+            // if (!!selectedProcess && selectedProcess.routes.length > 0 && !isSelected) return
 
+            // If the load location has been defined but the unload position hasnt, assign the unload position
             if (selectedTask.load.position !== null && selectedTask.unload.position === null) {
                 let unload = deepCopy(selectedTask.unload)
                 let type = selectedTask.type
@@ -226,7 +230,9 @@ function Station(props) {
                 className={rd3tClassName}
                 style={{ fill: color, stroke: color }}
                 onMouseEnter={() => {
-                    if (!hoveringID) {
+
+                    // Only allow hovering if there is no selected task
+                    if (!hoveringID && selectedTask === null) {
                         setHovering(true)
 
                         if (!rotating && !translating && selectedLocation == null && selectedTask == null) {
@@ -283,7 +289,12 @@ function Station(props) {
                     className={`${rd3tClassName}-trans`}
                     style={{ cursor: "pointer" }}
                     onMouseEnter={() => {
-                        setHovering(true)
+
+                        // Only allow hovering if there is no selected task
+                        if (selectedTask === null) {
+                            setHovering(true)
+
+                        }
                     }}
                     onMouseDown={() => setTranslating(true)}
                     // onClick={() => {
