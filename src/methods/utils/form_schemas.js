@@ -200,8 +200,9 @@ export const signInSchema = Yup.object().shape({
 const binsSchema = lazy(obj => object(
     mapValues(obj, (value, key) => {
         return Yup.object().shape({
-                    count: Yup.string()
-                        .required('Count required.'),
+                    count: Yup.number()
+                        .min(1, "Quantity must be at least 1.")
+                        .required('Quantity required.'),
                 })
     })
 ));

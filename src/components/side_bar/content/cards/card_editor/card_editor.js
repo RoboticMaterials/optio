@@ -41,6 +41,18 @@ const CONTENT = {
 	MOVE: "MOVE"
 }
 
+const SubmitErrorHandler = ({ submitCount, isValid, onSubmitError }) => {
+	const [lastHandled, setLastHandled] = useState(0);
+	useEffect(() => {
+		if (submitCount > lastHandled && !isValid) {
+			onSubmitError();
+			setLastHandled(submitCount);
+		}
+	}, [submitCount, isValid, onSubmitError, lastHandled]);
+
+	return null;
+};
+
 // overwrite default button text color since it's hard to see on the lots background color
 // const buttonStyle = {color: "black"}
 const buttonStyle = {}
@@ -81,9 +93,6 @@ const CardEditor = (props) => {
 	const [cardDataInterval, setCardDataInterval] = useState(null)
 	const [calendarValue, setCalendarValue] = useState(null)
 	const [showTimePicker, setShowTimePicker] = useState(false)
-
-
-
 
 	const handleGetCard = async (cardId) => {
 		if(cardId) {
@@ -295,18 +304,29 @@ const CardEditor = (props) => {
 				onSubmit={async (values, { setSubmitting, setTouched, resetForm }) => {
 					// set submitting to true, handle submit, then set submitting to false
 					// the submitting property is useful for eg. displaying a loading indicator
+					const {
+						buttonType
+					} = values
+
 					setSubmitting(true)
 					await handleSubmit(values, formMode)
 					setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
 					setSubmitting(false)
-					resetForm()
-					// close()
+
+					if(buttonType === "ADD") {
+						resetForm()
+						close()
+					}
+					else if(buttonType === "Add & Next") {
+						resetForm()
+					}
+
 				}}
 			>
 				{formikProps => {
 
 					// extract common properties from formik
-					const {errors, values, touched, isSubmitting, initialValues} = formikProps
+					const {errors, values, touched, isSubmitting, initialValues, submitCount, set} = formikProps
 
 					const startDateText = (values?.dates?.start?.month && values?.dates?.start?.day && values?.dates?.start?.year) ?  values.dates.start.month + "/" + values.dates.start.day + "/" + values.dates.start.year : "Planned start"
 					// const startDateTime = (values?.startTime?.hours && values?.startTime?.minutes && values?.startTime?.seconds) ?  values.startTime.hours + ":" + values.startTime.minutes + ":" + values.startTime.seconds : "Start Time"
@@ -319,9 +339,10 @@ const CardEditor = (props) => {
 
 					// get number of touched fields
 					// const touchedReducer = (accumulator, currentValue) => (currentValue === true) ? accumulator + 1 : accumulator
+					// const touchedReducer = (accumulator, currentValue) => (currentValue === true) ? accumulator + 1 : accumulator
 					// const touchedCount = Object.values(touched).reduce(touchedReducer, 0)
 					const touchedCount = Object.values(touched).length
-					const submitDisabled = (errorCount > 0) || (touchedCount === 0) || isSubmitting
+					const submitDisabled = ((errorCount > 0) || (touchedCount === 0) || isSubmitting) && (submitCount > 0)
 
 					const onDeleteClick = async () => {
 
@@ -476,12 +497,13 @@ const CardEditor = (props) => {
 								<styled.RowContainer>
 									<styled.ObjectInfoContainer>
 										<styled.ObjectTitleContainer>
-											<styled.ObjectLabel>Count</styled.ObjectLabel>
+											<styled.ObjectLabel>Quantity</styled.ObjectLabel>
 
 											<TextField
 												name={`bins.${selectedBin}.count`}
 												type="number"
 												InputComponent={styled.CountInput}
+												IconContainerComponent={styled.QuantityErrorContainerComponent}
 											/>
 										</styled.ObjectTitleContainer>
 									</styled.ObjectInfoContainer>
@@ -511,12 +533,14 @@ const CardEditor = (props) => {
 									<styled.ButtonContainer>
 										<Button
 											schema={'lots'}
+											type={"button"}
 											disabled={submitDisabled}
 											style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
 											secondary
 											onClick={async () => {
-												await formikProps.submitForm()
-												close()
+												formikProps.setFieldValue("buttonType", "ADD")
+												formikProps.submitForm()
+
 											}}
 										>
 											Add
@@ -524,12 +548,13 @@ const CardEditor = (props) => {
 
 										<Button
 											schema={'lots'}
+											type={"button"}
 											disabled={submitDisabled}
 											style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
 											secondary
 											onClick={async () => {
-												await formikProps.submitForm()
-												formikProps.resetForm()
+												formikProps.setFieldValue("buttonType", "Add & Next")
+												formikProps.submitForm()
 											}}
 										>
 											Add & Next
@@ -537,11 +562,12 @@ const CardEditor = (props) => {
 
 										<Button
 											schema={'lots'}
+											type={"button"}
 											disabled={submitDisabled}
 											style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
 											secondary
 											onClick={async () => {
-												await formikProps.submitForm()
+												formikProps.submitForm()
 											}}
 										>
 											Add & Edit
@@ -620,9 +646,6 @@ const CardEditor = (props) => {
 											bins,
 											...modifiedData
 										} = data
-										console.log("modifiedData",modifiedData)
-
-
 
 										// handle route_id change
 										if(Object.keys(modifiedData).includes("route_id")) {
@@ -721,6 +744,12 @@ const CardEditor = (props) => {
 
 					return (
 						<styled.StyledForm>
+							<SubmitErrorHandler
+								submitCount={submitCount}
+								isValid={formikProps.isValid}
+								onSubmitError={() => {}}
+								formik={formikProps}
+							/>
 							<styled.Header>
 								{((content === CONTENT.CALENDAR_START) || (content === CONTENT.CALENDAR_END) || (content === CONTENT.HISTORY) || (content === CONTENT.MOVE))  &&
 								<Button
