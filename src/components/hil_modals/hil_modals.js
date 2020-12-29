@@ -128,14 +128,29 @@ const HILModals = (props) => {
     *
     * */
     useEffect(() => {
+        const currentTask = tasks[item.task_id]
+
+        const {
+            type,
+            load,
+            unload
+        } = currentTask || {}
+
+        const {
+            station: unloadStationId
+        } = unload || {}
+
+        const {
+            station: loadStationId
+        } = load || {}
 
         const stationCards = Object.values(cards).filter((currCard) => {
             const {
                 bins
-            } = currCard
+            } = currCard || {}
 
             if (bins) {
-                if (bins[stationId] && bins[stationId].count > 0) return true
+                if (bins[loadStationId] && bins[loadStationId].count > 0) return true
             }
 
         })
@@ -149,7 +164,7 @@ const HILModals = (props) => {
         }
 
 
-    }, [cards, stationId])
+    }, [cards, selectedTask])
 
     useEffect(() => {
         if (count && quantity && (quantity > count)) setQuantity(parseInt(count))
