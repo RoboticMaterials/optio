@@ -36,11 +36,23 @@ const SideBarButton = (props) => {
                 button_2_text={"No"}
                 handleClose={() => setConfirmDeleteModal(null)}
                 handleOnClick1 = {() => {
-                    props.setShowSideBarPage(props.mode)
-                    setConfirmDeleteModal(null)
-                    onLocationEditing(false)
-                    onTaskEditing(false)
-                    onProcessEditing(false)
+                    if(props.mode==='lots'){
+                      const currentPath = history.location.pathname
+                      history.push('/lots/summary')
+
+                      setConfirmDeleteModal(null)
+                      onLocationEditing(false)
+                      onTaskEditing(false)
+                      onProcessEditing(false)
+                    }
+                    else{
+                      props.setShowSideBarPage(props.mode)
+                      setConfirmDeleteModal(null)
+                      onLocationEditing(false)
+                      onTaskEditing(false)
+                      onProcessEditing(false)
+                    }
+
                 }}
                 handleOnClick2 = {() => {
                     setConfirmDeleteModal(null)
@@ -101,13 +113,13 @@ const SideBarButton = (props) => {
                 <style.SideBarButtonIcon
                     className={'fas fa-layer-group'}
                     onClick={() => {
-                        // if(locationEditing || taskEditing || processEditing){
-                        //     setConfirmDeleteModal(true)
-                        // }
-                        // else{props.setShowSideBarPage(props.mode)}
-                            const currentPath = history.location.pathname
-                            history.push('/lots/summary')
-                    }}
+                         if(locationEditing || taskEditing || processEditing){
+                             setConfirmDeleteModal(true)
+                         }
+                         else{
+                              const currentPath = history.location.pathname
+                              history.push('/lots/summary')}
+                            }}
                     currentMode={props.currentMode}
                     mode={props.mode}
                 >

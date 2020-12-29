@@ -433,16 +433,6 @@ const EditProcess = (props) => {
                     Delete
                 </Button>
 
-
-                {!selectedProcessCopy.new && // only allow viewing card page if process has been created
-                    <Button
-                        onClick={goToCardPage}
-                    >
-                        View Lots
-                    </Button>
-                }
-
-
             </styled.Container>
         </>
 
