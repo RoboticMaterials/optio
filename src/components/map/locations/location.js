@@ -214,14 +214,23 @@ const Location = (props) => {
 
     // Is this location selected, or is it's parent selected
     let isSelected =
-        selectedTask === null &&
-        (
-            !!selectedLocation && selectedLocation._id == location._id
-            ||
-            !!location.parent && !!selectedLocation && selectedLocation._id == location._id
-            ||
-            !!location.parent && !!selectedLocation && selectedLocation._id == location.parent
-        )
+        selectedTask === null ?
+            (
+                !!selectedLocation && selectedLocation._id == location._id
+                ||
+                !!location.parent && !!selectedLocation && selectedLocation._id == location._id
+                ||
+                !!location.parent && !!selectedLocation && selectedLocation._id == location.parent
+            )
+            :
+            !!selectedProcess &&
+            (
+                !!selectedLocation && selectedLocation._id == location._id
+                ||
+                !!location.parent && !!selectedLocation && selectedLocation._id == location._id
+                ||
+                !!location.parent && !!selectedLocation && selectedLocation._id == location.parent
+            )
 
     let pos
 
@@ -239,7 +248,15 @@ const Location = (props) => {
         if (selectedLocation !== null && !isSelected && selectedTask === null) {
             color = '#afb5c9' // Grey
         }
-    } else {
+    } 
+    
+    else if(!!selectedProcess){
+        if (selectedLocation !== null && !isSelected) {
+            color = '#afb5c9' // Grey
+        }
+    }
+    
+    else {
         if (selectedTask.load.station == location._id || selectedTask.load.position == location._id
             || selectedTask.unload.station == location._id || selectedTask.unload.position == location._id) {
             color = '#38eb87' // Green
