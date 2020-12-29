@@ -124,7 +124,6 @@ const SideBar = (props) => {
      * Handles the hamburger icon transformation
      */
     const handleSideBarOpenCloseButtonClick = () => {
-      console.log(widgetPageLoaded)
 
       if(!widgetPageLoaded || widgetPageLoaded && !sideBarOpen){
         const hamburger = document.querySelector('.hamburger')

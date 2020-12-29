@@ -340,15 +340,15 @@ const EditTask = (props) => {
              * The structure of a routes that belong to a process is a directed graph
              * The way it works is the all stations involved with a process are added as keys
              * The values of each station are routes that have that station as the unload station
-             * 
+             *
              * This means that the very first station in a process wont have a route associated with it because it only loads and doesnt unload
-             * 
+             *
              * EX:
-             * 
+             *
              * Station 1 has a route that goes to Station 2 (route1) and Station 3 (route2)
              * Station 2 has a route that goes to Station 3 (route3)
              * Station 3 has no routes that leave the station
-             * 
+             *
              * So the data structure would look like this:
              * {
              *  station1: [], // No routes that unload here
@@ -489,19 +489,19 @@ const EditTask = (props) => {
                 isOpen={!!confirmDeleteModal}
                 title={
 
-                    `Are you sure you want to delete this Route? 
-                    
+                    `Are you sure you want to delete this Route?
+
 
                     ${selectedTask.processes.length > 0 ?
-                        `This task is a part of processes: 
+                        `This task is a part of processes:
 
                         ${selectedTask.processes.map((process) => {
                             // Try catch for error with editing an existing task that belongs to a new process
                             try {
                                 return `'${processes[process].name}', `
-                                
+
                             } catch (error) {
-                                return ``                             
+                                return ``
                             }
                         })}
 
@@ -721,7 +721,7 @@ const EditTask = (props) => {
                                     onClick={() => {
                                         dispatchSetSelectedTask({
                                             ...selectedTask,
-                                            track_quantity: !selectedTask.track_quantity
+                                            track_quantity: true
                                         })
                                     }}
                                     selected={selectedTask.track_quantity}
@@ -732,9 +732,10 @@ const EditTask = (props) => {
                                 <styled.DualSelectionButton
                                     style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
                                     onClick={() => {
+                                        console.log(selectedTask)
                                         dispatchSetSelectedTask({
                                             ...selectedTask,
-                                            track_quantity: !selectedTask.track_quantity
+                                            track_quantity: false
                                         })
                                     }}
                                     selected={!selectedTask.track_quantity}

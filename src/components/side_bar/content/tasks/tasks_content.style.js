@@ -62,7 +62,7 @@ export const DualSelectionButton = styled.button`
     font-family: ${props => props.theme.font.primary};
 
     color: ${props => !props.selected ? props.theme.bg.tertiary : props.theme.bg.octonary};
-    
+
     background-color: ${props => props.selected ? props.theme.schema.tasks.solid : props.theme.bg.octonary};
 
     transition: background-color 0.25s ease, box-shadow 0.1s ease;
@@ -76,6 +76,6 @@ export const DualSelectionButton = styled.button`
     }
 
     &:hover{
-        background-color: ${props => props.theme.bg.quaternary};
+        //background-color: ${props => props.theme.bg.quaternary};
     }
 `
