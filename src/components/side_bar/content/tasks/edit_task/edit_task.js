@@ -524,8 +524,9 @@ const EditTask = (props) => {
 
                         ${selectedTask.processes.map((process) => {
                             // Try catch for error with editing an existing task that belongs to a new process
+                            console.log('QQQQ Process', processes[process].name)
                             try {
-                                return `'${processes[process].name}', `
+                                return ` '${processes[process].name}'`
 
                             } catch (error) {
                                 return ``
