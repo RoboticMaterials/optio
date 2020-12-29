@@ -35,9 +35,11 @@ function Position(props) {
     const dispatchSelectLocation = (locationId) => dispatch(selectLocation(locationId))
 
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
+    const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const hoveringID = useSelector(state => state.locationsReducer.hoverLocationID)
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
+
     useEffect(() => {
         //window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
 
@@ -65,6 +67,42 @@ function Position(props) {
 
     }
 
+    const onSetPositionTask = () => {
+
+        // Commented out for now
+        // If there's a selected process and the process has routes and the station is not selected, then disable it from being selected
+        // if (!!selectedProcess && selectedProcess.routes.length > 0 && !isSelected) return
+
+
+        if (selectedTask !== null) {
+            // If the load location has been defined but the unload position hasnt, assign the unload position
+            if (selectedTask.load.position !== null && selectedTask.unload.position === null) {
+                let unload = deepCopy(selectedTask.unload)
+                let type = selectedTask.type
+                unload.position = location._id
+                if (location.parent !== null) {
+                    unload.station = location.parent
+                } else {
+                    type = 'push'
+                }
+                dispatchSetTaskAttributes(selectedTask._id, { unload, type })
+            } else { // Otherwise assign the load position and clear the unload position (to define a new unload)
+                let load = deepCopy(selectedTask.load)
+                let unload = deepCopy(selectedTask.unload)
+                let type = selectedTask.type
+                load.position = location._id
+                if (location.parent !== null) {
+                    load.station = location.parent
+                } else {
+                    type = 'pull'
+                }
+                unload.position = null
+                unload.station = null
+                dispatchSetTaskAttributes(selectedTask._id, { load, unload, type })
+            }
+        }
+    }
+
     // Tells the location to glow
     const shouldGlow = selectedTask !== null &&
         ((selectedTask.load.position == location._id && selectedTask.type == 'push') ||
@@ -77,8 +115,8 @@ function Position(props) {
             className={rd3tClassName}
             style={{ fill: color, stroke: color, strokeWidth: '0', opacity: '0.8', cursor: "pointer" }}
             onMouseEnter={() => {
-                // If this is a human position, then dont show a widget
-                if (location.type !== 'human_position') {
+                // Only hover if there is no selected task
+                if (selectedTask === null) {
                     setHovering(true)
                     if (!rotating && !translating && selectedLocation == null && selectedTask == null) {
                         dispatchHoverStationInfo(handleWidgetHover())
@@ -90,33 +128,8 @@ function Position(props) {
             }}
             onMouseLeave={() => { location.name !== 'TempRightClickMoveLocation' && setHovering(false) }}
             onMouseDown={() => {
-                if (selectedTask !== null) {
-                    // If the load location has been defined but the unload position hasnt, assign the unload position
-                    if (selectedTask.load.position !== null && selectedTask.unload.position === null) {
-                        let unload = deepCopy(selectedTask.unload)
-                        let type = selectedTask.type
-                        unload.position = location._id
-                        if (location.parent !== null) {
-                            unload.station = location.parent
-                        } else {
-                            type = 'push'
-                        }
-                        dispatchSetTaskAttributes(selectedTask._id, { unload, type })
-                    } else { // Otherwise assign the load position and clear the unload position (to define a new unload)
-                        let load = deepCopy(selectedTask.load)
-                        let unload = deepCopy(selectedTask.unload)
-                        let type = selectedTask.type
-                        load.position = location._id
-                        if (location.parent !== null) {
-                            load.station = location.parent
-                        } else {
-                            type = 'pull'
-                        }
-                        unload.position = null
-                        unload.station = null
-                        dispatchSetTaskAttributes(selectedTask._id, { load, unload, type })
-                    }
-                }
+                onSetPositionTask()
+
             }}
             transform={`translate(${location.x},${location.y}) rotate(${360 - location.rotation}) scale(${d3.scale / d3.imgResolution})`}
         >
