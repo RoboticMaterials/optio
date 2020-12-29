@@ -368,9 +368,7 @@ const Widgets = (props) => {
                     {!widgetPage && !!selectedLocation &&
                         <>
                             {selectedLocation.name == "TempRightClickMoveLocation" ?
-                              <styled.RowContainer>
                                 <styled.WidgetStationName>{"Send Cart To Location"}</styled.WidgetStationName>
-                              </styled.RowContainer>
                                 :
                                 <>
                                     {selectedLocation.schema == "positions" ?

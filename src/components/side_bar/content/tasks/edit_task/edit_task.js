@@ -732,7 +732,6 @@ const EditTask = (props) => {
                                 <styled.DualSelectionButton
                                     style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
                                     onClick={() => {
-                                        console.log(selectedTask)
                                         dispatchSetSelectedTask({
                                             ...selectedTask,
                                             track_quantity: false
@@ -798,7 +797,7 @@ const EditTask = (props) => {
                         handleRemove()
                     }}
                 >
-                    Remove
+                    Remove Route
             </Button>
             }
 
@@ -812,7 +811,7 @@ const EditTask = (props) => {
                     setConfirmDeleteModal(true)
                 }}
             >
-                Delete
+                Delete Route
             </Button>
         </styled.ContentContainer>
 
