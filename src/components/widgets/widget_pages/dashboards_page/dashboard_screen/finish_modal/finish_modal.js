@@ -9,7 +9,7 @@ import Button from "../../../../../basic/button/button";
 import DashboardButton from "../../dashboard_buttons/dashboard_button/dashboard_button";
 
 // actions
-import {getProcessCards, putCard} from "../../../../../../redux/actions/card_actions";
+import {getCards, getProcessCards, putCard} from "../../../../../../redux/actions/card_actions";
 
 // styles
 import * as styled from './finish_modal.style'
@@ -33,7 +33,8 @@ const FinishModal = (props) => {
     const theme = useTheme()
 
     const dispatch = useDispatch()
-    const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
+    // const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
+    const dispatchGetCards = () => dispatch(getCards())
     const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 
     const finishEnabledDashboard = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] })
@@ -141,10 +142,7 @@ const FinishModal = (props) => {
      *
      */
     useEffect(() => {
-        if(finishEnabledDashboard && Array.isArray(finishEnabledDashboard)) finishEnabledDashboard.forEach((currProcessId) => {
-            onGetProcessCards(currProcessId)
-        })
-
+        dispatchGetCards()
     }, [])
 
     /**

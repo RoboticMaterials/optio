@@ -9,7 +9,7 @@ import Button from "../../../../../basic/button/button";
 import DashboardButton from "../../dashboard_buttons/dashboard_button/dashboard_button";
 
 // actions
-import {getProcessCards, putCard} from "../../../../../../redux/actions/card_actions";
+import {getCards, getProcessCards, putCard} from "../../../../../../redux/actions/card_actions";
 
 // styles
 import * as styled from './kick_off_modal.style'
@@ -33,7 +33,8 @@ const KickOffModal = (props) => {
     const theme = useTheme()
 
     const dispatch = useDispatch()
-    const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
+    // const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
+    const dispatchGetCards = () => dispatch(getCards())
     const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 
     const kickOffEnabledInfo = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] })
@@ -159,10 +160,7 @@ const KickOffModal = (props) => {
      *
      */
     useEffect(() => {
-        if(kickOffEnabledInfo && Array.isArray(kickOffEnabledInfo)) kickOffEnabledInfo.forEach((currProcessId) => {
-            onGetProcessCards(currProcessId)
-        })
-
+        dispatchGetCards()
     }, [])
 
     /**
