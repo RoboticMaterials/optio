@@ -503,6 +503,7 @@ const CardEditor = (props) => {
 												name={`bins.${selectedBin}.count`}
 												type="number"
 												InputComponent={styled.CountInput}
+												IconContainerComponent={styled.QuantityErrorContainerComponent}
 											/>
 										</styled.ObjectTitleContainer>
 									</styled.ObjectInfoContainer>

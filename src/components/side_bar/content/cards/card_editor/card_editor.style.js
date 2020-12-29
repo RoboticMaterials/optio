@@ -183,6 +183,18 @@ export const ObjectLabel = styled.span`
   align-items: center;
 `
 
+export const QuantityErrorContainerComponent = styled.div`
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    right: 2.5rem;
+    transform: translateY(-50%);
+    margin: 0;
+    padding: 0;
+    ${props => props.iconContainerCss};
+`;
+
 export const ObjectName = styled.span`
 	display: flex;
 `
