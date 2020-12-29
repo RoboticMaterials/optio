@@ -24,22 +24,30 @@ const DashboardTaskQueue = () => {
     `
     return (
         <>
-            <styled.ExpandContainer showTaskQ={showTaskQ}>
-                <styled.ExpandIcon className={'fa fa-tasks'} onClick={() => { setShowTaskQ(!showTaskQ) }} />
+            {!showTaskQ ?
 
-                <styled.ExpandSVG viewBox='0 0 1000 1000'>
-                    <styled.ExpandPath d={path} fill={theme.main.bg.quinary} onClick={() => { setShowTaskQ(!showTaskQ) }} />
-                </styled.ExpandSVG>
+                <styled.ExpandContainer showTaskQ={showTaskQ}>
+                    <styled.ExpandIcon className={'fa fa-tasks'} onClick={() => { setShowTaskQ(!showTaskQ) }} />
+
+                    <styled.ExpandSVG viewBox='0 0 1000 1000'>
+                        <styled.ExpandPath d={path} fill={theme.main.bg.quinary} onClick={() => { setShowTaskQ(!showTaskQ) }} />
+                    </styled.ExpandSVG>
 
 
 
-                {/* <styled.ExpandIcon className={'fas fa-chevron-' + (!!showTaskQ ? 'right' : 'left')} /> */}
+                    {/* <styled.ExpandIcon className={'fas fa-chevron-' + (!!showTaskQ ? 'right' : 'left')} /> */}
 
-            </styled.ExpandContainer>
+                </styled.ExpandContainer>
 
-            {showTaskQ &&
+                :
+
                 <styled.TaskQContatiner showTaskQ={showTaskQ} ref={ref}>
                     <styled.Title schema={'taskQueue'}>Task Queue</styled.Title>
+                    <styled.CloseButton
+                        className={'fas fa-times'}
+                        onClick={() => { setShowTaskQ(!showTaskQ) }}
+                    />
+
 
                     <TaskQueue />
                 </styled.TaskQContatiner>
