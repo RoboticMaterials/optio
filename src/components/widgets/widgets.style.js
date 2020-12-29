@@ -124,7 +124,6 @@ export const WidgetHoverArea = styled.div`
 
 `
 
-
 export const WidgetPageButtonContainer = styled.div`
     width: 30rem;
     border-radius: 1rem;

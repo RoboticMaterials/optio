@@ -20,7 +20,6 @@ import { tasksSortedAlphabetically } from '../../../../methods/utils/task_utils'
 import RouteTask from './tasks_templates/route_task'
 import uuid from 'uuid'
 
-
 export default function TaskContent(props) {
 
     // Connect redux reducers
@@ -30,6 +29,7 @@ export default function TaskContent(props) {
     const onEditing = (props) => dispatch(taskActions.editingTask(props))
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
+    console.log(tasks)
 
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
@@ -128,6 +128,9 @@ export default function TaskContent(props) {
                         // .filter(task => !task.process && (task.map_id === currentMap._id))
                         // .filter(task => task.map_id === currentMap._id)
                         .filter(task => task.map_id === currentMap._id)
+                        // Filter out empty tasks that are somehow created when choosing an existing task to add to a process in the process tab
+                        // These are deleted by the cleaner function on page refresh but in the meantime dont show in the list view
+                        .filter(task => task.load.position !== null)
                         // Filter outs any human tasks that have associated tasks (AKA it only shows the associated device task)
                         .filter(task => !task.associated_task || (!!task.associated_task && task.device_type !== 'human'))
 
