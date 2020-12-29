@@ -74,6 +74,7 @@ const Cards = (props) => {
     let showAddCard
     let showGanttViewButton = false
     let currentProcess
+    let isProcessView = false
     switch(id) {
         case "summary":
             title = "Lots Summary"
@@ -87,6 +88,7 @@ const Cards = (props) => {
             currentProcess = processes[processIds[0]]
             break
         default:
+            isProcessView = true
             showAddCard = true
             currentProcess = processes[id]
             title = currentProcess.name
@@ -117,37 +119,25 @@ const Cards = (props) => {
 
 
             <styled.Header>
+                {isProcessView ?
                 <styled.MenuButton
-                    className="fa fa-th"
+                    style={{marginRight: "auto"}}
+                    className="fas fa-chevron-left"
                     aria-hidden="true"
-                    onClick={()=>setShowMenu(!showMenu)}
+                    // onClick={()=>setShowMenu(!showMenu)}
+                    onClick={()=>{
+                        history.replace ('/processes')}
+                    }
                 />
-
+                :
+                    <styled.InvisibleItem style={{marginRight: "auto"}}/>
+                }
                 <styled.Title>{title}</styled.Title>
-                {/*{showAddCard &&*/}
-                {/*    <Button*/}
-                {/*        onClick={()=>setShowCardEditor(!showCardEditor)}*/}
-                {/*        schema={'processes'}*/}
-                {/*    >*/}
-                {/*        + Card*/}
-                {/*    </Button>*/}
-                {/*}*/}
-                {showGanttViewButton &&
-                    <Button
-                        schema={'lots'}
-                    >
-                        Gantt View
-                    </Button>
-                }
-                {(id === "summary" || id === "timeline") &&
-                    <Button
-                        schema={'lots'}
-                        onClick={()=>history.replace ('/processes/' + processIds[0] + "/lots")}
-                    >
-                        Leave Summary
-                    </Button>
-                }
+                <styled.InvisibleItem
+                    style={{marginLeft: "auto"}}
+                />
             </styled.Header>
+
             <styled.Body id={"cards-body"}>
                 {showMenu &&
                 <CardMenu

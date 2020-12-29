@@ -43,6 +43,27 @@ export const MenuButton = styled.i`
 	font-size: 2rem;
 	padding: 0;
 	margin: 0;
+	color: white;
+	
+	text-shadow: 0.05rem 0.05rem 0.2rem #303030;
+    //transition: text-shadow 0.1s ease, filter 0.1s ease;
+    &:hover {
+        cursor: pointer;
+        filter: brightness(85%);
+    }
+
+    &:active{
+        filter: brightness(85%);
+        text-shadow: none;
+    }
+
+    background: none;
+    outline: none;
+    border: none;
+
+    &:focus {
+        outline: none;
+    }
 `
 
 export const Title = styled.span`
@@ -55,7 +76,11 @@ export const AddCardButton = styled.button`
 
 `
 
-
+export const InvisibleItem = styled.div`
+    visibility: hidden;
+    height: 1rem;
+    width: 1rem;
+`
 
 // LIST
 export const RoutesListContainer = styled.div`
