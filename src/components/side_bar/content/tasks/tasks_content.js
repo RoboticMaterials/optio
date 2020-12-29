@@ -29,7 +29,6 @@ export default function TaskContent(props) {
     const onEditing = (props) => dispatch(taskActions.editingTask(props))
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
-    console.log(tasks)
 
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
