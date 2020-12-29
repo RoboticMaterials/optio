@@ -50,8 +50,6 @@ const Column = SortableContainer((props) => {
 			...remainingPayload
 		} = payload
 
-		console.log("shouldAcceptDrop payload",payload)
-
 		if(oldProcessId !== processId) return false
 		// if(binId === station_id) return false
 		return true
