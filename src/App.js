@@ -104,23 +104,6 @@ const App = (props) => {
 
                 <styled.Container>
                     <BrowserRouter>
-                        {/*<HILModals*/}
-
-                        {/*    hilType={"push"}*/}
-                        {/*    taskQueueID={"5fe102c3c4d86ae41347fc4a"}*/}
-                        {/*    item={{*/}
-                        {/*        dashboard: "5fe0c8f5c4d86ae41347fc35", // lo4*/}
-                        {/*        // dashboard: "5fe0c8e3c4d86ae41347fc33", // lo2*/}
-                        {/*        // dashboard: "5fe0c8dbc4d86ae41347fc32", // loc1*/}
-                        {/*        // dashboard: "5fe0c8e3c4d86ae41347fc33", // loc2*/}
-                        {/*        task_id: "c59862a2-8b45-4a8d-a890-ac8465e43789",*/}
-                        {/*        hil_response: null,*/}
-                        {/*        owner: "human",*/}
-                        {/*        _id: {$oid: "5fe102c3c4d86ae41347fc4a"}*/}
-                        {/*    }}*/}
-                        {/*    // key={id}*/}
-                        {/*/>*/}
-
                         <Route
                             path={"/clear_local"}
                         >
