@@ -165,7 +165,7 @@ const WidgetButton = (props) => {
 
 
     return (
-        <styled.WidgetButtonButton style = {{marginLeft: type == 'cart' && '2rem'}}
+        <styled.WidgetButtonButton
             onClick={() => {
                 if (showSideBar && !widgetPage) {
                     const hamburger = document.querySelector('.hamburger')

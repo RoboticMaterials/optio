@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 export const WidgetButtonButton = styled.button`
     display:flex;
+    align-self:center;
     flex-direction: column;
     border: none;
     border-radius: 1rem;
@@ -13,7 +14,6 @@ export const WidgetButtonButton = styled.button`
     padding-top:.5rem;
 
     /* margin-top: 0.5rem; */
-
 
     box-shadow: 0 0.1rem 0.2rem 0rem #303030;
 

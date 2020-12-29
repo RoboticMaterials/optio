@@ -78,16 +78,32 @@ const HILModals = (props) => {
         station: stationId, //"c754a665-f756-4c74-a7c5-e8c014039ba3"
     } = selectedDashboard || {}
 
+    const currentTask = tasks[item.task_id]
+
+    const {
+        type,
+        load,
+        unload
+    } = currentTask || {}
+
+    const {
+        station: unloadStationId
+    } = unload || {}
+
+    const {
+        station: loadStationId
+    } = load || {}
+
     const {
         name: selectedLotName,
         _id: selectedLotId,
         bins
     } = selectedLot || {}
 
-    const currentBin = bins ? bins[stationId] : {}
+    const currentBin = bins ? bins[loadStationId] : {}
     const {
         count
-    } = currentBin
+    } = currentBin || {}
 
 
 
@@ -128,21 +144,7 @@ const HILModals = (props) => {
     *
     * */
     useEffect(() => {
-        const currentTask = tasks[item.task_id]
 
-        const {
-            type,
-            load,
-            unload
-        } = currentTask || {}
-
-        const {
-            station: unloadStationId
-        } = unload || {}
-
-        const {
-            station: loadStationId
-        } = load || {}
 
         const stationCards = Object.values(cards).filter((currCard) => {
             const {
