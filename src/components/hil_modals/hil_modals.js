@@ -475,7 +475,7 @@ const HILModals = (props) => {
 
                 <styled.LotSelectorContainer>
 
-                    <styled.LotsContainer style={{ justifyContent: "space-between" }}>
+                    <styled.LotsContainer style={{justifyContent: hilLoadUnload === 'load'&& "space-between" }}>
 
 
                         <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>

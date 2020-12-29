@@ -101,7 +101,7 @@ const SideBarSwitcher = (props) => {
             } */}
 
             <SideBarButton
-                mode={'devices'}
+                mode={'lots'}
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
@@ -112,7 +112,7 @@ const SideBarSwitcher = (props) => {
             />
 
             <SideBarButton
-                mode={'lots'}
+                mode={'devices'}
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
