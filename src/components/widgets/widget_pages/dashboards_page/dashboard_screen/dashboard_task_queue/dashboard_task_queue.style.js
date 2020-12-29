@@ -8,7 +8,8 @@ export const ExpandContainer = styled.div`
     margin: auto;
     height: 15rem;
     width: 10rem;
-    z-index: ${props => props.showTaskQ ? 20 : 10};
+    /* z-index: ${props => props.showTaskQ ? 20 : 10}; */
+    z-index: 15;
     /* border-radius: 1rem 0rem 0rem 1rem; */
 
     display: flex;
@@ -60,7 +61,8 @@ export const TaskQContatiner = styled.div`
     bottom: 0rem;
     right: 0rem;
 
-    width: 20rem;
+    /* width: 20rem; */
+    width: 100%;
 
     background-color: ${props => props.theme.bg.quinary};
 
@@ -71,4 +73,12 @@ export const Title = styled.h1`
     font-size: 2rem;
     font-weight: 500;
     color: ${props => props.theme.schema[props.schema].solid};
+`
+
+export const CloseButton = styled.i`
+    position: absolute;
+    top: 0rem;
+    right: 1rem;
+    font-size: 2.5rem;
+    margin: 1rem;
 `
