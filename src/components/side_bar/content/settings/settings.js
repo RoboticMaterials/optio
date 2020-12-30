@@ -320,7 +320,7 @@ const Settings = () => {
                 <styled.RowContainer>
                     <DropDownSearch
                         placeholder="Select Map"
-                        label="Sound to be played upon arrival"
+                        label="Select the map you would like to use for RMStudio"
                         labelField="name"
                         valueField="_id"
                         options={maps}
