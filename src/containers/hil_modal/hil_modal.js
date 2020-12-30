@@ -1,10 +1,10 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
 
-
+// Import Components
 import HILModals from '../../components/hil_modals/hil_modals'
+import HILSuccess from '../../components/hil_modals/hil_modals_content/hil_success'
 
 const HILModal = () => {
 
@@ -69,7 +69,8 @@ const HILModal = () => {
         }
 
         // Used to hide the HIL if success was clicked. (See HIL_Modals)
-        if (hilResponse === 'success') return
+        if (hilResponse === 'load') return <HILSuccess />
+        if (hilResponse === 'unload') return
 
         return Object.keys(taskQueue).map((id, ind) => {
 

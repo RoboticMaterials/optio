@@ -311,14 +311,14 @@ const DashboardScreen = (props) => {
                 )
             }
 
-            setAddTaskAlert({
-                type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
-                label: "Task Added to Queue",
-                message: name
-            })
+            // setAddTaskAlert({
+            //     type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+            //     label: "Task Added to Queue",
+            //     message: name
+            // })
 
-            // clear alert after timeout
-            return setTimeout(() => setAddTaskAlert(null), 1800)
+            // // clear alert after timeout
+            // return setTimeout(() => setAddTaskAlert(null), 1800)
         }
 
         else {
