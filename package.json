@@ -76,6 +76,7 @@
     "babel": "^6.23.0",
     "babel-core": "^6.26.3",
     "css-loader": "^2.1.0",
+    "jest-styled-components": "^7.0.3",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "style-loader": "^0.23.1",
