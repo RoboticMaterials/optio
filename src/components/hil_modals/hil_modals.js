@@ -158,7 +158,7 @@ const HILModals = (props) => {
         })
 
         if (stationCards && Array.isArray(stationCards) && stationCards.length > 0) {
-            if ((stationCards.length === 1) && !selectedLot &&!didSelectInitialLot) {
+            if ((stationCards.length === 1) && !selectedLot && !didSelectInitialLot) {
                 setSelectedLot(stationCards[0])
                 setDidSelectInitialLot(true)
             }
@@ -372,10 +372,12 @@ const HILModals = (props) => {
             <>
                 <styled.Header>
 
-                    <styled.HilExitModal
-                        className='fas fa-times'
-                        onClick={() => dispatchTaskQueueItemClicked('')}
-                    />
+                    {!!taskQueueItemClicked &&
+                        <styled.HilExitModal
+                            className='fas fa-times'
+                            onClick={() => dispatchTaskQueueItemClicked('')}
+                        />
+                    }
 
 
                     <styled.ColumnContainer>
@@ -387,7 +389,7 @@ const HILModals = (props) => {
                         }
                     </styled.ColumnContainer>
 
-                    <styled.InvisibleItem />
+                    {/* <styled.InvisibleItem /> */}
 
                 </styled.Header>
 
@@ -466,10 +468,12 @@ const HILModals = (props) => {
 
                 <styled.Header>
 
-                    <styled.HilExitModal
-                        className='fas fa-times'
-                        onClick={() => dispatchTaskQueueItemClicked('')}
-                    />
+                    {!!taskQueueItemClicked &&
+                        <styled.HilExitModal
+                            className='fas fa-times'
+                            onClick={() => dispatchTaskQueueItemClicked('')}
+                        />
+                    }
 
 
                     <styled.ColumnContainer>
@@ -482,13 +486,13 @@ const HILModals = (props) => {
                         }
                     </styled.ColumnContainer>
 
-                    <styled.InvisibleItem />
+                    {/* <styled.InvisibleItem /> */}
 
                 </styled.Header>
 
                 <styled.LotSelectorContainer>
 
-                    <styled.LotsContainer style={{justifyContent: hilLoadUnload === 'load'&& "space-between" }}>
+                    <styled.LotsContainer style={{ justifyContent: hilLoadUnload === 'load' && "space-between" }}>
 
 
                         <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
@@ -648,17 +652,19 @@ const HILModals = (props) => {
             <>
                 <styled.Header>
 
-                    <styled.HilExitModal
-                        className='fas fa-times'
-                        onClick={() => dispatchTaskQueueItemClicked('')}
-                    />
+                    {!!taskQueueItemClicked &&
+                        <styled.HilExitModal
+                            className='fas fa-times'
+                            onClick={() => dispatchTaskQueueItemClicked('')}
+                        />
+                    }
 
 
                     <styled.ColumnContainer>
                         <styled.HilMessage>Select Lot</styled.HilMessage>
                     </styled.ColumnContainer>
 
-                    <styled.InvisibleItem />
+                    {/* <styled.InvisibleItem /> */}
 
                 </styled.Header>
                 <styled.LotSelectorContainer>
