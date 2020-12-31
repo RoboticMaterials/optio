@@ -419,7 +419,9 @@ const HILModals = (props) => {
                             /> */}
                                   <styled.RowContainer>
                                     <styled.HilButtonText style={{ fontSize: '3rem' }} color={'#1c933c'}>{value}</styled.HilButtonText>
-                                    <styled.HilButtonQuantityText color={'#1c933c'}>{'(Quantity '+ Math.ceil(count*decimal)+')'}</styled.HilButtonQuantityText>
+                                    {!!count &&
+                                      <styled.HilButtonQuantityText color={'#1c933c'}>{'(Quantity '+ Math.ceil(count*decimal)+')'}</styled.HilButtonQuantityText>
+                                    }
 
                                   </styled.RowContainer>
                                 </styled.HilButton>
