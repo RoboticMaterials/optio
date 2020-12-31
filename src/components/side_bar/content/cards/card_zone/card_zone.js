@@ -27,15 +27,10 @@ const CardZone = SortableContainer((props) => {
 		// stations,
 		handleCardClick,
 		processId,
-		size,
 		setShowCardEditor,
 		showCardEditor,
 		maxHeight
 	} = props
-
-	const width = size?.width
-	const height = size?.height
-
 
 	const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] }) || {}
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
@@ -145,7 +140,7 @@ const CardZone = SortableContainer((props) => {
 
 
 		return(
-			<styled.Container width={width} height={height}>
+			<styled.Container>
 				<LotQueue
 					key={"QUEUE"}
 					maxHeight={maxHeight}
@@ -176,7 +171,6 @@ const CardZone = SortableContainer((props) => {
 						return (
 							<StationsColumn
 								step={step}
-								size={size}
 								maxHeight={maxHeight}
 								// onDrop={handleDrop}
 								key={station_id + index}

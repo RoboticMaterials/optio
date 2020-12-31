@@ -274,7 +274,7 @@ export const Header = styled.div`
     border-bottom: 1px solid ${props => props.theme.bg.tertiary};
     align-items: center;
     justify-content: center;
-  align-items: center;
+    align-items: center;
     padding: .5rem 1rem;
 `
 

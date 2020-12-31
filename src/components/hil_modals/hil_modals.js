@@ -7,6 +7,7 @@ import * as styled from './hil_modals.style';
 
 // Import Components
 import Textbox from '../basic/textbox/textbox'
+import HILSuccess from './hil_modals_content/hil_success'
 
 // Import Actions
 import { postTaskQueue, putTaskQueue } from '../../redux/actions/task_queue_actions'
@@ -61,8 +62,8 @@ const HILModals = (props) => {
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards) || {}
     const objects = useSelector(state => state.objectsReducer.objects)
     const cards = useSelector(state => state.cardsReducer.cards)
-    const [quantity, setQuantity] = useState(taskQuantity)
 
+    const [quantity, setQuantity] = useState(taskQuantity)
     const [selectedTask, setSelectedTask] = useState(null)
     const [selectedLot, setSelectedLot] = useState(null)
     const [availableLots, setAvailableLots] = useState([])
@@ -158,7 +159,7 @@ const HILModals = (props) => {
         })
 
         if (stationCards && Array.isArray(stationCards) && stationCards.length > 0) {
-            if ((stationCards.length === 1) && !selectedLot &&!didSelectInitialLot) {
+            if ((stationCards.length === 1) && !selectedLot && !didSelectInitialLot) {
                 setSelectedLot(stationCards[0])
                 setDidSelectInitialLot(true)
             }
@@ -237,7 +238,7 @@ const HILModals = (props) => {
         delete newItem.dashboard
 
         // This is used to make the tap of the HIL button respond quickly
-        disptachHILResponse('success')
+        disptachHILResponse(hilLoadUnload === 'load' ? 'load' : 'unload')
         setTimeout(() => disptachHILResponse(''), 2000)
 
         await disptachPutTaskQueue(newItem, ID)
@@ -372,10 +373,12 @@ const HILModals = (props) => {
             <>
                 <styled.Header>
 
-                    <styled.HilExitModal
-                        className='fas fa-times'
-                        onClick={() => dispatchTaskQueueItemClicked('')}
-                    />
+                    {!!taskQueueItemClicked &&
+                        <styled.HilExitModal
+                            className='fas fa-times'
+                            onClick={() => dispatchTaskQueueItemClicked('')}
+                        />
+                    }
 
 
                     <styled.ColumnContainer>
@@ -387,7 +390,7 @@ const HILModals = (props) => {
                         }
                     </styled.ColumnContainer>
 
-                    <styled.InvisibleItem />
+                    {/* <styled.InvisibleItem /> */}
 
                 </styled.Header>
 
@@ -466,10 +469,12 @@ const HILModals = (props) => {
 
                 <styled.Header>
 
-                    <styled.HilExitModal
-                        className='fas fa-times'
-                        onClick={() => dispatchTaskQueueItemClicked('')}
-                    />
+                    {!!taskQueueItemClicked &&
+                        <styled.HilExitModal
+                            className='fas fa-times'
+                            onClick={() => dispatchTaskQueueItemClicked('')}
+                        />
+                    }
 
 
                     <styled.ColumnContainer>
@@ -482,13 +487,13 @@ const HILModals = (props) => {
                         }
                     </styled.ColumnContainer>
 
-                    <styled.InvisibleItem />
+                    {/* <styled.InvisibleItem /> */}
 
                 </styled.Header>
 
                 <styled.LotSelectorContainer>
 
-                    <styled.LotsContainer style={{justifyContent: hilLoadUnload === 'load'&& "space-between" }}>
+                    <styled.LotsContainer style={{ justifyContent: hilLoadUnload === 'load' && "space-between" }}>
 
 
                         <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
@@ -648,17 +653,19 @@ const HILModals = (props) => {
             <>
                 <styled.Header>
 
-                    <styled.HilExitModal
-                        className='fas fa-times'
-                        onClick={() => dispatchTaskQueueItemClicked('')}
-                    />
+                    {!!taskQueueItemClicked &&
+                        <styled.HilExitModal
+                            className='fas fa-times'
+                            onClick={() => dispatchTaskQueueItemClicked('')}
+                        />
+                    }
 
 
                     <styled.ColumnContainer>
                         <styled.HilMessage>Select Lot</styled.HilMessage>
                     </styled.ColumnContainer>
 
-                    <styled.InvisibleItem />
+                    {/* <styled.InvisibleItem /> */}
 
                 </styled.Header>
                 <styled.LotSelectorContainer>
@@ -756,10 +763,12 @@ const HILModals = (props) => {
         <styled.HilContainer >
 
             {/*<styled.HilBorderContainer >*/}
-            {showLotSelector ?
-                renderLotSelector()
-                :
-                !!selectedTask && selectedTask.track_quantity ? renderQuantityOptions() : renderFractionOptions()
+
+            {
+                showLotSelector ?
+                    renderLotSelector()
+                    :
+                    !!selectedTask && selectedTask.track_quantity ? renderQuantityOptions() : renderFractionOptions()
             }
 
 

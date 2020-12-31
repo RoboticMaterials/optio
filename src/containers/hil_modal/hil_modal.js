@@ -1,10 +1,10 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
 
-
+// Import Components
 import HILModals from '../../components/hil_modals/hil_modals'
+import HILSuccess from '../../components/hil_modals/hil_modals_content/hil_success'
 
 const HILModal = () => {
 
@@ -58,10 +58,10 @@ const HILModal = () => {
                 // Since a human load task needs to immediatly show, its immediatly put into the task Q vs telling the backend to put it into the task Q
                 // since it doesnt come from the backend, there's no hil message in the task Q Item
                 let hilMessage = item.hil_message
-                if(!hilMessage) {
+                if (!hilMessage) {
                     hilMessage = tasks[item.task_id].load.instructions
                 }
-                
+
                 if (type === 'human') {
                     return <HILModals hilMessage={hilMessage} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item} />
                 }
@@ -69,7 +69,8 @@ const HILModal = () => {
         }
 
         // Used to hide the HIL if success was clicked. (See HIL_Modals)
-        if (hilResponse === 'success') return
+        if (hilResponse === 'load') return <HILSuccess />
+        if (hilResponse === 'unload') return
 
         return Object.keys(taskQueue).map((id, ind) => {
 
@@ -119,7 +120,12 @@ const HILModal = () => {
             // The reason this happens is that it's a human task and the person hit a dashboard button (see dashboard_screen).
             // The HIL modal needs to immediatly show because the backend will be too slow to respond to show that dashboard after button click
             else if (!!item.dashboard && item.dashboard === dashboardID && localHumanTask) {
-                return <HILModals hilMessage={item.hil_message} hilType={'push'} taskQuantity={item.quantity} taskQueueID={id} item={item} />
+                let hilMessage = item.hil_message
+                if (!hilMessage) {
+                    hilMessage = tasks[item.task_id].load.instructions
+                }
+
+                return <HILModals hilMessage={hilMessage} hilType={'push'} taskQuantity={item.quantity} taskQueueID={id} item={item} />
 
             }
 
