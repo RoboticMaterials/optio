@@ -33,8 +33,13 @@ export const Body = styled.div`
 `
 
 export const CardZoneContainer = styled.div`
-	overflow: auto;
+	//overflow: hidden;
+  overflow: auto;
   flex: 1;
+  //height: 40rem;
+  //height: 100%;
+  position: relative;
+  //padding: 1rem;
 	//width: 100%;
 	//height: 100%;
 `

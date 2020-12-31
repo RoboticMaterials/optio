@@ -10,7 +10,6 @@ import {setSize} from "../../../../../redux/actions/card_page_actions";
 const SummaryZone = SortableContainer((props) => {
 
 	const {
-		zoneRef,
 		handleCardClick,
 		setShowCardEditor,
 		showCardEditor,
@@ -28,7 +27,7 @@ const SummaryZone = SortableContainer((props) => {
 				selectedProcesses={selectedProcesses}
 				setSelectedProcesses={setSelectedProcesses}
 			/>
-			<styled.ProcessesContainer ref={zoneRef}>
+			<styled.ProcessesContainer>
 				{selectedProcesses.map((currProcess, processIndex) => {
 					const {
 						name: processName,
