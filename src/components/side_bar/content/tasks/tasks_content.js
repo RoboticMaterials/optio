@@ -29,7 +29,7 @@ export default function TaskContent(props) {
     const onEditing = (props) => dispatch(taskActions.editingTask(props))
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
-
+    let taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
@@ -40,6 +40,7 @@ export default function TaskContent(props) {
     // State definitions
     //const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
     const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)  // Current task
+
     const [shift, setShift] = useState(false) // Is shift key pressed ?
     const [isTransportTask, setIsTransportTask] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
     // To be able to remove the listeners, the function needs to be stored in state
@@ -50,6 +51,7 @@ export default function TaskContent(props) {
 
     // Creates listeners for if the shift key is pressed
     useEffect(() => {
+
         window.addEventListener('keydown', shiftCallback)
         window.addEventListener('keyup', shiftCallback)
 
@@ -102,6 +104,17 @@ export default function TaskContent(props) {
         }
     }
 
+    const handleInQueue = (task) => {
+      if(!!task){
+        Object.values(taskQueue).forEach((taskQueueItem, index) => {
+            if(taskQueueItem.task_id === task._id){
+            }
+        })
+
+      }
+      //return inQueue
+    }
+
 
 
 
@@ -143,6 +156,7 @@ export default function TaskContent(props) {
                     setSelectedTaskCopy(deepCopy(selectedTask))
                     onEditing(true)
                 }}
+
                 executeTask={() => handleHumanHil()}
                 onPlus={() => {
                     const newTask = {

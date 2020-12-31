@@ -228,7 +228,7 @@ const ApiContainer = (props) => {
 
             case 'dashboards':
                 pageDataInterval = setInterval(() => loadDashboardsData(), 100000);
-                // pageDataInterval = setInterval(() => loadTasksData(), 10000);
+                //pageDataInterval = setInterval(() => loadTasksData(), 10000);
                 break;
 
             case 'tasks':
@@ -313,7 +313,7 @@ const ApiContainer = (props) => {
         const funtion7 = await handleTasksWithBrokenProcess(processes, tasks)
         const funtion8 = await handleProcessesWithBrokenRoutes(processes, tasks)
 
-        // Commented out for now. Was causing an issue when sending a cart to a location using simple move. Since its just a one off task, the task is never added to the backend so if the page was refreshed, the task q item would be deleted 
+        // Commented out for now. Was causing an issue when sending a cart to a location using simple move. Since its just a one off task, the task is never added to the backend so if the page was refreshed, the task q item would be deleted
         // const funtion9 = await handleTaskQueueWithBrokenTasks(taskQueue, tasks)
 
         props.apiLoaded()
