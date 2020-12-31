@@ -41,6 +41,13 @@ const CONTENT = {
 	MOVE: "MOVE"
 }
 
+const FORM_BUTTON_TYPES = {
+	SAVE: "SAVE",
+	ADD: "ADD",
+	ADD_AND_NEXT: "ADD_AND_NEXT",
+	ADD_AND_EDIT: "ADD_AND_EDIT"
+}
+
 const SubmitErrorHandler = ({ submitCount, isValid, onSubmitError }) => {
 	const [lastHandled, setLastHandled] = useState(0);
 	useEffect(() => {
@@ -62,10 +69,15 @@ const CardEditor = (props) => {
 	const {
 		isOpen,
 		close,
-		cardId,
 		processId,
-		binId
+
 	} = props
+
+	/*
+	* cardId and binId are stored as internal state but initialized from props (if provided)
+	* */
+	const [cardId, setCardId] = useState(props.cardId)
+	const [binId, setBinId] = useState(props.binId)
 
 	// extract redux state
 	const cards = useSelector(state => { return state.cardsReducer.cards })
@@ -93,6 +105,7 @@ const CardEditor = (props) => {
 	const [cardDataInterval, setCardDataInterval] = useState(null)
 	const [calendarValue, setCalendarValue] = useState(null)
 	const [showTimePicker, setShowTimePicker] = useState(false)
+
 
 	const handleGetCard = async (cardId) => {
 		if(cardId) {
@@ -145,7 +158,8 @@ const CardEditor = (props) => {
 			bins,
 			description,
 			moveCount,
-			moveLocation
+			moveLocation,
+			buttonType
 		} = values
 
 
@@ -254,7 +268,23 @@ const CardEditor = (props) => {
 				end_date: end,
 			}
 
-			onPostCard(submitItem)
+			const postResult = await onPostCard(submitItem)
+
+			if(!(postResult instanceof Error)) {
+
+				// if editor should stay on the same lot that was just created, set cardId and binId
+				if(buttonType === FORM_BUTTON_TYPES.ADD_AND_EDIT) {
+					const {
+						_id
+					} = postResult
+
+					// set cardId to the id of the newly created lot
+					setCardId(_id)
+
+					// new lots are created in the queue, so set binId to QUEUE
+					setBinId("QUEUE")
+				}
+			}
 		}
 
 
@@ -313,12 +343,20 @@ const CardEditor = (props) => {
 					setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
 					setSubmitting(false)
 
-					if(buttonType === "ADD") {
-						resetForm()
-						close()
-					}
-					else if(buttonType === "Add & Next") {
-						resetForm()
+					switch(buttonType) {
+						case FORM_BUTTON_TYPES.ADD:
+							resetForm()
+							close()
+							break
+						case FORM_BUTTON_TYPES.ADD_AND_NEXT:
+							resetForm()
+							break
+						case FORM_BUTTON_TYPES.SAVE:
+
+							close()
+							break
+						default:
+							break
 					}
 
 				}}
@@ -538,7 +576,7 @@ const CardEditor = (props) => {
 											style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
 											secondary
 											onClick={async () => {
-												formikProps.setFieldValue("buttonType", "ADD")
+												formikProps.setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD)
 												formikProps.submitForm()
 
 											}}
@@ -553,7 +591,7 @@ const CardEditor = (props) => {
 											style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
 											secondary
 											onClick={async () => {
-												formikProps.setFieldValue("buttonType", "Add & Next")
+												formikProps.setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD_AND_NEXT)
 												formikProps.submitForm()
 											}}
 										>
@@ -567,6 +605,7 @@ const CardEditor = (props) => {
 											style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
 											secondary
 											onClick={async () => {
+												formikProps.setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD_AND_EDIT)
 												formikProps.submitForm()
 											}}
 										>
@@ -577,11 +616,13 @@ const CardEditor = (props) => {
 									<styled.ButtonContainer>
 										<Button
 											schema={'lots'}
+											type={"button"}
 											disabled={submitDisabled}
 											style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
 											secondary
 											onClick={async () => {
-												await formikProps.submitForm({close: false})
+												formikProps.setFieldValue("buttonType", FORM_BUTTON_TYPES.SAVE)
+												formikProps.submitForm()
 											}}
 										>
 											Save
