@@ -260,10 +260,8 @@ const EditTask = (props) => {
             // Add the task automatically to the associated load station dashboard
             // Since as of now the only type of task we are doing is push, only need to add it to the load location
             let updatedStation = deepCopy(stations[selectedTask.load.station])
-            console.log('QQQQ Station', updatedStation)
 
             let updatedDashboard = dashboards[updatedStation.dashboards[0]]
-            console.log('QQQQ Dashboard', updatedDashboard)
 
             if (updatedDashboard === undefined) {
                 let defaultDashboard = {
@@ -524,7 +522,6 @@ const EditTask = (props) => {
 
                         ${selectedTask.processes.map((process) => {
                             // Try catch for error with editing an existing task that belongs to a new process
-                            console.log('QQQQ Process', processes[process].name)
                             try {
                                 return ` '${processes[process].name}'`
 
