@@ -81,3 +81,61 @@ export const willRouteAdditionFixProcess = (process, route, routes) => {
         }
     }
 }
+
+/**
+ * This returns the list of ***UNIQUE*** station ids belonging to a process
+ *
+ * In order to get the list of station ids, this function first gets the list of route ids belonging to the process from the process's routes key
+ *
+ * For each route id, the corresponding route object is retrieved from the routes object
+ *
+ * From each route object, the unload and load objects are extracted
+ * from the unload and load objects, the station id is extracted
+ *
+ * Each station id is added to an object to accumulate all stations belonging to the process
+ * NOTE: an object is used for this purpose since it efficiently and automatically ensures that each entry will be unique (since object keys are unique).
+ *      If an array is desired, simply call Object.keys() on the returned object where needed
+ *
+ * RETURNS an object containing the key of each station contained in the process with value set as true
+ *
+ * @param {object} process The process to get stations from
+ * @param {object} routes Object containing all routes with each route's id as keys
+ */
+export const getProcessStations = (process, routes) => {
+    const { routes: routeIds = [] } = process || {}
+
+    // object that will contain {stationId: true} for each station in the process
+    // an object is used instead of an array because an object can only contain a key once
+    // if an array was used, the array would have to be checked each time a station is added to ensure duplicates aren't added
+    var stationIds = {}
+
+    // loop through each routeId, get the load / unload station of the route and add it to the stationIds obj
+    routeIds.forEach((currRouteId) => {
+
+        // get route from id
+        const currRoute = routes[currRouteId] || {} // default to empty obj
+
+        // get unload and load objects
+        const {
+            unload = {},
+            load = {}
+        } = currRoute
+
+        // get unload station id
+        const {
+            station: unloadStationId
+        } = unload
+
+        // get load station id
+        const {
+            station: loadStationId
+        } = load
+
+        // if unloadStationId and loadStationId exist, add to stationIds obj
+        if(unloadStationId) stationIds[unloadStationId] = true
+        if(loadStationId) stationIds[loadStationId] = true
+    })
+
+    // return stationIds obj
+    return stationIds
+}
