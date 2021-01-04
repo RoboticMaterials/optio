@@ -15,6 +15,7 @@ import {getCards, getProcessCards, putCard} from "../../../../../../redux/action
 import * as styled from './kick_off_modal.style'
 import {useTheme} from "styled-components";
 import {getProcesses} from "../../../../../../redux/actions/processes_actions";
+import FadeLoader from "react-spinners/FadeLoader";
 
 Modal.setAppElement('body');
 
@@ -45,6 +46,7 @@ const KickOffModal = (props) => {
     const routes = useSelector(state => { return state.tasksReducer.tasks }) || {}
 
     const [submitting, setSubmitting] = useState(false)
+    const [didLoadData, setDidLoadData] = useState(false)
     const [availableKickOffCards, setAvailableKickOffCards] = useState([])
     const isButtons = availableKickOffCards.length > 0
 
@@ -156,14 +158,22 @@ const KickOffModal = (props) => {
         })
     }
 
+    const loadData = async () => {
+        const cardsResult = await dispatchGetCards()
+        const processesResult = await dispatchGetProcesses()
+
+        if(!(cardsResult instanceof Error) && !(processesResult instanceof Error)) {
+            setDidLoadData(true)
+        }
+    }
+
     /**
      * When modal is opened, get all cards associated with the processes
      *
      *
      */
     useEffect(() => {
-        dispatchGetCards()
-        dispatchGetProcesses()
+        loadData()
     }, [])
 
     /**
@@ -231,7 +241,15 @@ const KickOffModal = (props) => {
                                 {isButtons ?
                                     renderKickOffButtons()
                                     :
+                                    didLoadData ?
                                     <styled.NoButtonsText>There are currently no lots in the queue available for kick off.</styled.NoButtonsText>
+                                        :
+                                        <FadeLoader
+                                            css={styled.FadeLoaderCSS}
+                                            height={5}
+                                            width={3}
+                                            loading={true}
+                                        />
                                 }
 
                             </styled.ReportButtonsContainer>
