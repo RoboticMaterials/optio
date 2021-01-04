@@ -106,14 +106,14 @@ const Cards = (props) => {
 
             // summary zone
             case "summary":
-                // only title needs to be set
                 setTitle("Lots Summary")
+                setIsProcessView(false)
                 break
 
             // timeline zone
             case "timeline":
-                // only title needs to be set
                 setTitle("Timeline Zone")
+                setIsProcessView(false)
                 break
 
             // otherwise assume id is the id of a specific process
