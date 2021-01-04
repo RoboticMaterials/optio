@@ -66,6 +66,7 @@ const HILModals = (props) => {
     const [quantity, setQuantity] = useState(taskQuantity)
     const [selectedTask, setSelectedTask] = useState(null)
     const [selectedLot, setSelectedLot] = useState(null)
+    const [isProcessTask, setIsProcessTask] = useState(false)
     const [availableLots, setAvailableLots] = useState([])
     const [selectedDashboard, setSelectedDashboard] = useState(null)
     const [cardsLoaded, setCardsLoaded] = useState([false])
@@ -128,12 +129,12 @@ const HILModals = (props) => {
     useEffect(() => {
 
         // Only show lot selector is they're cards loaded, lots have not been dispalyed yet, it's a load hil and there's available lots
-        if (cardsLoaded && !didDisplayLots && hilLoadUnload !== 'unload') {
+        if (cardsLoaded && !didDisplayLots && hilLoadUnload !== 'unload' && isProcessTask) {
             setShowLotSelector(true)
             setDidDisplayLots(true)
         }
 
-    }, [cardsLoaded, availableLots, didDisplayLots, hilLoadUnload])
+    }, [cardsLoaded, availableLots, didDisplayLots, hilLoadUnload, isProcessTask])
 
     /*
     * Get dropdownsearch options for cards
@@ -144,25 +145,38 @@ const HILModals = (props) => {
     * */
     useEffect(() => {
 
+        // selectedTask.processes
 
-        const stationCards = Object.values(cards).filter((currCard) => {
-            const {
-                bins
-            } = currCard || {}
+        if(selectedTask && selectedTask.processes && Array.isArray(selectedTask.processes ) && (selectedTask.processes.length > 0)) {
+            setIsProcessTask(true)
+            const taskProcesses = selectedTask.processes
 
-            if (bins) {
-                if (bins[loadStationId] && bins[loadStationId].count > 0) return true
+            const stationCards = Object.values(cards).filter((currCard) => {
+                const {
+                    bins,
+                    process_id: currCardProcessId
+                } = currCard || {}
+
+                if (bins) {
+                    if (bins[loadStationId] && bins[loadStationId].count > 0 && taskProcesses.includes(currCardProcessId)) return true
+                }
+
+            })
+
+            if (stationCards && Array.isArray(stationCards) && stationCards.length > 0) {
+                if ((stationCards.length === 1) && !selectedLot && !didSelectInitialLot) {
+                    setSelectedLot(stationCards[0])
+                    setDidSelectInitialLot(true)
+                }
+                setAvailableLots(stationCards)
             }
-
-        })
-
-        if (stationCards && Array.isArray(stationCards) && stationCards.length > 0) {
-            if ((stationCards.length === 1) && !selectedLot && !didSelectInitialLot) {
-                setSelectedLot(stationCards[0])
-                setDidSelectInitialLot(true)
-            }
-            setAvailableLots(stationCards)
         }
+
+        else {
+            setIsProcessTask(false)
+        }
+
+
 
 
     }, [cards, selectedTask])
@@ -178,6 +192,8 @@ const HILModals = (props) => {
 
         const currentTask = tasks[item.task_id]
         setSelectedTask(currentTask)
+
+        console.log("currentTask",currentTask)
 
         // If the task's load location of the task q item matches the item's location then its a load hil, else its unload
         if (currentTask && currentTask?.load?.station === item.hil_station_id || !!item.dashboard) {
