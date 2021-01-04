@@ -28,12 +28,6 @@ export const HilContainer = styled.div`
         display: none;  /* Safari and Chrome */
     }
 
-    @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
-
-
-        margin: .5rem;
-    }
-
 `
 
 export const HilInputContainer = styled.div`
@@ -133,7 +127,8 @@ export const LotsContainer = styled.div`
     width: 100%;
     overflow: auto;
     flex: 1;
-    padding: 2rem 1rem 1rem 1rem;
+    /* padding: 2rem 1rem 1rem 1rem; */
+    padding: 1rem;
     align-items: center;
 `
 
@@ -189,7 +184,7 @@ export const HilSubtitleMessage = styled.h4`
     display: flex;
     font-family: ${props => props.theme.font.primary};
     justify-content: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     //margin-top: 3rem;
     padding: 0;
     margin: 0;
@@ -268,8 +263,8 @@ const HilButtonCss = css`
 
     border-radius: 1rem;
     box-shadow: 0 0.1rem 0.2rem 0rem #303030;
-    height: 7rem;
-    min-height: 7rem;
+    height: 100%;
+    min-height: 5rem;
     max-height: 7rem;
     width: 100%;
     display: flex;

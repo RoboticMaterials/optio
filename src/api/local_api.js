@@ -33,18 +33,18 @@ export async function postLoggers(settings) {
 }
 
 export const postLocalSettings = async (settings) => {
-    const localSettings = localStorage.setItem("rmsutdio_local-settings-config", JSON.stringify(settings))
+    const localSettings = localStorage.setItem("local-settings-config", JSON.stringify(settings))
     return localSettings
 }
 
 export const deleteLocalSettings = async () => {
     console.log('QQQQ Cleared')
-    localStorage.removeItem("rmsutdio_local-settings-config")
+    localStorage.removeItem("local-settings-config")
     
 }
 
 export const getLocalSettings = async () => {
-    let localSettings = localStorage.getItem("rmsutdio_local-settings-config");
+    let localSettings = localStorage.getItem("local-settings-config");
 
     if (localSettings) {
         localSettings = JSON.parse(localSettings);

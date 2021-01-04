@@ -502,6 +502,9 @@ const EditTask = (props) => {
     }
 
     return (
+      <>
+      {!!selectedTask &&
+
         <styled.ContentContainer>
 
             <ConfirmDeleteModal
@@ -509,7 +512,6 @@ const EditTask = (props) => {
                 title={
 
                     `Are you sure you want to delete this Route?
-
 
                     ${selectedTask.processes.length > 0 ?
                         `This task is a part of processes:
@@ -542,26 +544,29 @@ const EditTask = (props) => {
             />
 
             <div style={{ marginBottom: '1rem' }}>
-                <ContentHeader
-                    content={'tasks'}
-                    mode={(!!isProcessTask && selectedTask.new) ? 'add' : 'create'}
-                    // Disables the button if load and unloads have not been selected for a task/route in a process
-                    disabled={selectedTask !== null && (!selectedTask.load.position || selectedTask.unload.position === null)}
-                    onClickSave={async () => {
-                        await onSave()
-                    }}
+            {selectedTask &&
+              <ContentHeader
+                  content={'tasks'}
+                  mode={(!!isProcessTask && selectedTask.new) ? 'add' : 'create'}
+                  // Disables the button if load and unloads have not been selected for a task/route in a process
+                  disabled={selectedTask !== null && (!selectedTask.load.position || selectedTask.unload.position === null)}
+                  onClickSave={async () => {
+                      await onSave()
+                  }}
 
-                    onClickBack={() => {
-                        handleBack()
-                    }}
-                />
+                  onClickBack={() => {
+                      handleBack()
+                  }}
+              />
+            }
+
             </div>
 
             {/*
                 If it's a process route and its a new route then add the ability to select alread existing routes.
                 Some filtering is done based on certain conditions, see 'options' key
             */}
-            {isProcessTask && !!selectedTask.new &&
+            {!!selectedTask && isProcessTask && !!selectedTask.new &&
                 <>
                     <styled.Label>
                         <styled.LabelHighlight>Either</styled.LabelHighlight> choose an existing Route...
@@ -674,7 +679,7 @@ const EditTask = (props) => {
                 </>
             }
 
-            {isProcessTask && !!selectedTask.new &&
+            {!!selectedTask && isProcessTask && !!selectedTask.new &&
 
                 <styled.Label style={{ marginTop: '1rem' }}>
                     <styled.LabelHighlight>Or</styled.LabelHighlight> make a new one
@@ -833,6 +838,8 @@ const EditTask = (props) => {
                 Delete Route
             </Button>
         </styled.ContentContainer>
+      }
+    </>
 
     )
 }

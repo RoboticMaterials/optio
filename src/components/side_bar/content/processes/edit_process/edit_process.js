@@ -121,7 +121,7 @@ const EditProcess = (props) => {
                         key={`li-${ind}`}
                         onMouseEnter={() => {
                             if (!selectedTask && !editingTask) {
-                                dispatchSetSelectedTask(routeTask)
+                                //dispatchSetSelectedTask(routeTask)
                             }
 
                         }}

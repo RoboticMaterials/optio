@@ -409,7 +409,7 @@ const HILModals = (props) => {
 
                     <styled.LotsContainer>
                         <styled.SubtitleContainer>
-                            <styled.HilSubtitleMessage>Select a fraction of the items you recieved to send along:</styled.HilSubtitleMessage>
+                            <styled.HilSubtitleMessage>Select a fraction:</styled.HilSubtitleMessage>
                         </styled.SubtitleContainer>
 
 
