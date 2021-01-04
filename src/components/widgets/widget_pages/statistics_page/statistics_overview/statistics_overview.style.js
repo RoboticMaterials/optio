@@ -12,7 +12,7 @@ export const OverviewContainer = styled.div`
     border-radius: 1rem;
 
     align-items: center;
-    justify-content: center;
+    justify-content: start;
 
     //padding-top: 1rem;
     // padding: .5rem;

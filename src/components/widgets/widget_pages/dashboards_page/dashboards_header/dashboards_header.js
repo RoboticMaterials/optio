@@ -44,7 +44,7 @@ const DashboardsHeader = (props) => {
     // extract url params
     const { stationID, dashboardID, editing } = props.match.params
 
-    const cards = useSelector(state=>state.cardsReducer.cards)
+    const cards = useSelector(state => state.cardsReducer.cards)
     const locations = useSelector(state => state.locationsReducer.locations)
     const location = locations[stationID]
 
@@ -68,59 +68,59 @@ const DashboardsHeader = (props) => {
 
     return (
         <style.ColumnContainer>
-          <style.RowContainer>
-            <style.LotsTitle>Lots:</style.LotsTitle>
-            {Object.values(cards).map((card, ind) =>
-              <>
-              {!!card.bins[location._id] &&
-                <style.LotItem>{card.bins[location._id].count}</style.LotItem>
-              }
-              </>
-            )}
-          </style.RowContainer>
+            <style.RowContainer>
+                <style.LotsTitle>Lots:</style.LotsTitle>
+                {Object.values(cards).map((card, ind) =>
+                    <>
+                        {!!card.bins[location._id] &&
+                            <style.LotItem>{card.bins[location._id].count}</style.LotItem>
+                        }
+                    </>
+                )}
+            </style.RowContainer>
 
-          <style.Header>
+            <style.Header>
 
-              {showBackButton &&
-                  <BackButton style={{ order: '1' }} containerStyle={{ marginTop: '1.8rem' }}
-                      onClick={onBack}
-                  />
-              }
+                {showBackButton &&
+                    <BackButton style={{ order: '1' }} containerStyle={{ marginTop: '1.8rem' }}
+                        onClick={onBack}
+                    />
+                }
 
-              {showTitle &&
-                  <style.Title style={{ order: '2' }}>{page}</style.Title>
-              }
+                {showTitle &&
+                    <style.Title style={{ order: '2' }}>{page}</style.Title>
+                }
 
-              {showEditButton && !mobileMode &&
-                  <Button style={{ order: '3', marginTop: '1.8rem' }}
-                      onClick={setEditingDashboard}
-                  >
-                      Edit
+                {showEditButton && !mobileMode &&
+                    <Button style={{ order: '3', marginTop: '1.8rem' }}
+                        onClick={setEditingDashboard}
+                    >
+                        Edit
   				</Button>
-              }
+                }
 
-              {showSaveButton &&
-                  <>
-                      <Button style={{ order: '3', marginTop: '1.8rem' }}
-                          type="submit"
-                          disabled={saveDisabled}
-                      >
-                          Save
+                {showSaveButton &&
+                    <>
+                        <Button style={{ order: '3', marginTop: '1.8rem' }}
+                            type="submit"
+                            disabled={saveDisabled}
+                        >
+                            Save
   				</Button>
 
-                      {/* Comment out for now since locations only have one dashboard, so you should not be able to delete the only dashboard */}
-                      {/* <Button
+                        {/* Comment out for now since locations only have one dashboard, so you should not be able to delete the only dashboard */}
+                        {/* <Button
                           schema={'delete'}
                           style={{ order: '4', marginTop: '1.8rem', marginLeft: '2rem' }}
                           onClick={onDelete}
                       >
                           Delete
                       </Button> */}
-                  </>
-              }
+                    </>
+                }
 
-              {children}
-          </style.Header>
+                {children}
+            </style.Header>
         </style.ColumnContainer>
 
     )
