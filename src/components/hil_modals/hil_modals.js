@@ -193,8 +193,6 @@ const HILModals = (props) => {
         const currentTask = tasks[item.task_id]
         setSelectedTask(currentTask)
 
-        console.log("currentTask",currentTask)
-
         // If the task's load location of the task q item matches the item's location then its a load hil, else its unload
         if (currentTask && currentTask?.load?.station === item.hil_station_id || !!item.dashboard) {
             // load
