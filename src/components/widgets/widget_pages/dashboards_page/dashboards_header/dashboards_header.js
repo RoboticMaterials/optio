@@ -87,7 +87,7 @@ const DashboardsHeader = (props) => {
                     {Object.values(cards).map((card, ind) =>
                         <>
                             {!!card.bins[location._id] &&
-                                <style.LotItem>{card.bins[location._id].count}</style.LotItem>
+                                <style.LotItem>{card.name + ' (' + card.bins[location._id].count +')'}</style.LotItem>
                             }
                         </>
                     )}
