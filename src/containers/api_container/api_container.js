@@ -227,7 +227,7 @@ const ApiContainer = (props) => {
                 break;
 
             case 'dashboards':
-                pageDataInterval = setInterval(() => loadDashboardsData(), 100000);
+                pageDataInterval = setInterval(() => loadDashboardsData(), 1000);
                 //pageDataInterval = setInterval(() => loadTasksData(), 10000);
                 break;
 
@@ -380,6 +380,7 @@ const ApiContainer = (props) => {
     const loadDashboardsData = async () => {
         const dashboards = await onGetDashboards();
         await onGetReportEvents()
+        await onGetCards()
 
     }
 
@@ -737,7 +738,7 @@ const ApiContainer = (props) => {
 
                     }
 
-                    else if(!processes[process].routes.includes(task._id)) {
+                    else if (!processes[process].routes.includes(task._id)) {
                         console.log('QQQQ Task is associated with a process that is not associated with the task anymore', task, process)
                         alert('Task is associated with a process that is not associated with the task anymore')
 
