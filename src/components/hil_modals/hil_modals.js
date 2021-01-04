@@ -106,10 +106,6 @@ const HILModals = (props) => {
         count
     } = currentBin || {}
 
-
-
-
-
     // If the qty goes below 0, then set to 0. You can never send negative parts
     if (quantity < 0) {
         setQuantity(0)
@@ -130,12 +126,14 @@ const HILModals = (props) => {
 
     // load card data on load for selecting lot
     useEffect(() => {
-        if (cardsLoaded && !didDisplayLots && availableLots.length > 0) {
+
+        // Only show lot selector is they're cards loaded, lots have not been dispalyed yet, it's a load hil and there's available lots
+        if (cardsLoaded && !didDisplayLots && hilLoadUnload !== 'unload' && availableLots.length > 0) {
             setShowLotSelector(true)
             setDidDisplayLots(true)
         }
 
-    }, [cardsLoaded, availableLots, didDisplayLots])
+    }, [cardsLoaded, availableLots, didDisplayLots, hilLoadUnload])
 
     /*
     * Get dropdownsearch options for cards
@@ -365,6 +363,43 @@ const HILModals = (props) => {
         )
     }
 
+    const renderUnloadOptions = () => {
+        return (
+            <>
+                <styled.Header>
+
+                    <styled.ColumnContainer>
+                        <styled.HilMessage>{hilMessage}</styled.HilMessage>
+                        {/* Only Showing timers on load at the moment, will probably change in the future */}
+                        {
+                            !!hilTimers[item._id.$oid] && hilLoadUnload === 'load' &&
+                            <styled.HilTimer>{hilTimers[item._id.$oid]}</styled.HilTimer>
+                        }
+                    </styled.ColumnContainer>
+
+                </styled.Header>
+
+                <styled.LotSelectorContainer>
+                    <styled.LotsContainer>
+
+                        <styled.HilButton color={'#90eaa8'}
+                            onClick={() => {
+                                onHilSuccess()
+                            }}
+                        >
+                            <styled.HilIcon
+                                className='fas fa-check'
+                                color={'#1c933c'}
+                            />
+                            {/* <styled.HilButtonText color={'#1c933c'}>1</styled.HilButtonText> */}
+                        </styled.HilButton>
+
+                    </styled.LotsContainer>
+                </styled.LotSelectorContainer>
+            </>
+        )
+    }
+
     const renderFractionOptions = () => {
 
         const fractionOptions = ['1', '3/4', '1/2', '1/4']
@@ -398,13 +433,13 @@ const HILModals = (props) => {
                 <styled.LotSelectorContainer>
 
                     <styled.LotsContainer>
-                      <styled.SubtitleContainer>
-                        <styled.HilSubtitleMessage>Select a fraction of the items you recieved to send along:</styled.HilSubtitleMessage>
-                      </styled.SubtitleContainer>
+                        <styled.SubtitleContainer>
+                            <styled.HilSubtitleMessage>Select a fraction:</styled.HilSubtitleMessage>
+                        </styled.SubtitleContainer>
 
 
                         {fractionOptions.map((value, ind) => {
-                          const decimal = fractionDecimals[ind]
+                            const decimal = fractionDecimals[ind]
                             return (
                                 <styled.HilButton
                                     color={'#90eaa8'}
@@ -417,34 +452,16 @@ const HILModals = (props) => {
                                 className='fas fa-check'
                                 color={'#1c933c'}
                             /> */}
-                                  <styled.RowContainer>
-                                    <styled.HilButtonText style={{ fontSize: '3rem' }} color={'#1c933c'}>{value}</styled.HilButtonText>
-                                    {!!count &&
-                                      <styled.HilButtonQuantityText color={'#1c933c'}>{'(Quantity '+ Math.ceil(count*decimal)+')'}</styled.HilButtonQuantityText>
-                                    }
+                                    <styled.RowContainer>
+                                        <styled.HilButtonText style={{ fontSize: '3rem' }} color={'#1c933c'}>{value}</styled.HilButtonText>
+                                        {!!count &&
+                                            <styled.HilButtonQuantityText color={'#1c933c'}>{'(Quantity ' + Math.ceil(count * decimal) + ')'}</styled.HilButtonQuantityText>
+                                        }
 
-                                  </styled.RowContainer>
+                                    </styled.RowContainer>
                                 </styled.HilButton>
                             )
                         })}
-
-
-
-                        {hilLoadUnload === 'unload' &&
-                            <styled.HilButton color={'#90eaa8'}
-                                onClick={() => {
-                                    onHilSuccess()
-                                }}
-                            >
-                                <styled.HilIcon
-                                    className='fas fa-check'
-                                    color={'#1c933c'}
-                                />
-                                <styled.HilButtonText color={'#1c933c'}>1</styled.HilButtonText>
-                            </styled.HilButton>
-                        }
-
-
 
                     </styled.LotsContainer>
 
@@ -781,7 +798,14 @@ const HILModals = (props) => {
                 showLotSelector ?
                     renderLotSelector()
                     :
-                    !!selectedTask && selectedTask.track_quantity ? renderQuantityOptions() : renderFractionOptions()
+                    !!selectedTask && hilLoadUnload === 'load' ?
+                        selectedTask.track_quantity ?
+                            renderQuantityOptions()
+                            :
+                            renderFractionOptions()
+
+                        :
+                        renderUnloadOptions()
             }
 
 

@@ -104,13 +104,13 @@ const App = (props) => {
 
                 <styled.Container>
                     <BrowserRouter>
-                        <Route
-                            path={"/clear_local"}
+                        {/* <Route
+                            exact path="/clear_local"
                         >
                             {
                                 handleClearLocalSettings()
                             }
-                        </Route>
+                        </Route> */}
 
 
                         <Route

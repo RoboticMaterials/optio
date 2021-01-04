@@ -38,12 +38,13 @@ export const postLocalSettings = async (settings) => {
 }
 
 export const deleteLocalSettings = async () => {
+    console.log('QQQQ Cleared')
     localStorage.removeItem("local-settings-config")
     
 }
 
 export const getLocalSettings = async () => {
-    var localSettings = localStorage.getItem("local-settings-config");
+    let localSettings = localStorage.getItem("local-settings-config");
 
     if (localSettings) {
         localSettings = JSON.parse(localSettings);
@@ -51,7 +52,7 @@ export const getLocalSettings = async () => {
     }
     // Posts settigns to the backend if there's nothing there
     else {
-        const settings = defaultLocalSettings
+        const settings = postLocalSettings(defaultLocalSettings)
         return settings
     }
 }
