@@ -28,12 +28,6 @@ export const HilContainer = styled.div`
         display: none;  /* Safari and Chrome */
     }
 
-    @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
-
-
-        margin: .5rem;
-    }
-
 `
 
 export const HilInputContainer = styled.div`
