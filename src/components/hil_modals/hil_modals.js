@@ -458,7 +458,7 @@ const HILModals = (props) => {
                     <styled.FooterContainer>
 
 
-                        {renderSelectedLot()}
+                        {isProcessTask && renderSelectedLot()}
 
                         <styled.FooterButton style={{ margin: 0, marginTop: "1rem" }} color={'#ff9898'} onClick={onHilFailure}>
                             <styled.HilIcon
@@ -593,7 +593,7 @@ const HILModals = (props) => {
 
 
                                     </styled.HilInputContainer>
-                                    {renderSelectedLot()}
+                                    {isProcessTask && renderSelectedLot()}
                                 </>
 
                             }
