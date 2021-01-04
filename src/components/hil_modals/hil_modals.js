@@ -124,11 +124,11 @@ const HILModals = (props) => {
         setSelectedDashboard(dashboard)
     }, [dashboards])
 
-    // load card data on load for selecting lot
+    // handles initial display of lot selector
     useEffect(() => {
 
         // Only show lot selector is they're cards loaded, lots have not been dispalyed yet, it's a load hil and there's available lots
-        if (cardsLoaded && !didDisplayLots && hilLoadUnload !== 'unload' && availableLots.length > 0) {
+        if (cardsLoaded && !didDisplayLots && hilLoadUnload !== 'unload') {
             setShowLotSelector(true)
             setDidDisplayLots(true)
         }
@@ -310,55 +310,30 @@ const HILModals = (props) => {
                 {selectedLot ?
                     <styled.LotTitleDescription>Selected Lot:</styled.LotTitleDescription>
                     :
-                    availableLots.length > 0 ?
-                        <>
-
-                            <styled.FooterButton
-                                onClick={() => {
-                                    setShowLotSelector(true)
-                                }}
-                            >
-                                <styled.LotTitleDescription>Select Lot</styled.LotTitleDescription>
-                            </styled.FooterButton>
-
-                            {/*<styled.LotTitleDescription>Select Lot</styled.LotTitleDescription>*/}
-
-                            {/*{!showLotSelector &&*/}
-                            {/*<styled.SelectedLotName>*/}
-                            {/*    <styled.EditLotIcon*/}
-                            {/*        className="fas fa-edit"*/}
-                            {/*        onClick={()=> {*/}
-                            {/*            setShowLotSelector(true)*/}
-                            {/*        }}*/}
-                            {/*    />*/}
-                            {/*</styled.SelectedLotName>*/}
-                            {/*}*/}
-                        </>
-
-                        :
-                        <styled.LotTitleName>No lots available</styled.LotTitleName>
-
+                    <styled.FooterButton
+                        onClick={() => {
+                            setShowLotSelector(true)
+                        }}
+                    >
+                        <styled.LotTitleDescription>Select Lot</styled.LotTitleDescription>
+                    </styled.FooterButton>
                 }
 
                 {(selectedLot) &&
-                    <styled.SelectedLotName>
-                        {selectedLotName &&
-                            <styled.LotTitleName>{selectedLotName}</styled.LotTitleName>
-                        }
-                        {!showLotSelector &&
-                            <styled.EditLotIcon
-                                className="fas fa-edit"
-                                onClick={() => {
-                                    setShowLotSelector(true)
-                                }}
-                            />
-                        }
-                    </styled.SelectedLotName>
+                <styled.SelectedLotName>
+                    {selectedLotName &&
+                    <styled.LotTitleName>{selectedLotName}</styled.LotTitleName>
+                    }
+                    {!showLotSelector &&
+                    <styled.EditLotIcon
+                        className="fas fa-edit"
+                        onClick={() => {
+                            setShowLotSelector(true)
+                        }}
+                    />
+                    }
+                </styled.SelectedLotName>
                 }
-
-
-
-
             </styled.SelectedLotContainer>
         )
     }
@@ -383,9 +358,9 @@ const HILModals = (props) => {
                     <styled.LotsContainer>
 
                         <styled.HilButton color={'#90eaa8'}
-                            onClick={() => {
-                                onHilSuccess()
-                            }}
+                                          onClick={() => {
+                                              onHilSuccess()
+                                          }}
                         >
                             <styled.HilIcon
                                 className='fas fa-check'
@@ -410,10 +385,10 @@ const HILModals = (props) => {
                 <styled.Header>
 
                     {!!taskQueueItemClicked &&
-                        <styled.HilExitModal
-                            className='fas fa-times'
-                            onClick={() => dispatchTaskQueueItemClicked('')}
-                        />
+                    <styled.HilExitModal
+                        className='fas fa-times'
+                        onClick={() => dispatchTaskQueueItemClicked('')}
+                    />
                     }
 
 
@@ -455,7 +430,7 @@ const HILModals = (props) => {
                                     <styled.RowContainer>
                                         <styled.HilButtonText style={{ fontSize: '3rem' }} color={'#1c933c'}>{value}</styled.HilButtonText>
                                         {!!count &&
-                                            <styled.HilButtonQuantityText color={'#1c933c'}>{'(Quantity ' + Math.ceil(count * decimal) + ')'}</styled.HilButtonQuantityText>
+                                        <styled.HilButtonQuantityText color={'#1c933c'}>{'(Quantity ' + Math.ceil(count * decimal) + ')'}</styled.HilButtonQuantityText>
                                         }
 
                                     </styled.RowContainer>
@@ -466,20 +441,20 @@ const HILModals = (props) => {
                     </styled.LotsContainer>
 
                     {(hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
-                        <styled.FooterContainer>
+                    <styled.FooterContainer>
 
 
-                            {renderSelectedLot()}
+                        {renderSelectedLot()}
 
-                            <styled.FooterButton style={{ margin: 0, marginTop: "1rem" }} color={'#ff9898'} onClick={onHilFailure}>
-                                <styled.HilIcon
-                                    style={{ margin: 0, marginRight: "1rem", fontSize: "2.5rem" }}
-                                    className='fas fa-times'
-                                    color={'#ff1818'}
-                                />
-                                <styled.HilButtonText style={{ margin: 0, padding: 0 }} color={'#ff1818'}>Cancel</styled.HilButtonText>
-                            </styled.FooterButton>
-                        </styled.FooterContainer>
+                        <styled.FooterButton style={{ margin: 0, marginTop: "1rem" }} color={'#ff9898'} onClick={onHilFailure}>
+                            <styled.HilIcon
+                                style={{ margin: 0, marginRight: "1rem", fontSize: "2.5rem" }}
+                                className='fas fa-times'
+                                color={'#ff1818'}
+                            />
+                            <styled.HilButtonText style={{ margin: 0, padding: 0 }} color={'#ff1818'}>Cancel</styled.HilButtonText>
+                        </styled.FooterButton>
+                    </styled.FooterContainer>
                     }
 
 
@@ -498,10 +473,10 @@ const HILModals = (props) => {
                 <styled.Header>
 
                     {!!taskQueueItemClicked &&
-                        <styled.HilExitModal
-                            className='fas fa-times'
-                            onClick={() => dispatchTaskQueueItemClicked('')}
-                        />
+                    <styled.HilExitModal
+                        className='fas fa-times'
+                        onClick={() => dispatchTaskQueueItemClicked('')}
+                    />
                     }
 
 
@@ -611,7 +586,7 @@ const HILModals = (props) => {
 
 
                             {count &&
-                                <styled.HilSubText style={{ marginBottom: "1rem" }}>Available Lot Items: {count}</styled.HilSubText>
+                            <styled.HilSubText style={{ marginBottom: "1rem" }}>Available Lot Items: {count}</styled.HilSubText>
                             }
                         </div>
 
@@ -637,37 +612,37 @@ const HILModals = (props) => {
                                     style={{ margin: 0, padding: 0 }}
                                 >
                                     Confirm
-                            </styled.HilButtonText>
+                                </styled.HilButtonText>
                             </styled.HilButton>
 
                             {((hilType === 'pull' && hilLoadUnload === 'load') || hilType === 'check') &&
-                                <styled.HilButton color={'#f7cd89'} onClick={onHilPostpone}>
-                                    <styled.HilIcon
-                                        style={{}}
-                                        // onClick={onHilPostpone}
-                                        className='icon-postpone'
-                                        color={'#ff7700'}
-                                        styled={{ marginTop: '.5rem' }}
-                                    />
-                                    <styled.HilButtonText
-                                        color={'#ff7700'}
-                                        style={{ margin: 0, padding: 0 }}
-                                    >
-                                        Postpone
-                            </styled.HilButtonText>
-                                </styled.HilButton>
+                            <styled.HilButton color={'#f7cd89'} onClick={onHilPostpone}>
+                                <styled.HilIcon
+                                    style={{}}
+                                    // onClick={onHilPostpone}
+                                    className='icon-postpone'
+                                    color={'#ff7700'}
+                                    styled={{ marginTop: '.5rem' }}
+                                />
+                                <styled.HilButtonText
+                                    color={'#ff7700'}
+                                    style={{ margin: 0, padding: 0 }}
+                                >
+                                    Postpone
+                                </styled.HilButtonText>
+                            </styled.HilButton>
                             }
 
                             {(hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
 
-                                <styled.HilButton color={'#ff9898'} onClick={onHilFailure}>
-                                    <styled.HilIcon
-                                        // onClick={onHilFailure}
-                                        className='fas fa-times'
-                                        color={'#ff1818'}
-                                    />
-                                    <styled.HilButtonText color={'#ff1818'}>Cancel</styled.HilButtonText>
-                                </styled.HilButton>
+                            <styled.HilButton color={'#ff9898'} onClick={onHilFailure}>
+                                <styled.HilIcon
+                                    // onClick={onHilFailure}
+                                    className='fas fa-times'
+                                    color={'#ff1818'}
+                                />
+                                <styled.HilButtonText color={'#ff1818'}>Cancel</styled.HilButtonText>
+                            </styled.HilButton>
                             }
 
                         </styled.HilButtonContainer>
@@ -684,10 +659,10 @@ const HILModals = (props) => {
                 <styled.Header>
 
                     {!!taskQueueItemClicked &&
-                        <styled.HilExitModal
-                            className='fas fa-times'
-                            onClick={() => dispatchTaskQueueItemClicked('')}
-                        />
+                    <styled.HilExitModal
+                        className='fas fa-times'
+                        onClick={() => dispatchTaskQueueItemClicked('')}
+                    />
                     }
 
 
@@ -699,43 +674,54 @@ const HILModals = (props) => {
 
                 </styled.Header>
                 <styled.LotSelectorContainer>
-                    <styled.LotsContainer>
-                        {availableLots.map((currLot) => {
-                            const {
-                                name,
-                                _id: lotId,
-                                bins
-                            } = currLot
 
-                            const isSelected = selectedLotId === lotId
+                    {availableLots.length > 0 ?
+                        <styled.LotsContainer>
 
-                            return (
-                                <styled.LotButton
-                                    isSelected={isSelected}
-                                    color={'orange'}
-                                    schema={"lots"}
-                                    onClick={() => {
-                                        // set selected lot and close lot selector
-                                        setSelectedLot(currLot)
-                                        setShowLotSelector(false)
-                                    }}
-                                >
+                            {availableLots.map((currLot) => {
+                                const {
+                                    name,
+                                    _id: lotId,
+                                    bins
+                                } = currLot
 
-                                    {/*{isSelected &&*/}
-                                    {/*    <styled.DeselectLotIcon*/}
-                                    {/*        className='fas fa-times-circle'*/}
-                                    {/*        onClick={(e) => {*/}
-                                    {/*            e.stopPropagation()*/}
-                                    {/*            e.preventDefault()*/}
-                                    {/*            setSelectedLot(null)*/}
-                                    {/*        }}*/}
-                                    {/*    />*/}
-                                    {/*}*/}
-                                    <styled.LotButtonText isSelected={isSelected} color={'#32a897'}>{name}</styled.LotButtonText>
-                                </styled.LotButton>
-                            )
-                        })}
-                    </styled.LotsContainer>
+                                const isSelected = selectedLotId === lotId
+
+                                return (
+                                    <styled.LotButton
+                                        isSelected={isSelected}
+                                        color={'orange'}
+                                        schema={"lots"}
+                                        onClick={() => {
+                                            // set selected lot and close lot selector
+                                            setSelectedLot(currLot)
+                                            setShowLotSelector(false)
+                                        }}
+                                    >
+
+                                        {/*{isSelected &&*/}
+                                        {/*    <styled.DeselectLotIcon*/}
+                                        {/*        className='fas fa-times-circle'*/}
+                                        {/*        onClick={(e) => {*/}
+                                        {/*            e.stopPropagation()*/}
+                                        {/*            e.preventDefault()*/}
+                                        {/*            setSelectedLot(null)*/}
+                                        {/*        }}*/}
+                                        {/*    />*/}
+                                        {/*}*/}
+                                        <styled.LotButtonText isSelected={isSelected}
+                                                              color={'#32a897'}>{name}</styled.LotButtonText>
+                                    </styled.LotButton>
+                                )
+                            })
+                            }
+                        </styled.LotsContainer>
+
+                        :
+                        <styled.NoLotsContainer>
+                            <styled.NoLotsText>No lots available</styled.NoLotsText>
+                        </styled.NoLotsContainer>
+                    }
 
                     <styled.FooterContainer>
                         <styled.FooterButton
