@@ -1,30 +1,25 @@
-import React, {useEffect, useState} from "react";
-
-
+import React, {useEffect, useState} from "react"
 
 // components
-import StationsColumn from "../columns/station_column/station_column";
-import LotQueue from "../columns/lot_queue/lot_queue";
-import Button from "../../../../basic/button/button";
-
-// external components
-import {SortableContainer} from "react-sortable-hoc";
-import {Container} from "react-smooth-dnd";
+import StationsColumn from "../columns/station_column/station_column"
+import LotQueue from "../columns/lot_queue/lot_queue"
+import FinishColumn from "../columns/finish_column/finish_column"
 
 // external functions
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux"
+import PropTypes from "prop-types"
+import {SortableContainer} from "react-sortable-hoc"
 
 // actions
-import {setDataPage} from "../../../../../redux/actions/api_actions";
+import {setDataPage} from "../../../../../redux/actions/api_actions"
 
 // styles
-import * as styled from "./card_zone.style";
-import FinishColumn from "../columns/finish_column/finish_column";
+import * as styled from "./card_zone.style"
 
 const CardZone = SortableContainer((props) => {
 
+	// extract props
 	const {
-		// stations,
 		handleCardClick,
 		processId,
 		setShowCardEditor,
@@ -32,175 +27,224 @@ const CardZone = SortableContainer((props) => {
 		maxHeight
 	} = props
 
+	// redux state
 	const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] }) || {}
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
 	const cards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || []
 	const stations = useSelector(state => { return state.locationsReducer.stations })
 
-	let cardsSorted = {}
-	var prevLoadStationId
-	var prevUnloadStationId
+	const [cardsSorted, setCardsSorted] = useState({})
+	const [queue, setQueue] = useState([])
+	const [finished, setFinished] = useState([])
 
-	var step = 0
-	currentProcess.routes && currentProcess.routes.forEach((currRouteId, index) => {
-		const currRoute =  routes[currRouteId]
+	// const onSetDataPage = (page) => setDataPage(page)
+	//
+	// useEffect(() => {
+	//
+	// 	onSetDataPage("CardZone")
+	//
+	// 	return () => {
+	// 		// remove page
+	// 		onSetDataPage(null)
+	// 	}
+	// }, [])
 
 
-		const loadStationId = currRoute?.load?.station
-		const unloadStationId = currRoute?.unload?.station
+	/*
+	* NOTE: cards are accumulated in temp vars and the temp vars are used to update component state
+	* 	The sorting must be performed this way because useState will not update within the context of useEffect, so rather than accumulating values it would overwrite previous useStates
+	* */
+	useEffect( () => {
 
-		if(prevUnloadStationId !== loadStationId) {
-			cardsSorted[loadStationId] = {
-				station_id: loadStationId,
-				step: step,
+		// need to loop through the process's routes first and get all station ids involved in the process
+		// this must be done first in order to avoid showing lots that are in stations that are no longer a part of the process
+
+		var prevLoadStationId		// tracks previous load station id when looping through routes
+		var prevUnloadStationId		// tracks previous unload station id when looping through routes
+		var tempCardsSorted = {}	// temp var for storing sorted cards
+
+		// loop through routes, get load / unload station id and create entry in tempCardsSorted for each station
+		currentProcess.routes && currentProcess.routes.forEach((currRouteId, index) => {
+
+			// get current route and load / unload station ids
+			const currRoute = routes[currRouteId]
+			const loadStationId = currRoute?.load?.station
+			const unloadStationId = currRoute?.unload?.station
+
+			// only add loadStation entry if the previous unload wasn't identical (in order to avoid duplicates)
+			if (prevUnloadStationId !== loadStationId) {
+
+				// add entry in tempCardsSorted
+				tempCardsSorted[loadStationId] = {
+					station_id: loadStationId,
+					cards: []
+				}
+			}
+
+			// add entry in tempCardsSorted
+			tempCardsSorted[unloadStationId] = {
+				station_id: unloadStationId,
 				cards: []
 			}
-		}
 
-		// if(prevLoadStationId !== unloadStationId ) {
-			cardsSorted[unloadStationId] = {
-				station_id: unloadStationId,
-				step: step,
-				cards: []
-		}
+			// update prevLoadStationId and prevUnloadStationId
+			prevLoadStationId = loadStationId
+			prevUnloadStationId = unloadStationId
+		})
 
-		step = step + 1
+		// now that the object keys have been made, loop through the process's cards and add them to the correct bins
 
-		prevLoadStationId = loadStationId
-		prevUnloadStationId = unloadStationId
-	})
+		var tempQueue = []		// temp var for storing queue lots
+		var tempFinished = []	// temp var for storing finished lots
 
+		Object.values(cards).forEach((card) => {
 
-	var queue = []
-	var finished = []
-	Object.values(cards).forEach((card) => {
+			// extract card attributes
+			const {
+				bins,
+				_id,
+				...rest
+			} = card
 
-		const {
-			bins,
-			_id,
-			...rest
-		} = card
+			if(card.bins) {
 
-		if(card.bins) {
-			Object.entries(card.bins).forEach((binEntry) => {
-				const binId = binEntry[0]
-				const binValue = binEntry[1]
+				// loop through this lot's bins
+				Object.entries(card.bins).forEach((binEntry) => {
 
-				const {
-					count
-				} = binValue
+					// get bin attributes
+					const binId = binEntry[0]
+					const binValue = binEntry[1]
+					const {
+						count
+					} = binValue
 
-				if(cardsSorted[binId]) {
-					cardsSorted[binId].cards.push({
-						...rest,
-						binId,
-						count,
-						cardId: _id
-					})
-				}
-				else if(binId === "QUEUE") {
-					queue.push({
-						...rest,
-						count,
-						binId,
-						cardId: _id
-					})
-				}
-				else if(binId === "FINISH") {
-					finished.push({
-						...rest,
-						count,
-						binId,
-						cardId: _id
-					})
-				}
+					// if there is an entry in tempCardsSorted with key matching {binId}, add the card to this bin
+					if(tempCardsSorted[binId]) {
+						tempCardsSorted[binId].cards.push({
+							...rest,
+							binId,
+							count,
+							cardId: _id
+						})
+					}
 
-			})
-		}
+					// if {binId} is queue, add the card to the queue
+					else if(binId === "QUEUE") {
+						tempQueue.push({
+							...rest,
+							count,
+							binId,
+							cardId: _id
+						})
+					}
 
+					// if the {binId} is finish, add the card to the finished column
+					else if(binId === "FINISH") {
+						tempFinished.push({
+							...rest,
+							count,
+							binId,
+							cardId: _id
+						})
+					}
 
+				})
+			}
 
+			// update component state with the temp vars
+			setCardsSorted(tempCardsSorted)
+			setQueue(tempQueue)
+			setFinished(tempFinished)
+		})
 
-	})
+	}, [currentProcess.routes, cards])
 
+	/*
+	* Renders a {StationColumn} for each entry in {cardsSorted}
+	*
+	* */
+	const renderStationColumns = () => {
 
+		// loop through each entry in {cardsSorted} and return a {StationsColumn}
+		return Object.values(cardsSorted).map((obj, index) => {
 
-	const onSetDataPage = (page) => setDataPage(page)
+			// extract attributes of current bin
+			const {
+				station_id,
+				route_id,
+				cards: cardsArr
+			} = obj
 
-	useEffect(() => {
+			// get current station attributes from {station_id} and redux state
+			const currStation = stations[station_id]
+			const {
+				name: stationName
+			} = currStation || {}
 
-		onSetDataPage("CardZone")
-		return () => {
-			// remove page
-			onSetDataPage(null) // might not be necessary, can just overwrite in next page
-		}
-	}, [])
-
-
-
-
-		return(
-			<styled.Container>
-				<LotQueue
-					key={"QUEUE"}
+			return (
+				<StationsColumn
 					maxHeight={maxHeight}
-					station_id={"QUEUE"}
-					setShowCardEditor={setShowCardEditor}
-					showCardEditor={showCardEditor}
-					stationName={"Queue"}
+					key={station_id + index}
+					id={route_id+"+"+station_id}
+					station_id={station_id}
+					stationName={stationName}
 					processId={processId}
-					cards={queue}
+					route_id={route_id}
+					cards={cardsArr}
 					handleCardClick={handleCardClick}
 				/>
+			)
+		})
+	}
 
-				{
-					Object.values(cardsSorted).map((obj, index) => {
+	return(
+		<styled.Container>
+			<LotQueue
+				key={"QUEUE"}
+				maxHeight={maxHeight}
+				station_id={"QUEUE"}
+				setShowCardEditor={setShowCardEditor}
+				showCardEditor={showCardEditor}
+				stationName={"Queue"}
+				processId={processId}
+				cards={queue}
+				handleCardClick={handleCardClick}
+			/>
 
-						const {
-							station_id,
-							route_id,
-							step,
-							cards: cardsArr
-						} = obj
+			{renderStationColumns()}
 
-						const currStation = stations[station_id]
-						const {
-							name: stationName
-						} = currStation || {}
-
-						return (
-							<StationsColumn
-								step={step}
-								maxHeight={maxHeight}
-								// onDrop={handleDrop}
-								key={station_id + index}
-								id={route_id+"+"+station_id}
-								station_id={station_id}
-								stationName={stationName}
-								processId={processId}
-								route_id={route_id}
-								cards={cardsArr}
-								handleCardClick={handleCardClick}
-							/>
-						)
-					})
-				}
-
-				<FinishColumn
-					key={"FINISH"}
-					maxHeight={maxHeight}
-					station_id={"FINISH"}
-					setShowCardEditor={setShowCardEditor}
-					showCardEditor={showCardEditor}
-					stationName={"Finished"}
-					processId={processId}
-					cards={finished}
-					handleCardClick={handleCardClick}
-				/>
-
-			</styled.Container>
-		)
+			<FinishColumn
+				key={"FINISH"}
+				maxHeight={maxHeight}
+				station_id={"FINISH"}
+				setShowCardEditor={setShowCardEditor}
+				showCardEditor={showCardEditor}
+				stationName={"Finished"}
+				processId={processId}
+				cards={finished}
+				handleCardClick={handleCardClick}
+			/>
+		</styled.Container>
+	)
 })
+
+// Specifies propTypes
+CardZone.propTypes = {
+	handleCardClick: PropTypes.func,
+	setShowCardEditor: PropTypes.func,
+	processId: PropTypes.string,
+	showCardEditor: PropTypes.bool,
+	maxHeight: PropTypes.number
+}
+
+// Specifies the default values for props:
+CardZone.defaultProps = {
+	handleCardClick: () => {},
+	processId: null,
+	setShowCardEditor: () => {},
+	showCardEditor: false,
+	maxHeight: "30rem"
+}
 
 export default CardZone
 

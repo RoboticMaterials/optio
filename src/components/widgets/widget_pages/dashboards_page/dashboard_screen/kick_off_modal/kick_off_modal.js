@@ -14,6 +14,7 @@ import {getCards, getProcessCards, putCard} from "../../../../../../redux/action
 // styles
 import * as styled from './kick_off_modal.style'
 import {useTheme} from "styled-components";
+import {getProcesses} from "../../../../../../redux/actions/processes_actions";
 
 Modal.setAppElement('body');
 
@@ -35,6 +36,7 @@ const KickOffModal = (props) => {
     const dispatch = useDispatch()
     // const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
     const dispatchGetCards = () => dispatch(getCards())
+    const dispatchGetProcesses = () => dispatch(getProcesses());
     const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 
     const kickOffEnabledInfo = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] })
@@ -161,6 +163,7 @@ const KickOffModal = (props) => {
      */
     useEffect(() => {
         dispatchGetCards()
+        dispatchGetProcesses()
     }, [])
 
     /**
