@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
 
@@ -66,18 +66,47 @@ const DashboardsHeader = (props) => {
         props.history.push(`/locations/${stationID}/dashboards`)
     }
 
+    /**
+     * Renders Lots that are are the station
+     */
+    const renderLotsTitile = useMemo(() => {
+
+        let hasLot = false
+
+        for (let i = 0; i < Object.values(cards).length; i++) {
+            if (!!Object.values(cards)[i].bins[location._id]) {
+                hasLot = true
+                break
+            }
+        }
+
+        if (!!hasLot) {
+            return (
+                <style.RowContainer>
+                    <style.LotsTitle>Lots:</style.LotsTitle>
+                    {Object.values(cards).map((card, ind) =>
+                        <>
+                            {!!card.bins[location._id] &&
+                                <style.LotItem>{card.bins[location._id].count}</style.LotItem>
+                            }
+                        </>
+                    )}
+                </style.RowContainer>
+            )
+        }
+        else {
+            return (
+                <style.RowContainer>
+                    <style.LotsTitle>No Lots</style.LotsTitle>
+                </style.RowContainer>
+            )
+        }
+    }, [cards])
+
     return (
         <style.ColumnContainer>
-            <style.RowContainer>
-                <style.LotsTitle>Lots:</style.LotsTitle>
-                {Object.values(cards).map((card, ind) =>
-                    <>
-                        {!!card.bins[location._id] &&
-                            <style.LotItem>{card.bins[location._id].count}</style.LotItem>
-                        }
-                    </>
-                )}
-            </style.RowContainer>
+
+            {renderLotsTitile}
 
             <style.Header>
 
