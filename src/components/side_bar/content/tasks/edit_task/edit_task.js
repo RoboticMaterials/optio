@@ -102,12 +102,6 @@ const EditTask = (props) => {
         }
     }, [])
 
-    useEffect(() => {
-
-
-    }, [])
-
-
     const renderLoadUnloadParameters = () => {
         if (selectedTask.load.position === null) {
             // No load position has been defined - ask user to define load (start) position

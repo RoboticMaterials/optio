@@ -169,7 +169,7 @@ function Station(props) {
      */
     const onSetStationTask = () => {
 
-        // Make sure there is a selected task and that its a station you can assign a task too
+        // Make sure there is a selected task and that its a station type you can assign a task too
         if (selectedTask !== null && (location.type === 'human' || location.type === 'warehouse')) {
 
             // Commented out for now
@@ -180,6 +180,10 @@ function Station(props) {
             if (selectedTask.load.position !== null && selectedTask.unload.position === null) {
                 let unload = deepCopy(selectedTask.unload)
                 let type = selectedTask.type
+
+                // If it's a station then set hadnoff to true
+                let handoff = selectedTask.handoff
+                handoff = true
 
                 // Since it's a station, set both the position and station to the location ID
                 unload.position = location._id
@@ -194,7 +198,7 @@ function Station(props) {
                 // } else {
                 //     type = 'push'
                 // }
-                dispatchSetTaskAttributes(selectedTask._id, { unload, type })
+                dispatchSetTaskAttributes(selectedTask._id, { unload, type, handoff })
             }
 
             // Otherwise assign the load position and clear the unload position (to define a new unload)
@@ -202,6 +206,10 @@ function Station(props) {
                 let load = deepCopy(selectedTask.load)
                 let unload = deepCopy(selectedTask.unload)
                 let type = selectedTask.type
+
+                // If it's a station then set hadnoff to true
+                let handoff = selectedTask.handoff
+                handoff = true
 
                 // Since it's a station, set both the position and station to the location ID
                 load.position = location._id
@@ -218,7 +226,7 @@ function Station(props) {
                 // }
                 unload.position = null
                 unload.station = null
-                dispatchSetTaskAttributes(selectedTask._id, { load, unload, type })
+                dispatchSetTaskAttributes(selectedTask._id, { load, unload, type, handoff })
             }
         }
     }
