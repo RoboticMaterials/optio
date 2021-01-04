@@ -165,7 +165,7 @@ export default function TaskContent(props) {
                         type: 'push',
                         quantity: 1,
                         device_type: !!MiRMapEnabled ? 'MiR_100' : 'human',
-                        handoff: true,
+                        handoff: !!MiRMapEnabled ? false : true,
                         track_quantity: true,
                         map_id: currentMap._id,
                         new: true,
