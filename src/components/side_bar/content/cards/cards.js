@@ -1,43 +1,44 @@
 import React, {useEffect, useState, useRef} from 'react';
+
+// external functions
 import { useHistory } from 'react-router-dom'
 import {useDispatch, useSelector} from "react-redux";
 
-import * as styled from './cards.style'
+// internal components
 import CardEditor from "./card_editor/card_editor";
 import CardMenu from "./card_menu/card_menu";
 import CardZone from "./card_zone/card_zone";
-// import TimelineZone from "./timeline_zone/timeline_zone";
-import Button from "../../../basic/button/button";
-import Portal from "../../../../higher_order_components/portal";
-import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
 import SummaryZone from "./summary_zone/summary_zone";
 
+// actions
 import {showEditor} from '../../../../redux/actions/card_actions'
 
+// styles
+import * as styled from './cards.style'
 
-const PAGES = {
-    CARDS: "CARDS",
-    SUMMARY: "SUMMARY",
-    TIMELINE: "TIMELINE"
-}
 const Cards = (props) => {
 
+    // extract props
     const {
         id
     } = props
 
+    // history
     const history = useHistory()
-    const processes = useSelector(state => { return state.processesReducer.processes })
-    const isCardDragging = useSelector(state => { return state.cardPageReducer.isCardDragging })
-    const isHoveringOverColumn = useSelector(state => { return state.cardPageReducer.isHoveringOverColumn })
-    const showCardEditor = useSelector(state=> {return state.cardsReducer.showEditor})
-    const processIds = Object.keys(processes)
 
+    //redux state
+    const processes = useSelector(state => { return state.processesReducer.processes })
+    const showCardEditor = useSelector(state=> {return state.cardsReducer.showEditor})
+
+    // actions
     const dispatch = useDispatch()
     const onShowCardEditor = (bool) => dispatch(showEditor(bool))
 
-    //const [showCardEditor, setShowCardEditor] = useState(false)
+    // internal state
     const [selectedCard, setSelectedCard] = useState(null)
+    const [title, setTitle] = useState(null)
+    const [currentProcess, setCurrentProcess] = useState(null)
+    const [isProcessView, setIsProcessView] = useState(false)
     const [showMenu, setShowMenu] = useState(false)
     const [zoneSize, setZoneSize] = useState({
         width: undefined,
@@ -45,19 +46,34 @@ const Cards = (props) => {
         offsetLeft: undefined,
         offsetTop: undefined,
     })
+
+    // refs
     const zoneRef = useRef(null);
 
-    // useEffect will run on zoneRef value assignment
+    /*
+    * This effect monitors the div referenced by zoneRef and the window height
+    *
+    * When either of these changes, zoneSize is updated with the current width, height, top offset, and left offset of the div referenced by zoneRef
+    * This ensures that the size of zoneRef is updated when the window size changes
+    *
+    * zoneSize is used for setting the max height of lot columns in the CardZone and SummaryZone
+    *
+    * @param {ref} zoneRef - ref assigned to CardZone
+    * @param {int} window.innerHeight - window height
+    *
+    * */
     useEffect( () => {
 
-        // The 'current' property contains info of the reference:
-        // align, title, ... , width, height, etc.
+        // if zoneRef is assigned
         if(zoneRef.current){
 
+            // extract dimensions of zoneRef
             let height = zoneRef.current.offsetHeight;
             let width  = zoneRef.current.offsetWidth;
             let offsetTop  = zoneRef.current.offsetTop;
             let offsetLeft  = zoneRef.current.offsetLeft;
+
+            // set zoneSize
             setZoneSize({
                 width: width,
                 height: height,
@@ -68,31 +84,59 @@ const Cards = (props) => {
 
     }, [zoneRef, window.innerHeight]);
 
-    let title
-    let showAddCard
-    let showGanttViewButton = false
-    let currentProcess
-    let isProcessView = false
-    switch(id) {
-        case "summary":
-            title = "Lots Summary"
-            showAddCard = false
-            currentProcess = processes[processIds[0]]
-            break
-        case "timeline":
-            showAddCard = false
-            showGanttViewButton = true
-            title = "Timeline Zone"
-            currentProcess = processes[processIds[0]]
-            break
-        default:
-            isProcessView = true
-            showAddCard = true
-            currentProcess = processes[id]
-            title = currentProcess.name
-            break
-    }
+    /*
+    * This effect updates internal component state basted on the {id} props
+    *
+    * The value of {id} can take on 1 of 3 types of values, {"summary"}, {"timeline"}, or the id of a process
+    *
+    * The content of the page changes based on the value of id, and this useEffect updates internal component state in order to achieve this
+    *
+    * the value of {id} should produce the following content:
+    *   {"summary"} - render content for the summary zone
+    *   {"timeline"} - render content for timeline zone *** CURRENTLY DISABLED ***
+    *   a process id - render lot content for the corresponding process
+    *
+    * @param {id} string - id of content to display
+    *
+    * */
+    useEffect( () => {
 
+        // update internal state based on id
+        switch(id) {
+
+            // summary zone
+            case "summary":
+                // only title needs to be set
+                setTitle("Lots Summary")
+                break
+
+            // timeline zone
+            case "timeline":
+                // only title needs to be set
+                setTitle("Timeline Zone")
+                break
+
+            // otherwise assume id is the id of a specific process
+            default:
+                setIsProcessView(true)
+                setCurrentProcess(processes[id])
+                setTitle(processes[id]?.name)
+                break
+        }
+    }, [id]);
+
+
+    /*
+   * This function handles the logic for when a lot is clicked
+   *
+   * Clicking a lot should open the lot editor for the clicked lot
+   * In order to do this, the function sets showCardEditor to true and sets selectedCard to the values passed in as arguments to this function
+   *
+   * @param {cardId} string - id of card clicked
+   * @param {processId} string - id of clicked card's process
+   * @param {binId)} string - id of clicked card's bin
+   *
+   * */
     const handleCardClick = (cardId, processId, binId) => {
         onShowCardEditor(true)
         setSelectedCard({cardId, processId, binId})
@@ -113,24 +157,20 @@ const Cards = (props) => {
                 }}
             />
             }
-
-
-
             <styled.Header>
                 {isProcessView ?
-                <styled.MenuButton
-                    style={{marginRight: "auto"}}
-                    className="fas fa-chevron-left"
-                    aria-hidden="true"
-                    // onClick={()=>setShowMenu(!showMenu)}
-                    onClick={()=>{
-                        history.replace ('/processes')}
-                    }
-                />
-                :
-                    <styled.InvisibleItem style={{marginRight: "auto"}}/>
+                    <styled.MenuButton
+                        style={{marginRight: "auto"}}
+                        className="fas fa-chevron-left"
+                        aria-hidden="true"
+                        onClick={()=>{
+                            history.replace ('/processes')}
+                        }
+                    />
+                    :
+                    <styled.InvisibleItem style={{marginRight: "auto"}}/> // used for spacing
                 }
-                <styled.Title>{title}</styled.Title>
+                <styled.Title>{title ? title : "untitled"}</styled.Title>
                 <styled.InvisibleItem
                     style={{marginLeft: "auto"}}
                 />
@@ -158,16 +198,16 @@ const Cards = (props) => {
                                 initialProcesses={[currentProcess]}
                             />
                     }[id] ||
-                        <styled.CardZoneContainer ref={zoneRef}>
-                            <CardZone
-                                maxHeight={(zoneSize.height - 75) + "px"}
-                                setShowCardEditor={onShowCardEditor}
-                                showCardEditor={showCardEditor}
-                                processId={id}
-                                handleCardClick={handleCardClick}
-                                processId={id}
-                            />
-                        </styled.CardZoneContainer>
+                    <styled.CardZoneContainer ref={zoneRef}>
+                        <CardZone
+                            maxHeight={(zoneSize.height - 75) + "px"} // maxHeight is set equal to size of parent div with some value subtracted as padding. NOTE: setting height to 100% doesn't currently work for this
+                            setShowCardEditor={onShowCardEditor}
+                            showCardEditor={showCardEditor}
+                            processId={id}
+                            handleCardClick={handleCardClick}
+                            processId={id}
+                        />
+                    </styled.CardZoneContainer>
                 }
             </styled.Body>
         </styled.Container>
