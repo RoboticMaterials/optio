@@ -83,14 +83,14 @@ const SummaryZone = SortableContainer((props) => {
 })
 
 // Specifies propTypes
-TextField.propTypes = {
+SummaryZone.propTypes = {
 	handleCardClick: PropTypes.func,
 	setShowCardEditor: PropTypes.func,
 	showCardEditor: PropTypes.bool
 }
 
 // Specifies the default values for props:
-TextField.defaultProps = {
+SummaryZone.defaultProps = {
 	handleCardClick: () => {},
 	setShowCardEditor: () => {},
 	showCardEditor: false,
