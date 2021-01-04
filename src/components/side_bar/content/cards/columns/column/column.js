@@ -15,7 +15,6 @@ const Column = SortableContainer((props) => {
 		stationName = "Unnamed",
 		handleCardClick,
 		cards = [],
-		size,
 		processId,
 		HeaderContent,
 		isCollapsed,
@@ -24,8 +23,6 @@ const Column = SortableContainer((props) => {
 
 	} = props
 
-	const width = size?.width
-	const height = size?.height
 
 
 	const dispatch = useDispatch()
@@ -192,7 +189,6 @@ const Column = SortableContainer((props) => {
 	else {
 		return(
 			<styled.StationContainer
-				height={height}
 				isCollapsed={isCollapsed}
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}

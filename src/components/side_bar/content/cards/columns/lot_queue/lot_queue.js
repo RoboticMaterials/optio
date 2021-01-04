@@ -17,7 +17,6 @@ const LotQueue = SortableContainer((props) => {
 		stationName = "Unnamed",
 		handleCardClick,
 		cards,
-		size,
 		processId,
 		setShowCardEditor,
 		showCardEditor,
@@ -63,7 +62,6 @@ const LotQueue = SortableContainer((props) => {
 			stationName = {stationName}
 			handleCardClick={handleCardClick}
 			cards = {cards}
-			size={size}
 			processId={processId}
 			isCollapsed={isCollapsed}
 		/>

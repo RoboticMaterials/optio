@@ -690,7 +690,7 @@ const EditTask = (props) => {
 
             {/* Task Title */}
             <Textbox
-                placeholder="Task Name"
+                placeholder="Route Name"
                 defaultValue={!!selectedTask && selectedTask.name}
                 schema={'tasks'}
                 focus={!!selectedTask && selectedTask.name == ''}

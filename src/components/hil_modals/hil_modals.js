@@ -368,6 +368,7 @@ const HILModals = (props) => {
     const renderFractionOptions = () => {
 
         const fractionOptions = ['1', '3/4', '1/2', '1/4']
+        const fractionDecimals = ['1', '0.75', '0.5', '0.25']
 
         return (
             <>
@@ -397,9 +398,13 @@ const HILModals = (props) => {
                 <styled.LotSelectorContainer>
 
                     <styled.LotsContainer>
+                      <styled.SubtitleContainer>
+                        <styled.HilSubtitleMessage>Select a fraction of the items you recieved to send along:</styled.HilSubtitleMessage>
+                      </styled.SubtitleContainer>
 
 
-                        {fractionOptions.map((value) => {
+                        {fractionOptions.map((value, ind) => {
+                          const decimal = fractionDecimals[ind]
                             return (
                                 <styled.HilButton
                                     color={'#90eaa8'}
@@ -412,7 +417,13 @@ const HILModals = (props) => {
                                 className='fas fa-check'
                                 color={'#1c933c'}
                             /> */}
+                                  <styled.RowContainer>
                                     <styled.HilButtonText style={{ fontSize: '3rem' }} color={'#1c933c'}>{value}</styled.HilButtonText>
+                                    {!!count &&
+                                      <styled.HilButtonQuantityText color={'#1c933c'}>{'(Quantity '+ Math.ceil(count*decimal)+')'}</styled.HilButtonQuantityText>
+                                    }
+
+                                  </styled.RowContainer>
                                 </styled.HilButton>
                             )
                         })}
@@ -480,6 +491,7 @@ const HILModals = (props) => {
                     <styled.ColumnContainer>
                         <styled.HilMessage>{hilMessage}</styled.HilMessage>
 
+
                         {/* Only Showing timers on load at the moment, will probably change in the future */}
                         {
                             !!hilTimers[item._id.$oid] && hilLoadUnload === 'load' &&
@@ -494,6 +506,7 @@ const HILModals = (props) => {
                 <styled.LotSelectorContainer>
 
                     <styled.LotsContainer style={{ justifyContent: hilLoadUnload === 'load' && "space-between" }}>
+
 
 
                         <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>

@@ -1,4 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useDispatch, useSelector } from 'react-redux'
+import { useParams, useHistory } from 'react-router-dom'
 
 // import components
 import BounceButton from "../../../../basic/bounce_button/bounce_button";
@@ -42,10 +44,22 @@ const DashboardsHeader = (props) => {
     // extract url params
     const { stationID, dashboardID, editing } = props.match.params
 
+    const cards = useSelector(state=>state.cardsReducer.cards)
+    const locations = useSelector(state => state.locationsReducer.locations)
+    const location = locations[stationID]
+
+    const [locationName, setLocationName] = useState("")
+
     const size = useWindowSize()
     const windowWidth = size.width
 
     const mobileMode = windowWidth < widthBreakPoint;
+
+
+    useEffect(() => {
+        const location = locations[stationID]
+        setLocationName(location.name)
+    }, [stationID, locations])
 
     // goes to main dashboards page
     const goToMainPage = () => {
@@ -53,48 +67,62 @@ const DashboardsHeader = (props) => {
     }
 
     return (
-        <style.Header>
+        <style.ColumnContainer>
+          <style.RowContainer>
+            <style.LotsTitle>Lots:</style.LotsTitle>
+            {Object.values(cards).map((card, ind) =>
+              <>
+              {!!card.bins[location._id] &&
+                <style.LotItem>{card.bins[location._id].count}</style.LotItem>
+              }
+              </>
+            )}
+          </style.RowContainer>
 
-            {showBackButton &&
-                <BackButton style={{ order: '1' }} containerStyle={{ marginTop: '1.8rem' }}
-                    onClick={onBack}
-                />
-            }
+          <style.Header>
 
-            {showTitle &&
-                <style.Title style={{ order: '2' }}>{page}</style.Title>
-            }
+              {showBackButton &&
+                  <BackButton style={{ order: '1' }} containerStyle={{ marginTop: '1.8rem' }}
+                      onClick={onBack}
+                  />
+              }
 
-            {showEditButton && !mobileMode &&
-                <Button style={{ order: '3', marginTop: '1.8rem' }}
-                    onClick={setEditingDashboard}
-                >
-                    Edit
-				</Button>
-            }
+              {showTitle &&
+                  <style.Title style={{ order: '2' }}>{page}</style.Title>
+              }
 
-            {showSaveButton &&
-                <>
-                    <Button style={{ order: '3', marginTop: '1.8rem' }}
-                        type="submit"
-                        disabled={saveDisabled}
-                    >
-                        Save
-				</Button>
+              {showEditButton && !mobileMode &&
+                  <Button style={{ order: '3', marginTop: '1.8rem' }}
+                      onClick={setEditingDashboard}
+                  >
+                      Edit
+  				</Button>
+              }
 
-                    {/* Comment out for now since locations only have one dashboard, so you should not be able to delete the only dashboard */}
-                    {/* <Button
-                        schema={'delete'}
-                        style={{ order: '4', marginTop: '1.8rem', marginLeft: '2rem' }}
-                        onClick={onDelete}
-                    >
-                        Delete
-                    </Button> */}
-                </>
-            }
+              {showSaveButton &&
+                  <>
+                      <Button style={{ order: '3', marginTop: '1.8rem' }}
+                          type="submit"
+                          disabled={saveDisabled}
+                      >
+                          Save
+  				</Button>
 
-            {children}
-        </style.Header>
+                      {/* Comment out for now since locations only have one dashboard, so you should not be able to delete the only dashboard */}
+                      {/* <Button
+                          schema={'delete'}
+                          style={{ order: '4', marginTop: '1.8rem', marginLeft: '2rem' }}
+                          onClick={onDelete}
+                      >
+                          Delete
+                      </Button> */}
+                  </>
+              }
+
+              {children}
+          </style.Header>
+        </style.ColumnContainer>
+
     )
 }
 

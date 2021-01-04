@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 
 // Import Styles
 import * as styled from './content_list.style'
@@ -20,6 +21,22 @@ export default function ContentList(props) {
         handleCardView,
     } = props
 
+    let taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
+    const [inQueue, setInQueue] = useState(false)
+
+
+    const handleInQueue = (element) => {
+      setInQueue(false)
+      if(!!element){
+
+      Object.values(taskQueue).forEach((taskQueueItem, ind) => {
+        if(element._id === taskQueueItem.task_id){
+          setInQueue(true)
+        }
+      })
+    }
+      return inQueue
+    }
 
     const renderLocationTypeIcon = (element) => {
 
@@ -73,8 +90,6 @@ export default function ContentList(props) {
                                 onMouseEnter={() => props.onMouseEnter(element)}
                                 onMouseLeave={() => props.onMouseLeave(element)}
                             >
-
-
                                 <styled.ListItemIconContainer style={{ width: '15%' }} >
 
                                     {props.schema === 'locations' &&
@@ -85,6 +100,7 @@ export default function ContentList(props) {
 
 
                                     {props.schema === 'tasks' &&
+
                                         <styled.ListItemIcon
                                             className='fas fa-play'
                                             onClick={() => {

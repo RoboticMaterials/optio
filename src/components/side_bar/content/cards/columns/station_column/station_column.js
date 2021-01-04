@@ -12,7 +12,6 @@ const StationsColumn = SortableContainer((props) => {
 		stationName = "Unnamed",
 		handleCardClick,
 		cards = [],
-		size,
 		processId,
 		maxHeight
 	} = props
@@ -50,7 +49,6 @@ const StationsColumn = SortableContainer((props) => {
 			stationName = {stationName}
 			handleCardClick={handleCardClick}
 			cards = {cards}
-			size={size}
 			processId={processId}
 			isCollapsed={isCollapsed}
 		/>

@@ -54,7 +54,6 @@ const Cards = (props) => {
         // align, title, ... , width, height, etc.
         if(zoneRef.current){
 
-            console.log("zoneRef.current",zoneRef.current)
             let height = zoneRef.current.offsetHeight;
             let width  = zoneRef.current.offsetWidth;
             let offsetTop  = zoneRef.current.offsetTop;
@@ -67,8 +66,7 @@ const Cards = (props) => {
             });
         }
 
-    }, [zoneRef]);
-
+    }, [zoneRef, window.innerHeight]);
 
     let title
     let showAddCard
@@ -150,8 +148,6 @@ const Cards = (props) => {
                     {
                         'summary':
                             <SummaryZone
-                                zoneRef={zoneRef}
-                                zoneSize={zoneSize}
                                 handleCardClick={handleCardClick}
                                 setShowCardEditor={onShowCardEditor}
                                 showCardEditor={showCardEditor}
@@ -162,12 +158,12 @@ const Cards = (props) => {
                                 initialProcesses={[currentProcess]}
                             />
                     }[id] ||
-                        <styled.CardZoneContainer>
+                        <styled.CardZoneContainer ref={zoneRef}>
                             <CardZone
+                                maxHeight={(zoneSize.height - 75) + "px"}
                                 setShowCardEditor={onShowCardEditor}
                                 showCardEditor={showCardEditor}
                                 processId={id}
-                                size={zoneSize}
                                 handleCardClick={handleCardClick}
                                 processId={id}
                             />
