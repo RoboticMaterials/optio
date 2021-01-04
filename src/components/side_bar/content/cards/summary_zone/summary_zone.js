@@ -2,7 +2,7 @@ import React, { useState } from "react"
 
 // external functions
 import {SortableContainer} from "react-sortable-hoc"
-import {useDispatch, useSelector} from "react-redux"
+import { useSelector} from "react-redux"
 import PropTypes from "prop-types"
 
 // internal components
@@ -11,7 +11,6 @@ import ZoneHeader from "../zone_header/zone_header"
 
 // styles
 import * as styled from "./summary_zone.style"
-import TextField from "../../../../basic/form/text_field/text_field"
 
 /*
 * This component renders a CardZone for a list of processes
