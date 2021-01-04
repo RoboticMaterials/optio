@@ -54,25 +54,3 @@ test('Renders Load Unload Fields Correctly', () => {
     getByText('Do you want to track transit time? This will display a Unload Button at the Unload Station')
 
 })
-
-// test('Allows the ability to change field data', () => {
-
-//     const { getByText, getByLabelText } = render(<LoadUnloadFields />)
-
-//     const input = getByLabelText('Some Label')
-
-//     fireEvent.change(input, { target: { value: 'Some Value' } })
-//     fireEvent.click(getByText('Some Button'))
-
-//     // The value should now be here
-//     getByText('Some Value')
-
-//     // The label should ahve chnaged
-//     getByText('Some new label')
-
-// })
-
-
-// test('Allow user to interact with API', () => {
-//     jest.mock('../../../../../../api/devices_api')
-// })

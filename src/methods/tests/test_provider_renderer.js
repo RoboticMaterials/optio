@@ -11,5 +11,6 @@ export default function TestProviderRender(component, { store, ...props }) {
                 {component}
             </Provider>
         </ThemeProvider>,
-        props);
+        props
+    )
 }
