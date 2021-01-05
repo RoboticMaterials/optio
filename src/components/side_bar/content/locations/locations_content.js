@@ -103,7 +103,6 @@ export default function LocationContent() {
     const devices = useSelector(state => state.devicesReducer.devices)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const editing = useSelector(state => state.locationsReducer.editingLocation)
-
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
     const [mergeStation, setMergeStation] = useState(false)
@@ -333,6 +332,10 @@ export default function LocationContent() {
 
                 case 'human_position':
                     locationTypeName = 'Position'
+                    break;
+
+                case 'human':
+                    locationTypeName = 'Station'
                     break;
 
                 default:
