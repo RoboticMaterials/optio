@@ -129,7 +129,7 @@ const HILModals = (props) => {
     useEffect(() => {
 
         // Only show lot selector is they're cards loaded, lots have not been dispalyed yet, it's a load hil and there's available lots
-        if (cardsLoaded && !didDisplayLots && hilLoadUnload !== 'unload' && isProcessTask) {
+        if (cardsLoaded && !didDisplayLots && hilLoadUnload !== 'unload' && true) {
             setShowLotSelector(true)
             setDidDisplayLots(true)
         }
@@ -458,7 +458,7 @@ const HILModals = (props) => {
                     <styled.FooterContainer>
 
 
-                        {isProcessTask && renderSelectedLot()}
+                        {renderSelectedLot()}
 
                         <styled.FooterButton style={{ margin: 0, marginTop: "1rem" }} color={'#ff9898'} onClick={onHilFailure}>
                             <styled.HilIcon
@@ -593,7 +593,7 @@ const HILModals = (props) => {
 
 
                                     </styled.HilInputContainer>
-                                    {isProcessTask && renderSelectedLot()}
+                                    {renderSelectedLot()}
                                 </>
 
                             }
