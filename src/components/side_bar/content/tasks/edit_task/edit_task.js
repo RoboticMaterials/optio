@@ -566,7 +566,7 @@ const EditTask = (props) => {
                 If it's a process route and its a new route then add the ability to select alread existing routes.
                 Some filtering is done based on certain conditions, see 'options' key
             */}
-            {!!selectedTask && isProcessTask && !!selectedTask.new &&
+            {isProcessTask && !!selectedTask.new &&
                 <>
                     <styled.Label>
                         <styled.LabelHighlight>Either</styled.LabelHighlight> choose an existing Route...
