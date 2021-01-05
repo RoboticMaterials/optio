@@ -130,7 +130,6 @@ const ApiContainer = (props) => {
         // once MiR map is enabled, it's always enabled, so only need to do check if it isn't enabled
         if (!MiRMapEnabled) {
             let containsMirCart = false
-
             // check each device
             // in order for MiR mode to be enabled, there must be at least one device of MiR type
             Object.values(devices).forEach((currDevice, index) => {
@@ -228,7 +227,6 @@ const ApiContainer = (props) => {
 
             case 'dashboards':
                 pageDataInterval = setInterval(() => loadDashboardsData(), 1000);
-                //pageDataInterval = setInterval(() => loadTasksData(), 10000);
                 break;
 
             case 'tasks':
@@ -381,7 +379,6 @@ const ApiContainer = (props) => {
         const dashboards = await onGetDashboards();
         await onGetReportEvents()
         await onGetCards()
-
     }
 
     /*
