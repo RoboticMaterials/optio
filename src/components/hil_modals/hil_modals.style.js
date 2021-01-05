@@ -130,9 +130,24 @@ export const LotsContainer = styled.div`
     /* padding: 2rem 1rem 1rem 1rem; */
     padding: 1rem;
     align-items: center;
-
-
 `
+
+export const NoLotsContainer = styled.div`
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    width: 100%;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+`
+
+export const NoLotsText = styled.span`
+    font-size: ${props => props.theme.fontSize.sz1};
+    font-family: ${props => props.theme.font.primary};
+`
+
+
 export const SubtitleContainer = styled.div`
     display: flex;
     width: 100%;
