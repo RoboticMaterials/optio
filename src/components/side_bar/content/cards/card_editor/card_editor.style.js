@@ -100,6 +100,29 @@ export const SectionContainer = styled.div`
   flex-direction: column;
 `
 
+export const ProcessOptionsContainer = styled.div`
+	//margin-bottom: 1rem;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  //padding: 1rem;
+  align-self: center;
+`
+
+export const ProcessOption = styled.div`
+	padding: 1rem;
+  	background: ${props => props.isSelected ? props.theme.bg.secondary : props.theme.bg.quinary};
+  //width: fit-content;
+  margin-right: 1rem;
+  border-radius: 1rem;
+  min-width: 5rem;
+  display: inline-flex;
+  justify-content: center;
+
+  font-size: ${props => props.theme.fontSize.sz3};
+  font-weight: ${props => props.theme.fontWeight.normal};
+`
+
 export const StyledForm = styled(Form)`
     display: flex;
     flex-direction: column;

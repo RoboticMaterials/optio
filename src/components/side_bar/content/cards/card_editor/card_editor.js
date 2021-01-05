@@ -80,8 +80,13 @@ const FormComponent = (props) => {
 		submitCount,
 		setFieldValue,
 		submitForm,
-		formikProps
+		formikProps,
+		processOptions,
+		showProcessSelector
+
 	} = props
+
+	console.log("processOptions",processOptions)
 
 	const {
 		selectedBin
@@ -96,6 +101,7 @@ const FormComponent = (props) => {
 	const cardHistory = useSelector(state => { return state.cardsReducer.cardHistories[cardId] })
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
 	const stations = useSelector(state => { return state.locationsReducer.stations })
+	const processes = useSelector(state => { return state.processesReducer.processes }) || {}
 
 	// component state
 	const [content, setContent] = useState(null)
@@ -588,6 +594,48 @@ const FormComponent = (props) => {
 		)
 	}
 
+	const renderProcessSelector = () => {
+		var test = processOptions.concat(processOptions)
+		test = test.concat(test)
+		test = test.concat(test)
+		test = test.concat(test)
+
+		return(
+			<div style={{marginBottom: "1rem"}}>
+				<styled.ContentHeader>
+					<styled.ContentTitle>Select Process</styled.ContentTitle>
+				</styled.ContentHeader>
+
+				<styled.ProcessOptionsContainer>
+
+
+					{Object.keys(processes).map((currProcessId, currIndex) => {
+						const currProcess = processes[currProcessId] || {}
+						const {
+							name: currProcessName = ""
+						} = currProcess
+
+						console.log("currProcess",currProcess)
+						console.log("processes",processes)
+
+						return (
+							<styled.ProcessOption
+								onClick={() => {
+									setFieldValue("processId", currProcessId)
+								}}
+								isSelected={currProcessId === values.processId}
+							>
+								{currProcessName}
+							</styled.ProcessOption>
+						)
+					})}
+				</styled.ProcessOptionsContainer>
+
+			</div>
+
+		)
+	}
+
 	return(
 		<styled.StyledForm>
 			<SubmitErrorHandler
@@ -632,6 +680,8 @@ const FormComponent = (props) => {
 					<styled.ContentTitle>Lot Info</styled.ContentTitle>
 				</styled.ContentHeader>
 				}
+
+				{showProcessSelector && renderProcessSelector()}
 
 				<styled.NameContainer>
 					<TextField
@@ -719,6 +769,8 @@ const CardEditor = (props) => {
 		isOpen,
 		close,
 		processId,
+		processOptions,
+		showProcessSelector
 	} = props
 
 	// redux state
@@ -955,6 +1007,7 @@ const CardEditor = (props) => {
 		>
 			<Formik
 				initialValues={{
+					processId: processId,
 					selectedBin: binId,
 					name: card ? card.name : "",
 					description: card ? card.description : "",
@@ -1046,6 +1099,8 @@ const CardEditor = (props) => {
 							setFieldValue={setFieldValue}
 							submitForm={submitForm}
 							formikProps={formikProps}
+							processOptions={processOptions}
+							showProcessSelector={showProcessSelector}
 						/>
 					)
 				}}
@@ -1057,11 +1112,13 @@ const CardEditor = (props) => {
 // Specifies propTypes
 CardEditor.propTypes = {
 	binId: PropTypes.string,
+	showProcessSelector: PropTypes.bool,
 };
 
 // Specifies the default values for props:
 CardEditor.defaultProps = {
-	binId: "QUEUE"
+	binId: "QUEUE",
+	showProcessSelector: false
 };
 
 export default CardEditor
