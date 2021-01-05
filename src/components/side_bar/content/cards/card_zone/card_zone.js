@@ -16,7 +16,7 @@ import {setDataPage} from "../../../../../redux/actions/api_actions"
 // styles
 import * as styled from "./card_zone.style"
 
-const CardZone = SortableContainer((props) => {
+const CardZone = ((props) => {
 
 	// extract props
 	const {
@@ -49,115 +49,101 @@ const CardZone = SortableContainer((props) => {
 	// 	}
 	// }, [])
 
+	// need to loop through the process's routes first and get all station ids involved in the process
+	// this must be done first in order to avoid showing lots that are in stations that are no longer a part of the process
 
-	/*
-	* NOTE: cards are accumulated in temp vars and the temp vars are used to update component state
-	* 	The sorting must be performed this way because useState will not update within the context of useEffect, so rather than accumulating values it would overwrite previous useStates
-	* */
-	useEffect( () => {
+	var prevLoadStationId		// tracks previous load station id when looping through routes
+	var prevUnloadStationId		// tracks previous unload station id when looping through routes
+	var tempCardsSorted = {}	// temp var for storing sorted cards
 
-		// need to loop through the process's routes first and get all station ids involved in the process
-		// this must be done first in order to avoid showing lots that are in stations that are no longer a part of the process
+	// loop through routes, get load / unload station id and create entry in tempCardsSorted for each station
+	currentProcess.routes && currentProcess.routes.forEach((currRouteId, index) => {
 
-		var prevLoadStationId		// tracks previous load station id when looping through routes
-		var prevUnloadStationId		// tracks previous unload station id when looping through routes
-		var tempCardsSorted = {}	// temp var for storing sorted cards
+		// get current route and load / unload station ids
+		const currRoute = routes[currRouteId]
+		const loadStationId = currRoute?.load?.station
+		const unloadStationId = currRoute?.unload?.station
 
-		// loop through routes, get load / unload station id and create entry in tempCardsSorted for each station
-		currentProcess.routes && currentProcess.routes.forEach((currRouteId, index) => {
-
-			// get current route and load / unload station ids
-			const currRoute = routes[currRouteId]
-			const loadStationId = currRoute?.load?.station
-			const unloadStationId = currRoute?.unload?.station
-
-			// only add loadStation entry if the previous unload wasn't identical (in order to avoid duplicates)
-			if (prevUnloadStationId !== loadStationId) {
-
-				// add entry in tempCardsSorted
-				tempCardsSorted[loadStationId] = {
-					station_id: loadStationId,
-					cards: []
-				}
-			}
+		// only add loadStation entry if the previous unload wasn't identical (in order to avoid duplicates)
+		if (prevUnloadStationId !== loadStationId) {
 
 			// add entry in tempCardsSorted
-			tempCardsSorted[unloadStationId] = {
-				station_id: unloadStationId,
+			tempCardsSorted[loadStationId] = {
+				station_id: loadStationId,
 				cards: []
 			}
+		}
 
-			// update prevLoadStationId and prevUnloadStationId
-			prevLoadStationId = loadStationId
-			prevUnloadStationId = unloadStationId
-		})
+		// add entry in tempCardsSorted
+		tempCardsSorted[unloadStationId] = {
+			station_id: unloadStationId,
+			cards: []
+		}
 
-		// now that the object keys have been made, loop through the process's cards and add them to the correct bins
+		// update prevLoadStationId and prevUnloadStationId
+		prevLoadStationId = loadStationId
+		prevUnloadStationId = unloadStationId
+	})
 
-		var tempQueue = []		// temp var for storing queue lots
-		var tempFinished = []	// temp var for storing finished lots
+	// now that the object keys have been made, loop through the process's cards and add them to the correct bins
 
-		Object.values(cards).forEach((card) => {
+	var tempQueue = []		// temp var for storing queue lots
+	var tempFinished = []	// temp var for storing finished lots
 
-			// extract card attributes
-			const {
-				bins,
-				_id,
-				...rest
-			} = card
+	Object.values(cards).forEach((card) => {
 
-			if(card.bins) {
+		// extract card attributes
+		const {
+			bins,
+			_id,
+			...rest
+		} = card
 
-				// loop through this lot's bins
-				Object.entries(card.bins).forEach((binEntry) => {
+		if(card.bins) {
 
-					// get bin attributes
-					const binId = binEntry[0]
-					const binValue = binEntry[1]
-					const {
-						count
-					} = binValue
+			// loop through this lot's bins
+			Object.entries(card.bins).forEach((binEntry) => {
 
-					// if there is an entry in tempCardsSorted with key matching {binId}, add the card to this bin
-					if(tempCardsSorted[binId]) {
-						tempCardsSorted[binId].cards.push({
-							...rest,
-							binId,
-							count,
-							cardId: _id
-						})
-					}
+				// get bin attributes
+				const binId = binEntry[0]
+				const binValue = binEntry[1]
+				const {
+					count
+				} = binValue
 
-					// if {binId} is queue, add the card to the queue
-					else if(binId === "QUEUE") {
-						tempQueue.push({
-							...rest,
-							count,
-							binId,
-							cardId: _id
-						})
-					}
+				// if there is an entry in tempCardsSorted with key matching {binId}, add the card to this bin
+				if(tempCardsSorted[binId]) {
+					tempCardsSorted[binId].cards.push({
+						...rest,
+						binId,
+						count,
+						cardId: _id
+					})
+				}
 
-					// if the {binId} is finish, add the card to the finished column
-					else if(binId === "FINISH") {
-						tempFinished.push({
-							...rest,
-							count,
-							binId,
-							cardId: _id
-						})
-					}
+				// if {binId} is queue, add the card to the queue
+				else if(binId === "QUEUE") {
+					tempQueue.push({
+						...rest,
+						count,
+						binId,
+						cardId: _id
+					})
+				}
 
-				})
-			}
+				// if the {binId} is finish, add the card to the finished column
+				else if(binId === "FINISH") {
+					tempFinished.push({
+						...rest,
+						count,
+						binId,
+						cardId: _id
+					})
+				}
 
-			// update component state with the temp vars
-			setCardsSorted(tempCardsSorted)
-			setQueue(tempQueue)
-			setFinished(tempFinished)
-		})
-
-	}, [currentProcess.routes, cards])
+			})
+		}
+	})
 
 	/*
 	* Renders a {StationColumn} for each entry in {cardsSorted}
@@ -166,7 +152,7 @@ const CardZone = SortableContainer((props) => {
 	const renderStationColumns = () => {
 
 		// loop through each entry in {cardsSorted} and return a {StationsColumn}
-		return Object.values(cardsSorted).map((obj, index) => {
+		return Object.values(tempCardsSorted).map((obj, index) => {
 
 			// extract attributes of current bin
 			const {
@@ -207,7 +193,7 @@ const CardZone = SortableContainer((props) => {
 				showCardEditor={showCardEditor}
 				stationName={"Queue"}
 				processId={processId}
-				cards={queue}
+				cards={tempQueue}
 				handleCardClick={handleCardClick}
 			/>
 
@@ -221,7 +207,7 @@ const CardZone = SortableContainer((props) => {
 				showCardEditor={showCardEditor}
 				stationName={"Finished"}
 				processId={processId}
-				cards={finished}
+				cards={tempFinished}
 				handleCardClick={handleCardClick}
 			/>
 		</styled.Container>

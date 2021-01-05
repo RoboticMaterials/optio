@@ -18,7 +18,7 @@ class Item extends Component {
 
   render() {
     // console.log('Item render this.props',this.props)
-    const { props, state, methods, item, itemIndex, ItemComponent, ContentContainer, ButtonComponent, TextComponent } = this.props;
+    const { props, state, methods, item, itemIndex, ItemComponent, ContentContainer, ButtonComponent, TextComponent, onMouseEnter } = this.props;
 
     if (props.itemRenderer) {
       return props.itemRenderer({ item, itemIndex, props, state, methods });
@@ -47,6 +47,7 @@ class Item extends Component {
           item.disabled ? `${LIB_NAME}-item-disabled` : ''
         }`}
         onClick={item.disabled ? undefined : () => methods.addItem(item)}
+        onFocus = {props.onMouseEnter}
         onKeyPress={item.disabled ? undefined : () => methods.addItem(item)}
         color={props.color}
         schema={props.schema}>

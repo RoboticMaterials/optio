@@ -79,6 +79,10 @@ export const NoButtonsText = styled.span`
 	font-size: ${props => props.theme.fontSize.sz3};
 `
 
+export const FadeLoaderCSS = css`
+ 
+`;
+
 export const ReportButtonsContainer = styled.div`
 	display: flex;
 	flex-direction: column;
@@ -87,7 +91,8 @@ export const ReportButtonsContainer = styled.div`
 	overflow: auto;
 	min-height: 5rem;
 	width: 100%;
-	justify-content: ${props => !props.isButtons && "center"};
+	// justify-content: ${props => !props.isButtons && "center"};
+	justify-content: center;
 `
 
 

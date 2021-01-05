@@ -47,10 +47,10 @@ const Dropdown = ({ ItemComponent, props, DropDownComponent, state, methods, Tex
                     <React.Fragment>
                         {props.create && state.search && !valueExistInSelected(state.search, state.values, props) && (
                             <AddNew
-
                                 className={`${LIB_NAME}-dropdown-add-new`}
                                 color={props.color}
-                                onClick={() => methods.createNew(state.search)}>
+                                onClick={() => methods.createNew(state.search)}
+                                >
                                 {props.createNewLabel.replace('{search}', `"${state.search}"`)}
                             </AddNew>
                         )}
@@ -124,7 +124,7 @@ export const DefaultDropDownComponent = styled.div`
   }
   /* Track */
   ::-webkit-scrollbar-track {
-      -webkit-background: rgba(0,0,0,0.1); 
+      -webkit-background: rgba(0,0,0,0.1);
       -webkit-border-radius: 10px;
       border-radius: 10px;
   }
@@ -132,11 +132,11 @@ export const DefaultDropDownComponent = styled.div`
   ::-webkit-scrollbar-thumb {
       -webkit-border-radius: 10px;
       border-radius: 10px;
-      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
-      background: rgba(255,255,255,0.4); 
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+      background: rgba(255,255,255,0.4);
   }
   ::-webkit-scrollbar-thumb:window-inactive {
-    background: rgba(255,255,255,0.2); 
+    background: rgba(255,255,255,0.2);
   }
 
 }

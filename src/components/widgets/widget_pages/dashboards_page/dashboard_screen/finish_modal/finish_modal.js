@@ -14,6 +14,7 @@ import {getCards, getProcessCards, putCard} from "../../../../../../redux/action
 // styles
 import * as styled from './finish_modal.style'
 import {useTheme} from "styled-components";
+import {getProcesses} from "../../../../../../redux/actions/processes_actions";
 
 Modal.setAppElement('body');
 
@@ -35,6 +36,7 @@ const FinishModal = (props) => {
     const dispatch = useDispatch()
     // const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
     const dispatchGetCards = () => dispatch(getCards())
+    const dispatchGetProcesses = () => dispatch(getProcesses())
     const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 
     const finishEnabledDashboard = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] })
@@ -143,6 +145,7 @@ const FinishModal = (props) => {
      */
     useEffect(() => {
         dispatchGetCards()
+        dispatchGetProcesses()
     }, [])
 
     /**

@@ -69,8 +69,6 @@ const Column = SortableContainer((props) => {
 
 				if(!(binId === station_id)) {
 
-					console.log("remainingPayload",remainingPayload)
-
 					const droppedCard = reduxCards[cardId] ? reduxCards[cardId] : {}
 
 					const oldBins = droppedCard.bins ? droppedCard.bins : {}
@@ -80,7 +78,7 @@ const Column = SortableContainer((props) => {
 					} = oldBins || {}
 
 					// already contains items in bin
-					if(oldBins[station_id]) {
+					if(oldBins[station_id] && movedBin) {
 
 						onPutCard({
 							...remainingPayload,
