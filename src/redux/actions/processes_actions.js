@@ -101,6 +101,7 @@ export const putProcesses = (process) => {
             const ID = deepCopy(process._id)
             // delete process._id
             const updateProcesses = await api.putProcesses(process, ID);
+            console.log('QQQQ Updated process', updateProcesses)
             return onSuccess(updateProcesses)
         } catch (error) {
             return onError(error)

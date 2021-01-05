@@ -40,7 +40,6 @@ const DashboardButtonList = ((props) => {
     const tasks = useSelector(state => state.tasksReducer.tasks)
 
     useEffect(() => {
-        console.log('QQQQ Getting Tasks')
         dispatchGetTasks()
     }, [])
 
