@@ -315,11 +315,18 @@ export default function Positions(props) {
 
 
                 {/* Cards for dragging a new position onto the map */}
-                <styled.CardContainer>
-                    {handlePositionCards()}
-                </styled.CardContainer>
 
-                <styled.Label>Associated Positions</styled.Label>
+                {!!MiRMapEnabled &&
+                  <>
+                    <styled.CardContainer>
+                        {handlePositionCards()}
+                    </styled.CardContainer>
+
+                    <styled.Label>Associated Positions</styled.Label>
+                  </>
+
+                }
+
 
                 <styled.ListContainer>
                     {positionTypes.map((positionType) => {
