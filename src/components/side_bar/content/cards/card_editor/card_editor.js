@@ -612,7 +612,7 @@ const FormComponent = (props) => {
 					<styled.ProcessOptionsContainer
 						hasError={hasError}
 					>
-						{processOptions.concat(processOptions).concat(processOptions).concat(processOptions).concat(processOptions).map((currProcessId, currIndex) => {
+						{processOptions.map((currProcessId, currIndex) => {
 							const currProcess = processes[currProcessId] || {}
 							const {
 								name: currProcessName = ""
