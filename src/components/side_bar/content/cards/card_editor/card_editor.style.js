@@ -86,7 +86,6 @@ export const FieldTitle = styled.span`
 export const InfoText = styled.span`
   font-size: ${props => props.theme.fontSize.sz3};
   // font-weight: ${props => props.theme.fontWeight.bold};
-  margin-right: 1rem;
   color: ${props => props.highlight ? props.theme.schema[props.schema].solid : "white"};
 `
 
