@@ -86,8 +86,6 @@ const FormComponent = (props) => {
 
 	} = props
 
-	console.log("processOptions",processOptions)
-
 	const {
 		selectedBin
 	} = values
@@ -595,13 +593,9 @@ const FormComponent = (props) => {
 	}
 
 	const renderProcessSelector = () => {
-		var test = processOptions.concat(processOptions)
-		test = test.concat(test)
-		test = test.concat(test)
-		test = test.concat(test)
 
 		return(
-			<div style={{marginBottom: "1rem"}}>
+			<styled.ProcessFieldContainer>
 				<styled.ContentHeader>
 					<styled.ContentTitle>Select Process</styled.ContentTitle>
 				</styled.ContentHeader>
@@ -609,14 +603,11 @@ const FormComponent = (props) => {
 				<styled.ProcessOptionsContainer>
 
 
-					{Object.keys(processes).map((currProcessId, currIndex) => {
+					{processOptions.map((currProcessId, currIndex) => {
 						const currProcess = processes[currProcessId] || {}
 						const {
 							name: currProcessName = ""
 						} = currProcess
-
-						console.log("currProcess",currProcess)
-						console.log("processes",processes)
 
 						return (
 							<styled.ProcessOption
@@ -624,14 +615,15 @@ const FormComponent = (props) => {
 									setFieldValue("processId", currProcessId)
 								}}
 								isSelected={currProcessId === values.processId}
+								containsSelected={values.processId}
 							>
-								{currProcessName}
+								<styled.ProcessName>{currProcessName}</styled.ProcessName>
 							</styled.ProcessOption>
 						)
 					})}
 				</styled.ProcessOptionsContainer>
 
-			</div>
+			</styled.ProcessFieldContainer>
 
 		)
 	}
@@ -675,14 +667,13 @@ const FormComponent = (props) => {
 			</styled.Header>
 
 			<styled.SectionContainer>
-				{formMode === FORM_MODES.UPDATE &&
-				<styled.ContentHeader>
-					<styled.ContentTitle>Lot Info</styled.ContentTitle>
-				</styled.ContentHeader>
-				}
+
 
 				{showProcessSelector && renderProcessSelector()}
 
+				<styled.ContentHeader>
+					<styled.ContentTitle>Lot Name</styled.ContentTitle>
+				</styled.ContentHeader>
 				<styled.NameContainer>
 					<TextField
 						name="name"
@@ -697,6 +688,9 @@ const FormComponent = (props) => {
 					{showLotInfo &&
 					<>
 						<styled.NameContainer>
+							<styled.ContentHeader>
+								<styled.ContentTitle>Lot Description</styled.ContentTitle>
+							</styled.ContentHeader>
 							<TextField
 								name="description"
 								type="text"
@@ -861,7 +855,8 @@ const CardEditor = (props) => {
 			moveCount,
 			moveLocation,
 			buttonType,
-			selectedBin
+			selectedBin,
+			processId: selectedProcessId
 		} = values
 
 
@@ -963,7 +958,7 @@ const CardEditor = (props) => {
 				name,
 				bins,
 				description,
-				process_id: processId,
+				process_id: processId ? processId : selectedProcessId,
 				start_date: start,
 				end_date: end,
 			}
@@ -985,6 +980,10 @@ const CardEditor = (props) => {
 					setBinId("QUEUE")
 				}
 			}
+		else {
+			console.log("postResult",postResult)
+			}
+
 		}
 	}
 

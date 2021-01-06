@@ -233,7 +233,7 @@ const KickOffModal = (props) => {
                 showProcessSelector={true}
                 cardId={null}
                 processId={null}
-                binId={null}
+                // binId={null}
                 close={()=>{
                     setShowLotEditor(false)
                     // setSelectedCard(null)
