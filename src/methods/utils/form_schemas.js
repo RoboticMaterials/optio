@@ -215,6 +215,11 @@ export const cardSchema = Yup.object().shape({
     description: Yup.string()
         .min(1, '1 character minimum.')
         .max(50, '250 character maximum.'),
-    bins: binsSchema
+    bins: binsSchema,
+    processId: Yup.string()
+        .min(1, '1 character minimum.')
+        .max(100, '50 character maximum.')
+        .required('Please select a process.')
+        .nullable(),
 });
 

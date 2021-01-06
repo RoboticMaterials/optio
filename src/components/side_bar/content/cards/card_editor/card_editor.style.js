@@ -107,12 +107,28 @@ export const ProcessFieldContainer = styled.div`
   //width: auto;
 `
 
+export const ProcessOptionErrorContainer = styled.div`
+	//align-self: center;
+  width: auto;
+  height: auto;
+  position: absolute;
+  z-index: 500;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  margin: 0;
+  padding: 0;
+`
+
 export const ProcessOptionsContainer = styled.div`
 	//margin-bottom: 1rem;
   display: flex;
   overflow-x: auto;
   overflow-y: hidden;
-  //width: fit-content;
+  position: relative;
+  
+  
+  box-shadow: ${props => props.hasError && "0 0 5px red"}; 
 
   background: ${props => props.theme.bg.quinary}; 
   padding: 1rem;
@@ -155,6 +171,22 @@ export const ProcessName = styled.span`
 `
 
 export const ProcessOption = styled.div`
+
+	&:hover {
+		cursor: pointer;
+	}
+	
+	text-shadow: 0.05rem 0.05rem 0.2rem #303030;
+	&:hover {
+		cursor: pointer;
+		filter: brightness(140%);
+	}
+	
+	&:active{
+		filter: brightness(85%);
+		text-shadow: none;
+	}
+  
   	background: ${props => props.theme.bg.senary};
 	
   	padding: 1rem;
@@ -170,7 +202,7 @@ export const ProcessOption = styled.div`
 	align-items: center;
 	
 	${props => (!props.isSelected && props.containsSelected) && "filter: grayscale(50%)"};
-	${props => props.isSelected && "filter: brightness(120%)"};
+	${props => props.isSelected && "filter: brightness(130%)"};
 	transition: all 0.5s ease;
 	
 	font-size: ${props => props.theme.fontSize.sz3};
@@ -199,6 +231,8 @@ export const StyledForm = styled(Form)`
     flex: 1;
     
     justify-content: space-between;
+  
+  
 `;
 
 export const ContentContainer = styled.div`

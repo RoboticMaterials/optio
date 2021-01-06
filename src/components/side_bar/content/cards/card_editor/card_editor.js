@@ -31,6 +31,7 @@ import * as styled from "./card_editor.style"
 
 // logger
 import log from '../../../../../logger'
+import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
@@ -594,37 +595,45 @@ const FormComponent = (props) => {
 
 	const renderProcessSelector = () => {
 
+		const hasError = errors.processId && touched.processId
 		return(
 			<styled.ProcessFieldContainer>
 				<styled.ContentHeader>
 					<styled.ContentTitle>Select Process</styled.ContentTitle>
 				</styled.ContentHeader>
 
-				<styled.ProcessOptionsContainer>
 
+				<div style={{position: "relative"}}>
+					<ErrorTooltip
+						visible={hasError}
+						text={errors.processId}
+						ContainerComponent={styled.ProcessOptionErrorContainer}
+					/>
+					<styled.ProcessOptionsContainer
+						hasError={hasError}
+					>
+						{processOptions.concat(processOptions).concat(processOptions).concat(processOptions).concat(processOptions).map((currProcessId, currIndex) => {
+							const currProcess = processes[currProcessId] || {}
+							const {
+								name: currProcessName = ""
+							} = currProcess
 
-					{processOptions.map((currProcessId, currIndex) => {
-						const currProcess = processes[currProcessId] || {}
-						const {
-							name: currProcessName = ""
-						} = currProcess
-
-						return (
-							<styled.ProcessOption
-								onClick={() => {
-									setFieldValue("processId", currProcessId)
-								}}
-								isSelected={currProcessId === values.processId}
-								containsSelected={values.processId}
-							>
-								<styled.ProcessName>{currProcessName}</styled.ProcessName>
-							</styled.ProcessOption>
-						)
-					})}
-				</styled.ProcessOptionsContainer>
+							return (
+								<styled.ProcessOption
+									onClick={() => {
+										setFieldValue("processId", currProcessId)
+									}}
+									isSelected={currProcessId === values.processId}
+									containsSelected={values.processId}
+								>
+									<styled.ProcessName>{currProcessName}</styled.ProcessName>
+								</styled.ProcessOption>
+							)
+						})}
+					</styled.ProcessOptionsContainer>
+				</div>
 
 			</styled.ProcessFieldContainer>
-
 		)
 	}
 
@@ -831,15 +840,17 @@ const CardEditor = (props) => {
 
 			}
 		}
-		setCardDataInterval(setInterval(()=>onGetCard(cardId),5000))
 	}
 
 	/*
 	*
 	* */
 	useEffect( () => {
-		clearInterval(cardDataInterval)
-		handleGetCard(cardId)
+		var timer = setInterval(()=>handleGetCard(cardId),100)
+
+		return () => {
+			clearInterval(timer)
+		}
 
 	}, [cardId])
 
