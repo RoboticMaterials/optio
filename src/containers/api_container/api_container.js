@@ -723,6 +723,12 @@ const ApiContainer = (props) => {
 
         Object.values(tasks).map(async (task) => {
 
+            if(!!task.new) {
+                console.log('QQQQ Task still has a new tag', deepCopy(task))
+                alert('Task still has a new tag, should have been deleted when saved')
+                onDeleteTask(task._id)
+            }
+
             if (task.processes.length > 0) {
                 task.processes.map((process) => {
 

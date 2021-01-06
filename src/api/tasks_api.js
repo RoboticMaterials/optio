@@ -110,6 +110,8 @@ export async function postTask(task) {
         const dataJson = JSON.parse(data)
         // log.debug('postTask: dataJson: ', dataJson)
 
+        console.log('QQQQ posting task', dataJson)
+
         return dataJson;
 
     } catch (error) {

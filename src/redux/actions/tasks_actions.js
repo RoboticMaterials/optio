@@ -122,7 +122,7 @@ export const postTask = (task) => {
 
         try {
             onStart();
-            if(task.new){
+            if(!!task.new){
                 delete task.new
             }
             const newTask = await api.postTask(task);

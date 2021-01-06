@@ -44,7 +44,7 @@ const EditTask = (props) => {
 
     const dispatch = useDispatch()
     const dispatchPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
-    const dispatchPutProcesses = (process) => dispatch(putProcesses(process))
+    const dispatchPutProcesses = async (process) => await dispatch(putProcesses(process))
     const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
     const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
     const dispatchDeleteTask = (ID) => dispatch(deleteTask(ID))
@@ -74,6 +74,7 @@ const EditTask = (props) => {
 
     useEffect(() => {
         console.log('QQQQ Selected Task', selectedTask)
+        if(!!selectedTask.associated_task) console.log('QQQQ Associated Task', tasks[selectedTask.associated_task])
         setSelectedTaskCopy(selectedTask)
 
         // Commented out for now
@@ -224,21 +225,18 @@ const EditTask = (props) => {
                 const newID = uuid.v4()
 
                 const humanTask = {
-                    ...deepCopy(selectedTask),
+                    ...selectedTask,
                     device_type: 'human',
                     _id: newID,
                     associated_task: selectedTask._id,
                 }
 
-                const deviceTask = {
-                    ...deepCopy(selectedTask),
-                    associated_task: humanTask._id,
-                }
+                selectedTask.associated_task = humanTask._id
 
                 console.log('QQQQ Human task', humanTask)
-                console.log('QQQQ Device task', deviceTask)
+                console.log('QQQQ Device task', selectedTask)
 
-                dispatch(taskActions.postTask(deviceTask))
+                dispatch(taskActions.postTask(selectedTask))
                 dispatch(taskActions.postTask(humanTask))
 
                 // Temp fix for a weird issue with redux and posting tasks to fast
@@ -423,13 +421,19 @@ const EditTask = (props) => {
 
             // Add the process to the task
             selectedTask.processes.push(selectedProcess._id);
-            if (!!selectedTask.associated_task) {
-                let updatedAssociatedTask = tasks[selectedTask.associated_task]
 
-                updatedAssociatedTask.push(selectedProcess._id)
-                dispatch(taskActions.putTask(updatedAssociatedTask, updatedAssociatedTask._id))
+            // If the task has an associated process, add the process to that task as well if that task does not have that process 
+            // This also checks to see if the associated task exists in tasks, it wouldnt exits in tasks because its a new task and the post has not gon through yet
+            // A simple await should work, butt it doesnt. Thanks Obama.
+            // if (!!selectedTask.associated_task && !!tasks[selectedTask.associated_task] && !tasks[selectedTask.associated_task].processes.includes(selectedProcess._id)) {
+            //     let updatedAssociatedTask = tasks[selectedTask.associated_task]
 
-            }
+            //     console.log('QQQQ Ass task', selectedTask.associated_task, tasks, tasks[selectedTask.associated_task])
+
+            //     updatedAssociatedTask.processes.push(selectedProcess._id)
+            //     dispatch(taskActions.putTask(updatedAssociatedTask, updatedAssociatedTask._id))
+            // }
+
             dispatch(taskActions.putTask(selectedTask, selectedTask._id))
 
         }
