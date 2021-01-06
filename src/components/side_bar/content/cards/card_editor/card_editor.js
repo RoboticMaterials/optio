@@ -32,6 +32,7 @@ import * as styled from "./card_editor.style"
 // logger
 import log from '../../../../../logger'
 import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
+import ScrollingButtonField from "../../../../basic/form/scrolling_buttons_field/scrolling_buttons_field";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
@@ -595,44 +596,32 @@ const FormComponent = (props) => {
 
 	const renderProcessSelector = () => {
 
-		const hasError = errors.processId && touched.processId
 		return(
 			<styled.ProcessFieldContainer>
 				<styled.ContentHeader>
 					<styled.ContentTitle>Select Process</styled.ContentTitle>
 				</styled.ContentHeader>
 
-
-				<div style={{position: "relative"}}>
-					<ErrorTooltip
-						visible={hasError}
-						text={errors.processId}
-						ContainerComponent={styled.ProcessOptionErrorContainer}
-					/>
-					<styled.ProcessOptionsContainer
-						hasError={hasError}
-					>
-						{processOptions.map((currProcessId, currIndex) => {
+				<ScrollingButtonField
+					name={"processId"}
+					valueKey={"value"}
+					labelKey={"label"}
+					options={
+						processOptions.map((currProcessId, currIndex) => {
 							const currProcess = processes[currProcessId] || {}
 							const {
 								name: currProcessName = ""
 							} = currProcess
 
 							return (
-								<styled.ProcessOption
-									onClick={() => {
-										setFieldValue("processId", currProcessId)
-									}}
-									isSelected={currProcessId === values.processId}
-									containsSelected={values.processId}
-								>
-									<styled.ProcessName>{currProcessName}</styled.ProcessName>
-								</styled.ProcessOption>
+								{
+									label: currProcessName,
+									value: currProcessId
+								}
 							)
-						})}
-					</styled.ProcessOptionsContainer>
-				</div>
-
+						})
+					}
+				/>
 			</styled.ProcessFieldContainer>
 		)
 	}

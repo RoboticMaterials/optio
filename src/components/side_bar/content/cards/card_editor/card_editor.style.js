@@ -107,18 +107,6 @@ export const ProcessFieldContainer = styled.div`
   //width: auto;
 `
 
-export const ProcessOptionErrorContainer = styled.div`
-	//align-self: center;
-  width: auto;
-  height: auto;
-  position: absolute;
-  z-index: 500;
-  top: 50%;
-  right: 1rem;
-  transform: translateY(-50%);
-  margin: 0;
-  padding: 0;
-`
 
 export const ProcessOptionsContainer = styled.div`
 	//margin-bottom: 1rem;
