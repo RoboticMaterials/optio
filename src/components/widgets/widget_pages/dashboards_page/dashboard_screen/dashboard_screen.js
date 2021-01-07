@@ -281,9 +281,9 @@ const DashboardScreen = (props) => {
         }
 
         let inQueue = false
-
         Object.values(taskQueue).map((item) => {
-            if (item.task_id === Id) inQueue = true
+            // If its in the Q and not a handoff, then alert the user saying its already there
+            if (item.task_id === Id && !tasks[item.task_id].handoff) inQueue = true
         })
 
         // add alert to notify task has been added
