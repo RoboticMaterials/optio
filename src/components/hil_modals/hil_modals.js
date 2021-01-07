@@ -75,6 +75,7 @@ const HILModals = (props) => {
     const [didDisplayLots, setDidDisplayLots] = useState(false)
     const [didSelectInitialLot, setDidSelectInitialLot] = useState(false)
     const [hilLoadUnload, setHilLoadUnload] = useState('')
+    const [lotFilterValue, setLotFilterValue] = useState('')
 
     const {
         name: dashboardName,
@@ -677,29 +678,60 @@ const HILModals = (props) => {
     const renderLotSelector = () => {
         return (
             <>
-                <styled.Header>
+                <styled.Header style={{flexDirection: "column"}}>
+                    <styled.HeaderMainContent>
+                        {!!taskQueueItemClicked &&
+                            <styled.HilExitModal
+                                className='fas fa-times'
+                                onClick={() => dispatchTaskQueueItemClicked('')}
+                            />
+                        }
 
-                    {!!taskQueueItemClicked &&
-                    <styled.HilExitModal
-                        className='fas fa-times'
-                        onClick={() => dispatchTaskQueueItemClicked('')}
-                    />
-                    }
+                        <styled.ColumnContainer>
+                            <styled.HilMessage>Select Lot</styled.HilMessage>
+                        </styled.ColumnContainer>
 
+                        {!!taskQueueItemClicked &&
+                        <styled.InvisibleItem/>
+                        }
+                    </styled.HeaderMainContent>
 
-                    <styled.ColumnContainer>
-                        <styled.HilMessage>Select Lot</styled.HilMessage>
-                    </styled.ColumnContainer>
-
-                    {/* <styled.InvisibleItem /> */}
-
+                    <div style={{display: "flex", maxWidth: "50rem", minWidth: "1rem", width: "50%"}}>
+                        <Textbox
+                            placeholder='Filter lots...'
+                            onChange={(e) => {
+                                setLotFilterValue(e.target.value)
+                            }}
+                            style={{flex: 1 }}
+                        />
+                    </div>
                 </styled.Header>
                 <styled.LotSelectorContainer>
 
                     {availableLots.length > 0 ?
                         <styled.LotsContainer>
 
-                            {availableLots.map((currLot) => {
+                            {availableLots
+                                .filter((currLot) => {
+
+                                    const {
+                                        name: currLotName,
+                                        _id: currLotId,
+                                        bins: currLotBins
+                                    } = currLot || {}
+
+                                    if(
+                                        currLotName
+                                            .toLowerCase()
+                                            .includes(lotFilterValue.toLowerCase())
+                                    ) {
+                                        return true
+                                    }
+                                    else {
+                                        return false
+                                    }
+                                })
+                                .map((currLot) => {
                                 const {
                                     name,
                                     _id: lotId,
