@@ -74,7 +74,7 @@ const EditTask = (props) => {
 
     useEffect(() => {
         console.log('QQQQ Selected Task', selectedTask)
-        if(!!selectedTask.associated_task) console.log('QQQQ Associated Task', tasks[selectedTask.associated_task])
+        if (!!selectedTask.associated_task) console.log('QQQQ Associated Task', tasks[selectedTask.associated_task])
         setSelectedTaskCopy(selectedTask)
 
         // Commented out for now
@@ -758,6 +758,10 @@ const EditTask = (props) => {
                                                     ...selectedTask,
                                                     track_quantity: true
                                                 })
+                                                setSelectedTaskCopy({
+                                                    ...selectedTask,
+                                                    track_quantity: false
+                                                })
                                             }}
                                             selected={selectedTask.track_quantity}
                                         >
@@ -768,6 +772,10 @@ const EditTask = (props) => {
                                             style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
                                             onClick={() => {
                                                 dispatchSetSelectedTask({
+                                                    ...selectedTask,
+                                                    track_quantity: false
+                                                })
+                                                setSelectedTaskCopy({
                                                     ...selectedTask,
                                                     track_quantity: false
                                                 })
