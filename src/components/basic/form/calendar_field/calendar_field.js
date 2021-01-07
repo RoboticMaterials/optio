@@ -23,31 +23,6 @@ const CalendarField = ({
 
 	const errorMessage = getMessageFromError(meta.error);
 
-	// console.log("CalendarField value",value)
-	// console.log("CalendarField field",field)
-	// console.log("CalendarField formikContext",formikContext)
-	// console.log("CalendarField meta",meta)
-
-	// const {
-	// 	start: {
-	// 		year: startYear = 0,
-	// 		month: startMonth = 0,
-	// 		day: startDay = 0
-	// 	} = {},
-	// 	end: {
-	// 		year: endYear = 0,
-	// 		month: endMonth = 0,
-	// 		day: endDay = 0
-	// 	} = {},
-	// } = initialValue || {}
-
-	// const {
-	// 	start: {
-	// 	} = {},
-	// 	end: {
-	// 	} = {},
-	// } = value || {}
-
 	const startYearVal = value?.start?.year || 0
 	const startMonthVal = value?.start?.month || 0
 	const startDayVal = value?.start?.day || 0
@@ -56,12 +31,8 @@ const CalendarField = ({
 	const endMonthVal = value?.end?.month || 0
 	const endDayVal = value?.end?.day || 0
 
-
-	// const initialStartDate = (startYear && startMonth && startDay) ? new Date(startYear, startMonth, startDay, 0, 0, 0, 0) : new Date()
-	// const initialEndDate = (endYear && endMonth && endDay) ? new Date(endYear, endMonth, endDay, 0, 0, 0, 0) : null
-
-	const startDate = (startYearVal && startMonthVal && startDayVal) ? new Date(startYearVal, startMonthVal, startDayVal, 0, 0, 0, 0) : new Date()
-	const endDate = (endYearVal && endMonthVal && endDayVal) ? new Date(endYearVal, endMonthVal, endDayVal, 0, 0, 0, 0) : null
+	const startDate = (startYearVal && (startMonthVal + 1) && startDayVal) ? new Date(startYearVal, startMonthVal, startDayVal, 0, 0, 0, 0) : new Date()
+	const endDate = (endYearVal && (endMonthVal + 1) && endDayVal) ? new Date(endYearVal, endMonthVal, endDayVal, 0, 0, 0, 0) : null
 
 	return (
 		<Container>
@@ -86,7 +57,6 @@ const CalendarField = ({
 							setFieldTouched(true)
 						}
 
-						console.log("CalendarField onChange value", value)
 						const startDate = value[0]
 
 
@@ -106,11 +76,6 @@ const CalendarField = ({
 							newValue["end"] = {year, month, day}
 						}
 
-						//
-						//
-						// console.log("year",year)
-						// console.log("month",month)
-						// console.log("day",day)
 						setFieldValue(field.name, newValue);
 						onChange && onChange(value)
 					}}

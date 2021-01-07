@@ -312,6 +312,16 @@ export const Header = styled.div`
     padding: .5rem 1rem;
 `
 
+export const HeaderMainContent = styled.div`
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+`
+
+
 export const HilIcon = styled.i`
     display: flex;
     justify-content: center;
