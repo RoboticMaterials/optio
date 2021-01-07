@@ -437,7 +437,6 @@ const ApiContainer = (props) => {
     //  API DATA CLEAN UP (Ideally these functions should not exist... but it's not an ideal world...)
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
     /**
      * Not the best place but it should still work
      * This will either make a dashboard for the device or replace a lost dashboard
@@ -680,7 +679,8 @@ const ApiContainer = (props) => {
 
     /**
      * This handles broken Processes
-     * A broken process would happen if a route/task that has been deleted but the process has not been updated
+     * 1) A broken process would happen if a route/task that has been deleted but the process has not been updated
+     * 2) Also, a task could have been added to a process, but the process was never added to the task
      * @param {*} processes
      * @param {*} tasks
      */
@@ -692,6 +692,7 @@ const ApiContainer = (props) => {
 
             process.routes.map(async (route) => {
 
+                // If the route does not exist anymore in tasks then delete the route from the process
                 if (!tasks[route]) {
                     // Removes the task from the array of routes
                     let processRoutes = deepCopy(process.routes)
@@ -705,6 +706,19 @@ const ApiContainer = (props) => {
                     alert('Route does not exist in anymore, delete from process')
 
                     await onPutProcess(updatedProcess)
+                }
+
+                // Else the task does exist, see if the task contains the process
+                else {
+                    if(!tasks[route].processes.includes(process._id)) {
+                        console.log('QQQQ Process containes a route, but the route does not contain the process, adding process to route', tasks[route])
+                        alert('Process containes a route, but the route does not contain the process, adding process to route')
+
+                        let taskCopy = deepCopy(tasks[route])
+                        taskCopy.processes.push(process._id)
+                        dispatchPutTask(taskCopy, taskCopy._id)
+
+                    }
                 }
             })
         })

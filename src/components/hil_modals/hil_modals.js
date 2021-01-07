@@ -152,7 +152,7 @@ const HILModals = (props) => {
         ) {
             setIsProcessTask(true)
             const taskProcesses = selectedTask.processes
-            const associatedsTaskProcess = associatedTask.processes
+            const associatedsTaskProcess = !!associatedTask ? associatedTask.processes : null
 
             const stationCards = Object.values(cards).filter((currCard) => {
                 const {
@@ -197,7 +197,8 @@ const HILModals = (props) => {
         setSelectedTask(currentTask)
 
         if(currentTask) {
-            if(currentTask.associated_task) setAssociatedTask(tasks[currentTask.associated_task])
+            console.log('QQQQ current task', currentTask.associated_task)
+            if(!!currentTask.associated_task) setAssociatedTask(tasks[currentTask.associated_task])
         }
 
         // If the task's load location of the task q item matches the item's location then its a load hil, else its unload
