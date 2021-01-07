@@ -197,7 +197,6 @@ const HILModals = (props) => {
         setSelectedTask(currentTask)
 
         if(currentTask) {
-            console.log('QQQQ current task', currentTask.associated_task)
             if(!!currentTask.associated_task) setAssociatedTask(tasks[currentTask.associated_task])
         }
 

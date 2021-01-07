@@ -109,9 +109,6 @@ export async function postTask(task) {
         const data = response.data;
         const dataJson = JSON.parse(data)
         // log.debug('postTask: dataJson: ', dataJson)
-
-        console.log('QQQQ posting task', dataJson)
-
         return dataJson;
 
     } catch (error) {

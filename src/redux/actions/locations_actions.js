@@ -333,7 +333,6 @@ export const deleteLocationProcess = (props) => {
                         let updatedProcess = processes[process]
                         let index = updatedProcess.routes.indexOf(task._id)
                         updatedProcess.routes.splice(index, 1)
-                        console.log('QQQQ Updated Process', updatedProcess)
                         await dispatch(putProcesses(updatedProcess))
 
                     })
