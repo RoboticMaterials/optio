@@ -116,8 +116,8 @@ const FormComponent = (props) => {
 	const processStationIds = getProcessStations(currentProcess, routes) // get object with all station's belonging to the current process as keys
 	const availableBins = !isEmpty(bins) ? Object.keys(bins) : ["QUEUE"]
 
-	const startDateText = (values?.dates?.start?.month && values?.dates?.start?.day && values?.dates?.start?.year) ?  values.dates.start.month + "/" + values.dates.start.day + "/" + values.dates.start.year : "Planned start"
-	const endDateText = (values?.dates?.end?.month && values?.dates?.end?.day && values?.dates?.end?.year) ?  values.dates?.end.month + "/" + values.dates?.end.day + "/" + values.dates?.end.year : "Planned end"
+	const startDateText = ((values?.dates?.start?.month + 1) && values?.dates?.start?.day && values?.dates?.start?.year) ?  (values.dates.start.month + 1) + "/" + values.dates.start.day + "/" + values.dates.start.year : "Planned start"
+	const endDateText = ((values?.dates?.end?.month + 1) && values?.dates?.end?.day && values?.dates?.end?.year) ?  (values.dates?.end.month + 1) + "/" + values.dates?.end.day + "/" + values.dates?.end.year : "Planned end"
 
 	const errorCount = Object.keys(errors).length > 0 // get number of field errors
 	const touchedCount = Object.values(touched).length // number of touched fields
