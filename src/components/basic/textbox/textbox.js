@@ -13,7 +13,7 @@ export default function Textbox(props) {
         if (props.focus == true) {
             inputRef.current.focus()
         }
-    })
+    }, [props.focus])
 
     return (
         <React.Fragment>

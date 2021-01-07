@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, {useState, useMemo, useEffect, useRef} from 'react';
 
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
@@ -41,6 +41,8 @@ const HILModals = (props) => {
         dashboard: dashboardId
     } = item || {}
 
+    const lotFilterRef = useRef(null);
+
     const dispatch = useDispatch()
     const dispatchPostTaskQueue = (response) => dispatch(postTaskQueue(response))
     const dispatchGetCards = () => dispatch(getCards())
@@ -76,6 +78,7 @@ const HILModals = (props) => {
     const [didSelectInitialLot, setDidSelectInitialLot] = useState(false)
     const [hilLoadUnload, setHilLoadUnload] = useState('')
     const [lotFilterValue, setLotFilterValue] = useState('')
+    const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState('')
 
     const {
         name: dashboardName,
@@ -119,6 +122,13 @@ const HILModals = (props) => {
         dispatchGetCards()
         setCardsLoaded(true)
     }, [])
+
+    // if number of available lots >= 5, auto focus lot filter text box
+    useEffect(() => {
+        if(availableLots.length >= 5 ) {
+            setShouldFocusLotFilter(true)
+        }
+    }, [availableLots.length])
 
     // load card data on load for selecting lot
     useEffect(() => {
@@ -698,6 +708,7 @@ const HILModals = (props) => {
 
                     <div style={{display: "flex", maxWidth: "50rem", minWidth: "1rem", width: "50%"}}>
                         <Textbox
+                            focus={shouldFocusLotFilter}
                             placeholder='Filter lots...'
                             onChange={(e) => {
                                 setLotFilterValue(e.target.value)
@@ -753,6 +764,7 @@ const HILModals = (props) => {
                                     >
 
                                         {/*{isSelected &&*/}
+                                        {/*    <styled.DeselectLotIcon*/}
                                         {/*    <styled.DeselectLotIcon*/}
                                         {/*        className='fas fa-times-circle'*/}
                                         {/*        onClick={(e) => {*/}
