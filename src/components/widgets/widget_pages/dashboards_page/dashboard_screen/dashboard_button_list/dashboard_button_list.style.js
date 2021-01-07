@@ -12,10 +12,10 @@ export const Container = styled.ul`
 	align-items: center;
 	margin: 0;
 	padding: 0;
-	
+
 	// allow scroll
 	overflow: auto;
-	
+
 	// hide scroll bar
 	::-webkit-scrollbar {
 		width: 0px;  /* Remove scrollbar space */
@@ -24,7 +24,7 @@ export const Container = styled.ul`
 	::-webkit-scrollbar-thumb {
 		background: #FF0000;
 	}
-	
+
 `
 
 export const ListContainer = styled.div`
@@ -32,7 +32,7 @@ export const ListContainer = styled.div`
     width: 100%;
 	max-height: calc(100% - 8rem);
 
-	
+
 	// flex layout
 	display: flex;
 	flex-direction: row;
@@ -45,17 +45,16 @@ export const ListContainer = styled.div`
 // overwrite dashboard button container style
 export  const ButtonContainerCss = css`
 	// large screen style
-	
+
 	@media (min-width: ${props => props.theme.widthBreakpoint.mobileL}){
 		width: 100%;
 		max-width: 100%;
     }
-    
+
     @media (min-width: ${props => props.theme.widthBreakpoint.tablet}){
 		width: 45%;
 		margin-left: .5rem;
 		margin-right: .5rem;
     }
-	
-`
 
+`

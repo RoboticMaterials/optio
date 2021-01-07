@@ -53,6 +53,10 @@ const TaskQueueMenu = (props) => {
 
                 // skip if associated task isn't found
                 if (task) {
+
+                    // If task is a handoff, don't show in task q
+                    if (task.handoff === true) return
+
                     queueItemClone.task = task;
                     queueItemClone.name = task.name;
                     taskQueueClone.push(queueItemClone);
@@ -89,8 +93,8 @@ const TaskQueueMenu = (props) => {
                 id={id}
                 key={key}
                 type={type}
-                item = {item}
-                task = {task}
+                item={item}
+                task={task}
             />
         )
     }

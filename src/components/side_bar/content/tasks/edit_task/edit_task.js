@@ -149,11 +149,10 @@ const EditTask = (props) => {
 
         // If the task has associated processes, then remove that task from that process
         if (selectedTask.processes.length > 0) {
-
             selectedTask.processes.map((process) => {
                 let updatedProcess = processes[process]
 
-                // If the route removal breaks the process then updatte the process
+                // If the route removal breaks the process then update the process
                 if (!!willRouteDeleteBreakProcess(updatedProcess, selectedTask, tasks)) {
                     updatedProcess.broken = willRouteDeleteBreakProcess(updatedProcess, selectedTask, tasks)
                 }
@@ -181,7 +180,6 @@ const EditTask = (props) => {
         if (!!selectedTask.associated_task) {
             dispatch(taskActions.deleteTask(selectedTask.associated_task));
         }
-
         dispatch(taskActions.deleteTask(selectedTask._id));
 
         // dispatch(taskActions.deselectTask());
@@ -422,7 +420,7 @@ const EditTask = (props) => {
             // Add the process to the task
             selectedTask.processes.push(selectedProcess._id);
 
-            // If the task has an associated process, add the process to that task as well if that task does not have that process 
+            // If the task has an associated process, add the process to that task as well if that task does not have that process
             // This also checks to see if the associated task exists in tasks, it wouldnt exits in tasks because its a new task and the post has not gon through yet
             // A simple await should work, butt it doesnt. Thanks Obama.
             // if (!!selectedTask.associated_task && !!tasks[selectedTask.associated_task] && !tasks[selectedTask.associated_task].processes.includes(selectedProcess._id)) {
@@ -497,9 +495,12 @@ const EditTask = (props) => {
         // Else, it's part of a process
         else {
             // If the selected task already has a object, set it to that
-            if (!!selectedTask && !!selectedTask.obj) {
-                return objects[selectedTask.obj]
+            if(!!selectedTask){
+              if (!!selectedTask.obj) {
+                  return objects[selectedTask.obj]
+              }
             }
+
 
             // Else if its a process and the last route in that process has an object, use that object as the default
             else if (selectedProcess.routes.length > 0 && !!tasks[selectedProcess.routes[selectedProcess.routes.length - 1]].obj) {

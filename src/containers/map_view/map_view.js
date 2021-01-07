@@ -631,10 +631,12 @@ export class MapView extends Component {
                                                         return true
 
                                                     }
+                                                  }
                                                 }
 
+
                                                 // return true
-                                            }
+
 
                                             // This filters out positions that aren't apart of a station when making a task
                                             // Should not be able to make a task for a random position
@@ -655,6 +657,7 @@ export class MapView extends Component {
                                                     onEnableDrag={this.onEnableDrag}
                                                     onDisableDrag={this.onDisableDrag}
                                                 />
+
                                             </>
                                         )
                                 }</>

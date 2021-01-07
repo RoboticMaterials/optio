@@ -121,13 +121,14 @@ const EditProcess = (props) => {
                         key={`li-${ind}`}
                         onMouseEnter={() => {
                             if (!selectedTask && !editingTask) {
-                                //dispatchSetSelectedTask(routeTask)
+                                dispatchSetSelectedTask(routeTask)
                             }
 
                         }}
                         onMouseLeave={() => {
                             if (selectedTask !== null && !editingTask) {
                                 dispatchDeselectTask()
+
                             }
                         }}
                     >
@@ -414,6 +415,7 @@ const EditProcess = (props) => {
                 <styled.Title schema={'processes'}>Associated Routes</styled.Title>
                 <styled.SectionContainer>
                     {handleExistingRoutes()}
+
                 </styled.SectionContainer>
 
                 {handleAddRoute()}
