@@ -152,7 +152,7 @@ const HILModals = (props) => {
         ) {
             setIsProcessTask(true)
             const taskProcesses = selectedTask.processes
-            const associatedsTaskProcess = !!associatedTask ? associatedTask.processes : null
+            const associatedsTaskProcess = !!associatedTask ? associatedTask.processes : []
 
             const stationCards = Object.values(cards).filter((currCard) => {
                 const {
@@ -161,7 +161,7 @@ const HILModals = (props) => {
                 } = currCard || {}
 
                 if (bins) {
-                    if (bins[loadStationId] && bins[loadStationId].count > 0 && (taskProcesses.includes(currCardProcessId) || associatedsTaskProcess).includes(currCardProcessId)) return true
+                    if (bins[loadStationId] && bins[loadStationId].count > 0 && (taskProcesses.includes(currCardProcessId) || associatedsTaskProcess.includes(currCardProcessId))) return true
                 }
 
             })

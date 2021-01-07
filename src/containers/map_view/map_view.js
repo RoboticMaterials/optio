@@ -597,7 +597,7 @@ export class MapView extends Component {
 
                                             // This filters out positions when fixing a process
                                             // If the process is broken, then you can only start the task at the route before break's unload location
-                                            if (!!this.props.selectedTask && !!this.props.selectedProcess && !!this.props.fixingProcess) {
+                                            if (!!this.props.selectedTask && !!this.props.selectedProcess && !!this.props.fixingProcess && this.props.selectedTask.load.position !== null) {
 
                                                 // Gets the route before break
                                                 const routeBeforeBreak = this.props.selectedProcess.routes[this.props.selectedProcess.broken - 1]
