@@ -179,7 +179,6 @@ const EditTask = (props) => {
         if (!!selectedTask.associated_task) {
             dispatch(taskActions.deleteTask(selectedTask.associated_task));
         }
-        console.log('deletinnnnnn')
         dispatch(taskActions.deleteTask(selectedTask._id));
 
         // dispatch(taskActions.deselectTask());
