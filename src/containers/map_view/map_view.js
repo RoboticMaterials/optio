@@ -621,6 +621,8 @@ export class MapView extends Component {
                                                 // Gets the last route in the routes array
                                                 const previousRoute = this.props.selectedProcess.routes[this.props.selectedProcess.routes.length - 1]
 
+                                              if(!!this.props.tasks[previousRoute]){
+
                                                 const previousTask = this.props.tasks[previousRoute]
 
                                                 if (!!previousTask.unload) {
@@ -632,7 +634,9 @@ export class MapView extends Component {
                                                         return true
 
                                                     }
+                                                  }
                                                 }
+
 
                                                 // return true
                                             }

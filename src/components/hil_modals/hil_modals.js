@@ -12,6 +12,7 @@ import HILSuccess from './hil_modals_content/hil_success'
 // Import Actions
 import { postTaskQueue, putTaskQueue } from '../../redux/actions/task_queue_actions'
 import { postEvents } from '../../redux/actions/events_actions'
+import { getTasks } from '../../redux/actions/tasks_actions'
 
 // Import API
 import { putTaskQueueItem } from '../../api/task_queue_api'
@@ -50,7 +51,7 @@ const HILModals = (props) => {
     const dispatchSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
     const dispatchPostEvents = (event) => dispatch(postEvents)
     const dispatchLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
-
+    const dispatchGetTasks = () => dispatch(getTasks())
 
 
     const hilTimers = useSelector(state => { return state.taskQueueReducer.hilTimers })
@@ -65,6 +66,7 @@ const HILModals = (props) => {
 
     const [quantity, setQuantity] = useState(taskQuantity)
     const [selectedTask, setSelectedTask] = useState(null)
+    const [trackQuantity, setTrackQuantity] = useState(null)
     const [selectedLot, setSelectedLot] = useState(null)
     const [isProcessTask, setIsProcessTask] = useState(false)
     const [availableLots, setAvailableLots] = useState([])
@@ -189,7 +191,6 @@ const HILModals = (props) => {
 
     // Use Effect for when page loads, handles wether the HIL is a load or unload
     useEffect(() => {
-
         const currentTask = tasks[item.task_id]
         setSelectedTask(currentTask)
 
@@ -214,6 +215,11 @@ const HILModals = (props) => {
             dispatchLocalHumanTask(false)
         }
 
+    }, [tasks])
+
+    useEffect(() => {
+      const currentTask = tasks[item.task_id]
+      setTrackQuantity(currentTask.track_quantity)
     }, [tasks])
 
     // Posts HIL Success to API
@@ -799,7 +805,7 @@ const HILModals = (props) => {
                     renderLotSelector()
                     :
                     !!selectedTask && hilLoadUnload === 'load' ?
-                        selectedTask.track_quantity ?
+                        trackQuantity == true ?
                             renderQuantityOptions()
                             :
                             renderFractionOptions()

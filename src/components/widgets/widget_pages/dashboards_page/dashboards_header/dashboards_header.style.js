@@ -67,13 +67,15 @@ export const RowContainer = styled.div`
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    margin-left:6rem;
+    margin-left:2rem;
     padding-top:1rem;
+    padding-bottom: 1rem;
+    max-width: ${props => props.windowWidth}
 
     @media only screen and (max-width: ${props => props.theme.widthBreakpoint.tablet}) {
         margin-left: 2rem;
+        margin-right: 2rem;
     }
-
 `
 
 export const ColumnContainer = styled.div`
@@ -82,19 +84,41 @@ export const ColumnContainer = styled.div`
     width: 100%;
 
 `
+export const Dots = styled.div`
+    align-items: center;
+    justify-content: flex-start;
+    height: 1.7rem;
+    color: white;
+    width:15rem;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    padding-top: .2rem;
+
+
+`
 
 
 export const LotItem = styled.div`
-    display: flex;
     align-items: center;
-    width: auto;
-    height: 1.5rem;
+    justify-content: center;
+    height: 1.7rem;
     color: white;
+
+    white-space: nowrap;
+    overflow: hidden;
     text-overflow: ellipsis;
-    justify-content: space-between;
+    width: auto;
+    max-width: 15rem;
+    min-width: 9rem;
     background: transparent;
-    padding: 0rem 1rem;
+
+    padding-right:.5rem;
+    padding-left:.5rem;
     margin-right:.5rem;
+
     border-radius: 0.5rem;
     border: 0.1rem solid;
     border-color: ${props => props.error ? 'red' : 'white'};

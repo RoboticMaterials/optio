@@ -16,6 +16,7 @@ import DashboardsSidebar from "./dashboards_sidebar/dashboards_sidebar.jsx"
 import { PAGES } from "../../../../constants/dashboard_contants";
 
 import {getDashboards, setDashboardKickOffProcesses, setDashboardFinishProcesses} from '../../../../redux/actions/dashboards_actions'
+import { getTasks } from '../../../../redux/actions/tasks_actions'
 
 // Import Styles
 import * as style from './dashboards_page.style'
@@ -31,6 +32,7 @@ const DashboardsPage = (props) => {
     const dispatch = useDispatch()
     const dispatchSetDashboardKickOffProcesses = async (dashboardId, kickOffEnabled) => await dispatch(setDashboardKickOffProcesses(dashboardId, kickOffEnabled))
     const dispatchSetDashboardFinishProcesses = async (dashboardId, finishEnabled) => await dispatch(setDashboardFinishProcesses(dashboardId, finishEnabled))
+    const dispatchGetTasks = () => dispatch(getTasks())
 
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const stations = useSelector(state => state.locationsReducer.stations)

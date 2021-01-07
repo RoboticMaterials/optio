@@ -148,11 +148,10 @@ const EditTask = (props) => {
 
         // If the task has associated processes, then remove that task from that process
         if (selectedTask.processes.length > 0) {
-
             selectedTask.processes.map((process) => {
                 let updatedProcess = processes[process]
 
-                // If the route removal breaks the process then updatte the process
+                // If the route removal breaks the process then update the process
                 if (!!willRouteDeleteBreakProcess(updatedProcess, selectedTask, tasks)) {
                     updatedProcess.broken = willRouteDeleteBreakProcess(updatedProcess, selectedTask, tasks)
                 }
@@ -180,7 +179,7 @@ const EditTask = (props) => {
         if (!!selectedTask.associated_task) {
             dispatch(taskActions.deleteTask(selectedTask.associated_task));
         }
-
+        console.log('deletinnnnnn')
         dispatch(taskActions.deleteTask(selectedTask._id));
 
         // dispatch(taskActions.deselectTask());
@@ -485,9 +484,12 @@ const EditTask = (props) => {
         // Else, it's part of a process
         else {
             // If the selected task already has a object, set it to that
-            if (!!selectedTask && !!selectedTask.obj) {
-                return objects[selectedTask.obj]
+            if(!!selectedTask){
+              if (!!selectedTask.obj) {
+                  return objects[selectedTask.obj]
+              }
             }
+
 
             // Else if its a process and the last route in that process has an object, use that object as the default
             else if (selectedProcess.routes.length > 0 && !!tasks[selectedProcess.routes[selectedProcess.routes.length - 1]].obj) {
@@ -605,18 +607,24 @@ const EditTask = (props) => {
                                     // If the selected process has routes, then filter out tasks that have load stations that arent the last route's unload station
                                     // This eliminates 'broken' processes with tasks that are between non-connected stations
                                     else if (selectedProcess.routes.length > 0) {
-
                                         // Gets the previous route
                                         const previousRouteID = selectedProcess.routes[selectedProcess.routes.length - 1]
-                                        const previousRoute = tasks[previousRouteID]
 
-                                        // Gets the previouse route unload location
-                                        const unloadStationID = previousRoute.unload.station
+                                        if(!!tasks[previousRouteID]){
+                                          const previousRoute = tasks[previousRouteID]
 
-                                        // If the load and unload station match, then this route can be added to this process
-                                        if (task.load.station === unloadStationID) {
-                                            return true
+                                          // Gets the previouse route unload location
+                                          const unloadStationID = previousRoute.unload.station
+
+                                          // If the load and unload station match, then this route can be added to this process
+                                          if (task.load.station === unloadStationID) {
+                                              return true
+                                          }
                                         }
+                                        else{
+                                            return false
+                                        }
+
                                     }
 
                                     else {

@@ -127,7 +127,6 @@ const DashboardScreen = (props) => {
     const handleDashboardButtons = () => {
         let { buttons } = currentDashboard	// extract buttons from dashboard
 
-
         // If this dashboard belongs to a device and the device is a cart, add some unique buttons
         if (!!devices[stationID] && devices[stationID].device_model === 'MiR100') {
             const device = devices[stationID]

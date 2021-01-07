@@ -13,6 +13,8 @@ import useWindowSize from '../../../../../hooks/useWindowSize'
 // import external funcations
 import { ThemeContext } from "styled-components";
 import { withRouter } from "react-router-dom";
+import { getCards} from "../../../../../redux/actions/card_actions";
+
 
 // import constants
 import { PAGES } from "../../../../../constants/dashboard_contants";
@@ -43,16 +45,17 @@ const DashboardsHeader = (props) => {
 
     // extract url params
     const { stationID, dashboardID, editing } = props.match.params
+    const dispatch = useDispatch()
+    const onGetCards = () => dispatch(getCards())
 
     const cards = useSelector(state => state.cardsReducer.cards)
     const locations = useSelector(state => state.locationsReducer.locations)
     const location = locations[stationID]
 
     const [locationName, setLocationName] = useState("")
-
+    const [slice, setSlice] = useState(null)
     const size = useWindowSize()
     const windowWidth = size.width
-
     const mobileMode = windowWidth < widthBreakPoint;
 
 
@@ -60,6 +63,8 @@ const DashboardsHeader = (props) => {
         const location = locations[stationID]
         setLocationName(location.name)
     }, [stationID, locations])
+
+
 
     // goes to main dashboards page
     const goToMainPage = () => {
@@ -69,20 +74,48 @@ const DashboardsHeader = (props) => {
     /**
      * Renders Lots that are are the station
      */
-    const renderLotsTitile = useMemo(() => {
+    const renderLotsTitle = useMemo(() => {
 
         let hasLot = false
+        let numberLots = 0
+        setSlice(0)
+        let threshold = mobileMode ? 3:6
+
 
         for (let i = 0; i < Object.values(cards).length; i++) {
-            if (!!Object.values(cards)[i].bins[location._id]) {
-                hasLot = true
+            if (!!Object.values(cards)[i].bins[location._id]){
+
+              hasLot = true
+              numberLots = numberLots+1
+              if(numberLots>threshold){
+                setSlice(i)
                 break
+              }
             }
         }
 
         if (!!hasLot) {
+          if(slice!=0){
             return (
-                <style.RowContainer>
+                <style.RowContainer windowWidth = {windowWidth}>
+                    <style.LotsTitle>Lots:</style.LotsTitle>
+                    {Object.values(cards).slice(0,slice).map((card, ind) =>
+                        <>
+                            {!!card.bins[location._id] &&
+
+                                <style.LotItem>{card.name + ' (' + card.bins[location._id].count +')'}</style.LotItem>
+                            }
+                        </>
+
+                    )}
+                    <style.Dots>...</style.Dots>
+                </style.RowContainer>
+            )
+          }
+          else{
+
+            return (
+                <style.RowContainer windowWidth = {windowWidth}>
                     <style.LotsTitle>Lots:</style.LotsTitle>
                     {Object.values(cards).map((card, ind) =>
                         <>
@@ -93,6 +126,7 @@ const DashboardsHeader = (props) => {
                     )}
                 </style.RowContainer>
             )
+          }
         }
         else {
             return (
@@ -106,7 +140,7 @@ const DashboardsHeader = (props) => {
     return (
         <style.ColumnContainer>
 
-            {renderLotsTitile}
+            {renderLotsTitle}
 
             <style.Header>
 
