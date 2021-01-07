@@ -22,7 +22,7 @@ import {FORM_MODES} from "../../../../../constants/scheduler_constants";
 
 // utils
 import {parseMessageFromEvent} from "../../../../../methods/utils/card_utils";
-import {cardSchema} from "../../../../../methods/utils/form_schemas";
+import {CARD_SCHEMA_MODES, cardSchema, getCardSchema} from "../../../../../methods/utils/form_schemas";
 import {getProcessStations} from "../../../../../methods/utils/processes_utils";
 import {isEmpty} from "../../../../../methods/utils/object_utils";
 
@@ -31,6 +31,9 @@ import * as styled from "./card_editor.style"
 
 // logger
 import log from '../../../../../logger'
+import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
+import ScrollingButtonField from "../../../../basic/form/scrolling_buttons_field/scrolling_buttons_field";
+import NumberField from "../../../../basic/form/number_field/number_field";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
@@ -47,7 +50,8 @@ const FORM_BUTTON_TYPES = {
 	SAVE: "SAVE",
 	ADD: "ADD",
 	ADD_AND_NEXT: "ADD_AND_NEXT",
-	ADD_AND_EDIT: "ADD_AND_EDIT"
+	ADD_AND_EDIT: "ADD_AND_EDIT",
+	MOVE_OK: "MOVE_OK"
 }
 
 const SubmitErrorHandler = ({ submitCount, isValid, onSubmitError }) => {
@@ -68,6 +72,7 @@ const FormComponent = (props) => {
 		formMode,
 		bins,
 		binId,
+		setBinId,
 		cardId,
 		close,
 		isOpen,
@@ -80,12 +85,14 @@ const FormComponent = (props) => {
 		submitCount,
 		setFieldValue,
 		submitForm,
-		formikProps
+		formikProps,
+		processOptions,
+		showProcessSelector,
+		content,
+		setContent
+
 	} = props
 
-	const {
-		selectedBin
-	} = values
 
 	// actions
 	const dispatch = useDispatch()
@@ -96,13 +103,16 @@ const FormComponent = (props) => {
 	const cardHistory = useSelector(state => { return state.cardsReducer.cardHistories[cardId] })
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
 	const stations = useSelector(state => { return state.locationsReducer.stations })
+	const processes = useSelector(state => { return state.processesReducer.processes }) || {}
 
 	// component state
-	const [content, setContent] = useState(null)
 	const [showLotInfo, setShowLotInfo] = useState(true)
 
 	// derived state
-	const selectedBinName = stations[selectedBin] ? stations[selectedBin].name : "Queue"
+	const selectedBinName = stations[binId] ?
+		stations[binId].name :
+		binId === "QUEUE" ? "Queue" : "Finished"
+
 	const processStationIds = getProcessStations(currentProcess, routes) // get object with all station's belonging to the current process as keys
 	const availableBins = !isEmpty(bins) ? Object.keys(bins) : ["QUEUE"]
 
@@ -160,8 +170,17 @@ const FormComponent = (props) => {
 				if(formMode === FORM_MODES.UPDATE) {
 					// if the form mode is set to UPDATE, the default action of enter should be to save the lot
 					// this is done by setting buttonType to SAVE and submitting the form
-					setFieldValue("buttonType", FORM_BUTTON_TYPES.SAVE)
-					submitForm()
+
+					switch(content){
+						case CONTENT.MOVE:
+							setFieldValue("buttonType", FORM_BUTTON_TYPES.MOVE_OK)
+							submitForm()
+							break
+						default:
+							setFieldValue("buttonType", FORM_BUTTON_TYPES.SAVE)
+							submitForm()
+							break
+					}
 				}
 				else {
 					// if the form mode is set to CREATE (the only option other than UPDATE), the default action of the enter key should be to add the lot
@@ -190,64 +209,49 @@ const FormComponent = (props) => {
 		}
 	}, [isOpen])
 
-	useEffect( () => {
-		// setSelectedBin(binId)
-		setFieldValue("selectedBin", binId)
-	}, [binId])
-
-
-
 	/*
 	* Renders content for moving some or all of a lot from one bin to another
 	* */
 	const renderMoveContent = () => {
-		const binCount = values.bins[selectedBin].count // count of current bin
-
-		// get quantity options
-		// options range from 1 to the number of items in the bin (binCount)
-		// options are stored as list for dropdown
-		var quantityOptions = [];
-		for (var i = 1; i <= binCount; i++) {
-			quantityOptions.push({
-				value: i
-			});
-		}
 
 		// get destination options for move
 		// the destination options include
 		const destinationOptions = [...Object.values(stations).filter((currStation) => {
-			if((currStation._id !== selectedBin) && processStationIds[currStation._id]) return true
+			if((currStation._id !== binId) && processStationIds[currStation._id]) return true
 		})]
-		if(selectedBin !== "QUEUE") destinationOptions.unshift({name: "Queue", _id: "QUEUE"})
-		if(selectedBin !== "FINISH") destinationOptions.push({name: "Finished", _id: "FINISH"})
+		if(binId !== "QUEUE") destinationOptions.unshift({name: "Queue", _id: "QUEUE"})
+		if(binId !== "FINISH") destinationOptions.push({name: "Finished", _id: "FINISH"})
+
+		const maxValue = bins[binId]?.count || 0
 
 		return(
 			<styled.BodyContainer
 				minHeight={"20rem"}
 			>
 				<div>
-					<styled.ContentHeader style={{}}>
+					<styled.ContentHeader style={{flexDirection: "column"}}>
 						<styled.ContentTitle>Move lot</styled.ContentTitle>
+						<div>
+							<styled.InfoText style={{marginRight: "1rem"}}>Current Station</styled.InfoText>
+							<styled.InfoText schema={"lots"} highlight={true}>{selectedBinName}</styled.InfoText>
+						</div>
 					</styled.ContentHeader>
-					<div style={{display: "flex", alignItems: "center", marginBottom: "1rem"}}>
-						<styled.InfoText>Move</styled.InfoText>
-						<DropDownSearchField
-							containerSyle={{marginRight: "1rem"}}
-							pattern={null}
-							name="moveCount"
-							labelField={'value'}
-							options={quantityOptions}
-							valueField={"value"}
+					<div style={{display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "1rem"}}>
+						<styled.InfoText>Select Quantity to Move</styled.InfoText>
+						<styled.InfoText style={{marginBottom: "1rem"}}>{maxValue} Items Available</styled.InfoText>
+
+						<NumberField
+							maxValue={maxValue}
+							minValue={0}
+							name={"moveCount"}
 						/>
-						<styled.InfoText>items</styled.InfoText>
 					</div>
 
-					<div style={{ display: "flex", alignItems: "center"}}>
-						<styled.InfoText>from</styled.InfoText>
-						<styled.InfoText schema={"lots"} highlight={true}>{selectedBinName}</styled.InfoText>
-						<styled.InfoText>To</styled.InfoText>
+					<div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "1rem"}}>
+						<styled.InfoText style={{marginBottom: "1rem"}}>Select Lot Destination</styled.InfoText>
+
 						<DropDownSearchField
-							containerSyle={{minWidth: "10rem"}}
+							containerSyle={{minWidth: "35%"}}
 							pattern={null}
 							name="moveLocation"
 							labelField={'name'}
@@ -261,10 +265,12 @@ const FormComponent = (props) => {
 
 				<div style={{display: "flex", flexDirection: "column", width: "100%"}}>
 					<Button
+						disabled={submitDisabled}
 						style={buttonStyle}
+						type={"button"}
 						onClick={()=> {
+							setFieldValue("buttonType", FORM_BUTTON_TYPES.MOVE_OK)
 							submitForm()
-							close()
 						}}
 						schema={"ok"}
 						secondary
@@ -272,6 +278,7 @@ const FormComponent = (props) => {
 						Ok
 					</Button>
 					<Button
+						type={"button"}
 						style={buttonStyle}
 						onClick={()=>setContent(null)}
 						schema={"error"}
@@ -327,9 +334,10 @@ const FormComponent = (props) => {
 				<ButtonGroup
 					buttonViewCss={styled.buttonViewCss}
 					buttons={buttonGroupNames}
-					selectedIndex={buttonGroupIds.findIndex((ele) => ele === selectedBin)}
+					selectedIndex={buttonGroupIds.findIndex((ele) => ele === binId)}
 					onPress={(selectedIndex)=>{
-						setFieldValue("selectedBin", buttonGroupIds[selectedIndex])
+						setBinId(buttonGroupIds[selectedIndex])
+						// setFieldValue("selectedBin", buttonGroupIds[selectedIndex])
 						// setSelectedBin(availableBins[selectedIndex])
 					}}
 					containerCss={styled.buttonGroupContainerCss}
@@ -343,7 +351,7 @@ const FormComponent = (props) => {
 							<styled.ObjectLabel>Quantity</styled.ObjectLabel>
 
 							<TextField
-								name={`bins.${selectedBin}.count`}
+								name={`bins.${binId}.count`}
 								type="number"
 								InputComponent={styled.CountInput}
 								IconContainerComponent={styled.QuantityErrorContainerComponent}
@@ -438,17 +446,17 @@ const FormComponent = (props) => {
 							style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
 							secondary
 							type={"button"}
-							onClick={()=>onDeleteClick(selectedBin)}
+							onClick={()=>onDeleteClick(binId)}
 						>
-							<i className="fa fa-trash" aria-hidden="true"/>
+							<i style={{marginRight: ".5rem"}} className="fa fa-trash" aria-hidden="true"/>
 
 							Delete
 						</Button>
 						<Button
 							schema={'lots'}
+							type={"button"}
 							style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
 							secondary
-							type={"button"}
 							onClick={async () => {
 								setContent(CONTENT.MOVE)
 							}}
@@ -588,6 +596,38 @@ const FormComponent = (props) => {
 		)
 	}
 
+	const renderProcessSelector = () => {
+
+		return(
+			<styled.ProcessFieldContainer>
+				<styled.ContentHeader>
+					<styled.ContentTitle>Select Process</styled.ContentTitle>
+				</styled.ContentHeader>
+
+				<ScrollingButtonField
+					name={"processId"}
+					valueKey={"value"}
+					labelKey={"label"}
+					options={
+						processOptions.map((currProcessId, currIndex) => {
+							const currProcess = processes[currProcessId] || {}
+							const {
+								name: currProcessName = ""
+							} = currProcess
+
+							return (
+								{
+									label: currProcessName,
+									value: currProcessId
+								}
+							)
+						})
+					}
+				/>
+			</styled.ProcessFieldContainer>
+		)
+	}
+
 	return(
 		<styled.StyledForm>
 			<SubmitErrorHandler
@@ -627,12 +667,13 @@ const FormComponent = (props) => {
 			</styled.Header>
 
 			<styled.SectionContainer>
-				{formMode === FORM_MODES.UPDATE &&
-				<styled.ContentHeader>
-					<styled.ContentTitle>Lot Info</styled.ContentTitle>
-				</styled.ContentHeader>
-				}
 
+
+				{showProcessSelector && renderProcessSelector()}
+
+				<styled.ContentHeader>
+					<styled.ContentTitle>Lot Name</styled.ContentTitle>
+				</styled.ContentHeader>
 				<styled.NameContainer>
 					<TextField
 						name="name"
@@ -647,6 +688,9 @@ const FormComponent = (props) => {
 					{showLotInfo &&
 					<>
 						<styled.NameContainer>
+							<styled.ContentHeader>
+								<styled.ContentTitle>Lot Description</styled.ContentTitle>
+							</styled.ContentHeader>
 							<TextField
 								name="description"
 								type="text"
@@ -719,6 +763,8 @@ const CardEditor = (props) => {
 		isOpen,
 		close,
 		processId,
+		processOptions,
+		showProcessSelector
 	} = props
 
 	// redux state
@@ -736,6 +782,7 @@ const CardEditor = (props) => {
 	const [formMode, setFormMode] = useState(FORM_MODES.CREATE)
 	const [cardId, setCardId] = useState(props.cardId) //cardId and binId are stored as internal state but initialized from props (if provided)
 	const [binId, setBinId] = useState(props.binId)
+	const [content, setContent] = useState(null)
 
 	// get card object from redux by cardId
 	const card = cards[cardId]
@@ -785,15 +832,18 @@ const CardEditor = (props) => {
 
 			}
 		}
-		setCardDataInterval(setInterval(()=>onGetCard(cardId),5000))
 	}
 
 	/*
 	*
 	* */
 	useEffect( () => {
-		clearInterval(cardDataInterval)
 		handleGetCard(cardId)
+		var timer = setInterval(()=>handleGetCard(cardId),5000)
+
+		return () => {
+			clearInterval(timer)
+		}
 
 	}, [cardId])
 
@@ -809,27 +859,25 @@ const CardEditor = (props) => {
 			moveCount,
 			moveLocation,
 			buttonType,
-			selectedBin
+			processId: selectedProcessId
 		} = values
 
 
 		const start = values?.dates?.start || null
 		const end = values?.dates?.end || null
 
-		// update (PUT)
-		if(formMode === FORM_MODES.UPDATE) {
-
-			var submitItem = {
-				name,
-				bins,
-				description,
-				process_id: card.process_id,
-				start_date: start,
-				end_date: end,
-			}
-
+		if(content === CONTENT.MOVE) {
 			// moving card need to update count for correct bins
 			if(moveCount && moveLocation) {
+
+				var submitItem = {
+					name,
+					bins,
+					description,
+					process_id: card.process_id,
+					start_date: start,
+					end_date: end,
+				}
 
 				/*
 				* if lot items are being moved to a different bin, the submitItem's bins key needs to be updated
@@ -841,7 +889,6 @@ const CardEditor = (props) => {
 				* */
 
 				// get count and location info for move from form values
-				const moveCountVal = moveCount[0].value
 				const {
 					name: moveName,
 					_id: destinationBinId,
@@ -850,13 +897,13 @@ const CardEditor = (props) => {
 				// extract destination, current, and remaining bins
 				const {
 					[destinationBinId]: destinationBin,
-					[selectedBin]: currentBin,
+					[binId]: currentBin,
 					...unalteredBins
 				} = bins
 
 				// update counts of current and destination bins
-				const currentBinCount = parseInt(currentBin ? currentBin.count : 0) - moveCountVal
-				const destinationBinCount = parseInt(destinationBin ? destinationBin.count : 0) + moveCountVal
+				const currentBinCount = parseInt(currentBin ? currentBin.count : 0) - moveCount
+				const destinationBinCount = parseInt(destinationBin ? destinationBin.count : 0) + moveCount
 
 				// update bins
 				var updatedBins
@@ -870,7 +917,7 @@ const CardEditor = (props) => {
 							...destinationBin,
 							count: destinationBinCount
 						},
-						[selectedBin]: {			// update current bin's count, keep remaining attributes
+						[binId]: {			// update current bin's count, keep remaining attributes
 							...currentBin,
 							count: currentBinCount
 						}
@@ -897,43 +944,61 @@ const CardEditor = (props) => {
 				// update card
 				onPutCard(submitItem, cardId)
 			}
+		}
 
-			// no lot item move, so just normal update
-			else {
+		else {
+			// update (PUT)
+			if(formMode === FORM_MODES.UPDATE) {
+
+				var submitItem = {
+					name,
+					bins,
+					description,
+					process_id: card.process_id,
+					start_date: start,
+					end_date: end,
+				}
+
 				onPutCard(submitItem, cardId)
 			}
-		}
 
-		// create (POST)
-		else {
+			// create (POST)
+			else {
 
-			const submitItem = {
-				name,
-				bins,
-				description,
-				process_id: processId,
-				start_date: start,
-				end_date: end,
-			}
-
-			const postResult = await onPostCard(submitItem)
-
-			if(!(postResult instanceof Error)) {
-
-				// if editor should stay on the same lot that was just created, set cardId and binId
-				if(buttonType === FORM_BUTTON_TYPES.ADD_AND_EDIT) {
-					const {
-						_id
-					} = postResult
-
-					// set cardId to the id of the newly created lot
-					setCardId(_id)
-
-					// new lots are created in the queue, so set binId to QUEUE
-					setBinId("QUEUE")
+				const submitItem = {
+					name,
+					bins,
+					description,
+					process_id: processId ? processId : selectedProcessId,
+					start_date: start,
+					end_date: end,
 				}
+
+				const postResult = await onPostCard(submitItem)
+
+				if(!(postResult instanceof Error)) {
+
+					// if editor should stay on the same lot that was just created, set cardId and binId
+					if(buttonType === FORM_BUTTON_TYPES.ADD_AND_EDIT) {
+						const {
+							_id
+						} = postResult
+
+						// set cardId to the id of the newly created lot
+						setCardId(_id)
+
+						// new lots are created in the queue, so set binId to QUEUE
+						setBinId("QUEUE")
+					}
+				}
+				else {
+					console.log("postResult",postResult)
+				}
+
 			}
 		}
+
+
 	}
 
 	return(
@@ -955,7 +1020,9 @@ const CardEditor = (props) => {
 		>
 			<Formik
 				initialValues={{
-					selectedBin: binId,
+					processId: processId,
+					moveCount: 0,
+					moveLocation: [],
 					name: card ? card.name : "",
 					description: card ? card.description : "",
 					bins: card && card.bins ?
@@ -975,12 +1042,12 @@ const CardEditor = (props) => {
 				}}
 
 				// validation control
-				validationSchema={cardSchema}
+				validationSchema={getCardSchema((content === CONTENT.MOVE) ? CARD_SCHEMA_MODES.MOVE_LOT : CARD_SCHEMA_MODES.EDIT_LOT, bins[binId]?.count ? bins[binId].count : 0)}
 				validateOnChange={true}
 				validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
 				validateOnBlur={true}
 
-				enableReinitialize={true} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
+				// enableReinitialize={true} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
 				onSubmit={async (values, { setSubmitting, setTouched, resetForm }) => {
 					// set submitting to true, handle submit, then set submitting to false
 					// the submitting property is useful for eg. displaying a loading indicator
@@ -998,11 +1065,14 @@ const CardEditor = (props) => {
 							resetForm()
 							close()
 							break
+						case FORM_BUTTON_TYPES.MOVE_OK:
+							resetForm()
+							close()
+							break
 						case FORM_BUTTON_TYPES.ADD_AND_NEXT:
 							resetForm()
 							break
 						case FORM_BUTTON_TYPES.SAVE:
-
 							close()
 							break
 						default:
@@ -1027,14 +1097,13 @@ const CardEditor = (props) => {
 					return (
 						<FormComponent
 							processId={processId}
-							// selectedBin={selectedBin}
-							// setSelectedBin={setSelectedBin}
 							close={close}
 							formMode={formMode}
 							formikProps={formikProps}
 							card={card}
 							bins={bins}
 							binId={binId}
+							setBinId={setBinId}
 							cardId={cardId}
 							isOpen={isOpen}
 							onDeleteClick={handleDeleteClick}
@@ -1046,6 +1115,10 @@ const CardEditor = (props) => {
 							setFieldValue={setFieldValue}
 							submitForm={submitForm}
 							formikProps={formikProps}
+							processOptions={processOptions}
+							showProcessSelector={showProcessSelector}
+							content={content}
+							setContent={setContent}
 						/>
 					)
 				}}
@@ -1057,11 +1130,13 @@ const CardEditor = (props) => {
 // Specifies propTypes
 CardEditor.propTypes = {
 	binId: PropTypes.string,
+	showProcessSelector: PropTypes.bool,
 };
 
 // Specifies the default values for props:
 CardEditor.defaultProps = {
-	binId: "QUEUE"
+	binId: "QUEUE",
+	showProcessSelector: false
 };
 
 export default CardEditor

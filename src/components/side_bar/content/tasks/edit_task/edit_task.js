@@ -236,8 +236,8 @@ const EditTask = (props) => {
                 console.log('QQQQ Human task', humanTask)
                 console.log('QQQQ Device task', selectedTask)
 
-                dispatch(taskActions.postTask(selectedTask))
-                dispatch(taskActions.postTask(humanTask))
+                await dispatch(taskActions.postTask(selectedTask))
+                await dispatch(taskActions.postTask(humanTask))
 
                 // Temp fix for a weird issue with redux and posting tasks to fast
                 // setTimeout(onGetTasks(), 500)
@@ -245,7 +245,7 @@ const EditTask = (props) => {
             }
             else {
                 console.log('QQQQ human task', deepCopy(selectedTask))
-                dispatch(taskActions.postTask(selectedTask))
+                await dispatch(taskActions.postTask(selectedTask))
 
             }
 
@@ -438,9 +438,10 @@ const EditTask = (props) => {
 
         }
 
+        toggleEditing(false)                            // No longer editing ***NOTE: THIS SHOULD COME BEFORE DESELECTING THE TASK IN ORDER TO AVOID CRASH IN EDIT_PROCESS - QUICK AND DIRTY FIX, REALLY THE WHOLE FUNCTION NEEDS TO BE REWRITTEN***
         dispatch(taskActions.deselectTask())    // Deselect
         setSelectedTaskCopy(null)                   // Reset the local copy to null
-        toggleEditing(false)                            // No longer editing
+
     }
 
     /**
@@ -464,9 +465,9 @@ const EditTask = (props) => {
 
         dispatchPutTask(selectedTask, selectedTask._id)
 
+        toggleEditing(false)
         dispatch(taskActions.deselectTask()) // Deselect
         setSelectedTaskCopy(null) // Reset the local copy to null
-        toggleEditing(false)
     }
 
     const handleBack = () => {

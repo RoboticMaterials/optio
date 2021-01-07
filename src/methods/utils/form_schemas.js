@@ -207,7 +207,12 @@ const binsSchema = lazy(obj => object(
     })
 ));
 
-export const cardSchema = Yup.object().shape({
+export const CARD_SCHEMA_MODES = {
+    EDIT_LOT: "EDIT_LOT",
+    MOVE_LOT: "MOVE_LOT"
+}
+
+export const editLotSchema = Yup.object().shape({
     name: Yup.string()
         .min(1, '1 character minimum.')
         .max(50, '50 character maximum.')
@@ -215,6 +220,40 @@ export const cardSchema = Yup.object().shape({
     description: Yup.string()
         .min(1, '1 character minimum.')
         .max(50, '250 character maximum.'),
-    bins: binsSchema
-});
+    bins: binsSchema,
+    processId: Yup.string()
+        .min(1, '1 character minimum.')
+        .max(100, '50 character maximum.')
+        .required('Please select a process.')
+        .nullable(),
+})
+
+export const getMoveLotSchema = (maxCount) => Yup.object().shape({
+    moveCount: Yup.number()
+        .min(1, 'Must be positive value.')
+        .max(maxCount, `Only ${maxCount} items are available.`)
+        .required('Please enter a quantity.'),
+    moveLocation: Yup.array().of(
+        Yup.object().shape({
+            name: Yup.string()
+                .required('Please select a destination.'),
+        })
+    )
+        .min(1, 'Please select a destination.')
+        .required('Please select a destination.')
+        .nullable(),
+})
+
+export const getCardSchema = (mode, availableBinItems) => {
+    switch(mode) {
+        case CARD_SCHEMA_MODES.EDIT_LOT:
+            return editLotSchema
+        case CARD_SCHEMA_MODES.MOVE_LOT:
+            return getMoveLotSchema(availableBinItems)
+        default:
+            return editLotSchema
+
+    }
+
+}
 
