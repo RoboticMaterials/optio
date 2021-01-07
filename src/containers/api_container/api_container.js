@@ -680,7 +680,7 @@ const ApiContainer = (props) => {
     /**
      * This handles broken Processes
      * 1) A broken process would happen if a route/task that has been deleted but the process has not been updated
-     * 2) Also, a task could have been added to a process, but the process was never added to the task
+     * 2) Also, a route could have been added to a process, but the process was never added to the route
      * @param {*} processes
      * @param {*} tasks
      */
@@ -728,8 +728,9 @@ const ApiContainer = (props) => {
 
     /**
      * This handles tasks that belong to broken process
-     * This would happen because either the process has been deleted and the task have not
-     * or The task was created but the process was never saved
+     * 1) the process has been deleted and the task have not
+     * 2) The task was created but the process was never saved
+     * 3) The task has a new tag
      * @param {*} processes
      * @param {*} tasks
      */
@@ -739,7 +740,7 @@ const ApiContainer = (props) => {
 
             if(!!task.new) {
                 console.log('QQQQ Task still has a new tag', deepCopy(task))
-                alert('Task still has a new tag, should have been deleted when saved')
+                alert('Task still has a new tag, deleting task')
                 onDeleteTask(task._id)
             }
 
@@ -759,7 +760,7 @@ const ApiContainer = (props) => {
 
                     else if (!processes[process].routes.includes(task._id)) {
                         console.log('QQQQ Task is associated with a process that is not associated with the task anymore', task, process)
-                        alert('Task is associated with a process that is not associated with the task anymore')
+                        alert('Task is associated with a process that is not associated with the task anymore, adding back to process')
 
                         const index = task.processes.indexOf(process)
                         task.processes.splice(index, 1)

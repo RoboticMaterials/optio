@@ -163,7 +163,7 @@ const EditTask = (props) => {
                 updatedProcess.routes.splice(index, 1)
 
                 // Update the process if need be
-                if (selectedProcess._id === updatedProcess._id) {
+                if (!!selectedProcess && selectedProcess._id === updatedProcess._id) {
                     dispatchSetSelectedProcess({
                         ...updatedProcess,
                     })
