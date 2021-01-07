@@ -597,7 +597,7 @@ export class MapView extends Component {
 
                                             // This filters out positions when fixing a process
                                             // If the process is broken, then you can only start the task at the route before break's unload location
-                                            if (!!this.props.selectedTask && !!this.props.selectedProcess && !!this.props.fixingProcess) {
+                                            if (!!this.props.selectedTask && !!this.props.selectedProcess && !!this.props.fixingProcess && this.props.selectedTask.load.station === null) {
 
                                                 // Gets the route before break
                                                 const routeBeforeBreak = this.props.selectedProcess.routes[this.props.selectedProcess.broken - 1]
@@ -620,9 +620,6 @@ export class MapView extends Component {
                                             else if (!!this.props.selectedTask && !!this.props.selectedProcess && this.props.selectedProcess.routes.length > 0 && this.props.selectedTask.load.position === null) {
                                                 // Gets the last route in the routes array
                                                 const previousRoute = this.props.selectedProcess.routes[this.props.selectedProcess.routes.length - 1]
-
-                                              if(!!this.props.tasks[previousRoute]){
-
                                                 const previousTask = this.props.tasks[previousRoute]
 
                                                 if (!!previousTask.unload) {
@@ -639,7 +636,7 @@ export class MapView extends Component {
 
 
                                                 // return true
-                                            }
+
 
                                             // This filters out positions that aren't apart of a station when making a task
                                             // Should not be able to make a task for a random position
@@ -660,6 +657,7 @@ export class MapView extends Component {
                                                     onEnableDrag={this.onEnableDrag}
                                                     onDisableDrag={this.onDisableDrag}
                                                 />
+
                                             </>
                                         )
                                 }</>

@@ -107,13 +107,6 @@ export default function locationsReducer(state = defaultState, action) {
     let newStations = {}
     let newPositions = {}
 
-    // Object.values(state.locations).forEach((location) => {
-    //     if(location.name === 'TempRightClickMoveLocation'){
-    //         console.log('QQQQ position', location)Widgets
-    //     }
-
-    // })
-
     const filterLocations = (stations, positions) => {
         const unfilteredLocationsArr = [...Object.values(stations), ...Object.values(positions)]
 

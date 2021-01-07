@@ -16,6 +16,7 @@ import * as styled from './kick_off_modal.style'
 import {useTheme} from "styled-components";
 import {getProcesses} from "../../../../../../redux/actions/processes_actions";
 import FadeLoader from "react-spinners/FadeLoader";
+import CardEditor from "../../../../../side_bar/content/cards/card_editor/card_editor";
 
 Modal.setAppElement('body');
 
@@ -46,6 +47,7 @@ const KickOffModal = (props) => {
     const routes = useSelector(state => { return state.tasksReducer.tasks }) || {}
 
     const [submitting, setSubmitting] = useState(false)
+    const [showLotEditor, setShowLotEditor] = useState(false)
     const [didLoadData, setDidLoadData] = useState(false)
     const [availableKickOffCards, setAvailableKickOffCards] = useState([])
     const isButtons = availableKickOffCards.length > 0
@@ -223,6 +225,21 @@ const KickOffModal = (props) => {
                 }
             }}
         >
+            {showLotEditor &&
+            <CardEditor
+                isOpen={true}
+                onAfterOpen={null}
+                processOptions={kickOffEnabledInfo}
+                showProcessSelector={true}
+                cardId={null}
+                processId={null}
+                // binId={null}
+                close={()=>{
+                    setShowLotEditor(false)
+                    // setSelectedCard(null)
+                }}
+            />
+            }
             <styled.Header>
                 <styled.Title>{title}</styled.Title>
 
@@ -261,6 +278,15 @@ const KickOffModal = (props) => {
                                 schema={"dashboards"}
                                 onClick={close}
                                 label={"Close"}
+                                type="button"
+                            />
+                            <Button
+                                // tertiary
+                                // secondary
+                                schema={"dashboards"}
+                                // onClick={close}
+                                onClick={()=>setShowLotEditor(true)}
+                                label={"Add Lot"}
                                 type="button"
                             />
                         </styled.ButtonsContainer>

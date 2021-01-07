@@ -46,6 +46,8 @@ const StatusHeader = (props) => {
     const isSideBarOpen = useSelector(state => state.sidebarReducer.open)
     const taskQueueOpen = useSelector(state => state.taskQueueReducer.taskQueueOpen)
 
+    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
+
     const [statusBarPath, setStatusBarPath] = useState(``)
     const [rightCurvePoint, setRightCurvePoint] = useState(``)
     const [overlapStatus, setOverlapStatus] = useState('')
@@ -68,13 +70,13 @@ const StatusHeader = (props) => {
 
         const pageWidth = window.innerWidth
 
-        if(windowWidth<800 && isSideBarOpen && taskQueueOpen){
-          setRightCurvePoint(220)
-          setOverlapStatus(true)
+        if (windowWidth < 800 && isSideBarOpen && taskQueueOpen) {
+            setRightCurvePoint(220)
+            setOverlapStatus(true)
         }
-        else{
-          setRightCurvePoint(320)
-          setOverlapStatus(false)
+        else {
+            setRightCurvePoint(320)
+            setOverlapStatus(false)
         }
 
         let x, mergeHeight
@@ -166,7 +168,7 @@ const StatusHeader = (props) => {
         const pause_status = !status_clone.pause_status;
 
         //Post the status to the API
-        await dispatch(postStatus({pause_status: pause_status}));
+        await dispatch(postStatus({ pause_status: pause_status }));
     }
 
     // Renders the left side of the header
@@ -211,13 +213,17 @@ const StatusHeader = (props) => {
 
         return (
             <styled.RightContentContainer>
-                <styled.PlayButton
-                    play={pause_status}
-                    windowWidth={windowWidth}
-                    widthBreakPoint={widthBreakPoint}
-                >
-                    <styled.PlayButtonIcon play={pause_status} className={playButtonClassName} onClick={handleTogglePlayPause}></styled.PlayButtonIcon>
-                </styled.PlayButton>
+
+                {/* Hide play pause button if it's not MirMapEnabled */}
+                {MiRMapEnabled &&
+                    <styled.PlayButton
+                        play={pause_status}
+                        windowWidth={windowWidth}
+                        widthBreakPoint={widthBreakPoint}
+                    >
+                        <styled.PlayButtonIcon play={pause_status} className={playButtonClassName} onClick={handleTogglePlayPause}></styled.PlayButtonIcon>
+                    </styled.PlayButton>
+                }
 
                 {/* This hides the right menu container if the screen size is below a set point and widgets are open (params.widgetPage) */}
                 {(windowWidth < widthBreakPoint && !params.widgetPage) &&
@@ -241,7 +247,7 @@ const StatusHeader = (props) => {
 
                         {(taskQueueOpen || newNotification) &&
                             <>
-                                <RightMenu showRightMenu={taskQueueOpen} newNotification={newNotification} overlapStatus = {overlapStatus} />
+                                <RightMenu showRightMenu={taskQueueOpen} newNotification={newNotification} overlapStatus={overlapStatus} />
                             </>
                         }
                     </>

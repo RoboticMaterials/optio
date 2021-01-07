@@ -66,9 +66,10 @@ const HILModals = (props) => {
 
     const [quantity, setQuantity] = useState(taskQuantity)
     const [selectedTask, setSelectedTask] = useState(null)
+    const [associatedTask, setAssociatedTask] = useState(null)
     const [trackQuantity, setTrackQuantity] = useState(null)
     const [selectedLot, setSelectedLot] = useState(null)
-    const [isProcessTask, setIsProcessTask] = useState(false)
+    const [isProcessTask, setIsProcessTask] = useState(true)
     const [availableLots, setAvailableLots] = useState([])
     const [selectedDashboard, setSelectedDashboard] = useState(null)
     const [cardsLoaded, setCardsLoaded] = useState([false])
@@ -131,7 +132,7 @@ const HILModals = (props) => {
     useEffect(() => {
 
         // Only show lot selector is they're cards loaded, lots have not been dispalyed yet, it's a load hil and there's available lots
-        if (cardsLoaded && !didDisplayLots && hilLoadUnload !== 'unload' && isProcessTask) {
+        if (cardsLoaded && !didDisplayLots && hilLoadUnload !== 'unload' && true) {
             setShowLotSelector(true)
             setDidDisplayLots(true)
         }
@@ -147,11 +148,13 @@ const HILModals = (props) => {
     * */
     useEffect(() => {
 
-        // selectedTask.processes
-
-        if(selectedTask && selectedTask.processes && Array.isArray(selectedTask.processes ) && (selectedTask.processes.length > 0)) {
+        if(
+            (selectedTask && selectedTask.processes && Array.isArray(selectedTask.processes ) && (selectedTask.processes.length > 0)) ||
+            (associatedTask && associatedTask.processes && Array.isArray(associatedTask.processes ) && (associatedTask.processes.length > 0))
+        ) {
             setIsProcessTask(true)
             const taskProcesses = selectedTask.processes
+            const associatedsTaskProcess = !!associatedTask ? associatedTask.processes : []
 
             const stationCards = Object.values(cards).filter((currCard) => {
                 const {
@@ -160,7 +163,7 @@ const HILModals = (props) => {
                 } = currCard || {}
 
                 if (bins) {
-                    if (bins[loadStationId] && bins[loadStationId].count > 0 && taskProcesses.includes(currCardProcessId)) return true
+                    if (bins[loadStationId] && bins[loadStationId].count > 0 && (taskProcesses.includes(currCardProcessId) || associatedsTaskProcess.includes(currCardProcessId))) return true
                 }
 
             })
@@ -175,7 +178,7 @@ const HILModals = (props) => {
         }
 
         else {
-            setIsProcessTask(false)
+            // setIsProcessTask(false)
         }
 
 
@@ -193,6 +196,10 @@ const HILModals = (props) => {
     useEffect(() => {
         const currentTask = tasks[item.task_id]
         setSelectedTask(currentTask)
+
+        if(currentTask) {
+            if(!!currentTask.associated_task) setAssociatedTask(tasks[currentTask.associated_task])
+        }
 
         // If the task's load location of the task q item matches the item's location then its a load hil, else its unload
         if (currentTask && currentTask?.load?.station === item.hil_station_id || !!item.dashboard) {
@@ -464,7 +471,7 @@ const HILModals = (props) => {
                     <styled.FooterContainer>
 
 
-                        {isProcessTask && renderSelectedLot()}
+                        {renderSelectedLot()}
 
                         <styled.FooterButton style={{ margin: 0, marginTop: "1rem" }} color={'#ff9898'} onClick={onHilFailure}>
                             <styled.HilIcon
@@ -599,7 +606,7 @@ const HILModals = (props) => {
 
 
                                     </styled.HilInputContainer>
-                                    {isProcessTask && renderSelectedLot()}
+                                    {renderSelectedLot()}
                                 </>
 
                             }

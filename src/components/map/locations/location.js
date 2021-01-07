@@ -248,14 +248,19 @@ const Location = (props) => {
         if (selectedLocation !== null && !isSelected && selectedTask === null) {
             color = '#afb5c9' // Grey
         }
-    } 
-    
-    else if(!!selectedProcess){
+    }
+
+    else if (!!selectedProcess) {
         if (selectedLocation !== null && !isSelected) {
             color = '#afb5c9' // Grey
         }
     }
-    
+
+    // If load is undefined, then its a simple move
+    else if (selectedTask.load === undefined) {
+        color = '#afb5c9' // Grey
+    }
+
     else {
         if (selectedTask.load.station == location._id || selectedTask.load.position == location._id
             || selectedTask.unload.station == location._id || selectedTask.unload.position == location._id) {

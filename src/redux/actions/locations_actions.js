@@ -17,6 +17,7 @@ import { deletePosition } from './positions_actions.js'
 import { setSelectedDevice, putDevices } from './devices_actions'
 import { deleteDashboard } from './dashboards_actions'
 import { deleteTask } from './tasks_actions'
+import { putProcesses } from './processes_actions'
 
 import { deepCopy } from '../../methods/utils/utils';
 import uuid from 'uuid';
@@ -217,7 +218,7 @@ export const sideBarBack = (props) => {
             if (selectedLocationChildrenCopy != null) {
 
                 selectedLocation.children.map((child, ind) => {
-                    if( !!positions[child].new ){
+                    if (!!positions[child].new) {
                         dispatch(positionActions.removePosition(child))
                     }
                 })
@@ -285,6 +286,7 @@ export const deleteLocationProcess = (props) => {
         selectedDevice,
         positions,
         tasks,
+        processes
     } = props
 
     let locationToDelete = {}
@@ -322,8 +324,20 @@ export const deleteLocationProcess = (props) => {
 
             //// Delete relevant tasks
             Object.values(tasks)
-                .filter(task => task.load.station == locationToDelete._id || task.unload.station == locationToDelete._id)
-                .forEach(async task => await dispatch(deleteTask(task._id)))
+                .filter(task => task.load.station === locationToDelete._id || task.unload.station === locationToDelete._id)
+                .forEach(async (task) => {
+
+                    // If the task was a part of a process, then delete the task from the process
+                    task.processes.forEach(async (process) => {
+
+                        let updatedProcess = processes[process]
+                        let index = updatedProcess.routes.indexOf(task._id)
+                        updatedProcess.routes.splice(index, 1)
+                        await dispatch(putProcesses(updatedProcess))
+
+                    })
+                    await dispatch(deleteTask(task._id))
+                })
 
             // Delete Station
             await dispatch(deleteStation(locationToDelete._id))

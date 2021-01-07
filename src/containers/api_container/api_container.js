@@ -437,7 +437,6 @@ const ApiContainer = (props) => {
     //  API DATA CLEAN UP (Ideally these functions should not exist... but it's not an ideal world...)
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
     /**
      * Not the best place but it should still work
      * This will either make a dashboard for the device or replace a lost dashboard
@@ -680,7 +679,8 @@ const ApiContainer = (props) => {
 
     /**
      * This handles broken Processes
-     * A broken process would happen if a route/task that has been deleted but the process has not been updated
+     * 1) A broken process would happen if a route/task that has been deleted but the process has not been updated
+     * 2) Also, a route could have been added to a process, but the process was never added to the route
      * @param {*} processes
      * @param {*} tasks
      */
@@ -692,6 +692,7 @@ const ApiContainer = (props) => {
 
             process.routes.map(async (route) => {
 
+                // If the route does not exist anymore in tasks then delete the route from the process
                 if (!tasks[route]) {
                     // Removes the task from the array of routes
                     let processRoutes = deepCopy(process.routes)
@@ -706,6 +707,19 @@ const ApiContainer = (props) => {
 
                     await onPutProcess(updatedProcess)
                 }
+
+                // Else the task does exist, see if the task contains the process
+                else {
+                    if(!tasks[route].processes.includes(process._id)) {
+                        console.log('QQQQ Process containes a route, but the route does not contain the process, adding process to route', tasks[route])
+                        alert('Process containes a route, but the route does not contain the process, adding process to route')
+
+                        let taskCopy = deepCopy(tasks[route])
+                        taskCopy.processes.push(process._id)
+                        dispatchPutTask(taskCopy, taskCopy._id)
+
+                    }
+                }
             })
         })
 
@@ -714,14 +728,21 @@ const ApiContainer = (props) => {
 
     /**
      * This handles tasks that belong to broken process
-     * This would happen because either the process has been deleted and the task have not
-     * or The task was created but the process was never saved
+     * 1) the process has been deleted and the task have not
+     * 2) The task was created but the process was never saved
+     * 3) The task has a new tag
      * @param {*} processes
      * @param {*} tasks
      */
     const handleTasksWithBrokenProcess = async (processes, tasks) => {
 
         Object.values(tasks).map(async (task) => {
+
+            if(!!task.new) {
+                console.log('QQQQ Task still has a new tag', deepCopy(task))
+                alert('Task still has a new tag, deleting task')
+                onDeleteTask(task._id)
+            }
 
             if (task.processes.length > 0) {
                 task.processes.map((process) => {
@@ -739,7 +760,7 @@ const ApiContainer = (props) => {
 
                     else if (!processes[process].routes.includes(task._id)) {
                         console.log('QQQQ Task is associated with a process that is not associated with the task anymore', task, process)
-                        alert('Task is associated with a process that is not associated with the task anymore')
+                        alert('Task is associated with a process that is not associated with the task anymore, adding back to process')
 
                         const index = task.processes.indexOf(process)
                         task.processes.splice(index, 1)

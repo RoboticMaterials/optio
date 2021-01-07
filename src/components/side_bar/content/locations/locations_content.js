@@ -104,6 +104,7 @@ export default function LocationContent() {
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const editing = useSelector(state => state.locationsReducer.editingLocation)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
+    const processes = useSelector(state => state.processesReducer.processes)
 
     const [mergeStation, setMergeStation] = useState(false)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
@@ -255,7 +256,7 @@ export default function LocationContent() {
 
     const onDelete = () => {
 
-        onDeleteLocationProcess({ selectedLocation, locations, positions, tasks })
+        onDeleteLocationProcess({ selectedLocation, locations, positions, tasks, processes })
         onEditing(false)
 
     }
