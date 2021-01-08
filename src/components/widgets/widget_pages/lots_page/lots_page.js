@@ -40,7 +40,6 @@ const LotsPage = (props) => {
     const [locationName, setLocationName] = useState("")
     const location = locations[stationID]
     const [selectedCard, setSelectedCard] = useState(null)
-    console.log(cards)
 
     // update location properties
     useEffect(() => {
