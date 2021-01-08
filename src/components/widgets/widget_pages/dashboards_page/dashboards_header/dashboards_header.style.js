@@ -67,10 +67,17 @@ export const RowContainer = styled.div`
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
+
     margin-left:2rem;
     padding-top:1rem;
+    padding-right:2rem;
     padding-bottom: 1rem;
-    max-width: ${props => props.windowWidth}
+    width: 100%;
+    height: 3rem;
+    overflow:hidden;
+    flex-wrap: wrap;
+
+
 
     @media only screen and (max-width: ${props => props.theme.widthBreakpoint.tablet}) {
         margin-left: 2rem;
@@ -92,14 +99,12 @@ export const Dots = styled.div`
     width:15rem;
 
     white-space: nowrap;
-    overflow: hidden;
     text-overflow: ellipsis;
 
     padding-top: .2rem;
 
 
 `
-
 
 export const LotItem = styled.div`
     align-items: center;
@@ -108,11 +113,8 @@ export const LotItem = styled.div`
     color: white;
 
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+
     width: auto;
-    max-width: 15rem;
-    min-width: 9rem;
     background: transparent;
 
     padding-right:.5rem;
