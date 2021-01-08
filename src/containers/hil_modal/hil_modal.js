@@ -43,7 +43,6 @@ const HILModal = () => {
         if (!!taskQueueItemClicked && taskQueue[taskQueueItemClicked] && !!taskQueue[taskQueueItemClicked].hil_station_id) {
             const item = taskQueue[taskQueueItemClicked]
             const hilType = tasks[item.task_id].type
-            console.log(hilType)
 
             return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item} />
         }

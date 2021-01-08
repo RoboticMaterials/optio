@@ -337,7 +337,7 @@ const ApiContainer = (props) => {
     const loadCriticalData = async () => {
         const status = await onGetStatus();
         const taskQueue = await onGetTaskQueue()
-        const devices = await onGetDevices()
+        const devices = !!MiRMapEnabled && await onGetDevices()
     }
 
     /*
