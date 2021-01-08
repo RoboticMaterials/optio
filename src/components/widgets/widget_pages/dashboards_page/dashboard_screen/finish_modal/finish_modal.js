@@ -15,6 +15,7 @@ import {getCards, getProcessCards, putCard} from "../../../../../../redux/action
 import * as styled from './finish_modal.style'
 import {useTheme} from "styled-components";
 import {getProcesses} from "../../../../../../redux/actions/processes_actions";
+import Textbox from "../../../../../basic/textbox/textbox";
 
 Modal.setAppElement('body');
 
@@ -44,6 +45,8 @@ const FinishModal = (props) => {
     const processes = useSelector(state => { return state.processesReducer.processes }) || {}
     const routes = useSelector(state => { return state.tasksReducer.tasks }) || {}
 
+    const [lotFilterValue, setLotFilterValue] = useState('')
+    const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
     const [submitting, setSubmitting] = useState(false)
     const [availableKickOffCards, setAvailableKickOffCards] = useState([])
     const isButtons = availableKickOffCards.length > 0
@@ -114,7 +117,24 @@ const FinishModal = (props) => {
     * renders an array of buttons for each kick off lot
     * */
     const renderKickOffButtons = () => {
-        return availableKickOffCards.map((currCard, cardIndex) => {
+        return availableKickOffCards
+            .filter((currLot) => {
+                const {
+                    name: currLotName,
+                } = currLot || {}
+
+                if(
+                    currLotName
+                        .toLowerCase()
+                        .includes(lotFilterValue.toLowerCase())
+                ) {
+                    return true
+                }
+                else {
+                    return false
+                }
+            })
+            .map((currCard, cardIndex) => {
             const {
                 name,
                 _id
@@ -181,6 +201,13 @@ const FinishModal = (props) => {
 
     }, [processCards])
 
+    // if number of available lots >= 5, auto focus lot filter text box
+    useEffect(() => {
+        if(availableKickOffCards.length >= 5 ) {
+            setShouldFocusLotFilter(true)
+        }
+    }, [availableKickOffCards.length])
+
     return (
         <styled.Container
             isOpen={isOpen}
@@ -196,7 +223,20 @@ const FinishModal = (props) => {
             }}
         >
             <styled.Header>
+                <styled.HeaderMainContentContainer>
                 <styled.Title>{title}</styled.Title>
+
+                    <div style={{display: "flex", maxWidth: "40rem", minWidth: "10rem", width: "50%"}}>
+                        <Textbox
+                            focus={shouldFocusLotFilter}
+                            placeholder='Filter lots...'
+                            onChange={(e) => {
+                                setLotFilterValue(e.target.value)
+                            }}
+                            style={{flex: 1, background: theme.bg.quaternary }}
+                        />
+                    </div>
+                </styled.HeaderMainContentContainer>
 
                 <Button
                     onClick={close}

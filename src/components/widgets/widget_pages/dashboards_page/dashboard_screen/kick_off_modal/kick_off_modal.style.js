@@ -22,28 +22,37 @@ export const Container = styled(Modal)`
 	overflow: hidden;
 `
 
-export const Header = styled.div`
+export const HeaderMainContentContainer = styled.div`
 	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 0;
-	margin: 0;
-	height: 3rem;
-	background: ${props => props.theme.bg.quinary};
+  	flex-direction: column;
+	justify-content: center;
+  align-items: center;
+  flex: 1;
+`
+
+export const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  //height: 5rem;
+  padding: .5rem 1rem;
+  background: ${props => props.theme.bg.quinary};
 `
 
 export const Title = styled.h2`
-	flex: 2;
-	height: 100%;
-	min-height: 100%;
-	margin: 0;
-	padding: 0;
-	text-align: center;
-	display: inline-flex;
-	justify-content: center;
-	align-items: center;
-	font-size: ${props => props.theme.fontSize.sz2};
-	font-weight: ${props => props.theme.fontWeight.bold};
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: ${props => props.theme.fontSize.sz2};
+  font-weight: ${props => props.theme.fontWeight.bold};
+  margin-bottom: 1rem;
 `;
 
 export const BodyContainer = styled.div`
