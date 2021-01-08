@@ -41,7 +41,7 @@ const DashboardButtonList = ((props) => {
 
     useEffect(() => {
         dispatchGetTasks()
-    })
+    }, [])
 
     // renders individuals buttons for list
     const itemRenderer = (index, key) => {
