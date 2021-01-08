@@ -15,6 +15,7 @@ import {setDataPage} from "../../../../../redux/actions/api_actions"
 
 // styles
 import * as styled from "./card_zone.style"
+import cardPageReducer from "../../../../../redux/reducers/card_page_reducer";
 
 const CardZone = ((props) => {
 
@@ -32,6 +33,13 @@ const CardZone = ((props) => {
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
 	const cards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || []
 	const stations = useSelector(state => { return state.locationsReducer.stations })
+	const draggedLotInfo = useSelector(state => { return state.cardPageReducer.draggedLotInfo })
+	const {
+		lotId: draggingLotId = "",
+		binId: draggingBinId = ""
+	} = draggedLotInfo || {}
+
+	// console.log("draggedLotInfo",draggedLotInfo)
 
 	const [cardsSorted, setCardsSorted] = useState({})
 	const [queue, setQueue] = useState([])
@@ -110,6 +118,9 @@ const CardZone = ((props) => {
 				const {
 					count
 				} = binValue
+
+				// don't render card being dragged - prevents flicker bug after drop
+				if((binId === draggingBinId) && (_id === draggingLotId)) return
 
 				// if there is an entry in tempCardsSorted with key matching {binId}, add the card to this bin
 				if(tempCardsSorted[binId]) {

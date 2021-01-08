@@ -8,8 +8,9 @@ import React, {useState} from "react";
 import {setCardDragging, setColumnHovering} from "../../../../../../redux/actions/card_page_actions";
 import {generateBinId} from "../../../../../../methods/utils/card_utils";
 
-
+// const animationDuration = 500
 const Column = SortableContainer((props) => {
+
 	const {
 		station_id,
 		stationName = "Unnamed",
@@ -20,24 +21,16 @@ const Column = SortableContainer((props) => {
 		isCollapsed,
 		maxWidth,
 		maxHeight
-
 	} = props
-
-
-
-	const dispatch = useDispatch()
 
 	const objects = useSelector(state => { return state.objectsReducer.objects })
 	const reduxCards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || {}
 
-
 	const [dragEnter, setDragEnter] = useState(false)
-	const [dragLeave, setDragLeave] = useState(false)
 
+	const dispatch = useDispatch()
 	const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
-	const dispatchDeleteCard = async (cardId, processId) => await dispatch(deleteCard(cardId, processId))
-	// const onSetCardDragging = async (isDragging) => await dispatch(setCardDragging(isDragging))
-	// const onSetColumnHovering = async (isHoveringOverColumn) => await dispatch(setColumnHovering(isHoveringOverColumn))
+	const dispatchSetCardDragging = async (lotId, binId) => await dispatch(setCardDragging(lotId, binId))
 
 	const shouldAcceptDrop = (sourceContainerOptions, payload) => {
 		const {
@@ -52,7 +45,7 @@ const Column = SortableContainer((props) => {
 		return true
 	}
 
-	const handleDrop = (dropResult) => {
+	const handleDrop = async (dropResult) => {
 		const { removedIndex, addedIndex, payload, element } = dropResult;
 
 		if (payload === null) { //  No new button, only reorder
@@ -66,6 +59,8 @@ const Column = SortableContainer((props) => {
 					// process_id: oldProcessId,
 					...remainingPayload
 				} = payload
+
+				await dispatchSetCardDragging(cardId, binId)
 
 				if(!(binId === station_id)) {
 
@@ -86,7 +81,7 @@ const Column = SortableContainer((props) => {
 							const oldCount = parseInt(oldBins[station_id]?.count || 0)
 							const movedCount = parseInt(movedBin?.count || 0)
 
-							onPutCard({
+							await onPutCard({
 								...remainingPayload,
 								bins: {
 									...remainingOldBins,
@@ -100,7 +95,7 @@ const Column = SortableContainer((props) => {
 
 						// no items in bin
 						else {
-							onPutCard({
+							const a = await onPutCard({
 								...remainingPayload,
 								bins: {
 									...remainingOldBins,
@@ -112,33 +107,35 @@ const Column = SortableContainer((props) => {
 						}
 					}
 				}
+
+				await dispatchSetCardDragging(null, null)
 			}
 		}
+
 	}
 
 	const renderCards = () => {
 		return(
 			<styled.BodyContainer
 				dragEnter={dragEnter}
-				// onMouseEnter={()=>onSetColumnHovering(true)}
-				// onTouchStart={()=>onSetCardDragging(true)}
-				// onScroll={()=>console.log("scroll")}
-				// onMouseLeave={()=>onSetColumnHovering(false)}
-				// onTouchEnd={()=>onSetCardDragging(false)}
 			>
 				<div onTouchEndCapture={null}></div>
 				<Container
-					onDrop={(DropResult)=> {
-						handleDrop(DropResult)
+					onDrop={async (DropResult)=> {
+						await handleDrop(DropResult)
 						setDragEnter(false)
 					}}
 					shouldAcceptDrop={shouldAcceptDrop}
 					getGhostParent={()=>document.body}
-					// onDragStart={()=>onSetCardDragging(true)}
-					// onDragEnd={()=>onSetCardDragging(false)}
-					onDragEnter={()=>setDragEnter(true)}
-					onDragLeave={()=>setDragEnter(false)}
-					onDropReady={()=>{}}
+					onDragStart={(dragStartParams, b, c)=>{}}
+					onDragEnd={(dragEndParams)=>{}}
+					onDragEnter={()=> {
+						setDragEnter(true)
+					}}
+					onDragLeave={()=> {
+						setDragEnter(false)
+					}}
+					onDropReady={(dropResult)=>{}}
 					groupName="process-cards"
 					getChildPayload={index =>
 						cards[index]

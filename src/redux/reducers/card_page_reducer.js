@@ -5,7 +5,8 @@ import {CARD_DRAGGING, COLUMN_HOVERING, SET_SIZE} from "../types/ui_types"
 const defaultState = {
 	isCardDragging: false,
 	isHoveringOverColumn: false,
-	sizes: {}
+	sizes: {},
+	draggedLotInfo: {}
 }
 
 const cardPageReducer = (state = defaultState, action) => {
@@ -15,7 +16,7 @@ const cardPageReducer = (state = defaultState, action) => {
 		case SET + CARD_DRAGGING:
 			return {
 				...state,
-				isCardDragging: action.payload
+				draggedLotInfo: action.payload
 			}
 
 		case SET_SIZE:
