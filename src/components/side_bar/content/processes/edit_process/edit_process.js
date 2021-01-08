@@ -78,22 +78,17 @@ const EditProcess = (props) => {
             if (tasks[route].device_type == 'human') {
                 const dashboardId = stations[tasks[route].load.station].dashboards[0]
 
-                const postToQueue = dispatch(postTaskQueue({ task_id: route, 'task_id': route, dashboard: dashboardId, hil_response: null }))
+                const postToQueue = dispatch(postTaskQueue({ task_id: route, 'task_id': route, dashboard: dashboardId, hil_response: null, _id: uuid.v4(), }))
                 postToQueue.then(item => {
-                    const id = item?._id?.$oid
+                    const id = item?._id
                     onTaskQueueItemClicked(id)
                 })
             }
             else {
-                dispatchPostTaskQueue({ task_id: route })
+                dispatchPostTaskQueue({ task_id: route, _id: uuid.v4(), })
             }
         }
     }
-
-    //  const handleExecuteProcessTask = (route) => {
-    //    dispatchPostTaskQueue({ task_id: route })
-
-    //  }
 
     const goToCardPage = () => {
         const currentPath = history.location.pathname

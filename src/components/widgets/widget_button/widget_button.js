@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import * as styled from './widget_button.style'
 
+// Import utils
+import uuid from 'uuid'
 
 // Import Actions
 import { postTaskQueue } from '../../../redux/actions/task_queue_actions'
@@ -81,6 +83,7 @@ const WidgetButton = (props) => {
         // Coord move is for right click send cart to pos
         if (!!coordinateMove) {
             onPostTaskQueue({
+                _id: uuid.v4(),
                 task_id: 'custom_task',
                 custom_task: {
                     type: 'coordinate_move',
@@ -98,6 +101,7 @@ const WidgetButton = (props) => {
         }
         else {
             onPostTaskQueue({
+                _id: uuid.v4(),
                 task_id: 'custom_task',
                 custom_task: {
                     type: 'position_move',

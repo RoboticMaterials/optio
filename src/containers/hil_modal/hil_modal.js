@@ -119,7 +119,7 @@ const HILModal = () => {
             // Else if the task q item has a dashboardID and the dashboardID matches current dashboard, then show that dashboard
             // The reason this happens is that it's a human task and the person hit a dashboard button (see dashboard_screen).
             // The HIL modal needs to immediatly show because the backend will be too slow to respond to show that dashboard after button click
-            else if (!!item.dashboard && item.dashboard === dashboardID && localHumanTask) {
+            else if (!!item.dashboard && item.dashboard === dashboardID && localHumanTask === item._id) {
                 let hilMessage = item.hil_message
                 if (!hilMessage) {
                     hilMessage = tasks[item.task_id].load.instructions
@@ -192,17 +192,17 @@ const HILModal = () => {
                             // Add the timer to redux
                             onSetHilTimers({
                                 ...hilTimers,
-                                [item._id.$oid]: biasedTimer.toFixed(0),
+                                [item._id]: biasedTimer.toFixed(0),
                             })
                             //If the timer goes to Zero then stop the timer
                             if (biasedTimer <= 0) {
                                 onSetHilTimers({
                                     ...hilTimers,
-                                    [item._id.$oid]: 0,
+                                    [item._id]: 0,
                                 })
 
                                 // Update redux
-                                delete hilTimers[item._id.$oid]
+                                delete hilTimers[item._id]
                                 onSetHilTimers({
                                     ...hilTimers,
                                 })
@@ -239,7 +239,7 @@ const HILModal = () => {
                     })
 
                     // Update redux
-                    delete hilTimers[item._id.$oid]
+                    delete hilTimers[item._id]
                     onSetHilTimers({
                         ...hilTimers,
                     })

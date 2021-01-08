@@ -92,14 +92,14 @@ export default function TaskContent(props) {
             if (selectedTask.device_type === 'human') {
                 const dashboardId = stations[selectedTask.load.station].dashboards[0]
 
-                const postToQueue = dispatch(postTaskQueue({ task_id: selectedTask._id, 'task_id': selectedTask._id, dashboard: dashboardId, hil_response: null }))
+                const postToQueue = dispatch(postTaskQueue({ task_id: selectedTask._id, 'task_id': selectedTask._id, dashboard: dashboardId, hil_response: null, _id: uuid.v4(), }))
                 postToQueue.then(item => {
-                    const id = item?._id?.$oid
+                    const id = item?._id
                     onTaskQueueItemClicked(id)
                 })
             }
             else {
-                onPostTaskQueue({ task_id: selectedTask._id })
+                onPostTaskQueue({ task_id: selectedTask._id, _id: uuid.v4(), })
             }
         }
     }

@@ -228,7 +228,7 @@ const HILModals = (props) => {
         // On unmount, set the task q item to none
         return () => {
             dispatchTaskQueueItemClicked('')
-            dispatchLocalHumanTask(false)
+            dispatchLocalHumanTask(null)
         }
 
     }, [tasks])
@@ -383,8 +383,8 @@ const HILModals = (props) => {
                         <styled.HilMessage>{hilMessage}</styled.HilMessage>
                         {/* Only Showing timers on load at the moment, will probably change in the future */}
                         {
-                            !!hilTimers[item._id.$oid] && hilLoadUnload === 'load' &&
-                            <styled.HilTimer>{hilTimers[item._id.$oid]}</styled.HilTimer>
+                            !!hilTimers[item._id] && hilLoadUnload === 'load' &&
+                            <styled.HilTimer>{hilTimers[item._id]}</styled.HilTimer>
                         }
                     </styled.ColumnContainer>
 
@@ -432,8 +432,8 @@ const HILModals = (props) => {
                         <styled.HilMessage>{hilMessage}</styled.HilMessage>
                         {/* Only Showing timers on load at the moment, will probably change in the future */}
                         {
-                            !!hilTimers[item._id.$oid] && hilLoadUnload === 'load' &&
-                            <styled.HilTimer>{hilTimers[item._id.$oid]}</styled.HilTimer>
+                            !!hilTimers[item._id] && hilLoadUnload === 'load' &&
+                            <styled.HilTimer>{hilTimers[item._id]}</styled.HilTimer>
                         }
                     </styled.ColumnContainer>
 
@@ -522,8 +522,8 @@ const HILModals = (props) => {
 
                         {/* Only Showing timers on load at the moment, will probably change in the future */}
                         {
-                            !!hilTimers[item._id.$oid] && hilLoadUnload === 'load' &&
-                            <styled.HilTimer>{hilTimers[item._id.$oid]}</styled.HilTimer>
+                            !!hilTimers[item._id] && hilLoadUnload === 'load' &&
+                            <styled.HilTimer>{hilTimers[item._id]}</styled.HilTimer>
                         }
                     </styled.ColumnContainer>
 

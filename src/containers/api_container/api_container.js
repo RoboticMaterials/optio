@@ -788,7 +788,7 @@ const ApiContainer = (props) => {
             if (tasks[Q.task_id] === undefined) {
                 console.log('QQQQ TaskQ associated task has been deleted')
                 alert('TaskQ associated task has been deleted')
-                await onDeleteTaskQItem(Q._id.$oid)
+                await onDeleteTaskQItem(Q._id)
             }
 
         })
