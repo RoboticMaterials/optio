@@ -9,7 +9,7 @@ import {setCardDragging, setColumnHovering} from "../../../../../../redux/action
 import {generateBinId} from "../../../../../../methods/utils/card_utils";
 
 // const animationDuration = 500
-const Column = SortableContainer((props) => {
+const Column = ((props) => {
 
 	const {
 		station_id,

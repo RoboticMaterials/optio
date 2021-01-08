@@ -6,7 +6,7 @@ import React, {useState} from "react";
 
 import Column from "../column/column"
 
-const StationsColumn = SortableContainer((props) => {
+const StationsColumn = ((props) => {
 	const {
 		station_id,
 		stationName = "Unnamed",

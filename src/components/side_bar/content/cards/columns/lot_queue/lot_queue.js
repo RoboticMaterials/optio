@@ -11,7 +11,7 @@ import CalendarField from "../../../../../basic/form/calendar_field/calendar_fie
 import PropTypes from 'prop-types';
 import Column from "../column/column";
 
-const LotQueue = SortableContainer((props) => {
+const LotQueue = ((props) => {
 	const {
 		station_id = "QUEUE",
 		stationName = "Unnamed",

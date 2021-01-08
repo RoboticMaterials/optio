@@ -15,7 +15,7 @@ import * as styled from "./summary_zone.style"
 /*
 * This component renders a CardZone for a list of processes
 * */
-const SummaryZone = SortableContainer((props) => {
+const SummaryZone = ((props) => {
 
 	// extract props
 	const {
