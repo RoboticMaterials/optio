@@ -55,7 +55,7 @@ const TaskQueueMenu = (props) => {
                 if (task) {
 
                     // If task is a handoff, don't show in task q
-                    // if (task.handoff === true) return
+                    if (task.handoff === true) return
 
                     queueItemClone.task = task;
                     queueItemClone.name = task.name;

@@ -302,7 +302,7 @@ const ApiContainer = (props) => {
         const loggers = await onGetLoggers()
 
         // Data Update Functions
-        const dataUpdate = await onUpdateTaskData(tasks)
+        // const dataUpdate = await onUpdateTaskData(tasks)
 
         // Cleaner Functions
         const funtion = await handleDeviceWithoutADashboard(devices, dashboards)
