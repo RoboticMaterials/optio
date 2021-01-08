@@ -28,12 +28,21 @@ export const Header = styled.div`
 	align-items: center;
 	padding: 0;
 	margin: 0;
-	height: 3rem;
+	//height: 5rem;
+  padding: .5rem 1rem;
 	background: ${props => props.theme.bg.quinary};
 `
 
+export const HeaderMainContentContainer = styled.div`
+	display: flex;
+  	flex-direction: column;
+	justify-content: center;
+  align-items: center;
+  flex: 1;
+`
 export const Title = styled.h2`
-	flex: 2;
+	//flex: 2;
+  	
 	height: 100%;
 	min-height: 100%;
 	margin: 0;
@@ -44,6 +53,7 @@ export const Title = styled.h2`
 	align-items: center;
 	font-size: ${props => props.theme.fontSize.sz2};
 	font-weight: ${props => props.theme.fontWeight.bold};
+  margin-bottom: 1rem;
 `;
 
 export const BodyContainer = styled.div`
