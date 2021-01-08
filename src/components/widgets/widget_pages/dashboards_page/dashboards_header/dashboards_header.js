@@ -98,7 +98,6 @@ const DashboardsHeader = (props) => {
                         </>
 
                     )}
-                    <style.Dots>...</style.Dots>
                 </style.RowContainer>
             )
           }
