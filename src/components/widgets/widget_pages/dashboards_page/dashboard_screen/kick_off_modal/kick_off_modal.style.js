@@ -81,6 +81,7 @@ export const ContentContainer = styled.div`
 	overflow: hidden;
 	margin-bottom: 1rem;
 	align-items: center;
+  justify-content: center;
 `
 
 export const NoButtonsText = styled.span`
@@ -93,15 +94,22 @@ export const FadeLoaderCSS = css`
 `;
 
 export const ReportButtonsContainer = styled.div`
-	display: flex;
-	flex-direction: column;
 	align-items: center;
-	flex-wrap: nowrap;
 	overflow: auto;
 	min-height: 5rem;
 	width: 100%;
-	// justify-content: ${props => !props.isButtons && "center"};
-	justify-content: center;
+  
+  ${props => props.isButtons ? buttonsCss : noButtonsCss }
+`
+
+const buttonsCss = css`
+`
+
+const noButtonsCss = css`
+  overflow: auto;
+	display: flex;
+  flex-drection: column;
+  justify-content: center;
 `
 
 
