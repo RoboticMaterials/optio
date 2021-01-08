@@ -301,6 +301,10 @@ const ApiContainer = (props) => {
 
         const loggers = await onGetLoggers()
 
+        // Data Update Functions
+        const dataUpdate = await onUpdateTaskData(tasks)
+
+        // Cleaner Functions
         const funtion = await handleDeviceWithoutADashboard(devices, dashboards)
         const funtion1 = await handleTasksWithBrokenPositions(tasks, locations)
         const funtion2 = await handlePositionsWithBrokenParents(locations)
@@ -432,6 +436,17 @@ const ApiContainer = (props) => {
 
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  DATA LOADERS SECTION END
+
+
+    //  DATA CONVERSION
+    //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    const onUpdateTaskData = async (tasks) => {
+        Object.values(tasks).map(async (task) => {
+            console.log('QQQQ Task', task)
+        })
+
+    }
 
 
     //  API DATA CLEAN UP (Ideally these functions should not exist... but it's not an ideal world...)
@@ -710,7 +725,7 @@ const ApiContainer = (props) => {
 
                 // Else the task does exist, see if the task contains the process
                 else {
-                    if(!tasks[route].processes.includes(process._id)) {
+                    if (!tasks[route].processes.includes(process._id)) {
                         console.log('QQQQ Process containes a route, but the route does not contain the process, adding process to route', tasks[route])
                         alert('Process containes a route, but the route does not contain the process, adding process to route')
 
@@ -738,7 +753,7 @@ const ApiContainer = (props) => {
 
         Object.values(tasks).map(async (task) => {
 
-            if(!!task.new) {
+            if (!!task.new) {
                 console.log('QQQQ Task still has a new tag', deepCopy(task))
                 alert('Task still has a new tag, deleting task')
                 onDeleteTask(task._id)

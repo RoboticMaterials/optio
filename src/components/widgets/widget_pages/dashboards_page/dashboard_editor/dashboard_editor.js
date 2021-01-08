@@ -190,7 +190,6 @@ const DashboardEditor = (props) => {
         >
             {(formikProps) => {
                 const { errors, values, touched, initialValues } = formikProps; // extract formik props
-                console.log("errorserrorserrors",errors)
 
                 // disabled submission if there are any errors or not all fields have been touched
                 const allTouched = Object.values(touched).every((val) => val === true)
