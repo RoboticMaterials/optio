@@ -105,6 +105,7 @@ const ApiContainer = (props) => {
     const [currentPage, setCurrentPage] = useState('')
     const [apiIpAddress, setApiIpAddress] = useState('')
     const [apiError, setApiError] = useState(false)
+    const [pageDataInterval, setPageDataInterval] = useState(null)
 
     const params = useParams()
 
@@ -184,7 +185,7 @@ const ApiContainer = (props) => {
     /**
      * Handles data interval based on page
      */
-    let pageDataInterval = null
+
     const setDataInterval = (pageParams) => {
         let pageName = ''
         const {
@@ -218,50 +219,51 @@ const ApiContainer = (props) => {
         switch (pageName) {
 
             case 'objects':
-                pageDataInterval = setInterval(() => loadObjectsData(), 10000);
+                setPageDataInterval(setInterval(() => loadObjectsData(), 10000))
                 break;
 
             case 'scheduler':
-                pageDataInterval = setInterval(() => loadSchedulerData(), 100000);
+                setPageDataInterval(setInterval(() => loadSchedulerData(), 100000))
                 break;
 
             case 'dashboards':
-                pageDataInterval = setInterval(() => loadDashboardsData(), 1000);
+                setPageDataInterval(setInterval(() => loadDashboardsData(), 1000))
                 break;
 
             case 'tasks':
-                pageDataInterval = setInterval(() => loadTasksData(), 10000);
+                setPageDataInterval(setInterval(() => loadTasksData(), 10000))
                 break;
 
             case 'settings':
-                pageDataInterval = setInterval(() => loadSettingsData(), 10000);
+                setPageDataInterval(setInterval(() => loadSettingsData(), 10000))
                 break;
 
             case 'lots':
-                pageDataInterval = setInterval(() => loadCardsData(), 1000)
+                setPageDataInterval(setInterval(() => loadCardsData(), 1000))
                 break
 
             case 'processes':
                 if (data2 === "lots") {
                     loadCardsData(data1) // initial call
-                    pageDataInterval = setInterval(() => loadCardsData(data1), 1000) // set interval
+                    setPageDataInterval(setInterval(() => loadCardsData(data1), 1000))
                 }
                 else if (data1 === "timeline") {
                     loadCardsData() // initial call
-                    pageDataInterval = setInterval(() => loadCardsData(), 10000)
+                    setPageDataInterval(setInterval(() => loadCardsData(), 10000))
                 }
                 else if (data1 === "summary") {
                     loadCardsData() // initial call
-                    pageDataInterval = setInterval(() => loadCardsData(), 10000)
+                    setPageDataInterval(setInterval(() => loadCardsData(), 10000))
                 }
                 else {
-                    pageDataInterval = setInterval(() => loadTasksData(), 10000);
+                    setPageDataInterval(setInterval(() => loadTasksData(), 10000))
                 }
 
                 break
 
             case 'more':
-                pageDataInterval = setInterval(() => loadMoreData(), 10000);
+                setPageDataInterval(setInterval(() => loadMoreData(), 10000))
+                // pageDataInterval = ;
                 break;
 
             default:
