@@ -40,6 +40,7 @@ const LotsPage = (props) => {
     const [locationName, setLocationName] = useState("")
     const location = locations[stationID]
     const [selectedCard, setSelectedCard] = useState(null)
+    console.log(cards)
 
     // update location properties
     useEffect(() => {
@@ -108,6 +109,15 @@ const LotsPage = (props) => {
                       <styled.ListSubtitle>Quantity:</styled.ListSubtitle>
                       <styled.ListContent>{card.bins[location._id].count}</styled.ListContent>
                     </styled.ColumnContainer2>
+
+
+                      <styled.ColumnContainer2>
+                        <styled.ListSubtitle>End Date:</styled.ListSubtitle>
+                        {!!card.end_date &&
+                          <styled.ListContent>{card.end_date.month+1 + '/' + card.end_date.day +'/' + card.end_date.year}</styled.ListContent>
+                        }
+                      </styled.ColumnContainer2>
+
 
                   <styled.ListItemIcon
                       className={'fas fa-edit'}
