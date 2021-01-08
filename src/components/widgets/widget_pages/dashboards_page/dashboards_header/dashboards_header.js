@@ -77,29 +77,19 @@ const DashboardsHeader = (props) => {
     const renderLotsTitle = useMemo(() => {
 
         let hasLot = false
-        let numberLots = 0
-        setSlice(0)
-        let threshold = mobileMode ? 3:6
-
 
         for (let i = 0; i < Object.values(cards).length; i++) {
             if (!!Object.values(cards)[i].bins[location._id]){
-
-              hasLot = true
-              numberLots = numberLots+1
-              if(numberLots>threshold){
-                setSlice(i)
+                hasLot = true
                 break
               }
             }
-        }
 
         if (!!hasLot) {
-          if(slice!=0){
             return (
                 <style.RowContainer windowWidth = {windowWidth}>
                     <style.LotsTitle>Lots:</style.LotsTitle>
-                    {Object.values(cards).slice(0,slice).map((card, ind) =>
+                    {Object.values(cards).map((card, ind) =>
                         <>
                             {!!card.bins[location._id] &&
 
@@ -112,22 +102,7 @@ const DashboardsHeader = (props) => {
                 </style.RowContainer>
             )
           }
-          else{
 
-            return (
-                <style.RowContainer windowWidth = {windowWidth}>
-                    <style.LotsTitle>Lots:</style.LotsTitle>
-                    {Object.values(cards).map((card, ind) =>
-                        <>
-                            {!!card.bins[location._id] &&
-                                <style.LotItem>{card.name + ' (' + card.bins[location._id].count +')'}</style.LotItem>
-                            }
-                        </>
-                    )}
-                </style.RowContainer>
-            )
-          }
-        }
         else {
             return (
                 <style.RowContainer>
