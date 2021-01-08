@@ -170,7 +170,7 @@ const KickOffModal = (props) => {
                 onClick={()=>{
                     onButtonClick(currCard)
                 }}
-                containerStyle={{height: '4rem', minHeight: "4rem", lineHeight: '3rem', margin: '.5rem auto 0.5rem auto', width: '80%'}}
+                containerStyle={{height: '4rem', minHeight: "4rem", lineHeight: '3rem', margin: '0.5rem auto 1rem auto', width: '80%'}}
                 hoverable={false}
                 taskID = {null}
                 color = {theme.schema.kick_off.solid}
