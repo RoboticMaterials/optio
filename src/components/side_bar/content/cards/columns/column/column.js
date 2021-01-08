@@ -36,8 +36,8 @@ const Column = SortableContainer((props) => {
 
 	const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 	const dispatchDeleteCard = async (cardId, processId) => await dispatch(deleteCard(cardId, processId))
-	const onSetCardDragging = async (isDragging) => await dispatch(setCardDragging(isDragging))
-	const onSetColumnHovering = async (isHoveringOverColumn) => await dispatch(setColumnHovering(isHoveringOverColumn))
+	// const onSetCardDragging = async (isDragging) => await dispatch(setCardDragging(isDragging))
+	// const onSetColumnHovering = async (isHoveringOverColumn) => await dispatch(setColumnHovering(isHoveringOverColumn))
 
 	const shouldAcceptDrop = (sourceContainerOptions, payload) => {
 		const {
@@ -69,6 +69,7 @@ const Column = SortableContainer((props) => {
 
 				if(!(binId === station_id)) {
 
+
 					const droppedCard = reduxCards[cardId] ? reduxCards[cardId] : {}
 
 					const oldBins = droppedCard.bins ? droppedCard.bins : {}
@@ -77,32 +78,38 @@ const Column = SortableContainer((props) => {
 						...remainingOldBins
 					} = oldBins || {}
 
-					// already contains items in bin
-					if(oldBins[station_id] && movedBin) {
 
-						onPutCard({
-							...remainingPayload,
-							bins: {
-								...remainingOldBins,
-								[station_id]: {
-									...oldBins[station_id],
-									count: parseInt(oldBins[station_id].count) + parseInt(movedBin.count)
-								}
-							}
-						}, cardId)
-					}
+					if(movedBin) {
+						// already contains items in bin
+						if(oldBins[station_id] && movedBin) {
 
-					// no items in bin
-					else {
-						onPutCard({
-							...remainingPayload,
-							bins: {
-								...remainingOldBins,
-								[station_id]: {
-									...movedBin,
+							const oldCount = parseInt(oldBins[station_id]?.count || 0)
+							const movedCount = parseInt(movedBin?.count || 0)
+
+							onPutCard({
+								...remainingPayload,
+								bins: {
+									...remainingOldBins,
+									[station_id]: {
+										...oldBins[station_id],
+										count:  oldCount + movedCount
+									}
 								}
-							}
-						}, cardId)
+							}, cardId)
+						}
+
+						// no items in bin
+						else {
+							onPutCard({
+								...remainingPayload,
+								bins: {
+									...remainingOldBins,
+									[station_id]: {
+										...movedBin,
+									}
+								}
+							}, cardId)
+						}
 					}
 				}
 			}
@@ -113,11 +120,11 @@ const Column = SortableContainer((props) => {
 		return(
 			<styled.BodyContainer
 				dragEnter={dragEnter}
-				onMouseEnter={()=>onSetColumnHovering(true)}
-				onTouchStart={()=>onSetCardDragging(true)}
+				// onMouseEnter={()=>onSetColumnHovering(true)}
+				// onTouchStart={()=>onSetCardDragging(true)}
 				// onScroll={()=>console.log("scroll")}
-				onMouseLeave={()=>onSetColumnHovering(false)}
-				onTouchEnd={()=>onSetCardDragging(false)}
+				// onMouseLeave={()=>onSetColumnHovering(false)}
+				// onTouchEnd={()=>onSetCardDragging(false)}
 			>
 				<div onTouchEndCapture={null}></div>
 				<Container
@@ -127,8 +134,8 @@ const Column = SortableContainer((props) => {
 					}}
 					shouldAcceptDrop={shouldAcceptDrop}
 					getGhostParent={()=>document.body}
-					onDragStart={()=>onSetCardDragging(true)}
-					onDragEnd={()=>onSetCardDragging(false)}
+					// onDragStart={()=>onSetCardDragging(true)}
+					// onDragEnd={()=>onSetCardDragging(false)}
 					onDragEnter={()=>setDragEnter(true)}
 					onDragLeave={()=>setDragEnter(false)}
 					onDropReady={()=>{}}
