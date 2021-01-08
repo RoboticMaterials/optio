@@ -41,6 +41,7 @@ export default function ContentList(props) {
     const renderLocationTypeIcon = (element) => {
 
         switch (element.type) {
+                
             case 'charger_position':
                 return (
                     <styled.LocationTypeGraphic fill={LocationTypes['shelf_position'].color} stroke={LocationTypes['shelf_position'].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
