@@ -39,10 +39,9 @@ const DashboardButtonList = ((props) => {
     // redux state
     const tasks = useSelector(state => state.tasksReducer.tasks)
 
-
     useEffect(() => {
         dispatchGetTasks()
-    }, [])
+    })
 
     // renders individuals buttons for list
     const itemRenderer = (index, key) => {
