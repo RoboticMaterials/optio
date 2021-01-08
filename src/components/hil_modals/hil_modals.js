@@ -141,7 +141,7 @@ const HILModals = (props) => {
     useEffect(() => {
 
         // Only show lot selector if they're cards loaded, lots have not been dispalyed yet, it's a load hil and there's available lots
-        if (cardsLoaded && !didDisplayLots && hilLoadUnload !== 'unload') {
+        if (cardsLoaded && !didDisplayLots && hilLoadUnload && hilLoadUnload !== 'unload') {
             setShowLotSelector(true)
             setDidDisplayLots(true)
         }
