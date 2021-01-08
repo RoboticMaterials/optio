@@ -26,21 +26,28 @@ export default function ContentList(props) {
 
 
     const handleInQueue = (element) => {
-      setInQueue(false)
-      if(!!element){
+        setInQueue(false)
+        if (!!element) {
 
-      Object.values(taskQueue).forEach((taskQueueItem, ind) => {
-        if(element._id === taskQueueItem.task_id){
-          setInQueue(true)
+            Object.values(taskQueue).forEach((taskQueueItem, ind) => {
+                if (element._id === taskQueueItem.task_id) {
+                    setInQueue(true)
+                }
+            })
         }
-      })
-    }
-      return inQueue
+        return inQueue
     }
 
     const renderLocationTypeIcon = (element) => {
 
         switch (element.type) {
+            case 'charger_position':
+                return (
+                    <styled.LocationTypeGraphic fill={LocationTypes['shelf_position'].color} stroke={LocationTypes['shelf_position'].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                        {LocationTypes['charger_position'].svgPath}
+                    </styled.LocationTypeGraphic>
+                )
+
             case 'shelf_position':
                 return (
                     <styled.LocationTypeGraphic fill={LocationTypes['shelf_position'].color} stroke={LocationTypes['shelf_position'].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
