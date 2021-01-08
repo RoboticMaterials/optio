@@ -13,6 +13,7 @@ import DashboardTaskQueue from './dashboard_task_queue/dashboard_task_queue'
 // Import Utils
 import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../constants/dashboard_contants";
 import { deepCopy } from '../../../../../methods/utils/utils'
+import uuid from 'uuid';
 
 // Import Hooks
 import useWindowSize from '../../../../../hooks/useWindowSize'
@@ -22,7 +23,7 @@ import { postStatus } from '../../../../../api/status_api'
 
 // Import Actions
 import { postTaskQueue, putTaskQueue } from '../../../../../redux/actions/task_queue_actions'
-import {dashboardOpen, setDashboardKickOffProcesses} from '../../../../../redux/actions/dashboards_actions'
+import { dashboardOpen, setDashboardKickOffProcesses } from '../../../../../redux/actions/dashboards_actions'
 
 // Import styles
 import * as pageStyle from '../dashboards_header/dashboards_header.style'
@@ -36,7 +37,7 @@ import { OPERATION_TYPES, TYPES } from "../dashboards_sidebar/dashboards_sidebar
 import ReportModal from "./report_modal/report_modal";
 import KickOffModal from "./kick_off_modal/kick_off_modal";
 import FinishModal from "./finish_modal/finish_modal";
-import {getProcesses} from "../../../../../redux/actions/processes_actions";
+import { getProcesses } from "../../../../../redux/actions/processes_actions";
 
 const logger = log.getLogger("DashboardsPage");
 
@@ -73,7 +74,7 @@ const DashboardScreen = (props) => {
     const dispatch = useDispatch()
     const onDashboardOpen = (bol) => dispatch(dashboardOpen(bol))
     const onHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
-    const onLocalHumanTask = (bol) => dispatch({type: 'LOCAL_HUMAN_TASK', payload: bol})
+    const onLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
     const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
 
 
@@ -176,7 +177,7 @@ const DashboardScreen = (props) => {
             // Map through each item and see if it's showing a station, station Id is matching the current station and a human task
             Object.values(taskQueue).map((item, ind) => {
                 // If it is matching, add a button the the dashboard for unloading
-                if (!!item.hil_station_id && item.hil_station_id === stationID && hilResponse !== item._id.$oid && tasks[item.task_id]?.device_type === 'human') {
+                if (!!item.hil_station_id && item.hil_station_id === stationID && hilResponse !== item._id&& tasks[item.task_id]?.device_type === 'human') {
                     buttons = [
                         ...buttons,
                         {
@@ -256,6 +257,7 @@ const DashboardScreen = (props) => {
 
             await dispatch(postTaskQueue(
                 {
+                    _id: uuid.v4(),
                     "task_id": Id,
                     'custom_task': custom
                 })
@@ -292,14 +294,15 @@ const DashboardScreen = (props) => {
             // Set hil_response to null because the backend does not dictate the load hil message
             // Since the task is put into the q but automatically assigned to the person that clicks the button
             if (tasks[Id]?.device_type === 'human') {
-                onLocalHumanTask(true)
+                const postTask = {
+                    _id: uuid.v4(),
+                    "task_id": Id,
+                    dashboard: dashboardID,
+                    hil_response: null,
+                }
+                onLocalHumanTask(postTask._id)
                 // dispatch action to add task to queue
-                await dispatch(postTaskQueue(
-                    {
-                        "task_id": Id,
-                        dashboard: dashboardID,
-                        hil_response: null,
-                    })
+                await dispatch(postTaskQueue(postTask)
                 )
 
             } else {
@@ -309,6 +312,7 @@ const DashboardScreen = (props) => {
                 // dispatch action to add task to queue
                 await dispatch(postTaskQueue(
                     {
+                        _id: uuid.v4(),
                         "task_id": Id,
                     })
                 )
@@ -346,7 +350,7 @@ const DashboardScreen = (props) => {
             // quantity: quantity,
         }
 
-        const ID = deepCopy(item._id.$oid)
+        const ID = deepCopy(item._id)
 
         delete newItem._id
         delete newItem.dashboard
@@ -388,44 +392,44 @@ const DashboardScreen = (props) => {
             }
 
             {(reportModal === OPERATION_TYPES.KICK_OFF.key) &&
-            <KickOffModal
-                isOpen={true}
-                stationId={stationID}
-                title={"Kick Off"}
-                close={() => setReportModal(null)}
-                dashboard={currentDashboard}
-                onSubmit={(name, success) => {
-                    // set alert
-                    setAddTaskAlert({
-                        type: success ? ADD_TASK_ALERT_TYPE.KICK_OFF_SUCCESS : ADD_TASK_ALERT_TYPE.KICK_OFF_FAILURE,
-                        label: success ? "Lot Kick Off Successful" : "Lot Kick Off Failed",
-                        message: name ? `"` + name + `"` : null
-                    })
+                <KickOffModal
+                    isOpen={true}
+                    stationId={stationID}
+                    title={"Kick Off"}
+                    close={() => setReportModal(null)}
+                    dashboard={currentDashboard}
+                    onSubmit={(name, success) => {
+                        // set alert
+                        setAddTaskAlert({
+                            type: success ? ADD_TASK_ALERT_TYPE.KICK_OFF_SUCCESS : ADD_TASK_ALERT_TYPE.KICK_OFF_FAILURE,
+                            label: success ? "Lot Kick Off Successful" : "Lot Kick Off Failed",
+                            message: name ? `"` + name + `"` : null
+                        })
 
-                    // clear alert
-                    setTimeout(() => setAddTaskAlert(null), 1800)
-                }}
-            />
+                        // clear alert
+                        setTimeout(() => setAddTaskAlert(null), 1800)
+                    }}
+                />
             }
             {(reportModal === OPERATION_TYPES.FINISH.key) &&
-            <FinishModal
-                isOpen={true}
-                stationId={stationID}
-                title={"Finish"}
-                close={() => setReportModal(null)}
-                dashboard={currentDashboard}
-                onSubmit={(name, success) => {
-                    // set alert
-                    setAddTaskAlert({
-                        type: success ? ADD_TASK_ALERT_TYPE.FINISH_SUCCESS : ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
-                        label: success ? "Finish Successful" : "Finish Failed",
-                        message: name ? `"` + name + `"` : null
-                    })
+                <FinishModal
+                    isOpen={true}
+                    stationId={stationID}
+                    title={"Finish"}
+                    close={() => setReportModal(null)}
+                    dashboard={currentDashboard}
+                    onSubmit={(name, success) => {
+                        // set alert
+                        setAddTaskAlert({
+                            type: success ? ADD_TASK_ALERT_TYPE.FINISH_SUCCESS : ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
+                            label: success ? "Finish Successful" : "Finish Failed",
+                            message: name ? `"` + name + `"` : null
+                        })
 
-                    // clear alert
-                    setTimeout(() => setAddTaskAlert(null), 1800)
-                }}
-            />
+                        // clear alert
+                        setTimeout(() => setAddTaskAlert(null), 1800)
+                    }}
+                />
             }
             <DashboardsHeader
                 showTitle={false}

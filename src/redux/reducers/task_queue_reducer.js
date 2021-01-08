@@ -51,7 +51,7 @@ const defaultState = {
     hilTimers: {},
     hilResponse: '',
     activeHilDashboards: {},
-    localHumanTask: false,
+    localHumanTask: null,
     taskQueueOpen: false,
 };
 
@@ -130,7 +130,7 @@ export default function taskQueueReducer(state = defaultState, action) {
                 ...state,
                 taskQueue: {
                     ...state.taskQueue,
-                    [action.payload.createdTaskQueueItem._id.$oid]: action.payload.createdTaskQueueItem
+                    [action.payload.createdTaskQueueItem._id]: action.payload.createdTaskQueueItem
                 },
                 error: '',
                 pending: false,

@@ -55,7 +55,7 @@ const TaskQueueMenu = (props) => {
                 if (task) {
 
                     // If task is a handoff, don't show in task q
-                    if (task.handoff === true) return
+                    // if (task.handoff === true) return
 
                     queueItemClone.task = task;
                     queueItemClone.name = task.name;
@@ -81,7 +81,7 @@ const TaskQueueMenu = (props) => {
         const type = item.task.device_type
         // extract properties
         const { name } = item
-        const id = item?._id?.$oid
+        const id = item?._id
         const status = item.mission_status
         const task = tasks[item.task_id]
 

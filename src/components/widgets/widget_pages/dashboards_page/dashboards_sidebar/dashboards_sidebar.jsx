@@ -16,6 +16,7 @@ import { handleAvailableTasks } from "../../../../../methods/utils/dashboards_ut
 
 // Import Utils
 import { ADD_TASK_ALERT_TYPE } from "../../../../../constants/dashboard_contants";
+import uuid from 'uuid'
 
 // Import Actions
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
@@ -128,7 +129,7 @@ const DashboardsSidebar = (props) => {
         })
 
         // dispatch action to add task to queue
-        const postPromise = dispatch(postTaskQueue({ "task_id": Id }))
+        const postPromise = dispatch(postTaskQueue({ _id: uuid.v4(),"task_id": Id }))
         postPromise.then(() => {
             try {
                 // code409 is returned if task is already in the queue

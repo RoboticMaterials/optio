@@ -113,9 +113,14 @@ const DashboardsPage = (props) => {
     // On page load, load the first and only dashboard with this station
     // Leaving the rest of the code in for adding dashboards and dashboard list view because we may need it in the future
     useEffect(() => {
-        const dashboardType = !!stations[stationID] ? stations[stationID] : devices[stationID]
-        const dashID = dashboardType.dashboards[0]
-        props.history.push(`/locations/${stationID}/dashboards/${dashID}`)
+        try {
+            const dashboardType = !!stations[stationID] ? stations[stationID] : devices[stationID]
+            const dashID = dashboardType.dashboards[0]
+            props.history.push(`/locations/${stationID}/dashboards/${dashID}`)
+        } catch (error) {
+            
+        }
+
         return () => {
 
         }
