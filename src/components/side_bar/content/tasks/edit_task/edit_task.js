@@ -250,100 +250,22 @@ const EditTask = (props) => {
     }
 
     const updateExistingTask = async (task) => {
-        // If the task device type is human and has an associated task, then this task must have gone from device to human based
-        // so delete the robot task and keep the associated human task from the new human task, keeps previous human task data
-        // If this doesn't make sense, look at the if statement above
-        // Hint, if there is a task that has 2 tasks because its a device task, only the device task is showed in the list
-        if (task.device_type === DEVICE_CONSTANTS.HUMAN && !!task.associated_task) {
-            console.log("updateExistingTask case 1 task",task)
-            const updatedHumanTask = {
-                ...task,
-                device_type: DEVICE_CONSTANTS.HUMAN,
-                _id: task.associated_task
-            }
 
-            delete updatedHumanTask.associated_task
-
-            console.log("updatedHumanTask",updatedHumanTask)
-
-            // update task process info
-            updateProcessInfo(updatedHumanTask)
-
-             dispatch(taskActions.putTask(updatedHumanTask, updatedHumanTask._id))
-             dispatchDeleteTask(task._id)
-
-        }
-
-        // If the task is an associated task, also update the associated task
-        else if (!!task.associated_task) {
-            console.log("updateExistingTask case 2 task",task)
-
-            const updatedAssociatedTask = {
-                ...task,
-                device_type: tasks[task.associated_task].device_type,
-                _id: task.associated_task
-            }
-
-            // update task process info - REMOVE PROCESS FROM HUMAN TASK
-            // updateProcessInfo(updatedSelectedTask)
-            // updateProcessInfo(updatedSelectedTask)
-
-            dispatch(taskActions.putTask(task, task._id))
-            dispatch(taskActions.putTask(updatedAssociatedTask, task.associated_task))
-
-        }
-
-        // If the task is not a human based task but it has no associated tasks
-        // that means it was a human based task that is now a device task
-        // So make a new device task
-        else if (task.device_type !== DEVICE_CONSTANTS.HUMAN && !task.associated_task) {
-            console.log("updateExistingTask case 3 task",task)
-
-            const deviceTask = generateAssociatedTask(task, DEVICE_CONSTANTS.MIR_100)
-
-            // Old human task
-            const updatedTask = {
-                ...task,
-                device_type: DEVICE_CONSTANTS.HUMAN,
-                associated_task: deviceTask._id,
-                processes: [] // remove this line if human tasks can contain processes
-            }
-
-            // update task process info
-            updateProcessInfo(deviceTask)
-
-            dispatch(taskActions.putTask(updatedTask, task._id))
-            dispatch(taskActions.postTask(deviceTask))
-
-        }
-
-        // Else its just a plain jane task
-        else {
             console.log("updateExistingTask case 4 task",task)
             // update task process info
             updateProcessInfo(task)
             dispatch(taskActions.putTask(task, task._id))
-        }
+
     }
 
     const createNewTask = async (task) => {
+        console.log("createNewTask task",task)
+
         // update task process info
         updateProcessInfo(task)
 
-        // If it's apart of a device, need to post 2 tasks and associate them with each other
-        // 1 robot task and 1 human task
-        // This allows for the ability for humans to do the task and seperates statistics between types
-        if (task.device_type === DEVICE_CONSTANTS.MIR_100) {
-
-            const humanTask = generateAssociatedTask(task, DEVICE_CONSTANTS.HUMAN)
-            task.associated_task = humanTask._id
-
-            await dispatch(taskActions.postTask(task))
-            await dispatch(taskActions.postTask(humanTask))
-        }
-        else {
-            await dispatch(taskActions.postTask(task))
-        }
+        // POST new task
+        await dispatch(taskActions.postTask(task))
 
         // dashboard needs to be updated with button for new task
         updateDashboard()
@@ -378,6 +300,8 @@ const EditTask = (props) => {
         setSelectedTaskCopy(null)                   // Reset the local copy to null
 
     }
+
+    console.log("selectedTask",selectedTask)
 
     const updateProcessInfo = (task) => {
         // If this task is part of a process and not already in the graph of routes, then add the task to the selected process

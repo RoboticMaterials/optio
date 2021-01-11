@@ -22,6 +22,7 @@ import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 // Import Utils
 import { isEquivalent, deepCopy } from '../../../../../methods/utils/utils'
 import uuid from 'uuid'
+import {DEVICE_CONSTANTS} from "../../../../../constants/device_constants";
 
 const EditProcess = (props) => {
 
@@ -194,7 +195,7 @@ const EditProcess = (props) => {
                                     obj: null,
                                     type: 'push',
                                     quantity: 1,
-                                    device_type: !!MiRMapEnabled ? 'MiR_100' : 'human',
+                                    device_types: !!MiRMapEnabled ? [DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN] : [DEVICE_CONSTANTS.HUMAN],
                                     handoff: true,
                                     track_quantity: true,
                                     map_id: currentMap._id,
@@ -253,7 +254,7 @@ const EditProcess = (props) => {
                             obj: null,
                             type: 'push',
                             quantity: 1,
-                            device_type: !!MiRMapEnabled ? 'MiR_100' : 'human',
+                            device_types: !!MiRMapEnabled ? [DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN] : [DEVICE_CONSTANTS.HUMAN],
                             handoff: !!MiRMapEnabled ? false : true,
                             track_quantity: true,
                             map_id: currentMap._id,

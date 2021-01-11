@@ -10,15 +10,21 @@ import { deepCopy } from './utils'
  */
 export const isBrokenProcess = (process, routes) => {
 
-    // Loops through and 
-    for (let i = 0; i < process.routes.length - 1; i++) {
-        const currentRoute = routes[process.routes[i]]
-        const nextRoute = routes[process.routes[i + 1]]
-        if (currentRoute.unload.station !== nextRoute.load.station) {
-            // Have to return the current route index plus 1 because if the route that is before the broken route is the first route in s process, then the index is 0, which is considered falsy
-            return i + 1
+    // can't be broken if there is only 1 route
+    if(process.routes.length > 1) {
+        // Loops through and
+        for (let i = 0; i < process.routes.length - 1; i++) {
+            const currentRoute = routes[process.routes[i]]
+            const nextRoute = routes[process.routes[i + 1]]
+            if (currentRoute.unload.station !== nextRoute.load.station) {
+                // Have to return the current route index plus 1 because if the route that is before the broken route is the first route in s process, then the index is 0, which is considered falsy
+                return i + 1
+            }
         }
     }
+
+    return 0
+
 }
 
 /**
