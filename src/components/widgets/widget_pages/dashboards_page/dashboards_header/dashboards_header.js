@@ -68,6 +68,9 @@ const DashboardsHeader = (props) => {
      */
     const renderLotsTitle = useMemo(() => {
 
+        //  If there is a location then see if it has lots. There wouldnt be a location because its a Mir dashboard
+        if(location === undefined) return
+
         let hasLot = false
 
         for (let i = 0; i < Object.values(cards).length; i++) {
@@ -106,8 +109,7 @@ const DashboardsHeader = (props) => {
     return (
         <style.ColumnContainer>
 
-            {/* If there is a location then see if it has lots. There wouldnt be a location because its a Mir dashboard */}
-            {!!location && renderLotsTitle}
+            {renderLotsTitle}
 
             <style.Header>
 
