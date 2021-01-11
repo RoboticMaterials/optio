@@ -60,7 +60,6 @@ const DashboardsHeader = (props) => {
 
 
     useEffect(() => {
-        const location = locations[stationID]
         setLocationName(location.name)
     }, [stationID, locations])
 
@@ -114,7 +113,7 @@ const DashboardsHeader = (props) => {
     return (
         <style.ColumnContainer>
 
-            {renderLotsTitle}
+            {!!location && renderLotsTitle}
 
             <style.Header>
 
