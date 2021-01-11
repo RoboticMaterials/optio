@@ -403,7 +403,8 @@ export default function LocationContent() {
                 {/* Location Type */}
                 <styled.DefaultTypesContainer>
 
-
+                  {!!selectedLocation &&
+                    <>
                     {!selectedLocation.type ?
                         <>
                             <>
@@ -445,6 +446,8 @@ export default function LocationContent() {
                             <styled.LocationTypeLabel>{locationTypeName}</styled.LocationTypeLabel>
                         </styled.LocationTypeContainer>
                     }
+                    </>
+                  }
 
                 </styled.DefaultTypesContainer>
                 {/* Will be used later for custom types (Lathe, Cut'it, etc.) */}
@@ -455,6 +458,8 @@ export default function LocationContent() {
                     <LocationTypeButton></LocationTypeButton> */}
                 </styled.CustomTypesContainer>
 
+              {!!selectedLocation &&
+                <>
                 {selectedLocation.schema === 'station' ?
                     <>
 
@@ -543,6 +548,8 @@ export default function LocationContent() {
                         :
                         <div style={{ height: "100%" }}></div>
                 }
+                </>
+              }
 
                 {/* Delete Location Button */}
                 <Button schema={'locations'} secondary onClick={() => setConfirmDeleteModal(true)} >Delete</Button>
