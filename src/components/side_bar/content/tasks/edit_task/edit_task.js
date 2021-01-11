@@ -30,7 +30,7 @@ import { putProcesses, setSelectedProcess, setFixingProcess } from '../../../../
 import { putStation } from '../../../../../redux/actions/stations_actions'
 import { selectLocation, deselectLocation } from '../../../../../redux/actions/locations_actions'
 import { select } from 'd3-selection'
-
+console.log("I added a console log")
 const EditTask = (props) => {
 
     const {
