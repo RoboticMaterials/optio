@@ -337,7 +337,7 @@ const ApiContainer = (props) => {
     const loadCriticalData = async () => {
         const status = await onGetStatus();
         const taskQueue = await onGetTaskQueue()
-        const devices = !!MiRMapEnabled && await onGetDevices()
+        const devices = await onGetDevices()
     }
 
     /*
@@ -461,7 +461,7 @@ const ApiContainer = (props) => {
     const handleDeviceWithoutADashboard = async (devices, dashboards) => {
         Object.values(devices).map(async (device) => {
             // if the device does not have a dashboard, add one
-            if (!device.dashboards) {
+            if (!device.dashboards || device.dashboards.length === 0) {
 
                 console.log('QQQQ Device does not have a dashboard', deepCopy(device))
                 alert('Device does not have a dashboard')
@@ -482,10 +482,33 @@ const ApiContainer = (props) => {
 
             }
 
-            // If the device does have a dashboard, but that dashboard has been lost for some reason, make a new dashboard
-            else if (!dashboards[device.dashboard]) {
+            device.dashboards.map((dashboard) => {
+                if (!dashboards[dashboard]) {
+                    console.log('QQQQ Dashboard has dissapeared for some reason', dashboard)
+                    alert('Devices dashboard has been deleted, recreating')
 
-            }
+                    const newDeviceDashboard = {
+                        name: `${device.device_name} Dashboard`,
+                        buttons: [],
+                        device: device._id,
+                    }
+
+                    const newDashboard = onPostDashoard(newDeviceDashboard)
+
+                    return newDashboard.then(async (dashPromise) => {
+                        // Add new dashboard
+                        device.dashboards.push(dashPromise._id.$oid)
+
+                        // Delete old dashboard
+                        const index = device.dashboards.indexOf(dashboard)
+                        device.dashboards.splice(index, 1)
+
+                        await onPutDevice(device, device._id)
+                    })
+
+
+                }
+            })
         })
     }
 
