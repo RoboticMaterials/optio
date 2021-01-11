@@ -30,6 +30,8 @@ import { putProcesses, setSelectedProcess, setFixingProcess } from '../../../../
 import { putStation } from '../../../../../redux/actions/stations_actions'
 import { selectLocation, deselectLocation } from '../../../../../redux/actions/locations_actions'
 import { select } from 'd3-selection'
+import {DEVICE_CONSTANTS} from "../../../../../constants/device_constants";
+import {generateAssociatedTask} from "../../../../../methods/utils/route_utils";
 
 const EditTask = (props) => {
 
@@ -187,7 +189,43 @@ const EditTask = (props) => {
         toggleEditing(false)
     }
 
-    const onSave = async () => {
+    const updateDashboard = () => {
+        // Add the task automatically to the associated load station dashboard
+        // Since as of now the only type of task we are doing is push, only need to add it to the load location
+        let updatedStation = deepCopy(stations[selectedTask.load.station])
+
+        let updatedDashboard = dashboards[updatedStation.dashboards[0]]
+
+        if (updatedDashboard === undefined) {
+            let defaultDashboard = {
+                name: updatedStation.name + ' Dashboard',
+                buttons: [],
+                station: updatedStation._id
+            }
+            const postDashboardPromise = dispatchPostDashboard(defaultDashboard)
+            postDashboardPromise.then(async postedDashboard => {
+                alert('Added dashboard to location. There already should be a dashboard tied to this location, so this is an temp fix')
+                console.log('QQQQ Posted dashboard', postedDashboard)
+                updatedStation.dashboards = [postedDashboard._id.$oid]
+                await dispatchPutStation(updatedStation, updatedStation._id)
+
+            })
+        }
+
+        const newDashboardButton = {
+            color: '#bcbcbc',
+            id: selectedTask._id,
+            name: selectedTask.name,
+            task_id: selectedTask._id
+        }
+        updatedDashboard.buttons.push(newDashboardButton)
+        dispatchPutDashboard(updatedDashboard, updatedDashboard._id.$oid)
+
+
+        // dispatch(taskActions.removeTask(selectedTask._id)) // Remove the temporary task from the local copy of tasks
+    }
+
+    const createObject = () => {
         // Save object
         let objectId
         if ('name' in obj) {
@@ -208,231 +246,130 @@ const EditTask = (props) => {
             }
         }
 
-        Object.assign(selectedTask, { obj: objectId })
+        return objectId
+    }
 
-        let taskId = ''
-
-        // Save Task
-        if (!!selectedTask.new) { // If task is new, POST
-
-            // If it's apart of a device, need to post 2 tasks and associate them with each other
-            // 1 robot task and 1 human task
-            // This allows for the ability for humans to do the task and seperates statistics between types
-            if (selectedTask.device_type === 'MiR_100') {
-
-                const newID = uuid.v4()
-
-                const humanTask = {
-                    ...selectedTask,
-                    device_type: 'human',
-                    _id: newID,
-                    associated_task: selectedTask._id,
-                }
-
-                selectedTask.associated_task = humanTask._id
-
-                console.log('QQQQ Human task', humanTask)
-                console.log('QQQQ Device task', selectedTask)
-
-                await dispatch(taskActions.postTask(selectedTask))
-                await dispatch(taskActions.postTask(humanTask))
-
-                // Temp fix for a weird issue with redux and posting tasks to fast
-                // setTimeout(onGetTasks(), 500)
-
-            }
-            else {
-                console.log('QQQQ human task', deepCopy(selectedTask))
-                await dispatch(taskActions.postTask(selectedTask))
-
+    const updateExistingTask = async (task) => {
+        // If the task device type is human and has an associated task, then this task must have gone from device to human based
+        // so delete the robot task and keep the associated human task from the new human task, keeps previous human task data
+        // If this doesn't make sense, look at the if statement above
+        // Hint, if there is a task that has 2 tasks because its a device task, only the device task is showed in the list
+        if (task.device_type === DEVICE_CONSTANTS.HUMAN && !!task.associated_task) {
+            console.log("updateExistingTask case 1 task",task)
+            const updatedHumanTask = {
+                ...task,
+                device_type: DEVICE_CONSTANTS.HUMAN,
+                _id: task.associated_task
             }
 
-            // Add the task automatically to the associated load station dashboard
-            // Since as of now the only type of task we are doing is push, only need to add it to the load location
-            let updatedStation = deepCopy(stations[selectedTask.load.station])
+            delete updatedHumanTask.associated_task
 
-            let updatedDashboard = dashboards[updatedStation.dashboards[0]]
+            console.log("updatedHumanTask",updatedHumanTask)
 
-            if (updatedDashboard === undefined) {
-                let defaultDashboard = {
-                    name: updatedStation.name + ' Dashboard',
-                    buttons: [],
-                    station: updatedStation._id
-                }
-                const postDashboardPromise = dispatchPostDashboard(defaultDashboard)
-                postDashboardPromise.then(async postedDashboard => {
-                    alert('Added dashboard to location. There already should be a dashboard tied to this location, so this is an temp fix')
-                    console.log('QQQQ Posted dashboard', postedDashboard)
-                    updatedStation.dashboards = [postedDashboard._id.$oid]
-                    await dispatchPutStation(updatedStation, updatedStation._id)
+            // update task process info
+            updateProcessInfo(updatedHumanTask)
 
-                })
-            }
-
-            const newDashboardButton = {
-                color: '#bcbcbc',
-                id: selectedTask._id,
-                name: selectedTask.name,
-                task_id: selectedTask._id
-            }
-            updatedDashboard.buttons.push(newDashboardButton)
-            dispatchPutDashboard(updatedDashboard, updatedDashboard._id.$oid)
-
-
-            // dispatch(taskActions.removeTask(selectedTask._id)) // Remove the temporary task from the local copy of tasks
-
-        } else {    // If task is not new, PUT
-            taskId = selectedTask._id
-
-            // If the task device type is human and has an associated task, then this task must have gone from device to human based
-            // so delete the robot task and keep the associated human task from the new human task, keeps previous human task data
-            // If this doesn't make sense, look at the if statement above
-            // Hint, if there is a task that has 2 tasks because its a device task, only the device task is showed in the list
-            if (selectedTask.device_type === 'human' && !!selectedTask.associated_task) {
-
-                const updatedHumanTask = {
-                    ...deepCopy(tasks[selectedTask.associated_task])
-                }
-
-                delete updatedHumanTask.associated_task
-
-                dispatch(taskActions.putTask(updatedHumanTask, updatedHumanTask._id))
-                dispatchDeleteTask(selectedTask._id)
-
-            }
-
-            // If the task is an associated task, also update the associated task
-            else if (!!selectedTask.associated_task) {
-
-                const updatedAssociatedTask = {
-                    ...deepCopy(selectedTask),
-                    device_type: tasks[selectedTask.associated_task].device_type,
-                    _id: selectedTask.associated_task
-                }
-
-                dispatch(taskActions.putTask(selectedTask, selectedTask._id))
-                dispatch(taskActions.putTask(updatedAssociatedTask, selectedTask.associated_task))
-
-            }
-
-            // If the task is not a human based task but it has no associated tasks
-            // that means it was a human based task that is now a device task
-            // So make a new device task
-            else if (selectedTask.device_type !== 'human' && !selectedTask.associated_task) {
-
-                // New Device task
-                const newTask = {
-                    ...deepCopy(selectedTask),
-                    associated_task: selectedTask._id,
-                    _id: uuid.v4(),
-                }
-
-                // Old human task
-                const updatedTask = {
-                    ...deepCopy(selectedTask),
-                    device_type: 'human',
-                    associated_task: newTask._id,
-                }
-
-                dispatch(taskActions.putTask(updatedTask, selectedTask._id))
-                dispatch(taskActions.postTask(newTask))
-
-            }
-
-
-
-            // Else its just a plain jane task
-            else {
-                dispatch(taskActions.putTask(selectedTask, selectedTask._id))
-            }
+             dispatch(taskActions.putTask(updatedHumanTask, updatedHumanTask._id))
+             dispatchDeleteTask(task._id)
 
         }
 
-        // If this task is part of a process and not already in the graph of routes, then add the task to the selected process
-        if (isProcessTask && !selectedProcess.routes.includes(selectedTask._id)) {
+        // If the task is an associated task, also update the associated task
+        else if (!!task.associated_task) {
+            console.log("updateExistingTask case 2 task",task)
 
-            /**
-             * The structure of a routes that belong to a process is a directed graph
-             * The way it works is the all stations involved with a process are added as keys
-             * The values of each station are routes that have that station as the unload station
-             *
-             * This means that the very first station in a process wont have a route associated with it because it only loads and doesnt unload
-             *
-             * EX:
-             *
-             * Station 1 has a route that goes to Station 2 (route1) and Station 3 (route2)
-             * Station 2 has a route that goes to Station 3 (route3)
-             * Station 3 has no routes that leave the station
-             *
-             * So the data structure would look like this:
-             * {
-             *  station1: [], // No routes that unload here
-             *  station2: [route1] // Route 1 unloads here
-             *  station3: [route2, route3] // Route 2 and 3 unload here
-             * }
-             */
-
-            //  Commented out for now
-            // let processRoutes = selectedProcess.routes
-
-            // // If the task is already incuded in the process then skip over
-            // if (Object.keys(processRoutes).includes(selectedTask.unload.station) && processRoutes[selectedTask.unload.station].includes(selectedTask._id)) return
-
-            // // Else if the process includes the station, then add task to the station
-            // else if (Object.keys(processRoutes).includes(selectedTask.unload.station)) {
-            //     processRoutes[selectedTask.unload.station].push(selectedTask._id)
-            // }
-
-            // // Else the process does not include station, so add station and route
-            // else {
-            //     processRoutes[selectedTask.unload.station] = [selectedTask._id]
-            // }
-
-            // // If the process does not include the load station then add it with no attatched routes (See directed graph explanation above)
-            // if(!processRoutes[selectedTask.load.station]) {
-            //     processRoutes[selectedTask.load.station] = []
-            // }
-
-            if (!!fixingProcess) {
-
-                // If the route addition fixes, process check to see if the process is still broken
-                // If it fixes the process, it returns false because if it breaks the process it returns an int which is truethy
-                if (!willRouteAdditionFixProcess(selectedProcess, selectedTask, tasks)) {
-                    selectedProcess.broken = null
-                }
-                else {
-                    // Update the broken location with the new array position
-                    selectedProcess.broken = willRouteAdditionFixProcess(selectedProcess, selectedTask, tasks)
-                }
-
-                // Splice in the new route into the correct position
-                selectedProcess.routes.splice(selectedProcess.broken - 1, 0, selectedTask._id)
-
-            } else {
-                selectedProcess.routes.push(selectedTask._id);
-
+            const updatedAssociatedTask = {
+                ...task,
+                device_type: tasks[task.associated_task].device_type,
+                _id: task.associated_task
             }
 
-            dispatchSetSelectedProcess(
-                selectedProcess
-            )
+            // update task process info - REMOVE PROCESS FROM HUMAN TASK
+            // updateProcessInfo(updatedSelectedTask)
+            // updateProcessInfo(updatedSelectedTask)
 
-            // Add the process to the task
-            selectedTask.processes.push(selectedProcess._id);
+            dispatch(taskActions.putTask(task, task._id))
+            dispatch(taskActions.putTask(updatedAssociatedTask, task.associated_task))
 
-            // If the task has an associated process, add the process to that task as well if that task does not have that process
-            // This also checks to see if the associated task exists in tasks, it wouldnt exits in tasks because its a new task and the post has not gon through yet
-            // A simple await should work, butt it doesnt. Thanks Obama.
-            // if (!!selectedTask.associated_task && !!tasks[selectedTask.associated_task] && !tasks[selectedTask.associated_task].processes.includes(selectedProcess._id)) {
-            //     let updatedAssociatedTask = tasks[selectedTask.associated_task]
+        }
 
-            //     console.log('QQQQ Ass task', selectedTask.associated_task, tasks, tasks[selectedTask.associated_task])
+        // If the task is not a human based task but it has no associated tasks
+        // that means it was a human based task that is now a device task
+        // So make a new device task
+        else if (task.device_type !== DEVICE_CONSTANTS.HUMAN && !task.associated_task) {
+            console.log("updateExistingTask case 3 task",task)
 
-            //     updatedAssociatedTask.processes.push(selectedProcess._id)
-            //     dispatch(taskActions.putTask(updatedAssociatedTask, updatedAssociatedTask._id))
-            // }
+            const deviceTask = generateAssociatedTask(task, DEVICE_CONSTANTS.MIR_100)
 
-            dispatch(taskActions.putTask(selectedTask, selectedTask._id))
+            // Old human task
+            const updatedTask = {
+                ...task,
+                device_type: DEVICE_CONSTANTS.HUMAN,
+                associated_task: deviceTask._id,
+                processes: [] // remove this line if human tasks can contain processes
+            }
+
+            // update task process info
+            updateProcessInfo(deviceTask)
+
+            dispatch(taskActions.putTask(updatedTask, task._id))
+            dispatch(taskActions.postTask(deviceTask))
+
+        }
+
+        // Else its just a plain jane task
+        else {
+            console.log("updateExistingTask case 4 task",task)
+            // update task process info
+            updateProcessInfo(task)
+            dispatch(taskActions.putTask(task, task._id))
+        }
+    }
+
+    const createNewTask = async (task) => {
+        // update task process info
+        updateProcessInfo(task)
+
+        // If it's apart of a device, need to post 2 tasks and associate them with each other
+        // 1 robot task and 1 human task
+        // This allows for the ability for humans to do the task and seperates statistics between types
+        if (task.device_type === DEVICE_CONSTANTS.MIR_100) {
+
+            const humanTask = generateAssociatedTask(task, DEVICE_CONSTANTS.HUMAN)
+            task.associated_task = humanTask._id
+
+            await dispatch(taskActions.postTask(task))
+            await dispatch(taskActions.postTask(humanTask))
+        }
+        else {
+            await dispatch(taskActions.postTask(task))
+        }
+
+        // dashboard needs to be updated with button for new task
+        updateDashboard()
+    }
+
+
+    const onSave = async () => {
+        // modifiable copy of task
+        var updatedSelectedTask = {...selectedTask}
+        console.log("before updatedSelectedTask",updatedSelectedTask)
+
+        // handle object creation
+        updatedSelectedTask.obj = createObject()
+
+
+
+        console.log("after updatedSelectedTask",updatedSelectedTask)
+
+        // Save Task
+        if (!!updatedSelectedTask.new) { // If task is new, POST
+
+            createNewTask(updatedSelectedTask)
+
+        } else {    // If task is not new, PUT
+
+            updateExistingTask(updatedSelectedTask)
 
         }
 
@@ -440,6 +377,43 @@ const EditTask = (props) => {
         dispatch(taskActions.deselectTask())    // Deselect
         setSelectedTaskCopy(null)                   // Reset the local copy to null
 
+    }
+
+    const updateProcessInfo = (task) => {
+        // If this task is part of a process and not already in the graph of routes, then add the task to the selected process
+        if (isProcessTask && !selectedProcess.routes.includes(task._id)) {
+
+            if (!!fixingProcess) {
+
+                // If the route addition fixes, process check to see if the process is still broken
+                // If it fixes the process, it returns false because if it breaks the process it returns an int which is truethy
+                if (!willRouteAdditionFixProcess(selectedProcess, task, tasks)) {
+                    selectedProcess.broken = null
+                }
+                else {
+                    // Update the broken location with the new array position
+                    selectedProcess.broken = willRouteAdditionFixProcess(selectedProcess, task, tasks)
+                }
+
+                // Splice in the new route into the correct position
+                selectedProcess.routes.splice(selectedProcess.broken - 1, 0, task._id)
+
+            } else {
+                selectedProcess.routes.push(task._id);
+
+            }
+
+            dispatchSetSelectedProcess(
+                selectedProcess
+            )
+
+            if(!task.processes.includes(selectedProcess._id)) task.processes.push(selectedProcess._id)
+
+            // return {
+            //     ...task,
+            //     processes: [...task.processes, selectedProcess._id]
+            // }
+        }
     }
 
     /**

@@ -115,7 +115,7 @@ const ApiContainer = (props) => {
         // this interval is always on
         // loads essential info used on every page such as status and taskQueue
 
-        const criticalDataInterval = setInterval(() => loadCriticalData(), 500);
+        const criticalDataInterval = setInterval(() => loadCriticalData(), 50000);
         const mapDataInterval = setInterval(() => loadMapData(), 50000)
         return () => {
             // clear intervals
@@ -219,7 +219,7 @@ const ApiContainer = (props) => {
         switch (pageName) {
 
             case 'objects':
-                setPageDataInterval(setInterval(() => loadObjectsData(), 10000))
+                setPageDataInterval(setInterval(() => loadObjectsData(), 100000))
                 break;
 
             case 'scheduler':
@@ -227,11 +227,11 @@ const ApiContainer = (props) => {
                 break;
 
             case 'dashboards':
-                setPageDataInterval(setInterval(() => loadDashboardsData(), 1000))
+                setPageDataInterval(setInterval(() => loadDashboardsData(), 100000))
                 break;
 
             case 'tasks':
-                setPageDataInterval(setInterval(() => loadTasksData(), 10000))
+                setPageDataInterval(setInterval(() => loadTasksData(), 100000))
                 break;
 
             case 'settings':
@@ -239,13 +239,13 @@ const ApiContainer = (props) => {
                 break;
 
             case 'lots':
-                setPageDataInterval(setInterval(() => loadCardsData(), 1000))
+                setPageDataInterval(setInterval(() => loadCardsData(), 100000))
                 break
 
             case 'processes':
                 if (data2 === "lots") {
                     loadCardsData(data1) // initial call
-                    setPageDataInterval(setInterval(() => loadCardsData(data1), 1000))
+                    setPageDataInterval(setInterval(() => loadCardsData(data1), 100000))
                 }
                 else if (data1 === "timeline") {
                     loadCardsData() // initial call
