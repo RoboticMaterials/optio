@@ -13,6 +13,8 @@ import Textbox from '../../../../../basic/textbox/textbox.js'
 
 // Import actions
 import { setSelectedTask, setTaskAttributes } from '../../../../../../redux/actions/tasks_actions'
+import {isHumanTask, isMiRTask, isOnlyHumanTask} from "../../../../../../methods/utils/route_utils";
+import {DEVICE_CONSTANTS} from "../../../../../../constants/device_constants";
 
 
 const LoadUnloadFields = () => {
@@ -28,14 +30,15 @@ const LoadUnloadFields = () => {
 
     // This handles if any position of a route is a human position, then it cant be done by a robot
     let humanLocation = false
+    const mirEnabled = isMiRTask(selectedTask)
 
     if ((!!stations[selectedTask.load.position] && stations[selectedTask.load.position].type === 'human') || (!!stations[selectedTask.unload.position] && stations[selectedTask.unload.position].type === 'human')) {
         humanLocation = true
 
-        if (selectedTask.device_type !== 'human') {
+        if (!isOnlyHumanTask(selectedTask)) {
             dispatchSetSelectedTask({
                 ...selectedTask,
-                device_type: 'human',
+                device_types: [DEVICE_CONSTANTS.HUMAN],
             })
         }
 
@@ -48,14 +51,12 @@ const LoadUnloadFields = () => {
                     <styled.RowContainer>
                         <styled.Header>Robot Enabled</styled.Header>
                         <Switch
-                            checked={selectedTask.device_type !== 'human'}
+                            checked={mirEnabled}
                             onChange={() => {
-
-                                const device_type = selectedTask.device_type !== 'human' ? 'human' : 'MiR_100'
                                 dispatchSetSelectedTask({
                                     ...selectedTask,
                                     // Just setting this to MiR100 for now. Need to expand in the future for other devices
-                                    device_type: device_type
+                                    device_types: mirEnabled ? [DEVICE_CONSTANTS.HUMAN] : [DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN],
                                 })
                             }}
                             onColor='red'
@@ -115,7 +116,7 @@ const LoadUnloadFields = () => {
                 lines={2}>
             </Textbox>
 
-            {selectedTask.device_type !== 'human' &&
+            {!isHumanTask(selectedTask) &&
                 <div style={{ display: "flex", flexDirection: "row", marginTop: "0.5rem" }}>
                     <styled.Label>Sound </styled.Label>
                     <DropDownSearch
@@ -145,7 +146,7 @@ const LoadUnloadFields = () => {
             {/* If its a human task, then the task can also be defined as a handoff.
                     A handoff does not require unload confirmation.
                 */}
-            {selectedTask.device_type === 'human' &&
+            {isHumanTask(selectedTask) &&
                 <styled.ContentContainer style={{ paddingBottom: '0rem' }}>
                     <styled.RowContainer>
                         <styled.Label style={{ marginBottom: '0rem' }}>Confirm Unload?</styled.Label>
@@ -184,7 +185,7 @@ const LoadUnloadFields = () => {
                     </Textbox>
 
                     {/* If its a human task, then you shouldnt require people to make noises. I personally would though...  */}
-                    {selectedTask.device_type !== 'human' &&
+                    {!isHumanTask(selectedTask) &&
 
                         <div style={{ display: "flex", flexDirection: "row", marginTop: "0.5rem" }}>
                             <styled.Label>Sound </styled.Label>

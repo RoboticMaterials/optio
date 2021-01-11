@@ -23,6 +23,7 @@ import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import { isEquivalent, deepCopy } from '../../../../../methods/utils/utils'
 import uuid from 'uuid'
 import {DEVICE_CONSTANTS} from "../../../../../constants/device_constants";
+import {generateDefaultRoute} from "../../../../../methods/utils/route_utils";
 
 const EditProcess = (props) => {
 
@@ -190,32 +191,7 @@ const EditProcess = (props) => {
                             secondary
                             disabled={selectedTask?.new}
                             onClick={() => {
-                                const newTask = {
-                                    name: '',
-                                    obj: null,
-                                    type: 'push',
-                                    quantity: 1,
-                                    device_types: !!MiRMapEnabled ? [DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN] : [DEVICE_CONSTANTS.HUMAN],
-                                    handoff: true,
-                                    track_quantity: true,
-                                    map_id: currentMap._id,
-                                    new: true,
-                                    processes: [],
-                                    load: {
-                                        position: null,
-                                        station: null,
-                                        sound: null,
-                                        instructions: 'Load',
-                                        timeout: '01:00'
-                                    },
-                                    unload: {
-                                        position: null,
-                                        station: null,
-                                        sound: null,
-                                        instructions: 'Unload'
-                                    },
-                                    _id: uuid.v4(),
-                                }
+                                const newTask = generateDefaultRoute()
                                 dispatchAddTask(newTask)
                                 setNewRoute(newTask)
                                 dispatchSetSelectedTask(newTask)
@@ -249,32 +225,7 @@ const EditProcess = (props) => {
                     secondary
                     disabled={selectedTask?.new}
                     onClick={() => {
-                        const newTask = {
-                            name: '',
-                            obj: null,
-                            type: 'push',
-                            quantity: 1,
-                            device_types: !!MiRMapEnabled ? [DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN] : [DEVICE_CONSTANTS.HUMAN],
-                            handoff: !!MiRMapEnabled ? false : true,
-                            track_quantity: true,
-                            map_id: currentMap._id,
-                            new: true,
-                            processes: [],
-                            load: {
-                                position: null,
-                                station: null,
-                                sound: null,
-                                instructions: 'Load',
-                                timeout: '01:00'
-                            },
-                            unload: {
-                                position: null,
-                                station: null,
-                                sound: null,
-                                instructions: 'Unload'
-                            },
-                            _id: uuid.v4(),
-                        }
+                        const newTask = generateDefaultRoute()
                         dispatchAddTask(newTask)
                         setNewRoute(newTask)
                         dispatchSetSelectedTask(newTask)
