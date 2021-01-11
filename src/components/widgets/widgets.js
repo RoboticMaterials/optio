@@ -11,7 +11,7 @@ import useWindowSize from '../../hooks/useWindowSize'
 
 // Import Actions
 import { hoverStationInfo } from '../../redux/actions/stations_actions'
-import { deselectLocation, widgetLoaded, setSelectedLocationCopy, setSelectedLocationChildrenCopy } from '../../redux/actions/locations_actions'
+import { selectLocation, deselectLocation, widgetLoaded, setSelectedLocationCopy, setSelectedLocationChildrenCopy } from '../../redux/actions/locations_actions'
 
 import * as sidebarActions from "../../redux/actions/sidebar_actions"
 import * as locationActions from '../../redux/actions/locations_actions'
@@ -53,6 +53,7 @@ const Widgets = (props) => {
     const onHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const onWidgetLoaded = (bool) => dispatch(widgetLoaded(bool))
     const onDeselectLocation = () => dispatch(deselectLocation())
+    const onSelectLocation = () => dispatch(selectLocation())
     const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
     const onSetSelectedLocationChildrenCopy = (locationChildren) => dispatch(setSelectedLocationChildrenCopy(locationChildren))
     const onShowSideBar = (bool) => dispatch(sidebarActions.setOpen(bool))
@@ -90,7 +91,6 @@ const Widgets = (props) => {
         }
 
         onShowSideBar(true)
-
         onSetSelectedLocationCopy(deepCopy(selectedLocation))
         if (!!selectedLocation.children) {
             onSetSelectedLocationChildrenCopy(selectedLocation.children.map(positionID => deepCopy(positions[positionID])))
