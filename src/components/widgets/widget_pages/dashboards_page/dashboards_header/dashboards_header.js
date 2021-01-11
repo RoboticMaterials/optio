@@ -13,7 +13,7 @@ import useWindowSize from '../../../../../hooks/useWindowSize'
 // import external funcations
 import { ThemeContext } from "styled-components";
 import { withRouter } from "react-router-dom";
-import { getCards} from "../../../../../redux/actions/card_actions";
+import { getCards } from "../../../../../redux/actions/card_actions";
 
 
 // import constants
@@ -52,17 +52,10 @@ const DashboardsHeader = (props) => {
     const locations = useSelector(state => state.locationsReducer.locations)
     const location = locations[stationID]
 
-    const [locationName, setLocationName] = useState("")
     const [slice, setSlice] = useState(null)
     const size = useWindowSize()
     const windowWidth = size.width
     const mobileMode = windowWidth < widthBreakPoint;
-
-
-    useEffect(() => {
-        setLocationName(location.name)
-    }, [stationID, locations])
-
 
 
     // goes to main dashboards page
@@ -78,28 +71,28 @@ const DashboardsHeader = (props) => {
         let hasLot = false
 
         for (let i = 0; i < Object.values(cards).length; i++) {
-            if (!!Object.values(cards)[i].bins[location._id]){
+            if (!!Object.values(cards)[i].bins[location._id]) {
                 hasLot = true
                 break
-              }
             }
+        }
 
         if (!!hasLot) {
             return (
-                <style.RowContainer windowWidth = {windowWidth}>
+                <style.RowContainer windowWidth={windowWidth}>
                     <style.LotsTitle>Lots:</style.LotsTitle>
                     {Object.values(cards).map((card, ind) =>
                         <>
                             {!!card.bins[location._id] &&
 
-                                <style.LotItem>{card.name + ' (' + card.bins[location._id].count +')'}</style.LotItem>
+                                <style.LotItem>{card.name + ' (' + card.bins[location._id].count + ')'}</style.LotItem>
                             }
                         </>
 
                     )}
                 </style.RowContainer>
             )
-          }
+        }
 
         else {
             return (
@@ -113,6 +106,7 @@ const DashboardsHeader = (props) => {
     return (
         <style.ColumnContainer>
 
+            {/* If there is a location then see if it has lots. There wouldnt be a location because its a Mir dashboard */}
             {!!location && renderLotsTitle}
 
             <style.Header>
