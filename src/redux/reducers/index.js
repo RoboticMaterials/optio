@@ -31,6 +31,7 @@ import cardsReducer from './cards_reducer'
 import lotsReducer from './lots_reducer'
 import testReducer from './test_reducer'
 import cardPageReducer from "./card_page_reducer"
+// TEST
 
 export default combineReducers({
     cardPageReducer,
