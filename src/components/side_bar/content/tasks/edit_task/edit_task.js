@@ -251,6 +251,7 @@ const EditTask = (props) => {
 
 
     const onSave = async () => {
+        console.log("editTask onSave")
         // modifiable copy of task
         var updatedSelectedTask = {...selectedTask}
 
@@ -262,6 +263,7 @@ const EditTask = (props) => {
 
         // Save Task
         if (!!updatedSelectedTask.new) { // If task is new, POST
+            console.log("editTask onSave NEW")
 
             // POST new task
             await dispatch(taskActions.postTask(updatedSelectedTask))
@@ -270,6 +272,7 @@ const EditTask = (props) => {
             updateDashboard()
 
         } else {    // If task is not new, PUT
+            console.log("editTask onSave EDIT")
             dispatch(taskActions.putTask(updatedSelectedTask, updatedSelectedTask._id))
         }
 
