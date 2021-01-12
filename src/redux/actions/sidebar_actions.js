@@ -2,7 +2,7 @@ import {
     SET_MODE,
     SET_ACTION,
     SET_WIDTH,
-    SET_OPEN
+    SET_OPEN,
 } from '../types/sidebar_types'
 
 export const setMode = (mode) => {

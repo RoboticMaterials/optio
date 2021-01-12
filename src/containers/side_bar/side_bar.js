@@ -46,7 +46,6 @@ const SideBar = (props) => {
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const onSideBarBack = (props) => dispatch(sideBarBack(props))
 
-
     const [width, setWidth] = useState(450)
     const [prevWidth, setPrevWidth] = useState(width)
     const [buttonActive, setButtonActive] = useState(false)
@@ -59,7 +58,7 @@ const SideBar = (props) => {
     const taskEditing = useSelector(state => state.tasksReducer.editingTask)
     const processEditing = useSelector(state => state.processesReducer.editingProcess)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
-
+    //console.log(sideBarOpen)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
     const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
@@ -83,6 +82,12 @@ const SideBar = (props) => {
         }
     }, [])
 
+
+  useEffect(() => {
+    dispatch(sidebarActions.setOpen(sideBarOpen))
+  })
+
+
     // sets width to full screen if card subpage is open in processes
     useEffect(() => {
         const {
@@ -95,7 +100,6 @@ const SideBar = (props) => {
 
 
         const time = Date.now()
-
         if((page === "processes" || page === "lots") && ((subpage === "lots")) || (id === "timeline") || (id === "summary")) {
 
             if(!prevWidth) setPrevWidth(width) // store previous width to restore when card page is left

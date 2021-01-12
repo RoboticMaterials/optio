@@ -2,16 +2,15 @@ import {
     SET_MODE,
     SET_ACTION,
     SET_WIDTH,
-    SET_OPEN
+    SET_OPEN,
 } from '../types/sidebar_types'
-
 
 
 const defaultState = {
     mode: 'locations',
     action: null,
     width: 450,
-    open: false
+    open: false,
 };
 
 export default function sidebarReducer(state = defaultState, action) {
@@ -41,6 +40,8 @@ export default function sidebarReducer(state = defaultState, action) {
                 ...state,
                 open: action.payload
             }
+
+
 
         default:
             return state;
