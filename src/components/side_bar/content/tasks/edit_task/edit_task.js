@@ -75,8 +75,6 @@ const EditTask = (props) => {
 
 
     useEffect(() => {
-        console.log('QQQQ Selected Task', selectedTask)
-        if (!!selectedTask.associated_task) console.log('QQQQ Associated Task', tasks[selectedTask.associated_task])
         setSelectedTaskCopy(selectedTask)
 
         // Commented out for now
@@ -143,8 +141,11 @@ const EditTask = (props) => {
             ).forEach(dashboard => {
                 let ind = dashboard.buttons.findIndex(button => button.task_id == selectedTask._id)
                 if (ind !== -1) {
-                    dashboard.buttons.splice(ind, 1)
-                    dispatch(dashboardActions.putDashboard(dashboard, dashboard._id.$oid))
+                    const UpdatedButtons = dashboard.buttons.slice(ind, 1)
+                    dispatch(dashboardActions.putDashboard({
+                        ...dashboard,
+                        buttons: UpdatedButtons
+                    }, dashboard._id.$oid))
                 }
             }
             )
@@ -249,59 +250,35 @@ const EditTask = (props) => {
         return objectId
     }
 
-    const updateExistingTask = async (task) => {
-
-            console.log("updateExistingTask case 4 task",task)
-            // update task process info
-            updateProcessInfo(task)
-            dispatch(taskActions.putTask(task, task._id))
-
-    }
-
-    const createNewTask = async (task) => {
-        console.log("createNewTask task",task)
-
-        // update task process info
-        updateProcessInfo(task)
-
-        // POST new task
-        await dispatch(taskActions.postTask(task))
-
-        // dashboard needs to be updated with button for new task
-        updateDashboard()
-    }
-
 
     const onSave = async () => {
         // modifiable copy of task
         var updatedSelectedTask = {...selectedTask}
-        console.log("before updatedSelectedTask",updatedSelectedTask)
 
         // handle object creation
         updatedSelectedTask.obj = createObject()
 
-
-
-        console.log("after updatedSelectedTask",updatedSelectedTask)
+        // update task process info
+        updateProcessInfo(updatedSelectedTask)
 
         // Save Task
         if (!!updatedSelectedTask.new) { // If task is new, POST
 
-            createNewTask(updatedSelectedTask)
+            // POST new task
+            await dispatch(taskActions.postTask(updatedSelectedTask))
+
+            // dashboard needs to be updated with button for new task
+            updateDashboard()
 
         } else {    // If task is not new, PUT
-
-            updateExistingTask(updatedSelectedTask)
-
+            dispatch(taskActions.putTask(updatedSelectedTask, updatedSelectedTask._id))
         }
 
         toggleEditing(false)                            // No longer editing ***NOTE: THIS SHOULD COME BEFORE DESELECTING THE TASK IN ORDER TO AVOID CRASH IN EDIT_PROCESS - QUICK AND DIRTY FIX, REALLY THE WHOLE FUNCTION NEEDS TO BE REWRITTEN***
         dispatch(taskActions.deselectTask())    // Deselect
         setSelectedTaskCopy(null)                   // Reset the local copy to null
-
     }
 
-    console.log("selectedTask",selectedTask)
 
     const updateProcessInfo = (task) => {
         // If this task is part of a process and not already in the graph of routes, then add the task to the selected process
@@ -344,19 +321,26 @@ const EditTask = (props) => {
      * Removes the route from the array of routes for a process
      */
     const handleRemove = () => {
+        var updatedProcess = [...selectedProcess]
+
+        const willBreak = willRouteDeleteBreakProcess(updatedProcess, selectedTask, tasks)
 
         // If the route removal breaks the process then updatte the process
-        if (!!willRouteDeleteBreakProcess(selectedProcess, selectedTask, tasks)) {
-            selectedProcess.broken = willRouteDeleteBreakProcess(selectedProcess, selectedTask, tasks)
+        if (!!willBreak) {
+            updatedProcess.broken = willBreak
         }
         // Remove the route from the process
-        const index = selectedProcess.routes.indexOf(selectedTask._id)
-        selectedProcess.routes.splice(index, 1)
+        const index = updatedProcess.routes.indexOf(selectedTask._id)
+        var updatedRoutes = updatedProcess.routes
+        updatedRoutes.splice(index, 1)
 
-        dispatchSetSelectedProcess(selectedProcess)
+        dispatchSetSelectedProcess({
+            ...updatedProcess,
+            routes: updatedRoutes
+        })
 
         // Remove from the Route
-        const routeIndex = selectedTask.processes.indexOf(selectedProcess._id)
+        const routeIndex = selectedTask.processes.indexOf(updatedProcess._id)
         selectedTask.processes.splice(routeIndex, 1)
 
         dispatchPutTask(selectedTask, selectedTask._id)
@@ -534,10 +518,6 @@ const EditTask = (props) => {
                                                 return true
                                             }
                                         })
-
-                                        // Filter outs any human tasks that have associated tasks (AKA it only shows the associated device task)
-                                        .filter(task => !task.associated_task || (!!task.associated_task && task.device_type !== 'human'))
-
                                 }
                                 // values={!!selectedTask.idle_location ? [positions[selectedTask.idle_location]] : []}
                                 dropdownGap={5}
