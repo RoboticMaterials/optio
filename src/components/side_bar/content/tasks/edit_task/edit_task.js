@@ -58,7 +58,7 @@ const EditTask = (props) => {
     const dispatchSetSelectedLocation = (id) => dispatch(selectLocation(id))
     const dispatchDeselectLocation = () => dispatch(deselectLocation())
 
-    let tasks = useSelector(state => state.tasksReducer.tasks)
+    let routes = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
@@ -138,26 +138,31 @@ const EditTask = (props) => {
         Object.values(dashboards)
             .filter(dashboard =>
                 dashboard.station == selectedTask.load.station || dashboard.station == selectedTask.unload.station
-            ).forEach(dashboard => {
-                let ind = dashboard.buttons.findIndex(button => button.task_id == selectedTask._id)
+            ).forEach(currDashboard => {
+                var currButtons = [...currDashboard.buttons]
+
+                let ind = currButtons.findIndex(button => button.task_id == selectedTask._id)
                 if (ind !== -1) {
-                    const UpdatedButtons = dashboard.buttons.slice(ind, 1)
+                    // remove button at index
+                    currButtons.splice(ind, 1)
+
+                    // update dashboard
                     dispatch(dashboardActions.putDashboard({
-                        ...dashboard,
-                        buttons: UpdatedButtons
-                    }, dashboard._id.$oid))
+                        ...currDashboard,
+                        buttons: currButtons
+                    }, currDashboard._id.$oid))
                 }
             }
             )
 
         // If the task has associated processes, then remove that task from that process
         if (selectedTask.processes.length > 0) {
-            selectedTask.processes.map((process) => {
+            selectedTask.processes.map(async (process) => {
                 let updatedProcess = processes[process]
 
                 // If the route removal breaks the process then update the process
-                if (!!willRouteDeleteBreakProcess(updatedProcess, selectedTask, tasks)) {
-                    updatedProcess.broken = willRouteDeleteBreakProcess(updatedProcess, selectedTask, tasks)
+                if (!!willRouteDeleteBreakProcess(updatedProcess, selectedTask, routes)) {
+                    updatedProcess.broken = willRouteDeleteBreakProcess(updatedProcess, selectedTask, routes)
                 }
 
                 // Removes the task from the array of routes
@@ -166,26 +171,20 @@ const EditTask = (props) => {
 
                 // Update the process if need be
                 if (!!selectedProcess && selectedProcess._id === updatedProcess._id) {
-                    dispatchSetSelectedProcess({
+                    await dispatchSetSelectedProcess({
                         ...updatedProcess,
                     })
                 }
 
-                dispatchPutProcesses({
+                await dispatchPutProcesses({
                     ...updatedProcess,
                 })
 
             })
         }
 
-        // If the selected task has an associated task, (usually for device and human task)
-        // Delete the associated task
-        if (!!selectedTask.associated_task) {
-            dispatch(taskActions.deleteTask(selectedTask.associated_task));
-        }
-        dispatch(taskActions.deleteTask(selectedTask._id));
+        await dispatch(taskActions.deleteTask(selectedTask._id));
 
-        // dispatch(taskActions.deselectTask());
         dispatchSetSelectedTask(null)
         toggleEditing(false)
     }
@@ -288,12 +287,12 @@ const EditTask = (props) => {
 
                 // If the route addition fixes, process check to see if the process is still broken
                 // If it fixes the process, it returns false because if it breaks the process it returns an int which is truethy
-                if (!willRouteAdditionFixProcess(selectedProcess, task, tasks)) {
+                if (!willRouteAdditionFixProcess(selectedProcess, task, routes)) {
                     selectedProcess.broken = null
                 }
                 else {
                     // Update the broken location with the new array position
-                    selectedProcess.broken = willRouteAdditionFixProcess(selectedProcess, task, tasks)
+                    selectedProcess.broken = willRouteAdditionFixProcess(selectedProcess, task, routes)
                 }
 
                 // Splice in the new route into the correct position
@@ -321,9 +320,9 @@ const EditTask = (props) => {
      * Removes the route from the array of routes for a process
      */
     const handleRemove = () => {
-        var updatedProcess = [...selectedProcess]
+        var updatedProcess = {...selectedProcess}
 
-        const willBreak = willRouteDeleteBreakProcess(updatedProcess, selectedTask, tasks)
+        const willBreak = willRouteDeleteBreakProcess(updatedProcess, selectedTask, routes)
 
         // If the route removal breaks the process then updatte the process
         if (!!willBreak) {
@@ -331,7 +330,7 @@ const EditTask = (props) => {
         }
         // Remove the route from the process
         const index = updatedProcess.routes.indexOf(selectedTask._id)
-        var updatedRoutes = updatedProcess.routes
+        var updatedRoutes = [...updatedProcess.routes]
         updatedRoutes.splice(index, 1)
 
         dispatchSetSelectedProcess({
@@ -339,11 +338,15 @@ const EditTask = (props) => {
             routes: updatedRoutes
         })
 
-        // Remove from the Route
+        // Remove process from the route
         const routeIndex = selectedTask.processes.indexOf(updatedProcess._id)
-        selectedTask.processes.splice(routeIndex, 1)
+        var updatedProcesses = [...selectedTask.processes]
+        updatedProcesses.splice(routeIndex, 1)
 
-        dispatchPutTask(selectedTask, selectedTask._id)
+        dispatchPutTask({
+            ...selectedTask,
+            processes: updatedProcesses
+        }, selectedTask._id)
 
         toggleEditing(false)
         dispatch(taskActions.deselectTask()) // Deselect
@@ -385,8 +388,8 @@ const EditTask = (props) => {
 
 
             // Else if its a process and the last route in that process has an object, use that object as the default
-            else if (selectedProcess.routes.length > 0 && !!tasks[selectedProcess.routes[selectedProcess.routes.length - 1]].obj) {
-                return objects[tasks[selectedProcess.routes[selectedProcess.routes.length - 1]].obj]
+            else if (selectedProcess.routes.length > 0 && !!routes[selectedProcess.routes[selectedProcess.routes.length - 1]].obj) {
+                return objects[routes[selectedProcess.routes[selectedProcess.routes.length - 1]].obj]
             }
 
             else {
@@ -475,7 +478,7 @@ const EditTask = (props) => {
 
                                 options={
 
-                                    Object.values(tasks)
+                                    Object.values(routes)
 
                                         .filter(task => {
 
@@ -484,11 +487,11 @@ const EditTask = (props) => {
                                             if (!!fixingProcess) {
 
                                                 // Gets the route before break
-                                                const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
-                                                const taskBeforeBreak = tasks[routeBeforeBreak]
+                                                const routeIdBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
+                                                const routeBeforeBreak = routes[routeIdBeforeBreak]
 
-                                                if (!!taskBeforeBreak.unload) {
-                                                    const unloadStationID = taskBeforeBreak.unload.station
+                                                if (!!routeBeforeBreak.unload) {
+                                                    const unloadStationID = routeBeforeBreak.unload.station
 
                                                     if (task.load.station === unloadStationID) {
                                                         return true
@@ -503,7 +506,7 @@ const EditTask = (props) => {
 
                                                 // Gets the previous route
                                                 const previousRouteID = selectedProcess.routes[selectedProcess.routes.length - 1]
-                                                const previousRoute = tasks[previousRouteID]
+                                                const previousRoute = routes[previousRouteID]
 
                                                 // Gets the previouse route unload location
                                                 const unloadStationID = previousRoute.unload.station
@@ -536,11 +539,11 @@ const EditTask = (props) => {
 
                                             // If the route addition fixes, process check to see if the process is still broken
                                             // If it fixes the process, it returns false because if it breaks the process it returns an int which is truethy
-                                            if (!willRouteAdditionFixProcess(selectedProcess, values[0], tasks)) {
+                                            if (!willRouteAdditionFixProcess(selectedProcess, values[0], routes)) {
                                                 selectedProcess.broken = null
                                             }
                                             else {
-                                                selectedProcess.broken = willRouteAdditionFixProcess(selectedProcess, values[0], tasks)
+                                                selectedProcess.broken = willRouteAdditionFixProcess(selectedProcess, values[0], routes)
                                             }
 
                                             // Splice in the new route into the correct position
