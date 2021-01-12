@@ -20,8 +20,8 @@ import {
     UPDATE_STATIONS,
     REMOVE_STATION,
     SET_STATION_ATTRIBUTES,
+    SET_SELECTED_STATION,
 
-    HOVER_STATION_INFO,
 } from '../types/stations_types'
 
 import { deepCopy } from '../../methods/utils/utils';
@@ -38,7 +38,7 @@ export const getStations = () => {
             dispatch({ type: GET_STATIONS_STARTED });
         }
         function onSuccess(stations) {
-            dispatch({ type: GET_STATIONS_SUCCESS, payload: { stations } });
+            dispatch({ type: GET_STATIONS_SUCCESS, payload: stations });
             return stations;
         }
         function onError(error) {
@@ -72,7 +72,7 @@ export const postStation = (station) => {
             dispatch({ type: POST_STATION_STARTED });
         }
         function onSuccess(station) {
-            dispatch({ type: POST_STATION_SUCCESS, payload: { station } });
+            dispatch({ type: POST_STATION_SUCCESS, payload: station });
             return station;
         }
         function onError(error) {
@@ -84,7 +84,8 @@ export const postStation = (station) => {
             onStart();
             if (!('_id' in station)) {
                 station._id = uuid.v4()
-                console.log('ASSIGNED NEW GUID')
+                console.log('QQQQ Added UUID to Station, this shouldnt Happen!!')
+                alert('QQQQ Added UUID to Station, this shouldnt Happen!!')
             }
             delete station.temp
             delete station.new
@@ -99,13 +100,13 @@ export const postStation = (station) => {
 
 // put
 // ******************************
-export const putStation = (station, ID) => {
+export const putStation = (station) => {
     return async dispatch => {
         function onStart() {
             dispatch({ type: PUT_STATION_STARTED });
         }
         function onSuccess(station) {
-            dispatch({ type: PUT_STATION_SUCCESS, payload: { station } });
+            dispatch({ type: PUT_STATION_SUCCESS, payload: station });
             return station;
         }
         function onError(error) {
@@ -116,9 +117,8 @@ export const putStation = (station, ID) => {
         try {
             onStart();
             let stationCopy = deepCopy(station)
-            delete stationCopy._id
             delete stationCopy.temp
-            const updateStation = await api.putStation(stationCopy, ID);
+            const updateStation = await api.putStation(stationCopy, stationCopy._id);
             return onSuccess(updateStation)
         } catch (error) {
             return onError(error)
@@ -135,7 +135,7 @@ export const deleteStation = (ID) => {
             dispatch({ type: DELETE_STATION_STARTED });
         }
         function onSuccess(id) {
-            dispatch({ type: DELETE_STATION_SUCCESS, payload: { id } });
+            dispatch({ type: DELETE_STATION_SUCCESS, payload: id });
             return id;
         }
         function onError(error) {
@@ -167,18 +167,18 @@ export const getStationAnalytics = async (id, timeSpan) => {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 export const addStation = (station) => {
-    return { type: ADD_STATION, payload: { station } }
+    return { type: ADD_STATION, payload: station }
 }
 
-export const updateStation = (station) => {
+export const updateStationTO_BE_DELETED = (station) => {
     return { type: UPDATE_STATION, payload: { station } }
 }
 
-export const updateStations = (stations) => {
+export const updateStationsTO_BE_DELETED = (stations) => {
     return { type: UPDATE_STATIONS, payload: { stations } }
 }
 
-export const removeStation = (id) => {
+export const removeStationTO_BE_DELETED = (id) => {
     return { type: REMOVE_STATION, payload: { id } }
 }
 
@@ -186,6 +186,6 @@ export const setStationAttributes = (id, attr) => {
     return { type: SET_STATION_ATTRIBUTES, payload: { id, attr } }
 }
 
-export const hoverStationInfo = (info) => {
-    return { type: HOVER_STATION_INFO, payload: { info } }
+export const setSelectedStation = (station) => {
+    return {type: SET_SELECTED_STATION, payload: station}
 }
