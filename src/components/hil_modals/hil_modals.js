@@ -205,7 +205,6 @@ const HILModals = (props) => {
     useEffect(() => {
         const currentTask = tasks[item.task_id]
         setSelectedTask(currentTask)
-
         if (currentTask) {
             if (!!currentTask.associated_task) setAssociatedTask(tasks[currentTask.associated_task])
         }
@@ -219,11 +218,6 @@ const HILModals = (props) => {
             setHilLoadUnload('unload')
         }
 
-        if (!!item.quantity) {
-            setQuantity(item.quantity)
-        } else {
-            setQuantity(0)
-        }
 
         // On unmount, set the task q item to none
         return () => {
@@ -232,6 +226,18 @@ const HILModals = (props) => {
         }
 
     }, [tasks])
+
+    useEffect(() => {
+      if (!!item.quantity) {
+          setQuantity(item.quantity)
+      } else{
+          if(!!selectedLot){
+            setQuantity(selectedLot.bins[loadStationId].count)
+          }
+          else{setQuantity(0)}
+      }
+
+    }, [selectedLot], [tasks])
 
     useEffect(() => {
       const currentTask = tasks[item.task_id]
@@ -587,12 +593,14 @@ const HILModals = (props) => {
                                                 }
                                             }}
                                             value={quantity}
+                                            defaultValue = {'1'}
                                         />
 
                                         <styled.HilInputIcon
                                             className='fas fa-plus-circle'
                                             styled={{ color: '#1c933c' }}
                                             onClick={() => {
+                                              console.log(selectedLot)
                                                 // if there is a lot count, quantity cannot exceed lot count
                                                 if (count) {
                                                     if (quantity < count) {
