@@ -26,8 +26,7 @@ import {
 
 // Import Utils
 import { deepCopy, isEquivalent } from '../../methods/utils/utils';
-import { convertD3ToReal, convertRealToD3, getRelativeOffset } from '../../methods/utils/map_utils'
-import * as d3 from 'd3'
+import { compareExistingVsIncomingLocations } from '../../methods/utils/locations_utils'
 
 
 
@@ -38,79 +37,28 @@ const defaultState = {
 
     editingPosition: {},
 
+    d3: {},
+
     error: {},
     pending: false,
 }
 
-export default function locationsReducer(state = defaultState, action) {
-    // ======================================== //
-    //                                          //
-    //         POSITION UTILITY FUNCTIONS        //
-    //                                          //
-    // ======================================== //
+export default function positionsReducer(state = defaultState, action) {
 
     /**
-     * This function compares existing vs incoming position
-     * 
-     * If the incoming position exists in existing positions then use the incoming position info but update the x and y from existing
-     * Using x and y from existing because it those values correlate with the local map
-     * 
-     * If an incoming position is not in existing positions that means it was added by another client
-     * Make sure to update the new positions x and y values to match the local map's d3
-     * 
-     * @param {object} existingPositions 
-     * @param {object} incomingPositions 
-     */
-    const onCompareExistingVsIncomingPositions = (incomingPositions) => {
-
-        existingPositions = state.positions
-
-        Object.values(existingPositions).forEach(existingPosition => {
-            // If the position exists in the backend and frontend, take the new positions, but assign local x and y
-            if (existingPosition._id in incomingPositions) {
-                Object.assign(incomingPositions[existingPosition._id], { x: existingPosition.x, y: existingPosition.y })
-            }
-
-            // If the ex
-            else if (existingPosition.new == true) {
-                incomingPositions[existingPosition._id] = existingPosition
-            }
-        })
-
-        // Compare incoming vs existing
-        Object.values(incomingPositions).forEach(incomingPosition => {
-
-            // If the incoming position is not in existing position, its a new position
-            if (!incomingPosition._id in existingPositions) {
-
-                // If it's a new position, make sure to update it's coords to d3 coords on the local map
-                [x, y] = convertRealToD3([incomingPosition.pos_x, incomingPosition.pos_y], d3)
-                incomingPosition = {
-                    ...incomingPosition,
-                    x: x,
-                    y: y,
-                }
-
-            }
-        })
-
-        return incomingPositions
-    }
-
-    /**
-     * Updates the state of positions to include the incoming payload.
+     * Updates the state of positions to include the incoming payload position.
      * If the payload is the current selected Position, then update that as well
-     * @param {object} payload 
+     * @param {object} position 
      */
-    const onUpdatePositions = (payload) => {
+    const onUpdatePosition = (position) => {
         return {
             ...state,
             positions: {
                 ...state.positions,
-                [payload._id]: payload
+                [position._id]: position
             },
             // If the post position is the selectedPosition, then update selected position
-            selectedPosition: state.selectedLocation !== null && state.selectedLocation._id === payload._id && payload,
+            selectedPosition: state.selectedPosition !== null && state.selectedPosition._id === position._id && position,
             pending: false,
         }
     }
@@ -121,16 +69,30 @@ export default function locationsReducer(state = defaultState, action) {
 
         // Adds position to front-end without adding it to the backend
         case ADD_POSITION:
-            return onUpdatePositions(action.payload)
+            return onUpdatePosition(action.payload)
 
+        // Sets Positions Attributes
         case SET_POSITION_ATTRIBUTES:
             Object.assign(action.payload.position, action.payload.attr)
-            return onUpdatePositions(action.payload)
+            return onUpdatePosition(action.payload)
 
+        // Sets a selected Position
         case SET_SELECTED_POSITION:
             return {
                 ...state,
                 selectedPosition: action.payload
+            }
+
+        // Updates a position locally on the front-end
+        case UPDATE_POSITION:
+            return onUpdatePosition(action.payload)
+
+        // Upates positions locally on the front-end
+        case UPDATE_POSITIONS:
+            return {
+                ...state,
+                positions: action.payload.positions,
+                d3: action.payload.d3
             }
 
         // ========== GET ========== //
@@ -141,7 +103,7 @@ export default function locationsReducer(state = defaultState, action) {
 
         case GET_POSITIONS_SUCCESS:
 
-            const parsedPositions = onCompareExistingVsIncomingPositions(deepCopy(action.payload))
+            const parsedPositions = compareExistingVsIncomingLocations(deepCopy(action.payload), deepCopy(state.positions), this.d3)
 
             return {
                 ...state,

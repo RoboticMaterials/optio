@@ -26,8 +26,7 @@ import {
 
 // Import Utils
 import { deepCopy, isEquivalent } from '../../methods/utils/utils';
-import { convertD3ToReal, convertRealToD3, getRelativeOffset } from '../../methods/utils/map_utils'
-import * as d3 from 'd3'
+import { compareExistingVsIncomingLocations } from '../../methods/utils/locations_utils'
 
 
 
@@ -38,69 +37,18 @@ const defaultState = {
 
     editingStation: {},
 
+    d3: {},
+
     error: {},
     pending: false,
 }
 
-export default function locationsReducer(state = defaultState, action) {
-    // ======================================== //
-    //                                          //
-    //         STATION UTILITY FUNCTIONS        //
-    //                                          //
-    // ======================================== //
-
-    /**
-     * This function compares existing vs incoming station
-     * 
-     * If the incoming station exists in existing stations then use the incoming station info but update the x and y from existing
-     * Using x and y from existing because it those values correlate with the local map
-     * 
-     * If an incoming station is not in existing stations that means it was added by another client
-     * Make sure to update the new stations x and y values to match the local map's d3
-     * 
-     * @param {object} existingStations 
-     * @param {object} incomingStations 
-     */
-    const onCompareExistingVsIncomingStations = (incomingStations) => {
-
-        existingStations = state.stations
-
-        Object.values(existingStations).forEach(existingStation => {
-            // If the station exists in the backend and frontend, take the new stations, but assign local x and y
-            if (existingStation._id in incomingStations) {
-                Object.assign(incomingStations[existingStation._id], { x: existingStation.x, y: existingStation.y })
-            }
-
-            // If the ex
-            else if (existingStation.new == true) {
-                incomingStations[existingStation._id] = existingStation
-            }
-        })
-
-        // Compare incoming vs existing
-        Object.values(incomingStations).forEach(incomingStation => {
-
-            // If the incoming station is not in existing station, its a new station
-            if (!incomingStation._id in existingStations) {
-
-                // If it's a new station, make sure to update it's coords to d3 coords on the local map
-                [x, y] = convertRealToD3([incomingStation.pos_x, incomingStation.pos_y], d3)
-                incomingStation = {
-                    ...incomingStation,
-                    x: x,
-                    y: y,
-                }
-
-            }
-        })
-
-        return incomingStations
-    }
+export default function stationsReducer(state = defaultState, action) {
 
     /**
      * Updates the state of stations to include the incoming payload station.
      * If the payload is the current selected Station, then update that as well
-     * @param {object} payload 
+     * @param {object} station 
      */
     const onUpdateStation = (station) => {
         return {
@@ -110,13 +58,9 @@ export default function locationsReducer(state = defaultState, action) {
                 [station._id]: station
             },
             // If the post station is the selectedStation, then update selected station
-            selectedStation: state.selectedLocation !== null && state.selectedLocation._id === station._id && station,
+            selectedStation: state.selectedStation !== null && state.selectedStation._id === station._id && station,
             pending: false,
         }
-    }
-
-    const onUpdateStations = (stations) => {
-
     }
 
     switch (action.type) {
@@ -147,7 +91,8 @@ export default function locationsReducer(state = defaultState, action) {
         case UPDATE_STATIONS:
             return {
                 ...state,
-                stations: action.payload,
+                stations: action.payload.stations,
+                d3: action.payload.d3
             }
 
         // ========== GET ========== //
@@ -158,7 +103,7 @@ export default function locationsReducer(state = defaultState, action) {
 
         case GET_STATIONS_SUCCESS:
 
-            const parsedStations = onCompareExistingVsIncomingStations(deepCopy(action.payload))
+            const parsedStations = compareExistingVsIncomingLocations(deepCopy(action.payload), deepCopy(state.stations), state.d3)
 
             return {
                 ...state,

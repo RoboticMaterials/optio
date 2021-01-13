@@ -21,12 +21,14 @@ import {
     REMOVE_POSITION,
     SET_POSITION_ATTRIBUTES,
     REVERT_CHILDREN,
+    SET_SELECTED_POSITION,
 } from '../types/positions_types'
 
 import { deepCopy } from '../../methods/utils/utils';
 import uuid from 'uuid';
 
 import * as api from '../../api/positions_api'
+import { SET_SELECTED_OBJECT } from '../types/objects_types';
 
 // get
 // ******************************
@@ -206,4 +208,8 @@ export const removePosition = (id) => {
 
 export const setPositionAttributes = (id, attr) => {
     return { type: SET_POSITION_ATTRIBUTES, payload: { id, attr } }
+}
+
+export const setSelectedPosition = (position) => {
+    return { type: SET_SELECTED_POSITION, payload: position }
 }

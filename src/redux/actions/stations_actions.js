@@ -170,12 +170,12 @@ export const addStation = (station) => {
     return { type: ADD_STATION, payload: station }
 }
 
-export const updateStationTO_BE_DELETED = (station) => {
-    return { type: UPDATE_STATION, payload: { station } }
+export const updateStation = (station) => {
+    return { type: UPDATE_STATION, payload: station }
 }
 
-export const updateStationsTO_BE_DELETED = (stations) => {
-    return { type: UPDATE_STATIONS, payload: { stations } }
+export const updateStations = (stations, d3) => {
+    return { type: UPDATE_STATIONS, payload: { stations, d3 } }
 }
 
 export const removeStationTO_BE_DELETED = (id) => {

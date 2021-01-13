@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 // Import utils
 import { deepCopy } from './utils'
+import { convertRealToD3 } from './map_utils'
 
 // Import Actions
 import { putDevices, postDevices, getDevices, deleteDevices } from '../../redux/actions/devices_actions'
@@ -286,4 +287,50 @@ export const locationsSortedAlphabetically = (locations) => {
     })
 
     return locationsCopy
+}
+
+/**
+ * This function compares existing vs incoming locations
+ * 
+ * If the incoming location exists in existing locations then use the incoming location info but update the x and y from existing
+ * Using x and y from existing because those values correlate with the local map's d3 state
+ * 
+ * If an incoming location is not in existing locations that means it was added by another client
+ * Make sure to update the new locations x and y values to match the local map's d3
+ * 
+ * @param {object} existingStations 
+ * @param {object} incomingStations 
+ */
+export const compareExistingVsIncomingLocations = (incomingLocations, existingLocations, d3) => {
+
+    Object.values(existingLocations).forEach(existngLocation => {
+        // If the location exists in the backend and frontend, take the new locations, but assign local x and y
+        if (existngLocation._id in incomingLocations) {
+            Object.assign(incomingLocations[existngLocation._id], { x: existngLocation.x, y: existngLocation.y })
+        }
+
+        // If the ex
+        else if (existngLocation.new == true) {
+            incomingLocations[existngLocation._id] = existngLocation
+        }
+    })
+
+    // Compare incoming vs existing
+    Object.values(incomingLocations).forEach(incomingLocation => {
+
+        // If the incoming location is not in existing location, its a new location
+        if (!incomingLocation._id in existingLocations) {
+
+            // If it's a new station, make sure to update it's coords to d3 coords on the local map
+            [x, y] = convertRealToD3([incomingLocation.pos_x, incomingLocation.pos_y], d3)
+            incomingLocation = {
+                ...incomingLocation,
+                x: x,
+                y: y,
+            }
+
+        }
+    })
+
+    return incomingLocations
 }
