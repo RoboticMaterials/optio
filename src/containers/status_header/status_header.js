@@ -43,7 +43,6 @@ const StatusHeader = (props) => {
     const sideBarWidth = useSelector(state => state.sidebarReducer.width)
     const toggle = useSelector(state => state.notificationsReducer.toggleNotificationTaskQueue)
     const isSideBarOpen = useSelector(state => state.sidebarReducer.open)
-    const sidebarOpenPath = useSelector(state => state.sidebarReducer.useSidebarOpenPath)
     const taskQueueOpen = useSelector(state => state.taskQueueReducer.taskQueueOpen)
 
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
@@ -53,6 +52,11 @@ const StatusHeader = (props) => {
     const [overlapStatus, setOverlapStatus] = useState('')
 
     const prevNotificationRef = useRef()
+
+
+    let params = useParams()
+    const widgetPage = params.widgetPage
+
 
     const theme = useContext(ThemeContext)
     const widthBreakPoint = 1025
@@ -69,7 +73,6 @@ const StatusHeader = (props) => {
     // Used for determining break point of header
     const size = useWindowSize()
     const windowWidth = size.width
-    const params = useParams()
 
 
     const generatePath = () => {
@@ -110,9 +113,9 @@ const StatusHeader = (props) => {
         const path = `
                 M0,0
                 L0,40
-                L${isSideBarOpen ? sideBarWidth : leftMargin},40
-                C${isSideBarOpen ? sideBarWidth + x / 2 : leftMargin + x / 2},40 ${isSideBarOpen ? sideBarWidth + x / 2 : leftMargin + x / 2},${mergeHeight} ${isSideBarOpen ? sideBarWidth + x : leftMargin + x},${mergeHeight}
-                L${pageWidth - (taskQueueOpen ? rightCurvePoint : rightMargin) - x},${mergeHeight}
+                L${isSideBarOpen && !widgetPage ? sideBarWidth : leftMargin},40
+                C${isSideBarOpen && !widgetPage ? sideBarWidth + x / 2 : leftMargin + x / 2},40 ${isSideBarOpen && !widgetPage ? sideBarWidth + x / 2 : leftMargin + x / 2},${mergeHeight} ${isSideBarOpen && !widgetPage ? sideBarWidth + x : leftMargin + x},${mergeHeight}
+                L${pageWidth - (taskQueueOpen && !widgetPage ? rightCurvePoint : rightMargin) - x},${mergeHeight}
                 C${pageWidth - (taskQueueOpen ? rightCurvePoint : rightMargin) - x / 2},${mergeHeight} ${taskQueueOpen ? `${pageWidth - rightCurvePoint},${mergeHeight}` : `${pageWidth - rightMargin - x / 2},40`} ${pageWidth - (taskQueueOpen ? rightCurvePoint : rightMargin)},40
                 L${pageWidth},40
                 L${pageWidth},0
