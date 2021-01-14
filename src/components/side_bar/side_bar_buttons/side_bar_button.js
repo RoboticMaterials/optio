@@ -205,7 +205,6 @@ const SideBarButton = (props) => {
                     }}
                     currentMode={props.currentMode}
                     mode={props.mode}
-                    style={{ position: 'absolute', bottom: '1rem' }}
 
                 >
                     <style.SideBarButtonText>Settings</style.SideBarButtonText>
