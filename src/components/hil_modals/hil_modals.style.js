@@ -33,14 +33,15 @@ export const HilContainer = styled.div`
 export const HilInputContainer = styled.div`
     display: flex;
     flex-direction: row;
-    margin-bottom: 1rem;
+    margin-bottom: 3rem;
+    margin-top: 1rem;
 `
 
 export const HilInput = styled.input`
     margin: 1rem 1rem;
     border-radius: .5rem;
     text-align: center;
-    width: 10rem;
+    width: 8rem;
     font-size: 2rem;
     -webkit-appearance: none !important;
     &:focus{
@@ -48,11 +49,19 @@ export const HilInput = styled.input`
         border-color: #56d5f5;
     }
 `
+export const HilInputIconContainer = styled.div`
+    display: flex;
+    flex-direction:row;
+    height: 3.3rem;
 
-export const HilInputIcon = styled.i`
-    font-size: 5rem;
-    text-shadow: 0.05rem 0.05rem 0.2rem #303030;
-    transition: text-shadow 0.1s ease, filter 0.1s ease;
+    margin-left:0.4rem;
+    margin-right:0.4rem;
+    margin-top:1rem;
+
+    border-radius: 0.5rem;
+    border: 0.2rem solid;
+    border-color: ${props => props.theme.bg.quinary};
+    background-color: ${props => props.theme.bg.quinary};
 
 
     &:hover {
@@ -63,6 +72,26 @@ export const HilInputIcon = styled.i`
         filter: brightness(85%);
         text-shadow: none;
     }
+`
+export const HilInputIconText = styled.h1`
+  font-size: 2.5rem;
+  font-weight: 500;
+  padding-right:.3rem;
+
+  text-shadow: 0.05rem 0.05rem 0.15rem #303030;
+  transition: text-shadow 0.1s ease, filter 0.1s ease;
+
+
+`
+export const HilInputIcon = styled.i`
+    padding-top: .45rem;
+    margin-left:.5rem;
+    margin-right:.5rem;
+    font-size: 2rem;
+    text-shadow: 0.05rem 0.05rem 0.2rem #303030;
+    transition: text-shadow 0.1s ease, filter 0.1s ease;
+    color: #90eaa8;
+
 `
 
 export const HilExitModal = styled.i`
