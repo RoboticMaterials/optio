@@ -2,8 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from "react-router-dom";
-import {isBrowser} from "react-device-detect";
-
 
 // Import Actions
 import { getMaps } from '../../redux/actions/map_actions'
