@@ -95,12 +95,13 @@ export const HilInputIcon = styled.i`
 `
 
 export const HilExitModal = styled.i`
+
     font-size: 5rem;
     text-shadow: 0.05rem 0.05rem 0.2rem #303030;
     transition: text-shadow 0.1s ease, filter 0.1s ease;
     //padding-left:2rem;
     //padding-top:1rem;
-    margin-right: auto;
+    margin-right: 1rem;
 
     &:hover {
         cursor: pointer;
@@ -201,6 +202,8 @@ export const HilMessage = styled.h3`
     display: flex;
     font-family: ${props => props.theme.font.primary};
     justify-content: center;
+    align-self: center;
+
     //padding-top: 1rem;
     //margin-top: 3rem;
     padding: 0;
@@ -331,12 +334,13 @@ export const RowContainer = styled.div`
 `
 
 export const Header = styled.div`
-    display: flex;
+    display:flex;
+    flex-direction: row;
     width: 100%;
     background: ${props => props.theme.bg.septenary};
     border-bottom: 1px solid ${props => props.theme.bg.tertiary};
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
     padding: .5rem 1rem;
 `

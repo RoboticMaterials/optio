@@ -610,14 +610,6 @@ const HILModals = (props) => {
 
                 <styled.Header>
 
-                    {!!taskQueueItemClicked &&
-                        <styled.HilExitModal
-                            className='fas fa-times'
-                            onClick={() => dispatchTaskQueueItemClicked('')}
-                        />
-                    }
-
-
                     <styled.ColumnContainer>
                         <styled.HilMessage>{hilMessage}</styled.HilMessage>
 
@@ -709,7 +701,7 @@ const HILModals = (props) => {
                                             setChangeQtyMouseHold('')
                                           }}
                                           >
-                                    () => {
+                                          {
 
                                     }      <styled.HilInputIcon
                                             className='fas fa-minus-circle'
@@ -889,20 +881,11 @@ const HILModals = (props) => {
             <>
                 <styled.Header style={{flexDirection: "column"}}>
                     <styled.HeaderMainContent>
-                        {!!taskQueueItemClicked &&
-                            <styled.HilExitModal
-                                className='fas fa-times'
-                                onClick={() => dispatchTaskQueueItemClicked('')}
-                            />
-                        }
 
                         <styled.ColumnContainer>
                             <styled.HilMessage>Select Lot</styled.HilMessage>
                         </styled.ColumnContainer>
 
-                        {!!taskQueueItemClicked &&
-                        <styled.InvisibleItem/>
-                        }
                     </styled.HeaderMainContent>
 
                     <div style={{display: "flex", maxWidth: "50rem", minWidth: "1rem", width: "50%"}}>
