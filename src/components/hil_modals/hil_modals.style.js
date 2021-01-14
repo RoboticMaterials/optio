@@ -193,7 +193,7 @@ export const FooterContainer = styled.div`
     justify-content: center;
     align-items: center;
     padding: .5rem;
-    flex-direction: column;
+    flex-direction: row;
 `
 
 
@@ -409,12 +409,16 @@ export const FooterButton = styled.button`
     height: 5rem;
     max-height: 5rem;
     width: fit-content;
+
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0rem;
     display: flex;
     flex-direction: row;
     padding: 0rem 3rem;
     align-items: center;
     justify-content: center;
-    margin: 0;
+
 `
 
 

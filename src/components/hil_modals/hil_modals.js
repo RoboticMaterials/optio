@@ -987,7 +987,6 @@ const HILModals = (props) => {
 
                     <styled.FooterContainer>
                         <styled.FooterButton
-                            style={{ margin: 0 }}
                             color={'#90eaa8'}
                             onClick={() => {
                                 setSelectedLot(null) // clear selected lot
@@ -1000,6 +999,26 @@ const HILModals = (props) => {
                             >
                                 {"Continue Without Lot"}
                             </styled.HilButtonText>
+                        </styled.FooterButton>
+
+                        <styled.FooterButton
+                            color={'#ff9898'}
+                            onClick={onHilFailure}
+                        >
+                          <styled.HilIcon
+                              // onClick={onHilFailure}
+                              className='fas fa-times'
+                              color={'#ff1818'}
+                              style = {{marginRight: '0.8rem'}}
+                          />
+                            <styled.HilButtonText
+                                style={{ margin: 0, padding: 0 }}
+                                color={'#ff1818'}
+                            >
+                                {"Cancel"}
+                            </styled.HilButtonText>
+
+
                         </styled.FooterButton>
                     </styled.FooterContainer>
 
