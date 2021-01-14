@@ -15,9 +15,19 @@ import Textbox from '../../../../../basic/textbox/textbox.js'
 import { setSelectedTask, setTaskAttributes } from '../../../../../../redux/actions/tasks_actions'
 import {isHumanTask, isMiRTask, isOnlyHumanTask} from "../../../../../../methods/utils/route_utils";
 import {DEVICE_CONSTANTS} from "../../../../../../constants/device_constants";
+import SwitchField from "../../../../../basic/form/switch_field/switch_field";
+import TimePickerField from "../../../../../basic/form/time_picker_field/time_picker_field";
+import TextField from "../../../../../basic/form/text_field/text_field";
+import DropDownSearchField from "../../../../../basic/form/drop_down_search_field/drop_down_search_field";
 
 
-const LoadUnloadFields = () => {
+const LoadUnloadFields = (props) => {
+
+    const {
+        fieldParent,
+        setFieldValue,
+        values
+    } = props
 
     const dispatch = useDispatch()
     const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
@@ -50,15 +60,34 @@ const LoadUnloadFields = () => {
                 <>
                     <styled.RowContainer>
                         <styled.Header>Robot Enabled</styled.Header>
-                        <Switch
-                            checked={mirEnabled}
-                            onChange={() => {
-                                dispatchSetSelectedTask({
-                                    ...selectedTask,
-                                    // Just setting this to MiR100 for now. Need to expand in the future for other devices
-                                    device_types: mirEnabled ? [DEVICE_CONSTANTS.HUMAN] : [DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN],
-                                })
+                        <SwitchField
+                            name={fieldParent ? `${fieldParent}.device_types` : "device_types"}
+                            // checked={mirEnabled}
+                            mapInput={(devices)=> {
+                                if(devices.includes(DEVICE_CONSTANTS.MIR_100) && devices.includes(DEVICE_CONSTANTS.HUMAN)) {
+                                    return true
+                                }
+                                else {
+                                    return false
+                                }
                             }}
+                            mapOutput={(enable) => {
+                                console.log("mapOutput enable",enable)
+                                if(enable) {
+                                    return([DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN])
+                                }
+                                else {
+                                    return([DEVICE_CONSTANTS.HUMAN])
+                                }
+                            }}
+
+                            // onChange={() => {
+                            //     dispatchSetSelectedTask({
+                            //         ...selectedTask,
+                            //         // Just setting this to MiR100 for now. Need to expand in the future for other devices
+                            //         device_types: mirEnabled ?  : ,
+                            //     })
+                            // }}
                             onColor='red'
                             style={{ marginRight: '1rem' }}
                         />
@@ -72,18 +101,26 @@ const LoadUnloadFields = () => {
 
             <styled.RowContainer style={{ marginTop: '2rem' }}>
 
-                <styled.Header style={{ marginTop: '0rem' }}>Load</styled.Header>
+                <styled.Header style={{ marginTop: '0rem',marginRight: ".5rem" }}>Load</styled.Header>
 
                 {!humanLocation &&
 
-                    <styled.RowContainer style={{ justifyContent: 'flex-end', alignItems: 'baseline' }}>
+                    <styled.RowContainer style={{ justifyContent: 'flex-end', alignItems: 'baseline',  }}>
                         <styled.HelpText style={{ fontSize: '1rem', marginRight: '.5rem' }}>TimeOut: </styled.HelpText>
 
-                        <TimePicker
-                            // format={'mm:ss'}
+                        <TimePickerField
+                            mapInput={(value) => {
+                                const splitVal = value.split(':')
+                                return moment().set({ 'minute': splitVal[0], 'second': splitVal[1] })
+                            }}
+                            mapOutput={(value) => {
+                                return value.format("mm:ss")
+                            }}
+                            name={fieldParent ? `${fieldParent}.load.timeout` : "load.timeout"}
                             style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
                             showHour={false}
                             className="xxx"
+                            autocomplete={"off"}
                             allowEmpty={false}
                             defaultOpenValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
                             defaultValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
@@ -96,48 +133,50 @@ const LoadUnloadFields = () => {
                                     }
                                 })
                             }}
-
                         />
                     </styled.RowContainer>
                 }
 
             </styled.RowContainer>
 
-            <Textbox
-                value={!!selectedTask && selectedTask.load.instructions}
+            <TextField
+                name={fieldParent ? `${fieldParent}.load.instructions` : "load.instructions"}
+                // value={!!selectedTask && selectedTask.load.instructions}
                 schema={'tasks'}
                 focus={!!selectedTask && selectedTask.type == null}
-                onChange={e => {
-                    let load = selectedTask.load
-                    load.instructions = e.target.value
-                    // dispatch(taskActions.setTaskAttributes(selectedTask._id, { load }))
-                    dispatchSetTaskAttributes(selectedTask._id, { load })
-                }}
-                lines={2}>
-            </Textbox>
+                // onChange={e => {
+                //     let load = selectedTask.load
+                //     load.instructions = e.target.value
+                //     // dispatch(taskActions.setTaskAttributes(selectedTask._id, { load }))
+                //     dispatchSetTaskAttributes(selectedTask._id, { load })
+                // }}
+                lines={2}
+                InputComponent={Textbox}
+            />
 
-            {!isHumanTask(selectedTask) &&
+            {!isOnlyHumanTask(selectedTask) &&
                 <div style={{ display: "flex", flexDirection: "row", marginTop: "0.5rem" }}>
                     <styled.Label>Sound </styled.Label>
-                    <DropDownSearch
+                    <DropDownSearchField
+                        name={fieldParent ? `${fieldParent}.load.sound` : "load.sound"}
                         placeholder="Select Sound"
                         label="Sound to be played upon arrival"
                         labelField="name"
                         valueField="name"
                         options={Object.values(sounds)}
-                        values={!!selectedTask.load.sound ? [sounds[selectedTask.load.sound]] : []}
+                        // values={!!selectedTask.load.sound ? [sounds[selectedTask.load.sound]] : []}
                         dropdownGap={5}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
-                        onChange={values => {
-                            dispatchSetSelectedTask({
-                                ...selectedTask,
-                                load: {
-                                    ...selectedTask.load,
-                                    sound: values[0]._id,
-                                }
-                            })
-                        }}
+                        // onChange={values => {
+                        //     dispatchSetSelectedTask({
+                        //         ...selectedTask,
+                        //         load: {
+                        //             ...selectedTask.load,
+                        //             sound: values[0]._id,
+                        //         }
+                        //     })
+                        // }}
                         className="w-100"
                         schema="tasks" />
                 </div>
@@ -150,16 +189,10 @@ const LoadUnloadFields = () => {
                 <styled.ContentContainer style={{ paddingBottom: '0rem' }}>
                     <styled.RowContainer>
                         <styled.Label style={{ marginBottom: '0rem' }}>Confirm Unload?</styled.Label>
-                        <Switch
-                            checked={!selectedTask.handoff}
-                            onChange={() => {
-                                dispatchSetSelectedTask({
-                                    ...selectedTask,
-                                    handoff: !selectedTask.handoff
-                                })
-                            }}
+                        <SwitchField
+                            name={fieldParent ? `${fieldParent}.handoff` : "handoff"}
                             onColor='red'
-                            style={{ marginRight: '1rem' }}
+                            containerStyle={{ marginRight: '1rem' }}
                         />
                     </styled.RowContainer>
                     <styled.HelpText>Do you want to track transit time? This will display a Unload Button at the Unload Station</styled.HelpText>
@@ -171,47 +204,44 @@ const LoadUnloadFields = () => {
 
                 <>
                     <styled.Header>Unload</styled.Header>
-                    <Textbox
-                        value={!!selectedTask && selectedTask.unload.instructions}
+                    <TextField
+                        name={fieldParent ? `${fieldParent}.unload.instructions` : "unload.instructions"}
                         schema={'tasks'}
                         focus={!!selectedTask && selectedTask.type == null}
-                        onChange={e => {
-                            let unload = selectedTask.unload
-                            unload.instructions = e.target.value
-                            // dispatch(taskActions.setTaskAttributes(selectedTask._id, { unload }))
-                            dispatchSetTaskAttributes(selectedTask._id, { unload })
-                        }}
-                        lines={2}>
-                    </Textbox>
+                        lines={2}
+                        InputComponent={Textbox}
+                    />
 
                     {/* If its a human task, then you shouldnt require people to make noises. I personally would though...  */}
-                    {!isHumanTask(selectedTask) &&
+                    {!isOnlyHumanTask(selectedTask) &&
 
                         <div style={{ display: "flex", flexDirection: "row", marginTop: "0.5rem" }}>
                             <styled.Label>Sound </styled.Label>
-                            <DropDownSearch
+                            <DropDownSearchField
+                                name={fieldParent ? `${fieldParent}.unload.sound` : "unload.sound"}
                                 placeholder="Select Sound"
                                 label="Sound to be played upon arrival"
                                 labelField="name"
                                 valueField="name"
                                 options={Object.values(sounds)}
-                                values={!!selectedTask.unload.sound ? [sounds[selectedTask.unload.sound]] : []}
+                                // values={!!selectedTask.unload.sound ? [sounds[selectedTask.unload.sound]] : []}
                                 dropdownGap={5}
                                 noDataLabel="No matches found"
                                 closeOnSelect="true"
-                                onChange={values => {
-
-                                    dispatchSetSelectedTask({
-                                        ...selectedTask,
-                                        unload: {
-                                            ...selectedTask.unload,
-                                            sound: values[0]._id,
-                                        }
-                                    })
-
-                                }}
+                                // onChange={values => {
+                                //
+                                //     dispatchSetSelectedTask({
+                                //         ...selectedTask,
+                                //         unload: {
+                                //             ...selectedTask.unload,
+                                //             sound: values[0]._id,
+                                //         }
+                                //     })
+                                //
+                                // }}
                                 className="w-100"
-                                schema="tasks" />
+                                schema="tasks"
+                            />
                         </div>
                     }
                 </>

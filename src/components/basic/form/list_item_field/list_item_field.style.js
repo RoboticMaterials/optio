@@ -4,39 +4,15 @@ import * as commonCss from "../../../../common_css/common_css";
 
 
 // ========== Content ========== //
-export const Container = styled.div`
-    flex-grow: 1;
-    padding: 1rem;
-    padding-top: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
-    margin-right: .5rem;
+export const DefaultContainer = styled.div`
+	postion: relative;
+`;
 
+
+export const DefaultErrorTooltipContainerComponent = styled.div`
 
 `
 
-export const Header = styled.div`
-    display: flex;
-    flex-direction: row;
-
-`
-
-export const Title = styled.h1`
-    font-family: ${props => props.theme.font.primary};
-    font-size: 2rem;
-    font-weight: 500;
-    color: ${props => props.theme.schema[props.schema].solid};
-    flex-grow: 1;
-    user-select: none;
-`
-
-// ========== List ========== //
-
-export const List = styled.ul`
-    flex-grow: 1;
-    padding: 0;
-`
 
 export const ListItem = styled.div`
     display: flex;
@@ -79,9 +55,6 @@ export const ListItemRect = styled.div`
     }
 
 `
-export const LocationTypeGraphic = styled.svg`
-    height: 1.5rem;
-`
 export const ListItemTitle = styled.h1`
 
     font-family: ${props => props.theme.font.primary};
@@ -115,8 +88,4 @@ export const ListItemIconContainer = styled.div`
     position: relative;
     display: flex;
     width: 10%;
-`
-
-export const ErrorContainer = styled.div`
-	position: relative;
 `

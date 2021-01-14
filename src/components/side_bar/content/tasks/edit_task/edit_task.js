@@ -2,13 +2,24 @@ import React, { useState, useEffect } from 'react'
 import * as styled from '../tasks_content.style'
 import { useSelector, useDispatch } from 'react-redux'
 
+
+/*
+*
+* Should track quantity / fraction option only display if there is an obj? in master it always displays
+*
+* When creating new process
+*   when adding route, should click add create the route in mongo, or should this wait until the process is made as well
+*       If we don't wait till the process is saved, if you leave the page / refresh / cancel, the route will already be made without the process. I think wait - Justin
+*
+* */
+
+
+
 // Import Basic Components
 import ContentHeader from '../../content_header/content_header'
 import Textbox from '../../../../basic/textbox/textbox.js'
 import Button from '../../../../basic/button/button'
 import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
-import TextBoxSearch from '../../../../basic/textbox_search/textbox_search'
-import ContentList from '../../content_list/content_list'
 
 // Import Components
 import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
@@ -31,18 +42,76 @@ import { putStation } from '../../../../../redux/actions/stations_actions'
 import { selectLocation, deselectLocation } from '../../../../../redux/actions/locations_actions'
 import { select } from 'd3-selection'
 import {DEVICE_CONSTANTS} from "../../../../../constants/device_constants";
-import {generateAssociatedTask} from "../../../../../methods/utils/route_utils";
+import {generateAssociatedTask, getRouteProcesses} from "../../../../../methods/utils/route_utils";
+import TextField from "../../../../basic/form/text_field/text_field";
+import DropDownSearchField from "../../../../basic/form/drop_down_search_field/drop_down_search_field";
+import TextboxSearchField from "../../../../basic/form/textbox_search_field/textbox_search_field";
+import PropTypes from "prop-types";
+import {isObject} from "../../../../../methods/utils/object_utils";
 
 const EditTask = (props) => {
 
     const {
-        selectedTaskCopy,
-        setSelectedTaskCopy,
         shift,
         isTransportTask,
         toggleEditing,
-        isProcessTask
+        isProcessTask,
+        fieldParent,
+        setFieldValue,
+        setValues,
+        setFieldError,
+        setFieldTouched,
+        // values,
+        getFieldMeta,
+        onSave,
+        onBackClick
     } = props
+
+
+
+
+
+    const fieldMeta = getFieldMeta(fieldParent)
+
+    const {
+        value: values,
+        error: errors = {},
+        touched,
+        initialError: initialErrors,
+        initialTouched,
+        initialValue: initialValues,
+    } = fieldMeta
+
+    const {
+        name,
+        device_types,
+        handoff,
+        load,
+        map_id,
+        obj,
+        processes: a,
+        quantity,
+        track_quantity,
+        type,
+        unload,
+        _id: routeId
+    } = values
+
+    console.log("EditTask props",props)
+    console.log("EditTask fieldMeta",fieldMeta)
+
+    console.log("EditTask fieldParent",fieldParent)
+    console.log("EditTask values",values)
+    console.log("EditTask errors",errors)
+    console.log("EditTask values[fieldParent]",values[fieldParent])
+    console.log("EditTask name",name)
+    console.log("EditTask track_quantity",track_quantity)
+
+    const errorCount = Object.keys(errors).length // get number of field errors
+    const touchedCount = Object.values(touched).length // number of touched fields
+    const submitDisabled = ((errorCount > 0) || (!touched)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
+
+
 
     const dispatch = useDispatch()
     const dispatchPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
@@ -69,13 +138,21 @@ const EditTask = (props) => {
 
     const stations = useSelector(state => state.locationsReducer.stations)
 
-    const [obj, setObject] = useState({}) // The current object (may or may not be on backend, but if not it will be posted when task is saved)
     // const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
+    useEffect(() => {
+
+        // update load & unload from selectedTask - currently have to do it this way since selectedTask is used in so many places
+        if(selectedTask && selectedTask.load) setFieldValue(fieldParent ? `${fieldParent}.load` : "load", selectedTask.load)
+        if(selectedTask && selectedTask.unload) setFieldValue(fieldParent ? `${fieldParent}.unload` : "unload", selectedTask.unload)
+
+        return () => {
+        }
+    }, [selectedTask])
 
     useEffect(() => {
-        setSelectedTaskCopy(selectedTask)
+        // setSelectedTaskCopy(selectedTask)
 
         // Commented out for now
         // Used to disable locations from being selected
@@ -112,7 +189,7 @@ const EditTask = (props) => {
             return (
                 <>
                     {selectedTask.unload.position === null &&
-                        <styled.DirectionText>Click on a position on the map to be the end position.</styled.DirectionText>
+                    <styled.DirectionText>Click on a position on the map to be the end position.</styled.DirectionText>
                     }
                     <styled.HelpText>Since the start position is not tied to a station, this task is no longer a transport task</styled.HelpText>
                 </>
@@ -127,11 +204,16 @@ const EditTask = (props) => {
                 return <styled.HelpText>Since the end position is not tied to a station, this task is no longer a transport task</styled.HelpText>
             } else {
                 // Load AND Unload positions have been defined. Display load/unload parameter fields
-                return <LoadUnloadFields />
+                return <LoadUnloadFields
+                    fieldParent={fieldParent}
+                    values={values}
+                    setFieldValue={setFieldValue}
+                />
 
             }
         }
     }
+
 
     const onDelete = async () => {
         // Delete all dashboard buttons associated with that task
@@ -153,40 +235,40 @@ const EditTask = (props) => {
                     }, currDashboard._id.$oid))
                 }
             }
-            )
+        )
 
-        // If the task has associated processes, then remove that task from that process
-        if (selectedTask.processes.length > 0) {
-            selectedTask.processes.map(async (process) => {
-                let updatedProcess = processes[process]
+        const routeProcesses = getRouteProcesses(routeId)
+        routeProcesses.forEach(async (currProcess) => {
+            console.log("onDelete currProcess",currProcess)
+            var updatedProcess = {}
 
-                // If the route removal breaks the process then update the process
-                if (!!willRouteDeleteBreakProcess(updatedProcess, selectedTask, routes)) {
-                    updatedProcess.broken = willRouteDeleteBreakProcess(updatedProcess, selectedTask, routes)
-                }
+            // If the route removal breaks the process then update the process
+            if (!!willRouteDeleteBreakProcess(updatedProcess, selectedTask, routes)) {
+                updatedProcess.broken = willRouteDeleteBreakProcess(updatedProcess, selectedTask, routes)
+            }
 
-                // Removes the task from the array of routes
-                const index = updatedProcess.routes.indexOf(selectedTask._id)
-                updatedProcess.routes.splice(index, 1)
+            // Removes the task from the array of routes
+            const index = updatedProcess.routes.indexOf(selectedTask._id)
+            updatedProcess.routes.splice(index, 1)
 
-                // Update the process if need be
-                if (!!selectedProcess && selectedProcess._id === updatedProcess._id) {
-                    await dispatchSetSelectedProcess({
-                        ...updatedProcess,
-                    })
-                }
-
-                await dispatchPutProcesses({
+            // Update the process if need be
+            if (!!selectedProcess && selectedProcess._id === updatedProcess._id) {
+                await dispatchSetSelectedProcess({
                     ...updatedProcess,
                 })
+            }
 
+            await dispatchPutProcesses({
+                ...updatedProcess,
             })
-        }
+        })
+
 
         await dispatch(taskActions.deleteTask(selectedTask._id));
 
-        dispatchSetSelectedTask(null)
+
         toggleEditing(false)
+        dispatchSetSelectedTask(null)
     }
 
     const updateDashboard = () => {
@@ -225,6 +307,7 @@ const EditTask = (props) => {
         // dispatch(taskActions.removeTask(selectedTask._id)) // Remove the temporary task from the local copy of tasks
     }
 
+    console.log("editT ASK obj",obj)
     const createObject = () => {
         // Save object
         let objectId
@@ -250,36 +333,39 @@ const EditTask = (props) => {
     }
 
 
-    const onSave = async () => {
-        console.log("editTask onSave")
-        // modifiable copy of task
-        var updatedSelectedTask = {...selectedTask}
+    // const onSave = async () => {
+    //     console.log("editTask onSave")
+    //     // modifiable copy of task
+    //     var updatedSelectedTask = {...selectedTask}
+    //
+    //     // handle object creation
+    //     updatedSelectedTask.obj = createObject()
+    //
+    //     // update task process info
+    //     updateProcessInfo(updatedSelectedTask)
+    //
+    //     // Save Task
+    //     if (!!updatedSelectedTask.new) { // If task is new, POST
+    //         console.log("editTask onSave NEW")
+    //
+    //         // POST new task
+    //         await dispatch(taskActions.postTask(updatedSelectedTask))
+    //
+    //         // dashboard needs to be updated with button for new task
+    //         updateDashboard()
+    //
+    //     } else {    // If task is not new, PUT
+    //         console.log("editTask onSave EDIT")
+    //         dispatch(taskActions.putTask(updatedSelectedTask, updatedSelectedTask._id))
+    //     }
+    //
+    //     toggleEditing(false)                            // No longer editing ***NOTE: THIS SHOULD COME BEFORE DESELECTING THE TASK IN ORDER TO AVOID CRASH IN EDIT_PROCESS - QUICK AND DIRTY FIX, REALLY THE WHOLE FUNCTION NEEDS TO BE REWRITTEN***
+    //     dispatch(taskActions.deselectTask())    // Deselect
+    //     setSelectedTaskCopy(null)                   // Reset the local copy to null
+    // }
 
-        // handle object creation
-        updatedSelectedTask.obj = createObject()
 
-        // update task process info
-        updateProcessInfo(updatedSelectedTask)
 
-        // Save Task
-        if (!!updatedSelectedTask.new) { // If task is new, POST
-            console.log("editTask onSave NEW")
-
-            // POST new task
-            await dispatch(taskActions.postTask(updatedSelectedTask))
-
-            // dashboard needs to be updated with button for new task
-            updateDashboard()
-
-        } else {    // If task is not new, PUT
-            console.log("editTask onSave EDIT")
-            dispatch(taskActions.putTask(updatedSelectedTask, updatedSelectedTask._id))
-        }
-
-        toggleEditing(false)                            // No longer editing ***NOTE: THIS SHOULD COME BEFORE DESELECTING THE TASK IN ORDER TO AVOID CRASH IN EDIT_PROCESS - QUICK AND DIRTY FIX, REALLY THE WHOLE FUNCTION NEEDS TO BE REWRITTEN***
-        dispatch(taskActions.deselectTask())    // Deselect
-        setSelectedTaskCopy(null)                   // Reset the local copy to null
-    }
 
 
     const updateProcessInfo = (task) => {
@@ -353,24 +439,13 @@ const EditTask = (props) => {
 
         toggleEditing(false)
         dispatch(taskActions.deselectTask()) // Deselect
-        setSelectedTaskCopy(null) // Reset the local copy to null
+        // setSelectedTaskCopy(null) // Reset the local copy to null
     }
 
-    const handleBack = () => {
-        // Discard the task changes
-        if (!!selectedTask.new) {
-            dispatch(taskActions.removeTask(selectedTask._id))   // If the task is new, simply remove it from the local copy of tasks
-        } else {
-            dispatch(taskActions.updateTask(selectedTaskCopy))  // Else, revert the task back to the copy we saved when user started editing
-            // dispatch(taskActions.updateTask(tasks[selectedTask._id]))  // Else, revert the task back to the copy we saved when user started editing
-        }
-        dispatch(taskActions.deselectTask())    // Deselect
-        setSelectedTaskCopy(null)                   // Reset the local copy to null
-        toggleEditing(false)                            // No longer editing
-    }
+
 
     const handleObject = () => {
-
+            return obj
         // If not selected process, then set it to the selected task if the task has an object
         if (!selectedProcess) {
             if (!!selectedTask && !!selectedTask.obj) {
@@ -384,9 +459,9 @@ const EditTask = (props) => {
         else {
             // If the selected task already has a object, set it to that
             if(!!selectedTask){
-              if (!!selectedTask.obj) {
-                  return objects[selectedTask.obj]
-              }
+                if (!!selectedTask.obj) {
+                    return objects[selectedTask.obj]
+                }
             }
 
 
@@ -400,287 +475,290 @@ const EditTask = (props) => {
             }
         }
 
+
     }
+
 
     return (
         <>
             {!!selectedTask &&
 
-                <styled.ContentContainer>
+            <styled.ContentContainer>
 
-                    <ConfirmDeleteModal
-                        isOpen={!!confirmDeleteModal}
-                        title={
+                <ConfirmDeleteModal
+                    isOpen={!!confirmDeleteModal}
+                    title={
 
-                            `Are you sure you want to delete this Route?
+                        `Are you sure you want to delete this Route?
 
                     ${selectedTask.processes.length > 0 ?
-                                `This task is a part of processes:
+                            `This task is a part of processes:
 
                         ${selectedTask.processes.map((process) => {
-                                    // Try catch for error with editing an existing task that belongs to a new process
-                                    try {
-                                        return ` '${processes[process].name}'`
+                                // Try catch for error with editing an existing task that belongs to a new process
+                                try {
+                                    return ` '${processes[process].name}'`
 
-                                    } catch (error) {
-                                        return ``
-                                    }
-                                })}
+                                } catch (error) {
+                                    return ``
+                                }
+                            })}
 
                         and will be removed from these processes if deleted.
                         `
-                                :
-                                ''
-                            }
+                            :
+                            ''
+                        }
                     `
-                        }
-                        button_1_text={"Yes"}
-                        handleOnClick1={() => {
-                            onDelete()
-                            setConfirmDeleteModal(null)
+                    }
+                    button_1_text={"Yes"}
+                    handleOnClick1={() => {
+                        onDelete()
+                        setConfirmDeleteModal(null)
+                    }}
+                    button_2_text={"No"}
+                    handleOnClick2={() => setConfirmDeleteModal(null)}
+                    handleClose={() => setConfirmDeleteModal(null)}
+                />
+
+                <div style={{ marginBottom: '1rem' }}>
+                    {selectedTask &&
+                    <ContentHeader
+                        content={'tasks'}
+                        mode={(!!isProcessTask && selectedTask.new) ? 'add' : 'create'}
+                        // Disables the button if load and unloads have not been selected for a task/route in a process
+                        // disabled={selectedTask !== null && (!selectedTask.load.position || selectedTask.unload.position === null)}
+                        disabled={submitDisabled}
+                        onClickSave={async () => {
+                            await onSave()
                         }}
-                        button_2_text={"No"}
-                        handleOnClick2={() => setConfirmDeleteModal(null)}
-                        handleClose={() => setConfirmDeleteModal(null)}
+
+                        onClickBack={() => {
+                            onBackClick()
+                        }}
                     />
+                    }
 
-                    <div style={{ marginBottom: '1rem' }}>
-                        {selectedTask &&
-                            <ContentHeader
-                                content={'tasks'}
-                                mode={(!!isProcessTask && selectedTask.new) ? 'add' : 'create'}
-                                // Disables the button if load and unloads have not been selected for a task/route in a process
-                                disabled={selectedTask !== null && (!selectedTask.load.position || selectedTask.unload.position === null)}
-                                onClickSave={async () => {
-                                    await onSave()
-                                }}
+                </div>
 
-                                onClickBack={() => {
-                                    handleBack()
-                                }}
-                            />
-                        }
-
-                    </div>
-
-                    {/*
+                {/*
                 If it's a process route and its a new route then add the ability to select alread existing routes.
                 Some filtering is done based on certain conditions, see 'options' key
             */}
-                    {!!selectedTask && isProcessTask && !!selectedTask.new &&
-                        <>
-                            <styled.Label>
-                                <styled.LabelHighlight>Either</styled.LabelHighlight> choose an existing Route...
+                {!!selectedTask && isProcessTask && !!selectedTask.new &&
+                <>
+                    <styled.Label>
+                        <styled.LabelHighlight>Either</styled.LabelHighlight> choose an existing Route...
                     </styled.Label>
-                            <DropDownSearch
+                    <DropDownSearch
+                        placeholder="Select Existing Route"
+                        label="Choose An Existing Route"
+                        labelField="name"
+                        valueField="name"
 
-                                placeholder="Select Existing Route"
-                                label="Choose An Existing Route"
-                                labelField="name"
-                                valueField="name"
+                        options={
 
-                                options={
+                            Object.values(routes)
 
-                                    Object.values(routes)
+                                .filter(task => {
+                                    console.log("Existing task",task)
 
-                                        .filter(task => {
+                                    // This filters out tasks when fixing a process
+                                    // If the process is broken, then you can only select tasks that are associated with the last route before break's unload station
+                                    if (!!fixingProcess) {
 
-                                            // This filters out tasks when fixing a process
-                                            // If the process is broken, then you can only select tasks that are associated with the last route before break's unload station
-                                            if (!!fixingProcess) {
+                                        // Gets the route before break
+                                        const routeIdBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
+                                        const routeBeforeBreak = routes[routeIdBeforeBreak]
 
-                                                // Gets the route before break
-                                                const routeIdBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
-                                                const routeBeforeBreak = routes[routeIdBeforeBreak]
+                                        if (!!routeBeforeBreak.unload) {
+                                            const unloadStationID = routeBeforeBreak.unload.station
 
-                                                if (!!routeBeforeBreak.unload) {
-                                                    const unloadStationID = routeBeforeBreak.unload.station
-
-                                                    if (task.load.station === unloadStationID) {
-                                                        return true
-
-                                                    }
-                                                }
-                                            }
-
-                                            // If the selected process has routes, then filter out tasks that have load stations that arent the last route's unload station
-                                            // This eliminates 'broken' processes with tasks that are between non-connected stations
-                                            else if (selectedProcess.routes.length > 0) {
-
-                                                // Gets the previous route
-                                                const previousRouteID = selectedProcess.routes[selectedProcess.routes.length - 1]
-                                                const previousRoute = routes[previousRouteID]
-
-                                                // Gets the previouse route unload location
-                                                const unloadStationID = previousRoute.unload.station
-
-                                                // If the load and unload station match, then this route can be added to this process
-                                                if (task.load.station === unloadStationID) {
-                                                    return true
-                                                }
-                                            }
-
-                                            else {
+                                            if (task.load.station === unloadStationID) {
                                                 return true
+
                                             }
-                                        })
-                                }
-                                // values={!!selectedTask.idle_location ? [positions[selectedTask.idle_location]] : []}
-                                dropdownGap={5}
-                                noDataLabel="No matches found"
-                                closeOnSelect="true"
-                                onChange={values => {
-
-                                    const newRoute = values[0]._id
-
-
-
-                                    // If this task is part of a process and not already in the array of routes, then add the task to the selected process
-                                    if (!selectedProcess.routes.includes(selectedTask._id)) {
-
-                                        if (!!fixingProcess) {
-
-                                            // If the route addition fixes, process check to see if the process is still broken
-                                            // If it fixes the process, it returns false because if it breaks the process it returns an int which is truethy
-                                            if (!willRouteAdditionFixProcess(selectedProcess, values[0], routes)) {
-                                                selectedProcess.broken = null
-                                            }
-                                            else {
-                                                selectedProcess.broken = willRouteAdditionFixProcess(selectedProcess, values[0], routes)
-                                            }
-
-                                            // Splice in the new route into the correct position
-                                            selectedProcess.routes.splice(selectedProcess.broken - 1, 0, values[0]._id)
-
-                                        } else {
-                                            selectedProcess.routes.push(values[0]._id);
                                         }
-
-                                        dispatchSetSelectedProcess(selectedProcess)
-
-                                        dispatchPutTask(
-                                            {
-                                                ...values[0],
-                                                processes: [...values[0].processes, selectedProcess._id]
-                                            }
-                                            , values[0]._id)
                                     }
 
-                                    dispatch(taskActions.deselectTask())    // Deselect
-                                    setSelectedTaskCopy(null)                   // Reset the local copy to null
-                                    toggleEditing(false)                            // No longer editing
-                                }}
-                                className="w-100"
-                                schema="tasks"
-                            />
-                        </>
-                    }
+                                        // If the selected process has routes, then filter out tasks that have load stations that arent the last route's unload station
+                                    // This eliminates 'broken' processes with tasks that are between non-connected stations
+                                    else if (selectedProcess.routes.length > 0) {
 
-                    {!!selectedTask && isProcessTask && !!selectedTask.new &&
 
-                        <styled.Label style={{ marginTop: '1rem' }}>
-                            <styled.LabelHighlight>Or</styled.LabelHighlight> make a new one
+                                        // Gets the previous route
+                                        const previousRouteID = selectedProcess.routes[selectedProcess.routes.length - 1]
+
+                                        var previousRoute
+                                        if(isObject(previousRouteID)) {
+                                            previousRoute = previousRouteID
+                                        }
+                                        else {
+                                            previousRoute = routes[previousRouteID]
+                                        }
+
+
+
+                                        // Gets the previouse route unload location
+                                        const unloadStationID = previousRoute.unload.station
+
+                                        // If the load and unload station match, then this route can be added to this process
+                                        if (task.load.station === unloadStationID) {
+                                            return true
+                                        }
+                                    }
+
+                                    else {
+                                        return true
+                                    }
+                                })
+                        }
+                        // values={!!selectedTask.idle_location ? [positions[selectedTask.idle_location]] : []}
+                        dropdownGap={5}
+                        noDataLabel="No matches found"
+                        closeOnSelect="true"
+                        name={fieldParent ? `${fieldParent}.existingRoute` : "existingRoute"}
+                        onChange={dropdownValues => {
+
+                            // If this task is part of a process and not already in the array of routes, then add the task to the selected process
+                            if (!selectedProcess.routes.includes(selectedTask._id)) {
+
+                                if (!!fixingProcess) {
+
+                                    // If the route addition fixes, process check to see if the process is still broken
+                                    // If it fixes the process, it returns false because if it breaks the process it returns an int which is truethy
+                                    if (!willRouteAdditionFixProcess(selectedProcess, dropdownValues[0], routes)) {
+                                        // selectedProcess.broken = null
+                                    }
+                                    else {
+                                        // selectedProcess.broken = willRouteAdditionFixProcess(selectedProcess, values[0], routes)
+                                    }
+
+                                    // Splice in the new route into the correct position
+                                    // selectedProcess.routes.splice(selectedProcess.broken - 1, 0, values[0]._id)
+
+                                } else {
+                                    // selectedProcess.routes.push(values[0]._id);
+                                }
+
+                                // setFieldValue
+                                if(fieldParent) {
+                                    setFieldValue(fieldParent, {...values, ...dropdownValues[0] })
+                                }
+                                else {
+                                    setValues(...values, ...dropdownValues[0])
+                                }
+
+                                onSave()
+
+
+                                // dispatchSetSelectedProcess(selectedProcess)
+                                //
+                                // dispatchPutTask(
+                                //     {
+                                //         ...values[0],
+                                //         processes: [...values[0].processes, selectedProcess._id]
+                                //     }
+                                //     , values[0]._id)
+                            }
+
+                            // dispatch(taskActions.deselectTask())    // Deselect
+                            // setSelectedTaskCopy(null)                   // Reset the local copy to null
+                            // toggleEditing(false)                            // No longer editing
+                        }}
+                        className="w-100"
+                        schema="tasks"
+                    />
+                </>
+                }
+
+                {!!selectedTask && isProcessTask && !!selectedTask.new &&
+
+                <styled.Label style={{ marginTop: '1rem' }}>
+                    <styled.LabelHighlight>Or</styled.LabelHighlight> make a new one
                 </styled.Label>
 
-                    }
+                }
 
-                    {/* Task Title */}
-                    <Textbox
-                        placeholder="Route Name"
-                        defaultValue={!!selectedTask && selectedTask.name}
-                        schema={'tasks'}
-                        focus={!!selectedTask && selectedTask.name == ''}
-                        onChange={(e) => {
-                            dispatch(taskActions.setTaskAttributes(selectedTask._id, { name: e.target.value }))
+                {/* Task Title */}
+                <TextField
+                    InputComponent={Textbox}
+                    name={fieldParent ? `${fieldParent}.name` : "name"}
+                    placeholder="Route Name"
+                    // defaultValue={!!selectedTask && selectedTask.name}
+                    schema={'tasks'}
+                    focus={!name}
+                    // onChange={(e) => {
+                    //     dispatch(taskActions.setTaskAttributes(selectedTask._id, { name: e.target.value }))
+                    //
+                    // }}
+                    style={{ fontSize: '1.2rem', fontWeight: '600' }}
+                />
 
+                {isTransportTask &&
+                <>
+                    <TextboxSearchField
+                        mapInput={(val)=>{
+                            if(!val) return []
+
+                            if(Array.isArray(val)) return val
+
+                            return [val]
                         }}
-                        style={{ fontSize: '1.2rem', fontWeight: '600' }}
+                        name={fieldParent ? `${fieldParent}.obj` : "obj"}
+                        placeholder="Object"
+                        label={!values.obj?._id  ? "New object will be created" : null}
+                        labelField="name"
+                        valueField="name"
+                        options={Object.values(objects).filter((obj) => obj.map_id === currentMap._id)}
+                        defaultValue={obj}
+                        textboxGap={0}
+                        closeOnSelect="true"
+                        className="w-100"
+                        schema="tasks"
+                        disbaled={!isTransportTask}
+                        containerStyle={{ marginTop: '1rem', marginBottom: "1rem" }}
                     />
 
-                    {isTransportTask &&
-                        <>
-                            <TextBoxSearch
-                                placeholder="Object"
-                                label={obj._id === undefined ? "New object will be created" : null}
-                                labelField="name"
-                                valueField="name"
-                                options={Object.values(objects).filter((obj) => obj.map_id === currentMap._id)}
-                                defaultValue={handleObject()}
-                                textboxGap={0}
-                                closeOnSelect="true"
-                                onChange={(values) => {
-                                    setObject(values[0])
-                                    // dispatchSetSelectedTask({
-                                    //     ...selectedTask,
-                                    //     load: {
-                                    //         ...selectedTask.load,
-                                    //         instructions: objects[selectedTask.obj] && !selectedTask.load.instructions.includes(objects[selectedTask.obj])`Load ${!selectedTask.load.instructions.includes(objects[selectedTask.obj])  }`
-                                    //     },
-                                    //     unload: {
-                                    //         ...selectedTask.unload,
-                                    //         instructions: `Unload ${values[0].name}`
-                                    //     },
-                                    // })
-                                }}
-                                className="w-100"
-                                schema="tasks"
-                                disbaled={!isTransportTask}
-                                style={{ marginTop: '1rem' }}
-                            />
-
-                            <styled.HelpText>
-                                Select the object that will be transported. Either search & select an existing object, or type the
-                                name of a new object to create one.
+                    <styled.HelpText>
+                        Select the object that will be transported. Either search & select an existing object, or type the
+                        name of a new object to create one.
                     </styled.HelpText>
 
-                            {(!!selectedTask.obj || !!obj) &&
-                                <>
-                                    <styled.Label>Track Using Quantity or Fractions</styled.Label>
-                                    <styled.RowContainer style={{ justifyContent: 'center' }}>
-                                        <styled.DualSelectionButton
-                                            style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
-                                            onClick={() => {
-                                                dispatchSetSelectedTask({
-                                                    ...selectedTask,
-                                                    track_quantity: true
-                                                })
-                                                setSelectedTaskCopy({
-                                                    ...selectedTask,
-                                                    track_quantity: false
-                                                })
-                                            }}
-                                            selected={selectedTask.track_quantity}
-                                        >
-                                            Quantity
+                    {(obj) &&
+                    <>
+                        <styled.Label>Track Using Quantity or Fractions</styled.Label>
+                        <styled.RowContainer style={{ justifyContent: 'center' }}>
+                            <styled.DualSelectionButton
+                                style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                                onClick={() => {
+                                    setFieldValue(fieldParent ? `${fieldParent}.track_quantity` : "track_quantity", true)
+                                }}
+                                selected={values.track_quantity}
+                            >
+                                Quantity
                             </styled.DualSelectionButton>
 
-                                        <styled.DualSelectionButton
-                                            style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
-                                            onClick={() => {
-                                                dispatchSetSelectedTask({
-                                                    ...selectedTask,
-                                                    track_quantity: false
-                                                })
-                                                setSelectedTaskCopy({
-                                                    ...selectedTask,
-                                                    track_quantity: false
-                                                })
-                                            }}
-                                            selected={!selectedTask.track_quantity}
+                            <styled.DualSelectionButton
+                                style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                                onClick={() => {
+                                    setFieldValue(fieldParent ? `${fieldParent}.track_quantity` : "track_quantity", false)
+                                }}
+                                selected={!values.track_quantity}
 
-                                        >
-                                            Fraction
+                            >
+                                Fraction
                             </styled.DualSelectionButton>
 
-                                    </styled.RowContainer>
-                                </>
-                            }
-                        </>
+                        </styled.RowContainer>
+                    </>
                     }
+                </>
+                }
 
-                    {/* Commented out for now, will posibly re-introduce later */}
-                    {/* Pull VS Push */}
-                    {/* <div style={{ display: 'flex', flexDirection: 'row', flexGrow: '1', marginTop: '1rem' }}>
+                {/* Commented out for now, will posibly re-introduce later */}
+                {/* Pull VS Push */}
+                {/* <div style={{ display: 'flex', flexDirection: 'row', flexGrow: '1', marginTop: '1rem' }}>
                 <Button schema={'tasks'} style={{ height: '1.8rem', fontSize: '1rem', flexGrow: '1' }}
                     onClick={() => { // If the shift key is pressed and the other button is pressed, change type to 'both'
                         if (shift && selectedTask.type == 'pull') {
@@ -709,15 +787,28 @@ const EditTask = (props) => {
             </styled.HelpText>
             } */}
 
-                    {/* Load and Unload Parameters */}
-                    <div style={{ height: "100%", paddingTop: "1rem" }}>
-                        {renderLoadUnloadParameters()}
-                    </div>
+                {/* Load and Unload Parameters */}
+                <div style={{ height: "100%", paddingTop: "1rem" }}>
+                    {renderLoadUnloadParameters()}
+                </div>
 
-                    <hr />
+                <hr />
 
-                    {/* Remove Task From Process Button */}
-                    {selectedProcess &&
+                {/* Remove Task From Process Button */}
+                {selectedTask.new ?
+                <>
+                    <Button
+                        schema={'tasks'}
+                        // disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
+                        secondary
+                        onClick={onBackClick}
+                    >
+                        Cancel
+                    </Button>
+                </>
+                    :
+                    <>
+                        {selectedProcess &&
                         <Button
                             schema={'tasks'}
                             disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
@@ -727,26 +818,39 @@ const EditTask = (props) => {
                             }}
                         >
                             Remove Route
-            </Button>
-                    }
+                        </Button>
+                        }
 
 
-                    {/* Delete Task Button */}
-                    <Button
-                        schema={'tasks'}
-                        disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
-                        secondary
-                        onClick={() => {
-                            setConfirmDeleteModal(true)
-                        }}
-                    >
-                        Delete Route
-            </Button>
-                </styled.ContentContainer>
+                        {/* Delete Task Button */}
+                        <Button
+                            schema={'tasks'}
+                            disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
+                            secondary
+                            onClick={() => {
+                                setConfirmDeleteModal(true)
+                            }}
+                        >
+                            Delete Route
+                        </Button>
+                    </>
+                }
+
+            </styled.ContentContainer>
             }
         </>
 
     )
 }
+
+// Specifies propTypes
+EditTask.propTypes = {
+    onSave: PropTypes.func,
+};
+
+// Specifies the default values for props:
+EditTask.defaultProps = {
+    onSave: () => {},
+};
 
 export default EditTask

@@ -25,6 +25,7 @@ import {
     DELETE_TASK_FAILURE,
 
     ADD_TASK,
+    SET_TASKS,
     UPDATE_TASK,
     UPDATE_TASKS,
     REMOVE_TASK,
@@ -192,6 +193,10 @@ export const deleteTask = (ID) => {
 
 export const addTask = (task) => {
     return { type: ADD_TASK, payload: { task } }
+}
+
+export const setTasks = (tasks) => {
+    return { type: SET_TASKS, payload: tasks}
 }
 
 export const updateTask = (task) => {

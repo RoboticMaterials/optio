@@ -36,3 +36,7 @@ export const isEmpty = (obj) => {
 
     return JSON.stringify(obj) === JSON.stringify({});
 }
+
+export const isObject = (item) => {
+    return ((typeof item === 'object') && (item !== null))
+}

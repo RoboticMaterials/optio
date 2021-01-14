@@ -25,6 +25,7 @@ import {
     DELETE_TASK_FAILURE,
 
     ADD_TASK,
+    SET_TASKS,
     UPDATE_TASK,
     UPDATE_TASKS,
     REMOVE_TASK,
@@ -72,7 +73,7 @@ export default function tasksReducer(state = defaultState, action) {
             tasksCopy = deepCopy(action.payload)
             return {
                 ...state,
-                tasks: action.payload,
+                tasks: {...state.tasks, ...action.payload},
                 pending: false
             }
 
@@ -182,6 +183,15 @@ export default function tasksReducer(state = defaultState, action) {
                 tasks: tasksCopy
             }
 
+        case SET_TASKS:
+            return {
+                ...state,
+                tasks: {
+                    ...state.tasks,
+                    ...action.payload
+                }
+            }
+
         case UPDATE_TASK:
             tasksCopy = deepCopy(state.tasks)
             tasksCopy[action.payload.task._id] = action.payload.task
@@ -216,12 +226,14 @@ export default function tasksReducer(state = defaultState, action) {
             }
 
         case REMOVE_TASK:
-            tasksCopy = deepCopy(state.tasks)
-            delete tasksCopy[action.payload.id]
+            const {
+                [action.payload.id]: taskToRemove,  // extract task to remove
+                ...remainingTasks                   // all other tasks are left here
+            } = state.tasks
 
             return {
                 ...state,
-                tasks: tasksCopy,
+                tasks: {...remainingTasks},         // keep all tasks but the one to remove
             }
 
 
@@ -238,7 +250,7 @@ export default function tasksReducer(state = defaultState, action) {
                 return {
                     ...state,
                     tasks: tasksCopy,
-                    selectedTask: deepCopy(tasksCopy[state.selectedTask._id])
+                    selectedTask: tasksCopy[state.selectedTask._id]
                 }
             } else {
                 return {

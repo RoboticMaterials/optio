@@ -37,6 +37,7 @@ import Widgets from '../../components/widgets/widgets'
 // logging
 import log from "../../logger"
 import { setCurrentMap } from "../../redux/actions/map_actions";
+import {getLastRoute} from "../../methods/utils/processes_utils";
 
 const logger = log.getLogger("MapView")
 
@@ -619,15 +620,21 @@ export class MapView extends Component {
                                             // This eliminates process with gaps between stations
                                             else if (!!this.props.selectedTask && !!this.props.selectedProcess && this.props.selectedProcess.routes.length > 0 && this.props.selectedTask.load.position === null) {
                                                 // Gets the last route in the routes array
-                                                const previousRoute = this.props.selectedProcess.routes[this.props.selectedProcess.routes.length - 1]
-                                                const previousTask = this.props.tasks[previousRoute]
+                                                // const previousRoute = this.props.selectedProcess.routes[this.props.selectedProcess.routes.length - 1]
+
+                                                const previousTask = getLastRoute(this.props.selectedProcess, this.props.tasks)
+                                                // const previousTask = this.props.tasks[previousRoute]
 
                                                 if (!!previousTask.unload) {
 
                                                     const unloadStationID = previousTask.unload.station
-                                                    const unloadStation = this.props.locations[unloadStationID]
+                                                    const unloadStation = this.props.locations[unloadStationID] || {}
 
-                                                    if (unloadStation.children.includes(position._id)) {
+                                                    console.log("previousTask",previousTask)
+                                                    console.log("unloadStationID",unloadStationID)
+                                                    console.log("unloadStation",unloadStation)
+
+                                                    if (Array.isArray(unloadStation.children) && unloadStation.children.includes(position._id)) {
                                                         return true
 
                                                     }

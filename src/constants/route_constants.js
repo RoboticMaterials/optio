@@ -6,6 +6,10 @@ export const ROUTE_TYPES = {
     PULL: "pull"
 }
 
+
+/*
+* NOTE: DO NOT GENERATE ID HERE, OTHERWISE IT WILL ONLY BE GENERATED ONCE ON LOAD AND NEW TASKS WILL ALL HAVE THE SAME ID
+* */
 export const defaultTask = {
     name: '',
     obj: null,
@@ -22,7 +26,7 @@ export const defaultTask = {
         station: null,
         sound: null,
         instructions: 'Load',
-        timeout: '01:00'
+        timeout: '09:00'
     },
     unload: {
         position: null,
@@ -30,5 +34,4 @@ export const defaultTask = {
         sound: null,
         instructions: 'Unload'
     },
-    _id: uuid.v4(),
 }

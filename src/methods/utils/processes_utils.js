@@ -1,4 +1,5 @@
 import { deepCopy } from './utils'
+import {isObject} from "./object_utils";
 
 /**
  * This function checks to see if a process is broken. 
@@ -144,4 +145,19 @@ export const getProcessStations = (process, routes) => {
 
     // return stationIds obj
     return stationIds
+}
+
+export const getLastRoute = (process, routes) => {
+    // Gets the previous route
+    const previousRouteID = process.routes[process.routes.length - 1]
+
+    var previousRoute
+    if(isObject(previousRouteID)) {
+        previousRoute = previousRouteID
+    }
+    else {
+        previousRoute = routes[previousRouteID]
+    }
+
+    return previousRoute
 }

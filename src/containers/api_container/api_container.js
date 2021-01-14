@@ -256,7 +256,7 @@ const ApiContainer = (props) => {
                     setPageDataInterval(setInterval(() => loadCardsData(), 10000))
                 }
                 else {
-                    setPageDataInterval(setInterval(() => loadTasksData(), 10000))
+                    setPageDataInterval(setInterval(() => loadTasksData(), 500000))
                 }
 
                 break
@@ -359,8 +359,8 @@ const ApiContainer = (props) => {
         tasks
     */
     const loadTasksData = async () => {
-        // const tasks = await onGetTasks()
-        // const processes = await onGetProcesses()
+        const tasks = await onGetTasks()
+        const processes = await onGetProcesses()
     }
 
     /*
@@ -749,17 +749,17 @@ const ApiContainer = (props) => {
                 }
 
                 // Else the task does exist, see if the task contains the process
-                else {
-                    if (!tasks[route].processes.includes(process._id)) {
-                        console.log('QQQQ Process containes a route, but the route does not contain the process, adding process to route', tasks[route])
-                        alert('Process containes a route, but the route does not contain the process, adding process to route')
-
-                        let taskCopy = deepCopy(tasks[route])
-                        taskCopy.processes.push(process._id)
-                        dispatchPutTask(taskCopy, taskCopy._id)
-
-                    }
-                }
+                // else {
+                //     if (!tasks[route].processes.includes(process._id)) {
+                //         console.log('QQQQ Process containes a route, but the route does not contain the process, adding process to route', tasks[route])
+                //         alert('Process containes a route, but the route does not contain the process, adding process to route')
+                //
+                //         let taskCopy = deepCopy(tasks[route])
+                //         taskCopy.processes.push(process._id)
+                //         dispatchPutTask(taskCopy, taskCopy._id)
+                //
+                //     }
+                // }
             })
         })
 
