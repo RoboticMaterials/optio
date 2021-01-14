@@ -11,7 +11,7 @@ import * as styled from './lots_page.style'
 import { ThemeContext } from 'styled-components';
 import Button from '../../../../components/basic/button/button'
 
-import {widgetLoaded} from '../../../../redux/actions/locations_actions'
+import {widgetLoaded} from '../../../../redux/actions/widget_actions'
 import { hoverStationInfo } from '../../../../redux/actions/stations_actions'
 import * as sidebarActions from "../../../../redux/actions/sidebar_actions"
 import {showEditor} from '../../../../redux/actions/card_actions'

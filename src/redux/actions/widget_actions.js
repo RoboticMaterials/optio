@@ -1,36 +1,17 @@
-import * as api from '../../api/sounds_api'
+import {
+  WIDGET_PAGE_LOADED,
+  WIDGET_XY_COORDINATES,
+  WIDGET_LOADED,
+} from '../types/widget_types'
 
-let GET_SOUNDS = 'GET_SOUNDS';
-let GET_SOUNDS_STARTED = 'GET_SOUNDS_STARTED';
-let GET_SOUNDS_SUCCESS = 'GET_SOUNDS_SUCCESS';
-let GET_SOUNDS_FAILURE = 'GET_SOUNDS_FAILURE';
+export const widgetPageLoaded = (state) => {
+    return { type: WIDGET_PAGE_LOADED, payload: state}
+}
 
+export const widgetXYCoordinates = (state) => {
+    return { type: WIDGET_XY_COORDINATES, payload: state}
+}
 
-
-// get
-// ******************************
-export const getSounds = () => {
-  return async dispatch => {
-
-    function onStart() {
-      dispatch({ type: GET_SOUNDS_STARTED });
-    }
-    function onSuccess(response) {
-      dispatch({ type: GET_SOUNDS_SUCCESS, payload: response });
-      return response;
-    }
-    function onError(error) {
-      dispatch({ type: GET_SOUNDS_FAILURE, payload: error });
-      return error;
-    }
-
-    try {
-      onStart();
-      const sounds = await api.getSounds();
-      return onSuccess(sounds);
-    } catch (error) {
-      return onError(error);
-    }
-  };
-};
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+export const widgetLoaded = (state) => {
+    return { type: WIDGET_LOADED, payload: state}
+}

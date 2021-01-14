@@ -115,7 +115,7 @@ const StatusHeader = (props) => {
                 L0,40
                 L${isSideBarOpen && !widgetPage ? sideBarWidth : leftMargin},40
                 C${isSideBarOpen && !widgetPage ? sideBarWidth + x / 2 : leftMargin + x / 2},40 ${isSideBarOpen && !widgetPage ? sideBarWidth + x / 2 : leftMargin + x / 2},${mergeHeight} ${isSideBarOpen && !widgetPage ? sideBarWidth + x : leftMargin + x},${mergeHeight}
-                L${pageWidth - (taskQueueOpen && !widgetPage ? rightCurvePoint : rightMargin) - x},${mergeHeight}
+                L${pageWidth - (taskQueueOpen ? rightCurvePoint : rightMargin) - x},${mergeHeight}
                 C${pageWidth - (taskQueueOpen ? rightCurvePoint : rightMargin) - x / 2},${mergeHeight} ${taskQueueOpen ? `${pageWidth - rightCurvePoint},${mergeHeight}` : `${pageWidth - rightMargin - x / 2},40`} ${pageWidth - (taskQueueOpen ? rightCurvePoint : rightMargin)},40
                 L${pageWidth},40
                 L${pageWidth},0

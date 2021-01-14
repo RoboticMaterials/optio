@@ -439,7 +439,6 @@ const HILModals = (props) => {
         event.station = station
         event.quantity = eventQuantity
         event.outgoing = outgoing
-
         // dispatchPostEvents(event)
     }
 
@@ -710,7 +709,9 @@ const HILModals = (props) => {
                                             setChangeQtyMouseHold('')
                                           }}
                                           >
-                                          <styled.HilInputIcon
+                                    () => {
+
+                                    }      <styled.HilInputIcon
                                             className='fas fa-minus-circle'
                                             style={{ color: '#ff9898' }}
                                         />
