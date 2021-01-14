@@ -315,7 +315,7 @@ const HILModals = (props) => {
             dispatchLocalHumanTask(null)
         }
 
-    }, [tasks])
+    }, [])
 
     useEffect(() => {
       if (!!item.quantity) {
@@ -585,9 +585,9 @@ const HILModals = (props) => {
 
                             {renderSelectedLot()}
 
-                            <styled.FooterButton style={{ margin: 0, marginTop: "1rem" }} color={'#ff9898'} onClick={onHilFailure}>
+                            <styled.FooterButton style={{ marginBottom: '1rem', marginTop: "1rem", marginLeft: '1rem' }} color={'#ff9898'} onClick={onHilFailure}>
                                 <styled.HilIcon
-                                    style={{ margin: 0, marginRight: "1rem", fontSize: "2.5rem" }}
+                                    style={{ marginBottom: 0, marginRight: "1rem", fontSize: "2.5rem" }}
                                     className='fas fa-times'
                                     color={'#ff1818'}
                                 />
