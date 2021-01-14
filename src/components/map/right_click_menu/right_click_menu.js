@@ -47,7 +47,7 @@ const RightClickMenu = (props) => {
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
     const dispatchEditingPosition = (bool) => dispatch(editingPosition(bool))
 
-    const dispatchAddStations = (station) => dispatch(addStation(station))
+    const dispatchAddStation = (station) => dispatch(addStation(station))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchEditingStation = (bool) => dispatch(editingStation(bool))
 
@@ -108,7 +108,7 @@ const RightClickMenu = (props) => {
         }
 
         await dispatchAddStation(tempSelectedStation)
-        await dispatchSetSelectedStation(tempSelectedStation))
+        await dispatchSetSelectedStation(tempSelectedStation)
 
         dispatchEditingStation(true)
         dispatchShowSideBar(true)
@@ -129,7 +129,7 @@ const RightClickMenu = (props) => {
                     <styled.MenuButton onClick={onSendCartToPosition}>Send Cart to Position</styled.MenuButton>
                 </>
                 :
-                <styled.MenuButton onClick={handleAddLocation}>Add Station</styled.MenuButton>
+                <styled.MenuButton onClick={onAddStation}>Add Station</styled.MenuButton>
 
             }
 

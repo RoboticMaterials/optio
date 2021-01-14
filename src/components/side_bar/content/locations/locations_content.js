@@ -21,7 +21,6 @@ import { sideBarBack, deleteLocationProcess, editing, deselectLocation } from '.
 import { setSelectedPosition, addPosition, deletePosition, updatePosition } from '../../../../redux/actions/positions_actions'
 import { setSelectedStation, addStation, deleteStation, updateStation } from '../../../../redux/actions/stations_actions'
 
-import { addStation, setSelectedStation } from '../../../../redux/actions/stations_actions'
 import * as positionActions from '../../../../redux/actions/positions_actions'
 import * as dashboardActions from '../../../../redux/actions/dashboards_actions'
 import * as taskActions from '../../../../redux/actions/tasks_actions'

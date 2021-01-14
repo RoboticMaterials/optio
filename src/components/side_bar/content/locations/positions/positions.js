@@ -14,9 +14,8 @@ import arrayMove from 'array-move';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 // Import Actions
-import locationsReducer from '../../../../../redux/reducers/locations_reducer';
-import * as locationActions from '../../../../../redux/actions/locations_actions'
-import { setSelectedLocationCopy } from '../../../../../redux/actions/locations_actions'
+import { setStationAttributes } from '../../../../../redux/actions/stations_actions'
+import { setPositionAttributes, deletePosition, addPosition } from '../../../../../redux/actions/positions_actions'
 import * as positionActions from '../../../../../redux/actions/positions_actions'
 import { deleteTask } from '../../../../../redux/actions/tasks_actions'
 import { deepCopy } from '../../../../../methods/utils/utils'
@@ -33,7 +32,11 @@ export default function Positions(props) {
     } = props
 
     const dispatch = useDispatch()
-    const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
+    const dispatchSetPositionAttributes = (id, attr) => dispatch(setPositionAttributes(id, attr))
+    const dispatchDeletePosition = (id) => dispatch(deletePosition(id))
+    const dispatchAddPosition = (position) => dispatch(addPosition(position))
+
+    const dispatchSetStationAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
 
     const positions = useSelector(state => state.locationsReducer.positions)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
@@ -91,7 +94,7 @@ export default function Positions(props) {
                     locationPositionIDs.splice(i, 1)
                     dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
 
-                    dispatch(positionActions.deletePosition(positions[position._id], position._id))
+                    dispatchDeletePosition(positions[position._id], position._id)
 
                 }}
                 />
@@ -102,7 +105,7 @@ export default function Positions(props) {
                     defaultValue={position.name}
                     onChange={(e) => {
                         setEditingIndex(i)
-                        dispatch(positionActions.setPositionAttributes(position._id, { name: e.target.value }))
+                        dispatchSetPositionAttributes(position._id, { name: e.target.value })
                     }}
 
                 />
@@ -152,8 +155,8 @@ export default function Positions(props) {
             locationPositionIDs.splice(i, 1)
             dispatch(locationActions.setLocationAttributes(selectedLocation._id, { children: locationPositionIDs }))
 
-            //
-            dispatch(positionActions.removePosition(position._id))
+            // TODO: Need to update to handle positions that are not in the backend yet
+            dispatchDeletePosition(position._id)
         }
 
         // Else remove from local copy, delete in backend and delete any associated tasks
@@ -178,7 +181,7 @@ export default function Positions(props) {
             }))
 
 
-            dispatch(positionActions.deletePosition(positions[position._id], position._id))
+            dispatchDeletePosition(positions[position._id], position._id)
 
         }
 
@@ -191,7 +194,7 @@ export default function Positions(props) {
             if (position.type === positionType) {
 
                 return (
-                    <styled.PositionListItem  background={LocationTypes[positionType].color}>
+                    <styled.PositionListItem background={LocationTypes[positionType].color}>
 
 
                         <MinusButton
@@ -255,7 +258,8 @@ export default function Positions(props) {
                     <styled.NewPositionCard draggable={false}
                         onMouseDown={e => {
                             const newPositionID = uuid()
-                            dispatch(positionActions.addPosition({
+                            // TODO: Add this to constants
+                            dispatchAddPosition({
                                 name: positionName + ' ' + (selectedLocation.children.filter((position) => positions[position].type === positionType).length + 1),
                                 schema: 'positions',
                                 type: positionType,
@@ -269,7 +273,7 @@ export default function Positions(props) {
                                 parent: selectedLocation._id,
                                 _id: newPositionID,
                                 map_id: currentMap._id
-                            }))
+                            })
 
                             let { children } = selectedLocation
                             children.push(newPositionID)
@@ -300,30 +304,30 @@ export default function Positions(props) {
             :
             <styled.PositionsContainer>
 
-              <ConfirmDeleteModal
-                isOpen = {!!confirmDeleteModal}
-                title={"Are you sure you want to delete this Position?"}
-                button_1_text={"Yes"}
-                handleOnClick1 = {()=>{
-                  handleDelete(deletingPosition, deletingIndex)
-                  setConfirmDeleteModal(null)
-                }}
-                button_2_text={"No"}
-                handleOnClick2 = {()=> setConfirmDeleteModal(null)}
-                handleClose={() => setConfirmDeleteModal(null)}
-              />
+                <ConfirmDeleteModal
+                    isOpen={!!confirmDeleteModal}
+                    title={"Are you sure you want to delete this Position?"}
+                    button_1_text={"Yes"}
+                    handleOnClick1={() => {
+                        handleDelete(deletingPosition, deletingIndex)
+                        setConfirmDeleteModal(null)
+                    }}
+                    button_2_text={"No"}
+                    handleOnClick2={() => setConfirmDeleteModal(null)}
+                    handleClose={() => setConfirmDeleteModal(null)}
+                />
 
 
                 {/* Cards for dragging a new position onto the map */}
 
                 {!!MiRMapEnabled &&
-                  <>
-                    <styled.CardContainer>
-                        {handlePositionCards()}
-                    </styled.CardContainer>
+                    <>
+                        <styled.CardContainer>
+                            {handlePositionCards()}
+                        </styled.CardContainer>
 
-                    <styled.Label>Associated Positions</styled.Label>
-                  </>
+                        <styled.Label>Associated Positions</styled.Label>
+                    </>
 
                 }
 

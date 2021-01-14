@@ -1,3 +1,6 @@
+import React, { useState, useEffect, useMemo } from 'react'
+
+
 const DragEntityProto = (props) => {
     const {
         isSelected,
@@ -8,12 +11,11 @@ const DragEntityProto = (props) => {
         handleEnableDrag,
         handleTranslateEnd,
         rd3tClassName,
+        d3
     } = props
 
     const [rotating, setRotating] = useState(false)
     const [translating, setTranslating] = useState(false)
-
-    const currentMap = useSelector(state => state.mapReducer.currentMap)
 
     useEffect(() => {
         bindDragListener()
