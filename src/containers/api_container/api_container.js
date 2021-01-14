@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from "react-router-dom";
+import {isBrowser} from "react-device-detect";
+
 
 // Import Actions
 import { getMaps } from '../../redux/actions/map_actions'
@@ -100,6 +102,7 @@ const ApiContainer = (props) => {
     const localReducer = useSelector(state => state.localReducer)
     const MiRMapEnabled = localReducer?.localSettings?.MiRMapEnabled
     const apiPage = useSelector(state => state.apiReducer.page)
+    const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
 
     // States
     const [currentPage, setCurrentPage] = useState('')
@@ -306,17 +309,18 @@ const ApiContainer = (props) => {
         // Data Update Functions
         // const dataUpdate = await onUpdateTaskData(tasks)
 
-        // Cleaner Functions
-        const funtion = await handleDeviceWithoutADashboard(devices, dashboards)
-        const funtion1 = await handleTasksWithBrokenPositions(tasks, locations)
-        const funtion2 = await handlePositionsWithBrokenParents(locations)
-        const funtion3 = await handleDevicesWithBrokenStations(devices, locations)
-        const funtion4 = await handleStationsWithBrokenDevices(devices, locations)
-        const funtion5 = await handleDashboardsWithBrokenStations(dashboards, locations)
-        const funtion6 = await handleStationsWithBrokenChildren(locations)
-        const funtion7 = await handleTasksWithBrokenProcess(processes, tasks)
-        const funtion8 = await handleProcessesWithBrokenRoutes(processes, tasks)
-
+        // Cleaner Functions (only run if map view enabled)
+        if (!!mapViewEnabled) {
+            const funtion = await handleDeviceWithoutADashboard(devices, dashboards)
+            const funtion1 = await handleTasksWithBrokenPositions(tasks, locations)
+            const funtion2 = await handlePositionsWithBrokenParents(locations)
+            const funtion3 = await handleDevicesWithBrokenStations(devices, locations)
+            const funtion4 = await handleStationsWithBrokenDevices(devices, locations)
+            const funtion5 = await handleDashboardsWithBrokenStations(dashboards, locations)
+            const funtion6 = await handleStationsWithBrokenChildren(locations)
+            const funtion7 = await handleTasksWithBrokenProcess(processes, tasks)
+            const funtion8 = await handleProcessesWithBrokenRoutes(processes, tasks)
+        }
         // Commented out for now. Was causing an issue when sending a cart to a location using simple move. Since its just a one off task, the task is never added to the backend so if the page was refreshed, the task q item would be deleted
         // const funtion9 = await handleTaskQueueWithBrokenTasks(taskQueue, tasks)
 
