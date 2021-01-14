@@ -258,10 +258,10 @@ export const getCardSchema = (mode, availableBinItems) => {
 }
 
 const routeStationSchema = Yup.object().shape({
-    instructions: Yup.string(),
-    position: Yup.string(),
-    station: Yup.string(),
-    timeout: Yup.string(),
+    instructions: Yup.string().nullable(),
+    position: Yup.string().nullable().required('No position selected.'),
+    station: Yup.string().nullable().required('No station selected.'),
+    timeout: Yup.string().nullable(),
 })
 
 const routeSchema = Yup.object().shape({

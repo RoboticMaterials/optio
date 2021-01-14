@@ -33,7 +33,7 @@ import {
     SELECT_TASK,
     SET_SELECTED_TASK,
     DESELECT_TASK,
-    EDITING_TASK,
+    EDITING_TASK, REMOVE_TASKS,
 } from '../types/tasks_types'
 
 import { deepCopy } from '../../methods/utils/utils';
@@ -209,6 +209,10 @@ export const updateTasks = (tasks) => {
 
 export const removeTask = (id) => {
     return { type: REMOVE_TASK, payload: { id } }
+}
+
+export const removeTasks = (ids) => {
+    return { type: REMOVE_TASKS, payload: { ids } }
 }
 
 export const setTaskAttributes = (id, attr) => {

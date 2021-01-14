@@ -34,7 +34,7 @@ import {
     SELECT_TASK,
     SET_SELECTED_TASK,
     DESELECT_TASK,
-    EDITING_TASK,
+    EDITING_TASK, REMOVE_TASKS,
 
 } from '../types/tasks_types'
 
@@ -225,7 +225,7 @@ export default function tasksReducer(state = defaultState, action) {
                 }
             }
 
-        case REMOVE_TASK:
+        case REMOVE_TASK: {
             const {
                 [action.payload.id]: taskToRemove,  // extract task to remove
                 ...remainingTasks                   // all other tasks are left here
@@ -235,6 +235,27 @@ export default function tasksReducer(state = defaultState, action) {
                 ...state,
                 tasks: {...remainingTasks},         // keep all tasks but the one to remove
             }
+        }
+
+        case REMOVE_TASKS: {
+
+
+            let temp = {...state.tasks}
+
+            action.payload.ids.forEach((currId) => {
+                const {
+                    [currId]: removed,
+                    ...remainingTasks
+                } = temp
+
+                temp = remainingTasks
+            })
+
+            return {
+                ...state,
+                tasks: {...temp},         // keep all tasks but the one to remove
+            }
+        }
 
 
         case SET_TASK_ATTRIBUTES:

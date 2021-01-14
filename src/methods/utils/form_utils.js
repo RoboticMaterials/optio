@@ -1,23 +1,25 @@
 export const getMessageFromError = (err) => {
     if(err) {
-        let message = "";
 
-        // handle array of errors
+        // err is array
         if( Array.isArray(err) ) {
-            const firstErr = err[0];
-            if(typeof(firstErr) === "object") {
-                return Object.values(firstErr);
-            }
-            return firstErr;
+            const firstErr = err[0] // get first item from arr and call recursively
+            return getMessageFromError(firstErr)
+
         }
 
+        // err is object
         if(typeof(err) === "object") {
-            return Object.values(err);
+            const firstErr = Object.values(err) // convert to arr and call recursively
+            return getMessageFromError(firstErr)
         }
-        return err;
+
+        // err is string - return
+        if(typeof(err) === "string") {
+            return err;
+        }
     }
 
-    return err
-
-
+    // default message
+    return "Error."
 }

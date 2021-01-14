@@ -4,21 +4,44 @@ import { useField, useFormikContext } from "formik";
 
 import ErrorTooltip from '../error_tooltip/error_tooltip';
 import * as styled from './list_item_field.style'
+import {getMessageFromError} from "../../../../methods/utils/form_utils";
 
 const ListItemField = (props) => {
 	const {
 		Container,
 		containerStyle,
 		ErrorTooltipContainerComponent,
-		isNew,
+		onMouseEnter,
+		onMouseLeave,
+		onIconClick,
+		onEditClick,
+		onTitleClick,
 		...rest
 	} = props
 
 	const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext();
 	const [field, meta] = useField(rest);
-	const { touched, error } = meta
+	const {
+		value: fieldValue,
+		name: fieldName
+	} = field
 
-	const hasError = touched && error
+	const {
+		name,
+		new: isNew
+	} = fieldValue
+
+	const {
+		touched,
+		error
+	} = meta
+
+	const hasError = error
+	const errorMessage = getMessageFromError(error)
+
+	console.log("ListItemField hasError",hasError)
+	console.log("ListItemField errorMessage",errorMessage)
+	const disabled = hasError || isNew
 
 
 	return (
@@ -26,26 +49,18 @@ const ListItemField = (props) => {
 			style={containerStyle}
 		>
 		<styled.ListItem
+			touched={touched}
 			error={hasError}
 			isNew={isNew}
-			key={`li-${currIndex}`}
-			onMouseEnter={() => {
-				if (!selectedTask && !editingTask) {
-					dispatchSetSelectedTask(currRoute)
-				}
-
-			}}
-			onMouseLeave={() => {
-				if (selectedTask !== null && !editingTask) {
-					dispatchSetSelectedTask(null)
-				}
-			}}
+			onMouseEnter={onMouseEnter}
+			onMouseLeave={onMouseLeave}
 		>
 			<styled.ListItemIconContainer style={{ width: '15%' }}>
 				<styled.ListItemIcon
+					disabled={disabled}
 					className='fas fa-play'
 					onClick={() => {
-						handleExecuteProcessTask(currRouteId)
+						if(!disabled) onIconClick()
 					}}
 				/>
 			</styled.ListItemIconContainer>
@@ -53,33 +68,45 @@ const ListItemField = (props) => {
 			{/* <styled.ListItemTitle schema={props.schema} onClick={() => props.onClick(element)}>{element.name}</styled.ListItemTitle> */}
 			<styled.ListItemTitle
 				schema={'processes'}
-				onClick={() => {
-					setEditingTask(true)
-					dispatchSetSelectedTask(currRoute)
-				}}
+				onClick={onTitleClick}
 			>
-				{currRouteName}
+				{name}
 			</styled.ListItemTitle>
 
 			<styled.ListItemIconContainer>
 
 				<styled.ListItemIcon
 					className='fas fa-edit'
-					onClick={() => {
-						setEditingTask(true)
-						dispatchSetSelectedTask(currRoute)
-					}}
+					onClick={onEditClick}
 					style={{ color: '#c6ccd3' }}
 				/>
 
-				{isNew &&
-				<ErrorTooltip
-					visible={isNew}
-					text={"This route is not saved. Leaving the editor will remove the route."}
-					className={"fas fa-exclamation-circle"}
-					color={"yellow"}
-					ContainerComponent={ErrorTooltipContainerComponent}
-				/>
+				{hasError ?
+					<ErrorTooltip
+						visible={hasError}
+						text={errorMessage}
+						// className={"fas fa-exclamation-circle"}
+						// color={"red"}
+						ContainerComponent={ErrorTooltipContainerComponent}
+					/>
+				:
+					isNew ?
+					<ErrorTooltip
+						visible={isNew}
+						text={"This route is not saved. Leaving the editor will remove the route."}
+						className={"fas fa-exclamation-circle"}
+						color={"yellow"}
+						ContainerComponent={ErrorTooltipContainerComponent}
+					/>
+					:
+					touched &&
+						<ErrorTooltip
+							visible={touched}
+							text={"This route contains unsaved changes. Leaving the editor without saving will undo your changes."}
+							className={"fas fa-exclamation-circle"}
+							color={"yellow"}
+							ContainerComponent={ErrorTooltipContainerComponent}
+						/>
 				}
 			</styled.ListItemIconContainer>
 		</styled.ListItem>
@@ -105,7 +132,11 @@ ListItemField.propTypes = {
 // Specifies the default values for props:
 ListItemField.defaultProps = {
 	Container: styled.DefaultContainer,
-	ErrorTooltipContainerComponent: styled.DefaultErrorTooltipContainerComponent
+	ErrorTooltipContainerComponent: styled.DefaultErrorTooltipContainerComponent,
+	onMouseEnter: () => {},
+	onMouseLeave: () => {},
+	onIconClick: () => {},
+	onEditClick: () => {},
 };
 
 export default ListItemField;

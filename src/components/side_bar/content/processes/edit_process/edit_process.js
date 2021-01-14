@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import { useHistory } from "react-router-dom";
 
 import * as styled from './edit_process.style'
@@ -23,7 +23,7 @@ import {
     addTask,
     putTask,
     deleteTask,
-    setTasks, removeTask
+    setTasks, removeTask, removeTasks
 } from '../../../../../redux/actions/tasks_actions'
 import { setSelectedProcess, postProcesses, putProcesses, deleteProcesses, setFixingProcess } from '../../../../../redux/actions/processes_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
@@ -38,6 +38,7 @@ import TextField from "../../../../basic/form/text_field/text_field";
 import * as taskActions from "../../../../../redux/actions/tasks_actions";
 import {getMessageFromError} from "../../../../../methods/utils/form_utils";
 import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
+import ListItemField from "../../../../basic/form/list_item_field/list_item_field";
 
 
 export const ProcessForm = (props) => {
@@ -58,7 +59,8 @@ export const ProcessForm = (props) => {
         setFieldValue,
         setFieldError,
         setFieldTouched,
-        submitForm
+        submitForm,
+        getFieldMeta
     } = formikProps
 
 
@@ -74,6 +76,7 @@ export const ProcessForm = (props) => {
     const dispatchAddTask = (task) => dispatch(addTask(task))
     const dispatchSetTasks = (tasks) => dispatch(setTasks(tasks))
     const dispatchRemoveTask = (taskId) => dispatch(removeTask(taskId))
+    const dispatchRemoveTasks = (taskIds) => dispatch(removeTasks(taskIds))
     const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
     const dispatchPutTask = (task, ID) => dispatch(putTask(task, ID))
     const dispatchDeleteTask = (ID) => dispatch(deleteTask(ID))
@@ -136,8 +139,17 @@ export const ProcessForm = (props) => {
         console.log("handleTaskBack after selectedTask", selectedTask)
     }
 
+    const valuesRef = useRef(values);
+
+    useEffect(() => {
+        valuesRef.current = values;
+    }, [values]);
+
+
+
     useEffect(() => {
         console.log('QQQQ selected process', selectedProcessCopy)
+
         return () => {
 
         }
@@ -176,6 +188,41 @@ export const ProcessForm = (props) => {
         }
 
     }, [editingTask])
+
+    // component mount / dismount
+    useEffect(() => {
+        // mount logic
+
+
+
+
+        // dismount logic
+        return () => {
+
+            if(valuesRef.current) {
+
+                // get id of all new (unsaved) routes
+                const routeIds = valuesRef.current.routes
+                    .filter((currRoute) => {
+                        return currRoute.new
+                    })
+                    .map((currRouteId) => currRouteId._id)
+
+                // remove unsaved from redux
+                dispatchRemoveTasks(routeIds)
+            }
+
+        }
+    }, [])
+
+    useEffect(() => {
+        // do stuff
+        return function() {
+            console.log()
+            // store form data on unmount
+            localStorage.setItem("formValues", JSON.stringify(valuesRef.current))
+        };
+    }, [])
 
 
 
@@ -276,7 +323,7 @@ export const ProcessForm = (props) => {
 
             // const hasError = (errors.routes && Array.isArray(errors.routes)) ? errors.routes[currIndex] : false
 
-            const fieldMeta = formikProps.getFieldMeta(`routes[${currIndex}]`)
+            const fieldMeta = getFieldMeta(`routes[${currIndex}]`)
             const {
                 error,
                 touched,
@@ -297,10 +344,8 @@ export const ProcessForm = (props) => {
 
             return (
                 <div key={`li-${currIndex}`}>
-                    <styled.ListItem
-                        error={hasError}
-                        isNew={isNew}
-                        key={`li-${currIndex}`}
+                    <ListItemField
+                        name={`routes[${currIndex}]`}
                         onMouseEnter={() => {
                             if (!selectedTask && !editingTask) {
                                 dispatchSetSelectedTask(currRoute)
@@ -312,54 +357,20 @@ export const ProcessForm = (props) => {
                                 dispatchSetSelectedTask(null)
                             }
                         }}
-                    >
-                        <styled.ListItemIconContainer style={{ width: '15%' }}>
-                            <styled.ListItemIcon
-                                className='fas fa-play'
-                                onClick={() => {
-                                    handleExecuteProcessTask(currRouteId)
-                                }}
-                            />
-                        </styled.ListItemIconContainer>
+                        onIconClick={() => {
+                            handleExecuteProcessTask(currRouteId)
+                        }}
+                        onEditClick={() => {
+                            setEditingTask(true)
+                            dispatchSetSelectedTask(currRoute)
+                        }}
+                        onTitleClick={() => {
+                            setEditingTask(true)
+                            dispatchSetSelectedTask(currRoute)
+                        }}
+                        key={`li-${currIndex}`}
+                    />
 
-                        {/* <styled.ListItemTitle schema={props.schema} onClick={() => props.onClick(element)}>{element.name}</styled.ListItemTitle> */}
-                        <styled.ListItemTitle
-                            schema={'processes'}
-                            onClick={() => {
-                                setEditingTask(true)
-                                dispatchSetSelectedTask(currRoute)
-                            }}
-                        >
-                            {currRouteName}
-                        </styled.ListItemTitle>
-
-                        <styled.ListItemIconContainer>
-
-                            <styled.ListItemIcon
-                                className='fas fa-edit'
-                                onClick={() => {
-                                    setEditingTask(true)
-                                    dispatchSetSelectedTask(currRoute)
-                                }}
-                                style={{ color: '#c6ccd3' }}
-                            />
-
-                            {isNew &&
-                                <ErrorTooltip
-                                    visible={isNew}
-                                    text={"This route is not saved. Leaving the editor will remove the route."}
-                                    className={"fas fa-exclamation-circle"}
-                                    color={"yellow"}
-
-                                    // ContainerComponent={IconContainerComponent}
-                                />
-                            }
-
-
-
-                        </styled.ListItemIconContainer>
-
-                    </styled.ListItem>
                     {editingTask && selectedTask && selectedTask._id === currRouteId &&
                     <styled.TaskContainer schema={'processes'}>
 
