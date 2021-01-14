@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import schedulesReducer from './schedules_reducer_v2';
 import skillsReducer from './skills_reducer';
-import locationsReducer from './locations_reducer_TO_BE_DELETED';
+import locationsReducer from './locations_reducer';
 import objectsReducer from './objects_reducer';
 import apiReducer from './api_reducer';
 import dashboardsReducer from './dashboards_reducer'
