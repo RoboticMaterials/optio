@@ -21,6 +21,7 @@ import {
     SET_STATION_ATTRIBUTES,
     UPDATE_STATIONS,
     REMOVE_STATION,
+    EDITING_STATION
 
 } from '../types/stations_types'
 
@@ -93,6 +94,12 @@ export default function stationsReducer(state = defaultState, action) {
                 ...state,
                 stations: action.payload.stations,
                 d3: action.payload.d3
+            }
+
+        case EDITING_STATION:
+            return {
+                ...state,
+                editingStation: action.payload
             }
 
         // ========== GET ========== //

@@ -22,6 +22,7 @@ import {
     SET_POSITION_ATTRIBUTES,
     REVERT_CHILDREN,
     SET_SELECTED_POSITION,
+    EDITING_POSITION,
 } from '../types/positions_types'
 
 import { deepCopy } from '../../methods/utils/utils';
@@ -110,7 +111,7 @@ export const postPosition = (position) => {
 
 // put
 // ******************************
-export const putPosition = (position, ID) => {
+export const putPosition = (position) => {
     return async dispatch => {
         function onStart() {
             dispatch({ type: PUT_POSITION_STARTED });
@@ -127,7 +128,6 @@ export const putPosition = (position, ID) => {
         try {
             onStart();
             let positionCopy = deepCopy(position)
-            delete positionCopy._id
             delete positionCopy.temp
 
             // Was used for a bug that didnt exit
@@ -142,7 +142,7 @@ export const putPosition = (position, ID) => {
 
             // Tells the backend that a position has changed
             positionCopy.change_key = 'changed'
-            const updatePosition = await api.putPosition(positionCopy, ID);
+            const updatePosition = await api.putPosition(positionCopy, positionCopy._id);
             return onSuccess(updatePosition)
         } catch (error) {
             return onError(error)
@@ -212,4 +212,8 @@ export const setPositionAttributes = (id, attr) => {
 
 export const setSelectedPosition = (position) => {
     return { type: SET_SELECTED_POSITION, payload: position }
+}
+
+export const editingPosition = (bool) => {
+    return { type: EDITING_POSITION, payload: bool }
 }

@@ -14,9 +14,9 @@ import { convertD3ToReal, convertRealToD3, getRelativeOffset } from '../../metho
 import { isEquivalent, } from '../../methods/utils/utils.js'
 
 // Import Actions
-import * as mapActions from '../../redux/actions/map_actions'
-import * as stationActions from '../../redux/actions/stations_actions'
-import * as positionActions from '../../redux/actions/positions_actions'
+import { getMap } from '../../redux/actions/map_actions'
+import { updateStations, setStationAttributes, setSelectedStation } from '../../redux/actions/stations_actions'
+import { updatePositions, postPosition, setPositionAttributes, setSelectedPosition } from '../../redux/actions/positions_actions'
 import * as locationActions from '../../redux/actions/locations_actions'
 import * as deviceActions from '../../redux/actions/devices_actions'
 
@@ -99,18 +99,18 @@ export class MapView extends Component {
 
         if (this.props.currentMapId && this.props.currentMap && this.props.currentMap._id && defaultMap) {
             if (this.props.currentMapId !== this.props.currentMap._id) {
-                this.props.onSetCurrentMap(defaultMap)
+                this.props.dispatchSetCurrentMap(defaultMap)
             }
 
         } else if (this.props.currentMapId && defaultMap) {
-            this.props.onSetCurrentMap(defaultMap)
+            this.props.dispatchSetCurrentMap(defaultMap)
 
         } else if (this.props.currentMap && this.props.currentMap._id) {
             // do nothing
         } else {
 
             // default to first map found
-            this.props.onSetCurrentMap(this.props.maps[0])
+            this.props.dispatchSetCurrentMap(this.props.maps[0])
         }
     }
 
@@ -168,7 +168,7 @@ export class MapView extends Component {
      */
     refreshMap = () => {
         if (!!this.props.maps[0]) {
-            this.props.onGetMap(this.props.maps[0].guid)
+            this.props.dispatchGetMap(this.props.maps[0].guid)
         }
     }
 
@@ -180,48 +180,81 @@ export class MapView extends Component {
 
     // ---------- Functionality for adding new location ---------- //
 
+    /**
+     * Handles Draging new locations onto the map
+     * 
+     * @param {*} e 
+     */
     dragNewEntity = e => {
-        if (this.mouseDown == false || !this.props.selectedLocation) { return }
 
-        // TempRightClick... should not be moved here, this creates a weird rotation bug
-        if (this.props.selectedLocation.temp == true && this.props.selectedLocation.name !== "TempRightClickMoveLocation") { //  Dragging current location onto the map
-            this.props.onSetLocationAttributes(this.props.selectedLocation._id, {
+        if (this.mouseDown == false || (!this.props.selectedStation || !this.props.selectedPosition)) return
+
+        // Handle Stations
+        if (!!this.props.selectedStation && this.props.selectedStation.temp === true) {
+            this.props.dispatchSetStationAttributes(this.props.selectedStation._id, {
                 x: e.clientX,
                 y: e.clientY
             })
-        } else {
+        }
+
+        // Handle Positions
+        else if (!!this.props.selectedPosition && this.props.selectedPosition.temp === true && this.props.selectedPosition.name !== "TempRightClickMovePosition") {
+            this.props.dispatchSetPositionAttributes(this.props.selectedStation._id, {
+                x: e.clientX,
+                y: e.clientY
+            })
+        }
+
+
+        // Else it's a stations child position
+        else {
             const draggingChild = Object.values(this.props.positions).find(position => position.temp == true)
-            if (!!draggingChild && this.props.selectedLocation.name !== "TempRightClickMoveLocation") {
-                this.props.onSetPositionAttributes(draggingChild._id, {
+            if (!!draggingChild && this.props.selectedPosition.name !== "TempRightClickMovePosition") {
+                this.props.dispatchSetPositionAttributes(draggingChild._id, {
                     x: e.clientX,
                     y: e.clientY
                 })
             }
+
         }
+
     }
 
     validateNewEntity = () => {
-        if (!this.props.selectedLocation) { return }
+        if (!this.props.selectedStation || !this.props.selectedPosition) return
 
-        if (this.props.selectedLocation.temp == true && this.props.selectedLocation.name !== "TempRightClickMoveLocation") {
-            const pos = convertD3ToReal([this.props.selectedLocation.x, this.props.selectedLocation.y], this.d3)
-            this.props.onSetLocationAttributes(this.props.selectedLocation._id, {
+        // Handle Stations
+        if (this.props.selectedStation.temp === true) {
+            const pos = convertD3ToReal([this.props.selectedStation.x, this.props.selectedStation.y], this.d3)
+            this.props.dispatchSetStationAttributes(this.props.selectedStation._id, {
                 pos_x: pos[0],
                 pos_y: pos[1],
                 temp: false
             })
-        } else {
+        }
+
+        // Handle Posiitions
+        else if (this.props.selectedPosition.temp === true && this.props.selectedPosition.name !== "TempRightClickMovePosition") {
+            const pos = convertD3ToReal([this.props.selectedPosition.x, this.props.selectedPosition.y], this.d3)
+            this.props.dispatchSetStationAttributes(this.props.selectedPosition._id, {
+                pos_x: pos[0],
+                pos_y: pos[1],
+                temp: false
+            })
+        }
+
+        // Handle child positions of stations
+        else {
             const newChildEntity = Object.values(this.props.positions).find(position => position.temp == true)
             if (!!newChildEntity) {
                 const pos = convertD3ToReal([newChildEntity.x, newChildEntity.y], this.d3)
-                this.props.onSetPositionAttributes(newChildEntity._id, {
+                this.props.dispatchSetPositionAttributes(newChildEntity._id, {
                     pos_x: pos[0],
                     pos_y: pos[1],
                     temp: false
                 })
             }
         }
-
     }
 
     /* ========== D3 Functions ========== */
@@ -247,8 +280,8 @@ export class MapView extends Component {
                 .on('zoom', () => {
 
                     // Disables the ability to hover over location on mouse drag when a loction is selected that is not new or a right click
-                    if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation' && this.props.selectedLocation.type !== null && !this.props.editing) {
-                        this.props.onHoverStationInfo(null)
+                    if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.name !== 'TempRightClickMovePosition')) && (!this.props.editingStation || !this.props.editingPosition)) {
+                        this.props.dispatchHoverStationInfo(null)
                         this.props.onDeselectLocation()
                     }
 
@@ -270,7 +303,7 @@ export class MapView extends Component {
                         Object.assign(station, { x, y })
                         stations[station._id] = station
                     })
-                    this.props.onUpdateStations(stations) // Bulk Update
+                    this.props.dispatchUpdateStations(stations) // Bulk Update
 
                     //// Apply the event translation to each position
                     Object.values(positions).forEach(position => {
@@ -278,7 +311,7 @@ export class MapView extends Component {
                         Object.assign(position, { x, y })
                         positions[position._id] = position
                     })
-                    this.props.onUpdatePositions(positions) // Bulk Update
+                    this.props.dispatchUpdatePositions(positions) // Bulk Update
 
                     //// Apply the event translation to each mobile device
                     Object.values(devices).filter(device => device.device_model == 'MiR100').map(device => {
@@ -286,7 +319,7 @@ export class MapView extends Component {
                         Object.assign(device.position, { x, y })
                         devices[device._id] = device
                     })
-                    this.props.onUpdateDevices(devices, this.d3) // Bulk Update
+                    this.props.dispatchUpdateDevices(devices, this.d3) // Bulk Update
 
                     // Once zoomed or dragged, stop initializing locations with transforms, instead now let the listener handle that. Otherwise zoom gets jumpy
                     if (this.initialRender) { this.initialRender = false }
@@ -415,7 +448,7 @@ export class MapView extends Component {
                 Object.assign(station, { x, y })
                 stations[station._id] = station
             })
-            this.props.onUpdateStations(stations) // Bulk Update
+            this.props.dispatchUpdateStations(stations) // Bulk Update
 
             //// Apply the event translation to each position
             Object.values(positions).forEach(position => {
@@ -423,7 +456,7 @@ export class MapView extends Component {
                 Object.assign(position, { x, y })
                 positions[position._id] = position
             })
-            this.props.onUpdatePositions(positions) // Bulk Update
+            this.props.dispatchUpdatePositions(positions) // Bulk Update
 
             //// Apply the event translation to each mobile device
             Object.values(devices).filter(device => device.device_model == 'MiR100').map(device => {
@@ -431,7 +464,7 @@ export class MapView extends Component {
                 Object.assign(device.position, { x, y })
                 devices[device._id] = device
             })
-            this.props.onUpdateDevices(devices, this.d3) // Bulk Update
+            this.props.dispatchUpdateDevices(devices, this.d3) // Bulk Update
 
         } else {
             translate = this.props.translate
@@ -485,9 +518,10 @@ export class MapView extends Component {
                             if (!!this.props.widgetLoaded) {
                                 // If there is a selected location and its not the right click menu location then hide
                                 // should always show widget if its the right click menu
-                                if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation' && !this.props.editing) {
-                                    this.props.onHoverStationInfo(null)
-                                    this.props.onDeselectLocation()
+                                if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.name !== 'TempRightClickMovePosition')) && (!this.props.editingStation || !this.props.editingPosition)) {
+                                    this.props.dispatchHoverStationInfo(null)
+                                    this.props.dispatchSetSelectedStation(null)
+                                    this.props.dispatchSetSelectedPosition(null)
                                 }
                             }
                         }}
@@ -495,11 +529,12 @@ export class MapView extends Component {
                             if (!!this.props.widgetLoaded) {
                                 // If there is a selected location and its not the right click menu location then hide
                                 // should always show widget if its the right click menu
-                                if (!!this.props.selectedLocation && this.props.selectedLocation.name !== 'TempRightClickMoveLocation') {
-                                    this.props.onHoverStationInfo(null)
+                                if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.name !== 'TempRightClickMovePosition'))) {
+                                    this.props.dispatchHoverStationInfo(null)
 
-                                    if (!this.props.editing) {
-                                        this.props.onDeselectLocation()
+                                    if (!this.props.editingStation || !this.props.editingPosition) {
+                                        this.props.dispatchSetSelectedStation(null)
+                                        this.props.dispatchSetSelectedPosition(null)
                                     }
                                 }
                             }
@@ -631,11 +666,11 @@ export class MapView extends Component {
                                                         return true
 
                                                     }
-                                                  }
                                                 }
+                                            }
 
 
-                                                // return true
+                                            // return true
 
 
                                             // This filters out positions that aren't apart of a station when making a task
@@ -716,13 +751,16 @@ const mapStateToProps = function (state) {
         stations: state.locationsReducer.stations,
         tasks: state.tasksReducer.tasks,
 
-        selectedLocation: state.locationsReducer.selectedLocation,
+        selectedStation: state.stationsReducer.selectedStation,
+        selectedPosition: state.positionsReducer.selectedPosition,
+        editingStation: state.stationsReducer.editingStation,
+        editingPosition: state.positionsReducer.editingPosition,
+
         selectedTask: state.tasksReducer.selectedTask,
         selectedProcess: state.processesReducer.selectedProcess,
         fixingProcess: state.processesReducer.fixingProcess,
 
         hoveringInfo: state.locationsReducer.hoverStationInfo,
-        editing: state.locationsReducer.editingLocation,
         widgetLoaded: state.locationsReducer.widgetLoaded,
 
     };
@@ -730,21 +768,21 @@ const mapStateToProps = function (state) {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onGetMap: (map_id) => dispatch(mapActions.getMap(map_id)),
-        onSetCurrentMap: (map) => dispatch(setCurrentMap(map)),
+        dispatchGetMap: (map_id) => dispatch(getMap(map_id)),
+        dispatchSetCurrentMap: (map) => dispatch(setCurrentMap(map)),
 
-        onUpdateStations: (stations) => dispatch(stationActions.updateStations(stations)),
-        onUpdatePositions: (positions) => dispatch(positionActions.updatePositions(positions)),
-        onUpdateDevices: (devices, d3) => dispatch(deviceActions.updateDevices(devices, d3)),
+        dispatchUpdateStations: (stations) => dispatch(updateStations(stations)),
+        dispatchUpdatePositions: (positions) => dispatch(updatePositions(positions)),
+        dispatchUpdateDevices: (devices, d3) => dispatch(deviceActions.updateDevices(devices, d3)),
 
-        onPostPosition: (position) => dispatch(positionActions.postPosition(position)),
-        onSetLocationAttributes: (id, attr) => dispatch(locationActions.setLocationAttributes(id, attr)),
-        onSetPositionAttributes: (id, attr) => dispatch(positionActions.setPositionAttributes(id, attr)),
-        onRemovePosition: (id) => dispatch(positionActions.removePosition(id)),
+        dispatchPostPosition: (position) => dispatch(postPosition(position)),
+        dispatchSetStationAttributes: (id, attr) => dispatch(setStationAttributes(id, attr)),
+        dispatchSetPositionAttributes: (id, attr) => dispatch(setPositionAttributes(id, attr)),
+        dispatchSetSelectedStation: (station) => dispatch(setSelectedStation(station)),
+        dispatchSetSelectedPosition: (position) => dispatch(setSelectedPosition(position)),
 
-        onDeselectLocation: () => dispatch(deselectLocation()),
-        onHoverStationInfo: (info) => dispatch(hoverStationInfo(info)),
-        onWidgetLoaded: (bool) => dispatch(widgetLoaded(bool)),
+        dispatchHoverStationInfo: (info) => dispatch(hoverStationInfo(info)),
+        dispatchWidgetLoaded: (bool) => dispatch(widgetLoaded(bool)),
 
 
     };

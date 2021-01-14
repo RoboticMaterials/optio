@@ -16,7 +16,7 @@ import Button from '../../../../basic/button/button'
 import Positions from '../../locations/positions/positions'
 
 // Import actions
-import * as locationActions from '../../../../../redux/actions/locations_actions'
+import { addStation, setSelectedStation } from '../../../../../redux/actions/stations_actions'
 import * as deviceActions from '../../../../../redux/actions/devices_actions'
 import * as positionActions from '../../../../../redux/actions/positions_actions'
 
@@ -46,8 +46,8 @@ const DeviceEdit = (props) => {
     const [showPositions, setShowPositions] = useState(false)
 
     const dispatch = useDispatch()
-    const onAddLocation = (selectedLocation) => dispatch(locationActions.addLocation(selectedLocation))
-    const onSetSelectedLocation = (selectedLocation) => dispatch(locationActions.setSelectedLocation(selectedLocation))
+    const dispatchAddStation = (selectedStation) => dispatch(addStation(selectedStation))
+    const dispatchSetSelectedStation = (selectedStation) => dispatch(setSelectedStation(selectedStation))
     const onSetSelectedDevice = (selectedDevice) => dispatch(deviceActions.setSelectedDevice(selectedDevice))
 
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
@@ -63,7 +63,7 @@ const DeviceEdit = (props) => {
         if (selectedDevice.device_model !== 'MiR100') {
             // If the selected device does not have a location, then give it a temp one
             if (!selectedLocation) {
-                onSetSelectedLocation({
+                dispatchSetSelectedStation({
                     name: selectedDevice.device_name,
                     device_id: selectedDevice._id,
                     schema: null,
@@ -151,8 +151,8 @@ const DeviceEdit = (props) => {
                     onMouseDown={async e => {
                         if (selectedLocation.type !== null) { return }
                         await Object.assign(selectedLocation, { ...template, temp: true })
-                        await onAddLocation(selectedLocation)
-                        await onSetSelectedLocation(selectedLocation)
+                        await dispatchAddStation(selectedLocation)
+                        await dispatchSetSelectedStation(selectedLocation)
                         setShowPositions(true)
                     }}
                 />
@@ -242,7 +242,7 @@ const DeviceEdit = (props) => {
 
     // This sets both the device name and station name to the same name
     const handleSetDeviceName = (event) => {
-        onSetSelectedLocation({
+        dispatchSetSelectedStation({
             ...selectedLocation,
             name: event.target.value
         })

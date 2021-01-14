@@ -27,10 +27,10 @@ import { putDashboard, postDashboard } from '../../../../../redux/actions/dashbo
 import * as objectActions from '../../../../../redux/actions/objects_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import { putProcesses, setSelectedProcess, setFixingProcess } from '../../../../../redux/actions/processes_actions'
-import { putStation } from '../../../../../redux/actions/stations_actions'
-import { selectLocation, deselectLocation } from '../../../../../redux/actions/locations_actions'
+import { setSelectedStation, putStation } from '../../../../../redux/actions/stations_actions'
+import { setSelectedPosition } from '../../../../../redux/actions/positions_actions'
 import { select } from 'd3-selection'
-console.log("I added a console log")
+
 const EditTask = (props) => {
 
     const {
@@ -53,8 +53,8 @@ const EditTask = (props) => {
     const dispatchPutTask = (task, id) => dispatch(putTask(task, id))
     const dispatchPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
     const dispatchSetFixingProcess = (bool) => dispatch(setFixingProcess(bool))
-    const dispatchSetSelectedLocation = (id) => dispatch(selectLocation(id))
-    const dispatchDeselectLocation = () => dispatch(deselectLocation())
+    const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
+    const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
 
     let tasks = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -77,28 +77,13 @@ const EditTask = (props) => {
         if (!!selectedTask.associated_task) console.log('QQQQ Associated Task', tasks[selectedTask.associated_task])
         setSelectedTaskCopy(selectedTask)
 
-        // Commented out for now
-        // Used to disable locations from being selected
-        // if (!!isProcessTask && selectedProcess.routes.length > 0 && selectedTask.load.position === null) {
-
-        //     const previousRoute = selectedProcess.routes[selectedProcess.routes.length - 1]
-
-        //     const previousTask = tasks[previousRoute]
-
-        //     if (!!previousTask.unload) {
-        //         const unloadStationID = previousTask.unload.station
-        //         console.log('QQQQ Should be highlighting location', unloadStationID)
-
-        //         dispatchSetSelectedLocation(unloadStationID)
-        //     }
-
-        // }
-
         return () => {
             // When unmounting edit task, always set fixing process to false
             // This will take care of when it's set to true in edit process
             dispatchSetFixingProcess(false)
-            dispatchDeselectLocation()
+            
+            dispatchSetSelectedStation(null)
+            dispatchSetSelectedPosition(null)
 
         }
     }, [])
@@ -495,10 +480,10 @@ const EditTask = (props) => {
         // Else, it's part of a process
         else {
             // If the selected task already has a object, set it to that
-            if(!!selectedTask){
-              if (!!selectedTask.obj) {
-                  return objects[selectedTask.obj]
-              }
+            if (!!selectedTask) {
+                if (!!selectedTask.obj) {
+                    return objects[selectedTask.obj]
+                }
             }
 
 

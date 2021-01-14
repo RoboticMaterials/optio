@@ -23,150 +23,150 @@ import { deepCopy } from '../../methods/utils/utils';
 import uuid from 'uuid';
 
 
-// get
-// ******************************
-export const getLocations = () => {
-    return async dispatch => {
-        const stations = await dispatch(stationActions.getStations())
-        const positions = await dispatch(positionActions.getPositions())
-        return ({ stations: stations, positions: positions })
-    }
-}
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// // get
+// // ******************************
+// export const getLocations = () => {
+//     return async dispatch => {
+//         const stations = await dispatch(stationActions.getStations())
+//         const positions = await dispatch(positionActions.getPositions())
+//         return ({ stations: stations, positions: positions })
+//     }
+// }
+// // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-// post
-// ******************************
-export const postLocation = (location) => {
-    return async dispatch => {
-        if (location.schema == 'station') {
-            return dispatch(stationActions.postStation(location))
-        } else if (location.schema == 'position') {
-            return dispatch(positionActions.postPosition(location))
-        }
-    }
-};
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// // post
+// // ******************************
+// export const postLocation = (location) => {
+//     return async dispatch => {
+//         if (location.schema == 'station') {
+//             return dispatch(stationActions.postStation(location))
+//         } else if (location.schema == 'position') {
+//             return dispatch(positionActions.postPosition(location))
+//         }
+//     }
+// };
+// // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-// put
-// ******************************
-export const putLocation = (location, ID) => {
-    return async dispatch => {
-        if (location.schema == 'station') {
-            return dispatch(stationActions.putStation(location, ID))
-        } else if (location.schema == 'position') {
-            return dispatch(positionActions.putPosition(location, ID))
-        }
-    }
-}
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// // put
+// // ******************************
+// export const putLocation = (location, ID) => {
+//     return async dispatch => {
+//         if (location.schema == 'station') {
+//             return dispatch(stationActions.putStation(location, ID))
+//         } else if (location.schema == 'position') {
+//             return dispatch(positionActions.putPosition(location, ID))
+//         }
+//     }
+// }
+// // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-// delete
-// ******************************
-export const deleteLocation = (id) => {
-    return async dispatch => {
-        dispatch(stationActions.deleteStation(id))
-        // TODO: Why is this here? Is this a catch because it may either be a position or location?
-        // dispatch(positionActions.deletePosition(id))
-    }
-}
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// // delete
+// // ******************************
+// export const deleteLocation = (id) => {
+//     return async dispatch => {
+//         dispatch(stationActions.deleteStation(id))
+//         // TODO: Why is this here? Is this a catch because it may either be a position or location?
+//         // dispatch(positionActions.deletePosition(id))
+//     }
+// }
+// // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-export const addLocation = (location) => {
-    return async dispatch => {
-        if (location.schema == 'station') {
-            dispatch(stationActions.addStation(location))
-        } else if (location.schema == 'position') {
-            dispatch(positionActions.addPosition(location))
-        }
-    }
-}
+// export const addLocation = (location) => {
+//     return async dispatch => {
+//         if (location.schema == 'station') {
+//             dispatch(stationActions.addStation(location))
+//         } else if (location.schema == 'position') {
+//             dispatch(positionActions.addPosition(location))
+//         }
+//     }
+// }
 
-export const updateLocation = (location) => {
-    return async dispatch => {
-        if (location.schema == 'station') {
-            dispatch(stationActions.updateStation(location))
-        } else if (location.schema == 'position') {
-            dispatch(positionActions.updatePosition(location))
-        }
+// export const updateLocation = (location) => {
+//     return async dispatch => {
+//         if (location.schema == 'station') {
+//             dispatch(stationActions.updateStation(location))
+//         } else if (location.schema == 'position') {
+//             dispatch(positionActions.updatePosition(location))
+//         }
 
-    }
-}
+//     }
+// }
 
-export const updateChildren = (location) => {
-    return async dispatch => {
-
-
-
-        dispatch(stationActions.updateStation(location))
-        dispatch(positionActions.updatePosition(location))
-
-    }
-}
+// export const updateChildren = (location) => {
+//     return async dispatch => {
 
 
-export const updateLocations = (locations) => {
-    return async dispatch => {
-        Object.values(locations).forEach(location => {
-            if (location.schema == 'station') {
-                dispatch(stationActions.updateStation(location))
-            } else if (location.schema == 'position') {
-                dispatch(positionActions.updatePosition(location))
-            }
-        })
-    }
-}
 
-export const removeLocation = (location) => {
+//         dispatch(stationActions.updateStation(location))
+//         dispatch(positionActions.updatePosition(location))
 
-    const {
-        _id,
-        children
-    } = location
+//     }
+// }
 
-    if (location.schema === 'station') {
 
-        return async dispatch => {
-            dispatch(stationActions.removeStation(_id))
+// export const updateLocations = (locations) => {
+//     return async dispatch => {
+//         Object.values(locations).forEach(location => {
+//             if (location.schema == 'station') {
+//                 dispatch(stationActions.updateStation(location))
+//             } else if (location.schema == 'position') {
+//                 dispatch(positionActions.updatePosition(location))
+//             }
+//         })
+//     }
+// }
 
-            children.forEach((child) => {
-                dispatch(positionActions.removePosition(child))
-            })
-        }
-    }
+// export const removeLocation = (location) => {
 
-    else if (location.schema === 'position') {
-        return async dispatch => {
-            dispatch(positionActions.removePosition(_id))
-        }
-    }
-}
+//     const {
+//         _id,
+//         children
+//     } = location
 
-export const setLocationAttributes = (id, attr) => {
-    return async dispatch => {
-        dispatch(stationActions.setStationAttributes(id, attr))
-        dispatch(positionActions.setPositionAttributes(id, attr))
-    }
-}
+//     if (location.schema === 'station') {
 
-export const selectLocation = (id) => {
-    return { type: SELECT_LOCATION, payload: { id } }
-}
+//         return async dispatch => {
+//             dispatch(stationActions.removeStation(_id))
 
-export const setSelectedLocation = (location) => {
-    return { type: SET_SELECTED_LOCATION, payload: { location } }
-}
+//             children.forEach((child) => {
+//                 dispatch(positionActions.removePosition(child))
+//             })
+//         }
+//     }
 
-export const deselectLocation = () => {
-    return { type: DESELECT_LOCATION }
-}
+//     else if (location.schema === 'position') {
+//         return async dispatch => {
+//             dispatch(positionActions.removePosition(_id))
+//         }
+//     }
+// }
 
-export const setSelectedLocationCopy = (location) => {
-    return { type: SET_SELECTED_LOCATION_COPY, payload: location }
-}
+// export const setLocationAttributes = (id, attr) => {
+//     return async dispatch => {
+//         dispatch(stationActions.setStationAttributes(id, attr))
+//         dispatch(positionActions.setPositionAttributes(id, attr))
+//     }
+// }
 
-export const setSelectedLocationChildrenCopy = (locationChildren) => {
-    return { type: SET_SELECTED_LOCATION_CHILDREN_COPY, payload: locationChildren }
-}
+// export const selectLocation = (id) => {
+//     return { type: SELECT_LOCATION, payload: { id } }
+// }
+
+// export const setSelectedLocation = (location) => {
+//     return { type: SET_SELECTED_LOCATION, payload: { location } }
+// }
+
+// export const deselectLocation = () => {
+//     return { type: DESELECT_LOCATION }
+// }
+
+// export const setSelectedLocationCopy = (location) => {
+//     return { type: SET_SELECTED_LOCATION_COPY, payload: location }
+// }
+
+// export const setSelectedLocationChildrenCopy = (locationChildren) => {
+//     return { type: SET_SELECTED_LOCATION_CHILDREN_COPY, payload: locationChildren }
+// }
 
 export const widgetLoaded = (bool) => {
     return { type: WIDGET_LOADED, payload: bool }

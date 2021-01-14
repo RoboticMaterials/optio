@@ -10,7 +10,7 @@ import { LocationTypes, handleWidgetHoverCoord } from '../../../../../methods/ut
 // Import Actions
 import { setTaskAttributes } from '../../../../../redux/actions/tasks_actions'
 import { hoverStationInfo } from '../../../../../redux/actions/stations_actions'
-import { selectLocation, deselectLocation } from '../../../../../redux/actions/locations_actions'
+import { setSelectedPosition } from '../../../../../redux/actions/positions_actions'
 
 function Position(props) {
 
@@ -32,11 +32,11 @@ function Position(props) {
     const dispatch = useDispatch()
     const dispatchSetTaskAttributes = (id, load) => dispatch(setTaskAttributes(id, load))
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
-    const dispatchSelectLocation = (locationId) => dispatch(selectLocation(locationId))
+    const dispatchSetSelect = (position) => dispatch(setSelectedPosition(position))
 
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
-    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
+    const selectedPosition = useSelector(state => state.locationsReducer.selectedPosition)
     const hoveringID = useSelector(state => state.locationsReducer.hoverLocationID)
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
 
@@ -50,10 +50,10 @@ function Position(props) {
 
     // Automatically opens widget pages and sets hovering to true in the location is a temp right click
     useEffect(() => {
-        if (location !== null && location.name === 'TempRightClickMoveLocation') {
+        if (location !== null && location.name === 'TempRightClickMovePosition') {
             setHovering(true)
             dispatchHoverStationInfo(handleWidgetHover())
-            dispatchSelectLocation(location._id)
+            dispatchSetSelectPosition(location)
         }
     }, [])
 
@@ -118,15 +118,15 @@ function Position(props) {
                 // Only hover if there is no selected task
                 if (selectedTask === null) {
                     setHovering(true)
-                    if (!rotating && !translating && selectedLocation == null && selectedTask == null) {
+                    if (!rotating && !translating && selectedPosition === null && selectedTask === null) {
                         dispatchHoverStationInfo(handleWidgetHover())
-                        dispatchSelectLocation(location._id)
+                        dispatchSetSelectPosition(location)
 
                     }
                 }
 
             }}
-            onMouseLeave={() => { location.name !== 'TempRightClickMoveLocation' && setHovering(false) }}
+            onMouseLeave={() => { location.name !== 'TempRightClickMovePosition' && setHovering(false) }}
             onMouseDown={() => {
                 onSetPositionTask()
 
@@ -160,7 +160,7 @@ function Position(props) {
 
             <g className={`${rd3tClassName}-rot`}>
                 {/* Only show rotating when editing or its a right click location */}
-                {isSelected && (hovering || rotating) && (hoveringInfo === null || location.name === 'TempRightClickMoveLocation') &&
+                {isSelected && (hovering || rotating) && (hoveringInfo === null || location.name === 'TempRightClickMovePosition') &&
                     <>
                         <circle x="-16" y="-16" r="16" strokeWidth="0" fill="transparent" style={{ cursor: "pointer" }}></circle>
                         <circle x="-18" y="-18" r="14" fill="none" strokeWidth="4" stroke="transparent" style={{ cursor: "pointer" }}

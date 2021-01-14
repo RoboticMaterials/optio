@@ -7,7 +7,7 @@ import * as styled from './station.style'
 
 // Import actions
 import { hoverStationInfo } from '../../../../../redux/actions/stations_actions'
-import { selectLocation, deselectLocation } from '../../../../../redux/actions/locations_actions'
+import { setSelectedStation } from '../../../../../redux/actions/stations_actions'
 import { setTaskAttributes } from '../../../../../redux/actions/tasks_actions'
 
 // Import Utils
@@ -31,7 +31,7 @@ function Station(props) {
     const [rotating, setRotating] = useState(false)
     const [translating, setTranslating] = useState(false)
 
-    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
+    const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const hoveringID = useSelector(state => state.locationsReducer.hoverLocationID)
@@ -42,7 +42,7 @@ function Station(props) {
 
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
-    const dispatchSelectLocation = (locationId) => dispatch(selectLocation(locationId))
+    const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchSetTaskAttributes = (id, load) => dispatch(setTaskAttributes(id, load))
 
     // Used to see if a widget Page is opened
@@ -98,8 +98,8 @@ function Station(props) {
 
         // This will gray out devices that arent selected. The device becomes selected either on hover in device side bar list or editing device
         let selected = true
-        if (!!selectedLocation && !!selectedLocation.device_id && location.device_id !== selectedLocation.device_id) selected = false
-        if (!!selectedLocation && !selectedLocation.device_id) selected = false
+        if (!!selectedStation && !!selectedStation.device_id && location.device_id !== selectedStation.device_id) selected = false
+        if (!!selectedStation && !selectedStation.device_id) selected = false
 
         let device = {}
         try {
@@ -245,9 +245,9 @@ function Station(props) {
                     if (!hoveringID && selectedTask === null) {
                         setHovering(true)
 
-                        if (!rotating && !translating && selectedLocation == null && selectedTask == null) {
+                        if (!rotating && !translating && selectedStation === null && selectedTask === null) {
                             dispatchHoverStationInfo(handleWidgetHover())
-                            dispatchSelectLocation(location._id)
+                            dispatchSetSelectedStation(location)
                         }
                     }
                 }

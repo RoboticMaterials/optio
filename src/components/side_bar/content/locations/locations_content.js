@@ -17,11 +17,11 @@ import Positions from './positions/positions'
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 
 // Import actions
-import { setSelectedLocation, setSelectedLocationCopy, setSelectedLocationChildrenCopy, sideBarBack, deleteLocationProcess, editing, deselectLocation } from '../../../../redux/actions/locations_actions'
-import { addPosition, removePosition, deletePosition, updatePosition } from '../../../../redux/actions/positions_actions'
+import { sideBarBack, deleteLocationProcess, editing, deselectLocation } from '../../../../redux/actions/locations_actions'
+import { setSelectedPosition, addPosition, deletePosition, updatePosition } from '../../../../redux/actions/positions_actions'
+import { setSelectedStation, addStation, deleteStation, updateStation } from '../../../../redux/actions/stations_actions'
 
-import * as locationActions from '../../../../redux/actions/locations_actions'
-import * as stationActions from '../../../../redux/actions/stations_actions'
+import { addStation, setSelectedStation } from '../../../../redux/actions/stations_actions'
 import * as positionActions from '../../../../redux/actions/positions_actions'
 import * as dashboardActions from '../../../../redux/actions/dashboards_actions'
 import * as taskActions from '../../../../redux/actions/tasks_actions'
@@ -93,21 +93,20 @@ function locationTypeGraphic(type, isNotSelected) {
 export default function LocationContent() {
 
     const dispatch = useDispatch()
-    const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
-    const onSetSelectedLocationChildrenCopy = (locationChildren) => dispatch(setSelectedLocationChildrenCopy(locationChildren))
-    const onSetSelectedLocation = (loc) => dispatch(setSelectedLocation(loc))
+
+    const dispatchSetSelectedStaion = (station) => dispatch(setSelectedStation(station))
+    const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
+
     const onSideBarBack = (props) => dispatch(sideBarBack(props))
     const onDeleteLocationProcess = (props) => dispatch(deleteLocationProcess(props))
     const onAddPosition = (pos) => dispatch(addPosition(pos))
     const onEditing = (props) => dispatch(locationActions.editing(props))
 
-    const locations = useSelector(state => state.locationsReducer.locations)
-    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
+    const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
+    const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const positions = useSelector(state => state.locationsReducer.positions)
     const stations = useSelector(state => state.locationsReducer.stations)
     const tasks = useSelector(state => state.tasksReducer.tasks)
-    const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
-    const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
     const devices = useSelector(state => state.devicesReducer.devices)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const editing = useSelector(state => state.locationsReducer.editingLocation)
@@ -157,10 +156,21 @@ export default function LocationContent() {
                 draggable={false}
 
                 onMouseDown={async e => {
-                    if (selectedLocation.type !== null) { return }
-                    await Object.assign(selectedLocation, { ...template, temp: true, map_id: currentMap._id })
-                    await dispatch(locationActions.addLocation(selectedLocation))
-                    await dispatch(locationActions.setSelectedLocation(selectedLocation))
+
+                    // Handle Station addition
+                    if (template.schema === 'station') {
+                        await Object.assign(selectedStation, { ...template, temp: true, map_id: currentMap._id })
+                        await dispatch(locationActions.addLocation(selectedLocation))
+                        await dispatch(locationActions.setSelectedLocation(selectedLocation))
+                    }
+
+                    else if(template.schema === 'position') {
+
+                    }
+
+                    else {
+                        throw('Schema Does Not exist')
+                    }
                 }}
 
                 isSelected={type === selected}
@@ -403,51 +413,51 @@ export default function LocationContent() {
                 {/* Location Type */}
                 <styled.DefaultTypesContainer>
 
-                  {!!selectedLocation &&
-                    <>
-                    {!selectedLocation.type ?
+                    {!!selectedLocation &&
                         <>
-                            <>
-                                <styled.LocationTypeContainer>
-                                    <LocationTypeButton type='human' selected={selectedLocation.type} />
-                                    <styled.LocationTypeLabel>Station</styled.LocationTypeLabel>
-                                </styled.LocationTypeContainer>
-
-                                <styled.LocationTypeContainer>
-                                    <LocationTypeButton type='warehouse' selected={selectedLocation.type} />
-                                    <styled.LocationTypeLabel>Warehouse</styled.LocationTypeLabel>
-                                </styled.LocationTypeContainer>
-                            </>
-
-                            {MiRMapEnabled &&
+                            {!selectedLocation.type ?
                                 <>
+                                    <>
+                                        <styled.LocationTypeContainer>
+                                            <LocationTypeButton type='human' selected={selectedLocation.type} />
+                                            <styled.LocationTypeLabel>Station</styled.LocationTypeLabel>
+                                        </styled.LocationTypeContainer>
 
-                                    {/* <styled.LocationTypeContainer>
+                                        <styled.LocationTypeContainer>
+                                            <LocationTypeButton type='warehouse' selected={selectedLocation.type} />
+                                            <styled.LocationTypeLabel>Warehouse</styled.LocationTypeLabel>
+                                        </styled.LocationTypeContainer>
+                                    </>
+
+                                    {MiRMapEnabled &&
+                                        <>
+
+                                            {/* <styled.LocationTypeContainer>
                                         <LocationTypeButton type='human' selected={selectedLocation.type} />
                                         <styled.LocationTypeLabel>Human Station</styled.LocationTypeLabel>
                                     </styled.LocationTypeContainer> */}
 
-                                    <styled.LocationTypeContainer>
-                                        <LocationTypeButton type='cart_position' selected={selectedLocation.type} />
-                                        <styled.LocationTypeLabel>Cart Position</styled.LocationTypeLabel>
-                                    </styled.LocationTypeContainer>
+                                            <styled.LocationTypeContainer>
+                                                <LocationTypeButton type='cart_position' selected={selectedLocation.type} />
+                                                <styled.LocationTypeLabel>Cart Position</styled.LocationTypeLabel>
+                                            </styled.LocationTypeContainer>
 
-                                    <styled.LocationTypeContainer>
-                                        <LocationTypeButton type='shelf_position' selected={selectedLocation.type} />
-                                        <styled.LocationTypeLabel>Shelf Position</styled.LocationTypeLabel>
-                                    </styled.LocationTypeContainer>
+                                            <styled.LocationTypeContainer>
+                                                <LocationTypeButton type='shelf_position' selected={selectedLocation.type} />
+                                                <styled.LocationTypeLabel>Shelf Position</styled.LocationTypeLabel>
+                                            </styled.LocationTypeContainer>
+                                        </>
+                                    }
                                 </>
+
+                                :
+                                <styled.LocationTypeContainer>
+                                    <LocationTypeButton type={selectedLocation.type} selected={selectedLocation.type} />
+                                    <styled.LocationTypeLabel>{locationTypeName}</styled.LocationTypeLabel>
+                                </styled.LocationTypeContainer>
                             }
                         </>
-
-                        :
-                        <styled.LocationTypeContainer>
-                            <LocationTypeButton type={selectedLocation.type} selected={selectedLocation.type} />
-                            <styled.LocationTypeLabel>{locationTypeName}</styled.LocationTypeLabel>
-                        </styled.LocationTypeContainer>
                     }
-                    </>
-                  }
 
                 </styled.DefaultTypesContainer>
                 {/* Will be used later for custom types (Lathe, Cut'it, etc.) */}
@@ -458,14 +468,14 @@ export default function LocationContent() {
                     <LocationTypeButton></LocationTypeButton> */}
                 </styled.CustomTypesContainer>
 
-              {!!selectedLocation &&
-                <>
-                {selectedLocation.schema === 'station' ?
+                {!!selectedLocation &&
                     <>
+                        {selectedLocation.schema === 'station' ?
+                            <>
 
-                        <Positions handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+                                <Positions handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
 
-                        {/* {MiRMapEnabled ?
+                                {/* {MiRMapEnabled ?
                             <>
                                 <Positions type='cart_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
                                 <Positions type='shelf_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
@@ -475,22 +485,22 @@ export default function LocationContent() {
                         } */}
 
 
-                    </>
-                    :
-                    selectedLocation.type === 'cart_position' || selectedLocation.type === 'shelf_position' ?
-                        <>
-                            <Button
-                                schema={'locations'}
-                                secondary
-                                onClick={() => {
-                                    handleSetPositionToCartCoords()
-                                }}
-                                style={{ marginBottom: '1rem' }}
-                            >
-                                Use Cart Location
+                            </>
+                            :
+                            selectedLocation.type === 'cart_position' || selectedLocation.type === 'shelf_position' ?
+                                <>
+                                    <Button
+                                        schema={'locations'}
+                                        secondary
+                                        onClick={() => {
+                                            handleSetPositionToCartCoords()
+                                        }}
+                                        style={{ marginBottom: '1rem' }}
+                                    >
+                                        Use Cart Location
                             </Button>
 
-                            {/* <Button
+                                    {/* <Button
                                 schema={'locations'}
                                 secondary
                                 onClick={() => {
@@ -502,8 +512,8 @@ export default function LocationContent() {
                                 Merge Position to Station
                             </Button> */}
 
-                            {/* Commented out for now. Moving merging to inside stations vs inside of positions */}
-                            {/* <styled.Label
+                                    {/* Commented out for now. Moving merging to inside stations vs inside of positions */}
+                                    {/* <styled.Label
                                 schema={'locations'}
                             >
                                 Merge Position To Station
@@ -542,14 +552,14 @@ export default function LocationContent() {
                             } */}
 
 
-                            <div style={{ height: "100%" }}></div>
-                        </>
+                                    <div style={{ height: "100%" }}></div>
+                                </>
 
-                        :
-                        <div style={{ height: "100%" }}></div>
+                                :
+                                <div style={{ height: "100%" }}></div>
+                        }
+                    </>
                 }
-                </>
-              }
 
                 {/* Delete Location Button */}
                 <Button schema={'locations'} secondary onClick={() => setConfirmDeleteModal(true)} >Delete</Button>
@@ -571,7 +581,7 @@ export default function LocationContent() {
                 elements={
                     locationsSortedAlphabetically(Object.values(locations))
                         // Filters out devices, entry positions, other positions and right click to move positions
-                        .filter(location => !location.parent && location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.name !== 'TempRightClickMoveLocation' && (location.map_id === currentMap._id))
+                        .filter(location => !location.parent && location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.name !== 'TempRightClickMovePosition' && (location.map_id === currentMap._id))
                 }
                 // elements={Object.values(locations)}
                 onMouseEnter={(location) => dispatch(locationActions.selectLocation(location._id))}

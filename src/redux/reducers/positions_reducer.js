@@ -95,6 +95,12 @@ export default function positionsReducer(state = defaultState, action) {
                 d3: action.payload.d3
             }
 
+        case EDITING_POSITION:
+            return {
+                ...state,
+                editingPosition: action.payload
+            }
+
         // ========== GET ========== //
         case GET_POSITIONS_STARTED:
             return Object.assign({}, state, {

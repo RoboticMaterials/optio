@@ -11,9 +11,11 @@ import useWindowSize from '../../hooks/useWindowSize'
 
 // Import Actions
 import { hoverStationInfo } from '../../redux/actions/stations_actions'
-import { selectLocation, deselectLocation, widgetLoaded, setSelectedLocationCopy, setSelectedLocationChildrenCopy } from '../../redux/actions/locations_actions'
+import { widgetLoaded, setSelectedLocationChildrenCopy } from '../../redux/actions/locations_actions'
+import { setSelectedStation } from '../../redux/actions/stations_actions'
+import { setSelectedPosition } from '../../redux/actions/positions_actions'
 
-import * as sidebarActions from "../../redux/actions/sidebar_actions"
+import { setOpen } from "../../redux/actions/sidebar_actions"
 import * as locationActions from '../../redux/actions/locations_actions'
 
 import { deepCopy } from '../../methods/utils/utils'
@@ -40,7 +42,8 @@ const Widgets = (props) => {
     // Grabs what widget page is in the URL
     const widgetPage = params.widgetPage
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
-    const locations = useSelector(state => { return state.locationsReducer.locations })
+    const stations = useSelector(state => state.stationsReducer.stations)
+    const positions = useSelector(state => state.stationsReducer.positions)
     const devices = useSelector(state => state.devicesReducer.devices)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const editing = useSelector(state => state.locationsReducer.editingLocation)
@@ -49,14 +52,14 @@ const Widgets = (props) => {
 
     // Info passed from workstations/device_locations via redux
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
+
     const dispatch = useDispatch()
-    const onHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
-    const onWidgetLoaded = (bool) => dispatch(widgetLoaded(bool))
-    const onDeselectLocation = () => dispatch(deselectLocation())
-    const onSelectLocation = () => dispatch(selectLocation())
-    const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
-    const onSetSelectedLocationChildrenCopy = (locationChildren) => dispatch(setSelectedLocationChildrenCopy(locationChildren))
-    const onShowSideBar = (bool) => dispatch(sidebarActions.setOpen(bool))
+    const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
+    const dispatchWidgetLoaded = (bool) => dispatch(widgetLoaded(bool))
+    const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
+    const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
+    const dispatchSetSelectedLocationChildrenCopy = (locationChildren) => dispatch(setSelectedLocationChildrenCopy(locationChildren))
+    const dispatchShowSideBar = (bool) => dispatch(setOpen(bool))
     const [hoverX, setHoverX] = useState(null)
     const [hoverY, setHoverY] = useState(null)
     // Location ID passed down through workstations via redux
@@ -65,20 +68,24 @@ const Widgets = (props) => {
     // This happens when moving the mouse too fast over a location causing a widget to load, but not fast enough for the onmouselave to execute
     useEffect(() => {
 
-        // setTimeout(() => onWidgetLoaded(true), 100)
-        onWidgetLoaded(true)
+        // setTimeout(() => dispatchWidgetLoaded(true), 100)
+        dispatchWidgetLoaded(true)
         return () => {
-            onHoverStationInfo(null)
-            if (!!editing) { onDeselectLocation() }
-            onWidgetLoaded(false)
+            dispatchHoverStationInfo(null)
+            if (!!editing) {
+                dispatchSetSelectedStation(null)
+                dispatchSetSelectedPosition(null)
+            }
+            dispatchWidgetLoaded(false)
         }
     }, [])
 
     // If widgetPage exists in URL params, then the widget pages are open
     const HandleWidgetPageOpen = () => {
         if (!!widgetPage && !!editing) {
-            onHoverStationInfo(hoveringInfo)
-            onDeselectLocation()
+            dispatchHoverStationInfo(hoveringInfo)
+            dispatchSetSelectedStation(null)
+            dispatchSetSelectedPosition(null)
         }
     }
 
@@ -90,10 +97,9 @@ const Widgets = (props) => {
             hamburger.classList.toggle('is-active')
         }
 
-        onShowSideBar(true)
-        onSetSelectedLocationCopy(deepCopy(selectedLocation))
+        dispatchShowSideBar(true)
         if (!!selectedLocation.children) {
-            onSetSelectedLocationChildrenCopy(selectedLocation.children.map(positionID => deepCopy(positions[positionID])))
+            dispatchSetSelectedLocationChildrenCopy(selectedLocation.children.map(positionID => deepCopy(positions[positionID])))
         }
 
         dispatch(locationActions.editing(true))
@@ -103,7 +109,7 @@ const Widgets = (props) => {
 
     // Renders the buttons under the location. useMemo is passed a blank array because the buttons only need to be rendered once
     const handleWidgetButtons = useMemo(() => {
-        const location = locations[hoveringInfo.id]
+        const location = !!stations[hoveringInfo.id] ? stations[hoveringInfo.id] : positions[hoveringInfo.id]
 
         // If the schema is a station then show these buttons, else it's a position
         if (location.schema === 'station') {
@@ -208,7 +214,7 @@ const Widgets = (props) => {
             }
         }
         // If right menu position, have send cart and cancel (times)
-        else if (selectedLocation.name === 'TempRightClickMoveLocation') {
+        else if (selectedLocation.name === 'TempRightClickMovePosition') {
             return (
                 <>
                     <WidgetButton
@@ -271,7 +277,7 @@ const Widgets = (props) => {
 
             </styled.WidgetStatisticsContainer>
         )
-    }, [locations])
+    }, [stations, positions])
 
     /**
      * This handles the x and y position of the widget.
@@ -301,7 +307,7 @@ const Widgets = (props) => {
         let widgetPosition = {}
 
         // Handles the x, use location x if right click menu so it can also move
-        if (!!selectedLocation && selectedLocation.name === 'TempRightClickMoveLocation') {
+        if (!!selectedLocation && selectedLocation.name === 'TempRightClickMovePosition') {
             widgetPosition.x = selectedLocation.x - elementWidth / 2 + 30 + 'px'
         }
         else {
@@ -309,7 +315,7 @@ const Widgets = (props) => {
         }
 
         // Handles the y, use location y if right click menu so it can also move
-        if (!!selectedLocation && selectedLocation.name === 'TempRightClickMoveLocation') {
+        if (!!selectedLocation && selectedLocation.name === 'TempRightClickMovePosition') {
             widgetPosition.y = selectedLocation.y + elementHeight / 2 + 20 + 'px'
         }
         else {
@@ -334,14 +340,15 @@ const Widgets = (props) => {
             <styled.WidgetLocationContainer
                 id={hoveringInfo.id}
                 onMouseEnter={() => {
-                    onHoverStationInfo(hoveringInfo)
+                    dispatchHoverStationInfo(hoveringInfo)
                     handleWidgetPosition()
                 }}
 
                 onMouseLeave={() => {
-                    if (!widgetPage && !!selectedLocation && selectedLocation.name !== 'TempRightClickMoveLocation' && !editing) {
-                        onHoverStationInfo(null)
-                        onDeselectLocation()
+                    if (!widgetPage && !!selectedLocation && selectedLocation.name !== 'TempRightClickMovePosition' && !editing) {
+                        dispatchHoverStationInfo(null)
+                        dispatchSetSelectedStation(null)
+                        dispatchSetSelectedPosition(null)
                     }
                 }}
 
@@ -355,19 +362,19 @@ const Widgets = (props) => {
                 style={{ opacity: !widgetPage && element === null ? '0' : '1' }}
             >
                 {/* If not widget page and not a right click widget then add an invisable hover area */}
-                {!widgetPage && !!selectedLocation && selectedLocation.name !== 'TempRightClickMoveLocation' &&
+                {!widgetPage && !!selectedLocation && selectedLocation.name !== 'TempRightClickMovePosition' &&
                     <styled.WidgetHoverArea
                         hoverScale={hoveringInfo.realScale}
                         onMouseEnter={() => {
-                            onHoverStationInfo(hoveringInfo)
+                            dispatchHoverStationInfo(hoveringInfo)
                         }}
 
                     />
                 }
-                <styled.WidgetContainer widgetPage={widgetPage} type = {!!selectedLocation && selectedLocation.type} >
+                <styled.WidgetContainer widgetPage={widgetPage} type={!!selectedLocation && selectedLocation.type} >
                     {!widgetPage && !!selectedLocation &&
                         <>
-                            {selectedLocation.name == "TempRightClickMoveLocation" ?
+                            {selectedLocation.name == "TempRightClickMovePosition" ?
                                 <styled.WidgetStationName>{"Send Cart To Location"}</styled.WidgetStationName>
                                 :
                                 <>
@@ -375,12 +382,12 @@ const Widgets = (props) => {
                                         <styled.WidgetPositionName>{selectedLocation.name}</styled.WidgetPositionName>
                                         :
                                         <styled.RowContainer>
-                                        <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>
-                                        <styled.EditIcon
-                                            className='fas fa-edit'
-                                            styled={{ color: '#ff1818' }}
-                                            onClick={() => onClickLocation()}
-                                        />
+                                            <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>
+                                            <styled.EditIcon
+                                                className='fas fa-edit'
+                                                styled={{ color: '#ff1818' }}
+                                                onClick={() => onClickLocation()}
+                                            />
                                         </styled.RowContainer>
 
                                     }

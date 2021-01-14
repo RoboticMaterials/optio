@@ -21,6 +21,7 @@ import {
     REMOVE_STATION,
     SET_STATION_ATTRIBUTES,
     SET_SELECTED_STATION,
+    EDITING_STATION,
 
 } from '../types/stations_types'
 
@@ -188,4 +189,12 @@ export const setStationAttributes = (id, attr) => {
 
 export const setSelectedStation = (station) => {
     return {type: SET_SELECTED_STATION, payload: station}
+}
+
+export const editingStation = (bool) => {
+    return { type: EDITING_STATION, payload: bool }
+}
+
+export const hoverStationInfo = (info) => {
+    return {type: 'HOVER_STATION_INFO', payload: info}
 }
