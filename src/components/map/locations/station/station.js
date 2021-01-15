@@ -38,7 +38,6 @@ function Station(props) {
     const hoveringID = useSelector(state => state.locationsReducer.hoverLocationID)
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
     const devices = useSelector(state => state.devicesReducer.devices)
-    const editing = useSelector(state => state.locationsReducer.editingLocation)
 
 
     const dispatch = useDispatch()
@@ -61,13 +60,6 @@ function Station(props) {
 
     else if (isSelected) color = '#38eb87' // Green
 
-    // else {
-    //     if (selectedTask.load.station == location._id || selectedTask.load.position == location._id
-    //         || selectedTask.unload.station == location._id || selectedTask.unload.position == location._id) {
-    //         color = '#38eb87' // Green
-    //     }
-    // }
-
     // Used to see if a widget Page is opened
     let params = useParams()
     useEffect(() => {
@@ -79,30 +71,30 @@ function Station(props) {
     }, [])
 
     /**
-    * This runs on page load (thats mean location are mounted) and shows a widget page if it returns true.
-    * If there is a station ID in the params (URL) and it matches this location,
+    * This runs on page load (thats mean station are mounted) and shows a widget page if it returns true.
+    * If there is a station ID in the params (URL) and it matches this station,
     * and the URL (params) container a widget page then the widget page should be showing
     */
     useEffect(() => {
-        if (params.stationID !== undefined && params.stationID === props.location._id && !!params.widgetPage) {
+        if (params.stationID !== undefined && params.stationID === props.station._id && !!params.widgetPage) {
             dispatchHoverStationInfo(handleWidgetHover())
         }
     }, [])
 
     /**
-     * Passes the X, Y, scale and ID of location to redux which is then used in widgets
+     * Passes the X, Y, scale and ID of station to redux which is then used in widgets
      */
     const handleWidgetHover = () => {
 
-        return handleWidgetHoverCoord(location, rd3tClassName, d3)
+        return handleWidgetHoverCoord(station, rd3tClassName, d3)
 
     }
 
     // Handles if URL has widget page open
     const onWidgetPageOpen = () => {
-        // If widget page is open, hovering is false and the open widget page locations id matches the location ID, set it to true so
+        // If widget page is open, hovering is false and the open widget page stations id matches the station ID, set it to true so
         // that the widget page doesn't disappear when mouse goes out of page
-        if (!!params.widgetPage && !hovering && params.locationID === location._id) {
+        if (!!params.widgetPage && !hovering && params.stationID === station._id) {
             setHovering(true)
             dispatchHoverStationInfo(handleWidgetHover())
 
@@ -121,12 +113,12 @@ function Station(props) {
 
         // This will gray out devices that arent selected. The device becomes selected either on hover in device side bar list or editing device
         let selected = true
-        if (!!selectedStation && !!selectedStation.device_id && location.device_id !== selectedStation.device_id) selected = false
+        if (!!selectedStation && !!selectedStation.device_id && station.device_id !== selectedStation.device_id) selected = false
         if (!!selectedStation && !selectedStation.device_id) selected = false
 
         let device = {}
         try {
-            device = devices[location.device_id]
+            device = devices[station.device_id]
 
         } catch (error) {
             console.log('Device is undefined and I dont know why...')
@@ -178,7 +170,7 @@ function Station(props) {
         return (
             <svg id={`${rd3tClassName}-station`} x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400" style={{ filter: shouldGlow ? 'url(#glow2)' : 'none' }}>
 
-                {StationTypes[location.type].svgPath}
+                {StationTypes[station.type].svgPath}
             </svg>
 
         )
@@ -193,13 +185,13 @@ function Station(props) {
     const onSetStationTask = () => {
 
         // Make sure there is a selected task and that its a station type you can assign a task too
-        if (selectedTask !== null && (location.type === 'human' || location.type === 'warehouse')) {
+        if (selectedTask !== null && (station.type === 'human' || station.type === 'warehouse')) {
 
             // Commented out for now
             // // If there's a selected process and the process has routes and the station is not selected, then disable it from being selected
             // if (!!selectedProcess && selectedProcess.routes.length > 0 && !isSelected) return
 
-            // If the load location has been defined but the unload position hasnt, assign the unload position
+            // If the load station has been defined but the unload position hasnt, assign the unload position
             if (selectedTask.load.position !== null && selectedTask.unload.position === null) {
                 let unload = deepCopy(selectedTask.unload)
                 let type = selectedTask.type
@@ -208,16 +200,16 @@ function Station(props) {
                 let handoff = selectedTask.handoff
                 handoff = true
 
-                // Since it's a station, set both the position and station to the location ID
-                unload.position = location._id
-                unload.station = location._id
+                // Since it's a station, set both the position and station to the station ID
+                unload.position = station._id
+                unload.station = station._id
 
                 // If it's a warehouse and the load station has been selected, then the task type has to be a push
                 // You can only push to a ware house
-                type = location.type === 'warehouse' ? 'push' : type
+                type = station.type === 'warehouse' ? 'push' : type
 
-                // if (location.parent !== null) {
-                //     unload.station = location._id
+                // if (station.parent !== null) {
+                //     unload.station = station._id
                 // } else {
                 //     type = 'push'
                 // }
@@ -236,16 +228,16 @@ function Station(props) {
                 let handoff = selectedTask.handoff
                 handoff = true
 
-                // Since it's a station, set both the position and station to the location ID
-                load.position = location._id
-                load.station = location._id
+                // Since it's a station, set both the position and station to the station ID
+                load.position = station._id
+                load.station = station._id
 
                 // If it's a warehouse and the load position has not been selected then the task type is a pull
                 // You can only pull from a ware house
-                type = location.type === 'warehouse' ? 'pull' : type
+                type = station.type === 'warehouse' ? 'pull' : type
 
-                // if (location.parent !== null) {
-                //     load.station = location._id
+                // if (station.parent !== null) {
+                //     load.station = station._id
                 // } else {
                 //     type = 'pull'
                 // }
@@ -270,7 +262,7 @@ function Station(props) {
 
                         if (!rotating && !translating && selectedStation === null && selectedTask === null) {
                             dispatchHoverStationInfo(handleWidgetHover())
-                            dispatchSetSelectedStation(location)
+                            dispatchSetSelectedStation(station)
                         }
                     }
                 }
@@ -282,7 +274,7 @@ function Station(props) {
                 //     console.log('Station clicked')
                 // }}
 
-                transform={`translate(${location.x},${location.y}) rotate(${location.rotation}) scale(${d3.scale / d3.imgResolution})`}
+                transform={`translate(${station.x},${station.y}) rotate(${station.rotation}) scale(${d3.scale / d3.imgResolution})`}
             >
                 <defs>
 
@@ -331,10 +323,10 @@ function Station(props) {
                     }}
                     onMouseDown={() => setTranslating(true)}
 
-                    transform={location.type === 'device' && 'scale(.07) translate(-180,-140)'}
+                    transform={station.type === 'device' && 'scale(.07) translate(-180,-140)'}
                 >
 
-                    {location.type === 'device' ?
+                    {station.type === 'device' ?
                         onDeviceSVG()
 
                         :

@@ -1,4 +1,5 @@
 import React from 'react'
+import uuid from 'uuid'
 
 export const PositionTypes = {
 
@@ -85,4 +86,23 @@ export const PositionTypes = {
     //     color: '#5eec33',
     // },
 
+}
+
+export const newPositionTemplate = (name, type, parent, map_id, x, y) => {
+
+    return {
+        name: name,
+        schema: 'positions',
+        type: type,
+        temp: true,
+        new: true,
+        pos_x: 0,
+        pos_y: 0,
+        rotation: 0,
+        x: x,
+        y: y,
+        parent: parent,
+        _id: uuid.v4(),
+        map_id: map_id
+    }
 }

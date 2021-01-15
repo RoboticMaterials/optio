@@ -1,8 +1,8 @@
 import React from 'react'
-import * as styled from './location_buttons.style'
+import * as styled from './location_button.style'
 
-import { StationTypes } from '../../../../../constants/station_constants'
-import { PositionTypes } from '../../../../../constants/position_constants'
+import { StationTypes } from '../../../../../../constants/station_constants'
+import { PositionTypes } from '../../../../../../constants/position_constants'
 
 const LocationButton = (props) => {
 

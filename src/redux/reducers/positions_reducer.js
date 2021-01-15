@@ -21,6 +21,7 @@ import {
     SET_POSITION_ATTRIBUTES,
     UPDATE_POSITIONS,
     REMOVE_POSITION,
+    EDITING_POSITION,
 
 } from '../types/positions_types'
 
@@ -44,6 +45,7 @@ const defaultState = {
 }
 
 export default function positionsReducer(state = defaultState, action) {
+    let positionsCopy
 
     /**
      * Updates the state of positions to include the incoming payload position.
@@ -99,6 +101,14 @@ export default function positionsReducer(state = defaultState, action) {
             return {
                 ...state,
                 editingPosition: action.payload
+            }
+
+        case REMOVE_POSITION:
+            positionsCopy = deepCopy(state.positions)
+            positionsCopy.delete(action.payload)
+            return {
+                ...state,
+                positions: positionsCopy
             }
 
         // ========== GET ========== //
@@ -160,7 +170,7 @@ export default function positionsReducer(state = defaultState, action) {
             });
 
         case DELETE_POSITION_SUCCESS:
-            const positionsCopy = deepCopy(state.positions)
+            positionsCopy = deepCopy(state.positions)
             delete positionsCopy[action.payload]
             return {
                 ...state,
