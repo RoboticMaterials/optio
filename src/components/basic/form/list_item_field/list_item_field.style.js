@@ -31,7 +31,7 @@ export const ListItem = styled.div`
     // border-color: ${props => props.isNew ? 'blue' : 'white'};
 
   ${props => props.isNew &&  commonCss.newGlow};
-  ${props => props.touched &&  commonCss.newGlow};
+  ${props => props.edited &&  commonCss.newGlow};
   ${props => props.error &&  commonCss.errorGlow};
 
     margin-bottom: 1rem;

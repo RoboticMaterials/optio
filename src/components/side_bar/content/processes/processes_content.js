@@ -12,7 +12,6 @@ import DropDownSearch from '../../../basic/drop_down_search_v2/drop_down_search'
 import TextBoxSearch from '../../../basic/textbox_search/textbox_search'
 
 import ContentList from '../content_list/content_list'
-import EditProcess from './edit_process/edit_process'
 
 // Import actions
 import { setSelectedProcess, editingProcess, putProcesses } from '../../../../redux/actions/processes_actions'
@@ -24,6 +23,7 @@ import { isBrokenProcess } from '../../../../methods/utils/processes_utils'
 
 import uuid from 'uuid'
 import { uuidv4 } from "../../../../methods/utils/utils";
+import ProcessForm from "./process_form/process_form";
 
 const ProcessesContent = () => {
 
@@ -85,7 +85,7 @@ const ProcessesContent = () => {
 
     if (editing && selectedProcess !== null) { // Editing Mode
         return (
-            <EditProcess
+            <ProcessForm
                 selectedProcessCopy={selectedProcessCopy}
                 setSelectedProcessCopy={props => setSelectedProcessCopy(props)}
                 toggleEditingProcess={props => dispatchEditing(props)}

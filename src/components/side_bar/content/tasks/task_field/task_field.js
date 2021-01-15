@@ -28,48 +28,39 @@ import LoadUnloadFields from './fields/load_unload_fields'
 // Import utils
 import uuid from 'uuid'
 import { deepCopy } from '../../../../../methods/utils/utils'
-import { willRouteDeleteBreakProcess, isBrokenProcess, willRouteAdditionFixProcess } from '../../../../../methods/utils/processes_utils'
+import { willRouteDeleteBreakProcess, willRouteAdditionFixProcess } from '../../../../../methods/utils/processes_utils'
 
 // Import actions
 import * as taskActions from '../../../../../redux/actions/tasks_actions'
-import { setSelectedTask, deleteTask, getTasks, putTask } from '../../../../../redux/actions/tasks_actions'
+import { setSelectedTask } from '../../../../../redux/actions/tasks_actions'
 import * as dashboardActions from '../../../../../redux/actions/dashboards_actions'
 import { putDashboard, postDashboard } from '../../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../../redux/actions/objects_actions'
-import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import { putProcesses, setSelectedProcess, setFixingProcess } from '../../../../../redux/actions/processes_actions'
 import { putStation } from '../../../../../redux/actions/stations_actions'
-import { selectLocation, deselectLocation } from '../../../../../redux/actions/locations_actions'
-import { select } from 'd3-selection'
-import {DEVICE_CONSTANTS} from "../../../../../constants/device_constants";
-import {generateAssociatedTask, getRouteProcesses} from "../../../../../methods/utils/route_utils";
+import { deselectLocation } from '../../../../../redux/actions/locations_actions'
+import { getRouteProcesses} from "../../../../../methods/utils/route_utils";
 import TextField from "../../../../basic/form/text_field/text_field";
-import DropDownSearchField from "../../../../basic/form/drop_down_search_field/drop_down_search_field";
 import TextboxSearchField from "../../../../basic/form/textbox_search_field/textbox_search_field";
 import PropTypes from "prop-types";
 import {isObject} from "../../../../../methods/utils/object_utils";
+import useChange from "../../../../basic/form/useChange";
 
-const EditTask = (props) => {
+const TaskField = (props) => {
 
     const {
-        shift,
         isTransportTask,
         toggleEditing,
         isProcessTask,
         fieldParent,
         setFieldValue,
         setValues,
-        setFieldError,
         setFieldTouched,
-        // values,
         getFieldMeta,
         onSave,
-        onBackClick
+        onBackClick,
+        onRemove
     } = props
-
-
-
-
 
     const fieldMeta = getFieldMeta(fieldParent)
 
@@ -77,30 +68,25 @@ const EditTask = (props) => {
         value: values,
         error: errors = {},
         touched,
-        initialError: initialErrors,
-        initialTouched,
-        initialValue: initialValues,
     } = fieldMeta
+
+    // sets values.changed to true when a change occurs
+    useChange(fieldParent)
 
     const {
         name,
-        device_types,
-        handoff,
-        load,
-        map_id,
         obj,
-        processes: a,
-        quantity,
         track_quantity,
-        type,
-        unload,
-        _id: routeId
+        _id: routeId,
+        changed
     } = values
 
+    const routeProcesses = getRouteProcesses(routeId)
     console.log("EditTask props",props)
     console.log("EditTask fieldMeta",fieldMeta)
 
     console.log("EditTask fieldParent",fieldParent)
+    console.log("EditTask touched",touched)
     console.log("EditTask values",values)
     console.log("EditTask errors",errors)
     console.log("EditTask values[fieldParent]",values[fieldParent])
@@ -108,23 +94,19 @@ const EditTask = (props) => {
     console.log("EditTask track_quantity",track_quantity)
 
     const errorCount = Object.keys(errors).length // get number of field errors
-    const touchedCount = Object.values(touched).length // number of touched fields
-    const submitDisabled = ((errorCount > 0) || (!touched)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
+    // const touchedCount = Object.values(touched).length // number of touched fields
+    const submitDisabled = ((errorCount > 0) || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
 
 
 
     const dispatch = useDispatch()
-    const dispatchPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
     const dispatchPutProcesses = async (process) => await dispatch(putProcesses(process))
     const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
     const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
-    const dispatchDeleteTask = (ID) => dispatch(deleteTask(ID))
     const dispatchPutStation = (station, ID) => dispatch(putStation(station, ID))
     const dispatchPutDashboard = (dashboard, ID) => dispatch(putDashboard(dashboard, ID))
-    const dispatchPutTask = (task, id) => dispatch(putTask(task, id))
     const dispatchPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
     const dispatchSetFixingProcess = (bool) => dispatch(setFixingProcess(bool))
-    const dispatchSetSelectedLocation = (id) => dispatch(selectLocation(id))
     const dispatchDeselectLocation = () => dispatch(deselectLocation())
 
     let routes = useSelector(state => state.tasksReducer.tasks)
@@ -144,32 +126,25 @@ const EditTask = (props) => {
     useEffect(() => {
 
         // update load & unload from selectedTask - currently have to do it this way since selectedTask is used in so many places
-        if(selectedTask && selectedTask.load) setFieldValue(fieldParent ? `${fieldParent}.load` : "load", selectedTask.load)
-        if(selectedTask && selectedTask.unload) setFieldValue(fieldParent ? `${fieldParent}.unload` : "unload", selectedTask.unload)
+        if(selectedTask && selectedTask.load) {
+            setFieldValue(fieldParent ? `${fieldParent}.load` : "load", selectedTask.load)
+        }
+        if(selectedTask && selectedTask.unload) {
+            setFieldValue(fieldParent ? `${fieldParent}.unload` : "unload", selectedTask.unload)
+        }
 
+        // set touched if changes
         return () => {
+            if(selectedTask && selectedTask.load) {
+                setFieldTouched(fieldParent ? `${fieldParent}.load` : "load", true)
+            }
+            if(selectedTask && selectedTask.unload) {
+                setFieldTouched(fieldParent ? `${fieldParent}.unload` : "unload", true)
+            }
         }
     }, [selectedTask])
 
     useEffect(() => {
-        // setSelectedTaskCopy(selectedTask)
-
-        // Commented out for now
-        // Used to disable locations from being selected
-        // if (!!isProcessTask && selectedProcess.routes.length > 0 && selectedTask.load.position === null) {
-
-        //     const previousRoute = selectedProcess.routes[selectedProcess.routes.length - 1]
-
-        //     const previousTask = tasks[previousRoute]
-
-        //     if (!!previousTask.unload) {
-        //         const unloadStationID = previousTask.unload.station
-        //         console.log('QQQQ Should be highlighting location', unloadStationID)
-
-        //         dispatchSetSelectedLocation(unloadStationID)
-        //     }
-
-        // }
 
         return () => {
             // When unmounting edit task, always set fixing process to false
@@ -183,7 +158,7 @@ const EditTask = (props) => {
     const renderLoadUnloadParameters = () => {
         if (selectedTask.load.position === null) {
             // No load position has been defined - ask user to define load (start) position
-            return <styled.DirectionText>Click a position on the map to be the load (or start) postion.</styled.DirectionText>
+            return <styled.DirectionText>Click a position on the map to be the load (or start) position.</styled.DirectionText>
         } else if (selectedTask.load.station === null) {
             // Load position is not tied to a station - task is no longer a transport task
             return (
@@ -223,28 +198,26 @@ const EditTask = (props) => {
             ).forEach(currDashboard => {
                 var currButtons = [...currDashboard.buttons]
 
-                let ind = currButtons.findIndex(button => button.task_id == selectedTask._id)
-                if (ind !== -1) {
-                    // remove button at index
-                    currButtons.splice(ind, 1)
+                currButtons = currButtons.filter(button => button.task_id !== routeId)
 
-                    // update dashboard
-                    dispatch(dashboardActions.putDashboard({
-                        ...currDashboard,
-                        buttons: currButtons
-                    }, currDashboard._id.$oid))
-                }
+                // update dashboard
+                dispatch(dashboardActions.putDashboard({
+                    ...currDashboard,
+                    buttons: currButtons
+                }, currDashboard._id.$oid))
             }
         )
 
+        // remove route from any processes
         const routeProcesses = getRouteProcesses(routeId)
         routeProcesses.forEach(async (currProcess) => {
-            console.log("onDelete currProcess",currProcess)
-            var updatedProcess = {}
 
+            var updatedProcess = {...currProcess}
+
+            const willBreak = willRouteDeleteBreakProcess(updatedProcess, routeId, routes)
             // If the route removal breaks the process then update the process
-            if (!!willRouteDeleteBreakProcess(updatedProcess, selectedTask, routes)) {
-                updatedProcess.broken = willRouteDeleteBreakProcess(updatedProcess, selectedTask, routes)
+            if (willBreak) {
+                updatedProcess.broken = willBreak
             }
 
             // Removes the task from the array of routes
@@ -264,7 +237,7 @@ const EditTask = (props) => {
         })
 
 
-        await dispatch(taskActions.deleteTask(selectedTask._id));
+        await dispatch(taskActions.deleteTask(routeId));
 
 
         toggleEditing(false)
@@ -287,7 +260,6 @@ const EditTask = (props) => {
             const postDashboardPromise = dispatchPostDashboard(defaultDashboard)
             postDashboardPromise.then(async postedDashboard => {
                 alert('Added dashboard to location. There already should be a dashboard tied to this location, so this is an temp fix')
-                console.log('QQQQ Posted dashboard', postedDashboard)
                 updatedStation.dashboards = [postedDashboard._id.$oid]
                 await dispatchPutStation(updatedStation, updatedStation._id)
 
@@ -332,118 +304,6 @@ const EditTask = (props) => {
         return objectId
     }
 
-
-    // const onSave = async () => {
-    //     console.log("editTask onSave")
-    //     // modifiable copy of task
-    //     var updatedSelectedTask = {...selectedTask}
-    //
-    //     // handle object creation
-    //     updatedSelectedTask.obj = createObject()
-    //
-    //     // update task process info
-    //     updateProcessInfo(updatedSelectedTask)
-    //
-    //     // Save Task
-    //     if (!!updatedSelectedTask.new) { // If task is new, POST
-    //         console.log("editTask onSave NEW")
-    //
-    //         // POST new task
-    //         await dispatch(taskActions.postTask(updatedSelectedTask))
-    //
-    //         // dashboard needs to be updated with button for new task
-    //         updateDashboard()
-    //
-    //     } else {    // If task is not new, PUT
-    //         console.log("editTask onSave EDIT")
-    //         dispatch(taskActions.putTask(updatedSelectedTask, updatedSelectedTask._id))
-    //     }
-    //
-    //     toggleEditing(false)                            // No longer editing ***NOTE: THIS SHOULD COME BEFORE DESELECTING THE TASK IN ORDER TO AVOID CRASH IN EDIT_PROCESS - QUICK AND DIRTY FIX, REALLY THE WHOLE FUNCTION NEEDS TO BE REWRITTEN***
-    //     dispatch(taskActions.deselectTask())    // Deselect
-    //     setSelectedTaskCopy(null)                   // Reset the local copy to null
-    // }
-
-
-
-
-
-    const updateProcessInfo = (task) => {
-        // If this task is part of a process and not already in the graph of routes, then add the task to the selected process
-        if (isProcessTask && !selectedProcess.routes.includes(task._id)) {
-
-            if (!!fixingProcess) {
-
-                // If the route addition fixes, process check to see if the process is still broken
-                // If it fixes the process, it returns false because if it breaks the process it returns an int which is truethy
-                if (!willRouteAdditionFixProcess(selectedProcess, task, routes)) {
-                    selectedProcess.broken = null
-                }
-                else {
-                    // Update the broken location with the new array position
-                    selectedProcess.broken = willRouteAdditionFixProcess(selectedProcess, task, routes)
-                }
-
-                // Splice in the new route into the correct position
-                selectedProcess.routes.splice(selectedProcess.broken - 1, 0, task._id)
-
-            } else {
-                selectedProcess.routes.push(task._id);
-
-            }
-
-            dispatchSetSelectedProcess(
-                selectedProcess
-            )
-
-            if(!task.processes.includes(selectedProcess._id)) task.processes.push(selectedProcess._id)
-
-            // return {
-            //     ...task,
-            //     processes: [...task.processes, selectedProcess._id]
-            // }
-        }
-    }
-
-    /**
-     * Removes the route from the array of routes for a process
-     */
-    const handleRemove = () => {
-        var updatedProcess = {...selectedProcess}
-
-        const willBreak = willRouteDeleteBreakProcess(updatedProcess, selectedTask, routes)
-
-        // If the route removal breaks the process then updatte the process
-        if (!!willBreak) {
-            updatedProcess.broken = willBreak
-        }
-        // Remove the route from the process
-        const index = updatedProcess.routes.indexOf(selectedTask._id)
-        var updatedRoutes = [...updatedProcess.routes]
-        updatedRoutes.splice(index, 1)
-
-        dispatchSetSelectedProcess({
-            ...updatedProcess,
-            routes: updatedRoutes
-        })
-
-        // Remove process from the route
-        const routeIndex = selectedTask.processes.indexOf(updatedProcess._id)
-        var updatedProcesses = [...selectedTask.processes]
-        updatedProcesses.splice(routeIndex, 1)
-
-        dispatchPutTask({
-            ...selectedTask,
-            processes: updatedProcesses
-        }, selectedTask._id)
-
-        toggleEditing(false)
-        dispatch(taskActions.deselectTask()) // Deselect
-        // setSelectedTaskCopy(null) // Reset the local copy to null
-    }
-
-
-
     const handleObject = () => {
             return obj
         // If not selected process, then set it to the selected task if the task has an object
@@ -485,19 +345,20 @@ const EditTask = (props) => {
 
             <styled.ContentContainer>
 
+                {confirmDeleteModal &&
                 <ConfirmDeleteModal
                     isOpen={!!confirmDeleteModal}
                     title={
 
                         `Are you sure you want to delete this Route?
 
-                    ${selectedTask.processes.length > 0 ?
+                    ${routeProcesses.length > 0 ?
                             `This task is a part of processes:
 
-                        ${selectedTask.processes.map((process) => {
+                        ${routeProcesses.map((process) => {
                                 // Try catch for error with editing an existing task that belongs to a new process
                                 try {
-                                    return ` '${processes[process].name}'`
+                                    return ` '${process.name}'`
 
                                 } catch (error) {
                                     return ``
@@ -520,6 +381,8 @@ const EditTask = (props) => {
                     handleOnClick2={() => setConfirmDeleteModal(null)}
                     handleClose={() => setConfirmDeleteModal(null)}
                 />
+                }
+
 
                 <div style={{ marginBottom: '1rem' }}>
                     {selectedTask &&
@@ -534,7 +397,7 @@ const EditTask = (props) => {
                         }}
 
                         onClickBack={() => {
-                            onBackClick()
+                            onBackClick(routeId)
                         }}
                     />
                     }
@@ -542,7 +405,7 @@ const EditTask = (props) => {
                 </div>
 
                 {/*
-                If it's a process route and its a new route then add the ability to select alread existing routes.
+                If it's a process route and its a new route then add the ability to select already existing routes.
                 Some filtering is done based on certain conditions, see 'options' key
             */}
                 {!!selectedTask && isProcessTask && !!selectedTask.new &&
@@ -599,7 +462,7 @@ const EditTask = (props) => {
 
 
 
-                                        // Gets the previouse route unload location
+                                        // Gets the previous route unload location
                                         const unloadStationID = previousRoute.unload.station
 
                                         // If the load and unload station match, then this route can be added to this process
@@ -626,7 +489,7 @@ const EditTask = (props) => {
                                 if (!!fixingProcess) {
 
                                     // If the route addition fixes, process check to see if the process is still broken
-                                    // If it fixes the process, it returns false because if it breaks the process it returns an int which is truethy
+                                    // If it fixes the process, it returns false because if it breaks the process it returns an int which is truthy
                                     if (!willRouteAdditionFixProcess(selectedProcess, dropdownValues[0], routes)) {
                                         // selectedProcess.broken = null
                                     }
@@ -756,37 +619,6 @@ const EditTask = (props) => {
                 </>
                 }
 
-                {/* Commented out for now, will posibly re-introduce later */}
-                {/* Pull VS Push */}
-                {/* <div style={{ display: 'flex', flexDirection: 'row', flexGrow: '1', marginTop: '1rem' }}>
-                <Button schema={'tasks'} style={{ height: '1.8rem', fontSize: '1rem', flexGrow: '1' }}
-                    onClick={() => { // If the shift key is pressed and the other button is pressed, change type to 'both'
-                        if (shift && selectedTask.type == 'pull') {
-                            dispatch(taskActions.setTaskAttributes(selectedTask._id, { type: 'both' }))
-                        } else {
-                            dispatch(taskActions.setTaskAttributes(selectedTask._id, { type: 'push' }))
-                        }
-                    }}
-                    disabled={!isTransportTask}
-                    active={selectedTask.type == 'push' || selectedTask.type == 'both'}>Push</Button>
-                <Button schema={'tasks'} style={{ height: '1.8rem', fontSize: '1rem', flexGrow: '1' }}
-                    onClick={() => { // If the shift key is pressed and the other button is pressed, change type to 'both'
-                        if (shift && selectedTask.type == 'push') {
-                            dispatch(taskActions.setTaskAttributes(selectedTask._id, { type: 'both' }))
-                        } else {
-                            dispatch(taskActions.setTaskAttributes(selectedTask._id, { type: 'pull' }))
-                        }
-                    }}
-                    disabled={!isTransportTask}
-                    active={selectedTask.type == 'pull' || selectedTask.type == 'both'}>Pull</Button>
-            </div>
-            {isTransportTask &&
-                <styled.HelpText>
-                    A push task will be called by the user at the load location; while a pull task will be called
-                by the user at the unload location. To have the task display at both stations <b>Shift-Click</b>.
-            </styled.HelpText>
-            } */}
-
                 {/* Load and Unload Parameters */}
                 <div style={{ height: "100%", paddingTop: "1rem" }}>
                     {renderLoadUnloadParameters()}
@@ -801,7 +633,7 @@ const EditTask = (props) => {
                         schema={'tasks'}
                         // disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
                         secondary
-                        onClick={onBackClick}
+                        onClick={()=>onBackClick(routeId)}
                     >
                         Cancel
                     </Button>
@@ -814,7 +646,7 @@ const EditTask = (props) => {
                             disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
                             primary
                             onClick={() => {
-                                handleRemove()
+                                onRemove(routeId)
                             }}
                         >
                             Remove Route
@@ -844,13 +676,29 @@ const EditTask = (props) => {
 }
 
 // Specifies propTypes
-EditTask.propTypes = {
+TaskField.propTypes = {
     onSave: PropTypes.func,
+    toggleEditing: PropTypes.func,
+    fieldParent: null,
+    setFieldValue: PropTypes.func,
+    setValues: PropTypes.func,
+    setFieldTouched: PropTypes.func,
+    getFieldMeta: PropTypes.func,
+    onBackClick: PropTypes.func,
+    onRemove: PropTypes.func,
 };
 
 // Specifies the default values for props:
-EditTask.defaultProps = {
+TaskField.defaultProps = {
     onSave: () => {},
+    toggleEditing: () => {},
+    fieldParent: null,
+    setFieldValue: () => {},
+    setValues: () => {},
+    setFieldTouched: () => {},
+    getFieldMeta: () => {},
+    onBackClick: () => {},
+    onRemove: () => {},
 };
 
-export default EditTask
+export default TaskField

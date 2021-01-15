@@ -37,7 +37,7 @@ import Widgets from '../../components/widgets/widgets'
 // logging
 import log from "../../logger"
 import { setCurrentMap } from "../../redux/actions/map_actions";
-import {getLastRoute} from "../../methods/utils/processes_utils";
+import {getPreviousRoute} from "../../methods/utils/processes_utils";
 
 const logger = log.getLogger("MapView")
 
@@ -622,8 +622,8 @@ export class MapView extends Component {
                                                 // Gets the last route in the routes array
                                                 // const previousRoute = this.props.selectedProcess.routes[this.props.selectedProcess.routes.length - 1]
 
-                                                const previousTask = getLastRoute(this.props.selectedProcess, this.props.tasks)
-                                                // const previousTask = this.props.tasks[previousRoute]
+                                                const previousTaskId = getPreviousRoute(this.props.selectedProcess.routes, this.props.selectedTask._id, this.props.tasks)
+                                                const previousTask = this.props.tasks[previousTaskId]
 
                                                 if (!!previousTask.unload) {
 

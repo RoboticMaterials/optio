@@ -282,10 +282,9 @@ export default function tasksReducer(state = defaultState, action) {
 
 
         case SELECT_TASK:
-            tasksCopy = deepCopy(state.tasks)
             return {
                 ...state,
-                selectedTask: tasksCopy[action.payload.id]
+                selectedTask: state.tasks[action.payload.id]
             }
 
         case SET_SELECTED_TASK:

@@ -41,12 +41,13 @@ export const isBrokenProcess = (process, routes) => {
  * @param {objecet} route Selected Route
  * @param {object} routes All the routes
  */
-export const willRouteDeleteBreakProcess = (process, route, routes) => {
+export const willRouteDeleteBreakProcess = (process, routeId, routes) => {
 
-    if (route._id !== process.routes[process.routes.length - 1] && route._id !== process.routes[0]) {
+    // if not first or last route
+    if (routeId !== process.routes[process.routes.length - 1] && routeId !== process.routes[0]) {
 
         const copyProcess = deepCopy(process)
-        const index = copyProcess.routes.indexOf(route._id)
+        const index = copyProcess.routes.indexOf(routeId)
         copyProcess.routes.splice(index, 1)
 
         return isBrokenProcess(copyProcess, routes)
@@ -86,6 +87,14 @@ export const willRouteAdditionFixProcess = (process, route, routes) => {
         else {
             return false
         }
+    }
+
+    copyProcess.routes.splice(process.broken, 0, route._id)
+    if (!!isBrokenProcess(copyProcess, routes)) {
+        return isBrokenProcess(copyProcess, routes)
+    }
+    else {
+        return false
     }
 }
 
@@ -147,17 +156,8 @@ export const getProcessStations = (process, routes) => {
     return stationIds
 }
 
-export const getLastRoute = (process, routes) => {
-    // Gets the previous route
-    const previousRouteID = process.routes[process.routes.length - 1]
-
-    var previousRoute
-    if(isObject(previousRouteID)) {
-        previousRoute = previousRouteID
-    }
-    else {
-        previousRoute = routes[previousRouteID]
-    }
-
-    return previousRoute
+export const getPreviousRoute = (processRoutes, currentRouteId, routes) => {
+    const currentRouteindex = processRoutes.findIndex((currItem) => currItem === currentRouteId)
+    if(currentRouteindex > 0 ) return processRoutes[currentRouteindex - 1]
+    return processRoutes[processRoutes.length - 1]
 }

@@ -126,6 +126,9 @@ export const postTask = (task) => {
             if(!!task.new){
                 delete task.new
             }
+            if(task.changed) {
+                delete task.changed
+            }
             const newTask = await api.postTask(task);
             return onSuccess(newTask);
         } catch (error) {
@@ -154,6 +157,12 @@ export const putTask = (task, ID) => {
         try {
             onStart();
             let taskCopy = deepCopy(task)
+            if(!!taskCopy.new){
+                delete taskCopy.new
+            }
+            if(taskCopy.changed) {
+                delete taskCopy.changed
+            }
             // delete taskCopy._id
             const updateTask = await api.putTask(taskCopy, ID);
             return onSuccess(updateTask)

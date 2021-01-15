@@ -28,7 +28,8 @@ const ListItemField = (props) => {
 
 	const {
 		name,
-		new: isNew
+		new: isNew,
+		changed
 	} = fieldValue
 
 	const {
@@ -41,7 +42,10 @@ const ListItemField = (props) => {
 
 	console.log("ListItemField hasError",hasError)
 	console.log("ListItemField errorMessage",errorMessage)
-	const disabled = hasError || isNew
+
+	const edited = changed
+
+	const disabled = hasError || isNew || edited
 
 
 	return (
@@ -49,7 +53,7 @@ const ListItemField = (props) => {
 			style={containerStyle}
 		>
 		<styled.ListItem
-			touched={touched}
+			edited={edited}
 			error={hasError}
 			isNew={isNew}
 			onMouseEnter={onMouseEnter}
@@ -99,9 +103,9 @@ const ListItemField = (props) => {
 						ContainerComponent={ErrorTooltipContainerComponent}
 					/>
 					:
-					touched &&
+						edited &&
 						<ErrorTooltip
-							visible={touched}
+							visible={edited}
 							text={"This route contains unsaved changes. Leaving the editor without saving will undo your changes."}
 							className={"fas fa-exclamation-circle"}
 							color={"yellow"}

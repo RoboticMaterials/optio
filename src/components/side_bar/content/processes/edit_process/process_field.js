@@ -1,17 +1,14 @@
 import React, {useState, useEffect, useRef} from 'react'
-import { useHistory } from "react-router-dom";
 
-import * as styled from './edit_process.style'
+import * as styled from './process_field.style'
 import { useSelector, useDispatch } from 'react-redux'
-import {Formik, useField} from "formik";
-import {Form} from "formik";
 
 // Import basic components
 import Textbox from '../../../../basic/textbox/textbox.js'
 import Button from '../../../../basic/button/button'
 
 // Import components
-import EditTask from '../../tasks/edit_task/edit_task'
+import TaskField from '../../tasks/task_field/task_field'
 import ContentHeader from '../../content_header/content_header'
 import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 
@@ -19,34 +16,34 @@ import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/co
 // Import actions
 import {
     setSelectedTask,
-    deselectTask,
     addTask,
     putTask,
     deleteTask,
-    setTasks, removeTask, removeTasks
+    setTasks, removeTask, removeTasks, getTasks
 } from '../../../../../redux/actions/tasks_actions'
 import { setSelectedProcess, postProcesses, putProcesses, deleteProcesses, setFixingProcess } from '../../../../../redux/actions/processes_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 
 // Import Utils
-import {isEquivalent, deepCopy, convertArrayToObject} from '../../../../../methods/utils/utils'
+import { convertArrayToObject} from '../../../../../methods/utils/utils'
 import uuid from 'uuid'
-import {DEVICE_CONSTANTS} from "../../../../../constants/device_constants";
 import {generateDefaultRoute} from "../../../../../methods/utils/route_utils";
-import {CARD_SCHEMA_MODES, getCardSchema, processSchema} from "../../../../../methods/utils/form_schemas";
 import TextField from "../../../../basic/form/text_field/text_field";
 import * as taskActions from "../../../../../redux/actions/tasks_actions";
-import {getMessageFromError} from "../../../../../methods/utils/form_utils";
-import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
 import ListItemField from "../../../../basic/form/list_item_field/list_item_field";
+import {
+    isBrokenProcess,
+    willRouteAdditionFixProcess,
+    willRouteDeleteBreakProcess
+} from "../../../../../methods/utils/processes_utils";
+import {isEmpty} from "../../../../../methods/utils/object_utils";
+import useChange from "../../../../basic/form/useChange";
 
 
-export const ProcessForm = (props) => {
+export const ProcessField = (props) => {
     const {
         formikProps,
-        setSelectedProcessCopy,
         toggleEditingProcess,
-        selectedProcessCopy
     } = props
 
     // extract formik props
@@ -55,26 +52,33 @@ export const ProcessForm = (props) => {
         values,
         touched,
         isSubmitting,
-        submitCount,
         setFieldValue,
         setFieldError,
         setFieldTouched,
-        submitForm,
-        getFieldMeta
+        getFieldMeta,
+        validateForm
     } = formikProps
 
+    useChange()
 
 
 
-    const errorCount = Object.keys(errors).length // get number of field errors
+
+    let errorCount = 0
+    Object.values(errors).forEach((currError) => {
+        if(!isEmpty(currError)) errorCount++
+    }) // get number of field errors
+
+    console.log("errorCount",errorCount)
     const touchedCount = Object.values(touched).length // number of touched fields
-    const submitDisabled = ((errorCount > 0) || (touchedCount === 0) || isSubmitting) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
+    console.log("touchedCount",touchedCount)
+    const submitDisabled = ((errorCount > 0) || (touchedCount === 0) || isSubmitting ||!values.changed) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
 
-    const history = useHistory()
     const dispatch = useDispatch()
     const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
     const dispatchAddTask = (task) => dispatch(addTask(task))
     const dispatchSetTasks = (tasks) => dispatch(setTasks(tasks))
+    const dispatchGetTasks = () => dispatch(getTasks())
     const dispatchRemoveTask = (taskId) => dispatch(removeTask(taskId))
     const dispatchRemoveTasks = (taskIds) => dispatch(removeTasks(taskIds))
     const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
@@ -93,13 +97,10 @@ export const ProcessForm = (props) => {
     const stations = useSelector(state => state.locationsReducer.stations)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
-    const currentMap = useSelector(state => state.mapReducer.currentMap)
-    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
     // State definitions
-    // const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)  // Current task
-    const [shift, setShift] = useState(false) // Is shift key pressed ?
-    const [isTransportTask, setIsTransportTask] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
+    const [shift, ] = useState(false) // Is shift key pressed ?
+    const [isTransportTask, ] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
     const [editingTask, setEditingTask] = useState(false) // Used to tell if a task is being edited
     const [newRoute, setNewRoute] = useState(null)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
@@ -109,34 +110,90 @@ export const ProcessForm = (props) => {
     // clear selectedTask and add new route to values.routes
     const handleAddTask = () => {
 
-        setNewRoute(null)   // clear new route
-        setFieldValue("new", null)
+        if(newRoute) {
+            if(values.broken) {
+                let updatedRoute = [...values.routes]
+                updatedRoute.splice(values.broken, 0, {...values.newRoute})
+                setFieldValue("routes", updatedRoute)
 
+                console.log("values",values)
+                console.log("values.new",values.new)
+                console.log("tasks",tasks)
+                const willFix = willRouteAdditionFixProcess(selectedProcess, values.newRoute, tasks)
+                setFieldValue("broken", willFix)
+                console.log("willFix",willFix)
+            }
+
+            else {
+                setFieldValue("routes", [...values.routes, {...values.newRoute}])
+            }
+        }
+
+        else {
+            setFieldValue("broken", isBrokenProcess(selectedProcess, tasks))
+        }
+
+
+        setNewRoute(null)   // clear new route
+        setFieldValue("newRoute", null)
         dispatchSetSelectedTask(null)
 
-        if(newRoute) {
-            setFieldValue("routes", [...values.routes, {...values.new}])
+        validateForm()
+    }
+
+    /**
+     * Removes the route from the array of routes for a process
+     */
+    const handleRemoveTask = (routeId) => {
+        setEditingTask(false)
+        setFieldValue("newRoute", null)
+        dispatchSetSelectedTask(null) // Deselect
+        setNewRoute(null)
+
+        let updatedProcess = {...selectedProcess}
+
+        const willBreak = willRouteDeleteBreakProcess(updatedProcess, routeId, tasks)
+
+        // If the route removal breaks the process then update the process
+        if (!!willBreak) {
+            setFieldValue("broken", willBreak)
+            // updatedProcess.broken = willBreak
         }
+
+        // Remove the route from the process
+        const index = values.routes.findIndex((currRoute) => currRoute._id === routeId)
+        console.log("handleRemoveTask routeId", routeId)
+        console.log("handleRemoveTask index", index)
+        let updatedRoutes = [...values.routes]
+        console.log("updatedRoutes",updatedRoutes)
+        updatedRoutes.splice(index, 1)
+
+        setFieldValue("routes", updatedRoutes)
+
+
+        // setSelectedTaskCopy(null) // Reset the local copy to null
     }
 
     const handleTaskBack = async () => {
         console.log("handleTaskBack before selectedTask", selectedTask)
 
-        // if unsaved should should immidiately disappear use this block
-        // if(selectedTask.new) {
-        //     dispatchRemoveTask(selectedTask._id)
-        // }
+        // if unsaved should should immediately disappear use this block
+        if(selectedTask.new) {
+            dispatchRemoveTask(selectedTask._id)
+        }
 
         // if unsaved route should appear in process, use this block
-        if(newRoute) {
-            setFieldValue("routes", [...values.routes, {...values.new}])
-        }
+        // if(newRoute) {
+        //     setFieldValue("routes", [...values.routes, {...values.newRoute}])
+        // }
 
 
         setNewRoute(null)
-        setFieldValue("new", null)
+        setFieldValue("newRoute", null)
         await dispatchSetSelectedTask(null)
         console.log("handleTaskBack after selectedTask", selectedTask)
+
+        validateForm()
     }
 
     const valuesRef = useRef(values);
@@ -148,7 +205,6 @@ export const ProcessForm = (props) => {
 
 
     useEffect(() => {
-        console.log('QQQQ selected process', selectedProcessCopy)
 
         return () => {
 
@@ -179,12 +235,11 @@ export const ProcessForm = (props) => {
         }
     }, [values])
 
-
     useEffect(() => {
         if(!editingTask) {
-            setFieldTouched("new", {})
-            setFieldError("new", {})
-            setFieldValue("new", null)
+            setFieldTouched("newRoute", {})
+            setFieldError("newRoute", {})
+            setFieldValue("newRoute", null)
         }
 
     }, [editingTask])
@@ -194,24 +249,21 @@ export const ProcessForm = (props) => {
         // mount logic
 
 
-
-
         // dismount logic
         return () => {
-
             if(valuesRef.current) {
 
                 // get id of all new (unsaved) routes
-                const routeIds = valuesRef.current.routes
+                const removeRouteIds = valuesRef.current.routes
                     .filter((currRoute) => {
                         return currRoute.new
                     })
                     .map((currRouteId) => currRouteId._id)
 
                 // remove unsaved from redux
-                dispatchRemoveTasks(routeIds)
+                dispatchRemoveTasks(removeRouteIds) // remove routes
+                dispatchGetTasks() // cleans up unsaved changed routes
             }
-
         }
     }, [])
 
@@ -228,10 +280,10 @@ export const ProcessForm = (props) => {
 
     const handleExecuteProcessTask = async (route) => {
         if (tasks[route] != null) {
-            if (tasks[route].device_type == 'human') {
+            if (tasks[route].device_type === 'human') {
                 const dashboardId = stations[tasks[route].load.station].dashboards[0]
 
-                const postToQueue = dispatch(postTaskQueue({ task_id: route, 'task_id': route, dashboard: dashboardId, hil_response: null, _id: uuid.v4(), }))
+                const postToQueue = dispatch(postTaskQueue({ task_id: route, dashboard: dashboardId, hil_response: null, _id: uuid.v4(), }))
                 postToQueue.then(item => {
                     const id = item?._id
                     onTaskQueueItemClicked(id)
@@ -243,13 +295,6 @@ export const ProcessForm = (props) => {
         }
     }
 
-    const goToCardPage = () => {
-        const currentPath = history.location.pathname
-        history.push(currentPath + '/' + selectedProcessCopy._id + "/card")
-    }
-
-
-
 
 
     const handleSave = async () => {
@@ -257,14 +302,8 @@ export const ProcessForm = (props) => {
         dispatchSetSelectedTask(null)
 
         // If the id is new then post
-        if (selectedProcessCopy.new) {
-
+        if (selectedProcess.new) {
             await dispatchPostProcess(selectedProcess)
-
-            values.routes.forEach(async (currRoute) => {
-                dispatchPostRoute(currRoute)
-            })
-
         }
 
         // Else put
@@ -272,8 +311,16 @@ export const ProcessForm = (props) => {
             await dispatchPutProcess(selectedProcess)
         }
 
+        values.routes.forEach(async (currRoute) => {
+            if(currRoute.new) {
+                dispatchPostRoute(currRoute)
+            }
+            else {
+                dispatchPutTask(currRoute, currRoute._id)
+            }
+        })
+
         dispatchSetSelectedProcess(null)
-        setSelectedProcessCopy(null)
         toggleEditingProcess(false)
     }
 
@@ -281,7 +328,6 @@ export const ProcessForm = (props) => {
 
         await dispatchSetSelectedTask(null)
         dispatchSetSelectedProcess(null)
-        setSelectedProcessCopy(null)
         toggleEditingProcess(false)
 
     }
@@ -293,21 +339,19 @@ export const ProcessForm = (props) => {
             selectedProcess.routes.forEach(route => dispatchDeleteTask(route))
         }
 
-        await dispatchDeleteProcess(selectedProcessCopy._id)
+        await dispatchDeleteProcess(selectedProcess._id)
 
         dispatchSetSelectedTask(null)
         dispatchSetSelectedProcess(null)
-        setSelectedProcessCopy(null)
         toggleEditingProcess(false)
     }
 
     const handleDeleteWithoutRoutes = async () => {
 
-        await dispatchDeleteProcess(selectedProcessCopy._id)
+        await dispatchDeleteProcess(selectedProcess._id)
 
         dispatchSetSelectedTask(null)
         dispatchSetSelectedProcess(null)
-        setSelectedProcessCopy(null)
         toggleEditingProcess(false)
     }
 
@@ -317,7 +361,6 @@ export const ProcessForm = (props) => {
 
     // Maps through the list of existing routes
     const handleExistingRoutes = (routes) => {
-        console.log("handleExistingRoutes", routes)
 
         return routes.map((currRoute, currIndex) => {
 
@@ -325,20 +368,14 @@ export const ProcessForm = (props) => {
 
             const fieldMeta = getFieldMeta(`routes[${currIndex}]`)
             const {
-                error,
                 touched,
             } = fieldMeta
-            const hasError = error
-            const errorMessage = getMessageFromError(error);
 
             const {
-                name: currRouteName = "",
                 _id: currRouteId = "",
-                new: isNew
             } = currRoute || {}
 
             if (currRoute === undefined) {
-                console.log('QQQQ undefined')
                 return
             }
 
@@ -374,8 +411,9 @@ export const ProcessForm = (props) => {
                     {editingTask && selectedTask && selectedTask._id === currRouteId &&
                     <styled.TaskContainer schema={'processes'}>
 
-                        <EditTask
+                        <TaskField
                             {...formikProps}
+                            onRemove={handleRemoveTask}
                             onBackClick={handleTaskBack}
                             onSave={handleAddTask}
                             values={values}
@@ -402,7 +440,7 @@ export const ProcessForm = (props) => {
 
                     <Button
                         schema={'devices'}
-                        disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
+                        // disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
                         style={{marginBottom: '1rem', width: '100%', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden'}}
                         secondary
                         disabled={selectedTask?.new}
@@ -411,7 +449,7 @@ export const ProcessForm = (props) => {
                             dispatchAddTask(newTask)
                             dispatchSetSelectedTask(newTask)
                             setNewRoute(newTask)
-                            setFieldValue("new", newTask)
+                            setFieldValue("newRoute", newTask)
 
                             // var routesCopy = [...values.routes]
                             // routesCopy.splice(currIndex + 1, 0, newTask)
@@ -445,7 +483,7 @@ export const ProcessForm = (props) => {
 
                 <Button
                     schema={'processes'}
-                    disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
+                    // disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
                     secondary
                     disabled={selectedTask?.new}
                     onClick={() => {
@@ -453,7 +491,7 @@ export const ProcessForm = (props) => {
                         console.log("edit_process newTask",newTask)
                         dispatchAddTask(newTask)
                         setNewRoute(newTask)
-                        setFieldValue("new", newTask)
+                        setFieldValue("newRoute", newTask)
 
                         // var routesCopy = [...values.routes]
                         // routesCopy.splice(values.routes.length, 0, newTask)
@@ -473,15 +511,16 @@ export const ProcessForm = (props) => {
 
                 {!!newRoute &&
                 <styled.TaskContainer schema={'processes'}>
-                    <EditTask
+                    <TaskField
                         onSave={handleAddTask}
+                        onRemove={handleRemoveTask}
                         onBackClick={handleTaskBack}
                         {...formikProps}
                         values={values}
                         errors={errors}
                         touched={touched}
                         setFieldValue={setFieldValue}
-                        fieldParent={`new`}
+                        fieldParent={'newRoute'}
                         // selectedTaskCopy={newRoute}
                         // setSelectedTaskCopy={props => {
                         //     setSelectedTaskCopy(props)
@@ -541,7 +580,7 @@ export const ProcessForm = (props) => {
                     <TextField
                         focus={!values.name}
                         placeholder='Process Name'
-                        defaultValue={selectedProcessCopy.name}
+                        defaultValue={selectedProcess.name}
                         schema={'processes'}
                         name={`name`}
                         InputComponent={Textbox}
@@ -579,76 +618,5 @@ export const ProcessForm = (props) => {
 
     )
 }
-const EditProcess = (props) => {
 
-    const {
-        selectedProcessCopy,
-        setSelectedProcessCopy,
-        toggleEditingProcess,
-
-    } = props
-
-    const tasks = useSelector(state => state.tasksReducer.tasks)
-
-
-
-    return (
-        <Formik
-            initialValues={{
-                name: selectedProcessCopy ? selectedProcessCopy.name : "",
-                routes: (selectedProcessCopy && selectedProcessCopy.routes && Array.isArray(selectedProcessCopy.routes)) ? selectedProcessCopy.routes.map((currRouteId) => tasks[currRouteId])  : [],
-                broken: selectedProcessCopy ? selectedProcessCopy.broken : false,
-                new: null,
-                _id: selectedProcessCopy ? selectedProcessCopy._id : uuid.v4()
-            }}
-
-            // validation control
-            validationSchema={processSchema}
-            validateOnChange={true}
-            validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
-            validateOnBlur={true}
-
-            // enableReinitialize={true} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
-            onSubmit={async (values, formikHelpers) => {
-
-                const {
-                    setSubmitting,
-                    setTouched,
-                    resetForm
-                } = formikHelpers
-
-                // set submitting to true, handle submit, then set submitting to false
-                // the submitting property is useful for eg. displaying a loading indicator
-                const {
-                    buttonType
-                } = values
-
-                setSubmitting(true)
-                // await handleSubmit(values, formMode)
-                setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
-                setSubmitting(false)
-
-            }}
-        >
-            {formikProps => {
-
-
-
-                return(
-                    <ProcessForm
-                        formikProps={formikProps}
-                        setSelectedProcessCopy={setSelectedProcessCopy}
-                        toggleEditingProcess={toggleEditingProcess}
-                        selectedProcessCopy={selectedProcessCopy}
-                    />
-                )
-
-            }}
-
-        </Formik>
-
-    )
-}
-
-
-export default EditProcess
+export default ProcessField

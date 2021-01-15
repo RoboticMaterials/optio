@@ -264,7 +264,7 @@ const routeStationSchema = Yup.object().shape({
     timeout: Yup.string().nullable(),
 })
 
-const routeSchema = Yup.object().shape({
+export const routeSchema = Yup.object().shape({
     name: Yup.string()
         .min(1, '1 character minimum.')
         .max(50, '50 character maximum.')
@@ -280,7 +280,7 @@ const routeSchema = Yup.object().shape({
 
 
 
-const routesSchema = Yup.array().of(
+export const routesSchema = Yup.array().of(
             routeSchema
         )
 
@@ -290,7 +290,7 @@ export const processSchema = Yup.object().shape({
         .max(50, '50 character maximum.')
         .required('Please enter a name.'),
     routes: routesSchema,
-    new: routeSchema.nullable(),
+    newRoute: routeSchema.nullable(),
 
 })
 
