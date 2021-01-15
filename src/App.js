@@ -42,7 +42,6 @@ const App = (props) => {
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const maps = useSelector(state => state.mapReducer.maps)
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
-    const positions = useSelector(state => state.locationsReducer.positions)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
 

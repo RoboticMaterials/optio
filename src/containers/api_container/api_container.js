@@ -397,7 +397,8 @@ const ApiContainer = (props) => {
       tasks, skills, objects, locations, dashboards, sounds
     */
     const loadMapData = async () => {
-        const locations = await onGetLocations();
+        const stations = await onGetStations();
+        const positions = await onGetPositions();
         const tasksAnalysis = await onGetTasksAnalysis()
     }
 

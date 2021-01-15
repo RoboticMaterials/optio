@@ -5,7 +5,10 @@ import { useParams } from 'react-router-dom'
 
 // Import Utils
 import { deepCopy } from '../../../../../methods/utils/utils'
-import { LocationTypes, handleWidgetHoverCoord } from '../../../../../methods/utils/locations_utils'
+import { handleWidgetHoverCoord } from '../../../../../methods/utils/locations_utils'
+
+// Import Constants
+import { PositionTypes } from '../../../../../constants/position_constants'
 
 // Import Actions
 import { setTaskAttributes } from '../../../../../redux/actions/tasks_actions'
@@ -18,7 +21,7 @@ function Position(props) {
         color,
         d3,
         isSelected,
-        location,
+        position,
         onDisableDrag,
         onEnableDrag,
         rd3tClassName,
@@ -32,11 +35,11 @@ function Position(props) {
     const dispatch = useDispatch()
     const dispatchSetTaskAttributes = (id, load) => dispatch(setTaskAttributes(id, load))
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
-    const dispatchSetSelect = (position) => dispatch(setSelectedPosition(position))
+    const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
 
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
-    const selectedPosition = useSelector(state => state.locationsReducer.selectedPosition)
+    const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const hoveringID = useSelector(state => state.locationsReducer.hoverLocationID)
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
 
@@ -48,22 +51,22 @@ function Position(props) {
         }
     }, [])
 
-    // Automatically opens widget pages and sets hovering to true in the location is a temp right click
+    // Automatically opens widget pages and sets hovering to true in the position is a temp right click
     useEffect(() => {
-        if (location !== null && location.name === 'TempRightClickMovePosition') {
+        if (position !== null && position.name === 'TempRightClickMovePosition') {
             setHovering(true)
             dispatchHoverStationInfo(handleWidgetHover())
-            dispatchSetSelectPosition(location)
+            dispatchSetSelectedPosition(position)
         }
     }, [])
 
 
     /**
-    * Passes the X, Y, scale and ID of location to redux which is then used in widgets
+    * Passes the X, Y, scale and ID of position to redux which is then used in widgets
     */
     const handleWidgetHover = () => {
 
-        return handleWidgetHoverCoord(location, rd3tClassName, d3)
+        return handleWidgetHoverCoord(position, rd3tClassName, d3)
 
     }
 
@@ -75,13 +78,13 @@ function Position(props) {
 
 
         if (selectedTask !== null) {
-            // If the load location has been defined but the unload position hasnt, assign the unload position
+            // If the load position has been defined but the unload position hasnt, assign the unload position
             if (selectedTask.load.position !== null && selectedTask.unload.position === null) {
                 let unload = deepCopy(selectedTask.unload)
                 let type = selectedTask.type
-                unload.position = location._id
-                if (location.parent !== null) {
-                    unload.station = location.parent
+                unload.position = position._id
+                if (position.parent !== null) {
+                    unload.station = position.parent
                 } else {
                     type = 'push'
                 }
@@ -90,9 +93,9 @@ function Position(props) {
                 let load = deepCopy(selectedTask.load)
                 let unload = deepCopy(selectedTask.unload)
                 let type = selectedTask.type
-                load.position = location._id
-                if (location.parent !== null) {
-                    load.station = location.parent
+                load.position = position._id
+                if (position.parent !== null) {
+                    load.station = position.parent
                 } else {
                     type = 'pull'
                 }
@@ -103,12 +106,12 @@ function Position(props) {
         }
     }
 
-    // Tells the location to glow
+    // Tells the position to glow
     const shouldGlow = selectedTask !== null &&
-        ((selectedTask.load.position == location._id && selectedTask.type == 'push') ||
-            (selectedTask.unload.position == location._id && selectedTask.type == 'pull') ||
-            (selectedTask.load.position == location._id && selectedTask.type == 'both') ||
-            (selectedTask.unload.position == location._id && selectedTask.type == 'both'))
+        ((selectedTask.load.position == position._id && selectedTask.type == 'push') ||
+            (selectedTask.unload.position == position._id && selectedTask.type == 'pull') ||
+            (selectedTask.load.position == position._id && selectedTask.type == 'both') ||
+            (selectedTask.unload.position == position._id && selectedTask.type == 'both'))
 
     return (
         <g
@@ -120,18 +123,18 @@ function Position(props) {
                     setHovering(true)
                     if (!rotating && !translating && selectedPosition === null && selectedTask === null) {
                         dispatchHoverStationInfo(handleWidgetHover())
-                        dispatchSetSelectPosition(location)
+                        dispatchSetSelectedPosition(position)
 
                     }
                 }
 
             }}
-            onMouseLeave={() => { location.name !== 'TempRightClickMovePosition' && setHovering(false) }}
+            onMouseLeave={() => { position.name !== 'TempRightClickMovePosition' && setHovering(false) }}
             onMouseDown={() => {
                 onSetPositionTask()
 
             }}
-            transform={`translate(${location.x},${location.y}) rotate(${360 - location.rotation}) scale(${d3.scale / d3.imgResolution})`}
+            transform={`translate(${position.x},${position.y}) rotate(${360 - position.rotation}) scale(${d3.scale / d3.imgResolution})`}
         >
             <defs>
 
@@ -159,8 +162,8 @@ function Position(props) {
 
 
             <g className={`${rd3tClassName}-rot`}>
-                {/* Only show rotating when editing or its a right click location */}
-                {isSelected && (hovering || rotating) && (hoveringInfo === null || location.name === 'TempRightClickMovePosition') &&
+                {/* Only show rotating when editing or its a right click position */}
+                {isSelected && (hovering || rotating) && (hoveringInfo === null || position.name === 'TempRightClickMovePosition') &&
                     <>
                         <circle x="-16" y="-16" r="16" strokeWidth="0" fill="transparent" style={{ cursor: "pointer" }}></circle>
                         <circle x="-18" y="-18" r="14" fill="none" strokeWidth="4" stroke="transparent" style={{ cursor: "pointer" }}
@@ -176,7 +179,7 @@ function Position(props) {
                 }
             </g>
 
-            <g className={`${rd3tClassName}-trans`} id={`${rd3tClassName}-trans`} transform={"scale(1, 1)", location.type === 'shelf_position' && "rotate(90)"}
+            <g className={`${rd3tClassName}-trans`} id={`${rd3tClassName}-trans`} transform={"scale(1, 1)", position.type === 'shelf_position' && "rotate(90)"}
                 onMouseDown={() => {
                     setTranslating(true)
                 }}
@@ -190,7 +193,7 @@ function Position(props) {
 
                 <svg x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400" style={{ filter: shouldGlow && `url(#glow-${rd3tClassName})` }}>
 
-                    {LocationTypes[location.type].svgPath}
+                    {PositionTypes[position.type].svgPath}
 
                 </svg>
             </g>

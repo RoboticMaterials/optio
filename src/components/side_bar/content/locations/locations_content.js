@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import * as styled from './locations_content.style'
 import { useSelector, useDispatch } from 'react-redux'
-import { useHistory, useLocation } from 'react-router-dom'
 
 // Import components
 import ContentHeader from '../content_header/content_header'
@@ -13,80 +12,21 @@ import ConfirmDeleteModal from '../../../basic/modals/confirm_delete_modal/confi
 // Import components
 import ContentList from '../content_list/content_list'
 import Positions from './positions/positions'
+import LocationButton from './location_buttons/location_buttons'
 
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 
 // Import actions
-import { sideBarBack, deleteLocationProcess, editing, deselectLocation } from '../../../../redux/actions/locations_actions'
-import { setSelectedPosition, addPosition, deletePosition, updatePosition } from '../../../../redux/actions/positions_actions'
-import { setSelectedStation, addStation, deleteStation, updateStation } from '../../../../redux/actions/stations_actions'
-
-import * as positionActions from '../../../../redux/actions/positions_actions'
-import * as dashboardActions from '../../../../redux/actions/dashboards_actions'
-import * as taskActions from '../../../../redux/actions/tasks_actions'
+import { sideBarBack, deleteLocationProcess } from '../../../../redux/actions/locations_actions'
+import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition } from '../../../../redux/actions/positions_actions'
+import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setSelectedStationChildrenCopy } from '../../../../redux/actions/stations_actions'
 
 // Import Utils
 import { setAction } from '../../../../redux/actions/sidebar_actions'
 import { deepCopy } from '../../../../methods/utils/utils'
-import { LocationTypes, locationsSortedAlphabetically } from '../../../../methods/utils/locations_utils'
+import { locationsSortedAlphabetically } from '../../../../methods/utils/locations_utils'
 
 import uuid from 'uuid'
-
-function locationTypeGraphic(type, isNotSelected) {
-    switch (type) {
-
-        case 'charger_position':
-            return (
-                <styled.LocationTypeGraphic fill={LocationTypes['shelf_position'].color} stroke={LocationTypes['shelf_position'].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                    {LocationTypes['charger_position'].svgPath}
-                </styled.LocationTypeGraphic>
-            )
-
-        case 'shelf_position':
-            return (
-                <styled.LocationTypeGraphic fill={LocationTypes['shelf_position'].color} stroke={LocationTypes['shelf_position'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                    {LocationTypes['shelf_position'].svgPath}
-                </styled.LocationTypeGraphic>
-            )
-
-        case 'workstation':
-            return (
-                <styled.LocationTypeGraphic fill={LocationTypes['workstation'].color} stroke={LocationTypes['workstation'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                    {LocationTypes['workstation'].svgPath}
-                </styled.LocationTypeGraphic>
-            )
-
-        case 'warehouse':
-            return (
-                <styled.LocationTypeGraphic fill={LocationTypes['warehouse'].color} stroke={LocationTypes['warehouse'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                    {LocationTypes['warehouse'].svgPath}
-                </styled.LocationTypeGraphic>
-            )
-
-        case 'human':
-            return (
-                <styled.LocationTypeGraphic fill={LocationTypes['human'].color} stroke={LocationTypes['human'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                    {LocationTypes['human'].svgPath}
-                </styled.LocationTypeGraphic>
-            )
-
-        case 'cart_position':
-            return (
-                <styled.LocationTypeGraphic fill={LocationTypes['cart_position'].color} stroke={LocationTypes['cart_position'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                    {LocationTypes['cart_position'].svgPath}
-                </styled.LocationTypeGraphic>
-
-            )
-
-        case 'human_position':
-            return (
-                <styled.LocationTypeGraphic fill={LocationTypes['human_position'].color} stroke={LocationTypes['human_position'].color} isNotSelected={isNotSelected} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                    {LocationTypes['human_position'].svgPath}
-                </styled.LocationTypeGraphic>
-
-            )
-    }
-}
 
 // This adds a location selected info to the reducer
 export default function LocationContent() {
@@ -94,17 +34,22 @@ export default function LocationContent() {
     const dispatch = useDispatch()
 
     const dispatchSetSelectedStaion = (station) => dispatch(setSelectedStation(station))
+    const dispatchSetStationAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
+    const dispatchAddStation = (station) => dispatch(addStation(station))
+    const dispatchSetSelectedStationChildrenCopy = (children) => dispatch(setSelectedStationChildrenCopy(children))
+
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
+    const dispatchAddPosition = (pos) => dispatch(addPosition(pos))
+    const dispatchSetPositionAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
 
     const onSideBarBack = (props) => dispatch(sideBarBack(props))
     const onDeleteLocationProcess = (props) => dispatch(deleteLocationProcess(props))
-    const onAddPosition = (pos) => dispatch(addPosition(pos))
-    const onEditing = (props) => dispatch(locationActions.editing(props))
 
+    const stations = useSelector(state => state.locationsReducer.stations)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const positions = useSelector(state => state.locationsReducer.positions)
-    const stations = useSelector(state => state.locationsReducer.stations)
+
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const devices = useSelector(state => state.devicesReducer.devices)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
@@ -115,87 +60,7 @@ export default function LocationContent() {
     const [mergeStation, setMergeStation] = useState(false)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
-    function LocationTypeButton({ type, selected }) {
-
-        let template
-        switch (type) {
-            case 'workstation':
-                template = LocationTypes['workstation'].attributes
-                break
-
-            case 'cart_position':
-                template = LocationTypes['cart_position'].attributes
-                break
-
-            case 'human_position':
-                template = LocationTypes['human_position'].attributes
-                break
-
-            case 'shelf_position':
-                template = LocationTypes['shelf_position'].attributes
-                break
-
-            case 'warehouse':
-                template = LocationTypes['warehouse'].attributes
-                break
-
-            case 'human':
-                template = LocationTypes['human'].attributes
-                break
-
-        }
-
-        // If there is a type selected and its not the button type, that means this type has not been selected so gray everything out
-        const isNotSelected = selectedLocation.type !== null && selectedLocation.type !== type ? true : false;
-
-        return (
-            <styled.LocationTypeButton
-                isNotSelected={isNotSelected}
-                id={`location-type-button-${type}`}
-                draggable={false}
-
-                onMouseDown={async e => {
-
-                    // Handle Station addition
-                    if (template.schema === 'station') {
-                        await Object.assign(selectedStation, { ...template, temp: true, map_id: currentMap._id })
-                        await dispatch(locationActions.addLocation(selectedLocation))
-                        await dispatch(locationActions.setSelectedLocation(selectedLocation))
-                    }
-
-                    else if(template.schema === 'position') {
-
-                    }
-
-                    else {
-                        throw('Schema Does Not exist')
-                    }
-                }}
-
-                isSelected={type === selected}
-                style={{ cursor: 'grab' }}
-            >
-                {locationTypeGraphic(type, isNotSelected)}
-            </styled.LocationTypeButton>
-        )
-    }
-
-    useEffect(() => {
-        return () => {
-
-        }
-    }, [])
-
-    useEffect(() => {
-
-        if (selectedLocationCopy === null) {
-
-            //onEditing(false)
-            onSetSelectedLocationCopy(null)                   // Reset the local copy to null
-            onSetSelectedLocationChildrenCopy(null)
-        }
-
-    }, [selectedLocationCopy])
+    const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
 
     /**
      * This function is called when the back button is pressed. If the location is new, it is deleted;
@@ -204,10 +69,6 @@ export default function LocationContent() {
      */
     const onBack = () => {
 
-
-        onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy, positions, locations })
-
-        onEditing(false)
     }
 
     /**
@@ -216,65 +77,9 @@ export default function LocationContent() {
      * tieing it to this location. Each child position for a station is also either POSTED or PUT.
      */
     const onSave = () => {
-        const saveChildren = (locationID) => {
-            //// Function to save the children of a posted station
-            // Since the child has a .parent attribute, this function needs to be given the station's id
-            let postPositionPromise, child
-            selectedLocation.children.forEach((childID, ind) => {
-                child = positions[childID]
-                child.parent = locationID
-                if (child.new) { // If the position is new, post it and update its id in the location.children array
-                    dispatch(positionActions.postPosition(child))
-                    selectedLocation.children[ind] = child._id
-                    dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
-
-                } else { //  If the position is not new, just update it
-                    dispatch(positionActions.putPosition(child, child._id))
-                }
-            })
-        }
-
-        //// Post the location
-        if (selectedLocation.new == true) {
-            const locationPostPromise = dispatch(locationActions.postLocation(selectedLocation))
-            locationPostPromise.then(postedLocation => {
-                //// On return of the posted location, if it is a station we also need to assign it a default dashboard
-                if (postedLocation.schema == 'station') {
-                    let defaultDashboard = {
-                        name: postedLocation.name + ' Dashboard',
-                        buttons: [],
-                        station: postedLocation._id
-                    }
-
-                    //// Now post the dashboard, and on return tie that dashboard to location.dashboards and put the location
-                    const postDashboardPromise = dispatch(dashboardActions.postDashboard(defaultDashboard))
-                    postDashboardPromise.then(postedDashboard => {
-                        postedLocation.dashboards = [postedDashboard._id.$oid]
-                        dispatch(stationActions.putStation(postedLocation, postedLocation._id))
-                    })
-
-                    saveChildren(postedLocation._id)
-
-                }
-            })
-        } else { // If the location is not new, PUT it and update it's children
-            dispatch(locationActions.putLocation(selectedLocation, selectedLocation._id))
-            if (selectedLocation.schema === 'station') {
-                saveChildren(selectedLocation._id)
-            }
-        }
-
-        dispatch(locationActions.deselectLocation())    // Deselect
-        onSetSelectedLocationCopy(null)                 // Reset the local copy to null
-        onSetSelectedLocationChildrenCopy(null)         // Reset the local children copy to null
-        onEditing(false)                            // No longer editing
-
     }
 
     const onDelete = () => {
-
-        onDeleteLocationProcess({ selectedLocation, locations, positions, tasks, processes })
-        onEditing(false)
 
     }
 
@@ -294,9 +99,8 @@ export default function LocationContent() {
                 }
 
                 // Not sure why onSetSelectedLocation is not working, should be the same as a normal dispatch...
-                // onSetSelectedLocation({newSelectedLocation})
-                await dispatch(locationActions.addLocation(updatedSelectedLocation))
-                await dispatch(locationActions.setSelectedLocation(updatedSelectedLocation))
+                await dispatchAddPosition(updatedSelectedLocation)
+                await dispatchSetSelectedPosition(updatedSelectedLocation)
             }
         })
     }
@@ -315,18 +119,35 @@ export default function LocationContent() {
                     rotation: devicePosition.orientation,
                 }
 
-                dispatch(positionActions.addPosition(updatedPosition))
+                dispatchAddPosition(updatedPosition)
 
             }
         })
     }
 
-    const handleMergeToStation = () => {
+    const onAddLocation = () => {
 
-        let station = stations[mergeStation]
+    }
 
-        station.children.push(selectedLocation._id)
-        selectedLocation.parent = mergeStation
+    const onLocationNameChange = (e) => {
+        if(!!selectedStation){
+            dispatchSetStationAttributes(selectedStation._id, { name: e.target.value })
+        }
+        else {
+            dispatchSetPositionAttributes(selectedPosition._id, { name: e.target.value })
+        }
+    }
+
+    const renderStationButtons = () => {
+        // If there is a type selected and its not the button type, that means this type has not been selected so gray everything out
+        const types = ['human', 'warehouse']
+
+        return types.map((type) => {
+            const isSelected = selectedStation.type !== null && selectedStation.type !== type ? true : false;
+            return (
+                <LocationButton type={'human'} isSelected={isSelected} handleAddLocation={onAddLocation} />
+            )
+        })
 
     }
 
@@ -336,20 +157,9 @@ export default function LocationContent() {
         let locationTypeName = ''
         if (!!selectedLocation) {
             switch (selectedLocation.type) {
-                case 'workstation':
-                    locationTypeName = 'Station'
-                    break;
-
-                case 'human_position':
-                    locationTypeName = 'Position'
-                    break;
 
                 case 'cart_position':
                     locationTypeName = 'Cart Position'
-                    break;
-
-                case 'human_position':
-                    locationTypeName = 'Position'
                     break;
 
                 case 'human':
@@ -400,12 +210,7 @@ export default function LocationContent() {
                     schema={'locations'}
                     focus={!!selectedLocation && selectedLocation.type == null}
                     onChange={(e) => {
-                        if (selectedLocation.type !== null) {
-                            dispatch(locationActions.setLocationAttributes(selectedLocation._id, { name: e.target.value }))
-                        } else { // If the type has not been selected, this location does not exist in the reducer and needs to be changed directly
-                            Object.assign(selectedLocation, { name: e.target.value })
-                            dispatch(locationActions.setSelectedLocation(selectedLocation))
-                        }
+                        onLocationNameChange(e)
                     }}
                     style={{ fontSize: '1.2rem', fontWeight: '600' }}>
                 </Textbox>
@@ -589,7 +394,7 @@ export default function LocationContent() {
                     // If location button is clicked, start editing it
                     onSetSelectedLocationCopy(deepCopy(selectedLocation))
                     if (selectedLocation.children != null && selectedLocation.children != undefined) {
-                        onSetSelectedLocationChildrenCopy(selectedLocation.children.map(positionID => deepCopy(positions[positionID])))
+                        dispatchSetSelectedStationChildrenCopy(selectedLocation.children.map(positionID => deepCopy(positions[positionID])))
                     }
                     onEditing(true)
                 }}

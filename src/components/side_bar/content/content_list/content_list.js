@@ -9,8 +9,11 @@ import ContentHeader from '../content_header/content_header'
 import ErrorTooltip from '../../../basic/form/error_tooltip/error_tooltip'
 
 // Import Utils
-import { LocationTypes } from '../../../../methods/utils/locations_utils'
 import { deepCopy } from '../../../../methods/utils/utils'
+
+// Import Constants
+import { StationTypes } from '../../../../constants/station_constants'
+import { PositionTypes } from '../../../../constants/position_constants'
 
 
 export default function ContentList(props) {
@@ -40,8 +43,13 @@ export default function ContentList(props) {
 
     const renderLocationTypeIcon = (element) => {
 
+        const LocationTypes ={
+            ...StationTypes,
+            ...PositionTypes,
+        }
+
         switch (element.type) {
-                
+
             case 'charger_position':
                 return (
                     <styled.LocationTypeGraphic fill={LocationTypes['shelf_position'].color} stroke={LocationTypes['shelf_position'].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">

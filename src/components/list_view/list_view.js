@@ -55,8 +55,7 @@ const ListView = (props) => {
     const windowWidth = size.width
     const widthBreakPoint = 1025
 
-    const locations = useSelector(state => state.locationsReducer.stations)
-    const positions = useSelector(state => state.locationsReducer.positions)
+    const positions = useSelector(state => state.positionsReducer.positions)
     const devices = useSelector(state => state.devicesReducer.devices)
     const status = useSelector(state => state.statusReducer.status)
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)

@@ -11,8 +11,8 @@ import useWindowSize from '../../hooks/useWindowSize'
 
 // Import Actions
 import { hoverStationInfo } from '../../redux/actions/stations_actions'
-import { widgetLoaded, setSelectedLocationChildrenCopy } from '../../redux/actions/locations_actions'
-import { setSelectedStation } from '../../redux/actions/stations_actions'
+import { widgetLoaded } from '../../redux/actions/locations_actions'
+import { setSelectedStation, setSelectedStationChildrenCopy } from '../../redux/actions/stations_actions'
 import { setSelectedPosition } from '../../redux/actions/positions_actions'
 
 import { setOpen } from "../../redux/actions/sidebar_actions"
@@ -42,12 +42,16 @@ const Widgets = (props) => {
     // Grabs what widget page is in the URL
     const widgetPage = params.widgetPage
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
+
     const stations = useSelector(state => state.stationsReducer.stations)
-    const positions = useSelector(state => state.stationsReducer.positions)
+    const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
+    const editingStation = useSelector(state => state.stationsReducer.editingStation)
+
+    const positions = useSelector(state => state.positionsReducer.positions)
+    const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
+    const editingPosition = useSelector(state => state.positionsReducer.editingPosition)
+
     const devices = useSelector(state => state.devicesReducer.devices)
-    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
-    const editing = useSelector(state => state.locationsReducer.editingLocation)
-    const positions = useSelector(state => state.locationsReducer.positions)
     const showSideBar = useSelector(state => state.sidebarReducer.open)
 
     // Info passed from workstations/device_locations via redux
@@ -58,12 +62,17 @@ const Widgets = (props) => {
     const dispatchWidgetLoaded = (bool) => dispatch(widgetLoaded(bool))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
-    const dispatchSetSelectedLocationChildrenCopy = (locationChildren) => dispatch(setSelectedLocationChildrenCopy(locationChildren))
+    const dispatchSetSelectedStationChildrenCopy = (locationChildren) => dispatch(setSelectedStationChildrenCopy(locationChildren))
     const dispatchShowSideBar = (bool) => dispatch(setOpen(bool))
     const [hoverX, setHoverX] = useState(null)
     const [hoverY, setHoverY] = useState(null)
+
     // Location ID passed down through workstations via redux
     const stationID = hoveringInfo.id
+
+    const editing = editingStation ? editingStation : editingPosition
+    const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
+
     // This tells redux that the widget has mounted. Used in map view to handle if widget is still open but shoulnt be
     // This happens when moving the mouse too fast over a location causing a widget to load, but not fast enough for the onmouselave to execute
     useEffect(() => {
@@ -72,7 +81,7 @@ const Widgets = (props) => {
         dispatchWidgetLoaded(true)
         return () => {
             dispatchHoverStationInfo(null)
-            if (!!editing) {
+            if (!!editingStation || !!editingPosition) {
                 dispatchSetSelectedStation(null)
                 dispatchSetSelectedPosition(null)
             }
@@ -82,7 +91,7 @@ const Widgets = (props) => {
 
     // If widgetPage exists in URL params, then the widget pages are open
     const HandleWidgetPageOpen = () => {
-        if (!!widgetPage && !!editing) {
+        if (!!widgetPage && (!!editingStation || !!editingPosition)) {
             dispatchHoverStationInfo(hoveringInfo)
             dispatchSetSelectedStation(null)
             dispatchSetSelectedPosition(null)
@@ -98,8 +107,8 @@ const Widgets = (props) => {
         }
 
         dispatchShowSideBar(true)
-        if (!!selectedLocation.children) {
-            dispatchSetSelectedLocationChildrenCopy(selectedLocation.children.map(positionID => deepCopy(positions[positionID])))
+        if (!!selectedStation) {
+            dispatchSetSelectedStationChildrenCopy(selectedStation.children.map(positionID => deepCopy(positions[positionID])))
         }
 
         dispatch(locationActions.editing(true))
@@ -214,7 +223,7 @@ const Widgets = (props) => {
             }
         }
         // If right menu position, have send cart and cancel (times)
-        else if (selectedLocation.name === 'TempRightClickMovePosition') {
+        else if (selectedPosition.name === 'TempRightClickMovePosition') {
             return (
                 <>
                     <WidgetButton
@@ -307,16 +316,16 @@ const Widgets = (props) => {
         let widgetPosition = {}
 
         // Handles the x, use location x if right click menu so it can also move
-        if (!!selectedLocation && selectedLocation.name === 'TempRightClickMovePosition') {
-            widgetPosition.x = selectedLocation.x - elementWidth / 2 + 30 + 'px'
+        if (!!selectedPosition && selectedPosition.name === 'TempRightClickMovePosition') {
+            widgetPosition.x = selectedPosition.x - elementWidth / 2 + 30 + 'px'
         }
         else {
             widgetPosition.x = hoveringInfo.xPosition - elementWidth / 2 + 'px'
         }
 
         // Handles the y, use location y if right click menu so it can also move
-        if (!!selectedLocation && selectedLocation.name === 'TempRightClickMovePosition') {
-            widgetPosition.y = selectedLocation.y + elementHeight / 2 + 20 + 'px'
+        if (!!selectedPosition && selectedPosition.name === 'TempRightClickMovePosition') {
+            widgetPosition.y = selectedPosition.y + elementHeight / 2 + 20 + 'px'
         }
         else {
             widgetPosition.y = hoveringInfo.yPosition + elementHeight / 2 + 'px'

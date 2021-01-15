@@ -12,9 +12,11 @@ import { setOpen } from "../../../redux/actions/sidebar_actions"
 
 
 // Import utils
-import { LocationTypes } from '../../../methods/utils/locations_utils'
 import { convertD3ToReal } from '../../../methods/utils/map_utils'
 import { deepCopy } from '../../../methods/utils/utils'
+
+// Import Constants
+import { PositionTypes } from '../../../constants/position_constants'
 
 // import styling
 import * as styled from './right_click_menu.style'
@@ -79,7 +81,7 @@ const RightClickMenu = (props) => {
             _id: uuid.v4()
         }
 
-        await Object.assign(tempSelectedPosition, { ...LocationTypes['cart_position'].attributes, temp: true })
+        await Object.assign(tempSelectedPosition, { ...PositionTypes['cart_position'].attributes, temp: true })
         await dispatchAddPositions(tempSelectedPosition)
         await dispatchSetSelectedPosition(tempSelectedPosition)
 

@@ -27,12 +27,14 @@ import { deselectLocation, widgetLoaded } from '../../redux/actions/locations_ac
 // Import Components
 import TaskPaths from '../../components/map/task_paths/task_paths.js'
 import ProcessPaths from '../../components/map/process_paths/process_paths'
-import Location from '../../components/map/locations/location.js'
 import MiR100 from '../../components/map/amrs/mir100/mir100.js'
 import Zones from '../../components/map/zones/zones'
 import RightClickMenu from '../../components/map/right_click_menu/right_click_menu'
 import TaskStatistics from '../../components/map/task_statistics/task_statistics'
 import Widgets from '../../components/widgets/widgets'
+
+import Station from '../../components/map/locations/station/station'
+import Position from '../../components/map/locations/position/position'
 
 // logging
 import log from "../../logger"
@@ -54,6 +56,7 @@ export class MapView extends Component {
         this.rd3tSvgClassName = `__SVG`     // Gives uniqe className to map components to reference for d3 events
         this.rd3tMapClassName = `__MAP`
         this.rd3tLocClassName = '__LOC'
+        this.rd3tStationClassName = `__STATION`
         this.rd3tPosClassName = '__POS'
 
         this.lastEvent = null   // Save the latest event
@@ -597,10 +600,10 @@ export class MapView extends Component {
                             <>
                                 <>{
                                     //// Render Locations
-                                    Object.values(this.props.stations).filter(location => (location.map_id === this.props.currentMap._id)).map((location, ind) =>
-                                        <Location key={`loc-${ind}`}
+                                    Object.values(this.props.stations).filter(station => (station.map_id === this.props.currentMap._id)).map((location, ind) =>
+                                        <Station key={`loc-${ind}`}
                                             location={location}
-                                            rd3tClassName={`${this.rd3tLocClassName}_${ind}`}
+                                            rd3tClassName={`${this.rd3tStationClassName}_${ind}`}
                                             d3={this.d3}
                                             onEnableDrag={this.onEnableDrag}
                                             onDisableDrag={this.onDisableDrag}
@@ -685,7 +688,7 @@ export class MapView extends Component {
                                         })
                                         .map((position, ind) =>
                                             <>
-                                                <Location key={`pos-${ind}`}
+                                                <Position key={`pos-${ind}`}
                                                     location={position}
                                                     rd3tClassName={`${this.rd3tPosClassName}_${ind}`}
                                                     d3={this.d3}

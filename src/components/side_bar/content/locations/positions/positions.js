@@ -20,8 +20,8 @@ import * as positionActions from '../../../../../redux/actions/positions_actions
 import { deleteTask } from '../../../../../redux/actions/tasks_actions'
 import { deepCopy } from '../../../../../methods/utils/utils'
 
-// Import utils
-import { LocationTypes } from '../../../../../methods/utils/locations_utils'
+// Import Constants
+import { PositionTypes } from '../../../../../constants/position_constants'
 
 import uuid from 'uuid'
 
@@ -142,6 +142,7 @@ export default function Positions(props) {
     /**
      * Handles deleting positions
      * Does some different things based on if the position is new or not (see comments bellow)
+     * TODO: FIX THIS SHIT!
      * @param {*} position
      * @param {*} i
      */
@@ -194,7 +195,7 @@ export default function Positions(props) {
             if (position.type === positionType) {
 
                 return (
-                    <styled.PositionListItem background={LocationTypes[positionType].color}>
+                    <styled.PositionListItem background={PositionTypes[positionType].color}>
 
 
                         <MinusButton
@@ -282,8 +283,8 @@ export default function Positions(props) {
                         }
                     >
 
-                        <styled.LocationTypeGraphic fill={LocationTypes[positionType].color} stroke={LocationTypes[positionType].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-                            {LocationTypes[positionType].svgPath}
+                        <styled.LocationTypeGraphic fill={PositionTypes[positionType].color} stroke={PositionTypes[positionType].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+                            {PositionTypes[positionType].svgPath}
                         </styled.LocationTypeGraphic>
 
                         <styled.LocationTypeLabel>

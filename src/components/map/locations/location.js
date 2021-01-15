@@ -14,7 +14,10 @@ import { setStationAttributes } from '../../../redux/actions/stations_actions'
 
 // Import Utils
 import { convertD3ToReal, convertRealToD3, getRelativeD3, getRelativeOffset } from '../../../methods/utils/map_utils'
-import { LocationTypes } from '../../../methods/utils/locations_utils'
+
+// Import Constants
+import { StationTypes } from '../../../constants/station_constants'
+import { PositionTypes } from '../../../constants/position_constants'
 
 // Import Components
 import DragEntityProto from './drag_entity_proto'
@@ -208,11 +211,9 @@ const Location = (props) => {
     const dispatchSetStationAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
     const dispatchSetPositionAttributes = (id, attr) => dispatch(setPositionAttributes(id, attr))
 
-    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
-    const stations = useSelector(state => state.locationsReducer.stations)
-    const positions = useSelector(state => state.locationsReducer.positions)
-    const locations = useSelector(state => state.locationsReducer.locations)
+    const stations = useSelector(state => state.stationsReducer.stations)
+    const positions = useSelector(state => state.positionsReducer.positions)
 
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     //const [showSideBar, setShowSideBar] = useState(false)
@@ -241,6 +242,11 @@ const Location = (props) => {
     let pos
 
     let color = '#6283f0' // Blue
+
+    const LocationTypes = {
+        ...StationTypes,
+        ...PositionTypes
+    }
 
     // Try catch for unknown location types
     try {

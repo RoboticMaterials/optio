@@ -12,18 +12,19 @@ import { setTaskAttributes } from '../../../../../redux/actions/tasks_actions'
 
 // Import Utils
 import { DeviceItemTypes } from '../../../../../methods/utils/device_utils'
-import { LocationTypes, handleWidgetHoverCoord } from '../../../../../methods/utils/locations_utils'
+import { handleWidgetHoverCoord } from '../../../../../methods/utils/locations_utils'
 import { deepCopy } from '../../../../../methods/utils/utils'
+
+// Import Constants
+import { StationTypes } from '../../../../../constants/station_constants'
 
 function Station(props) {
 
 
     const {
+        station,
         rd3tClassName,
-        location,
-        isSelected,
         d3,
-        color,
     } = props
 
 
@@ -44,6 +45,28 @@ function Station(props) {
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchSetTaskAttributes = (id, load) => dispatch(setTaskAttributes(id, load))
+
+
+    // TODO: isSelected has a lot going on
+    const isSelected = true
+
+    let color = StationTypes[station.type].color
+
+    if (!isSelected) color = '#afb5c9' // Grey
+
+    // If load is undefined, then its a simple move
+    else if (selectedTask.load === undefined) {
+        color = '#afb5c9' // Grey
+    }
+
+    else if (isSelected) color = '#38eb87' // Green
+
+    // else {
+    //     if (selectedTask.load.station == location._id || selectedTask.load.position == location._id
+    //         || selectedTask.unload.station == location._id || selectedTask.unload.position == location._id) {
+    //         color = '#38eb87' // Green
+    //     }
+    // }
 
     // Used to see if a widget Page is opened
     let params = useParams()
@@ -155,7 +178,7 @@ function Station(props) {
         return (
             <svg id={`${rd3tClassName}-station`} x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400" style={{ filter: shouldGlow ? 'url(#glow2)' : 'none' }}>
 
-                {LocationTypes[location.type].svgPath}
+                {StationTypes[location.type].svgPath}
             </svg>
 
         )
@@ -307,9 +330,7 @@ function Station(props) {
                         }
                     }}
                     onMouseDown={() => setTranslating(true)}
-                    // onClick={() => {
-                    //     console.log('Station clicked')
-                    // }}
+
                     transform={location.type === 'device' && 'scale(.07) translate(-180,-140)'}
                 >
 
