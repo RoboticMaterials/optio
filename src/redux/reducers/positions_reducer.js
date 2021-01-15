@@ -140,7 +140,7 @@ export default function positionsReducer(state = defaultState, action) {
             });
 
         case POST_POSITION_SUCCESS:
-            return onUpdatePositions(action.payload)
+            return onUpdatePosition(action.payload)
 
         case POST_POSITION_FAILURE:
             return Object.assign({}, state, {
@@ -155,7 +155,7 @@ export default function positionsReducer(state = defaultState, action) {
             });
 
         case PUT_POSITION_SUCCESS:
-            return onUpdatePositions(action.payload)
+            return onUpdatePosition(action.payload)
 
         case PUT_POSITION_FAILURE:
             return Object.assign({}, state, {
