@@ -727,6 +727,7 @@ const ApiContainer = (props) => {
      * @param {*} tasks
      */
     const handleProcessesWithBrokenRoutes = async (processes, tasks) => {
+        if (processes === undefined || tasks === undefined) return
 
         Object.values(processes).map((process) => {
 
@@ -777,6 +778,7 @@ const ApiContainer = (props) => {
      * @param {*} tasks
      */
     const handleTasksWithBrokenProcess = async (processes, tasks) => {
+        if (processes === undefined || tasks === undefined) return
 
         Object.values(tasks).map(async (task) => {
 
