@@ -92,7 +92,7 @@ const App = (props) => {
         )
     }
     return (
-        <PageErrorBoundary>
+        <>
             <Logger />
 
 
@@ -230,7 +230,7 @@ const App = (props) => {
                     </BrowserRouter>
                 </styled.Container>
             </ThemeProvider>
-        </PageErrorBoundary>
+        </>
     );
 
 }
