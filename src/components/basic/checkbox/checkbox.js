@@ -2,16 +2,23 @@ import React from 'react'
 import * as style from './checkbox.style'
 
 const Checkbox = (props) => {
+
+    const {
+      onClick,
+      checked,
+      title,
+    } = props
+
     return(
         <React.Fragment>
             <div className='checkbox'>
                 <style.Label>
-                    <style.Input 
-                        type='checkbox' 
-                        onClick={props.onClick} 
-                        checked={props.checked}
+                    <style.Input
+                        type='checkbox'
+                        onClick={onClick}
+                        checked={checked}
                     />
-                {props.title}
+                {title}
                 </style.Label>
             </div>
         </React.Fragment>

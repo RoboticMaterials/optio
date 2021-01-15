@@ -55,7 +55,6 @@ const RightClickMenu = (props) => {
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const showSideBar = useSelector(state=> state.sidebarReducer.open)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
-
     const history = useHistory()
 
 

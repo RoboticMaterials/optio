@@ -21,6 +21,7 @@ import SchedulerContent from '../../components/side_bar/content/scheduler/schedu
 import ProcessesContent from '../../components/side_bar/content/processes/processes_content'
 import Settings from '../../components/side_bar/content/settings/settings'
 import ConfirmDeleteModal from '../../components/basic/modals/confirm_delete_modal/confirm_delete_modal'
+import PageErrorBoundary from '../../containers/page_error_boundary/page_error_boundary'
 
 import { setWidth, setMode } from "../../redux/actions/sidebar_actions";
 import * as sidebarActions from "../../redux/actions/sidebar_actions"
@@ -134,13 +135,11 @@ const SideBar = (props) => {
         hamburger.classList.toggle('is-active')
       }
 
-
         dispatch(editing(false)) //location editing need to rename
         dispatch(editingTask(false))
         dispatch(editingProcess(false))
 
         onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy, positions, locations })
-
         dispatch(taskActions.deselectTask())    // Deselect
 
         if (!showSideBar && url == '/') {

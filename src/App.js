@@ -30,6 +30,7 @@ import Widgets from './components/widgets/widgets'
 import ListView from "./components/list_view/list_view";
 import TestsContainer from "./containers/api_container/tests_container";
 import HILModals from "./components/hil_modals/hil_modals";
+import ErrorBoundary from './components/basic/error_boundary/error_boundary';
 
 const widthBreakPoint = 1000;
 
@@ -91,7 +92,7 @@ const App = (props) => {
         )
     }
     return (
-        <>
+        <PageErrorBoundary>
             <Logger />
 
 
@@ -229,7 +230,7 @@ const App = (props) => {
                     </BrowserRouter>
                 </styled.Container>
             </ThemeProvider>
-        </>
+        </PageErrorBoundary>
     );
 
 }

@@ -3,19 +3,27 @@ import * as style from './back_button.style'
 import {globStyle} from '../../../global_style'
 
 const BackButton = (props) => {
-    
+
     const [hovered, setHovered] = useState(false)
     const [active, setActive] = useState(false)
 
+    const {
+      onClick,
+      schema,
+      containerStyle,
+      style,
+      disabled,
+    } = props
+
     return (
-        <style.BackButton 
+        <style.BackButton
             hovered={hovered}
             active={active}
-            onClick={props.onClick} 
-            schema={props.schema} 
-            style={{...props.containerStyle}}
+            onClick={onClick}
+            schema={schema}
+            style={{...containerStyle}}
 
-            onMouseEnter={() => setHovered(true)} 
+            onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             onMouseDown={() => setActive(true)}
             onMouseUp={() => setActive(false)}
@@ -23,12 +31,13 @@ const BackButton = (props) => {
             <style.BackSymbol
                 hovered={hovered}
                 active={active}
-                style={{...props.style}}
-                
-                disable={props.disabled}
-                schema={props.schema}
+                style={{...style}}
+
+                disable={disabled}
+                schema={schema}
                 className="fa fa-chevron-left"
-            ></style.BackSymbol>
+            />
+
         </style.BackButton>
     )
 }

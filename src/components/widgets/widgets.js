@@ -98,6 +98,8 @@ const Widgets = (props) => {
         }
 
         dispatch(locationActions.editing(true))
+        onHoverStationInfo(null)
+
 
     }
 

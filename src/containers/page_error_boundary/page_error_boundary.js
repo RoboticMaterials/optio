@@ -6,18 +6,22 @@ import * as styled from './page_error_boundary.style'
 class PageErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = {
+       hasError: false,
+       error:null,
+       infor:null
+     };
   }
 
-  static getDerivedStateFromError(error) {
-    // Update state so the next render will show the fallback UI.
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
+  componentDidCatch(error, info) {
     // log the error to an error reporting service
-    console.log(error, errorInfo);
-  }
+    this.setState({
+    hasError: true,
+    error: error,
+    info: info
+  });
+}
+
 
   handleReloadPage = () => {
     window.location.reload();
@@ -36,8 +40,8 @@ class PageErrorBoundary extends React.Component {
       )
 
     }
-    return null
-    // return this.props.children;
+    //return null
+    return this.props.children;
   }
 }
 
