@@ -361,8 +361,8 @@ const ApiContainer = (props) => {
         tasks
     */
     const loadTasksData = async () => {
-        // const tasks = await onGetTasks()
-        // const processes = await onGetProcesses()
+        const tasks = await onGetTasks()
+        const processes = await onGetProcesses()
     }
 
     /*
