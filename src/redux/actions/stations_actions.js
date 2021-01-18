@@ -21,7 +21,6 @@ import {
     REMOVE_STATION,
     SET_STATION_ATTRIBUTES,
 
-    HOVER_STATION_INFO,
 } from '../types/stations_types'
 
 import { deepCopy } from '../../methods/utils/utils';
@@ -184,8 +183,4 @@ export const removeStation = (id) => {
 
 export const setStationAttributes = (id, attr) => {
     return { type: SET_STATION_ATTRIBUTES, payload: { id, attr } }
-}
-
-export const hoverStationInfo = (info) => {
-    return { type: HOVER_STATION_INFO, payload: { info } }
 }

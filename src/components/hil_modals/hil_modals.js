@@ -9,6 +9,9 @@ import * as styled from './hil_modals.style';
 // Import Components
 import Textbox from '../basic/textbox/textbox'
 import HILSuccess from './hil_modals_content/hil_success'
+import DropDownSearch from "../basic/drop_down_search_v2/drop_down_search";
+import DropDownSearchField from "../basic/form/drop_down_search_field/drop_down_search_field";
+import Button from "../basic/button/button";
 
 // Import Actions
 import { postTaskQueue, putTaskQueue } from '../../redux/actions/task_queue_actions'
@@ -20,10 +23,7 @@ import { putTaskQueueItem } from '../../api/task_queue_api'
 
 // Import Utils
 import { deepCopy } from '../../methods/utils/utils'
-import DropDownSearch from "../basic/drop_down_search_v2/drop_down_search";
 import { getCards } from "../../redux/actions/card_actions";
-import DropDownSearchField from "../basic/form/drop_down_search_field/drop_down_search_field";
-import Button from "../basic/button/button";
 
 
 /**
@@ -53,7 +53,6 @@ const HILModals = (props) => {
     const dispatchPostEvents = (event) => dispatch(postEvents)
     const dispatchLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
     const dispatchGetTasks = () => dispatch(getTasks())
-
 
     const hilTimers = useSelector(state => { return state.taskQueueReducer.hilTimers })
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
@@ -203,6 +202,7 @@ const HILModals = (props) => {
 
 
     }, [selectedLot])
+
 // Changes quantity on Mouse hold
     useEffect(() => {
         const interval = setInterval(() => {
@@ -252,8 +252,6 @@ const HILModals = (props) => {
                         setQuantity(quantity => quantity + 1)
                     }
 
-
-                    // quantity is greater than count (probably was set before lot was selected), reduce to count
                     else {
                         setQuantity(count)
                     }
@@ -271,8 +269,6 @@ const HILModals = (props) => {
                     if (quantity+10 < count) {
                         setQuantity(quantity => quantity + 10)
                     }
-
-                    // quantity is greater than count (probably was set before lot was selected), reduce to count
                     else {
                         setQuantity(parseInt(count))
                     }

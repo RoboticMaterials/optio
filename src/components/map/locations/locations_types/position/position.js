@@ -9,7 +9,7 @@ import { LocationTypes, handleWidgetHoverCoord } from '../../../../../methods/ut
 
 // Import Actions
 import { setTaskAttributes } from '../../../../../redux/actions/tasks_actions'
-import { hoverStationInfo } from '../../../../../redux/actions/stations_actions'
+import { hoverStationInfo } from '../../../../../redux/actions/widget_actions'
 import { selectLocation, deselectLocation } from '../../../../../redux/actions/locations_actions'
 
 function Position(props) {
@@ -37,7 +37,7 @@ function Position(props) {
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
-    const hoveringID = useSelector(state => state.locationsReducer.hoverLocationID)
+    const hoveringID = useSelector(state => state.widgetReducer.hoverLocationID)
     const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
 
     useEffect(() => {

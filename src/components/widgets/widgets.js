@@ -10,9 +10,8 @@ import WidgetButton from './widget_button/widget_button'
 import useWindowSize from '../../hooks/useWindowSize'
 
 // Import Actions
-import { hoverStationInfo } from '../../redux/actions/stations_actions'
 import { selectLocation, deselectLocation, setSelectedLocationCopy, setSelectedLocationChildrenCopy } from '../../redux/actions/locations_actions'
-import {widgetLoaded} from '../../redux/actions/widget_actions'
+import {widgetLoaded, hoverStationInfo} from '../../redux/actions/widget_actions'
 
 import * as sidebarActions from "../../redux/actions/sidebar_actions"
 import * as locationActions from '../../redux/actions/locations_actions'
