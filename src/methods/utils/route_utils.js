@@ -58,3 +58,20 @@ export const getRouteProcesses = (routeId) => {
         if(currProcess.routes.includes(routeId)) return true
     })
 }
+
+export const isNextRouteViable = (currentRoute, nextRoute) => {
+    const currentUnloadStationId = getUnloadStation(currentRoute)
+    const nextLoadStationId = getLoadStation(nextRoute)
+
+    if (currentUnloadStationId === nextLoadStationId) {
+        return true
+    }
+}
+
+export const getUnloadStation = (route) => {
+    return route?.unload?.station
+}
+
+export const getLoadStation = (route) => {
+    return route?.load?.station
+}

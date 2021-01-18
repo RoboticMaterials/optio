@@ -72,7 +72,6 @@ const LoadUnloadFields = (props) => {
                                 }
                             }}
                             mapOutput={(enable) => {
-                                console.log("mapOutput enable",enable)
                                 if(enable) {
                                     return([DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN])
                                 }
@@ -80,14 +79,6 @@ const LoadUnloadFields = (props) => {
                                     return([DEVICE_CONSTANTS.HUMAN])
                                 }
                             }}
-
-                            // onChange={() => {
-                            //     dispatchSetSelectedTask({
-                            //         ...selectedTask,
-                            //         // Just setting this to MiR100 for now. Need to expand in the future for other devices
-                            //         device_types: mirEnabled ?  : ,
-                            //     })
-                            // }}
                             onColor='red'
                             style={{ marginRight: '1rem' }}
                         />
@@ -141,15 +132,15 @@ const LoadUnloadFields = (props) => {
 
             <TextField
                 name={fieldParent ? `${fieldParent}.load.instructions` : "load.instructions"}
-                // value={!!selectedTask && selectedTask.load.instructions}
                 schema={'tasks'}
                 focus={!!selectedTask && selectedTask.type == null}
-                // onChange={e => {
-                //     let load = selectedTask.load
-                //     load.instructions = e.target.value
-                //     // dispatch(taskActions.setTaskAttributes(selectedTask._id, { load }))
-                //     dispatchSetTaskAttributes(selectedTask._id, { load })
-                // }}
+                onChange={e => {
+                    let load = selectedTask.load
+                    dispatchSetTaskAttributes(selectedTask._id, { load: {
+                            ...selectedTask.load,
+                            instructions: e.target.value
+                        } })
+                }}
                 lines={2}
                 InputComponent={Textbox}
             />
@@ -168,15 +159,14 @@ const LoadUnloadFields = (props) => {
                         dropdownGap={5}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
-                        // onChange={values => {
-                        //     dispatchSetSelectedTask({
-                        //         ...selectedTask,
-                        //         load: {
-                        //             ...selectedTask.load,
-                        //             sound: values[0]._id,
-                        //         }
-                        //     })
-                        // }}
+                        onChange={values => {
+                            dispatchSetTaskAttributes(selectedTask._id,{
+                                load: {
+                                    ...selectedTask.load,
+                                    sound: values[0]._id,
+                                }
+                            })
+                        }}
                         className="w-100"
                         schema="tasks" />
                 </div>
@@ -207,6 +197,14 @@ const LoadUnloadFields = (props) => {
                     <TextField
                         name={fieldParent ? `${fieldParent}.unload.instructions` : "unload.instructions"}
                         schema={'tasks'}
+                        onChange={e => {
+                            dispatchSetTaskAttributes(selectedTask._id, {
+                                unload: {
+                                    ...selectedTask.unload,
+                                    instructions: e.target.value
+                                }
+                            })
+                        }}
                         focus={!!selectedTask && selectedTask.type == null}
                         lines={2}
                         InputComponent={Textbox}
@@ -224,21 +222,17 @@ const LoadUnloadFields = (props) => {
                                 labelField="name"
                                 valueField="name"
                                 options={Object.values(sounds)}
-                                // values={!!selectedTask.unload.sound ? [sounds[selectedTask.unload.sound]] : []}
                                 dropdownGap={5}
                                 noDataLabel="No matches found"
                                 closeOnSelect="true"
-                                // onChange={values => {
-                                //
-                                //     dispatchSetSelectedTask({
-                                //         ...selectedTask,
-                                //         unload: {
-                                //             ...selectedTask.unload,
-                                //             sound: values[0]._id,
-                                //         }
-                                //     })
-                                //
-                                // }}
+                                onChange={values => {
+                                    dispatchSetTaskAttributes(selectedTask._id,{
+                                        unload: {
+                                            ...selectedTask.unload,
+                                            sound: values[0]._id,
+                                        }
+                                    })
+                                }}
                                 className="w-100"
                                 schema="tasks"
                             />

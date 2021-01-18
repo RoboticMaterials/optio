@@ -27,7 +27,7 @@ import LoadUnloadFields from './fields/load_unload_fields'
 // Import utils
 import uuid from 'uuid'
 import { deepCopy } from '../../../../../methods/utils/utils'
-import { willRouteAdditionFixProcess } from '../../../../../methods/utils/processes_utils'
+import {getPreviousRoute, willRouteAdditionFixProcess} from '../../../../../methods/utils/processes_utils'
 
 // Import actions
 import { putDashboard, postDashboard } from '../../../../../redux/actions/dashboards_actions'
@@ -35,12 +35,13 @@ import * as objectActions from '../../../../../redux/actions/objects_actions'
 import { setFixingProcess } from '../../../../../redux/actions/processes_actions'
 import { putStation } from '../../../../../redux/actions/stations_actions'
 import { deselectLocation } from '../../../../../redux/actions/locations_actions'
-import { getRouteProcesses} from "../../../../../methods/utils/route_utils";
+import {getRouteProcesses, isNextRouteViable} from "../../../../../methods/utils/route_utils";
 import TextField from "../../../../basic/form/text_field/text_field";
 import TextboxSearchField from "../../../../basic/form/textbox_search_field/textbox_search_field";
 import PropTypes from "prop-types";
 import {isObject} from "../../../../../methods/utils/object_utils";
 import useChange from "../../../../basic/form/useChange";
+import {removeTask} from "../../../../../redux/actions/tasks_actions";
 
 const TaskField = (props) => {
 
@@ -101,6 +102,7 @@ const TaskField = (props) => {
     const dispatchPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
     const dispatchSetFixingProcess = (bool) => dispatch(setFixingProcess(bool))
     const dispatchDeselectLocation = () => dispatch(deselectLocation())
+    const dispatchRemoveTask = (taskId) => dispatch(removeTask(taskId))
 
     let routes = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -146,6 +148,7 @@ const TaskField = (props) => {
         }
     }, [])
 
+    // calls save function when values.needsSubmit is true - used for auto submit when selecting route from existing
     useEffect(() => {
         if(values.needsSubmit) onSave()
     }, [values.needsSubmit])
@@ -385,27 +388,12 @@ const TaskField = (props) => {
                                     // This eliminates 'broken' processes with tasks that are between non-connected stations
                                     else if (selectedProcess.routes.length > 0) {
 
-
                                         // Gets the previous route
-                                        const previousRouteID = selectedProcess.routes[selectedProcess.routes.length - 1]
+                                        const previousRouteID = getPreviousRoute(selectedProcess.routes, values._id, routes)
+                                        const previousRoute = routes[previousRouteID]
 
-                                        var previousRoute
-                                        if(isObject(previousRouteID)) {
-                                            previousRoute = previousRouteID
-                                        }
-                                        else {
-                                            previousRoute = routes[previousRouteID]
-                                        }
+                                        return isNextRouteViable(previousRoute, task)
 
-
-
-                                        // Gets the previous route unload location
-                                        const unloadStationID = previousRoute.unload.station
-
-                                        // If the load and unload station match, then this route can be added to this process
-                                        if (task.load.station === unloadStationID) {
-                                            return true
-                                        }
                                     }
 
                                     else {
@@ -441,15 +429,16 @@ const TaskField = (props) => {
                                     // selectedProcess.routes.push(values[0]._id);
                                 }
 
-
-                                var updated = {...values, ...(dropdownValues[0]) }
+                                dispatchRemoveTask(selectedTask._id)
+                                var selectedRoute = {...(dropdownValues[0]), needsSubmit: true }
                                 // setFieldValue
                                 if(fieldParent) {
-                                    setFieldValue(fieldParent, {...(dropdownValues[0]), needsSubmit: true })
+                                    setFieldValue(fieldParent, selectedRoute)
                                 }
                                 else {
-                                    await setValues({...(dropdownValues[0]), needsSubmit: true})
+                                    await setValues(selectedRoute)
                                 }
+
                             }
                         }}
                         className="w-100"

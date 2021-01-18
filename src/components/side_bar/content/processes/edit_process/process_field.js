@@ -20,18 +20,22 @@ import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 
 // Import Utils
 import { convertArrayToObject} from '../../../../../methods/utils/utils'
-import {generateDefaultRoute} from "../../../../../methods/utils/route_utils";
+import {generateDefaultRoute, getRouteProcesses} from "../../../../../methods/utils/route_utils";
 import {isBrokenProcess, willRouteAdditionFixProcess, willRouteDeleteBreakProcess} from "../../../../../methods/utils/processes_utils";
 import {isEmpty} from "../../../../../methods/utils/object_utils";
 import useChange from "../../../../basic/form/useChange";
 
 // styles
 import * as styled from './process_field.style'
+import * as taskActions from "../../../../../redux/actions/tasks_actions";
 
 export const ProcessField = (props) => {
     const {
         formikProps,
         toggleEditingProcess,
+        onDelete,
+        onSave,
+        onBack,
     } = props
 
     // extract formik props
@@ -56,9 +60,17 @@ export const ProcessField = (props) => {
     const touchedCount = Object.values(touched).length // number of touched fields
     const submitDisabled = ((errorCount > 0) || (touchedCount === 0) || isSubmitting ||!values.changed) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
 
+
+    console.log("ProcessField values.changed", values.changed)
+    console.log("ProcessField errors", errors)
+    console.log("ProcessField values", values)
+    console.log("ProcessField touched", touched)
+
     const dispatch = useDispatch()
     const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
     const dispatchAddTask = (task) => dispatch(addTask(task))
+    const dispatchPutRoute = (task, ID) => dispatch(putTask(task, ID))
+    const dispatchPostRoute = async (route) => await dispatch(taskActions.postTask(route))
     const dispatchSetTasks = (tasks) => dispatch(setTasks(tasks))
     const dispatchGetTasks = () => dispatch(getTasks())
     const dispatchRemoveTask = (taskId) => dispatch(removeTask(taskId))
@@ -77,8 +89,8 @@ export const ProcessField = (props) => {
     const [shift, ] = useState(false) // Is shift key pressed ?
     const [isTransportTask, ] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
     const [editingTask, setEditingTask] = useState(false) // Used to tell if a task is being edited
-    const [newRoute, setNewRoute] = useState(null)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
+    const [showExistingTaskWarning, setShowExistingTaskWarning] = useState(false);
 
     const valuesRef = useRef(values) // needed for handling cleanup - unsaved tasks have to be removed, and useEffect will only have access to initialValues
 
@@ -122,7 +134,7 @@ export const ProcessField = (props) => {
                 // get id of all new (unsaved) routes
                 const removeRouteIds = valuesRef.current.routes
                     .filter((currRoute) => {
-                        return currRoute.new
+                        return currRoute.new || currRoute.unsaved
                     })
                     .map((currRouteId) => currRouteId._id)
 
@@ -133,23 +145,45 @@ export const ProcessField = (props) => {
         }
     }, [])
 
-    // clear selectedTask and add new route to values.routes
-    const handleAddTask = () => {
 
-        if(newRoute) {
+    const handleAddTask = async () => {
 
+        // contains new route
+        if(values.newRoute) {
+
+            // extract newRoute values
             const {
                 needsSubmit, // remove from route
+                new: isNew,
                 ...remainingRoute
             } = values.newRoute || {}
+
+
+            var newRoute
+            if(needsSubmit) {
+                // if needsSubmit, the item was created from a previous one, and is therefore already saved
+                newRoute = {...remainingRoute}
+            }
+            else {
+                // otherwise a new route is being made, and it isn't saved yet
+                newRoute = {...remainingRoute, unsaved: true}
+            }
+
+            // if not a new process, go ahead and save new route
+            if(!values.new) {
+                await onSave({
+                    ...values,
+                    routes:  [...values.routes, newRoute]   // append new route
+                }, false)
+            }
 
             if(values.broken) {
                 // check if new route will fix process
                 let updatedRoute = [...values.routes]
                 let willFix = willRouteAdditionFixProcess(selectedProcess, remainingRoute, tasks)
 
-                // add route to values
-                updatedRoute.splice(values.broken, 0, {...remainingRoute, })
+                // add route to values at broken index
+                updatedRoute.splice(values.broken, 0, newRoute)
 
                 // update values
                 setFieldValue("routes", updatedRoute)
@@ -157,21 +191,92 @@ export const ProcessField = (props) => {
             }
 
             else {
-                // add route to values
-                setFieldValue("routes", [...values.routes, {...remainingRoute}])
+                // not broken, just append to routes
+                setFieldValue("routes", [...values.routes, newRoute])
             }
         }
 
-        // if not new route, only thing to check is if any changes broke the process
+        // not a new route
         else {
-            setFieldValue("broken", isBrokenProcess(selectedProcess, tasks))
+            // get data for route being edited
+            const fieldMeta = getFieldMeta(editingTask)
+            const {
+                value: currRouteValue,
+            } = fieldMeta
+
+            // get routes processes
+            const routeProcesses = getRouteProcesses(currRouteValue._id)
+            const belongsToAnotherProcess = routeProcesses.findIndex((currProcess) => currProcess._id !== selectedProcess._id)
+
+            // if route belongs to more than one process, give option to make a copy of the route so other processes won't be affected
+            if(belongsToAnotherProcess !== -1) {
+                setShowExistingTaskWarning(true)
+            }
+
+            // if it only belongs to one process, go ahead and update it
+            else {
+                updateExistingTask()
+            }
+
         }
 
-        setNewRoute(null)   // clear new route
+        // clear newRoute and selectedTask
         setFieldValue("newRoute", null)
         dispatchSetSelectedTask(null)
 
         validateForm() // run validation so errors will show up right away
+    }
+    // clear selectedTask and add new route to values.routes
+    const updateExistingTask = () => {
+        // if this is an existing process, go ahead and save the changes
+        if(!values.new) {
+
+            const fieldMeta = getFieldMeta(editingTask)
+            const {
+                initialValue,
+                value: currRouteValue,
+            } = fieldMeta
+
+            dispatchPutRoute(currRouteValue, currRouteValue._id)
+
+            onSave(values, false)
+        }
+
+        // if not new route, only thing to check is if any changes broke the process
+        setFieldValue("broken", isBrokenProcess(selectedProcess, tasks))
+    }
+
+    const createNewTask = async () => {
+        const fieldMeta = getFieldMeta(editingTask)
+        const {
+            initialValue,
+            value: currRouteValue,
+        } = fieldMeta
+
+        const newId = uuid.v4()
+        const routeClone = {...currRouteValue, _id: newId}
+
+        if(!values.new) {
+            // Update existing route, not a new process, so save now
+            await dispatchPostRoute(routeClone)
+
+            const valueRoutes = values.routes
+            valueRoutes.splice(editingTask, 1, routeClone) // replace existing route with new clone
+
+            // save
+            onSave({
+                ...values,
+                routes: valueRoutes
+            }, false)
+        }
+
+        else {
+            // if process doesn't exist yet, just add to field
+            setFieldValue(editingTask, {...routeClone, unsaved: true})
+        }
+
+        // if not new route, only thing to check is if any changes broke the process
+        setFieldValue("broken", isBrokenProcess(selectedProcess, tasks))
     }
 
     /**
@@ -181,7 +286,6 @@ export const ProcessField = (props) => {
         setEditingTask(false)
         setFieldValue("newRoute", null)
         dispatchSetSelectedTask(null) // Deselect
-        setNewRoute(null)
 
         let updatedProcess = {...selectedProcess}
 
@@ -203,7 +307,7 @@ export const ProcessField = (props) => {
 
     const handleTaskBack = async () => {
 
-        // if unsaved should should immediately disappear use this block
+        // if unsaved should immediately disappear use this block
         if(selectedTask.new) {
             dispatchRemoveTask(selectedTask._id)
         }
@@ -212,8 +316,6 @@ export const ProcessField = (props) => {
         //     setFieldValue("routes", [...values.routes, {...values.newRoute}])
         // }
 
-
-        setNewRoute(null)
         setFieldValue("newRoute", null)
         await dispatchSetSelectedTask(null)
 
@@ -272,10 +374,12 @@ export const ProcessField = (props) => {
                 return
             }
 
+            const fieldName = `routes[${currIndex}]`
+
             return (
                 <div key={`li-${currIndex}`}>
                     <ListItemField
-                        name={`routes[${currIndex}]`}
+                        name={fieldName}
                         onMouseEnter={() => {
                             if (!selectedTask && !editingTask) {
                                 dispatchSetSelectedTask(currRoute)
@@ -291,11 +395,11 @@ export const ProcessField = (props) => {
                             handleExecuteProcessTask(currRouteId)
                         }}
                         onEditClick={() => {
-                            setEditingTask(true)
+                            setEditingTask(fieldName)
                             dispatchSetSelectedTask(currRoute)
                         }}
                         onTitleClick={() => {
-                            setEditingTask(true)
+                            setEditingTask(fieldName)
                             dispatchSetSelectedTask(currRoute)
                         }}
                         key={`li-${currIndex}`}
@@ -310,15 +414,7 @@ export const ProcessField = (props) => {
                             onDelete={handleDeleteRoute}
                             onBackClick={handleTaskBack}
                             onSave={handleAddTask}
-                            values={values}
-                            errors={errors}
-                            touched={touched}
-                            setFieldValue={setFieldValue}
-                            setFieldError={setFieldError}
-                            setFieldTouched={setFieldTouched}
-                            fieldParent={`routes[${currIndex}]`}
-                            // selectedTaskCopy={selectedTaskCopy}
-                            // setSelectedTaskCopy={props => setSelectedTaskCopy(props)}
+                            fieldParent={fieldName}
                             shift={shift}
                             isTransportTask={isTransportTask}
                             isProcessTask={true}
@@ -342,7 +438,6 @@ export const ProcessField = (props) => {
                             const newTask = generateDefaultRoute()
                             dispatchAddTask(newTask)
                             dispatchSetSelectedTask(newTask)
-                            setNewRoute(newTask)
                             setFieldValue("newRoute", newTask)
 
                             // Tells the map that the new task is supposed to be fixing the process
@@ -365,7 +460,6 @@ export const ProcessField = (props) => {
 
         return (
             <>
-
                 <Button
                     schema={'processes'}
                     // disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
@@ -373,9 +467,7 @@ export const ProcessField = (props) => {
                     disabled={selectedTask?.new}
                     onClick={() => {
                         const newTask = generateDefaultRoute()
-                        console.log("edit_process newTask",newTask)
                         dispatchAddTask(newTask)
-                        setNewRoute(newTask)
                         setFieldValue("newRoute", newTask)
                         dispatchSetSelectedTask(newTask)
                         setEditingTask(true)
@@ -384,7 +476,7 @@ export const ProcessField = (props) => {
                     Add Route
                 </Button>
 
-                {!!newRoute &&
+                {!!values.newRoute &&
                 <styled.TaskContainer schema={'processes'}>
                     <TaskField
                         onSave={handleAddTask}
@@ -397,11 +489,6 @@ export const ProcessField = (props) => {
                         touched={touched}
                         setFieldValue={setFieldValue}
                         fieldParent={'newRoute'}
-                        // selectedTaskCopy={newRoute}
-                        // setSelectedTaskCopy={props => {
-                        //     setSelectedTaskCopy(props)
-                        //     setNewRoute(props)
-                        // }}
                         shift={shift}
                         isTransportTask={isTransportTask}
                         isProcessTask={true}
@@ -416,6 +503,29 @@ export const ProcessField = (props) => {
             </>
         )
     }
+
+    const getChildren = () => {
+        console.log("in thingy editingTask",editingTask)
+        const fieldMeta = getFieldMeta(editingTask)
+        const {
+            value: currRouteValue,
+        } = fieldMeta
+        const routeProcesses = getRouteProcesses(currRouteValue._id)
+
+        return(
+            <div>
+                {routeProcesses.map((currProcess) => {
+                    const {
+                        name: currProcessName
+                    } = currProcess
+                    console.log("currProcessName",currProcessName)
+
+                    return <div>{currProcessName} aaaa</div>
+                })}
+            </div>
+
+        )
+    }
     return(
         <>
             <ConfirmDeleteModal
@@ -425,31 +535,50 @@ export const ProcessField = (props) => {
                 button_2_text={"Delete process and DELETE associated routes"}
                 handleClose={() => setConfirmDeleteModal(null)}
                 handleOnClick1={() => {
-                    handleDeleteWithoutRoutes()
+                    onDelete(false)
                     setConfirmDeleteModal(null)
                 }}
                 handleOnClick2={() => {
-                    handleDeleteWithRoutes()
+                    onDelete(true)
                     setConfirmDeleteModal(null)
                 }}
             />
+
+            {showExistingTaskWarning &&
+                <ConfirmDeleteModal
+                    isOpen={!!showExistingTaskWarning}
+                    title={"Changing an existing route will affect other processes that use this route. Would you like to make a copy, or change the existing route?"}
+                    button_1_text={"Make a Copy"}
+                    button_2_text={"Change the Existing Route"}
+                    handleClose={() => setShowExistingTaskWarning(false)}
+                    children={getChildren()}
+                    handleOnClick1={() => {
+                        createNewTask()
+                        setShowExistingTaskWarning(false)
+                    }}
+                    handleOnClick2={() => {
+                        updateExistingTask()
+                        setShowExistingTaskWarning(false)
+
+                    }}
+                />
+            }
+
             <styled.Container>
                 <div style={{ marginBottom: '1rem' }}>
-
                     <ContentHeader
                         content={'processes'}
                         mode={'create'}
                         disabled={(!!selectedTask && !!editingTask) || submitDisabled}
                         onClickSave={() => {
-                            handleSave()
+                            onSave(values, true)
                         }}
 
                         onClickBack={() => {
-                            handleBack()
+                            onBack()
                         }}
 
                     />
-
                 </div>
 
                 <div style={{marginBottom: "1rem"}}>
@@ -462,14 +591,13 @@ export const ProcessField = (props) => {
                         InputComponent={Textbox}
                         style={{ fontSize: '1.2rem', fontWeight: '600'}}
                         textboxContainerStyle={{border: "none"}}
-                        // IconContainerComponent={styled.QuantityErrorContainerComponent}
                     />
                 </div>
 
                 <styled.Title schema={'processes'}>Associated Routes</styled.Title>
+
                 <styled.SectionContainer>
                     {handleExistingRoutes(values.routes)}
-
                 </styled.SectionContainer>
 
                 {handleAddRoute()}

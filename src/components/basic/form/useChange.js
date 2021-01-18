@@ -12,12 +12,17 @@ const useChange = (fieldName) => {
 		value
 	} = meta
 
+	const {
+		changed: changedSet
+	} = value
+
 	const [changed, setChanged] = useState(false);
-	const [initialValue, ] = useState(value);
+	const [initialValue, setInitialValue] = useState(value);
 
 	React.useEffect(() => {
 
 		// if values have changed from initial values, set changed to true
+
 		if(!changed) {
 
 			const issEquivalent = isEquivalent(initialValue, value)
@@ -28,6 +33,13 @@ const useChange = (fieldName) => {
 				console.log("value",value)
 				setChanged(true);
 				setFieldValue(fieldName ? `${fieldName}.changed` : 'changed', true);
+			}
+		}
+
+		else {
+			if(!changedSet) {
+				setChanged(false)
+				setInitialValue(value)
 			}
 		}
 

@@ -625,6 +625,12 @@ export class MapView extends Component {
                                                 const previousTaskId = getPreviousRoute(this.props.selectedProcess.routes, this.props.selectedTask._id, this.props.tasks)
                                                 const previousTask = this.props.tasks[previousTaskId]
 
+                                                console.log("previousTaskId",previousTaskId)
+                                                console.log("previousTask",previousTask)
+                                                console.log("this.props.selectedProcess.routes",this.props.selectedProcess.routes)
+                                                console.log("this.props.selectedProcess.routes",this.props.selectedProcess.routes)
+                                                console.log("this.props.selectedTask._id",this.props.selectedTask._id)
+
                                                 if (!!previousTask.unload) {
 
                                                     const unloadStationID = previousTask.unload.station

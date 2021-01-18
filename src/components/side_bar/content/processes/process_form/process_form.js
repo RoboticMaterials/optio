@@ -1,4 +1,4 @@
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {Formik} from "formik";
 import {processSchema} from "../../../../../methods/utils/form_schemas";
 import React from "react";
@@ -17,15 +17,15 @@ const ProcessForm = (props) => {
 
 	const {
 		selectedProcessCopy,
-		setSelectedProcessCopy,
 		toggleEditingProcess,
 	} = props
 
 	const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
 
-	const tasks = useSelector(state => state.tasksReducer.tasks)
+
+	const dispatch = useDispatch()
 	const dispatchPostProcess = async (process) => await dispatch(postProcesses(process))
-	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
+
 	const dispatchPutProcess = async (process) => await dispatch(putProcesses(process))
 	const dispatchPostRoute = async (route) => await dispatch(taskActions.postTask(route))
 	const dispatchPutTask = (task, ID) => dispatch(putTask(task, ID))
@@ -33,45 +33,87 @@ const ProcessForm = (props) => {
 	const dispatchDeleteProcess = async (ID) => await dispatch(deleteProcesses(ID))
 	const dispatchDeleteTask = (ID) => dispatch(deleteTask(ID))
 
-	const handleSave = async (values) => {
+	const tasks = useSelector(state => state.tasksReducer.tasks)
+	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
 
-		dispatchSetSelectedTask(null)
+	const handleSave = async (values, close) => {
+		console.log("handleSave values",values)
 
-		// If the id is new then post
-		if (selectedProcess.new) {
-			await dispatchPostProcess(selectedProcess)
+		// extract some values
+		const {
+			newRoute,
+			changed,
+			...remainingValues
+		} = values
+
+		dispatchSetSelectedTask(null) // clear selected task
+		const mappedRoute = remainingValues.routes.map((currRoute) => currRoute._id)
+
+		// if new, POST
+		if (remainingValues.new) {
+			await dispatchPostProcess({
+				...remainingValues,
+				routes: mappedRoute
+			})
 		}
 
 		// Else put
 		else {
-			await dispatchPutProcess(selectedProcess)
+			await dispatchPutProcess({
+				...remainingValues,
+				routes: mappedRoute
+			})
 		}
 
-		for (const currRoute of values.routes) {
-			if(currRoute.new) {
-				delete currRoute.new
-				delete currRoute.changed
-				delete currRoute.needsSubmit
+		// perform any updates for routes
+		for (const currRoute of remainingValues.routes) {
+
+			// if not saved, POST
+			if(currRoute.unsaved) {
+				cleanRoute(currRoute)
 				await dispatchPostRoute(currRoute)
 			}
+
+			// otherwise, PUT
 			else {
-				delete currRoute.new
-				delete currRoute.changed
-				delete currRoute.needsSubmit
+				cleanRoute(currRoute)
 				await dispatchPutTask(currRoute, currRoute._id)
 			}
 		}
 
-		dispatchSetSelectedProcess(null)
-		toggleEditingProcess(false)
+		// close editor
+		if(close) {
+			dispatchSetSelectedProcess(null)
+			toggleEditingProcess(false)
+		}
+
 	}
 
 	const handleBack = async () => {
+		// clear selectedTask, selectedProcess, and set toggleEditing to false
 		await dispatchSetSelectedTask(null)
 		dispatchSetSelectedProcess(null)
 		toggleEditingProcess(false)
 	}
 
+	// remove keys from route that shouldn't be saved
+	const cleanRoute = (route) => {
+		delete route.new
+		delete route.changed
+		delete route.needsSubmit
+		delete route.unsaved
+	}
+
+
+	const handleDelete = (withRoutes) => {
+		if(withRoutes) {
+			handleDeleteWithRoutes()
+		}
+
+		else {
+			handleDeleteWithoutRoutes()
+		}
+	}
 	const handleDeleteWithRoutes = async () => {
 
 		// If there's routes in this process, delete the routes
@@ -135,22 +177,39 @@ const ProcessForm = (props) => {
 			}}
 		>
 			{formikProps => {
-
+				const {
+					setSubmitting,
+					submitForm,
+					setTouched,
+					resetForm,
+					setFieldValue
+				} = formikProps
 
 
 				return(
 					<ProcessField
+						onSave={async (values, close) => {
+							setSubmitting(true)
+							await handleSave(values, close)
+							setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
+							setSubmitting(false)
+
+							// reset changed to false
+							setFieldValue("changed", false)
+
+
+							// resetForm()
+
+						}}
+						onBack={handleBack}
+						onDelete={handleDelete}
 						formikProps={formikProps}
 						toggleEditingProcess={toggleEditingProcess}
 					/>
 				)
-
 			}}
-
 		</Formik>
-
 	)
 }
-
 
 export default ProcessForm
