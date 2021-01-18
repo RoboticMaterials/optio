@@ -48,7 +48,7 @@ const Widgets = (props) => {
     const showSideBar = useSelector(state => state.sidebarReducer.open)
 
     // Info passed from workstations/device_locations via redux
-    const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
+    const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
     const dispatch = useDispatch()
     const onHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const onWidgetLoaded = (bool) => dispatch(widgetLoaded(bool))

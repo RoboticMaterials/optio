@@ -721,7 +721,7 @@ const mapStateToProps = function (state) {
         selectedProcess: state.processesReducer.selectedProcess,
         fixingProcess: state.processesReducer.fixingProcess,
 
-        hoveringInfo: state.locationsReducer.hoverStationInfo,
+        hoveringInfo: state.widgetReducer.hoverStationInfo,
         editing: state.locationsReducer.editingLocation,
         widgetLoaded: state.locationsReducer.widgetLoaded,
 

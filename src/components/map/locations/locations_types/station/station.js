@@ -12,11 +12,11 @@ import { setTaskAttributes } from '../../../../../redux/actions/tasks_actions'
 
 // Import Utils
 import { DeviceItemTypes } from '../../../../../methods/utils/device_utils'
-import { LocationTypes, handleWidgetHoverCoord } from '../../../../../methods/utils/locations_utils'
+import { handleWidgetHoverCoord } from '../../../../../methods/utils/widget_utils'
+import { LocationTypes } from '../../../../../methods/utils/locations_utils'
 import { deepCopy } from '../../../../../methods/utils/utils'
 
 function Station(props) {
-
 
     const {
         rd3tClassName,
