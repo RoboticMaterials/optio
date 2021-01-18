@@ -11,9 +11,9 @@ import useWindowSize from '../../hooks/useWindowSize'
 
 // Import Actions
 import { hoverStationInfo } from '../../redux/actions/stations_actions'
-import { widgetLoaded } from '../../redux/actions/locations_actions'
 import { setSelectedStation, setSelectedStationChildrenCopy } from '../../redux/actions/stations_actions'
 import { setSelectedPosition } from '../../redux/actions/positions_actions'
+import { widgetLoaded } from '../../redux/actions/widget_actions'
 
 import { setOpen } from "../../redux/actions/sidebar_actions"
 import * as locationActions from '../../redux/actions/locations_actions'
@@ -112,6 +112,8 @@ const Widgets = (props) => {
         }
 
         dispatch(locationActions.editing(true))
+        dispatchHoverStationInfo(null)
+
 
     }
 

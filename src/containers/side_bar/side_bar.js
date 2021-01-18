@@ -21,6 +21,7 @@ import SchedulerContent from '../../components/side_bar/content/scheduler/schedu
 import ProcessesContent from '../../components/side_bar/content/processes/processes_content'
 import Settings from '../../components/side_bar/content/settings/settings'
 import ConfirmDeleteModal from '../../components/basic/modals/confirm_delete_modal/confirm_delete_modal'
+import PageErrorBoundary from '../../containers/page_error_boundary/page_error_boundary'
 
 import { setWidth, setMode } from "../../redux/actions/sidebar_actions";
 import * as sidebarActions from "../../redux/actions/sidebar_actions"
@@ -46,7 +47,6 @@ const SideBar = (props) => {
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const onSideBarBack = (props) => dispatch(sideBarBack(props))
 
-
     const [width, setWidth] = useState(450)
     const [prevWidth, setPrevWidth] = useState(width)
     const [buttonActive, setButtonActive] = useState(false)
@@ -59,7 +59,7 @@ const SideBar = (props) => {
     const taskEditing = useSelector(state => state.tasksReducer.editingTask)
     const processEditing = useSelector(state => state.processesReducer.editingProcess)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
-
+    //console.log(sideBarOpen)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
     const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
@@ -83,6 +83,12 @@ const SideBar = (props) => {
         }
     }, [])
 
+
+  useEffect(() => {
+    dispatch(sidebarActions.setOpen(sideBarOpen))
+  })
+
+
     // sets width to full screen if card subpage is open in processes
     useEffect(() => {
         const {
@@ -95,7 +101,6 @@ const SideBar = (props) => {
 
 
         const time = Date.now()
-
         if((page === "processes" || page === "lots") && ((subpage === "lots")) || (id === "timeline") || (id === "summary")) {
 
             if(!prevWidth) setPrevWidth(width) // store previous width to restore when card page is left
@@ -130,13 +135,11 @@ const SideBar = (props) => {
         hamburger.classList.toggle('is-active')
       }
 
-
         dispatch(editing(false)) //location editing need to rename
         dispatch(editingTask(false))
         dispatch(editingProcess(false))
 
         onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy, positions, locations })
-
         dispatch(taskActions.deselectTask())    // Deselect
 
         if (!showSideBar && url == '/') {

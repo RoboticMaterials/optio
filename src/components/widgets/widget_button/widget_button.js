@@ -9,8 +9,9 @@ import uuid from 'uuid'
 
 // Import Actions
 import { postTaskQueue } from '../../../redux/actions/task_queue_actions'
-import { widgetLoaded, sideBarBack } from '../../../redux/actions/locations_actions'
+import { sideBarBack } from '../../../redux/actions/locations_actions'
 import { hoverStationInfo, putStation, setSelectedStationChildrenCopy } from '../../../redux/actions/stations_actions'
+import {widgetLoaded} from '../../../redux/actions/widget_actions'
 import { postDashboard, dashboardOpen } from '../../../redux/actions/dashboards_actions'
 
 import * as sidebarActions from "../../../redux/actions/sidebar_actions"

@@ -7,11 +7,29 @@ function BasicListItem(props) {
 
 	// extract props
 	const {
-		LeftContentContainer, leftContentContainerCss, leftContentContainerProps, leftContent,
-		RightContentContainer, rightContentContainerCss, rightContentContainerProps, rightContent,
-		ContentContainer, contentContainerCss, contentContainerProps,
-		Container, containerCss, containerProps,
-		title, Title, titleCss, titleProps, onClick, onMouseEnter,onMouseLeave, Status, status
+		LeftContentContainer,
+		leftContentContainerCss,
+		leftContentContainerProps,
+		leftContent,
+		RightContentContainer,
+		rightContentContainerCss,
+		rightContentContainerProps,
+		rightContent,
+		ContentContainer,
+		contentContainerCss,
+		contentContainerProps,
+		Container,
+		containerCss,
+		 containerProps,
+		title,
+		Title,
+		titleCss,
+		titleProps,
+		onClick,
+		onMouseEnter,
+		onMouseLeave,
+		Status,
+		status
 	} = props
 
 	return (

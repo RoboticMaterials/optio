@@ -7,16 +7,20 @@ import * as styled from './station.style'
 
 // Import actions
 import { hoverStationInfo } from '../../../../redux/actions/stations_actions'
-import { setSelectedStation } from '../../../../redux/actions/stations_actions'
+import { setSelectedStation, setStationAttributes } from '../../../../redux/actions/stations_actions'
 import { setTaskAttributes } from '../../../../redux/actions/tasks_actions'
 
 // Import Utils
-import { DeviceItemTypes } from '../../../../methods/utils/device_utils'
 import { handleWidgetHoverCoord } from '../../../../methods/utils/locations_utils'
 import { deepCopy } from '../../../../methods/utils/utils'
+import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 
 // Import Constants
 import { StationTypes } from '../../../../constants/station_constants'
+
+// Import Components
+import LocationSvg from '../location_svg/location_svg'
+import DragEntityProto from '../drag_entity_proto'
 
 function Station(props) {
 
@@ -43,21 +47,16 @@ function Station(props) {
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
+    const dispatchSetStationAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
     const dispatchSetTaskAttributes = (id, load) => dispatch(setTaskAttributes(id, load))
 
 
-    // TODO: isSelected has a lot going on
-    const isSelected = true
+    const isSelected = !!selectedStation && selectedStation._id === station._id
+    const shouldGlow = hovering && !props.isSelected && selectedTask == null
 
+    // Set Color
     let color = StationTypes[station.type].color
-
-    if (!isSelected) color = '#afb5c9' // Grey
-
-    // If load is undefined, then its a simple move
-    else if (selectedTask.load === undefined) {
-        color = '#afb5c9' // Grey
-    }
-
+    if (!isSelected && !!selectedStation) color = '#afb5c9' // Grey
     else if (isSelected) color = '#38eb87' // Green
 
     // Used to see if a widget Page is opened
@@ -69,6 +68,7 @@ function Station(props) {
         }
 
     }, [])
+
 
     /**
     * This runs on page load (thats mean station are mounted) and shows a widget page if it returns true.
@@ -104,76 +104,6 @@ function Station(props) {
         else if (!isSelected && hovering && hoveringInfo === null) {
             setHovering(false)
         }
-    }
-
-    const shouldGlow = hovering && !props.isSelected && selectedTask == null
-
-    // Handles what type of svg to return based on the device model
-    const onDeviceSVG = () => {
-
-        // This will gray out devices that arent selected. The device becomes selected either on hover in device side bar list or editing device
-        let selected = true
-        if (!!selectedStation && !!selectedStation.device_id && station.device_id !== selectedStation.device_id) selected = false
-        if (!!selectedStation && !selectedStation.device_id) selected = false
-
-        let device = {}
-        try {
-            device = devices[station.device_id]
-
-        } catch (error) {
-            console.log('Device is undefined and I dont know why...')
-            return (<></>)
-        }
-
-        // Sets the device type, if the device does not exits in the list of device item types, then it uses the generic device
-        let deviceType = DeviceItemTypes['generic']
-        try {
-
-            if (!!device && !!device.device_model && !!DeviceItemTypes[device.device_model]) deviceType = DeviceItemTypes[device.device_model]
-            else if (device.device_model === 'MiR100') deviceType = DeviceItemTypes['cart']
-
-        } catch (error) {
-            console.log('QQQQ error', device)
-            throw 'Get Kalervo and show him the console logs'
-
-        }
-
-        try {
-            return (
-
-                <svg xmlns="http://www.w3.org/2000/svg" id={`${rd3tClassName}-device`}>
-                    <defs>
-                        <linearGradient id={device._id} x1="72.95" y1="153" x2="287.05" y2="153" gradientUnits="userSpaceOnUse">
-                            <stop offset="0" style={{ stopColor: deviceType.startGradientColor }} />
-                            <stop offset="1" style={{ stopColor: deviceType.stopGradientColor }} />
-                        </linearGradient>
-                    </defs>
-                    <g id="Layer_2" data-name="Layer 2">
-                        <g id="Layer_1-2" data-name="Layer 1">
-                            <rect fill='#4d4d4d' width="360" height="240" rx="30" />
-                            <path style={{ fill: !selected ? 'gray' : `url(#${device._id})` }} d={deviceType.svgPath} />
-                        </g>
-                    </g>
-                </svg>
-            )
-
-        } catch (error) {
-            console.log('Catching error, please fix', error)
-        }
-    }
-
-    /**
-     * Handles SVG for normal stations
-     */
-    const onStationSVG = () => {
-
-        return (
-            <svg id={`${rd3tClassName}-station`} x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400" style={{ filter: shouldGlow ? 'url(#glow2)' : 'none' }}>
-
-                {StationTypes[station.type].svgPath}
-            </svg>
-
-        )
     }
 
     /**
@@ -248,114 +178,77 @@ function Station(props) {
         }
     }
 
+    const onMouseEnter = () => {
+        // Only allow hovering if there is no selected task
+        if (!hoveringID && selectedTask === null) {
+            setHovering(true)
+
+            if (!rotating && !translating && selectedStation === null && selectedTask === null) {
+                dispatchHoverStationInfo(handleWidgetHover())
+                dispatchSetSelectedStation(station)
+            }
+        }
+    }
+
+    const onMouseDown = () => {
+        onSetStationTask()
+    }
+
+    const onTranslating = () => {
+        setTranslating(true)
+    }
+
+    const onRotating = () => {
+        setRotating(true)
+    }
+
+    const onMouseLeave = () => {
+        if (isSelected == true) { setHovering(false) }
+    }
+
+
     return (
-        <>
-            <styled.WorkstationGroup
-                id={rd3tClassName}
-                className={rd3tClassName}
-                style={{ fill: color, stroke: color }}
-                onMouseEnter={() => {
+        <React.Fragment key={`frag-loc-${station._id}`}>
+            <LocationSvg
+                location={station}
+                rd3tClassName={rd3tClassName}
+                color={color}
+                d3={d3}
+                isSelected={isSelected}
+                hovering={hovering}
+                rotating={rotating}
+                hoveringInfo={hoveringInfo}
+                shouldGlow={shouldGlow}
 
-                    // Only allow hovering if there is no selected task
-                    if (!hoveringID && selectedTask === null) {
-                        setHovering(true)
+                handleMouseEnter={onMouseEnter}
+                handleMouseLeave={onMouseLeave}
+                handleMouseDown={onMouseDown}
+                handleTranslating={onTranslating}
+                handleRotating={onRotating}
 
-                        if (!rotating && !translating && selectedStation === null && selectedTask === null) {
-                            dispatchHoverStationInfo(handleWidgetHover())
-                            dispatchSetSelectedStation(station)
-                        }
-                    }
-                }
-                }
-                onMouseDown={() => {
-                    onSetStationTask()
+            />
+
+            <DragEntityProto
+                isSelected={isSelected}
+                location={station}
+                rd3tClassName={rd3tClassName}
+                d3={d3}
+
+                handleRotate={(rotation) => { dispatchSetStationAttributes(station._id, { rotation }) }}
+                handleTranslate={({ x, y }) => dispatchSetStationAttributes(station._id, { x, y })}
+                handleTranslateEnd={({ x, y }) => {
+                    const pos = convertD3ToReal([x, y], props.d3)
+                    dispatchSetStationAttributes(station._id, { pos_x: pos[0], pos_y: pos[1] })
                 }}
-                // onClick={() => {
-                //     console.log('Station clicked')
-                // }}
 
-                transform={`translate(${station.x},${station.y}) rotate(${station.rotation}) scale(${d3.scale / d3.imgResolution})`}
-            >
-                <defs>
+                handleEnableDrag={console.log('QQQQ Enable Drag??')}
+                handleDisableDrag={console.log('QQQQ Disable Drag??')}
 
-                    {/* a transparent glow that takes on the colour of the object it's applied to */}
-                    <filter id="glow">
-                        <feGaussianBlur stdDeviation="1" result="coloredBlur" />
-                        <feMerge>
-                            <feMergeNode in="coloredBlur" />
-                            <feMergeNode in="SourceGraphic" />
-                        </feMerge>
-                    </filter>
 
-                    <filter id="glow2" height="300%" width="300%" x="-75%" y="-75%">
-                        <feMorphology operator="dilate" radius="1" in="SourceAlpha" result="thicken" />
-                        <feGaussianBlur in="thicken" stdDeviation="2" result="blurred" />
-                        <feFlood floodColor={color} result="glowColor" />
-                        <feComposite in="glowColor" in2="blurred" operator="in" result="softGlow_colored" />
-                        <feMerge>
-                            <feMergeNode in="softGlow_colored" />
-                            <feMergeNode in="SourceGraphic" />
-                        </feMerge>
-                    </filter>
-
-                </defs>
-
-                <g className={`${rd3tClassName}-rot`} onMouseLeave={() => { if (isSelected == true) { setHovering(false) } }}>
-                    <circle x="-20" y="-20" r="20" strokeWidth="0" fill="transparent" style={{ cursor: rotating ? "pointer" : "grab" }}></circle>
-                    {isSelected && (hovering || rotating) && hoveringInfo === null &&
-                        <>
-                            <circle x="-20" y="-20" r="18" fill="none" strokeWidth="4" stroke="transparent" style={{ cursor: "pointer" }} onMouseDown={() => setRotating(true)}></circle>
-                            <circle x="-18" y="-18" r="18" fill="none" strokeWidth="0.8" style={{ filter: "url(#glow)", cursor: "pointer" }}></circle>
-                        </>
-                    }
-                </g>
-
-                <g
-                    className={`${rd3tClassName}-trans`}
-                    style={{ cursor: "pointer" }}
-                    onMouseEnter={() => {
-
-                        // Only allow hovering if there is no selected task
-                        if (selectedTask === null) {
-                            setHovering(true)
-
-                        }
-                    }}
-                    onMouseDown={() => setTranslating(true)}
-
-                    transform={station.type === 'device' && 'scale(.07) translate(-180,-140)'}
-                >
-
-                    {station.type === 'device' ?
-                        onDeviceSVG()
-
-                        :
-                        onStationSVG()
-                    }
-
-                </g>
-
-                {/* TODO: Commented out, this is just for reference to make sure that the devices are showing up in the correct space */}
-                {/* <g
-                    className={`${rd3tClassName}-trans`}
-                    style={{ cursor: "pointer" }}
-                    onMouseEnter={() => {
-                        setHovering(true)
-                    }}
-                    onMouseDown={() => setTranslating(true)}
-                    // transform="translate(-13.7,-92)"
-                    // transform='scale(.07) translate(-13.7,-92)'
-                >
-                    <rect id={`${rd3tClassName}-rectQ`} x="-8" y="-8" rx="0.2" ry="0.2" width="16" height="16" fill="transparent" strokeWidth="1" style={{ filter: hovering && !isSelected && selectedTask == null ? 'url(#glow2)' : 'none' }} />
-
-                </g> */}
-
-            </styled.WorkstationGroup>
+            />
             {onWidgetPageOpen()}
-
-        </>
+        </React.Fragment>
     )
-
 }
 
 export default Station

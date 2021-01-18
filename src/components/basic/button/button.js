@@ -1,21 +1,33 @@
 import React from 'react';
 import * as styled from './button.style'
 
+
 const Button = (props) => {
 
+    const {
+      disabled,
+      onClick,
+      schema,
+      style,
+      secondary,
+      children,
+      label,
+    } = props
+
+
     return (
-        <styled.SmallButton 
-            onClick={!props.disabled ? props.onClick : () => {return}} 
-            disabled={props.disabled} 
-            schema={props.schema}
-            style={props.style} 
-            secondary={props.secondary}             
+        <styled.SmallButton
+            onClick={!disabled ? onClick : () => {return}}
+            disabled={disabled}
+            schema={schema}
+            style={style}
+            secondary={secondary}
             {...props} >
 
-        {props.children ?
-            props.children
+        {children ?
+            children
             :
-            props.label
+            label
         }
 
         </styled.SmallButton>

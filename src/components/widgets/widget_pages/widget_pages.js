@@ -16,6 +16,7 @@ import ViewerPage from './viewer_page/viewer_page'
 import LotsPage from './lots_page/lots_page'
 
 import log from "../../../logger"
+import {widgetPageLoaded} from '../../../redux/actions/widget_actions'
 
 const logger = log.getLogger("WidgetPages")
 
@@ -37,9 +38,8 @@ const WidgetPages = (props) => {
     const showWidgetPage = widgetPage
 
     // Tells the reducer if widget page has been loaded
-    const onWidgetPageLoaded = (bol) => {
-        dispatch({ type: 'WIDGET_PAGE_LOADED', payload: bol });
-    }
+    const onWidgetPageLoaded = (props) => dispatch(widgetPageLoaded(props));
+
 
     useEffect(() => {
         // On intitial widget page load, set a delay to tell redux that the widget pages have loaded

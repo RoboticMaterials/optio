@@ -252,7 +252,7 @@ const DashboardScreen = (props) => {
     }
 
     const handleRouteClick = async (Id, name, custom) => {
-        
+
         // If a custom task then add custom task key to task q
         if (Id === 'custom_task') {
 

@@ -6,7 +6,6 @@ import {
     SET_SELECTED_LOCATION_COPY,
     SET_SELECTED_LOCATION_CHILDREN_COPY,
     DESELECT_LOCATION,
-    WIDGET_LOADED,
     EDITING_LOCATION,
 } from '../types/locations_types'
 
@@ -168,9 +167,6 @@ import uuid from 'uuid';
 //     return { type: SET_SELECTED_LOCATION_CHILDREN_COPY, payload: locationChildren }
 // }
 
-export const widgetLoaded = (bool) => {
-    return { type: WIDGET_LOADED, payload: bool }
-}
 
 export const editing = (bool) => {
     return { type: EDITING_LOCATION, payload: bool }
@@ -192,7 +188,6 @@ export const editing = (bool) => {
  */
 
 export const sideBarBack = (props) => {
-
 }
 
 
