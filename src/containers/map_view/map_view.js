@@ -20,9 +20,8 @@ import { updatePositions, postPosition, setPositionAttributes, setSelectedPositi
 import * as locationActions from '../../redux/actions/locations_actions'
 import * as deviceActions from '../../redux/actions/devices_actions'
 
-import { hoverStationInfo } from '../../redux/actions/stations_actions'
 import { deselectLocation } from '../../redux/actions/locations_actions'
-import {widgetLoaded} from '../../redux/actions/widget_actions'
+import {widgetLoaded, hoverStationInfo} from '../../redux/actions/widget_actions'
 
 
 // Import Components
@@ -764,7 +763,7 @@ const mapStateToProps = function (state) {
         selectedProcess: state.processesReducer.selectedProcess,
         fixingProcess: state.processesReducer.fixingProcess,
 
-        hoveringInfo: state.locationsReducer.hoverStationInfo,
+        hoveringInfo: state.widgetReducer.hoverStationInfo,
         widgetLoaded: state.locationsReducer.widgetLoaded,
 
     };

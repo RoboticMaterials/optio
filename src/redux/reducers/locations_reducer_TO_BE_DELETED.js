@@ -21,7 +21,6 @@ import {
     UPDATE_STATIONS,
     REMOVE_STATION,
 
-    HOVER_STATION_INFO,
 } from '../types/stations_types'
 
 import {
@@ -85,7 +84,6 @@ const defaultState = {
     selectedLocationCopy: null,
     selectedLocationChildrenCopy: null,
 
-    hoverStationInfo: null,
     editingLocation: false,
 
     error: {},
@@ -708,11 +706,6 @@ export default function locationsReducer(state = defaultState, action) {
                 selectedLocationChildrenCopy: action.payload
             }
 
-        case HOVER_STATION_INFO:
-            return {
-                ...state,
-                hoverStationInfo: action.payload.info,
-            }
 
         case EDITING_LOCATION:
             return {

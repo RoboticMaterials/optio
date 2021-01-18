@@ -39,7 +39,7 @@ const widthBreakPoint = 1000;
 const App = (props) => {
 
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
-    const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
+    const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const maps = useSelector(state => state.mapReducer.maps)
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)

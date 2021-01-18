@@ -2,13 +2,17 @@ import {
   WIDGET_PAGE_LOADED,
   WIDGET_XY_COORDINATES,
   WIDGET_LOADED,
+  HOVER_STATION_INFO,
+
 } from '../types/widget_types'
 
 
   const defaultState = {
     widgetPageLoaded: false,
     widgetXYCoordinates: {x: '', y: ''},
-    widgetLoaded: false
+    widgetLoaded: false,
+    hoverStationInfo: null,
+
 };
 
 const widgetReducer = (state = defaultState, action) => {
@@ -31,6 +35,12 @@ const widgetReducer = (state = defaultState, action) => {
               return {
                   ...state,
                   widgetLoaded: action.payload,
+              }
+
+          case HOVER_STATION_INFO:
+              return {
+                  ...state,
+                  hoverStationInfo: action.payload.info,
               }
 
         default:

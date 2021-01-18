@@ -8,8 +8,8 @@ import * as styled from './side_bar.style'
 import { DraggableCore } from "react-draggable";
 import SideBarSwitcher from '../../components/side_bar/side_bar_switcher/side_bar_switcher'
 
-import { hoverStationInfo } from '../../redux/actions/stations_actions'
 import { sideBarBack, editing } from '../../redux/actions/locations_actions'
+import { hoverStationInfo } from '../../redux/actions/widget_actions'
 import {editingTask} from '../../redux/actions/tasks_actions'
 import {editingProcess} from '../../redux/actions/processes_actions'
 

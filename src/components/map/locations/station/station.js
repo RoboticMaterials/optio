@@ -11,7 +11,7 @@ import { setSelectedStation, setStationAttributes } from '../../../../redux/acti
 import { setTaskAttributes } from '../../../../redux/actions/tasks_actions'
 
 // Import Utils
-import { handleWidgetHoverCoord } from '../../../../methods/utils/locations_utils'
+import { handleWidgetHoverCoord } from '../../../../methods/utils/widget_utils'
 import { deepCopy } from '../../../../methods/utils/utils'
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 
