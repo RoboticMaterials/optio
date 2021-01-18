@@ -40,6 +40,10 @@ import {
 
 import * as api from '../../api/dashboards_api'
 import { dashboardsSchema } from '../../normalizr/schema';
+import {getRouteProcesses} from "../../methods/utils/route_utils";
+import {willRouteDeleteBreakProcess} from "../../methods/utils/processes_utils";
+import {putProcesses, setSelectedProcess} from "./processes_actions";
+import {deleteTask} from "./tasks_actions";
 
 
 export const getDashboards = () => {
@@ -143,6 +147,39 @@ export const deleteDashboard = (ID) => {
         }
     }
 }
+
+// deletes all buttons with routeId from all dashboards
+// ******************************
+export const removeRouteFromAllDashboards = (routeId) => {
+    return async (dispatch, getState) => {
+
+        // current state
+        const state = getState()
+
+        const dashboards = state.dashboardsReducer.dashboards || {}
+        const routes = state.tasksReducer.tasks || {}
+        const selectedTask = routes[routeId] || {}
+
+        // Delete all dashboard buttons associated with that task
+        Object.values(dashboards)
+            .filter(dashboard =>
+                dashboard.station == selectedTask.load.station || dashboard.station == selectedTask?.unload?.station
+            ).forEach(currDashboard => {
+                var currButtons = [...currDashboard.buttons]
+
+                currButtons = currButtons.filter(button => button.task_id !== routeId)
+
+                // update dashboard
+                dispatch(putDashboard({
+                    ...currDashboard,
+                    buttons: currButtons
+                }, currDashboard._id.$oid))
+            }
+        )
+
+    }
+}
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 export const dashboardOpen = (bol) => {
     return { type: DASHBOARD_OPEN, payload: bol }

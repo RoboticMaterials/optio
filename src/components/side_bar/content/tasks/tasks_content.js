@@ -20,6 +20,8 @@ import RouteTask from './tasks_templates/route_task'
 import uuid from 'uuid'
 import TaskForm from "./task_form/task_form";
 import {generateDefaultRoute} from "../../../../methods/utils/route_utils";
+import {willRouteDeleteBreakProcess} from "../../../../methods/utils/processes_utils";
+import {deleteRouteClean} from "../../../../redux/actions/tasks_actions";
 
 export default function TaskContent(props) {
 
@@ -146,11 +148,17 @@ export default function TaskContent(props) {
     }
 
     const handleBackClick = (routeId) => {
-        dispatchDeselectTask()
+        dispatchSetSelectedTask(null)
         if(tasks[routeId] && tasks[routeId].new) {
             dispatchRemoveTask(routeId)
         }
         onEditing(false)
+    }
+
+    const handleDelete = async (routeId) => {
+        await dispatch(deleteRouteClean(routeId))
+        onEditing(false)
+        dispatchSetSelectedTask(null)
     }
 
 
@@ -159,6 +167,7 @@ export default function TaskContent(props) {
     if (editing && selectedTask !== null) { // Editing Mode
         return (
             <TaskForm
+                handleDelete={handleDelete}
                 initialValues={{
                     ...selectedTask
                 }}

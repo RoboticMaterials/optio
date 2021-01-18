@@ -14,7 +14,6 @@ import { useSelector, useDispatch } from 'react-redux'
 * */
 
 
-
 // Import Basic Components
 import ContentHeader from '../../content_header/content_header'
 import Textbox from '../../../../basic/textbox/textbox.js'
@@ -28,15 +27,12 @@ import LoadUnloadFields from './fields/load_unload_fields'
 // Import utils
 import uuid from 'uuid'
 import { deepCopy } from '../../../../../methods/utils/utils'
-import { willRouteDeleteBreakProcess, willRouteAdditionFixProcess } from '../../../../../methods/utils/processes_utils'
+import { willRouteAdditionFixProcess } from '../../../../../methods/utils/processes_utils'
 
 // Import actions
-import * as taskActions from '../../../../../redux/actions/tasks_actions'
-import { setSelectedTask } from '../../../../../redux/actions/tasks_actions'
-import * as dashboardActions from '../../../../../redux/actions/dashboards_actions'
 import { putDashboard, postDashboard } from '../../../../../redux/actions/dashboards_actions'
 import * as objectActions from '../../../../../redux/actions/objects_actions'
-import { putProcesses, setSelectedProcess, setFixingProcess } from '../../../../../redux/actions/processes_actions'
+import { setFixingProcess } from '../../../../../redux/actions/processes_actions'
 import { putStation } from '../../../../../redux/actions/stations_actions'
 import { deselectLocation } from '../../../../../redux/actions/locations_actions'
 import { getRouteProcesses} from "../../../../../methods/utils/route_utils";
@@ -50,7 +46,6 @@ const TaskField = (props) => {
 
     const {
         isTransportTask,
-        toggleEditing,
         isProcessTask,
         fieldParent,
         setFieldValue,
@@ -59,7 +54,8 @@ const TaskField = (props) => {
         getFieldMeta,
         onSave,
         onBackClick,
-        onRemove
+        onRemove,
+        onDelete
     } = props
 
     const fieldMeta = getFieldMeta(fieldParent)
@@ -100,9 +96,6 @@ const TaskField = (props) => {
 
 
     const dispatch = useDispatch()
-    const dispatchPutProcesses = async (process) => await dispatch(putProcesses(process))
-    const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
-    const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
     const dispatchPutStation = (station, ID) => dispatch(putStation(station, ID))
     const dispatchPutDashboard = (dashboard, ID) => dispatch(putDashboard(dashboard, ID))
     const dispatchPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
@@ -115,12 +108,10 @@ const TaskField = (props) => {
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const objects = useSelector(state => state.objectsReducer.objects)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
-    const processes = useSelector(state => state.processesReducer.processes)
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
 
     const stations = useSelector(state => state.locationsReducer.stations)
 
-    // const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
     useEffect(() => {
@@ -154,6 +145,11 @@ const TaskField = (props) => {
 
         }
     }, [])
+
+    useEffect(() => {
+        if(values.needsSubmit) onSave()
+    }, [values.needsSubmit])
+
 
     const renderLoadUnloadParameters = () => {
         if (selectedTask.load.position === null) {
@@ -190,60 +186,6 @@ const TaskField = (props) => {
     }
 
 
-    const onDelete = async () => {
-        // Delete all dashboard buttons associated with that task
-        Object.values(dashboards)
-            .filter(dashboard =>
-                dashboard.station == selectedTask.load.station || dashboard.station == selectedTask.unload.station
-            ).forEach(currDashboard => {
-                var currButtons = [...currDashboard.buttons]
-
-                currButtons = currButtons.filter(button => button.task_id !== routeId)
-
-                // update dashboard
-                dispatch(dashboardActions.putDashboard({
-                    ...currDashboard,
-                    buttons: currButtons
-                }, currDashboard._id.$oid))
-            }
-        )
-
-        // remove route from any processes
-        const routeProcesses = getRouteProcesses(routeId)
-        routeProcesses.forEach(async (currProcess) => {
-
-            var updatedProcess = {...currProcess}
-
-            const willBreak = willRouteDeleteBreakProcess(updatedProcess, routeId, routes)
-            // If the route removal breaks the process then update the process
-            if (willBreak) {
-                updatedProcess.broken = willBreak
-            }
-
-            // Removes the task from the array of routes
-            const index = updatedProcess.routes.indexOf(selectedTask._id)
-            updatedProcess.routes.splice(index, 1)
-
-            // Update the process if need be
-            if (!!selectedProcess && selectedProcess._id === updatedProcess._id) {
-                await dispatchSetSelectedProcess({
-                    ...updatedProcess,
-                })
-            }
-
-            await dispatchPutProcesses({
-                ...updatedProcess,
-            })
-        })
-
-
-        await dispatch(taskActions.deleteTask(routeId));
-
-
-        toggleEditing(false)
-        dispatchSetSelectedTask(null)
-    }
-
     const updateDashboard = () => {
         // Add the task automatically to the associated load station dashboard
         // Since as of now the only type of task we are doing is push, only need to add it to the load location
@@ -275,11 +217,9 @@ const TaskField = (props) => {
         updatedDashboard.buttons.push(newDashboardButton)
         dispatchPutDashboard(updatedDashboard, updatedDashboard._id.$oid)
 
-
         // dispatch(taskActions.removeTask(selectedTask._id)) // Remove the temporary task from the local copy of tasks
     }
 
-    console.log("editT ASK obj",obj)
     const createObject = () => {
         // Save object
         let objectId
@@ -324,7 +264,6 @@ const TaskField = (props) => {
                 }
             }
 
-
             // Else if its a process and the last route in that process has an object, use that object as the default
             else if (selectedProcess.routes.length > 0 && !!routes[selectedProcess.routes[selectedProcess.routes.length - 1]].obj) {
                 return objects[routes[selectedProcess.routes[selectedProcess.routes.length - 1]].obj]
@@ -334,8 +273,6 @@ const TaskField = (props) => {
                 return null
             }
         }
-
-
     }
 
 
@@ -374,7 +311,7 @@ const TaskField = (props) => {
                     }
                     button_1_text={"Yes"}
                     handleOnClick1={() => {
-                        onDelete()
+                        onDelete(routeId)
                         setConfirmDeleteModal(null)
                     }}
                     button_2_text={"No"}
@@ -481,7 +418,7 @@ const TaskField = (props) => {
                         noDataLabel="No matches found"
                         closeOnSelect="true"
                         name={fieldParent ? `${fieldParent}.existingRoute` : "existingRoute"}
-                        onChange={dropdownValues => {
+                        onChange={async (dropdownValues) => {
 
                             // If this task is part of a process and not already in the array of routes, then add the task to the selected process
                             if (!selectedProcess.routes.includes(selectedTask._id)) {
@@ -504,30 +441,16 @@ const TaskField = (props) => {
                                     // selectedProcess.routes.push(values[0]._id);
                                 }
 
+
+                                var updated = {...values, ...(dropdownValues[0]) }
                                 // setFieldValue
                                 if(fieldParent) {
-                                    setFieldValue(fieldParent, {...values, ...dropdownValues[0] })
+                                    setFieldValue(fieldParent, {...(dropdownValues[0]), needsSubmit: true })
                                 }
                                 else {
-                                    setValues(...values, ...dropdownValues[0])
+                                    await setValues({...(dropdownValues[0]), needsSubmit: true})
                                 }
-
-                                onSave()
-
-
-                                // dispatchSetSelectedProcess(selectedProcess)
-                                //
-                                // dispatchPutTask(
-                                //     {
-                                //         ...values[0],
-                                //         processes: [...values[0].processes, selectedProcess._id]
-                                //     }
-                                //     , values[0]._id)
                             }
-
-                            // dispatch(taskActions.deselectTask())    // Deselect
-                            // setSelectedTaskCopy(null)                   // Reset the local copy to null
-                            // toggleEditing(false)                            // No longer editing
                         }}
                         className="w-100"
                         schema="tasks"
@@ -686,6 +609,7 @@ TaskField.propTypes = {
     getFieldMeta: PropTypes.func,
     onBackClick: PropTypes.func,
     onRemove: PropTypes.func,
+    onDelete: PropTypes.func,
 };
 
 // Specifies the default values for props:
@@ -699,6 +623,7 @@ TaskField.defaultProps = {
     getFieldMeta: () => {},
     onBackClick: () => {},
     onRemove: () => {},
+    onDelete: () => {},
 };
 
 export default TaskField

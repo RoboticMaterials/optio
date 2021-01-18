@@ -2,8 +2,6 @@ import uuid from 'uuid'
 import {DEVICE_CONSTANTS} from "../../constants/device_constants";
 import  store  from "../../redux/store/index";
 import {defaultTask} from "../../constants/route_constants";
-import {useSelector} from "react-redux";
-import {willRouteDeleteBreakProcess} from "./processes_utils";
 
 /**
  * Creates a default route based on store state

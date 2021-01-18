@@ -39,11 +39,17 @@ import {
 import { deepCopy } from '../../methods/utils/utils';
 
 import * as api from '../../api/tasks_api'
+import * as dashboardActions from "./dashboards_actions";
+import {getRouteProcesses} from "../../methods/utils/route_utils";
+import {willRouteDeleteBreakProcess} from "../../methods/utils/processes_utils";
+import {useSelector} from "react-redux";
+import * as processesActions from "./processes_actions";
+import * as dashboardsActions from "./dashboards_actions";
 
 // get
 // ******************************
 export const getTasks = () => {
-    return async dispatch => {
+    return async (dispatch) => {
 
         function onStart() {
             dispatch({ type: GET_TASKS_STARTED });
@@ -199,6 +205,25 @@ export const deleteTask = (ID) => {
     }
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// delete
+// ******************************
+export const deleteRouteClean = (routeId) => {
+    return async (dispatch, getState) => {
+
+        // remove route from all dashboards
+        await dispatch(dashboardsActions.removeRouteFromAllDashboards(routeId))
+
+        // remove route from all processes
+        await dispatch(processesActions.removeRouteFromAllProcesses(routeId))
+
+        // delete route
+        await dispatch(deleteTask(routeId));
+    }
+}
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
 
 export const addTask = (task) => {
     return { type: ADD_TASK, payload: { task } }
