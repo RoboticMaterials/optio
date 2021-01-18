@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom'
 import * as styled from './station.style'
 
 // Import actions
-import { hoverStationInfo } from '../../../../redux/actions/stations_actions'
+import { hoverStationInfo } from '../../../../redux/actions/widget_actions'
 import { setSelectedStation, setStationAttributes } from '../../../../redux/actions/stations_actions'
 import { setTaskAttributes } from '../../../../redux/actions/tasks_actions'
 
@@ -39,9 +39,7 @@ function Station(props) {
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
-    const hoveringID = useSelector(state => state.locationsReducer.hoverLocationID)
-    const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
-    const devices = useSelector(state => state.devicesReducer.devices)
+    const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
 
 
     const dispatch = useDispatch()
@@ -50,9 +48,8 @@ function Station(props) {
     const dispatchSetStationAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
     const dispatchSetTaskAttributes = (id, load) => dispatch(setTaskAttributes(id, load))
 
-
     const isSelected = !!selectedStation && selectedStation._id === station._id
-    const shouldGlow = hovering && !props.isSelected && selectedTask == null
+    const shouldGlow = hovering && !isSelected && selectedTask == null
 
     // Set Color
     let color = StationTypes[station.type].color
@@ -180,7 +177,7 @@ function Station(props) {
 
     const onMouseEnter = () => {
         // Only allow hovering if there is no selected task
-        if (!hoveringID && selectedTask === null) {
+        if (!hoveringInfo && selectedTask === null) {
             setHovering(true)
 
             if (!rotating && !translating && selectedStation === null && selectedTask === null) {
@@ -232,7 +229,7 @@ function Station(props) {
                 isSelected={isSelected}
                 location={station}
                 rd3tClassName={rd3tClassName}
-                d3={d3}
+                d3={() => d3()}
 
                 handleRotate={(rotation) => { dispatchSetStationAttributes(station._id, { rotation }) }}
                 handleTranslate={({ x, y }) => dispatchSetStationAttributes(station._id, { x, y })}
@@ -241,8 +238,13 @@ function Station(props) {
                     dispatchSetStationAttributes(station._id, { pos_x: pos[0], pos_y: pos[1] })
                 }}
 
-                handleEnableDrag={console.log('QQQQ Enable Drag??')}
-                handleDisableDrag={console.log('QQQQ Disable Drag??')}
+                handleEnableDrag={() => {
+                    console.log('QQQQ Enable Drag??')
+
+                }}
+                handleDisableDrag={() => {
+                    console.log('QQQQ Disable Drag??')
+                }}
 
 
             />

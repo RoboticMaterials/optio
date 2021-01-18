@@ -5,8 +5,8 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
 // Import actions
-import { addStation, setSelectedStation, editingStation } from '../../../redux/actions/stations_actions'
-import { addPosition, setSelectedPosition, editingPosition } from '../../../redux/actions/positions_actions'
+import { addStation, setSelectedStation, setEditingStation } from '../../../redux/actions/stations_actions'
+import { addPosition, setSelectedPosition, setEditingPosition } from '../../../redux/actions/positions_actions'
 import { setOpen } from "../../../redux/actions/sidebar_actions"
 
 
@@ -47,11 +47,11 @@ const RightClickMenu = (props) => {
 
     const dispatchAddPositions = (position) => dispatch(addPosition(position))
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
-    const dispatchEditingPosition = (bool) => dispatch(editingPosition(bool))
+    const dispatchEditingPosition = (bool) => dispatch(setEditingPosition(bool))
 
     const dispatchAddStation = (station) => dispatch(addStation(station))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
-    const dispatchEditingStation = (bool) => dispatch(editingStation(bool))
+    const dispatchEditingStation = (bool) => dispatch(setEditingStation(bool))
 
     const dispatchShowSideBar = (bool) => dispatch(setOpen(bool))
 

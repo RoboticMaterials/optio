@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
+import * as d3 from 'd3'
 
 
 const DragEntityProto = (props) => {
@@ -11,7 +12,7 @@ const DragEntityProto = (props) => {
         handleEnableDrag,
         handleTranslateEnd,
         rd3tClassName,
-        d3
+        // d3
     } = props
 
     const [rotating, setRotating] = useState(false)

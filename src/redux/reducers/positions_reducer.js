@@ -34,7 +34,7 @@ const defaultState = {
 
     selectedPosition: {},
 
-    editingPosition: {},
+    editingPosition: false,
 
     d3: {},
 

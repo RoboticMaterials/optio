@@ -1,18 +1,14 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
-import {useLocation, useParams} from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import { useHistory } from 'react-router-dom'
 
+// Import Styles
 import * as styled from './side_bar.style'
 
+// Import Components
 import { DraggableCore } from "react-draggable";
 import SideBarSwitcher from '../../components/side_bar/side_bar_switcher/side_bar_switcher'
-
-import { sideBarBack, editing } from '../../redux/actions/locations_actions'
-import { hoverStationInfo } from '../../redux/actions/widget_actions'
-import {editingTask} from '../../redux/actions/tasks_actions'
-import {editingProcess} from '../../redux/actions/processes_actions'
-
 import LocationsContent from '../../components/side_bar/content/locations/locations_content'
 import ObjectsContent from '../../components/side_bar/content/objects/objects_content'
 import TasksContent from '../../components/side_bar/content/tasks/tasks_content'
@@ -22,11 +18,17 @@ import ProcessesContent from '../../components/side_bar/content/processes/proces
 import Settings from '../../components/side_bar/content/settings/settings'
 import ConfirmDeleteModal from '../../components/basic/modals/confirm_delete_modal/confirm_delete_modal'
 import PageErrorBoundary from '../../containers/page_error_boundary/page_error_boundary'
+import Cards from "../../components/side_bar/content/cards/cards";
 
+// Import Actions
+import { sideBarBack } from '../../redux/actions/locations_actions'
+import { setEditingStation } from '../../redux/actions/stations_actions'
+import { setEditingPosition } from '../../redux/actions/positions_actions'
+import { hoverStationInfo } from '../../redux/actions/widget_actions'
+import { editingTask } from '../../redux/actions/tasks_actions'
+import { editingProcess } from '../../redux/actions/processes_actions'
 import { setWidth, setMode } from "../../redux/actions/sidebar_actions";
 import * as sidebarActions from "../../redux/actions/sidebar_actions"
-import Cards from "../../components/side_bar/content/cards/cards";
-import * as locationActions from '../../redux/actions/locations_actions'
 import * as taskActions from '../../redux/actions/tasks_actions'
 
 const SideBar = (props) => {
@@ -45,7 +47,9 @@ const SideBar = (props) => {
 
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
-    const onSideBarBack = (props) => dispatch(sideBarBack(props))
+    const dispatchSideBarBack = (props) => dispatch(sideBarBack(props))
+    const dispatchEditingStation = (bool) => dispatch(setEditingStation(bool))
+    const dispatchEditingPosition = (bool) => dispatch(setEditingPosition(bool))
 
     const [width, setWidth] = useState(450)
     const [prevWidth, setPrevWidth] = useState(width)
@@ -55,20 +59,19 @@ const SideBar = (props) => {
 
     const mode = useSelector(state => state.sidebarReducer.mode)
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
-    const locationEditing = useSelector(state => state.locationsReducer.editingLocation)
+    const editingStation = useSelector(state => state.stationsReducer.editingStation)
+    const editingPosition = useSelector(state => state.positionsReducer.editingPosition)
+
     const taskEditing = useSelector(state => state.tasksReducer.editingTask)
     const processEditing = useSelector(state => state.processesReducer.editingProcess)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
-    //console.log(sideBarOpen)
-    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
-    const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
-    const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
-    const locations = useSelector(state => state.locationsReducer.locations)
-    const positions = useSelector(state => state.locationsReducer.positions)
 
     const history = useHistory()
     const url = useLocation().pathname
 
+    const locationEditing = !!editingStation ? editingStation : editingPosition
+
+    console.log('QQQQ Editing', locationEditing)
 
     const boundToWindowSize = () => {
         const newWidth = Math.min(window.innerWidth, Math.max(360, width))
@@ -76,17 +79,17 @@ const SideBar = (props) => {
         dispatch(sidebarActions.setWidth(newWidth));
     }
     useEffect(() => {
-        window.addEventListener('resize', boundToWindowSize, {passive:true})
+        window.addEventListener('resize', boundToWindowSize, { passive: true })
 
         return () => {
-            window.removeEventListener('resize', boundToWindowSize, {passive:true})
+            window.removeEventListener('resize', boundToWindowSize, { passive: true })
         }
     }, [])
 
 
-  useEffect(() => {
-    dispatch(sidebarActions.setOpen(sideBarOpen))
-  })
+    useEffect(() => {
+        dispatch(sidebarActions.setOpen(sideBarOpen))
+    })
 
 
     // sets width to full screen if card subpage is open in processes
@@ -101,14 +104,14 @@ const SideBar = (props) => {
 
 
         const time = Date.now()
-        if((page === "processes" || page === "lots") && ((subpage === "lots")) || (id === "timeline") || (id === "summary")) {
+        if ((page === "processes" || page === "lots") && ((subpage === "lots")) || (id === "timeline") || (id === "summary")) {
 
-            if(!prevWidth) setPrevWidth(width) // store previous width to restore when card page is left
+            if (!prevWidth) setPrevWidth(width) // store previous width to restore when card page is left
             setWidth(window.innerWidth)
             dispatch(sidebarActions.setWidth(window.innerWidth))
 
         }
-        else if((((prevSubpage === "lots") || (prevId === "timeline") || (prevId === "summary")) && (prevPage === "processes" || prevPage === "lots")) && ((subpage !== "lots") || (id === "timeline") || (id === "summary")) ) {
+        else if ((((prevSubpage === "lots") || (prevId === "timeline") || (prevId === "summary")) && (prevPage === "processes" || prevPage === "lots")) && ((subpage !== "lots") || (id === "timeline") || (id === "summary"))) {
             setWidth(prevWidth)
             dispatch(sidebarActions.setWidth(prevWidth))
             setPrevWidth(null)
@@ -116,12 +119,12 @@ const SideBar = (props) => {
 
         setPrevParams(params)
 
-        if(!showSideBar) {
+        if (!showSideBar) {
             setWidth(450)
             dispatch(sidebarActions.setWidth(450))
         }
 
-        return () => {}
+        return () => { }
 
     }, [page, subpage, id, width, showSideBar])
 
@@ -130,17 +133,19 @@ const SideBar = (props) => {
      */
     const handleSideBarOpenCloseButtonClick = () => {
 
-      if(!widgetPageLoaded || widgetPageLoaded && !sideBarOpen){
-        const hamburger = document.querySelector('.hamburger')
-        hamburger.classList.toggle('is-active')
-      }
+        if (!widgetPageLoaded || widgetPageLoaded && !sideBarOpen) {
+            const hamburger = document.querySelector('.hamburger')
+            hamburger.classList.toggle('is-active')
+        }
 
-        dispatch(editing(false)) //location editing need to rename
-        dispatch(editingTask(false))
-        dispatch(editingProcess(false))
+        // TODO: Not sure why these are here...
+        // dispatchEditingStation(false)
+        // dispatchEditingPosition(false)
 
-        onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy, positions, locations })
-        dispatch(taskActions.deselectTask())    // Deselect
+        // dispatch(editingProcess(false))
+
+        // dispatchSideBarBack()
+        // dispatch(taskActions.deselectTask())    // Deselect
 
         if (!showSideBar && url == '/') {
             history.push(`/locations`)
@@ -200,8 +205,8 @@ const SideBar = (props) => {
         //     break
 
         case 'processes':
-            if(subpage === "lots")   {
-                content = <Cards id={id}/>
+            if (subpage === "lots") {
+                content = <Cards id={id} />
             }
             else {
                 content = <ProcessesContent subpage={subpage} id={id} />
@@ -210,8 +215,8 @@ const SideBar = (props) => {
             break
 
         case 'lots':
-            if((id === "summary") || (id === "timeline"))   {
-                content = <Cards id={id}/>
+            if ((id === "summary") || (id === "timeline")) {
+                content = <Cards id={id} />
             }
             break
 
@@ -245,18 +250,18 @@ const SideBar = (props) => {
         <>
 
             <ConfirmDeleteModal
-              isOpen = {!!confirmDeleteModal}
-              title={"Are you sure you want to leave this page? Any changes will not be saved"}
-              button_1_text={"Yes"}
-              button_2_text={"No"}
-              handleClose={() => setConfirmDeleteModal(null)}
-              handleOnClick1 = {() => {
-                  handleSideBarOpenCloseButtonClick()
-                  setConfirmDeleteModal(null)
-              }}
-              handleOnClick2 = {() => {
-                  setConfirmDeleteModal(null)
-              }}
+                isOpen={!!confirmDeleteModal}
+                title={"Are you sure you want to leave this page? Any changes will not be saved"}
+                button_1_text={"Yes"}
+                button_2_text={"No"}
+                handleClose={() => setConfirmDeleteModal(null)}
+                handleOnClick1={() => {
+                    handleSideBarOpenCloseButtonClick()
+                    setConfirmDeleteModal(null)
+                }}
+                handleOnClick2={() => {
+                    setConfirmDeleteModal(null)
+                }}
             />
 
             <styled.SideBarOpenCloseButton
@@ -264,10 +269,10 @@ const SideBar = (props) => {
                 type='button'
                 id='sideBarButton'
                 onClick={() => {
-                  if(locationEditing || taskEditing || processEditing){
-                    setConfirmDeleteModal(true)
-                  }
-                  else{handleSideBarOpenCloseButtonClick()}
+                    if (locationEditing || taskEditing || processEditing) {
+                        setConfirmDeleteModal(true)
+                    }
+                    else { handleSideBarOpenCloseButtonClick() }
                 }}
             // showSideBar={showSideBar}
             >

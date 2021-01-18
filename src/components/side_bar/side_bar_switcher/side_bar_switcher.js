@@ -26,9 +26,6 @@ const SideBarSwitcher = (props) => {
     const dispatchTaskEditing = (props) => dispatch(editingTask(props))
     const dispatchProcessEditing = (props) => dispatch(editingProcess(props))
 
-    const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
-    const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
-    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
     const mode = useSelector(state => state.sidebarReducer.mode)
@@ -45,7 +42,7 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    dispatchSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy })
+                    dispatchSideBarBack()
                     dispatchTaskEditing(false)
                     dispatchProcessEditing(false)
                 }}
@@ -111,7 +108,7 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    dispatchSideBarBack({ selectedLocation })
+                    dispatchSideBarBack()
                     dispatchTaskEditing(false)
                 }}
                 currentMode={url}
@@ -122,7 +119,7 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    dispatchSideBarBack({ selectedLocation })
+                    dispatchSideBarBack()
                     dispatchTaskEditing(false)
                 }}
                 currentMode={url}

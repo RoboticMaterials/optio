@@ -17,12 +17,9 @@ import { isEquivalent, } from '../../methods/utils/utils.js'
 import { getMap } from '../../redux/actions/map_actions'
 import { updateStations, setStationAttributes, setSelectedStation } from '../../redux/actions/stations_actions'
 import { updatePositions, postPosition, setPositionAttributes, setSelectedPosition } from '../../redux/actions/positions_actions'
-import * as locationActions from '../../redux/actions/locations_actions'
 import * as deviceActions from '../../redux/actions/devices_actions'
 
-import { deselectLocation } from '../../redux/actions/locations_actions'
-import {widgetLoaded, hoverStationInfo} from '../../redux/actions/widget_actions'
-
+import { widgetLoaded, hoverStationInfo } from '../../redux/actions/widget_actions'
 
 // Import Components
 import TaskPaths from '../../components/map/task_paths/task_paths.js'
@@ -285,7 +282,8 @@ export class MapView extends Component {
                     // Disables the ability to hover over location on mouse drag when a loction is selected that is not new or a right click
                     if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.name !== 'TempRightClickMovePosition')) && (!this.props.editingStation || !this.props.editingPosition)) {
                         this.props.dispatchHoverStationInfo(null)
-                        this.props.onDeselectLocation()
+                        this.props.dispatchSetSelectedPosition(null)
+                        this.props.dispatchSetSelectedPosition(null)
                     }
 
                     //// Saving the last event is usefull for saving d3 state when draggable is toggled (when moving locations)
@@ -490,7 +488,7 @@ export class MapView extends Component {
 
 
     render() {
-        let { locations, positions, devices } = this.props
+        let { stations, positions, devices } = this.props
         if (this.props.currentMap == null) { return (<></>) }
         const { translate, scale } = this.d3;
 
@@ -600,15 +598,17 @@ export class MapView extends Component {
                             <>
                                 <>{
                                     //// Render Locations
-                                    Object.values(this.props.stations).filter(station => (station.map_id === this.props.currentMap._id)).map((location, ind) =>
-                                        <Station key={`loc-${ind}`}
-                                            location={location}
-                                            rd3tClassName={`${this.rd3tStationClassName}_${ind}`}
-                                            d3={this.d3}
-                                            onEnableDrag={this.onEnableDrag}
-                                            onDisableDrag={this.onDisableDrag}
-                                        />
-                                    )
+                                    Object.values(stations)
+                                        .filter(station => (station.map_id === this.props.currentMap._id))
+                                        .map((station, ind) =>
+                                            <Station key={`loc-${ind}`}
+                                                station={station}
+                                                rd3tClassName={`${this.rd3tStationClassName}_${ind}`}
+                                                d3={this.d3}
+                                                onEnableDrag={this.onEnableDrag}
+                                                onDisableDrag={this.onDisableDrag}
+                                            />
+                                        )
                                 }</>
 
                                 <>{
@@ -749,9 +749,8 @@ const mapStateToProps = function (state) {
         currentMap: state.mapReducer.currentMap,
 
         devices: state.devicesReducer.devices,
-        locations: state.locationsReducer.locations,
-        positions: state.locationsReducer.positions,
-        stations: state.locationsReducer.stations,
+        positions: state.positionsReducer.positions,
+        stations: state.stationsReducer.stations,
         tasks: state.tasksReducer.tasks,
 
         selectedStation: state.stationsReducer.selectedStation,
@@ -764,7 +763,7 @@ const mapStateToProps = function (state) {
         fixingProcess: state.processesReducer.fixingProcess,
 
         hoveringInfo: state.widgetReducer.hoverStationInfo,
-        widgetLoaded: state.locationsReducer.widgetLoaded,
+        widgetLoaded: state.widgetReducer.widgetLoaded,
 
     };
 }

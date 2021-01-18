@@ -36,7 +36,7 @@ const defaultState = {
 
     selectedStation: {},
 
-    editingStation: {},
+    editingStation: false,
 
     selectedStationChildrenCopy: {},
 

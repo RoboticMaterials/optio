@@ -40,7 +40,7 @@ export default function LocationContent() {
     const stations = useSelector(state => state.stationsReducer.stations)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
-    const positions = useSelector(state => state.locationsReducer.positions)
+    const positions = useSelector(state => state.positionsReducer.positions)
 
     const editingStation = useSelector(state => state.stationsReducer.editingStation)
     const editingPosition = useSelector(state => state.positionsReducer.editingPosition)

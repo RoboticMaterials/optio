@@ -196,10 +196,6 @@ export const setSelectedStationChildrenCopy = (positions) => {
     return { type: SET_SELECTED_STATION_CHILDREN_COPY, payload: positions }
 }
 
-export const editingStation = (bool) => {
+export const setEditingStation = (bool) => {
     return { type: EDITING_STATION, payload: bool }
-}
-
-export const hoverStationInfo = (info) => {
-    return { type: 'HOVER_STATION_INFO', payload: info }
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { DeviceItemTypes } from '../../../../methods/utils/device_utils'
+import { DeviceTypes } from '../../../../constants/device_constants'
 
 const MiR100 = (props) => {
 
@@ -18,7 +18,7 @@ const MiR100 = (props) => {
         type = 'shelf'
     }
 
-    let color = DeviceItemTypes[type].primaryColor
+    let color = DeviceTypes[type].primaryColor
 
     if (device.state_text === 'EmergencyStop') {
         color = 'red'
@@ -34,7 +34,7 @@ const MiR100 = (props) => {
 
             <svg x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400">
 
-                {DeviceItemTypes[type].svgPath}
+                {DeviceTypes[type].svgPath}
 
             </svg>
 

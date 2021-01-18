@@ -227,7 +227,7 @@ export const setSelectedPosition = (position) => {
     return { type: SET_SELECTED_POSITION, payload: position }
 }
 
-export const editingPosition = (bool) => {
+export const setEditingPosition = (bool) => {
     return { type: EDITING_POSITION, payload: bool }
 }
 
