@@ -29,8 +29,6 @@ import {
 import { deepCopy, isEquivalent } from '../../methods/utils/utils';
 import { compareExistingVsIncomingLocations } from '../../methods/utils/locations_utils'
 
-
-
 const defaultState = {
     positions: {},
 
@@ -44,7 +42,7 @@ const defaultState = {
     pending: false,
 }
 
-export default function positionsReducer(state = defaultState, action) {
+const positionsReducer = (state = defaultState, action) => {
     let positionsCopy
 
     /**
@@ -184,6 +182,11 @@ export default function positionsReducer(state = defaultState, action) {
                 error: action.payload,
                 pending: false
             });
+
+        default:
+            return state
     }
 
 }
+
+export default positionsReducer

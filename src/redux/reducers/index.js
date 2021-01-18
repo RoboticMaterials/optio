@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux'
 import schedulesReducer from './schedules_reducer_v2';
 import skillsReducer from './skills_reducer';
-// import locationsReducer from './locations_reducer';
 import stationsReducer from './stations_reducer';
 import positionsReducer from './positions_reducer'
 import objectsReducer from './objects_reducer';
@@ -42,7 +41,6 @@ export default combineReducers({
     lotsReducer,
     schedulesReducer,
     skillsReducer,
-    // locationsReducer,
     positionsReducer,
     stationsReducer,
     objectsReducer,

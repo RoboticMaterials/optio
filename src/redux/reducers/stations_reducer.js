@@ -38,7 +38,7 @@ const defaultState = {
 
     editingStation: {},
 
-    selectedStationChildrenCopy: {}, 
+    selectedStationChildrenCopy: {},
 
     d3: {},
 
@@ -177,6 +177,9 @@ export default function stationsReducer(state = defaultState, action) {
                 error: action.payload,
                 pending: false
             });
+
+        default:
+            return state
     }
 
 }
