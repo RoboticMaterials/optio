@@ -4,16 +4,16 @@ import { useParams } from 'react-router-dom'
 
 
 // Import Utils
-import { deepCopy } from '../../../../../methods/utils/utils'
-import { handleWidgetHoverCoord } from '../../../../../methods/utils/locations_utils'
+import { deepCopy } from '../../../../methods/utils/utils'
+import { handleWidgetHoverCoord } from '../../../../methods/utils/locations_utils'
 
 // Import Constants
-import { PositionTypes } from '../../../../../constants/position_constants'
+import { PositionTypes } from '../../../../constants/position_constants'
 
 // Import Actions
-import { setTaskAttributes } from '../../../../../redux/actions/tasks_actions'
-import { hoverStationInfo } from '../../../../../redux/actions/stations_actions'
-import { setSelectedPosition } from '../../../../../redux/actions/positions_actions'
+import { setTaskAttributes } from '../../../../redux/actions/tasks_actions'
+import { hoverStationInfo } from '../../../../redux/actions/stations_actions'
+import { setSelectedPosition } from '../../../../redux/actions/positions_actions'
 
 function Position(props) {
 

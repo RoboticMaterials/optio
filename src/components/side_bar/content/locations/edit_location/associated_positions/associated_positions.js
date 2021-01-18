@@ -1,24 +1,24 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import * as styled from './positions.style'
+import * as styled from './associated_positions.style'
 
 import { sortableElement, sortableHandle } from 'react-sortable-hoc';
 
 // Import Components
-import MinusButton from '../../../../basic/minus_button/minus_button'
-import Textbox from '../../../../basic/textbox/textbox'
-import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
+import MinusButton from '../../../../../basic/minus_button/minus_button'
+import Textbox from '../../../../../basic/textbox/textbox'
+import ConfirmDeleteModal from '../../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 
 
 import arrayMove from 'array-move';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 // Import Actions
-import { setStationAttributes } from '../../../../../redux/actions/stations_actions'
+import { setStationAttributes } from '../../../../../../redux/actions/stations_actions'
 import { setPositionAttributes, deletePosition, addPosition, postPosition } from '../../../../../../redux/actions/positions_actions'
-import * as positionActions from '../../../../../redux/actions/positions_actions'
-import { deleteTask } from '../../../../../redux/actions/tasks_actions'
-import { deepCopy } from '../../../../../methods/utils/utils'
+import * as positionActions from '../../../../../../redux/actions/positions_actions'
+import { deleteTask } from '../../../../../../redux/actions/tasks_actions'
+import { deepCopy } from '../../../../../../methods/utils/utils'
 
 // Import Constants
 import { PositionTypes, newPositionTemplate } from '../../../../../../constants/position_constants'

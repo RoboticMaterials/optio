@@ -6,17 +6,17 @@ import { useParams } from 'react-router-dom'
 import * as styled from './station.style'
 
 // Import actions
-import { hoverStationInfo } from '../../../../../redux/actions/stations_actions'
-import { setSelectedStation } from '../../../../../redux/actions/stations_actions'
-import { setTaskAttributes } from '../../../../../redux/actions/tasks_actions'
+import { hoverStationInfo } from '../../../../redux/actions/stations_actions'
+import { setSelectedStation } from '../../../../redux/actions/stations_actions'
+import { setTaskAttributes } from '../../../../redux/actions/tasks_actions'
 
 // Import Utils
-import { DeviceItemTypes } from '../../../../../methods/utils/device_utils'
-import { handleWidgetHoverCoord } from '../../../../../methods/utils/locations_utils'
-import { deepCopy } from '../../../../../methods/utils/utils'
+import { DeviceItemTypes } from '../../../../methods/utils/device_utils'
+import { handleWidgetHoverCoord } from '../../../../methods/utils/locations_utils'
+import { deepCopy } from '../../../../methods/utils/utils'
 
 // Import Constants
-import { StationTypes } from '../../../../../constants/station_constants'
+import { StationTypes } from '../../../../constants/station_constants'
 
 function Station(props) {
 

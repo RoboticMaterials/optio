@@ -4,20 +4,20 @@ import { useSelector, useDispatch } from 'react-redux'
 import * as styled from './edit_location.style'
 
 // Import Components
-import LocationButton from './location_buttons/location_button'
-import ContentHeader from '../content_header/content_header'
-import ConfirmDeleteModal from '../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
+import LocationButton from './location_button/location_button'
+import ContentHeader from '../../content_header/content_header'
+import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 import AssociatedPositions from './associated_positions/associated_positions'
 
 // Import Basic Components
-import DropDownSearch from '../../../basic/drop_down_search_v2/drop_down_search'
-import Textbox from '../../../basic/textbox/textbox.js'
-import Button from '../../../basic/button/button'
+import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
+import Textbox from '../../../../basic/textbox/textbox.js'
+import Button from '../../../../basic/button/button'
 
 // Import actions
-import { sideBarBack, deleteLocationProcess } from '../../../../redux/actions/locations_actions'
-import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition } from '../../../../redux/actions/positions_actions'
-import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setSelectedStationChildrenCopy } from '../../../../redux/actions/stations_actions'
+import { sideBarBack, deleteLocationProcess } from '../../../../../redux/actions/locations_actions'
+import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition } from '../../../../../redux/actions/positions_actions'
+import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setSelectedStationChildrenCopy } from '../../../../../redux/actions/stations_actions'
 
 
 const EditLocation = () => {
