@@ -46,6 +46,22 @@ const ProcessForm = (props) => {
 			...remainingValues
 		} = values
 
+		// perform any updates for routes
+		for (const currRoute of remainingValues.routes) {
+
+			// if not saved, POST
+			if(currRoute.unsaved) {
+				cleanRoute(currRoute)
+				await dispatchPostRoute(currRoute)
+			}
+
+			// otherwise, PUT
+			else {
+				cleanRoute(currRoute)
+				await dispatchPutTask(currRoute, currRoute._id)
+			}
+		}
+
 		dispatchSetSelectedTask(null) // clear selected task
 		const mappedRoute = remainingValues.routes.map((currRoute) => currRoute._id)
 
@@ -65,21 +81,7 @@ const ProcessForm = (props) => {
 			})
 		}
 
-		// perform any updates for routes
-		for (const currRoute of remainingValues.routes) {
 
-			// if not saved, POST
-			if(currRoute.unsaved) {
-				cleanRoute(currRoute)
-				await dispatchPostRoute(currRoute)
-			}
-
-			// otherwise, PUT
-			else {
-				cleanRoute(currRoute)
-				await dispatchPutTask(currRoute, currRoute._id)
-			}
-		}
 
 		// close editor
 		if(close) {

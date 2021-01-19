@@ -1,5 +1,6 @@
 import { deepCopy } from './utils'
 import {isObject} from "./object_utils";
+import store from "../../redux/store";
 
 /**
  * This function checks to see if a process is broken. 
@@ -10,13 +11,14 @@ import {isObject} from "./object_utils";
  * @param {object} routes All routes
  */
 export const isBrokenProcess = (process, routes) => {
+    console.log("isBrokenProcess process",process)
 
     // can't be broken if there is only 1 route
     if(process.routes.length > 1) {
         // Loops through and
         for (let i = 0; i < process.routes.length - 1; i++) {
-            const currentRoute = routes[process.routes[i]]
-            const nextRoute = routes[process.routes[i + 1]]
+            const currentRoute = isObject(process.routes[i]) ? process.routes[i]: routes[process.routes[i]]
+            const nextRoute = isObject(process.routes[i + 1]) ? process.routes[i + 1] : routes[process.routes[i + 1]]
             if (currentRoute.unload.station !== nextRoute.load.station) {
                 // Have to return the current route index plus 1 because if the route that is before the broken route is the first route in s process, then the index is 0, which is considered falsy
                 return i + 1
@@ -156,8 +158,34 @@ export const getProcessStations = (process, routes) => {
     return stationIds
 }
 
-export const getPreviousRoute = (processRoutes, currentRouteId, routes) => {
-    const currentRouteindex = processRoutes.findIndex((currItem) => currItem === currentRouteId)
-    if(currentRouteindex > 0 ) return processRoutes[currentRouteindex - 1]
-    return processRoutes[processRoutes.length - 1]
+export const getPreviousRoute = (processRoutes, currentRouteId) => {
+    const storeState = store.getState()
+    const routes = storeState.tasksReducer.tasks
+    var previousRoute
+
+    const currentRouteindex = processRoutes.findIndex((currItem) => {
+        if(isObject(currItem)) {
+            return currItem._id === currentRouteId
+        }
+        else {
+            return currItem === currentRouteId
+        }
+
+    })
+
+    if(currentRouteindex > 0 ) {
+        previousRoute = processRoutes[currentRouteindex - 1]
+    }
+    else {
+        previousRoute = processRoutes[processRoutes.length - 1]
+    }
+
+    if(!isObject(previousRoute)) {
+        return routes[previousRoute]
+    }
+    else {
+        return previousRoute
+    }
+
 }
+

@@ -60,18 +60,18 @@ export const getRouteProcesses = (routeId) => {
 }
 
 export const isNextRouteViable = (currentRoute, nextRoute) => {
-    const currentUnloadStationId = getUnloadStation(currentRoute)
-    const nextLoadStationId = getLoadStation(nextRoute)
+    const currentUnloadStationId = getUnloadStationId(currentRoute)
+    const nextLoadStationId = getLoadStationId(nextRoute)
 
     if (currentUnloadStationId === nextLoadStationId) {
         return true
     }
 }
 
-export const getUnloadStation = (route) => {
+export const getUnloadStationId = (route) => {
     return route?.unload?.station
 }
 
-export const getLoadStation = (route) => {
+export const getLoadStationId = (route) => {
     return route?.load?.station
 }

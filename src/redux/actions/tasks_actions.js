@@ -223,6 +223,20 @@ export const deleteRouteClean = (routeId) => {
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// delete
+// ******************************
+export const putRouteClean = (route, routeId) => {
+    return async (dispatch, getState) => {
+
+        // handle adding buttons to dashboards
+        await dispatch(dashboardsActions.addRouteToDashboards(route))
+
+        // put task
+        await dispatch(putTask(route, routeId));
+    }
+}
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 
 export const addTask = (task) => {

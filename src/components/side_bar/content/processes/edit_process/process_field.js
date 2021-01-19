@@ -68,13 +68,21 @@ export const ProcessField = (props) => {
 
     const dispatch = useDispatch()
     const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
-    const dispatchAddTask = (task) => dispatch(addTask(task))
+
+    // const dispatchAddTask = (task) => dispatch(addTask(task))
+    const dispatchAddTask = (task) => {}
+    // const dispatchSetTasks = (tasks) => dispatch(setTasks(tasks))
+    const dispatchSetTasks = (tasks) => {}
+
     const dispatchPutRoute = (task, ID) => dispatch(putTask(task, ID))
     const dispatchPostRoute = async (route) => await dispatch(taskActions.postTask(route))
-    const dispatchSetTasks = (tasks) => dispatch(setTasks(tasks))
     const dispatchGetTasks = () => dispatch(getTasks())
-    const dispatchRemoveTask = (taskId) => dispatch(removeTask(taskId))
-    const dispatchRemoveTasks = (taskIds) => dispatch(removeTasks(taskIds))
+
+    // const dispatchRemoveTask = (taskId) => dispatch(removeTask(taskId))
+    const dispatchRemoveTask = (taskId) => {}
+    // const dispatchRemoveTasks = (taskIds) => dispatch(removeTasks(taskIds))
+    const dispatchRemoveTasks = (taskIds) => {}
+
     const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
     const dispatchPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
     const onTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
@@ -100,7 +108,7 @@ export const ProcessField = (props) => {
         // map process values to selectedProcess
         dispatchSetSelectedProcess({
             ...values,
-            routes: values.routes.map((currRoute) => currRoute._id) // processes in redux only store the route keys
+            // routes: values.routes.map((currRoute) => currRoute._id) // processes in redux only store the route keys
         })
 
         // dispatch values.routes to redux state
@@ -140,7 +148,7 @@ export const ProcessField = (props) => {
 
                 // remove unsaved from redux
                 dispatchRemoveTasks(removeRouteIds) // remove routes
-                dispatchGetTasks() // cleans up unsaved changed routes
+                dispatchGetTasks() // cleans up changed routes
             }
         }
     }, [])
@@ -307,18 +315,16 @@ export const ProcessField = (props) => {
 
     const handleTaskBack = async () => {
 
-        // if unsaved should immediately disappear use this block
+        // remove the route
         if(selectedTask.new) {
             dispatchRemoveTask(selectedTask._id)
         }
-        // if unsaved route should appear in process, use this block
-        // if(newRoute) {
-        //     setFieldValue("routes", [...values.routes, {...values.newRoute}])
-        // }
 
+        // clear newRoute and selectedTask
         setFieldValue("newRoute", null)
         await dispatchSetSelectedTask(null)
 
+        // run validation
         validateForm()
     }
 
@@ -355,24 +361,20 @@ export const ProcessField = (props) => {
     }
 
     // Maps through the list of existing routes
-    const handleExistingRoutes = (routes) => {
+    const renderExistingRoutes = (routes) => {
 
-        return routes.map((currRoute, currIndex) => {
+        return routes.filter((currRoute, currIndex) => {
 
-            // const hasError = (errors.routes && Array.isArray(errors.routes)) ? errors.routes[currIndex] : false
+            if (currRoute === undefined) {
+                return false
+            }
+            return true
 
-            const fieldMeta = getFieldMeta(`routes[${currIndex}]`)
-            const {
-                touched,
-            } = fieldMeta
+        }).map((currRoute, currIndex) => {
 
             const {
                 _id: currRouteId = "",
             } = currRoute || {}
-
-            if (currRoute === undefined) {
-                return
-            }
 
             const fieldName = `routes[${currIndex}]`
 
@@ -545,23 +547,23 @@ export const ProcessField = (props) => {
             />
 
             {showExistingTaskWarning &&
-                <ConfirmDeleteModal
-                    isOpen={!!showExistingTaskWarning}
-                    title={"Changing an existing route will affect other processes that use this route. Would you like to make a copy, or change the existing route?"}
-                    button_1_text={"Make a Copy"}
-                    button_2_text={"Change the Existing Route"}
-                    handleClose={() => setShowExistingTaskWarning(false)}
-                    children={getChildren()}
-                    handleOnClick1={() => {
-                        createNewTask()
-                        setShowExistingTaskWarning(false)
-                    }}
-                    handleOnClick2={() => {
-                        updateExistingTask()
-                        setShowExistingTaskWarning(false)
+            <ConfirmDeleteModal
+                isOpen={!!showExistingTaskWarning}
+                title={"Changing an existing route will affect other processes that use this route. Would you like to make a copy, or change the existing route?"}
+                button_1_text={"Make a Copy"}
+                button_2_text={"Change the Existing Route"}
+                handleClose={() => setShowExistingTaskWarning(false)}
+                children={getChildren()}
+                handleOnClick1={() => {
+                    createNewTask()
+                    setShowExistingTaskWarning(false)
+                }}
+                handleOnClick2={() => {
+                    updateExistingTask()
+                    setShowExistingTaskWarning(false)
 
-                    }}
-                />
+                }}
+            />
             }
 
             <styled.Container>
@@ -597,7 +599,7 @@ export const ProcessField = (props) => {
                 <styled.Title schema={'processes'}>Associated Routes</styled.Title>
 
                 <styled.SectionContainer>
-                    {handleExistingRoutes(values.routes)}
+                    {renderExistingRoutes(values.routes)}
                 </styled.SectionContainer>
 
                 {handleAddRoute()}

@@ -40,10 +40,13 @@ import {
 
 import * as api from '../../api/dashboards_api'
 import { dashboardsSchema } from '../../normalizr/schema';
-import {getRouteProcesses} from "../../methods/utils/route_utils";
+import {getLoadStationId, getRouteProcesses} from "../../methods/utils/route_utils";
 import {willRouteDeleteBreakProcess} from "../../methods/utils/processes_utils";
 import {putProcesses, setSelectedProcess} from "./processes_actions";
 import {deleteTask} from "./tasks_actions";
+import {deepCopy} from "../../methods/utils/utils";
+import {useSelector} from "react-redux";
+import * as stationActions from "./stations_actions";
 
 
 export const getDashboards = () => {
@@ -177,6 +180,67 @@ export const removeRouteFromAllDashboards = (routeId) => {
             }
         )
 
+    }
+}
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// deletes all buttons with routeId from all dashboards
+// ******************************
+export const addRouteToDashboards = (route) => {
+    return async (dispatch, getState) => {
+
+        // current state
+        const state = getState()
+
+        const dashboards = state.dashboardsReducer.dashboards || {}
+        const routes = state.tasksReducer.tasks || {}
+        const stations = state.locationsReducer.stations || {}
+
+        // Add the task automatically to the associated load station dashboard
+        // Since as of now the only type of task we are doing is push, only need to add it to the load location
+        const loadStation = stations[getLoadStationId(route)]
+
+
+        const dashboard = dashboards[loadStation.dashboards[0]]
+
+        const newDashboardButton = {
+            color: '#bcbcbc',
+            id: selectedTask._id,
+            name: selectedTask.name,
+            task_id: selectedTask._id
+        }
+
+        if (dashboard === undefined) {
+            const defaultDashboard = {
+                name: updatedStation.name + ' Dashboard',
+                buttons: [newDashboardButton],
+                station: updatedStation._id
+            }
+            const postDashboardPromise = postDashboard(defaultDashboard)
+            postDashboardPromise.then(async postedDashboard => {
+                alert('Added dashboard to location. There already should be a dashboard tied to this location, so this is an temp fix')
+                await stationActions.putStation({
+                    ...loadStation,
+                    dashboards: [postedDashboard._id.$oid]
+                }, loadStation._id)
+
+            })
+        }
+
+        else {
+            const buttonIndex = dashboard.buttons.findIndex((currButton) => {
+                return currButton.task_id === route._id
+            })
+
+            // only add button if it isn't already in the dashboard
+            if(buttonIndex === -1) {
+                putDashboard({
+                    ...dashboard,
+                    buttons: [...dashboard.buttons, newDashboardButton]
+                }, dashboard._id.$oid)
+            }
+
+        }
     }
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

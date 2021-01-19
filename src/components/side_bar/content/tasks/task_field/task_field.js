@@ -102,7 +102,8 @@ const TaskField = (props) => {
     const dispatchPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
     const dispatchSetFixingProcess = (bool) => dispatch(setFixingProcess(bool))
     const dispatchDeselectLocation = () => dispatch(deselectLocation())
-    const dispatchRemoveTask = (taskId) => dispatch(removeTask(taskId))
+    // const dispatchRemoveTask = (taskId) => dispatch(removeTask(taskId))
+    const dispatchRemoveTask = (taskId) => {}
 
     let routes = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -389,8 +390,7 @@ const TaskField = (props) => {
                                     else if (selectedProcess.routes.length > 0) {
 
                                         // Gets the previous route
-                                        const previousRouteID = getPreviousRoute(selectedProcess.routes, values._id, routes)
-                                        const previousRoute = routes[previousRouteID]
+                                        const previousRoute = getPreviousRoute(selectedProcess.routes, values._id)
 
                                         return isNextRouteViable(previousRoute, task)
 
@@ -410,24 +410,6 @@ const TaskField = (props) => {
 
                             // If this task is part of a process and not already in the array of routes, then add the task to the selected process
                             if (!selectedProcess.routes.includes(selectedTask._id)) {
-
-                                if (!!fixingProcess) {
-
-                                    // If the route addition fixes, process check to see if the process is still broken
-                                    // If it fixes the process, it returns false because if it breaks the process it returns an int which is truthy
-                                    if (!willRouteAdditionFixProcess(selectedProcess, dropdownValues[0], routes)) {
-                                        // selectedProcess.broken = null
-                                    }
-                                    else {
-                                        // selectedProcess.broken = willRouteAdditionFixProcess(selectedProcess, values[0], routes)
-                                    }
-
-                                    // Splice in the new route into the correct position
-                                    // selectedProcess.routes.splice(selectedProcess.broken - 1, 0, values[0]._id)
-
-                                } else {
-                                    // selectedProcess.routes.push(values[0]._id);
-                                }
 
                                 dispatchRemoveTask(selectedTask._id)
                                 var selectedRoute = {...(dropdownValues[0]), needsSubmit: true }
@@ -460,13 +442,8 @@ const TaskField = (props) => {
                     InputComponent={Textbox}
                     name={fieldParent ? `${fieldParent}.name` : "name"}
                     placeholder="Route Name"
-                    // defaultValue={!!selectedTask && selectedTask.name}
                     schema={'tasks'}
                     focus={!name}
-                    // onChange={(e) => {
-                    //     dispatch(taskActions.setTaskAttributes(selectedTask._id, { name: e.target.value }))
-                    //
-                    // }}
                     style={{ fontSize: '1.2rem', fontWeight: '600' }}
                 />
 

@@ -38,6 +38,7 @@ import Widgets from '../../components/widgets/widgets'
 import log from "../../logger"
 import { setCurrentMap } from "../../redux/actions/map_actions";
 import {getPreviousRoute} from "../../methods/utils/processes_utils";
+import {isObject} from "../../methods/utils/object_utils";
 
 const logger = log.getLogger("MapView")
 
@@ -601,11 +602,11 @@ export class MapView extends Component {
                                             if (!!this.props.selectedTask && !!this.props.selectedProcess && !!this.props.fixingProcess && this.props.selectedTask.load.station === null) {
 
                                                 // Gets the route before break
-                                                const routeBeforeBreak = this.props.selectedProcess.routes[this.props.selectedProcess.broken - 1]
-                                                const taskBeforeBreak = this.props.tasks[routeBeforeBreak]
+                                                var routeBeforeBreak = this.props.selectedProcess.routes[this.props.selectedProcess.broken - 1]
+                                                if(!isObject(routeBeforeBreak)) routeBeforeBreak = this.props.tasks[routeBeforeBreak]
 
-                                                if (!!taskBeforeBreak.unload) {
-                                                    const unloadStationID = taskBeforeBreak.unload.station
+                                                if (!!routeBeforeBreak.unload) {
+                                                    const unloadStationID = routeBeforeBreak.unload.station
                                                     const unloadStation = this.props.locations[unloadStationID]
 
                                                     if (unloadStation.children.includes(position._id)) {
@@ -622,21 +623,19 @@ export class MapView extends Component {
                                                 // Gets the last route in the routes array
                                                 // const previousRoute = this.props.selectedProcess.routes[this.props.selectedProcess.routes.length - 1]
 
-                                                const previousTaskId = getPreviousRoute(this.props.selectedProcess.routes, this.props.selectedTask._id, this.props.tasks)
-                                                const previousTask = this.props.tasks[previousTaskId]
+                                                const previousRoute = getPreviousRoute(this.props.selectedProcess.routes, this.props.selectedTask._id)
 
-                                                console.log("previousTaskId",previousTaskId)
-                                                console.log("previousTask",previousTask)
+                                                console.log("previousRoute",previousRoute)
                                                 console.log("this.props.selectedProcess.routes",this.props.selectedProcess.routes)
                                                 console.log("this.props.selectedProcess.routes",this.props.selectedProcess.routes)
                                                 console.log("this.props.selectedTask._id",this.props.selectedTask._id)
 
-                                                if (!!previousTask.unload) {
+                                                if (!!previousRoute.unload) {
 
-                                                    const unloadStationID = previousTask.unload.station
+                                                    const unloadStationID = previousRoute.unload.station
                                                     const unloadStation = this.props.locations[unloadStationID] || {}
 
-                                                    console.log("previousTask",previousTask)
+                                                    console.log("previousRoute",previousRoute)
                                                     console.log("unloadStationID",unloadStationID)
                                                     console.log("unloadStation",unloadStation)
 

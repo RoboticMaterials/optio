@@ -39,6 +39,7 @@ import {
 } from '../types/tasks_types'
 
 import { deepCopy } from '../../methods/utils/utils';
+import {isObject} from "../../methods/utils/object_utils";
 
 
 const defaultState = {
@@ -258,26 +259,42 @@ export default function tasksReducer(state = defaultState, action) {
         }
 
 
-        case SET_TASK_ATTRIBUTES:
-            tasksCopy = deepCopy(state.tasks)
-            Object.assign(tasksCopy[action.payload.id], action.payload.attr)
+        case SET_TASK_ATTRIBUTES: {
+                var newState
 
-            // tasksCopy = {
-            //     ...tasksCopy,
-            //     [action.payload.id]: action.payload.attr,
-            // }
+                if (isObject(state.selectedTask) && state.selectedTask._id === action.payload.id) {
+                    newState = {
+                        ...state,
+                        tasks: state.tasks[action.payload.id] ?
+                            {
+                                ...state.tasks,
+                                [action.payload.id]: {...state.tasks[action.payload.id], ...action.payload.attr},
+                            }
+                        :
+                            {
+                                ...state.tasks
+                            },
+                        selectedTask: {
+                            ...state.selectedTask,
+                            ...action.payload.attr
+                        }
+                    }
+                } else {
+                    newState = {
+                        ...state,
+                        tasks: state.tasks[action.payload.id] ? {
+                                ...state.tasks,
+                                [action.payload.id]: {...state.tasks[action.payload.id], ...action.payload.attr},
+                            }
+                        :
+                            {
+                                ...state.tasks
+                            }
+                    }
+                }
 
-            if (state.selectedTask !== null) {
-                return {
-                    ...state,
-                    tasks: tasksCopy,
-                    selectedTask: tasksCopy[state.selectedTask._id]
-                }
-            } else {
-                return {
-                    ...state,
-                    tasks: tasksCopy,
-                }
+                return newState
+
             }
 
 
