@@ -86,7 +86,6 @@ const TaskQueueListItem = (props) => {
                         <IconButton
                             color={themeContext.fg.primary}
                             onClick={handleClick}
-
                         >
                             <style.StyledRemoveIcon
                                 fontSize={"large"}
