@@ -13,6 +13,9 @@ import { sideBarBack, deleteLocationProcess } from '../../../../redux/actions/lo
 import { setEditingPosition, setSelectedPosition } from '../../../../redux/actions/positions_actions'
 import { setEditingStation, setSelectedStation } from '../../../../redux/actions/stations_actions'
 
+// Import Constants
+import { StationTypes } from '../../../../constants/station_constants'
+
 // Import Utils
 import { setAction } from '../../../../redux/actions/sidebar_actions'
 import { deepCopy } from '../../../../methods/utils/utils'
@@ -82,7 +85,7 @@ export default function LocationContent() {
         console.log('QQQQ Editing', editingLocation)
 
         // If a station
-        if(editingLocation.schema === 'station') {
+        if (editingLocation.schema === 'station') {
             dispatchSetEditingStation(true)
             dispatchSetSelectedStation(editingLocation)
         }
@@ -115,7 +118,7 @@ export default function LocationContent() {
                     onEditLocation(location._id)
                 }}
                 onPlus={() => {
-                    // setEditing(true)
+                    dispatchSetEditingStation(true)
                 }}
             />
     )

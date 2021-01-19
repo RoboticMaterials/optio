@@ -14,21 +14,29 @@ import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_sear
 import Textbox from '../../../../basic/textbox/textbox.js'
 import Button from '../../../../basic/button/button'
 
+// Import Constants
+import { StationTypes } from '../../../../../constants/station_constants'
+import { PositionTypes } from '../../../../../constants/position_constants'
+
 // Import actions
 import { sideBarBack, deleteLocationProcess } from '../../../../../redux/actions/locations_actions'
 import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition, setEditingPosition } from '../../../../../redux/actions/positions_actions'
-import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setSelectedStationChildrenCopy, setEditingStation } from '../../../../../redux/actions/stations_actions'
+import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setSelectedStationChildrenCopy, setEditingStation, putStation, postStation } from '../../../../../redux/actions/stations_actions'
 
 
 const EditLocation = () => {
     const dispatch = useDispatch()
 
-    const dispatchSetSelectedStaion = (station) => dispatch(setSelectedStation(station))
+    // Station Dispatches
+    const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchSetEditingStation = (bool) => dispatch(setEditingStation(bool))
     const dispatchSetStationAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
     const dispatchAddStation = (station) => dispatch(addStation(station))
     const dispatchSetSelectedStationChildrenCopy = (children) => dispatch(setSelectedStationChildrenCopy(children))
+    const dispatchPutStation = async (station) => await dispatch(putStation(station))
+    const dispatchPostStation = async (station) => await dispatch(postStation(station))
 
+    // Position Dispatches
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
     const dispatchAddPosition = (pos) => dispatch(addPosition(pos))
     const dispatchSetPositionAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
@@ -49,12 +57,46 @@ const EditLocation = () => {
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
 
+    const LocationTypes = {
+        ...StationTypes,
+        ...PositionTypes,
+    }
+
     /**
      * This function is called when the save button is pressed. The location is POSTED or PUT to the backend.
      * If the location is new and is a station, this function also handles posting the default dashboard and
      * tieing it to this location. Each child position for a station is also either POSTED or PUT.
      */
-    const onSave = () => {
+    const onSave = async () => {
+
+        // Station
+        if (!!selectedStation) {
+
+            // Post
+            if (!!selectedStation.new) {
+                await dispatchPostStation(selectedStation)
+
+                // Add dashboard
+            }
+            // Put
+            else {
+                await dispatchPutStation(selectedStation)
+            }
+
+            // Children Positions
+            selectedStation.children.map((child, ind) => {
+
+            })
+        }
+
+        // Position
+        else {
+
+        }
+
+        onBack()
+
+
     }
 
     const onDelete = () => {
@@ -66,11 +108,29 @@ const EditLocation = () => {
         dispatchSetEditingPosition(false)
 
         dispatchSetSelectedPosition(null)
-        dispatchSetSelectedStaion(null)
+        dispatchSetSelectedStation(null)
     }
 
-    const onAddLocation = () => {
+    const onAddLocation = async (e, type) => {
 
+        console.log('QQQQ Whats here?', e, LocationTypes[type])
+
+        const attributes = LocationTypes[type].attributes
+
+        // Handle Station addition
+        if (attributes.schema === 'station') {
+            await Object.assign(selectedStation, { ...attributes, temp: true, map_id: currentMap._id })
+            await dispatchAddStation(selectedStation)
+            await dispatchSetSelectedStation(selectedStation)
+        }
+
+        else if (attributes.schema === 'position') {
+
+        }
+
+        else {
+            throw ('Schema Does Not exist')
+        }
     }
 
     const onLocationNameChange = (e) => {
@@ -130,7 +190,7 @@ const EditLocation = () => {
         const types = ['human', 'warehouse']
 
         return types.map((type) => {
-            const isSelected = selectedStation.type !== null && selectedStation.type !== type ? true : false;
+            const isSelected = (!!selectedStation && selectedStation.type !== null && selectedStation.type === type) ? selectedStation.type : false;
             return (
                 <LocationButton type={type} isSelected={isSelected} handleAddLocation={onAddLocation} />
             )
@@ -142,7 +202,7 @@ const EditLocation = () => {
         const types = ['cart_position', 'shelf_position']
 
         return types.map((type) => {
-            const isSelected = selectedStation.type !== null && selectedStation.type !== type ? true : false;
+            const isSelected = (!!selectedPosition && selectedPosition.type !== null && selectedPosition.type !== type) ? selectedPosition.type : false;
             return (
                 <LocationButton type={type} isSelected={isSelected} handleAddLocation={onAddLocation} />
             )
@@ -191,29 +251,34 @@ const EditLocation = () => {
                 {/* Location Type */}
                 <styled.DefaultTypesContainer>
 
-                    {!selectedLocation.type ?
+                    {!selectedLocation ?
                         <>
-                            <>
+                            <styled.LocationTypeContainer>
+                                <styled.Label schema={'locations'}>Stations</styled.Label>
                                 {renderStationButtons()}
-                            </>
+                            </styled.LocationTypeContainer>
 
                             {MiRMapEnabled &&
-                                <>
-
+                                <styled.LocationTypeContainer>
+                                    <styled.Label schema={'locations'}>Positions</styled.Label>
                                     {renderPositionButtons()}
 
-                                </>
+                                </styled.LocationTypeContainer>
                             }
                         </>
 
                         :
-                        <LocationButton type={selectedLocation.type} isSelected={true} handleAddLocation={onAddLocation} />
+                        <LocationButton
+                            type={selectedLocation.type}
+                            isSelected={(!!selectedLocation && selectedLocation.type !== null) ? selectedLocation.type : false}
+                            handleAddLocation={onAddLocation}
+                        />
 
                     }
 
                 </styled.DefaultTypesContainer>
 
-                {selectedLocation.schema === 'station' ?
+                {(!!selectedLocation && selectedLocation.schema === 'station') ?
 
                     <AssociatedPositions handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
                     :

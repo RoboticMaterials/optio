@@ -79,10 +79,16 @@ const Widgets = (props) => {
         dispatchWidgetLoaded(true)
         return () => {
             dispatchHoverStationInfo(null)
-            if (!!editingStation || !!editingPosition) {
-                dispatchSetSelectedStation(null)
-                dispatchSetSelectedPosition(null)
-            }
+            
+            dispatchSetSelectedStation(null)
+            dispatchSetSelectedPosition(null)
+
+            // TODO Delete this probably
+            // if (!!editingStation || !!editingPosition) {
+            //     dispatchSetSelectedStation(null)
+            //     dispatchSetSelectedPosition(null)
+            // }
+
             dispatchWidgetLoaded(false)
         }
     }, [])

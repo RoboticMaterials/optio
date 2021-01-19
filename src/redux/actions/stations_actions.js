@@ -176,8 +176,8 @@ export const updateStation = (station) => {
     return { type: UPDATE_STATION, payload: station }
 }
 
-export const updateStations = (stations, d3) => {
-    return { type: UPDATE_STATIONS, payload: { stations, d3 } }
+export const updateStations = (stations, selectedStation, d3) => {
+    return { type: UPDATE_STATIONS, payload: { stations, selectedStation, d3 } }
 }
 
 export const removeStationTO_BE_DELETED = (id) => {

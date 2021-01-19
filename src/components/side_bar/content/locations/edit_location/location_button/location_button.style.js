@@ -25,3 +25,12 @@ export const LocationTypeButton = styled.div`
 
     box-shadow: ${props => props.isSelected ? `inset 0 0.1rem 0.2rem rgba(0,0,0,.39), 0 -0.1rem 0.1rem rgba(255,255,255,0.1), 0 0.1rem 0 rgba(255,255,255,0.1)` : `0 0.2rem 0.3rem 0rem rgba(0,0,0,0.3)`};
 `
+
+export const LocationTypeLabel = styled.p`
+    font-family: ${props => props.theme.font.primary};
+    font-size: ${props => props.theme.fontSize.sz3};
+    color: ${props => props.theme.bg.octonary};
+    margin-bottom: auto;
+    user-select: none;
+    text-align: center;
+`

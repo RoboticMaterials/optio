@@ -5,6 +5,10 @@ import * as stylel from '../locations_content.style'
 export const ContentContainer = styled(stylel.ContentContainer)`
 `
 
+export const Label = styled(stylel.Label)`
+
+`
+
 export const DefaultTypesContainer = styled.div`
     display: flex;
     flex-direction: row;
@@ -14,15 +18,6 @@ export const DefaultTypesContainer = styled.div`
 
     margin-top: 0.5rem;
     padding-bottom: 0.5rem;
-`
-
-export const LocationTypeLabel = styled.p`
-    font-family: ${props => props.theme.font.primary};
-    font-size: ${props => props.theme.fontSize.sz3};
-    color: ${props => props.theme.bg.octonary};
-    margin-bottom: auto;
-    user-select: none;
-    text-align: center;
 `
 
 export const LocationTypeContainer = styled.div`

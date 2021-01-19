@@ -45,16 +45,32 @@ export const locationsSortedAlphabetically = (locations) => {
  */
 export const compareExistingVsIncomingLocations = (incomingLocations, existingLocations, d3) => {
 
-    Object.values(existingLocations).forEach(existngLocation => {
+    Object.values(existingLocations).forEach(existingLocation => {
+
         // If the location exists in the backend and frontend, take the new locations, but assign local x and y
-        if (existngLocation._id in incomingLocations) {
-            Object.assign(incomingLocations[existngLocation._id], { x: existngLocation.x, y: existngLocation.y })
+        if (existingLocation._id in incomingLocations) {
+            Object.assign(incomingLocations[existingLocation._id], { x: existingLocation.x, y: existingLocation.y })
         }
 
-        // If the ex
-        else if (existngLocation.new == true) {
-            incomingLocations[existngLocation._id] = existngLocation
+        // This was an attempt to fix incoming locations that had their position changed
+        // Didn't work
+        // But that should be obvious
+        // Cause if it did
+        // It wouldnt be commented
+        // Duh.
+        // if (existingLocation._id in incomingLocations && (incomingLocations[existingLocation._id].pos_x !== existingLocation.pos_x || incomingLocations[existingLocation._id].pos_y !== existingLocation.pos_y)) {
+        //     let x, y
+        //     [x, y] = convertRealToD3([incomingLocations[existingLocation._id].pos_x, incomingLocations[existingLocation._id].pos_y], d3)
+
+        //     Object.assign(incomingLocations[existingLocation._id], { x: x, y: y })
+        // }
+
+
+        // If the existing location is  new then make sure to pass it in
+        else if (existingLocation.new == true) {
+            incomingLocations[existingLocation._id] = existingLocation
         }
+        
     })
 
     // Compare incoming vs existing

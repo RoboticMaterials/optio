@@ -29,6 +29,8 @@ function Station(props) {
         station,
         rd3tClassName,
         d3,
+        handleEnableDrag,
+        handleDisableDrag,
     } = props
 
 
@@ -81,7 +83,6 @@ function Station(props) {
      * Passes the X, Y, scale and ID of station to redux which is then used in widgets
      */
     const handleWidgetHover = () => {
-
         return handleWidgetHoverCoord(station, rd3tClassName, d3)
 
     }
@@ -179,7 +180,7 @@ function Station(props) {
         if (!hoveringInfo && selectedTask === null) {
             setHovering(true)
 
-            if (!rotating && !translating && selectedStation === null && selectedTask === null) {
+            if (!rotating && !translating && !selectedStation && !selectedTask) {
                 dispatchHoverStationInfo(handleWidgetHover())
                 dispatchSetSelectedStation(station)
             }
@@ -194,12 +195,13 @@ function Station(props) {
         setTranslating(bool)
     }
 
-    const onRotating = () => {
-        setRotating(true)
+    const onRotating = (bool) => {
+        setRotating(bool)
     }
 
     const onMouseLeave = () => {
-        if (isSelected == true) { setHovering(false) }
+        setHovering(false)
+
     }
 
 
@@ -238,11 +240,11 @@ function Station(props) {
                 }}
 
                 handleEnableDrag={() => {
-                    console.log('QQQQ Enable Drag??')
+                    handleEnableDrag()
 
                 }}
                 handleDisableDrag={() => {
-                    console.log('QQQQ Disable Drag??')
+                    handleDisableDrag()
                 }}
 
 

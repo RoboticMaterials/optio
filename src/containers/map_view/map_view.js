@@ -300,11 +300,22 @@ export class MapView extends Component {
 
                     //// Apply the event translation to each station
                     Object.values(stations).forEach(station => {
+
                         [x, y] = convertRealToD3([station.pos_x, station.pos_y], this.d3)
                         Object.assign(station, { x, y })
                         stations[station._id] = station
+
                     })
-                    this.props.dispatchUpdateStations(stations) // Bulk Update
+
+                    // Apply the event translation to selectedStation if there is one
+                    let updatedSelectedStation = null
+                    if (!!this.props.selectedStation) {
+                        [x, y] = convertRealToD3([this.props.selectedStation.pos_x, this.props.selectedStation.pos_y], this.d3)
+                        updatedSelectedStation = this.props.selectedStation
+                        Object.assign(updatedSelectedStation, { x, y })
+                    }
+
+                    this.props.dispatchUpdateStations(stations, updatedSelectedStation, this.d3) // Bulk Update
 
                     //// Apply the event translation to each position
                     Object.values(positions).forEach(position => {
@@ -488,7 +499,7 @@ export class MapView extends Component {
 
 
     render() {
-        let { stations, positions, devices } = this.props
+        let { stations, positions, devices, selectedStation, selectedPosition } = this.props
         if (this.props.currentMap == null) { return (<></>) }
         const { translate, scale } = this.d3;
 
@@ -601,12 +612,16 @@ export class MapView extends Component {
                                     Object.values(stations)
                                         .filter(station => (station.map_id === this.props.currentMap._id))
                                         .map((station, ind) =>
+
                                             <Station key={`loc-${ind}`}
-                                                station={station}
+                                                // If there is a selected station, then render the selected station vs station in redux
+                                                // Selected station could contain local edits that are not on the backend (naked redux) yet 
+                                                station={(!!selectedStation && station._id === selectedStation._id) ? selectedStation : station}
+                                                // station={station}
                                                 rd3tClassName={`${this.rd3tStationClassName}_${ind}`}
                                                 d3={this.d3}
-                                                onEnableDrag={this.onEnableDrag}
-                                                onDisableDrag={this.onDisableDrag}
+                                                handleEnableDrag={this.onEnableDrag}
+                                                handleDisableDrag={this.onDisableDrag}
                                             />
                                         )
                                 }</>
@@ -773,7 +788,7 @@ const mapDispatchToProps = dispatch => {
         dispatchGetMap: (map_id) => dispatch(getMap(map_id)),
         dispatchSetCurrentMap: (map) => dispatch(setCurrentMap(map)),
 
-        dispatchUpdateStations: (stations) => dispatch(updateStations(stations)),
+        dispatchUpdateStations: (stations, selectedStation, d3) => dispatch(updateStations(stations, selectedStation, d3)),
         dispatchUpdatePositions: (positions) => dispatch(updatePositions(positions)),
         dispatchUpdateDevices: (devices, d3) => dispatch(deviceActions.updateDevices(devices, d3)),
 

@@ -51,22 +51,22 @@ export const StationTypes = {
         color: '#f4a460'
     },
 
-    workstation: {
-        svgPath:
-            <>
-                <rect x="100" y="40" width="300" height="300" rx="10" transform="translate(390 -50) rotate(90)" fill="none" strokeMiterlimit="10" strokeWidth="20" />
-                <rect x="120" y="60" width="260" height="260" rx="2" transform="translate(390 -50) rotate(90)" />
-            </>,
-        attributes:
-        {
-            schema: 'station',
-            type: 'workstation',
-            children: [],
-            dashboards: [],
-            new: true,
-        },
-        color: '#6283f0'
-    },
+    // workstation: {
+    //     svgPath:
+    //         <>
+    //             <rect x="100" y="40" width="300" height="300" rx="10" transform="translate(390 -50) rotate(90)" fill="none" strokeMiterlimit="10" strokeWidth="20" />
+    //             <rect x="120" y="60" width="260" height="260" rx="2" transform="translate(390 -50) rotate(90)" />
+    //         </>,
+    //     attributes:
+    //     {
+    //         schema: 'station',
+    //         type: 'workstation',
+    //         children: [],
+    //         dashboards: [],
+    //         new: true,
+    //     },
+    //     color: '#6283f0'
+    // },
 
     human: {
         svgPath:
