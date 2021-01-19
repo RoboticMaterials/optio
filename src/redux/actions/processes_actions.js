@@ -160,8 +160,10 @@ export const removeRouteFromAllProcesses = (routeId) => {
         // loop through each of these processes, check if removing the route will break the process, then remove the route
         for (const currProcess of routeProcesses) {
 
+            const processRoutes = currProcess.routes.map((currRoute) => routes[currRoute])
+
             // will removing route break the process?
-            const willBreak = willRouteDeleteBreakProcess(currProcess, routeId, routes)
+            const willBreak = willRouteDeleteBreakProcess(processRoutes, routeId)
             console.log("willBreak",willBreak)
 
             // dispatch update

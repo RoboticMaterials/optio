@@ -58,18 +58,19 @@ const ProcessesContent = () => {
     useEffect(() => {
         // Maps through all process and sees if they're broken
         Object.values(processes).map((process) => {
+            const processRoutes = process.routes.map((currRoute) => tasks[currRoute])
 
             // If it was previously broken, but not anymore, then correct that ish
-            if (!!process.broken && !isBrokenProcess(process, tasks)) {
+            if (!!process.broken && !isBrokenProcess(processRoutes, tasks)) {
                 console.log('Process was broken but now fixed')
                 process.broken = null
                 dispatchPutProcess(process)
             }
 
             // Else if the process is broken, so fix that ish
-            else if (!!isBrokenProcess(process, tasks) && process.broken === null) {
+            else if (!!isBrokenProcess(processRoutes, tasks) && process.broken === null) {
                 console.log('QQQQ Process is broken')
-                process.broken = isBrokenProcess(process, tasks)
+                process.broken = isBrokenProcess(processRoutes, tasks)
                 dispatchPutProcess(process)
             }
         })

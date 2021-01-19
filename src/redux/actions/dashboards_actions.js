@@ -38,15 +38,20 @@ import {
     FINISH_ENABLED
 } from "../types/suffixes"
 
+import uuid from 'uuid'
+
 import * as api from '../../api/dashboards_api'
 import { dashboardsSchema } from '../../normalizr/schema';
-import {getLoadStationId, getRouteProcesses} from "../../methods/utils/route_utils";
+import {getLoadStationId, getRouteProcesses, getUnloadStationId} from "../../methods/utils/route_utils";
 import {willRouteDeleteBreakProcess} from "../../methods/utils/processes_utils";
 import {putProcesses, setSelectedProcess} from "./processes_actions";
 import {deleteTask} from "./tasks_actions";
 import {deepCopy} from "../../methods/utils/utils";
 import {useSelector} from "react-redux";
 import * as stationActions from "./stations_actions";
+import {getDefaultStation} from "../../methods/utils/station_utils";
+import {removeArrayIndices} from "../../methods/utils/array_utils";
+import {ROUTE_TYPES} from "../../constants/route_constants";
 
 
 export const getDashboards = () => {
@@ -184,63 +189,134 @@ export const removeRouteFromAllDashboards = (routeId) => {
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-// deletes all buttons with routeId from all dashboards
+// automatically adds a button for a route to its load station's dashboard
 // ******************************
 export const addRouteToDashboards = (route) => {
     return async (dispatch, getState) => {
 
         // current state
         const state = getState()
-
         const dashboards = state.dashboardsReducer.dashboards || {}
-        const routes = state.tasksReducer.tasks || {}
         const stations = state.locationsReducer.stations || {}
 
-        // Add the task automatically to the associated load station dashboard
-        // Since as of now the only type of task we are doing is push, only need to add it to the load location
-        const loadStation = stations[getLoadStationId(route)]
+        const {
+            _id: routeId,
+            type: routeType,
+            name: routeName
+        } = route
 
+        // get station for route button (load if push, unload if pull)
+        let stationId
+        if(routeType === ROUTE_TYPES.PULL) {
+            stationId = getUnloadStationId(route)
+        }
+        else {
+            stationId = getLoadStationId(route)
+        }
 
-        const dashboard = dashboards[loadStation.dashboards[0]]
+        const station = stations[stationId] || getDefaultStation()
+        const dashboard = dashboards[station.dashboards[0]] || {}
 
         const newDashboardButton = {
             color: '#bcbcbc',
-            id: selectedTask._id,
-            name: selectedTask.name,
-            task_id: selectedTask._id
+            id: uuid.v4(),
+            name: routeName,
+            task_id: routeId
         }
 
         if (dashboard === undefined) {
             const defaultDashboard = {
-                name: updatedStation.name + ' Dashboard',
+                name: station.name + ' Dashboard',
                 buttons: [newDashboardButton],
-                station: updatedStation._id
+                station: station._id
             }
-            const postDashboardPromise = postDashboard(defaultDashboard)
+            const postDashboardPromise = dispatch(postDashboard(defaultDashboard))
             postDashboardPromise.then(async postedDashboard => {
                 alert('Added dashboard to location. There already should be a dashboard tied to this location, so this is an temp fix')
-                await stationActions.putStation({
-                    ...loadStation,
+                await dispatch(stationActions.putStation({
+                    ...station,
                     dashboards: [postedDashboard._id.$oid]
-                }, loadStation._id)
+                }, station._id))
 
             })
         }
 
         else {
+            console.log("adawd dashboard", dashboard)
+            // see if button for task already exists
             const buttonIndex = dashboard.buttons.findIndex((currButton) => {
                 return currButton.task_id === route._id
             })
 
             // only add button if it isn't already in the dashboard
             if(buttonIndex === -1) {
-                putDashboard({
+                dispatch(putDashboard({
                     ...dashboard,
                     buttons: [...dashboard.buttons, newDashboardButton]
-                }, dashboard._id.$oid)
+                }, dashboard._id.$oid))
             }
 
         }
+    }
+}
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// automatically removes a button that was added to a dashboard but no longer belongs to it
+// ******************************
+export const removeRouteFromWrongDashboards = (route) => {
+    return async (dispatch, getState) => {
+
+        // current state
+        const state = getState()
+        const dashboards = Object.values(state.dashboardsReducer.dashboards) || []
+
+        const {
+            _id: routeId,
+            type: routeType
+        } = route
+
+        // get station id for route (load for push, unload for pull)
+        let stationId
+        if(routeType === ROUTE_TYPES.PULL) {
+            // if pull type, button should be at unload station
+            stationId = getUnloadStationId(route)
+        }
+
+        else {
+            // if push type, button should be at load station
+            stationId = getLoadStationId(route)
+        }
+
+        dashboards.forEach((currDashboard) => {
+            const {
+                buttons: currDashboardButtons = [],
+                _id: currDashboardIdObj = {},
+                station: currStationId
+            } = currDashboard
+
+            const {
+                $oid: currDashboardId
+            } = currDashboardIdObj
+
+            // curr dashboard isn't the route's load station
+            if(currStationId !== stationId) {
+
+                // loop through each button and check if the button needs to be removed
+                const filteredButtons = currDashboardButtons.filter((currButton, currButtonIndex) => {
+                    const {
+                        task_id: currRouteId
+                    } = currButton
+
+                    return(currRouteId !== routeId) // if dashboard isn't at the right station for the route, filter out buttons for this route
+                })
+
+                // update the dashboard
+                dispatch(putDashboard({
+                    ...currDashboard,
+                    buttons: filteredButtons
+                }, currDashboardId))
+            }
+        })
     }
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -127,6 +127,11 @@ const TaskField = (props) => {
             setFieldValue(fieldParent ? `${fieldParent}.unload` : "unload", selectedTask.unload)
         }
 
+        if(selectedTask && selectedTask.type) {
+            setFieldValue(fieldParent ? `${fieldParent}.type` : "type", selectedTask.type)
+        }
+
+
         // set touched if changes
         return () => {
             if(selectedTask && selectedTask.load) {
@@ -369,11 +374,10 @@ const TaskField = (props) => {
 
                                     // This filters out tasks when fixing a process
                                     // If the process is broken, then you can only select tasks that are associated with the last route before break's unload station
-                                    if (!!fixingProcess) {
+                                    if (fixingProcess) {
 
                                         // Gets the route before break
-                                        const routeIdBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
-                                        const routeBeforeBreak = routes[routeIdBeforeBreak]
+                                        const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
 
                                         if (!!routeBeforeBreak.unload) {
                                             const unloadStationID = routeBeforeBreak.unload.station

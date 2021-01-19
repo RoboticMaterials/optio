@@ -223,19 +223,40 @@ export const deleteRouteClean = (routeId) => {
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-// delete
+// PUT clean
 // ******************************
 export const putRouteClean = (route, routeId) => {
     return async (dispatch, getState) => {
 
-        // handle adding buttons to dashboards
-        await dispatch(dashboardsActions.addRouteToDashboards(route))
-
         // put task
         await dispatch(putTask(route, routeId));
+
+        // remove buttons associated with route at dashboards at the wrong station
+        await dispatch(dashboardsActions.removeRouteFromWrongDashboards(route))
+
+        // handle adding buttons to dashboards
+        await dispatch(dashboardsActions.addRouteToDashboards(route))
     }
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// POST clean
+// ******************************
+export const postRouteClean = (route) => {
+    return async (dispatch, getState) => {
+
+        // post route
+        await dispatch(postTask(route));
+
+        // remove buttons associated with route at dashboards at the wrong station
+        await dispatch(dashboardsActions.removeRouteFromWrongDashboards(route))
+
+        // handle adding buttons to dashboards
+        await dispatch(dashboardsActions.addRouteToDashboards(route))
+    }
+}
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 
 

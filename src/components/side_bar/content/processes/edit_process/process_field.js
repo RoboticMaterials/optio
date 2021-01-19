@@ -14,7 +14,18 @@ import TextField from "../../../../basic/form/text_field/text_field";
 import ListItemField from "../../../../basic/form/list_item_field/list_item_field";
 
 // Import actions
-import { setSelectedTask, addTask, putTask, deleteTask, setTasks, removeTask, removeTasks, getTasks, deleteRouteClean } from '../../../../../redux/actions/tasks_actions'
+import {
+    setSelectedTask,
+    addTask,
+    putTask,
+    deleteTask,
+    setTasks,
+    removeTask,
+    removeTasks,
+    getTasks,
+    deleteRouteClean,
+    putRouteClean
+} from '../../../../../redux/actions/tasks_actions'
 import { setSelectedProcess, postProcesses, putProcesses, deleteProcesses, setFixingProcess } from '../../../../../redux/actions/processes_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 
@@ -74,8 +85,8 @@ export const ProcessField = (props) => {
     // const dispatchSetTasks = (tasks) => dispatch(setTasks(tasks))
     const dispatchSetTasks = (tasks) => {}
 
-    const dispatchPutRoute = (task, ID) => dispatch(putTask(task, ID))
-    const dispatchPostRoute = async (route) => await dispatch(taskActions.postTask(route))
+    const dispatchPutRouteClean = async (route, routeId) => await dispatch(putRouteClean(route, routeId))
+    const dispatchPostRouteClean = async (route) => await dispatch(taskActions.postRouteClean(route))
     const dispatchGetTasks = () => dispatch(getTasks())
 
     // const dispatchRemoveTask = (taskId) => dispatch(removeTask(taskId))
@@ -101,6 +112,8 @@ export const ProcessField = (props) => {
     const [showExistingTaskWarning, setShowExistingTaskWarning] = useState(false);
 
     const valuesRef = useRef(values) // needed for handling cleanup - unsaved tasks have to be removed, and useEffect will only have access to initialValues
+
+    const routeIds = values.routes.map((currRoute) => currRoute._id)
 
     useEffect(() => {
         valuesRef.current = values // update valuesRef
@@ -177,21 +190,24 @@ export const ProcessField = (props) => {
                 newRoute = {...remainingRoute, unsaved: true}
             }
 
-            // if not a new process, go ahead and save new route
-            if(!values.new) {
-                await onSave({
-                    ...values,
-                    routes:  [...values.routes, newRoute]   // append new route
-                }, false)
-            }
+
 
             if(values.broken) {
+
                 // check if new route will fix process
                 let updatedRoute = [...values.routes]
-                let willFix = willRouteAdditionFixProcess(selectedProcess, remainingRoute, tasks)
+                let willFix = willRouteAdditionFixProcess(values.routes, values.broken, remainingRoute)
 
                 // add route to values at broken index
                 updatedRoute.splice(values.broken, 0, newRoute)
+
+                // if not a new process, go ahead and save new route
+                if(!values.new) {
+                    await onSave({
+                        ...values,
+                        routes:  updatedRoute   // append new route
+                    }, false)
+                }
 
                 // update values
                 setFieldValue("routes", updatedRoute)
@@ -199,6 +215,14 @@ export const ProcessField = (props) => {
             }
 
             else {
+                // if not a new process, go ahead and save new route
+                if(!values.new) {
+                    await onSave({
+                        ...values,
+                        routes:  [...values.routes, newRoute]   // append new route
+                    }, false)
+                }
+
                 // not broken, just append to routes
                 setFieldValue("routes", [...values.routes, newRoute])
             }
@@ -214,7 +238,7 @@ export const ProcessField = (props) => {
 
             // get routes processes
             const routeProcesses = getRouteProcesses(currRouteValue._id)
-            const belongsToAnotherProcess = routeProcesses.findIndex((currProcess) => currProcess._id !== selectedProcess._id)
+            const belongsToAnotherProcess = routeProcesses.findIndex((currProcess) => currProcess._id !== values._id)
 
             // if route belongs to more than one process, give option to make a copy of the route so other processes won't be affected
             if(belongsToAnotherProcess !== -1) {
@@ -245,13 +269,13 @@ export const ProcessField = (props) => {
                 value: currRouteValue,
             } = fieldMeta
 
-            dispatchPutRoute(currRouteValue, currRouteValue._id)
+            dispatchPutRouteClean(currRouteValue, currRouteValue._id)
 
             onSave(values, false)
         }
 
         // if not new route, only thing to check is if any changes broke the process
-        setFieldValue("broken", isBrokenProcess(selectedProcess, tasks))
+        setFieldValue("broken", isBrokenProcess(values.routes, tasks))
     }
 
     const createNewTask = async () => {
@@ -266,7 +290,7 @@ export const ProcessField = (props) => {
 
         if(!values.new) {
             // Update existing route, not a new process, so save now
-            await dispatchPostRoute(routeClone)
+            await dispatchPostRouteClean(routeClone)
 
             const valueRoutes = values.routes
             valueRoutes.splice(editingTask, 1, routeClone) // replace existing route with new clone
@@ -284,26 +308,28 @@ export const ProcessField = (props) => {
         }
 
         // if not new route, only thing to check is if any changes broke the process
-        setFieldValue("broken", isBrokenProcess(selectedProcess, tasks))
+        setFieldValue("broken", isBrokenProcess(values.routes, tasks))
     }
 
     /**
      * Removes the route from the array of routes for a process
      */
     const handleRemoveTask = (routeId) => {
+        console.log("handleRemoveTask routeId", routeId)
         setEditingTask(false)
         setFieldValue("newRoute", null)
         dispatchSetSelectedTask(null) // Deselect
 
         let updatedProcess = {...selectedProcess}
 
-        const willBreak = willRouteDeleteBreakProcess(updatedProcess, routeId, tasks)
+        const willBreak = willRouteDeleteBreakProcess(values.routes, routeId)
+        console.log("willbreak", willBreak)
 
         // If the route removal breaks the process then update the process
-        if (!!willBreak) {
+        // if (!!willBreak) {
             setFieldValue("broken", willBreak)
             // updatedProcess.broken = willBreak
-        }
+        // }
 
         // Remove the route from the process
         const index = values.routes.findIndex((currRoute) => currRoute._id === routeId)
@@ -330,7 +356,7 @@ export const ProcessField = (props) => {
 
     const handleDeleteRoute = async (routeId) => {
 
-        const willBreak = willRouteDeleteBreakProcess(selectedProcess, routeId, tasks)
+        const willBreak = willRouteDeleteBreakProcess(values.routes, routeId)
         if (!!willBreak) {
             setFieldValue("broken", willBreak)
         }
@@ -428,7 +454,7 @@ export const ProcessField = (props) => {
                     }
 
                     {/* If the process is broken and it's at the broken index, then show a button there to fix it */}
-                    {(!!selectedProcess.broken && currIndex === selectedProcess.broken - 1) &&
+                    {(!!values.broken && currIndex === values.broken - 1) &&
 
                     <Button
                         schema={'devices'}
@@ -587,7 +613,7 @@ export const ProcessField = (props) => {
                     <TextField
                         focus={!values.name}
                         placeholder='Process Name'
-                        defaultValue={selectedProcess.name}
+                        defaultValue={values.name}
                         schema={'processes'}
                         name={`name`}
                         InputComponent={Textbox}

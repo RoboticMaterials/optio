@@ -4,7 +4,13 @@ import {processSchema} from "../../../../../methods/utils/form_schemas";
 import React from "react";
 import {ProcessField} from "../edit_process/process_field";
 import uuid from 'uuid'
-import {deleteTask, putTask, setSelectedTask} from "../../../../../redux/actions/tasks_actions";
+import {
+	deleteRouteClean,
+	deleteTask,
+	putRouteClean,
+	putTask,
+	setSelectedTask
+} from "../../../../../redux/actions/tasks_actions";
 import {
 	deleteProcesses,
 	postProcesses,
@@ -27,11 +33,13 @@ const ProcessForm = (props) => {
 	const dispatchPostProcess = async (process) => await dispatch(postProcesses(process))
 
 	const dispatchPutProcess = async (process) => await dispatch(putProcesses(process))
-	const dispatchPostRoute = async (route) => await dispatch(taskActions.postTask(route))
-	const dispatchPutTask = (task, ID) => dispatch(putTask(task, ID))
+
+	const dispatchPostRouteClean = async (route) => await dispatch(taskActions.postRouteClean(route))
+	const dispatchPutRouteClean = (task, ID) => dispatch(putRouteClean(task, ID))
+
 	const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
 	const dispatchDeleteProcess = async (ID) => await dispatch(deleteProcesses(ID))
-	const dispatchDeleteTask = (ID) => dispatch(deleteTask(ID))
+	const dispatchDeleteRouteClean = (routeId) => dispatch(deleteRouteClean(routeId))
 
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
@@ -52,13 +60,13 @@ const ProcessForm = (props) => {
 			// if not saved, POST
 			if(currRoute.unsaved) {
 				cleanRoute(currRoute)
-				await dispatchPostRoute(currRoute)
+				await dispatchPostRouteClean(currRoute)
 			}
 
 			// otherwise, PUT
 			else {
 				cleanRoute(currRoute)
-				await dispatchPutTask(currRoute, currRoute._id)
+				await dispatchPutRouteClean(currRoute, currRoute._id)
 			}
 		}
 
@@ -120,7 +128,7 @@ const ProcessForm = (props) => {
 
 		// If there's routes in this process, delete the routes
 		if (selectedProcess.routes.length > 0) {
-			selectedProcess.routes.forEach(route => dispatchDeleteTask(route))
+			selectedProcess.routes.forEach(route => dispatchDeleteRouteClean(route))
 		}
 
 		await dispatchDeleteProcess(selectedProcess._id)
