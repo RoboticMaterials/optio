@@ -65,7 +65,7 @@ const EditTask = (props) => {
     const processes = useSelector(state => state.processesReducer.processes)
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
 
-    const stations = useSelector(state => state.locationsReducer.stations)
+    const stations = useSelector(state => state.stationsReducer.stations)
 
     const [obj, setObject] = useState({}) // The current object (may or may not be on backend, but if not it will be posted when task is saved)
     // const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)

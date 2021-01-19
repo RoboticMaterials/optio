@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom'
 const WidgetPageHeader = (props) => {
 
     const params = useParams()
-    const locations = useSelector(state => state.locationsReducer.locations)
+    const stations = useSelector(state => state.stationsReducer.stations)
 
     const locationID = params.locationID
 
@@ -16,7 +16,7 @@ const WidgetPageHeader = (props) => {
 
     let locationName = ''
     try {
-        locationName = locations[locationID].name
+        locationName = stations[locationID].name
         
     } catch (error) {
         

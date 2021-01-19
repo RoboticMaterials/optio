@@ -23,7 +23,7 @@ const LoadUnloadFields = () => {
 
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const sounds = useSelector(state => state.soundsReducer.sounds)
-    const stations = useSelector(state => state.locationsReducer.stations)
+    const stations = useSelector(state => state.stationsReducer.stations)
 
 
     // This handles if any position of a route is a human position, then it cant be done by a robot

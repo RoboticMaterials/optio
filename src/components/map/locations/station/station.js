@@ -41,7 +41,6 @@ function Station(props) {
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
 
-
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
@@ -191,8 +190,8 @@ function Station(props) {
         onSetStationTask()
     }
 
-    const onTranslating = () => {
-        setTranslating(true)
+    const onTranslating = (bool) => {
+        setTranslating(bool)
     }
 
     const onRotating = () => {

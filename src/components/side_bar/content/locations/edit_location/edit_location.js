@@ -16,14 +16,15 @@ import Button from '../../../../basic/button/button'
 
 // Import actions
 import { sideBarBack, deleteLocationProcess } from '../../../../../redux/actions/locations_actions'
-import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition } from '../../../../../redux/actions/positions_actions'
-import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setSelectedStationChildrenCopy } from '../../../../../redux/actions/stations_actions'
+import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition, setEditingPosition } from '../../../../../redux/actions/positions_actions'
+import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setSelectedStationChildrenCopy, setEditingStation } from '../../../../../redux/actions/stations_actions'
 
 
 const EditLocation = () => {
     const dispatch = useDispatch()
 
     const dispatchSetSelectedStaion = (station) => dispatch(setSelectedStation(station))
+    const dispatchSetEditingStation = (bool) => dispatch(setEditingStation(bool))
     const dispatchSetStationAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
     const dispatchAddStation = (station) => dispatch(addStation(station))
     const dispatchSetSelectedStationChildrenCopy = (children) => dispatch(setSelectedStationChildrenCopy(children))
@@ -31,16 +32,16 @@ const EditLocation = () => {
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
     const dispatchAddPosition = (pos) => dispatch(addPosition(pos))
     const dispatchSetPositionAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
+    const dispatchSetEditingPosition = (bool) => dispatch(setEditingPosition(bool))
 
-    const stations = useSelector(state => state.locationsReducer.stations)
+    const stations = useSelector(state => state.stationsReducer.stations)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
-    const positions = useSelector(state => state.locationsReducer.positions)
+    const positions = useSelector(state => state.positionsReducer.positions)
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const devices = useSelector(state => state.devicesReducer.devices)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
-    const editing = useSelector(state => state.locationsReducer.editingLocation)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const processes = useSelector(state => state.processesReducer.processes)
 
@@ -61,7 +62,11 @@ const EditLocation = () => {
     }
 
     const onBack = () => {
+        dispatchSetEditingStation(false)
+        dispatchSetEditingPosition(false)
 
+        dispatchSetSelectedPosition(null)
+        dispatchSetSelectedStaion(null)
     }
 
     const onAddLocation = () => {

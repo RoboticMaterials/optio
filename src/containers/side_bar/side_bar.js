@@ -71,8 +71,6 @@ const SideBar = (props) => {
 
     const locationEditing = !!editingStation ? editingStation : editingPosition
 
-    console.log('QQQQ Editing', locationEditing)
-
     const boundToWindowSize = () => {
         const newWidth = Math.min(window.innerWidth, Math.max(360, width))
         setWidth(newWidth)

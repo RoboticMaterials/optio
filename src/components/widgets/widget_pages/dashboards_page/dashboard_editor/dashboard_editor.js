@@ -61,7 +61,7 @@ const DashboardEditor = (props) => {
     const onDeleteDashboard = async (ID) => await dispatch(deleteDashboard(ID))
     const onPutStation = async (station, ID) => await dispatch(putStation(station, ID))
 
-    const stations = useSelector(state => state.locationsReducer.stations)
+    const stations = useSelector(state => state.stationsReducer.stations)
 
     /*
     * Returns initialValues object for Formik

@@ -16,7 +16,7 @@ const TaskStatistics = (props) => {
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const tasks = useSelector(state => state.tasksReducer.tasks)
-    const positions = useSelector(state => state.locationsReducer.positions)
+    const positions = useSelector(state => state.positionsReducer.positions)
     const tasksAnalysis = useSelector(state => state.taskAnalysisReducer.tasksAnalysis) || {}
 
 

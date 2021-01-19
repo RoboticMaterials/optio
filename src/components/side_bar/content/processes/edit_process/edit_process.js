@@ -49,7 +49,7 @@ const EditProcess = (props) => {
     const dispatchSetFixingProcess = async (bool) => await dispatch(setFixingProcess(bool))
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
-    const stations = useSelector(state => state.locationsReducer.stations)
+    const stations = useSelector(state => state.stationsReducer.stations)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const currentMap = useSelector(state => state.mapReducer.currentMap)

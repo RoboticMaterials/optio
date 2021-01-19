@@ -32,7 +32,7 @@ import { compareExistingVsIncomingLocations } from '../../methods/utils/location
 const defaultState = {
     positions: {},
 
-    selectedPosition: {},
+    selectedPosition: null,
 
     editingPosition: false,
 

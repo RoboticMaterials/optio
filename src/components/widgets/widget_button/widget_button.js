@@ -14,10 +14,6 @@ import { putStation, setSelectedStationChildrenCopy } from '../../../redux/actio
 import {widgetLoaded, hoverStationInfo} from '../../../redux/actions/widget_actions'
 import { postDashboard, dashboardOpen } from '../../../redux/actions/dashboards_actions'
 
-import * as sidebarActions from "../../../redux/actions/sidebar_actions"
-import * as locationActions from '../../../redux/actions/locations_actions'
-import * as dashboardActions from '../../../redux/actions/dashboards_actions'
-
 import { deepCopy } from '../../../methods/utils/utils'
 
 
@@ -46,15 +42,14 @@ const WidgetButton = (props) => {
     const onPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
     const onPutStation = (station, ID) => dispatch(putStation(station, ID))
 
-    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
-    const editing = useSelector(state => state.locationsReducer.editingLocation)
-    const positions = useSelector(state => state.locationsReducer.positions)
+    const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
+    const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const showSideBar = useSelector(state => state.sidebarReducer.open)
-    const stations = useSelector(state => state.locationsReducer.stations)
+    const stations = useSelector(state => state.stationsReducer.stations)
 
     const dashboardID = params.dashboardID
 
-
+    const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
 
     const handleOnClick = () => {
         switch (props.type) {

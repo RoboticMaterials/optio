@@ -38,7 +38,7 @@ export default function Positions(props) {
 
     const dispatchSetStationAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
 
-    const positions = useSelector(state => state.locationsReducer.positions)
+    const positions = useSelector(state => state.positionsReducer.positions)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const tasks = useSelector(state => state.tasksReducer.tasks)

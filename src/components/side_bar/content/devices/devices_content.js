@@ -60,7 +60,7 @@ const DevicesContent = () => {
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedStationChildrenCopy = useSelector(state => state.stationsReducer.selectedStationChildrenCopy)
     const stations = useSelector(state => state.stationsReducer.stations)
-    const positions = useSelector(state => state.locationsReducer.positions)
+    const positions = useSelector(state => state.positionsReducer.positions)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const selectedDevice = useSelector(state => state.devicesReducer.selectedDevice)

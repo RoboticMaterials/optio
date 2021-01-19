@@ -38,7 +38,7 @@ const LocationSvg = (props) => {
         <styled.WorkstationGroup
             id={rd3tClassName}
             className={rd3tClassName}
-            style={{fill: color, stroke: color}}
+            style={{ fill: color, stroke: color }}
             onMouseEnter={() => {
                 handleMouseEnter()
             }}
@@ -81,7 +81,10 @@ const LocationSvg = (props) => {
                 <circle x="-20" y="-20" r="20" strokeWidth="0" fill="transparent" style={{ cursor: rotating ? "pointer" : "grab" }} />
                 {isSelected && (hovering || rotating) && hoveringInfo === null &&
                     <>
-                        <circle x="-20" y="-20" r="18" fill="none" strokeWidth="4" stroke="transparent" style={{ cursor: "pointer" }} onMouseDown={() => handleRotating()}></circle>
+                        <circle x="-20" y="-20" r="18" fill="none" strokeWidth="4" stroke="transparent" style={{ cursor: "pointer" }}
+                            onMouseDown={() => handleRotating(true)}
+                            onMouseUp={() => handleRotating(false)}
+                        />
                         <circle x="-18" y="-18" r="18" fill="none" strokeWidth="0.8" style={{ filter: "url(#glow)", cursor: "pointer" }} />
                     </>
                 }
@@ -93,7 +96,8 @@ const LocationSvg = (props) => {
                 onMouseEnter={() => {
                     handleMouseEnter()
                 }}
-                onMouseDown={() => handleTranslating()}
+                onMouseDown={() => handleTranslating(true)}
+                onMouseUp={() => handleTranslating(false)}
 
                 transform={location.type === 'device' && 'scale(.07) translate(-180,-140)'}
             >

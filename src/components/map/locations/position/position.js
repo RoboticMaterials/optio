@@ -5,24 +5,25 @@ import { useParams } from 'react-router-dom'
 // Import Utils
 import { deepCopy } from '../../../../methods/utils/utils'
 import { handleWidgetHoverCoord } from '../../../../methods/utils/widget_utils'
+import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 
 // Import Constants
 import { PositionTypes } from '../../../../constants/position_constants'
 
 // Import Actions
 import { setTaskAttributes } from '../../../../redux/actions/tasks_actions'
-import { setSelectedPosition } from '../../../../redux/actions/positions_actions'
+import { setSelectedPosition, setPositionAttributes } from '../../../../redux/actions/positions_actions'
 import { hoverStationInfo } from '../../../../redux/actions/widget_actions'
+
+// Import Components
+import LocationSvg from '../location_svg/location_svg'
+import DragEntityProto from '../drag_entity_proto'
 
 function Position(props) {
 
     const {
-        color,
         d3,
-        isSelected,
         position,
-        onDisableDrag,
-        onEnableDrag,
         rd3tClassName,
     } = props
 
@@ -35,12 +36,27 @@ function Position(props) {
     const dispatchSetTaskAttributes = (id, load) => dispatch(setTaskAttributes(id, load))
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
+    const dispatchSetPositionAttributes = (id, attr) => dispatch(setPositionAttributes(id, attr))
 
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const hoveringID = useSelector(state => state.widgetReducer.hoverLocationID)
     const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
+
+    const isSelected = !!selectedPosition && selectedPosition._id === position._id
+
+    // Tells the position to glow
+    const shouldGlow = selectedTask !== null &&
+        ((selectedTask.load.position == position._id && selectedTask.type == 'push') ||
+            (selectedTask.unload.position == position._id && selectedTask.type == 'pull') ||
+            (selectedTask.load.position == position._id && selectedTask.type == 'both') ||
+            (selectedTask.unload.position == position._id && selectedTask.type == 'both'))
+
+    // Set Color
+    let color = PositionTypes[position.type].color
+    if (!isSelected && !!selectedPosition) color = '#afb5c9' // Grey
+    else if (isSelected) color = '#38eb87' // Green
 
     useEffect(() => {
         //window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
@@ -105,32 +121,91 @@ function Position(props) {
         }
     }
 
-    // Tells the position to glow
-    const shouldGlow = selectedTask !== null &&
-        ((selectedTask.load.position == position._id && selectedTask.type == 'push') ||
-            (selectedTask.unload.position == position._id && selectedTask.type == 'pull') ||
-            (selectedTask.load.position == position._id && selectedTask.type == 'both') ||
-            (selectedTask.unload.position == position._id && selectedTask.type == 'both'))
+    const onMouseEnter = () => {
+        // Only hover if there is no selected task
+        if (selectedTask === null) {
+            setHovering(true)
+            if (!rotating && !translating && selectedPosition === null && selectedTask === null) {
+                dispatchHoverStationInfo(handleWidgetHover())
+                dispatchSetSelectedPosition(position)
+
+            }
+        }
+
+    }
+
+    const onMouseDown = () => {
+        onSetPositionTask()
+    }
+
+    const onTranslating = (bool) => {
+        setTranslating(bool)
+    }
+
+    const onRotating = (bool) => {
+        setRotating(bool)
+    }
+
+    const onMouseLeave = () => {
+        position.name !== 'TempRightClickMovePosition' && setHovering(false)
+    }
+
+    return (
+        <React.Fragment key={`frag-loc-${position._id}`}>
+            <LocationSvg
+                location={position}
+                rd3tClassName={rd3tClassName}
+                color={color}
+                d3={d3}
+                isSelected={isSelected}
+                hovering={hovering}
+                rotating={rotating}
+                hoveringInfo={hoveringInfo}
+                shouldGlow={shouldGlow}
+
+                handleMouseEnter={onMouseEnter}
+                handleMouseLeave={onMouseLeave}
+                handleMouseDown={onMouseDown}
+                handleTranslating={onTranslating}
+                handleRotating={onRotating}
+
+            />
+
+            <DragEntityProto
+                isSelected={isSelected}
+                location={position}
+                rd3tClassName={rd3tClassName}
+                d3={() => d3()}
+
+                handleRotate={(rotation) => { dispatchSetPositionAttributes(position._id, { rotation }) }}
+                handleTranslate={({ x, y }) => dispatchSetPositionAttributes(position._id, { x, y })}
+                handleTranslateEnd={({ x, y }) => {
+                    const pos = convertD3ToReal([x, y], props.d3)
+                    dispatchSetPositionAttributes(position._id, { pos_x: pos[0], pos_y: pos[1] })
+                }}
+
+                handleEnableDrag={() => {
+                    console.log('QQQQ Enable Drag??')
+
+                }}
+                handleDisableDrag={() => {
+                    console.log('QQQQ Disable Drag??')
+                }}
+
+
+            />
+        </React.Fragment>
+    )
 
     return (
         <g
             className={rd3tClassName}
             style={{ fill: color, stroke: color, strokeWidth: '0', opacity: '0.8', cursor: "pointer" }}
             onMouseEnter={() => {
-                // Only hover if there is no selected task
-                if (selectedTask === null) {
-                    setHovering(true)
-                    if (!rotating && !translating && selectedPosition === null && selectedTask === null) {
-                        dispatchHoverStationInfo(handleWidgetHover())
-                        dispatchSetSelectedPosition(position)
-
-                    }
-                }
 
             }}
-            onMouseLeave={() => { position.name !== 'TempRightClickMovePosition' && setHovering(false) }}
+            onMouseLeave={() => { }}
             onMouseDown={() => {
-                onSetPositionTask()
 
             }}
             transform={`translate(${position.x},${position.y}) rotate(${360 - position.rotation}) scale(${d3.scale / d3.imgResolution})`}
@@ -179,14 +254,6 @@ function Position(props) {
             </g>
 
             <g className={`${rd3tClassName}-trans`} id={`${rd3tClassName}-trans`} transform={"scale(1, 1)", position.type === 'shelf_position' && "rotate(90)"}
-                onMouseDown={() => {
-                    setTranslating(true)
-                }}
-
-                onMouseUp={() => {
-                    setTranslating(false)
-                }}
-
             >
 
 

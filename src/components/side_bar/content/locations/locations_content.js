@@ -10,8 +10,8 @@ import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 
 // Import actions
 import { sideBarBack, deleteLocationProcess } from '../../../../redux/actions/locations_actions'
-import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition } from '../../../../redux/actions/positions_actions'
-import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setSelectedStationChildrenCopy } from '../../../../redux/actions/stations_actions'
+import { setEditingPosition, setSelectedPosition } from '../../../../redux/actions/positions_actions'
+import { setEditingStation, setSelectedStation } from '../../../../redux/actions/stations_actions'
 
 // Import Utils
 import { setAction } from '../../../../redux/actions/sidebar_actions'
@@ -25,14 +25,11 @@ export default function LocationContent() {
 
     const dispatch = useDispatch()
 
-    const dispatchSetSelectedStaion = (station) => dispatch(setSelectedStation(station))
-    const dispatchSetStationAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
-    const dispatchAddStation = (station) => dispatch(addStation(station))
-    const dispatchSetSelectedStationChildrenCopy = (children) => dispatch(setSelectedStationChildrenCopy(children))
-
+    const dispatchSetEditingPosition = (bool) => dispatch(setEditingPosition(bool))
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
-    const dispatchAddPosition = (pos) => dispatch(addPosition(pos))
-    const dispatchSetPositionAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
+
+    const dispatchSetEditingStation = (bool) => dispatch(setEditingStation(bool))
+    const dispatchSetSelectedStation = (position) => dispatch(setSelectedStation(position))
 
     const onSideBarBack = (props) => dispatch(sideBarBack(props))
     const onDeleteLocationProcess = (props) => dispatch(deleteLocationProcess(props))
@@ -53,17 +50,13 @@ export default function LocationContent() {
 
     const [mergeStation, setMergeStation] = useState(false)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
-    const [editing, setEditing] = useState(!!editingStation ? editingStation : editingPosition)
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
+
     const locations = {
         ...stations,
         ...positions
     }
-
-    useEffect(() => {
-        setEditing(!!editingStation ? editingStation : editingPosition)
-    }, [editingStation, editingPosition])
 
     /**
      * This function is called when the back button is pressed. If the location is new, it is deleted;
@@ -78,12 +71,31 @@ export default function LocationContent() {
 
     }
 
+    /**
+     * Tells what location is being edited
+     * Handles whether location is a station or a position
+     * @param {*} id 
+     */
     const onEditLocation = (id) => {
+        const editingLocation = locations[id]
 
+        console.log('QQQQ Editing', editingLocation)
+
+        // If a station
+        if(editingLocation.schema === 'station') {
+            dispatchSetEditingStation(true)
+            dispatchSetSelectedStation(editingLocation)
+        }
+
+        // Else its a position
+        else {
+            dispatchSetEditingPosition(true)
+            dispatchSetSelectedPosition(editingLocation)
+        }
     }
 
     return (
-        !!editing ?
+        (editingPosition || editingStation) ?
             <EditLocation />
 
             :
@@ -103,7 +115,7 @@ export default function LocationContent() {
                     onEditLocation(location._id)
                 }}
                 onPlus={() => {
-                    setEditing(true)
+                    // setEditing(true)
                 }}
             />
     )
