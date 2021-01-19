@@ -39,6 +39,7 @@ import useChange from "../../../../basic/form/useChange";
 // styles
 import * as styled from './process_field.style'
 import * as taskActions from "../../../../../redux/actions/tasks_actions";
+import * as objectActions from "../../../../../redux/actions/objects_actions";
 
 export const ProcessField = (props) => {
     const {
@@ -258,6 +259,9 @@ export const ProcessField = (props) => {
 
         validateForm() // run validation so errors will show up right away
     }
+
+
+
     // clear selectedTask and add new route to values.routes
     const updateExistingTask = () => {
         // if this is an existing process, go ahead and save the changes

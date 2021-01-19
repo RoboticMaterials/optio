@@ -42,6 +42,7 @@ import PropTypes from "prop-types";
 import {isObject} from "../../../../../methods/utils/object_utils";
 import useChange from "../../../../basic/form/useChange";
 import {removeTask} from "../../../../../redux/actions/tasks_actions";
+import {isArray} from "../../../../../methods/utils/array_utils";
 
 const TaskField = (props) => {
 
@@ -102,8 +103,6 @@ const TaskField = (props) => {
     const dispatchPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
     const dispatchSetFixingProcess = (bool) => dispatch(setFixingProcess(bool))
     const dispatchDeselectLocation = () => dispatch(deselectLocation())
-    // const dispatchRemoveTask = (taskId) => dispatch(removeTask(taskId))
-    const dispatchRemoveTask = (taskId) => {}
 
     let routes = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -131,6 +130,9 @@ const TaskField = (props) => {
             setFieldValue(fieldParent ? `${fieldParent}.type` : "type", selectedTask.type)
         }
 
+        // if(selectedTask && selectedTask.handoff) {
+        //     setFieldValue(fieldParent ? `${fieldParent}.handoff` : "handoff", selectedTask.handoff)
+        // }
 
         // set touched if changes
         return () => {
@@ -195,6 +197,8 @@ const TaskField = (props) => {
     }
 
 
+
+
     const updateDashboard = () => {
         // Add the task automatically to the associated load station dashboard
         // Since as of now the only type of task we are doing is push, only need to add it to the load location
@@ -229,61 +233,23 @@ const TaskField = (props) => {
         // dispatch(taskActions.removeTask(selectedTask._id)) // Remove the temporary task from the local copy of tasks
     }
 
-    const createObject = () => {
-        // Save object
-        let objectId
-        if ('name' in obj) {
-            if (obj._id == undefined) { // If the object does not currently exist, make a new one
-                const newObject = {
-                    name: obj.name,
-                    description: "",
-                    modelName: "",
-                    dimensions: null,
-                    map_id: currentMap._id,
-                    _id: uuid.v4(),
-                }
-                dispatch(objectActions.postObject(newObject))
 
-                objectId = newObject._id
-            } else { //  Otherwise just set the task obj to the existing obj
-                objectId = obj._id
-            }
-        }
 
-        return objectId
-    }
 
-    const handleObject = () => {
+    const handleDefaultObj = () => {
+        // if route has obj, return obj
+        if (isObject(obj)) {
             return obj
-        // If not selected process, then set it to the selected task if the task has an object
-        if (!selectedProcess) {
-            if (!!selectedTask && !!selectedTask.obj) {
-                return objects[selectedTask.obj]
-            } else {
-                return null
-            }
+        }
+        // Else ifm its a process and the last route in that process has an object, use that object as the default
+        else if (selectedProcess && isArray(selectedProcess.routes) && selectedProcess.routes.length > 0 && !!selectedProcess.routes[selectedProcess.routes.length - 1].obj) {
+            return selectedProcess.routes[selectedProcess.routes.length - 1].obj
         }
 
-        // Else, it's part of a process
-        else {
-            // If the selected task already has a object, set it to that
-            if(!!selectedTask){
-                if (!!selectedTask.obj) {
-                    return objects[selectedTask.obj]
-                }
-            }
+        return null
 
-            // Else if its a process and the last route in that process has an object, use that object as the default
-            else if (selectedProcess.routes.length > 0 && !!routes[selectedProcess.routes[selectedProcess.routes.length - 1]].obj) {
-                return objects[routes[selectedProcess.routes[selectedProcess.routes.length - 1]].obj]
-            }
 
-            else {
-                return null
-            }
-        }
     }
-
 
     return (
         <>
@@ -415,7 +381,6 @@ const TaskField = (props) => {
                             // If this task is part of a process and not already in the array of routes, then add the task to the selected process
                             if (!selectedProcess.routes.includes(selectedTask._id)) {
 
-                                dispatchRemoveTask(selectedTask._id)
                                 var selectedRoute = {...(dropdownValues[0]), needsSubmit: true }
                                 // setFieldValue
                                 if(fieldParent) {
@@ -434,11 +399,9 @@ const TaskField = (props) => {
                 }
 
                 {!!selectedTask && isProcessTask && !!selectedTask.new &&
-
                 <styled.Label style={{ marginTop: '1rem' }}>
                     <styled.LabelHighlight>Or</styled.LabelHighlight> make a new one
                 </styled.Label>
-
                 }
 
                 {/* Task Title */}
@@ -465,9 +428,13 @@ const TaskField = (props) => {
                         placeholder="Object"
                         label={!values.obj?._id  ? "New object will be created" : null}
                         labelField="name"
+                        onChange={(val) => {
+                            console.log("TextboxSearchField onChange val",val)
+                        }}
+
                         valueField="name"
                         options={Object.values(objects).filter((obj) => obj.map_id === currentMap._id)}
-                        defaultValue={obj}
+                        defaultValue={handleDefaultObj()}
                         textboxGap={0}
                         closeOnSelect="true"
                         className="w-100"

@@ -310,11 +310,16 @@ export const removeRouteFromWrongDashboards = (route) => {
                     return(currRouteId !== routeId) // if dashboard isn't at the right station for the route, filter out buttons for this route
                 })
 
-                // update the dashboard
-                dispatch(putDashboard({
-                    ...currDashboard,
-                    buttons: filteredButtons
-                }, currDashboardId))
+                // if length of buttons arr changed, a button was removed, so update
+                // otherwise nothing was removed, so need for update
+                if(filteredButtons.length !== currDashboardButtons.length) {
+                    // update the dashboard
+                    dispatch(putDashboard({
+                        ...currDashboard,
+                        buttons: filteredButtons
+                    }, currDashboardId))
+                }
+
             }
         })
     }

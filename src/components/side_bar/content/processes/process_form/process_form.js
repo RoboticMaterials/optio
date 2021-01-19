@@ -18,6 +18,8 @@ import {
 	setSelectedProcess
 } from "../../../../../redux/actions/processes_actions";
 import * as taskActions from "../../../../../redux/actions/tasks_actions";
+import {isObject} from "../../../../../methods/utils/object_utils";
+import * as objectActions from "../../../../../redux/actions/objects_actions";
 
 const ProcessForm = (props) => {
 
@@ -43,6 +45,32 @@ const ProcessForm = (props) => {
 
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
+	const objects = useSelector(state => state.objectsReducer.objects)
+	const currentMap = useSelector(state => state.mapReducer.currentMap)
+
+	const createObject = (obj) => {
+		// Save object
+		let objectId = null
+		if ('name' in obj) {
+			if (obj._id == undefined) { // If the object does not currently exist, make a new one
+				const newObject = {
+					name: obj.name,
+					description: "",
+					modelName: "",
+					dimensions: null,
+					map_id: currentMap._id,
+					_id: uuid.v4(),
+				}
+				dispatch(objectActions.postObject(newObject))
+
+				objectId = newObject._id
+			} else { //  Otherwise just set the task obj to the existing obj
+				objectId = obj._id
+			}
+		}
+
+		return objectId
+	}
 
 	const handleSave = async (values, close) => {
 		console.log("handleSave values",values)
@@ -57,27 +85,46 @@ const ProcessForm = (props) => {
 		// perform any updates for routes
 		for (const currRoute of remainingValues.routes) {
 
+			console.log("currRoutecurrRoute",currRoute)
+			const {
+				unsaved,
+				new: isNew,
+				changed,
+				needsSubmit,
+				obj = {},
+				...remainingRoute
+			} = currRoute
+
+			const objectId = createObject(obj)
+
+			cleanRoute(currRoute)
+
+
+
+			const submitItem = {
+				...remainingRoute,
+				obj: objectId
+			}
+
 			// if not saved, POST
-			if(currRoute.unsaved) {
-				cleanRoute(currRoute)
-				await dispatchPostRouteClean(currRoute)
+			if(unsaved) {
+				await dispatchPostRouteClean(submitItem)
 			}
 
 			// otherwise, PUT
 			else {
-				cleanRoute(currRoute)
-				await dispatchPutRouteClean(currRoute, currRoute._id)
+				await dispatchPutRouteClean(submitItem, submitItem._id)
 			}
 		}
 
 		dispatchSetSelectedTask(null) // clear selected task
-		const mappedRoute = remainingValues.routes.map((currRoute) => currRoute._id)
+		const mappedRoutes = remainingValues.routes.map((currRoute) => currRoute._id)
 
 		// if new, POST
 		if (remainingValues.new) {
 			await dispatchPostProcess({
 				...remainingValues,
-				routes: mappedRoute
+				routes: mappedRoutes
 			})
 		}
 
@@ -85,7 +132,7 @@ const ProcessForm = (props) => {
 		else {
 			await dispatchPutProcess({
 				...remainingValues,
-				routes: mappedRoute
+				routes: mappedRoutes
 			})
 		}
 
@@ -99,13 +146,6 @@ const ProcessForm = (props) => {
 
 	}
 
-	const handleBack = async () => {
-		// clear selectedTask, selectedProcess, and set toggleEditing to false
-		await dispatchSetSelectedTask(null)
-		dispatchSetSelectedProcess(null)
-		toggleEditingProcess(false)
-	}
-
 	// remove keys from route that shouldn't be saved
 	const cleanRoute = (route) => {
 		delete route.new
@@ -113,6 +153,14 @@ const ProcessForm = (props) => {
 		delete route.needsSubmit
 		delete route.unsaved
 	}
+
+	const handleBack = async () => {
+		// clear selectedTask, selectedProcess, and set toggleEditing to false
+		await dispatchSetSelectedTask(null)
+		dispatchSetSelectedProcess(null)
+		toggleEditingProcess(false)
+	}
+
 
 
 	const handleDelete = (withRoutes) => {
@@ -151,7 +199,21 @@ const ProcessForm = (props) => {
 		<Formik
 			initialValues={{
 				name: selectedProcessCopy ? selectedProcessCopy.name : "",
-				routes: (selectedProcessCopy && selectedProcessCopy.routes && Array.isArray(selectedProcessCopy.routes)) ? selectedProcessCopy.routes.map((currRouteId) => tasks[currRouteId])  : [],
+				routes: (selectedProcessCopy && selectedProcessCopy.routes && Array.isArray(selectedProcessCopy.routes)) ?
+					selectedProcessCopy.routes.map((currRouteId) => {
+						const route = tasks[currRouteId]
+						const obj = isObject(objects[route.obj]) ? objects[route.obj] : null
+
+						return {
+							...route,
+							obj
+						}
+					}
+
+					)
+
+					:
+					[],
 				broken: selectedProcessCopy ? selectedProcessCopy.broken : false,
 				_id: selectedProcessCopy ? selectedProcessCopy._id : uuid.v4(),
 				new: selectedProcessCopy.new,
