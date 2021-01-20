@@ -122,7 +122,7 @@ export class MapView extends Component {
         // if (prevProps.maps.length != this.props.maps.length) {
         //     this.refreshMap()
         // }
-        this.checkForMapLoad()
+        this.checkForMapLoad() //test
 
 
         // If the map has been changed, recalculate the geometry and bind the zoom
