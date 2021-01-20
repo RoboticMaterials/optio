@@ -20,36 +20,25 @@ import { tasksSortedAlphabetically } from '../../../../methods/utils/task_utils'
 import RouteTask from './tasks_templates/route_task'
 import uuid from 'uuid'
 import TaskForm from "./task_form/route_form";
-import {generateDefaultRoute} from "../../../../methods/utils/route_utils";
+import {generateDefaultRoute, isHumanTask, isMiRTask} from "../../../../methods/utils/route_utils";
 import {willRouteDeleteBreakProcess} from "../../../../methods/utils/processes_utils";
 import {deleteRouteClean} from "../../../../redux/actions/tasks_actions";
 import {isObject} from "../../../../methods/utils/object_utils";
+import {DEVICE_CONSTANTS} from "../../../../constants/device_constants";
 
 export default function TaskContent(props) {
 
     // Connect redux reducers
     const dispatch = useDispatch()
-    const params = useParams()
     const onHandlePostTaskQueue = (props) => dispatch(taskQueueActions.handlePostTaskQueue(props))
-    const onPostTaskQueue = async (ID) => await dispatch(postTaskQueue(ID))
-    const onTaskQueueItemClicked = async (id) => await dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
     const onEditing = async (props) => await dispatch(taskActions.editingTask(props))
-    const dispatchSelectTask = async (taskId) => await dispatch(taskActions.selectTask(taskId))
-    const dispatchDeselectTask = async () => await dispatch(taskActions.deselectTask())
     const dispatchSetSelectedTask = async (task) => await dispatch(taskActions.setSelectedTask(task))
     const dispatchAddTask = async (task) => await dispatch(taskActions.addTask(task))
 
-    const dispatchPostTaskClean = async (task) => await dispatch(taskActions.postRouteClean(task))
-    const dispatchPutTaskClean = async (task, taskId) => await dispatch(taskActions.putRouteClean(task, taskId))
-
-
-
-
-    let tasks = useSelector(state => state.tasksReducer.tasks)
-    let taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
-    let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
+    const tasks = useSelector(state => state.tasksReducer.tasks)
+    const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
+    const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
-    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
     const stations = useSelector(state => state.locationsReducer.stations)
     const editing = useSelector(state => state.tasksReducer.editingTask) //Moved to redux so the variable can be accesed in the sideBar files for confirmation modal
@@ -60,16 +49,14 @@ export default function TaskContent(props) {
     */
 
     // State definitions
-    //const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
-    const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)  // Current task
-
     const [shift, setShift] = useState(false) // Is shift key pressed ?
 
     // To be able to remove the listeners, the function needs to be stored in state
 
     //Parameters to pass into handlePostTaskQueue dispatch
-    const dashboardID = selectedTask ? stations[selectedTask.load.station].dashboards[0]: {}
-    const Id = selectedTask ? selectedTask._id: {}
+    const dashboardID = selectedTask ? stations[selectedTask?.load?.station].dashboards[0] : {}
+    const Id = selectedTask ? selectedTask._id : {}
+    const deviceTypes = selectedTask ? (selectedTask.device_types || []) : []
     const name = selectedTask ? selectedTask.name : {}
     const custom = false
     const fromSideBar = true
@@ -90,21 +77,6 @@ export default function TaskContent(props) {
             window.removeEventListener('keyup', shiftCallback)
         }
     })
-
-
-
-    const handleInQueue = (task) => {
-      if(!!task){
-        Object.values(taskQueue).forEach((taskQueueItem, index) => {
-            if(taskQueueItem.task_id === task._id){
-            }
-        })
-
-      }
-      //return inQueue
-    }
-
-
 
     const handleDefaultObj = (objId, prevObj) => {
 
@@ -152,7 +124,14 @@ export default function TaskContent(props) {
                 }}
 
                 executeTask={()=> {
-                    onHandlePostTaskQueue({dashboardID, tasks, taskQueue, Id, name, custom, fromSideBar})
+                    let deviceType
+                    if(isMiRTask(selectedTask)) {
+                        deviceType = DEVICE_CONSTANTS.MIR_100
+                    }
+                    else if(isHumanTask(selectedTask)){
+                        deviceType = DEVICE_CONSTANTS.HUMAN
+                    }
+                    onHandlePostTaskQueue({dashboardID, tasks, deviceType, taskQueue, Id, name, custom, fromSideBar})
                 }}
 
                 onPlus={() => {

@@ -44,16 +44,12 @@ const HILModals = (props) => {
     } = item || {}
 
     const dispatch = useDispatch()
-    const dispatchPostTaskQueue = (response) => dispatch(postTaskQueue(response))
     const dispatchGetCards = () => dispatch(getCards())
     const dispatchTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
     const disptachHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
     const disptachPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
     const dispatchSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
-    const dispatchPostEvents = (event) => dispatch(postEvents)
     const dispatchLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
-    const dispatchGetTasks = () => dispatch(getTasks())
-    const dispatchDeleteTaskQueueItem = (id) => dispatch(deleteTaskQueueItem(id))
 
     const hilTimers = useSelector(state => { return state.taskQueueReducer.hilTimers })
     const tasks = useSelector(state => { return state.tasksReducer.tasks })

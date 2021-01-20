@@ -30,7 +30,6 @@ const ProcessesContent = () => {
     const history = useHistory()
 
     const dispatch = useDispatch()
-    const dispatchPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
     const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
     const dispatchEditing = (props) => dispatch(editingProcess(props))
     const dispatchPutProcess = (process) => dispatch(putProcesses(process))

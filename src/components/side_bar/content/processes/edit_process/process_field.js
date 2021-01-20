@@ -21,16 +21,22 @@ import {
     setSelectedTask,
 } from '../../../../../redux/actions/tasks_actions'
 import { setSelectedProcess, setFixingProcess } from '../../../../../redux/actions/processes_actions'
-import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
+import {handlePostTaskQueue, postTaskQueue} from '../../../../../redux/actions/task_queue_actions'
 
 // Import Utils
-import {generateDefaultRoute, getRouteProcesses} from "../../../../../methods/utils/route_utils";
+import {
+    generateDefaultRoute,
+    getRouteProcesses,
+    isHumanTask,
+    isMiRTask
+} from "../../../../../methods/utils/route_utils";
 import {isBrokenProcess, willRouteAdditionFixProcess, willRouteDeleteBreakProcess} from "../../../../../methods/utils/processes_utils";
-import {isEmpty} from "../../../../../methods/utils/object_utils";
+import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
 import useChange from "../../../../basic/form/useChange";
 
 // styles
 import * as styled from './process_field.style'
+import {DEVICE_CONSTANTS} from "../../../../../constants/device_constants";
 
 
 export const ProcessField = (props) => {
@@ -65,11 +71,8 @@ export const ProcessField = (props) => {
 
     const dispatch = useDispatch()
     const dispatchSetSelectedTask = async (task) => await dispatch(setSelectedTask(task))
-    const dispatchPutRouteClean = async (route, routeId) => await dispatch(putRouteClean(route, routeId))
-    const dispatchPostRouteClean = async (route) => await dispatch(postRouteClean(route))
     const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
-    const dispatchPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
-    const onTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
+    const onHandlePostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
     const dispatchSetFixingProcess = async (bool) => await dispatch(setFixingProcess(bool))
     const dispatchDeleteRouteClean = async (routeId) => await dispatch(deleteRouteClean(routeId))
 
@@ -78,6 +81,8 @@ export const ProcessField = (props) => {
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
+
+    const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
 
     // State definitions
     const [shift, ] = useState(false) // Is shift key pressed ?
@@ -321,21 +326,24 @@ export const ProcessField = (props) => {
         dispatchSetSelectedTask(null)
     }
 
-    const handleExecuteProcessTask = async (route) => {
-        if (tasks[route] != null) {
-            if (tasks[route].device_type === 'human') {
-                const dashboardId = stations[tasks[route].load.station].dashboards[0]
+    const handleExecuteProcessTask = async (routeId) => {
+        const task = tasks[routeId] || null
+        if(!isObject(task)) return
 
-                const postToQueue = dispatch(postTaskQueue({ task_id: route, dashboard: dashboardId, hil_response: null, _id: uuid.v4(), }))
-                postToQueue.then(item => {
-                    const id = item?._id
-                    onTaskQueueItemClicked(id)
-                })
-            }
-            else {
-                dispatchPostTaskQueue({ task_id: route, _id: uuid.v4(), })
-            }
+        const routeName = task.name
+
+        let deviceType
+        if(isMiRTask(task)) {
+            // if MiR is available, default to MiR
+            deviceType = DEVICE_CONSTANTS.MIR_100
         }
+        else if(isHumanTask(task)){
+            // otherwise if human is available, submit human
+            deviceType = DEVICE_CONSTANTS.HUMAN
+        }
+
+        const dashboardId = stations[tasks[routeId].load.station].dashboards[0]
+        onHandlePostTaskQueue({dashboardId, tasks, deviceType, taskQueue, Id: routeId, routeName, custom: false, fromSideBar: true})
     }
 
     // Maps through the list of existing routes

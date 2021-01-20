@@ -11,6 +11,7 @@ import * as dashboard_buttons_style from '../dashboard_buttons.style'
 
 // import logging
 import log from '../../../../../../logger'
+import {DEVICE_CONSTANTS} from "../../../../../../constants/device_constants";
 
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
@@ -31,7 +32,6 @@ const DashboardSplitButton = (props => {
         containerCss,
         error,
         iconColor,
-        associatedTaskId
     } = props
 
     return (
@@ -48,7 +48,7 @@ const DashboardSplitButton = (props => {
             <style.RobotButton
                 background={color}
                 clickable={clickable}
-                onClick={clickable ? () => onClick(taskID) : null}
+                onClick={clickable ? () => onClick(taskID, DEVICE_CONSTANTS.MIR_100) : null}
 
             >
                 <style.ConditionText style={null}>{title}</style.ConditionText>
@@ -59,7 +59,7 @@ const DashboardSplitButton = (props => {
             <style.HumanButton
                 clickable={clickable}
                 background={color}
-                onClick={clickable ? () => onClick(associatedTaskId) : null}
+                onClick={clickable ? () => onClick(taskID, DEVICE_CONSTANTS.HUMAN) : null}
             >
                 <SchemaIcon className={"fas fa-user"} color={iconColor}></SchemaIcon>
             </style.HumanButton>
