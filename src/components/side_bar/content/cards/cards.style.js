@@ -75,6 +75,7 @@ export const Title = styled.span`
 	font-size: ${props => props.theme.fontSize.sz2};
 	color: white;
 	font-weight: ${props => props.theme.fontWeight.bold};
+  margin-bottom: .5rem;
 `
 
 export const AddCardButton = styled.button`

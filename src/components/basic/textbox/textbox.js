@@ -18,7 +18,7 @@ export default function Textbox(props) {
     return (
         <React.Fragment>
             {(!props.inline && props.label) && <styled.TextboxLabel style={props.labelStyle}>{props.label}</styled.TextboxLabel>}
-            <styled.TextboxContainer className="form-group" style={{...props.style}}>
+            <styled.TextboxContainer className="form-group" style={{...props.textboxContainerStyle}}>
                 {props.inline && <styled.TextboxLabel style={props.labelStyle}>{props.label}</styled.TextboxLabel>}
                 <InputComponent 
                     ref={inputRef}
