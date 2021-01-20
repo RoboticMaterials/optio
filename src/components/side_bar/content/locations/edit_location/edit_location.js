@@ -20,9 +20,8 @@ import { StationTypes } from '../../../../../constants/station_constants'
 import { PositionTypes } from '../../../../../constants/position_constants'
 
 // Import actions
-import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition, setEditingPosition } from '../../../../../redux/actions/positions_actions'
+import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition, setEditingPosition, putPosition, postPosition } from '../../../../../redux/actions/positions_actions'
 import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setSelectedStationChildrenCopy, setEditingStation, putStation, postStation } from '../../../../../redux/actions/stations_actions'
-
 
 const EditLocation = () => {
     const dispatch = useDispatch()
@@ -38,11 +37,13 @@ const EditLocation = () => {
     const dispatchDeleteStation = async (id) => await dispatch(deleteStation(id))
 
     // Position Dispatches
-    const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
-    const dispatchAddPosition = (pos) => dispatch(addPosition(pos))
-    const dispatchSetPositionAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
+    const dispatchSetSelectedPosition = async (position) => await dispatch(setSelectedPosition(position))
+    const dispatchAddPosition = async (pos) => await dispatch(addPosition(pos))
+    const dispatchSetPositionAttributes = (id, attr) => dispatch(setPositionAttributes(id, attr))
     const dispatchSetEditingPosition = (bool) => dispatch(setEditingPosition(bool))
     const dispatchDeletePosition = async (id) => dispatch(deletePosition(id))
+    const dispatchPutPosition = async (position) => await dispatch(putPosition(position))
+    const dispatchPostPosition = async (position) => await dispatch(postPosition(position))
 
     const stations = useSelector(state => state.stationsReducer.stations)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
@@ -93,6 +94,16 @@ const EditLocation = () => {
 
         // Position
         else {
+            // Post
+            if (!!selectedPosition.new) {
+                await dispatchPostPosition(selectedPosition)
+
+                // Add dashboard
+            }
+            // Put
+            else {
+                await dispatchPutPosition(selectedPosition)
+            }
 
         }
 
@@ -127,7 +138,7 @@ const EditLocation = () => {
     /**
      * The X and Y here are set in map view view dragNewEntity
      */
-    const onAddLocation = async (e, type) => {
+    const onAddLocation = async (type) => {
 
         // TODO: Stick this into Constants
         const defaultAttributes = {
@@ -146,20 +157,21 @@ const EditLocation = () => {
 
         const attributes = LocationTypes[type].attributes
 
-        const newStation = {
+        const newLocation = {
             ...defaultAttributes,
             ...attributes
         }
-        console.log('QQQQ Whats here?', e, newStation)
+        console.log('QQQQ Whats here?', newLocation)
 
         // Handle Station addition
         if (attributes.schema === 'station') {
-            await dispatchAddStation(newStation)
-            await dispatchSetSelectedStation(newStation)
+            await dispatchAddStation(newLocation)
+            await dispatchSetSelectedStation(newLocation)
         }
 
         else if (attributes.schema === 'position') {
-
+            await dispatchAddPosition(newLocation)
+            await dispatchSetSelectedPosition(newLocation)
         }
 
         else {
@@ -236,7 +248,7 @@ const EditLocation = () => {
         const types = ['cart_position', 'shelf_position']
 
         return types.map((type) => {
-            const isSelected = (!!selectedPosition && selectedPosition.type !== null && selectedPosition.type !== type) ? selectedPosition.type : false;
+            const isSelected = (!!selectedPosition && selectedPosition.type !== null && selectedPosition.type === type) ? selectedPosition.type : false;
             return (
                 <LocationButton type={type} isSelected={isSelected} handleAddLocation={onAddLocation} />
             )
@@ -303,7 +315,7 @@ const EditLocation = () => {
 
                         :
                         <LocationButton
-                            type={selectedLocation.type}
+                            type={selectedLocation['type']}
                             isSelected={(!!selectedLocation && selectedLocation.type !== null) ? selectedLocation.type : false}
                             handleAddLocation={onAddLocation}
                         />

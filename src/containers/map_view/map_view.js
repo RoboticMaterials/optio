@@ -187,7 +187,7 @@ export class MapView extends Component {
      */
     dragNewEntity = e => {
 
-        if(!this.mouseDown) return
+        if (!this.mouseDown) return
 
         // Handle Stations
         if (!!this.props.selectedStation && this.props.selectedStation.temp === true) {
@@ -199,7 +199,7 @@ export class MapView extends Component {
 
         // Handle Positions
         else if (!!this.props.selectedPosition && this.props.selectedPosition.temp === true && this.props.selectedPosition.name !== "TempRightClickMovePosition") {
-            this.props.dispatchSetPositionAttributes(this.props.selectedStation._id, {
+            this.props.dispatchSetPositionAttributes(this.props.selectedPosition._id, {
                 x: e.clientX,
                 y: e.clientY
             })
@@ -657,11 +657,13 @@ export class MapView extends Component {
                                         .map((position, ind) =>
                                             <Position
                                                 key={`pos-${ind}`}
-                                                position={position}
+                                                // If there is a selected station, then render the selected station vs station in redux
+                                                // Selected station could contain local edits that are not on the backend (naked redux) yet 
+                                                position={(!!selectedPosition && position._id === selectedPosition._id) ? selectedPosition : position}
                                                 rd3tClassName={`${this.rd3tPosClassName}_${ind}`}
                                                 d3={this.d3}
-                                                onEnableDrag={this.onEnableDrag}
-                                                onDisableDrag={this.onDisableDrag}
+                                                handleEnableDrag={this.onEnableDrag}
+                                                handleDisableDrag={this.onDisableDrag}
                                             />
 
                                         )

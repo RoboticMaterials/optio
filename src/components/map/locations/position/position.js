@@ -90,6 +90,7 @@ function Position(props) {
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const hoveringID = useSelector(state => state.widgetReducer.hoverLocationID)
     const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
+    const stations = useSelector(state => state.stationsReducer.stations)
 
     const isSelected = !!selectedPosition && selectedPosition._id === position._id
     // Tells the position to glow
@@ -169,7 +170,7 @@ function Position(props) {
 
     const onMouseEnter = () => {
         // Only hover if there is no selected task
-        if (selectedTask === null) {
+        if (!hoveringInfo && selectedTask === null) {
             setHovering(true)
             if (!rotating && !translating && !selectedPosition && !selectedTask) {
                 dispatchHoverStationInfo(handleWidgetHover())
@@ -178,6 +179,15 @@ function Position(props) {
             }
         }
 
+    }
+
+    const renderParentLine = () => {
+        return (
+            <line x1={`${position.x}`} y1={`${position.y}`}
+                x2={`${stations[position.parent].x}`} y2={`${stations[position.parent].y}`}
+                stroke={color} strokeWidth="1.4" shapeRendering="geometricPrecision" style={{ opacity: '0.3', }}
+            />
+        )
     }
 
     const onMouseDown = () => {
@@ -198,6 +208,7 @@ function Position(props) {
 
     return (
         <React.Fragment key={`frag-loc-${position._id}`}>
+            {!!position.parent && renderParentLine()}
             <LocationSvg
                 location={position}
                 rd3tClassName={rd3tClassName}

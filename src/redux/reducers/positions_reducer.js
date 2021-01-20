@@ -51,6 +51,7 @@ const positionsReducer = (state = defaultState, action) => {
      * @param {object} position 
      */
     const onUpdatePosition = (position) => {
+        console.log('QQQQ position', position)
         return {
             ...state,
             positions: {
@@ -75,6 +76,7 @@ const positionsReducer = (state = defaultState, action) => {
         case SET_POSITION_ATTRIBUTES:
             // If there is a selected station and the payload is that station, then edit the selected station and dont edit the station in state
             if (!!state.selectedPosition && action.payload.id === state.selectedPosition._id) {
+                console.log('QQQQ Hur')
                 let updatedPosition = state.selectedPosition
                 Object.assign(updatedPosition, action.payload.attr)
                 return {

@@ -17,8 +17,6 @@ const LocationButton = (props) => {
         ...PositionTypes
     }
 
-    const template = LocationTypes[type].attributes
-
     return (
         <>
             <styled.LocationTypeButton
@@ -27,7 +25,7 @@ const LocationButton = (props) => {
                 id={`location-type-button-${type}`}
                 onMouseDown={async e => {
 
-                    handleAddLocation(e, type)
+                    handleAddLocation(type)
 
                 }}
 

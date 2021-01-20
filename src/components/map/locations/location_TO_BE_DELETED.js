@@ -319,7 +319,8 @@ const Location = (props) => {
                         {location.parent !== null && location.parent !== undefined && location.parent.length > 0 &&
                             <line x1={`${location.x}`} y1={`${location.y}`}
                                 x2={`${stations[location.parent].x}`} y2={`${stations[location.parent].y}`}
-                                stroke={color} strokeWidth="1.4" shape-rendering="geometricPrecision" style={{ opacity: '0.3', }} />
+                                stroke={color} strokeWidth="1.4" shape-rendering="geometricPrecision" style={{ opacity: '0.3', }}
+                            />
                         }
                         <Position isSelected={isSelected} color={color} {...props} />
                         <DragEntityProto isSelected={isSelected} {...props}

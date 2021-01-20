@@ -82,7 +82,7 @@ export const postPosition = (position) => {
             dispatch({ type: POST_POSITION_STARTED });
         }
         function onSuccess(position) {
-            dispatch({ type: POST_POSITION_SUCCESS, payload: { position } });
+            dispatch({ type: POST_POSITION_SUCCESS, payload: position });
             return position;
         }
         function onError(error) {
@@ -125,7 +125,7 @@ export const putPosition = (position) => {
             dispatch({ type: PUT_POSITION_STARTED });
         }
         function onSuccess(position) {
-            dispatch({ type: PUT_POSITION_SUCCESS, payload: { position } });
+            dispatch({ type: PUT_POSITION_SUCCESS, payload: position });
             return position;
         }
         function onError(error) {
@@ -149,7 +149,8 @@ export const putPosition = (position) => {
 
 
             // Tells the backend that a position has changed
-            positionCopy.change_key = 'changed'
+            console.log('QQQQ Position Copy', positionCopy)
+            if (positionCopy.change_key !== 'deleted') positionCopy.change_key = 'changed'
             const updatePosition = await api.putPosition(positionCopy, positionCopy._id);
             return onSuccess(updatePosition)
         } catch (error) {
@@ -167,7 +168,7 @@ export const deletePosition = (position) => {
             dispatch({ type: DELETE_POSITION_STARTED });
         }
         function onSuccess(id) {
-            dispatch({ type: DELETE_POSITION_SUCCESS, payload: { id } });
+            dispatch({ type: DELETE_POSITION_SUCCESS, payload: id });
             return id;
         }
         function onError(error) {
@@ -201,19 +202,19 @@ export const deletePosition = (position) => {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 export const addPosition = (position) => {
-    return { type: ADD_POSITION, payload: { position } }
+    return { type: ADD_POSITION, payload: position }
 }
 
 export const updatePosition = (position) => {
-    return { type: UPDATE_POSITION, payload: { position } }
+    return { type: UPDATE_POSITION, payload: position }
 }
 
 export const revertChildren = (position) => {
-    return { type: REVERT_CHILDREN, payload: { position } }
+    return { type: REVERT_CHILDREN, payload: position }
 }
 
-export const updatePositions = (positions) => {
-    return { type: UPDATE_POSITIONS, payload: { positions } }
+export const updatePositions = (positions, selectedPosition, d3) => {
+    return { type: UPDATE_POSITIONS, payload: { positions, selectedPosition, d3 } }
 }
 
 export const removePosition = (id) => {
