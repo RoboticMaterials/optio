@@ -196,6 +196,35 @@ const TaskField = (props) => {
         }
     }
 
+    const createObject = async () => {
+        // Save object
+        let objectId = null
+        if (isObject(obj) && ('name' in obj)) {
+            if (obj._id == undefined) { // If the object does not currently exist, make a new one
+                const newObject = {
+                    name: obj.name,
+                    description: "",
+                    modelName: "",
+                    dimensions: null,
+                    map_id: currentMap._id,
+                    _id: uuid.v4(),
+                }
+                const response = await dispatch(objectActions.postObject(newObject))
+                console.log("response",response)
+                setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", newObject)
+
+
+                objectId = newObject._id
+            } else { //  Otherwise just set the task obj to the existing obj
+                objectId = obj._id
+            }
+
+        }
+
+        setFieldValue(fieldParent ? `${fieldParent}.needsSubmit` : "needsSubmit", true)
+
+        return objectId
+    }
 
 
 
@@ -236,20 +265,7 @@ const TaskField = (props) => {
 
 
 
-    const handleDefaultObj = () => {
-        // if route has obj, return obj
-        if (isObject(obj)) {
-            return obj
-        }
-        // Else ifm its a process and the last route in that process has an object, use that object as the default
-        else if (selectedProcess && isArray(selectedProcess.routes) && selectedProcess.routes.length > 0 && !!selectedProcess.routes[selectedProcess.routes.length - 1].obj) {
-            return selectedProcess.routes[selectedProcess.routes.length - 1].obj
-        }
 
-        return null
-
-
-    }
 
     return (
         <>
@@ -305,7 +321,8 @@ const TaskField = (props) => {
                         // disabled={selectedTask !== null && (!selectedTask.load.position || selectedTask.unload.position === null)}
                         disabled={submitDisabled}
                         onClickSave={async () => {
-                            await onSave()
+                            await createObject()
+                            // await onSave()
                         }}
 
                         onClickBack={() => {
@@ -378,10 +395,19 @@ const TaskField = (props) => {
                         name={fieldParent ? `${fieldParent}.existingRoute` : "existingRoute"}
                         onChange={async (dropdownValues) => {
 
-                            // If this task is part of a process and not already in the array of routes, then add the task to the selected process
-                            if (!selectedProcess.routes.includes(selectedTask._id)) {
+                            const selectedValue = dropdownValues[0] || {}
 
-                                var selectedRoute = {...(dropdownValues[0]), needsSubmit: true }
+                            const {
+                                obj: selectedObjId = "",
+                                _id: selectedRouteId = ""
+                            } = selectedValue || {}
+
+                            const selectedObj = selectedObjId ? (objects[selectedObjId] || null) : null
+
+                            // If this task is part of a process and not already in the array of routes, then add the task to the selected process
+                            if (!selectedProcess.routes.includes(selectedRouteId)) {
+
+                                var selectedRoute = {...selectedValue, needsSubmit: true, obj: selectedObj }
                                 // setFieldValue
                                 if(fieldParent) {
                                     setFieldValue(fieldParent, selectedRoute)
@@ -434,7 +460,7 @@ const TaskField = (props) => {
 
                         valueField="name"
                         options={Object.values(objects).filter((obj) => obj.map_id === currentMap._id)}
-                        defaultValue={handleDefaultObj()}
+                        defaultValue={obj}
                         textboxGap={0}
                         closeOnSelect="true"
                         className="w-100"

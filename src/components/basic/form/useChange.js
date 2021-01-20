@@ -29,8 +29,8 @@ const useChange = (fieldName) => {
 
 
 			if(!issEquivalent) {
-				console.log("initialValue",initialValue)
-				console.log("value",value)
+				console.log("initialValue boi",initialValue)
+				console.log("value a",value)
 				setChanged(true);
 				setFieldValue(fieldName ? `${fieldName}.changed` : 'changed', true);
 			}

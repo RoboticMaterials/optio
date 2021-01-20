@@ -18,10 +18,11 @@ import { deepCopy } from '../../../../methods/utils/utils'
 import { tasksSortedAlphabetically } from '../../../../methods/utils/task_utils'
 import RouteTask from './tasks_templates/route_task'
 import uuid from 'uuid'
-import TaskForm from "./task_form/task_form";
+import TaskForm from "./task_form/route_form";
 import {generateDefaultRoute} from "../../../../methods/utils/route_utils";
 import {willRouteDeleteBreakProcess} from "../../../../methods/utils/processes_utils";
 import {deleteRouteClean} from "../../../../redux/actions/tasks_actions";
+import {isObject} from "../../../../methods/utils/object_utils";
 
 export default function TaskContent(props) {
 
@@ -34,9 +35,10 @@ export default function TaskContent(props) {
     const dispatchDeselectTask = async () => await dispatch(taskActions.deselectTask())
     const dispatchSetSelectedTask = async (task) => await dispatch(taskActions.setSelectedTask(task))
     const dispatchAddTask = async (task) => await dispatch(taskActions.addTask(task))
-    const dispatchRemoveTask = async (taskId) => await dispatch(taskActions.removeTask(taskId))
-    const dispatchPostTask = async (task) => await dispatch(taskActions.postTask(task))
-    const dispatchPutTask = async (task, taskId) => await dispatch(taskActions.putTask(task, taskId))
+
+    const dispatchPostTaskClean = async (task) => await dispatch(taskActions.postRouteClean(task))
+    const dispatchPutTaskClean = async (task, taskId) => await dispatch(taskActions.putRouteClean(task, taskId))
+
 
 
 
@@ -48,14 +50,14 @@ export default function TaskContent(props) {
 
     const stations = useSelector(state => state.locationsReducer.stations)
     const editing = useSelector(state => state.tasksReducer.editingTask) //Moved to redux so the variable can be accesed in the sideBar files for confirmation modal
+    const objects = useSelector(state => state.objectsReducer.objects)
 
     // State definitions
     //const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
 
     const [shift, setShift] = useState(false) // Is shift key pressed ?
-    const [isTransportTask, setIsTransportTask] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
-    // To be able to remove the listeners, the function needs to be stored in state
 
+    // To be able to remove the listeners, the function needs to be stored in state
     const [shiftCallback] = useState(() => e => {
         setShift(e.shiftKey)
     })
@@ -72,29 +74,6 @@ export default function TaskContent(props) {
             window.removeEventListener('keyup', shiftCallback)
         }
     })
-
-    useEffect(() => {
-        if (!selectedTask) { return }
-        if (selectedTask.load.position === null) {
-            // No load position has been defined - ask user to define load (start) position
-            setIsTransportTask(true)
-        } else if (selectedTask.load.station === null) {
-            // Load position is not tied to a station - task is no longer a transport task
-            setIsTransportTask(false)
-        } else {
-            // Load position has been defined and is a station - now handle unload position
-            if (selectedTask.unload.position === null) {
-                // No unload position has been defined - ask user to define load (end) position
-                setIsTransportTask(true)
-            } else if (selectedTask.unload.station === null) {
-                // Unload position is not a station - task is no longer a transport task
-                setIsTransportTask(false)
-            } else {
-                // Load AND Unload positions have been defined. Display load/unload parameter fields
-                setIsTransportTask(true)
-            }
-        }
-    }, [selectedTask])
 
 
     const handleHumanHil = async () => {
@@ -126,55 +105,29 @@ export default function TaskContent(props) {
       //return inQueue
     }
 
-    const handleSubmit = (values) => {
 
-        const {
-            new: isNew,
-            changed
-        } = values
 
-        // create new route
-        if(isNew) {
-            dispatchPostTask(values)
+    const handleDefaultObj = (objId, prevObj) => {
+
+        if(isObject(objects[objId])) {
+            return objects[objId]
         }
-
-        // update existing route
+        else if (prevObj) {
+            return prevObj
+        }
         else {
-            dispatchPutTask(values, values._id)
+            return null
         }
-
-        dispatchSetSelectedTask(null)
-        onEditing(false)
     }
-
-    const handleBackClick = (routeId) => {
-        dispatchSetSelectedTask(null)
-        if(tasks[routeId] && tasks[routeId].new) {
-            dispatchRemoveTask(routeId)
-        }
-        onEditing(false)
-    }
-
-    const handleDelete = async (routeId) => {
-        await dispatch(deleteRouteClean(routeId))
-        onEditing(false)
-        dispatchSetSelectedTask(null)
-    }
-
-
-
 
     if (editing && selectedTask !== null) { // Editing Mode
         return (
             <TaskForm
-                handleDelete={handleDelete}
                 initialValues={{
-                    ...selectedTask
+                    ...selectedTask,
+                    obj: handleDefaultObj(selectedTask.obj)
                 }}
-                handleSubmit={handleSubmit}
-                handleBackClick={handleBackClick}
                 shift={shift}
-                isTransportTask={isTransportTask}
                 toggleEditing={props => onEditing(props)}
             />
         )

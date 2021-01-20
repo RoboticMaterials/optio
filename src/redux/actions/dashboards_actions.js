@@ -171,7 +171,7 @@ export const removeRouteFromAllDashboards = (routeId) => {
         // Delete all dashboard buttons associated with that task
         Object.values(dashboards)
             .filter(dashboard =>
-                dashboard.station == selectedTask.load.station || dashboard.station == selectedTask?.unload?.station
+                dashboard.station === selectedTask?.load?.station || dashboard.station === selectedTask?.unload?.station
             ).forEach(currDashboard => {
                 var currButtons = [...currDashboard.buttons]
 

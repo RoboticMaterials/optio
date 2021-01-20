@@ -1,18 +1,49 @@
 import {Formik} from "formik";
 import {routeSchema} from "../../../../../methods/utils/form_schemas";
 import React from "react";
-import TaskField from "../task_field/task_field";
+import TaskField from "../task_field/route_field";
+import {deleteRouteClean, saveFormRoute, setSelectedTask} from "../../../../../redux/actions/tasks_actions";
+import {useDispatch, useSelector} from "react-redux";
+import * as taskActions from "../../../../../redux/actions/tasks_actions";
 
 const TaskForm = (props) => {
 
 	const {
 		initialValues,
 		toggleEditing,
-		handleSubmit,
-		handleBackClick,
-		handleDelete,
 		...remainingProps
 	} = props
+
+	const dispatch = useDispatch()
+	const dispatchSaveFormRoute = async (formRoute) => await dispatch(saveFormRoute(formRoute))
+	const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
+	const dispatchRemoveTask = async (taskId) => await dispatch(taskActions.removeTask(taskId))
+	const dispatchDeleteRouteClean = async (routeId) => await dispatch(taskActions.deleteRouteClean(routeId))
+	const onEditing = async (props) => await dispatch(taskActions.editingTask(props))
+
+	const tasks = useSelector(state => state.tasksReducer.tasks)
+
+	const handleSubmit = async (values) => {
+
+		await dispatchSaveFormRoute(values)
+
+		dispatchSetSelectedTask(null)
+		onEditing(false)
+	}
+
+	const handleBackClick = (routeId) => {
+		dispatchSetSelectedTask(null)
+		if(tasks[routeId] && tasks[routeId].new) {
+			dispatchRemoveTask(routeId)
+		}
+		onEditing(false)
+	}
+
+	const handleDelete = async (routeId) => {
+		await dispatchDeleteRouteClean(routeId)
+		onEditing(false)
+		dispatchSetSelectedTask(null)
+	}
 
 	return (
 		<Formik

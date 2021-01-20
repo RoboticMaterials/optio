@@ -6,7 +6,7 @@ import {defaultTask} from "../../constants/route_constants";
 /**
  * Creates a default route based on store state
  */
-export const generateDefaultRoute = (task, deviceType) => {
+export const generateDefaultRoute = (obj) => {
     const storeState = store.getState()
     const MiRMapEnabled = storeState.localReducer.localSettings.MiRMapEnabled
     const currentMap = storeState.mapReducer.currentMap
@@ -18,6 +18,7 @@ export const generateDefaultRoute = (task, deviceType) => {
         map_id: currentMap._id,
         load: {...defaultTask.load},
         unload: {...defaultTask.unload},
+        obj: obj ? obj : null,
         _id: uuid.v4(), // NOTE - ID IS GENERATED HERE INSTEAD OF IN defaultTask SO THE ID IS GENERATED EACH TIME THE FUNCTION IS CALLED
     }
 }

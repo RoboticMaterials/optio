@@ -8,7 +8,7 @@ import {
 	deleteRouteClean,
 	deleteTask,
 	putRouteClean,
-	putTask,
+	putTask, saveFormRoute,
 	setSelectedTask
 } from "../../../../../redux/actions/tasks_actions";
 import {
@@ -19,12 +19,11 @@ import {
 } from "../../../../../redux/actions/processes_actions";
 import * as taskActions from "../../../../../redux/actions/tasks_actions";
 import {isObject} from "../../../../../methods/utils/object_utils";
-import * as objectActions from "../../../../../redux/actions/objects_actions";
+import {isArray} from "../../../../../methods/utils/array_utils";
 
 const ProcessForm = (props) => {
 
 	const {
-		selectedProcessCopy,
 		toggleEditingProcess,
 	} = props
 
@@ -42,35 +41,11 @@ const ProcessForm = (props) => {
 	const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
 	const dispatchDeleteProcess = async (ID) => await dispatch(deleteProcesses(ID))
 	const dispatchDeleteRouteClean = (routeId) => dispatch(deleteRouteClean(routeId))
+	const dispatchSaveFormRoute = async (formRoute) => await dispatch(saveFormRoute(formRoute))
 
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
 	const objects = useSelector(state => state.objectsReducer.objects)
-	const currentMap = useSelector(state => state.mapReducer.currentMap)
-
-	const createObject = (obj) => {
-		// Save object
-		let objectId = null
-		if ('name' in obj) {
-			if (obj._id == undefined) { // If the object does not currently exist, make a new one
-				const newObject = {
-					name: obj.name,
-					description: "",
-					modelName: "",
-					dimensions: null,
-					map_id: currentMap._id,
-					_id: uuid.v4(),
-				}
-				dispatch(objectActions.postObject(newObject))
-
-				objectId = newObject._id
-			} else { //  Otherwise just set the task obj to the existing obj
-				objectId = obj._id
-			}
-		}
-
-		return objectId
-	}
 
 	const handleSave = async (values, close) => {
 		console.log("handleSave values",values)
@@ -84,37 +59,8 @@ const ProcessForm = (props) => {
 
 		// perform any updates for routes
 		for (const currRoute of remainingValues.routes) {
-
-			console.log("currRoutecurrRoute",currRoute)
-			const {
-				unsaved,
-				new: isNew,
-				changed,
-				needsSubmit,
-				obj = {},
-				...remainingRoute
-			} = currRoute
-
-			const objectId = createObject(obj)
-
+			dispatchSaveFormRoute(currRoute)
 			cleanRoute(currRoute)
-
-
-
-			const submitItem = {
-				...remainingRoute,
-				obj: objectId
-			}
-
-			// if not saved, POST
-			if(unsaved) {
-				await dispatchPostRouteClean(submitItem)
-			}
-
-			// otherwise, PUT
-			else {
-				await dispatchPutRouteClean(submitItem, submitItem._id)
-			}
 		}
 
 		dispatchSetSelectedTask(null) // clear selected task
@@ -136,14 +82,11 @@ const ProcessForm = (props) => {
 			})
 		}
 
-
-
 		// close editor
 		if(close) {
 			dispatchSetSelectedProcess(null)
 			toggleEditingProcess(false)
 		}
-
 	}
 
 	// remove keys from route that shouldn't be saved
@@ -176,7 +119,14 @@ const ProcessForm = (props) => {
 
 		// If there's routes in this process, delete the routes
 		if (selectedProcess.routes.length > 0) {
-			selectedProcess.routes.forEach(route => dispatchDeleteRouteClean(route))
+			selectedProcess.routes.forEach(route => {
+				if(isObject(route)) {
+					dispatchDeleteRouteClean(route._id)
+				}
+				else {
+					dispatchDeleteRouteClean(route)
+				}
+			})
 		}
 
 		await dispatchDeleteProcess(selectedProcess._id)
@@ -195,28 +145,54 @@ const ProcessForm = (props) => {
 		toggleEditingProcess(false)
 	}
 
+	const handleDefaultObj = (objId, prevObj) => {
+		console.log("handleDefaultObj objId",objId)
+
+		if(isObject(objects[objId])) {
+			return objects[objId]
+		}
+		else if (prevObj) {
+			return prevObj
+		}
+		else {
+			return null
+		}
+	}
+
+	const handleInitialRoutes = () => {
+		if(selectedProcess && selectedProcess.routes && Array.isArray(selectedProcess.routes)) {
+			let prevObj = null
+
+			return selectedProcess.routes.map((currRouteItem) => {
+				console.log("mapping currRouteId",currRouteItem)
+
+				const route = isObject(currRouteItem) ? currRouteItem : (tasks[currRouteItem] || {})
+				console.log("mapping route",route)
+
+				const obj = handleDefaultObj(route.obj, prevObj)
+				prevObj = obj
+
+				return {
+					...route,
+					obj
+				}
+			})
+		}
+
+		// otherwise initialize to empty array
+		return []
+
+	}
+
+
 	return (
 		<Formik
 			initialValues={{
-				name: selectedProcessCopy ? selectedProcessCopy.name : "",
-				routes: (selectedProcessCopy && selectedProcessCopy.routes && Array.isArray(selectedProcessCopy.routes)) ?
-					selectedProcessCopy.routes.map((currRouteId) => {
-						const route = tasks[currRouteId]
-						const obj = isObject(objects[route.obj]) ? objects[route.obj] : null
-
-						return {
-							...route,
-							obj
-						}
-					}
-
-					)
-
-					:
-					[],
-				broken: selectedProcessCopy ? selectedProcessCopy.broken : false,
-				_id: selectedProcessCopy ? selectedProcessCopy._id : uuid.v4(),
-				new: selectedProcessCopy.new,
+				name: selectedProcess ? selectedProcess.name : "",
+				routes: handleInitialRoutes(),
+				broken: selectedProcess ? selectedProcess.broken : false,
+				_id: selectedProcess ? selectedProcess._id : uuid.v4(),
+				new: selectedProcess.new,
 				newRoute: null
 			}}
 

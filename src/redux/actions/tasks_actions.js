@@ -227,6 +227,8 @@ export const deleteRouteClean = (routeId) => {
 // ******************************
 export const putRouteClean = (route, routeId) => {
     return async (dispatch, getState) => {
+        console.log("putRouteClean route",route)
+        console.log("putRouteClean routeId",routeId)
 
         // put task
         await dispatch(putTask(route, routeId));
@@ -244,6 +246,7 @@ export const putRouteClean = (route, routeId) => {
 // ******************************
 export const postRouteClean = (route) => {
     return async (dispatch, getState) => {
+        console.log("postRouteClean route",route)
 
         // post route
         await dispatch(postTask(route));
@@ -257,7 +260,44 @@ export const postRouteClean = (route) => {
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+//
+// ******************************
+export const saveFormRoute = (formRoute) => {
+    return async (dispatch) => {
 
+        // extract values
+        const {
+            unsaved,        // remove key
+            new: isNew,     // remove key
+            changed,        // remove key
+            needsSubmit,    // remove key
+            obj = {},
+            ...remainingRoute
+        } = formRoute
+
+        // get objectId
+        const {
+            _id: objectId
+        } = obj || {}
+
+        // create payload
+        const payload = {
+            ...remainingRoute,
+            obj: objectId
+        }
+
+        // create new route
+        if(isNew) {
+            dispatch(postRouteClean(payload))
+        }
+
+        // update existing route
+        else {
+            dispatch(putRouteClean(payload, payload._id))
+        }
+    }
+}
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 export const addTask = (task) => {
