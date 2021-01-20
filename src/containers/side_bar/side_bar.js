@@ -46,6 +46,12 @@ const SideBar = (props) => {
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const onSideBarBack = (props) => dispatch(sideBarBack(props))
+    const onSetOpen = (sideBarOpen) => dispatch(sidebarActions.setOpen(sideBarOpen))
+    const onSetWidth = (width) => dispatch(sidebarActions.setWidth(width))
+    const onDeselectTask = () => dispatch(taskActions.deselectTask())
+    const dispatchEditingLocation = (bool) => dispatch(editing(bool)) //location editing need to rename
+    const dispatchEditingTask = (bool) => dispatch(editingTask(bool))
+    const dispatchEditingProcess = (bool) => dispatch(editingProcess(bool))
 
     const [width, setWidth] = useState(450)
     const [prevWidth, setPrevWidth] = useState(width)
@@ -59,7 +65,6 @@ const SideBar = (props) => {
     const taskEditing = useSelector(state => state.tasksReducer.editingTask)
     const processEditing = useSelector(state => state.processesReducer.editingProcess)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
-    //console.log(sideBarOpen)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
     const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
@@ -73,7 +78,7 @@ const SideBar = (props) => {
     const boundToWindowSize = () => {
         const newWidth = Math.min(window.innerWidth, Math.max(360, width))
         setWidth(newWidth)
-        dispatch(sidebarActions.setWidth(newWidth));
+        onSetWidth(newWidth)
     }
     useEffect(() => {
         window.addEventListener('resize', boundToWindowSize, {passive:true})
@@ -85,7 +90,7 @@ const SideBar = (props) => {
 
 
   useEffect(() => {
-    dispatch(sidebarActions.setOpen(sideBarOpen))
+    onSetOpen(sideBarOpen)
   })
 
 
@@ -105,12 +110,12 @@ const SideBar = (props) => {
 
             if(!prevWidth) setPrevWidth(width) // store previous width to restore when card page is left
             setWidth(window.innerWidth)
-            dispatch(sidebarActions.setWidth(window.innerWidth))
+            onSetWidth(window.innerWidth)
 
         }
         else if((((prevSubpage === "lots") || (prevId === "timeline") || (prevId === "summary")) && (prevPage === "processes" || prevPage === "lots")) && ((subpage !== "lots") || (id === "timeline") || (id === "summary")) ) {
             setWidth(prevWidth)
-            dispatch(sidebarActions.setWidth(prevWidth))
+            onSetWidth(prevWidth)
             setPrevWidth(null)
         }
 
@@ -118,7 +123,7 @@ const SideBar = (props) => {
 
         if(!showSideBar) {
             setWidth(450)
-            dispatch(sidebarActions.setWidth(450))
+            onSetWidth(450)
         }
 
         return () => {}
@@ -135,12 +140,12 @@ const SideBar = (props) => {
         hamburger.classList.toggle('is-active')
       }
 
-        dispatch(editing(false)) //location editing need to rename
-        dispatch(editingTask(false))
-        dispatch(editingProcess(false))
+        dispatchEditingLocation(false)
+        dispatchEditingTask(false)
+        dispatchEditingProcess(false)
 
         onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy, positions, locations })
-        dispatch(taskActions.deselectTask())    // Deselect
+        onDeselectTask()
 
         if (!showSideBar && url == '/') {
             history.push(`/locations`)
@@ -153,7 +158,7 @@ const SideBar = (props) => {
         } else {
             const newSideBarState = !showSideBar
             setShowSideBar(newSideBarState)
-            dispatch(sidebarActions.setOpen(newSideBarState))
+            onSetOpen(newSideBarState)
         }
 
     }
@@ -185,7 +190,7 @@ const SideBar = (props) => {
     function handleDrag(e, ui) {
         const newWidth = Math.min(window.innerWidth, Math.max(360, width + ui.deltaX))
         setWidth(newWidth)
-        dispatch(sidebarActions.setWidth(newWidth));
+        onSetWidth(newWidth)
     }
 
     let content

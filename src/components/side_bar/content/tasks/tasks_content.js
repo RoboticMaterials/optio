@@ -43,7 +43,10 @@ export default function TaskContent(props) {
     /**
     * @param {*} Id
     */
-
+    const Id = selectedTask ? selectedTask._id: {}
+    const name = selectedTask ? selectedTask.name : {}
+    const custom = false
+    const fromSideBar = true
     // State definitions
     //const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
     const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)  // Current task
@@ -51,12 +54,7 @@ export default function TaskContent(props) {
     const [isTransportTask, setIsTransportTask] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
     // To be able to remove the listeners, the function needs to be stored in state
 
-    //Parameters to pass into handlePostTaskQueue dispatch
-    const dashboardID = selectedTask ? stations[selectedTask.load.station].dashboards[0]: {}
-    const Id = selectedTask ? selectedTask._id: {}
-    const name = selectedTask ? selectedTask.name : {}
-    const custom = false
-    const fromSideBar = true
+
 
     const [shiftCallback] = useState(() => e => {
         setShift(e.shiftKey)
@@ -154,6 +152,8 @@ export default function TaskContent(props) {
                 }}
 
                 executeTask={()=> {
+                    //Parameters to pass into handlePostTaskQueue dispatch
+                    const dashboardID = selectedTask && stations ? stations[selectedTask.load.station].dashboards[0]: {}
                     onHandlePostTaskQueue({dashboardID, tasks, taskQueue, Id, name, custom, fromSideBar})
                 }}
 

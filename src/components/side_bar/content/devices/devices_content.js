@@ -57,6 +57,12 @@ const DevicesContent = () => {
     const onSideBarBack = (props) => dispatch(sideBarBack(props))
     const onDeleteLocationProcess = (props) => dispatch(deleteLocationProcess(props))
 
+    const onSelectLocation = (props) => dispatch(selectLocation(props))
+    const onPostPosition = (props) => dispatch(positionActions.postPosition(props))
+    const onPutLocation = (location, id) => dispatch(putLocation(location, id))
+    const onPostDashboard = (props) => dispatch(dashboardActions.postDashboard(props))
+    const onPutStation = (postedLocation, id) => dispatch(stationActions.putStation(postedLocation, id))
+
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
     const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
@@ -130,7 +136,7 @@ const DevicesContent = () => {
                                     onSetSelectedLocationChildrenCopy(locations[devices[deviceID].station_id].children.map(positionID => deepCopy(positions[positionID])))
                                 }
 
-                                dispatch(selectLocation(locations[devices[deviceID].station_id]._id))
+                                onSelectLocation(locations[devices[deviceID].station_id]._id)
 
                             }
                         }
@@ -147,9 +153,9 @@ const DevicesContent = () => {
     }
 
     /**
-     * This function is called when the save button is pressed. The location is POSTED or PUT to the backend. 
+     * This function is called when the save button is pressed. The location is POSTED or PUT to the backend.
      * If the location is new and is a station, this function also handles posting the default dashboard and
-     * tieing it to this location. Each child position for a station is also either POSTED or PUT. 
+     * tieing it to this location. Each child position for a station is also either POSTED or PUT.
      */
     const handleSaveDevice = () => {
 
@@ -168,20 +174,20 @@ const DevicesContent = () => {
                     child = positions[childID]
                     child.parent = locationID
                     if (child.new) { // If the position is new, post it and update its id in the location.children array
-                        postPositionPromise = dispatch(positionActions.postPosition(child))
+                        postPositionPromise = onPostPosition(child)
                         postPositionPromise.then(postedPosition => {
                             selectedLocation.children[ind] = postedPosition._id
-                            dispatch(putLocation(selectedLocation, selectedLocation._id))
+                            onPutLocation(selectedLocation, selectedLocation._id)
                         })
                     } else { //  If the position is not new, just update it
-                        dispatch(positionActions.putPosition(child, child._id))
+                        onPutLocation(child, child._id)
                     }
                 })
             }
 
             //// Post the location
             if (selectedLocation.new == true) {
-                const locationPostPromise = dispatch(postLocation(selectedLocation))
+                const locationPostPromise = onPostPosition(selectedLocation)
                 locationPostPromise.then(postedLocation => {
                     //// On return of the posted location, if it is a station we also need to assign it a default dashboard
                     // TODO: Aren't devices always stations??
@@ -194,10 +200,10 @@ const DevicesContent = () => {
                         }
 
                         //// Now post the dashboard, and on return tie that dashboard to location.dashboards and put the location
-                        const postDashboardPromise = dispatch(dashboardActions.postDashboard(defaultDashboard))
+                        const postDashboardPromise = onPostDashboard(defaultDashboard)
                         postDashboardPromise.then(postedDashboard => {
                             postedLocation.dashboards = [postedDashboard._id.$oid]
-                            dispatch(stationActions.putStation(postedLocation, postedLocation._id))
+                            onPutStation(postedLocation, postedLocation._id)
                         })
 
                         const device = {
@@ -213,7 +219,7 @@ const DevicesContent = () => {
                     }
                 })
             } else { // If the location is not new, PUT it and update it's children
-                dispatch(putLocation(selectedLocation, selectedLocation._id))
+                onPutLocation(selectedLocation, selectedLocation._id)
                 if (selectedLocation.schema == 'station') {
                     saveChildren(selectedLocation._id)
                 }
@@ -230,7 +236,7 @@ const DevicesContent = () => {
     }
 
     /**
-    * Called when the delete button is pressed. Deletes the location, its children, its dashboards, 
+    * Called when the delete button is pressed. Deletes the location, its children, its dashboards,
     * and any tasks associated with the location
     */
     const onDeleteDeviceLocation = () => {
@@ -243,7 +249,7 @@ const DevicesContent = () => {
     return (
         <styled.ContentContainer>
 
-            {/* Content header changes based on whats going on with devices 
+            {/* Content header changes based on whats going on with devices
                 If in standard list mode then header should be in list mode (add button)
                 If in editing/adding then the header should be in create mode (save button)
                 If in stats then the header should be in title mode with back enabled

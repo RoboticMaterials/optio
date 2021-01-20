@@ -60,6 +60,9 @@ const DashboardEditor = (props) => {
 
     const onDeleteDashboard = async (ID) => await dispatch(deleteDashboard(ID))
     const onPutStation = async (station, ID) => await dispatch(putStation(station, ID))
+    const onPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
+    const onPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
+
 
     const stations = useSelector(state => state.locationsReducer.stations)
 
@@ -155,12 +158,12 @@ const DashboardEditor = (props) => {
         // if dashboard has id, it must already exist, so update with put
         if (dashboardId) {
             // update
-            dispatch(putDashboard(dashboardCopy, dashboardId))
+            onPutDashboard(dashboardCopy, dashboardId)
         }
         // otherwise, dashboard is new, so create with post
         else {
             // create
-            dispatch(postDashboard(dashboardCopy))
+            onPostDashboard(dashboardCopy)
         }
 
         history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)

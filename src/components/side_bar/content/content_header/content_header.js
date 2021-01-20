@@ -65,7 +65,6 @@ const ContentHeader = (props) => {
                     :
                     <PlusButton
                         onClick={onClickAdd}
-
                     />
                 }
 

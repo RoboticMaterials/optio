@@ -56,8 +56,6 @@ const WidgetButton = (props) => {
 
     const dashboardID = params.dashboardID
 
-
-
     const handleOnClick = () => {
         switch (props.type) {
             case 'cart':
@@ -179,8 +177,6 @@ const WidgetButton = (props) => {
 
                 handleOnClick()
 
-                //const hamburger = document.querySelector('.hamburger')
-                //hamburger.classList.toggle(false)
             }}
             pageID={type}
             currentPage={currentPage}
