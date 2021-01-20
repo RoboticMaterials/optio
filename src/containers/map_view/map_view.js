@@ -78,20 +78,21 @@ export class MapView extends Component {
     }
 
     componentDidMount() {
-
         // Refresh the map on initial mount. This will only likely give you back the list of
         // maps, but componentDidUpdate will catch that and set the current map to the first map
         // in the returned list (which will be the active map)
         // this.refreshMap()
+
         this.checkForMapLoad()
         window.addEventListener('mousedown', () => this.mouseDown = true, { passive: false })
         window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, { passive: false })
 
         // Event listener that will recalculate the map geometry when the screen size changes
         window.addEventListener('resize', () => {
-            this.calculateD3Geometry()
+            //this.calculateD3Geometry()
             this.bindZoomListener()
         }, { passive: false })
+
     }
 
     checkForMapLoad = () => {
@@ -115,6 +116,7 @@ export class MapView extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
+
         // If new maps are available, refresh current map
         // NOTE: will be useless once we have a method to select map
         // if (prevProps.maps.length != this.props.maps.length) {
@@ -123,13 +125,10 @@ export class MapView extends Component {
         this.checkForMapLoad()
 
 
-
-
-
         // If the map has been changed, recalculate the geometry and bind the zoom
         // listener to default to the correct translation
         if (!isEquivalent(prevProps.currentMap, this.props.currentMap)) {
-            this.calculateD3Geometry(this.mapContainer)
+            //this.calculateD3Geometry(this.mapContainer)
             this.bindZoomListener()
         }
 
@@ -263,7 +262,6 @@ export class MapView extends Component {
                         translate: d3.event.translate,
                         scale: d3.event.scale
                     })
-
                     //// Apply the event translation to each station
                     Object.values(stations).forEach(station => {
                         [x, y] = convertRealToD3([station.pos_x, station.pos_y], this.d3)
@@ -365,6 +363,7 @@ export class MapView extends Component {
             scale = this.props.scaleExtent.min;
         } else {
             scale = this.props.zoom;
+            console.log(scale)
         }
 
         let translate

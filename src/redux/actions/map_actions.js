@@ -10,7 +10,8 @@ import {
     GET_MAP_FAILURE,
 
     SET_MAP_ATTRIBUTES,
-    SET_CURRENT_MAP
+    SET_CURRENT_MAP,
+    SET_MAP_ZOOM
 } from '../types/map_types'
 
 
@@ -48,7 +49,7 @@ export const getMaps = () => {
 // ******************************
 export const getMap = (map_id) => {
     return async dispatch => {
-  
+
       function onStart() {
         dispatch({ type: GET_MAP_STARTED });
       }
@@ -60,7 +61,7 @@ export const getMap = (map_id) => {
         dispatch({ type: GET_MAP_FAILURE, payload: error });
         return error;
       }
-  
+
       try {
         onStart();
         const map = await api.getMap(map_id);
@@ -100,5 +101,5 @@ export const setCurrentMap = (map) => {
         }
     }
 }
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
