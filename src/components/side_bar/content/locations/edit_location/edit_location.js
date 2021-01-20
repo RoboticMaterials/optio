@@ -20,8 +20,8 @@ import { StationTypes } from '../../../../../constants/station_constants'
 import { PositionTypes } from '../../../../../constants/position_constants'
 
 // Import actions
-import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition, setEditingPosition, putPosition, postPosition } from '../../../../../redux/actions/positions_actions'
-import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setSelectedStationChildrenCopy, setEditingStation, putStation, postStation } from '../../../../../redux/actions/stations_actions'
+import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition, setEditingPosition, putPosition, postPosition, setSelectedStationChildrenCopy } from '../../../../../redux/actions/positions_actions'
+import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setEditingStation, putStation, postStation } from '../../../../../redux/actions/stations_actions'
 
 const EditLocation = () => {
     const dispatch = useDispatch()
@@ -49,6 +49,7 @@ const EditLocation = () => {
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const positions = useSelector(state => state.positionsReducer.positions)
+    const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const devices = useSelector(state => state.devicesReducer.devices)
@@ -57,6 +58,7 @@ const EditLocation = () => {
     const processes = useSelector(state => state.processesReducer.processes)
 
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
+    const [newName, setNewName] = useState('')
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
 
@@ -85,15 +87,25 @@ const EditLocation = () => {
             else {
                 await dispatchPutStation(selectedStation)
             }
-
+            console.log('QQQQ children copy', selectedStationChildrenCopy)
             // Children Positions
-            selectedStation.children.map((child, ind) => {
+            Object.values(selectedStationChildrenCopy).map(async (child, ind) => {
+                // Post
+                if (!!child.new) {
+                    console.log('QQQQ Posting', child)
+                    await dispatchPostPosition(child)
 
+                }
+                // Put
+                else {
+                    await dispatchPutPosition(child)
+
+                }
             })
         }
 
         // Position
-        else {
+        else if(!!selectedPosition){
             // Post
             if (!!selectedPosition.new) {
                 await dispatchPostPosition(selectedPosition)
@@ -107,12 +119,17 @@ const EditLocation = () => {
 
         }
 
+        else {
+            throw('You son of a bitch Trebech')
+        }
+
         onBack()
 
 
     }
 
     const onDelete = () => {
+        console.log('QQQQ Deleting', selectedLocation)
 
         // Station 
         if (selectedLocation.schema === 'station') {
@@ -121,6 +138,7 @@ const EditLocation = () => {
 
         // Position
         else {
+            console.log('QQQQ Deleting Position')
             dispatchDeletePosition(selectedPosition._id)
         }
 
@@ -133,6 +151,7 @@ const EditLocation = () => {
 
         dispatchSetSelectedPosition(null)
         dispatchSetSelectedStation(null)
+        dispatchSetSelectedStationChildrenCopy(null)
     }
 
     /**
@@ -142,7 +161,7 @@ const EditLocation = () => {
 
         // TODO: Stick this into Constants
         const defaultAttributes = {
-            name: '',
+            name: newName,
             schema: null,
             type: null,
             pos_x: 0,
@@ -183,8 +202,13 @@ const EditLocation = () => {
         if (!!selectedStation) {
             dispatchSetStationAttributes(selectedStation._id, { name: e.target.value })
         }
-        else {
+        else if (!!selectedPosition) {
             dispatchSetPositionAttributes(selectedPosition._id, { name: e.target.value })
+        }
+
+        // Location Type has not been defined yet
+        else {
+            setNewName(e.target.value)
         }
     }
 

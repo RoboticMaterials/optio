@@ -76,6 +76,11 @@ export const compareExistingVsIncomingLocations = (incomingLocations, existingLo
     // Compare incoming vs existing
     Object.values(incomingLocations).forEach(incomingLocation => {
 
+        // Handles deleted Positions on the backend
+        if (!!incomingLocation.change_key && incomingLocation.change_key === 'deleted') {
+            delete incomingLocations[incomingLocation._id]
+        }
+
         // If the incoming location is not in existing location, its a new location
         if (!incomingLocation._id in existingLocations) {
             let x, y

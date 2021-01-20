@@ -22,8 +22,6 @@ import {
     SET_STATION_ATTRIBUTES,
     SET_SELECTED_STATION,
     EDITING_STATION,
-    SET_SELECTED_STATION_CHILDREN_COPY,
-
 } from '../types/stations_types'
 
 import { deepCopy } from '../../methods/utils/utils';
@@ -190,10 +188,6 @@ export const setStationAttributes = (id, attr) => {
 
 export const setSelectedStation = (station) => {
     return { type: SET_SELECTED_STATION, payload: station }
-}
-
-export const setSelectedStationChildrenCopy = (positions) => {
-    return { type: SET_SELECTED_STATION_CHILDREN_COPY, payload: positions }
 }
 
 export const setEditingStation = (bool) => {

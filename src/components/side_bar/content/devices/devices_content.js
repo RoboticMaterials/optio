@@ -24,8 +24,8 @@ import DeviceItem from './device_item/device_item'
 
 // Import Actions
 import { putDevices, postDevices, getDevices, deleteDevices, setSelectedDevice } from '../../../../redux/actions/devices_actions'
-import { setSelectedStation, putStation, postStation, setSelectedStationChildrenCopy } from '../../../../redux/actions/stations_actions'
-import { postPosition, putPosition } from '../../../../redux/actions/positions_actions'
+import { setSelectedStation, putStation, postStation } from '../../../../redux/actions/stations_actions'
+import { postPosition, putPosition, setSelectedStationChildrenCopy } from '../../../../redux/actions/positions_actions'
 import { postDashboard } from '../../../../redux/actions/dashboards_actions'
 import * as stationActions from '../../../../redux/actions/stations_actions'
 
@@ -55,7 +55,7 @@ const DevicesContent = () => {
     const dispatchPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
 
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
-    const selectedStationChildrenCopy = useSelector(state => state.stationsReducer.selectedStationChildrenCopy)
+    const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
     const stations = useSelector(state => state.stationsReducer.stations)
     const positions = useSelector(state => state.positionsReducer.positions)
     const tasks = useSelector(state => state.tasksReducer.tasks)
@@ -116,18 +116,6 @@ const DevicesContent = () => {
                             console.log('QQQQ Selected Device', devices[deviceID])
                             dispatchSetSelectedDevice(deepCopy(devices[deviceID]))
 
-                            // If the device has a station Id, set the station ID. It wouldnt have a station ID because the device has not been placed on the map
-                            if (!!devices[deviceID].station_id) {
-
-                                dispatchSetSelectedStation(deepCopy(stations[devices[deviceID].station_id]))
-
-                                if (!!stations[devices[deviceID].station_id].children) {
-                                    dispatchSetSelectedStationChildrenCopy(stations[devices[deviceID].station_id].children.map(positionID => deepCopy(positions[positionID])))
-                                }
-
-                                dispatchSetSelectedStation(stations[devices[deviceID].station_id])
-
-                            }
                         }
                         }
                     />

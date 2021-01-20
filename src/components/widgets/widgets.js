@@ -10,8 +10,8 @@ import WidgetButton from './widget_button/widget_button'
 import useWindowSize from '../../hooks/useWindowSize'
 
 // Import Actions
-import { setSelectedStation, setSelectedStationChildrenCopy } from '../../redux/actions/stations_actions'
-import { setSelectedPosition } from '../../redux/actions/positions_actions'
+import { setSelectedStation } from '../../redux/actions/stations_actions'
+import { setSelectedPosition, setSelectedStationChildrenCopy } from '../../redux/actions/positions_actions'
 import { widgetLoaded, hoverStationInfo } from '../../redux/actions/widget_actions'
 
 import { setOpen } from "../../redux/actions/sidebar_actions"
@@ -112,7 +112,8 @@ const Widgets = (props) => {
 
         dispatchShowSideBar(true)
         if (!!selectedStation) {
-            dispatchSetSelectedStationChildrenCopy(selectedStation.children.map(positionID => deepCopy(positions[positionID])))
+            // TODO: Not sure why this is here...
+            // dispatchSetSelectedStationChildrenCopy(selectedStation.children.map(positionID => deepCopy(positions[positionID])))
         }
 
         dispatch(locationActions.editing(true))

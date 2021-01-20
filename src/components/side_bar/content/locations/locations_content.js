@@ -9,7 +9,7 @@ import EditLocation from './edit_location/edit_location'
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 
 // Import actions
-import { setEditingPosition, setSelectedPosition } from '../../../../redux/actions/positions_actions'
+import { setEditingPosition, setSelectedPosition, setSelectedStationChildrenCopy } from '../../../../redux/actions/positions_actions'
 import { setEditingStation, setSelectedStation } from '../../../../redux/actions/stations_actions'
 
 // Import Constants
@@ -32,6 +32,7 @@ export default function LocationContent() {
 
     const dispatchSetEditingStation = (bool) => dispatch(setEditingStation(bool))
     const dispatchSetSelectedStation = (position) => dispatch(setSelectedStation(position))
+    const dispatchSetSelectedStationChildrenCopy = (positions) => dispatch(setSelectedStationChildrenCopy(positions))
 
     const stations = useSelector(state => state.stationsReducer.stations)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
@@ -84,6 +85,18 @@ export default function LocationContent() {
         if (editingLocation.schema === 'station') {
             dispatchSetEditingStation(true)
             dispatchSetSelectedStation(editingLocation)
+
+            // Copy Children
+            if(editingLocation.children.length > 0){
+                let copy = {}
+
+                editingLocation.children.forEach(child => {
+                    copy[child] = positions[child]
+                })
+
+                console.log('QQQQ Copy', copy)
+                dispatchSetSelectedStationChildrenCopy(copy)
+            }
         }
 
         // Else its a position

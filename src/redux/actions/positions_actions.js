@@ -23,6 +23,7 @@ import {
     REVERT_CHILDREN,
     SET_SELECTED_POSITION,
     EDITING_POSITION,
+    SET_SELECTED_STATION_CHILDREN_COPY
 } from '../types/positions_types'
 
 import { deepCopy } from '../../methods/utils/utils';
@@ -92,6 +93,7 @@ export const postPosition = (position) => {
 
         try {
             onStart();
+            console.log('QQQQ Starting to post', position)
             if (!('_id' in position)) {
                 position._id = uuid.v4()
             }
@@ -109,6 +111,7 @@ export const postPosition = (position) => {
             delete position.new
             position.change_key = 'new'
             const postedPosition = await api.postPosition(position);
+            console.log('QQQQ Posted Pos', postedPosition)
             return onSuccess(postedPosition);
         } catch (error) {
             return onError(error);
@@ -162,7 +165,7 @@ export const putPosition = (position) => {
 
 // delete
 // ******************************
-export const deletePosition = (position) => {
+export const deletePosition = (id) => {
     return async dispatch => {
         function onStart() {
             dispatch({ type: DELETE_POSITION_STARTED });
@@ -178,8 +181,8 @@ export const deletePosition = (position) => {
 
         try {
             onStart();
-            let positionCopy = deepCopy(onDeletePosition(position))
-
+            let positionCopy = deepCopy(onDeletePosition(id))
+            console.log('QQQQ Positioncopy', positionCopy)
             // If theres a position copy then tell the backend is deleted
             // There wouldnt be a position copy because the position did not exist on the backend
             if (!!positionCopy) {
@@ -187,6 +190,7 @@ export const deletePosition = (position) => {
                 // IMPORTANT!: Putting with change_key as deleted instead of deleting because it was causing back end issues
                 // Tells the backend that a position has been deleted
                 positionCopy.change_key = 'deleted'
+                console.log('QQQQ Should be here', positionCopy)
                 const updatePosition = await api.putPosition(positionCopy, positionCopy._id);
                 return onSuccess(positionCopy._id)
             }
@@ -233,16 +237,26 @@ export const setEditingPosition = (bool) => {
     return { type: EDITING_POSITION, payload: bool }
 }
 
+export const setSelectedStationChildrenCopy = (positions) => {
+    return { type: SET_SELECTED_STATION_CHILDREN_COPY, payload: positions }
+}
 
-const onDeletePosition = (position) => {
+
+
+const onDeletePosition = (id) => {
 
     const stationsState = store.getState().stationsReducer
+    const positionsState = store.getState().positionsReducer
     const tasksState = store.getState().tasksReducer
+
+    let position = positionsState.positions[id]
 
     // If the position has a parent then remove from parent
     if (!!position.parent) {
 
-        let selectedStation = deepCopy(stationsState.selectedStation)
+        let selectedStation = deepCopy(stationsState.stations[position.parent])
+
+        if(!selectedStation) return position
 
         // Remove the position from the list of children
         const positionIndex = selectedStation.children.findIndex(p => p._id === position._id)
@@ -270,7 +284,8 @@ const onDeletePosition = (position) => {
             deleteTask(relevantTask._id)
         })
 
-        return position
 
     }
+    return position
+
 }

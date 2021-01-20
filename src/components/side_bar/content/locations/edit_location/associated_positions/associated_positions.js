@@ -15,7 +15,7 @@ import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 // Import Actions
 import { setStationAttributes } from '../../../../../../redux/actions/stations_actions'
-import { setPositionAttributes, deletePosition, addPosition, postPosition } from '../../../../../../redux/actions/positions_actions'
+import { setPositionAttributes, deletePosition, addPosition, postPosition, setSelectedStationChildrenCopy } from '../../../../../../redux/actions/positions_actions'
 import * as positionActions from '../../../../../../redux/actions/positions_actions'
 import { deleteTask } from '../../../../../../redux/actions/tasks_actions'
 import { deepCopy } from '../../../../../../methods/utils/utils'
@@ -35,6 +35,7 @@ export default function Positions(props) {
     const dispatchDeletePosition = (id) => dispatch(deletePosition(id))
     const dispatchAddPosition = (position) => dispatch(addPosition(position))
     const disptachPostPosition = (position) => dispatch(postPosition(position))
+    const dispatchSetSelectedStationChildrenCopy = (positions) => dispatch(setSelectedStationChildrenCopy(positions))
 
     const dispatchSetStationAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
 
@@ -44,6 +45,7 @@ export default function Positions(props) {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
+    const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
 
     const [editingIndex, setEditingIndex] = useState(null)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
@@ -62,14 +64,13 @@ export default function Positions(props) {
      * Does some different things based on if the position is new or not (see comments bellow)
      * TODO: FIX THIS SHIT!
      * @param {*} position
-     * @param {*} i
      */
     const onDelete = async (position) => {
-
+        console.log('Deleting this pos', position)
         dispatchDeletePosition(position)
     }
 
-    const handleAssociatedPositions = (associatedPositions, positionType) => {
+    const onAssociatedPositions = (associatedPositions, positionType) => {
 
         return associatedPositions.map((position, i) => {
 
@@ -116,14 +117,21 @@ export default function Positions(props) {
 
     }
 
-    const onAddAssociatedPosition = async (type, event) => {
+    const onAddAssociatedPosition = async (type) => {
 
         const newPositionName = selectedStation.name + ' ' + (selectedStation.children.filter((position) => positions[position].type === type).length + 1)
         const newPositionType = type
 
-        const newPosition = newPositionTemplate(newPositionName, newPositionType, selectedStation._id, currentMap._id, event.clientX, event.clientY)
+        const newPosition = newPositionTemplate(newPositionName, newPositionType, selectedStation._id, currentMap._id)
 
-        await disptachPostPosition(newPosition)
+        await dispatchSetSelectedStationChildrenCopy({
+            ...selectedStationChildrenCopy,
+            [newPosition._id]: newPosition
+        })
+
+        console.log('QQQQ Adding', selectedStationChildrenCopy)
+
+        await dispatchAddPosition(newPosition)
 
         let { children } = selectedStation
         children.push(newPosition._id)
@@ -131,7 +139,7 @@ export default function Positions(props) {
         dispatchSetStationAttributes(selectedStation._id, { children })
     }
 
-    const handlePositionCards = () => {
+    const onPositionCards = () => {
 
         return positionTypes.map((positionType) => {
 
@@ -144,9 +152,6 @@ export default function Positions(props) {
                 positionName = 'Shelf'
             }
 
-            if (positionType === 'human_position') {
-                positionName = 'Position'
-            }
             return (
                 <styled.Card>
 
@@ -154,7 +159,7 @@ export default function Positions(props) {
                     <styled.NewPositionCard style={{ transform: 'translate(-0.2rem, 0.2rem)' }} />
                     <styled.NewPositionCard draggable={false}
                         onMouseDown={e => {
-
+                            onAddAssociatedPosition(positionType)
                         }
                         }
                     >
@@ -182,8 +187,9 @@ export default function Positions(props) {
                 isOpen={!!confirmDeleteModal}
                 title={"Are you sure you want to delete this Position?"}
                 button_1_text={"Yes"}
-                handleOnClick1={() => {
-                    onDelete(deletingPosition)
+                handleOnClick1={async () => {
+                    await onDelete(deletingPosition)
+                    console.log('QQQQ CLick', deletingPosition)
                     setConfirmDeleteModal(null)
                 }}
                 button_2_text={"No"}
@@ -197,7 +203,7 @@ export default function Positions(props) {
             {!!MiRMapEnabled &&
                 <>
                     <styled.CardContainer>
-                        {handlePositionCards()}
+                        {onPositionCards()}
                     </styled.CardContainer>
 
                     <styled.Label>Associated Positions</styled.Label>
@@ -211,7 +217,7 @@ export default function Positions(props) {
                     return (
                         <>
                             {/* <styled.Label style={{fontSize:'1.25rem'}}>{positionType}</styled.Label> */}
-                            {handleAssociatedPositions(selectedPositions, positionType)}
+                            {onAssociatedPositions(selectedPositions, positionType)}
                         </>
                     )
                 })}

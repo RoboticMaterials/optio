@@ -36,8 +36,6 @@ const defaultState = {
 
     editingStation: false,
 
-    selectedStationChildrenCopy: {},
-
     d3: {},
 
     error: {},

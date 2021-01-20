@@ -205,11 +205,11 @@ export class MapView extends Component {
             })
         }
 
-
         // Else it's a stations child position
-        else if (!!this.props.selectedStation && this.props.selectedStation.children.length > 0) {
+        else if (!!this.props.selectedStationChildrenCopy) {
             const draggingChild = Object.values(this.props.positions).find(position => position.temp == true)
-            if (!!draggingChild && this.props.selectedPosition.name !== "TempRightClickMovePosition") {
+
+            if (!!draggingChild && !this.props.selectedPosition) {
                 this.props.dispatchSetPositionAttributes(draggingChild._id, {
                     x: e.clientX,
                     y: e.clientY
@@ -522,7 +522,7 @@ export class MapView extends Component {
 
 
     render() {
-        let { stations, positions, devices, selectedStation, selectedPosition } = this.props
+        let { stations, positions, devices, selectedStation, selectedPosition, selectedStationChildrenCopy } = this.props
         if (this.props.currentMap == null) { return (<></>) }
         const { translate, scale } = this.d3;
 
@@ -657,9 +657,18 @@ export class MapView extends Component {
                                         .map((position, ind) =>
                                             <Position
                                                 key={`pos-${ind}`}
-                                                // If there is a selected station, then render the selected station vs station in redux
-                                                // Selected station could contain local edits that are not on the backend (naked redux) yet 
-                                                position={(!!selectedPosition && position._id === selectedPosition._id) ? selectedPosition : position}
+                                                position={
+                                                    (!!selectedPosition && position._id === selectedPosition._id) ?
+                                                        // If there is a selected station, then render the selected station vs station in redux
+                                                        // Selected station could contain local edits that are not on the backend (naked redux) yet 
+                                                        selectedPosition
+                                                        :
+                                                        // If the positions parent is currently being edited
+                                                        (!!selectedStationChildrenCopy && position._id in selectedStationChildrenCopy) ?
+                                                            selectedStationChildrenCopy[position._id]
+                                                            :
+                                                            position
+                                                }
                                                 rd3tClassName={`${this.rd3tPosClassName}_${ind}`}
                                                 d3={this.d3}
                                                 handleEnableDrag={this.onEnableDrag}
@@ -723,6 +732,7 @@ const mapStateToProps = function (state) {
         tasks: state.tasksReducer.tasks,
 
         selectedStation: state.stationsReducer.selectedStation,
+        selectedStationChildrenCopy: state.positionsReducer.selectedStationChildrenCopy,
         selectedPosition: state.positionsReducer.selectedPosition,
         editingStation: state.stationsReducer.editingStation,
         editingPosition: state.positionsReducer.editingPosition,

@@ -172,7 +172,7 @@ function Position(props) {
         // Only hover if there is no selected task
         if (!hoveringInfo && selectedTask === null) {
             setHovering(true)
-            if (!rotating && !translating && !selectedPosition && !selectedTask) {
+            if (!rotating && !translating && !selectedPosition && !selectedTask && !position.temp) {
                 dispatchHoverStationInfo(handleWidgetHover())
                 dispatchSetSelectedPosition(position)
 

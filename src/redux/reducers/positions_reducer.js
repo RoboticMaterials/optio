@@ -22,6 +22,7 @@ import {
     UPDATE_POSITIONS,
     REMOVE_POSITION,
     EDITING_POSITION,
+    SET_SELECTED_STATION_CHILDREN_COPY
 
 } from '../types/positions_types'
 
@@ -35,6 +36,7 @@ const defaultState = {
     selectedPosition: null,
 
     editingPosition: false,
+    selectedStationChildrenCopy: null,
 
     d3: {},
 
@@ -74,9 +76,23 @@ const positionsReducer = (state = defaultState, action) => {
 
         // Sets Positions Attributes
         case SET_POSITION_ATTRIBUTES:
+
+            // If editing a child position then update the position in the childrencopy
+            if (!!state.selectedStationChildrenCopy && action.payload.id in state.selectedStationChildrenCopy) {
+                return {
+                    ...state,
+                    selectedStationChildrenCopy: {
+                        ...state.selectedStationChildrenCopy,
+                        [action.payload.id]: {
+                            ...state.selectedStationChildrenCopy[action.payload.id],
+                            ...action.payload.attr,
+                        }
+                    },
+                }
+            }
+
             // If there is a selected station and the payload is that station, then edit the selected station and dont edit the station in state
-            if (!!state.selectedPosition && action.payload.id === state.selectedPosition._id) {
-                console.log('QQQQ Hur')
+            else if (!!state.selectedPosition && action.payload.id === state.selectedPosition._id) {
                 let updatedPosition = state.selectedPosition
                 Object.assign(updatedPosition, action.payload.attr)
                 return {
@@ -115,6 +131,13 @@ const positionsReducer = (state = defaultState, action) => {
             return {
                 ...state,
                 editingPosition: action.payload
+            }
+
+        case SET_SELECTED_STATION_CHILDREN_COPY:
+            console.log('QQQQ Setting children', action.payload)
+            return {
+                ...state,
+                selectedStationChildrenCopy: action.payload
             }
 
         case REMOVE_POSITION:

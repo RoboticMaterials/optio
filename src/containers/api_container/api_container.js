@@ -81,7 +81,7 @@ const ApiContainer = (props) => {
 
     const onDeleteTask = (ID) => dispatch(deleteTask(ID))
     const onDeleteDashboard = (ID) => dispatch(deleteDashboard(ID))
-    const onDeletePosition = (position, ID) => dispatch(deletePosition(position, ID))
+    const onDeletePosition = (position, ID) => dispatch(deletePosition(position))
     const onDeleteStation = async (ID) => await dispatch(deleteStation(ID))
     const onDeleteTaskQItem = async (ID) => await dispatch(deleteTaskQueueItem(ID))
 
@@ -583,7 +583,7 @@ const ApiContainer = (props) => {
             if (!!position.parent && !Object.keys(stations).includes(position.parent)) {
                 console.log('QQQQ This position should be deleted', position)
                 alert('This position should be deleted')
-                onDeletePosition(position, position._id)
+                onDeletePosition(position)
             }
 
         })
