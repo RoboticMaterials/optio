@@ -1,4 +1,5 @@
 import { normalize, schema } from 'normalizr';
+import { useDispatch, useSelector } from 'react-redux'
 import {
     TASK_QUEUE,
     TASK_QUEUE_ALL,
@@ -23,6 +24,7 @@ import {
     DELETE_TASK_QUEUE_SUCCESS,
     DELETE_TASK_QUEUE_FAILURE,
 
+    HANDLE_POST_TASK_QUEUE,
     TASK_QUEUE_OPEN,
 } from '../types/task_queue_types';
 
@@ -38,8 +40,9 @@ import {
 } from '../types/api_types';
 
 import { taskQueueSchema } from '../../normalizr/task_queue_schema';
-
+import uuid from 'uuid';
 import * as api from '../../api/task_queue_api'
+
 
 // get
 // ******************************
@@ -185,11 +188,81 @@ export const deleteTaskQueueItem = (id) => {
             onStart();
             const response = await api.deleteTaskQueueItem(id);
             return onSuccess(response, id);
-        } catch (error) {
+        }   catch (error) {
             return onError(error);
         }
     };
 };
+
+/**
+ @param {*} props
+ */
+
+export const handlePostTaskQueue = (props) => {
+
+  const {
+      dashboardID,
+      tasks,
+      taskQueue,
+      Id,
+      name,
+      custom,
+      fromSideBar
+  } = props
+  return async dispatch => {
+    // If a custom task then add custom task key to task q
+    if (Id === 'custom_task') {
+
+        await dispatch(postTaskQueue(
+            {
+                _id: uuid.v4(),
+                "task_id": Id,
+                'custom_task': custom
+            }
+          ))
+        }
+
+    let inQueue = false
+    Object.values(taskQueue).map((item) => {
+        // If its in the Q and not a handoff, then alert the user saying its already there
+        if (item.task_id === Id && !tasks[item.task_id].handoff) inQueue = true
+    })
+    // add alert to notify task has been added
+    if (!inQueue) {
+        // If the task is a human task, its handled a little differently compared to a normal task
+        // Set hil_response to null because the backend does not dictate the load hil message
+        // Since the task is put into the q but automatically assigned to the person that clicks the button
+        if (tasks[Id]?.device_type === 'human') {
+
+            const postTask = {
+                _id: uuid.v4(),
+                "task_id": Id,
+                dashboard: dashboardID,
+                hil_response: null,
+            }
+                 await dispatch({ type: 'LOCAL_HUMAN_TASK', payload: postTask._id })
+                 const postToQueue = dispatch(postTaskQueue(postTask))
+
+                 if(fromSideBar){
+                 postToQueue.then(item => {
+                     const id = item?._id
+                     dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
+            })
+          }
+        }
+
+        else {
+             await dispatch(postTaskQueue(
+                {
+                    _id: uuid.v4(),
+                    "task_id": Id,
+                })
+            )
+        }
+    }
+  };
+};
+
 
 export const taskQueueOpen = (bool) => {
     return { type: TASK_QUEUE_OPEN, payload: bool }

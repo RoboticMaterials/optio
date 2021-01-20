@@ -48,7 +48,8 @@ const HILModal = () => {
         }
 
         else {
-            if (!!taskQueueItemClicked && taskQueue[taskQueueItemClicked]) {
+            if (!!taskQueueItemClicked && !!taskQueue[taskQueueItemClicked]) {
+
                 const item = taskQueue[taskQueueItemClicked]
                 const type = tasks[item.task_id].device_type
                 const hilType = tasks[item.task_id].type
@@ -124,7 +125,10 @@ const HILModal = () => {
                     hilMessage = tasks[item.task_id].load.instructions
                 }
 
-                return <HILModals hilMessage={hilMessage} hilType={'push'} taskQuantity={item.quantity} taskQueueID={id} item={item} />
+                if(item.hil_response!==false){
+                  return <HILModals hilMessage={hilMessage} hilType={'push'} taskQuantity={item.quantity} taskQueueID={id} item={item} />
+                }
+
 
             }
 

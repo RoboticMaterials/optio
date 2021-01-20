@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import * as styled from './tasks_content.style'
 import { useSelector, useDispatch } from 'react-redux'
+import {useParams} from 'react-router-dom'
 
 // Import Components
 import ContentList from '../content_list/content_list'
@@ -28,6 +29,8 @@ export default function TaskContent(props) {
 
     // Connect redux reducers
     const dispatch = useDispatch()
+    const params = useParams()
+    const onHandlePostTaskQueue = (props) => dispatch(taskQueueActions.handlePostTaskQueue(props))
     const onPostTaskQueue = async (ID) => await dispatch(postTaskQueue(ID))
     const onTaskQueueItemClicked = async (id) => await dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
     const onEditing = async (props) => await dispatch(taskActions.editingTask(props))
@@ -52,12 +55,25 @@ export default function TaskContent(props) {
     const editing = useSelector(state => state.tasksReducer.editingTask) //Moved to redux so the variable can be accesed in the sideBar files for confirmation modal
     const objects = useSelector(state => state.objectsReducer.objects)
 
+    /**
+    * @param {*} Id
+    */
+
     // State definitions
     //const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
+    const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)  // Current task
 
     const [shift, setShift] = useState(false) // Is shift key pressed ?
 
     // To be able to remove the listeners, the function needs to be stored in state
+
+    //Parameters to pass into handlePostTaskQueue dispatch
+    const dashboardID = selectedTask ? stations[selectedTask.load.station].dashboards[0]: {}
+    const Id = selectedTask ? selectedTask._id: {}
+    const name = selectedTask ? selectedTask.name : {}
+    const custom = false
+    const fromSideBar = true
+
     const [shiftCallback] = useState(() => e => {
         setShift(e.shiftKey)
     })
@@ -76,23 +92,6 @@ export default function TaskContent(props) {
     })
 
 
-    const handleHumanHil = async () => {
-        if (selectedTask != null) {
-
-            if (selectedTask.device_type === 'human') {
-                const dashboardId = stations[selectedTask.load.station].dashboards[0]
-
-                const postToQueue = dispatch(postTaskQueue({ task_id: selectedTask._id, 'task_id': selectedTask._id, dashboard: dashboardId, hil_response: null, _id: uuid.v4(), }))
-                postToQueue.then(item => {
-                    const id = item?._id
-                    onTaskQueueItemClicked(id)
-                })
-            }
-            else {
-                onPostTaskQueue({ task_id: selectedTask._id, _id: uuid.v4(), })
-            }
-        }
-    }
 
     const handleInQueue = (task) => {
       if(!!task){
@@ -152,7 +151,10 @@ export default function TaskContent(props) {
                     onEditing(true)
                 }}
 
-                executeTask={() => handleHumanHil()}
+                executeTask={()=> {
+                    onHandlePostTaskQueue({dashboardID, tasks, taskQueue, Id, name, custom, fromSideBar})
+                }}
+
                 onPlus={() => {
                     const newTask = generateDefaultRoute()
                     dispatchAddTask(newTask)
