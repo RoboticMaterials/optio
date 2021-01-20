@@ -9,7 +9,6 @@ import EditLocation from './edit_location/edit_location'
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 
 // Import actions
-import { sideBarBack, deleteLocationProcess } from '../../../../redux/actions/locations_actions'
 import { setEditingPosition, setSelectedPosition } from '../../../../redux/actions/positions_actions'
 import { setEditingStation, setSelectedStation } from '../../../../redux/actions/stations_actions'
 
@@ -33,9 +32,6 @@ export default function LocationContent() {
 
     const dispatchSetEditingStation = (bool) => dispatch(setEditingStation(bool))
     const dispatchSetSelectedStation = (position) => dispatch(setSelectedStation(position))
-
-    const onSideBarBack = (props) => dispatch(sideBarBack(props))
-    const onDeleteLocationProcess = (props) => dispatch(deleteLocationProcess(props))
 
     const stations = useSelector(state => state.stationsReducer.stations)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)

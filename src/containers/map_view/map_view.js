@@ -187,7 +187,7 @@ export class MapView extends Component {
      */
     dragNewEntity = e => {
 
-        if (this.mouseDown == false || (!this.props.selectedStation || !this.props.selectedPosition)) return
+        if(!this.mouseDown) return
 
         // Handle Stations
         if (!!this.props.selectedStation && this.props.selectedStation.temp === true) {
@@ -207,7 +207,7 @@ export class MapView extends Component {
 
 
         // Else it's a stations child position
-        else {
+        else if (!!this.props.selectedStation && this.props.selectedStation.children.length > 0) {
             const draggingChild = Object.values(this.props.positions).find(position => position.temp == true)
             if (!!draggingChild && this.props.selectedPosition.name !== "TempRightClickMovePosition") {
                 this.props.dispatchSetPositionAttributes(draggingChild._id, {
@@ -220,11 +220,15 @@ export class MapView extends Component {
 
     }
 
+    /**
+     * This runs on mouse up
+     * Handles adding pos_x and pos_y to new locations
+     * pos_x and pos_y are the real x and y relations of the location to the map
+     */
     validateNewEntity = () => {
-        if (!this.props.selectedStation || !this.props.selectedPosition) return
 
         // Handle Stations
-        if (this.props.selectedStation.temp === true) {
+        if (!!this.props.selectedStation && this.props.selectedStation.temp === true) {
             const pos = convertD3ToReal([this.props.selectedStation.x, this.props.selectedStation.y], this.d3)
             this.props.dispatchSetStationAttributes(this.props.selectedStation._id, {
                 pos_x: pos[0],
@@ -234,9 +238,9 @@ export class MapView extends Component {
         }
 
         // Handle Posiitions
-        else if (this.props.selectedPosition.temp === true && this.props.selectedPosition.name !== "TempRightClickMovePosition") {
+        else if (!!this.props.selectedPosition && this.props.selectedPosition.temp === true && this.props.selectedPosition.name !== "TempRightClickMovePosition") {
             const pos = convertD3ToReal([this.props.selectedPosition.x, this.props.selectedPosition.y], this.d3)
-            this.props.dispatchSetStationAttributes(this.props.selectedPosition._id, {
+            this.props.dispatchSetPositionAttributes(this.props.selectedPosition._id, {
                 pos_x: pos[0],
                 pos_y: pos[1],
                 temp: false
@@ -316,6 +320,25 @@ export class MapView extends Component {
                     }
 
                     this.props.dispatchUpdateStations(stations, updatedSelectedStation, this.d3) // Bulk Update
+
+                    //// Apply the event translation to each position
+                    Object.values(positions).forEach(position => {
+
+                        [x, y] = convertRealToD3([position.pos_x, position.pos_y], this.d3)
+                        Object.assign(position, { x, y })
+                        positions[position._id] = position
+
+                    })
+
+                    // Apply the event translation to selectedStation if there is one
+                    let updatedSelectedPosition = null
+                    if (!!this.props.selectedPosition) {
+                        [x, y] = convertRealToD3([this.props.selectedPosition.pos_x, this.props.selectedPosition.pos_y], this.d3)
+                        updatedSelectedPosition = this.props.selectedPosition
+                        Object.assign(updatedSelectedPosition, { x, y })
+                    }
+
+                    this.props.dispatchUpdatePositions(positions, updatedSelectedPosition, this.d3) // Bulk Update
 
                     //// Apply the event translation to each position
                     Object.values(positions).forEach(position => {
@@ -613,7 +636,8 @@ export class MapView extends Component {
                                         .filter(station => (station.map_id === this.props.currentMap._id))
                                         .map((station, ind) =>
 
-                                            <Station key={`loc-${ind}`}
+                                            <Station
+                                                key={`loc-${ind}`}
                                                 // If there is a selected station, then render the selected station vs station in redux
                                                 // Selected station could contain local edits that are not on the backend (naked redux) yet 
                                                 station={(!!selectedStation && station._id === selectedStation._id) ? selectedStation : station}
@@ -629,89 +653,17 @@ export class MapView extends Component {
                                 <>{
                                     //// Render children positions if appropriate
                                     Object.values(positions)
-                                        // .filter(position => !!this.props.selectedTask || (!!this.props.selectedLocation && position.parent == this.props.selectedLocation._id))
-                                        // This filter turns on when there's a selected task that has a load position but no unload position
-                                        // If that's the case (happens when a new task exist and the load location has been selected) then filter out the other type of positions
-                                        // IE, if the load positions type is a cart position, then only cart positions should be selectable
-                                        // .filter(position => {
-                                        //     if (!!this.props.selectedTask && !!this.props.selectedTask.load.position && !this.props.selectedTask.unload.position) {
-                                        //         const positionType = this.props.positions[this.props.selectedTask.load.position].type
-                                        //         return position.type === positionType
-                                        //     }
-                                        //     else {
-                                        //         return true
-                                        //     }
-                                        // })
-
-
-                                        .filter(position => {
-                                            // remove positions not associated with current map
-                                            if (position.map_id !== this.props.currentMap._id) return false
-
-                                            // This filters out positions when fixing a process
-                                            // If the process is broken, then you can only start the task at the route before break's unload location
-                                            if (!!this.props.selectedTask && !!this.props.selectedProcess && !!this.props.fixingProcess && this.props.selectedTask.load.station === null) {
-
-                                                // Gets the route before break
-                                                const routeBeforeBreak = this.props.selectedProcess.routes[this.props.selectedProcess.broken - 1]
-                                                const taskBeforeBreak = this.props.tasks[routeBeforeBreak]
-
-                                                if (!!taskBeforeBreak.unload) {
-                                                    const unloadStationID = taskBeforeBreak.unload.station
-                                                    const unloadStation = this.props.locations[unloadStationID]
-
-                                                    if (unloadStation.children.includes(position._id)) {
-                                                        return true
-
-                                                    }
-                                                }
-                                            }
-
-                                            // This filters positions when making a process
-                                            // If the process has routes, and you're adding a new route, you should only be able to add a route starting at the last station
-                                            // This eliminates process with gaps between stations
-                                            else if (!!this.props.selectedTask && !!this.props.selectedProcess && this.props.selectedProcess.routes.length > 0 && this.props.selectedTask.load.position === null) {
-                                                // Gets the last route in the routes array
-                                                const previousRoute = this.props.selectedProcess.routes[this.props.selectedProcess.routes.length - 1]
-                                                const previousTask = this.props.tasks[previousRoute]
-
-                                                if (!!previousTask.unload) {
-
-                                                    const unloadStationID = previousTask.unload.station
-                                                    const unloadStation = this.props.locations[unloadStationID]
-
-                                                    if (unloadStation.children.includes(position._id)) {
-                                                        return true
-
-                                                    }
-                                                }
-                                            }
-
-
-                                            // return true
-
-
-                                            // This filters out positions that aren't apart of a station when making a task
-                                            // Should not be able to make a task for a random position
-                                            else if (!!this.props.selectedTask) {
-                                                return !!position.parent
-                                            }
-
-                                            else {
-                                                return true
-                                            }
-                                        })
+                                        .filter(position => (position.map_id === this.props.currentMap._id))
                                         .map((position, ind) =>
-                                            <>
-                                                <Position key={`pos-${ind}`}
-                                                    location={position}
-                                                    rd3tClassName={`${this.rd3tPosClassName}_${ind}`}
-                                                    d3={this.d3}
-                                                    onEnableDrag={this.onEnableDrag}
-                                                    onDisableDrag={this.onDisableDrag}
-                                                />
+                                            <Position
+                                                key={`pos-${ind}`}
+                                                position={position}
+                                                rd3tClassName={`${this.rd3tPosClassName}_${ind}`}
+                                                d3={this.d3}
+                                                onEnableDrag={this.onEnableDrag}
+                                                onDisableDrag={this.onDisableDrag}
+                                            />
 
-                                            </>
                                         )
                                 }</>
 

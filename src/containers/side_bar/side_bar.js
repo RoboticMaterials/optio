@@ -21,7 +21,6 @@ import PageErrorBoundary from '../../containers/page_error_boundary/page_error_b
 import Cards from "../../components/side_bar/content/cards/cards";
 
 // Import Actions
-import { sideBarBack } from '../../redux/actions/locations_actions'
 import { setEditingStation } from '../../redux/actions/stations_actions'
 import { setEditingPosition } from '../../redux/actions/positions_actions'
 import { hoverStationInfo } from '../../redux/actions/widget_actions'
@@ -47,7 +46,6 @@ const SideBar = (props) => {
 
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
-    const dispatchSideBarBack = (props) => dispatch(sideBarBack(props))
     const dispatchEditingStation = (bool) => dispatch(setEditingStation(bool))
     const dispatchEditingPosition = (bool) => dispatch(setEditingPosition(bool))
 

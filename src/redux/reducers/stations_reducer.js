@@ -29,8 +29,6 @@ import {
 import { deepCopy, isEquivalent } from '../../methods/utils/utils';
 import { compareExistingVsIncomingLocations } from '../../methods/utils/locations_utils'
 
-
-
 const defaultState = {
     stations: {},
 
@@ -54,6 +52,7 @@ export default function stationsReducer(state = defaultState, action) {
      * @param {object} station 
      */
     const onUpdateStation = (station) => {
+        console.log('QQQQ Station', station)
         return {
             ...state,
             stations: {
@@ -68,7 +67,11 @@ export default function stationsReducer(state = defaultState, action) {
 
     switch (action.type) {
 
-        // ========== UTILS ========== //
+        // ======================================== //
+        //                                          //
+        //                UTILS                     //
+        //                                          //
+        // ======================================== //
 
         // Adds station to front-end without adding it to the backend
         case ADD_STATION:
@@ -88,7 +91,7 @@ export default function stationsReducer(state = defaultState, action) {
             }
 
             else {
-                let updatedStation = deepCopy(state.stations[action.payload.id])
+                let updatedStation = state.stations[action.payload.id]
                 Object.assign(updatedStation, action.payload.attr)
                 return onUpdateStation(updatedStation)
             }

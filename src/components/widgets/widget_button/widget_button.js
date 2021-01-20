@@ -9,7 +9,6 @@ import uuid from 'uuid'
 
 // Import Actions
 import { postTaskQueue } from '../../../redux/actions/task_queue_actions'
-import { sideBarBack } from '../../../redux/actions/locations_actions'
 import { putStation, setSelectedStationChildrenCopy } from '../../../redux/actions/stations_actions'
 import {widgetLoaded, hoverStationInfo} from '../../../redux/actions/widget_actions'
 import { postDashboard, dashboardOpen } from '../../../redux/actions/dashboards_actions'
@@ -37,7 +36,6 @@ const WidgetButton = (props) => {
     const onPostTaskQueue = (q) => dispatch(postTaskQueue(q))
     const onWidgetLoaded = (bol) => dispatch(widgetLoaded(bol))
     const onHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
-    const onSideBarBack = (props) => dispatch(sideBarBack(props))
     const onDashboardOpen = (props) => dispatch(dashboardOpen(props))
     const onPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
     const onPutStation = (station, ID) => dispatch(putStation(station, ID))
@@ -91,7 +89,6 @@ const WidgetButton = (props) => {
             })
             onWidgetLoaded(false)
             onHoverStationInfo(null)
-            onSideBarBack({ selectedLocation })
         }
         else {
             onPostTaskQueue({
@@ -110,7 +107,6 @@ const WidgetButton = (props) => {
     const handleCancelClick = () => {
         onWidgetLoaded(false)
         onHoverStationInfo(null)
-        onSideBarBack({ selectedLocation })
     }
 
     // Handles if a dashboard is clicked

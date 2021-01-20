@@ -47,7 +47,7 @@ export const getPositions = () => {
             dispatch({ type: GET_POSITIONS_STARTED });
         }
         function onSuccess(positions) {
-            dispatch({ type: GET_POSITIONS_SUCCESS, payload: { positions } });
+            dispatch({ type: GET_POSITIONS_SUCCESS, payload: positions });
             return positions;
         }
         function onError(error) {
@@ -59,6 +59,7 @@ export const getPositions = () => {
             onStart();
             const positions = await api.getPositions();
 
+            // TODO: Add to normalizer
             const normalizedPositions = {}
             positions.map((position) => {
                 normalizedPositions[position._id] = position

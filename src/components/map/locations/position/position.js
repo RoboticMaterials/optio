@@ -19,14 +19,61 @@ import { hoverStationInfo } from '../../../../redux/actions/widget_actions'
 import LocationSvg from '../location_svg/location_svg'
 import DragEntityProto from '../drag_entity_proto'
 
+// Commented out for now, but will need to use logic for disabling locations
+// // This filters out positions when fixing a process
+// // If the process is broken, then you can only start the task at the route before break's unload location
+// if (!!this.props.selectedTask && !!this.props.selectedProcess && !!this.props.fixingProcess && this.props.selectedTask.load.station === null) {
+
+//     // Gets the route before break
+//     const routeBeforeBreak = this.props.selectedProcess.routes[this.props.selectedProcess.broken - 1]
+//     const taskBeforeBreak = this.props.tasks[routeBeforeBreak]
+
+//     if (!!taskBeforeBreak.unload) {
+//         const unloadStationID = taskBeforeBreak.unload.station
+//         const unloadStation = this.props.locations[unloadStationID]
+
+//         if (unloadStation.children.includes(position._id)) {
+//             return true
+
+//         }
+//     }
+// }
+
+// // This filters positions when making a process
+// // If the process has routes, and you're adding a new route, you should only be able to add a route starting at the last station
+// // This eliminates process with gaps between stations
+// else if (!!this.props.selectedTask && !!this.props.selectedProcess && this.props.selectedProcess.routes.length > 0 && this.props.selectedTask.load.position === null) {
+//     // Gets the last route in the routes array
+//     const previousRoute = this.props.selectedProcess.routes[this.props.selectedProcess.routes.length - 1]
+//     const previousTask = this.props.tasks[previousRoute]
+
+//     if (!!previousTask.unload) {
+
+//         const unloadStationID = previousTask.unload.station
+//         const unloadStation = this.props.locations[unloadStationID]
+
+//         if (unloadStation.children.includes(position._id)) {
+//             return true
+
+//         }
+//     }
+// }
+
+// This filters out positions that aren't apart of a station when making a task
+// Should not be able to make a task for a random position
+// else if (!!this.props.selectedTask) {
+//     return !!position.parent
+// }
+
 function Position(props) {
 
     const {
         d3,
         position,
         rd3tClassName,
+        handleEnableDrag,
+        handleDisableDrag,
     } = props
-
 
     const [hovering, setHovering] = useState(false)
     const [rotating, setRotating] = useState(false)
@@ -45,7 +92,6 @@ function Position(props) {
     const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
 
     const isSelected = !!selectedPosition && selectedPosition._id === position._id
-
     // Tells the position to glow
     const shouldGlow = selectedTask !== null &&
         ((selectedTask.load.position == position._id && selectedTask.type == 'push') ||
@@ -125,7 +171,7 @@ function Position(props) {
         // Only hover if there is no selected task
         if (selectedTask === null) {
             setHovering(true)
-            if (!rotating && !translating && selectedPosition === null && selectedTask === null) {
+            if (!rotating && !translating && !selectedPosition && !selectedTask) {
                 dispatchHoverStationInfo(handleWidgetHover())
                 dispatchSetSelectedPosition(position)
 
@@ -185,11 +231,10 @@ function Position(props) {
                 }}
 
                 handleEnableDrag={() => {
-                    console.log('QQQQ Enable Drag??')
-
+                    handleEnableDrag()
                 }}
                 handleDisableDrag={() => {
-                    console.log('QQQQ Disable Drag??')
+                    handleDisableDrag()
                 }}
 
 

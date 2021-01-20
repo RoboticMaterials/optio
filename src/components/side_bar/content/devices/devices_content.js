@@ -25,7 +25,6 @@ import DeviceItem from './device_item/device_item'
 // Import Actions
 import { putDevices, postDevices, getDevices, deleteDevices, setSelectedDevice } from '../../../../redux/actions/devices_actions'
 import { setSelectedStation, putStation, postStation, setSelectedStationChildrenCopy } from '../../../../redux/actions/stations_actions'
-import { sideBarBack, deleteLocationProcess } from '../../../../redux/actions/locations_actions'
 import { postPosition, putPosition } from '../../../../redux/actions/positions_actions'
 import { postDashboard } from '../../../../redux/actions/dashboards_actions'
 import * as stationActions from '../../../../redux/actions/stations_actions'
@@ -50,9 +49,7 @@ const DevicesContent = () => {
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchSetSelectedStationChildrenCopy = (children) => dispatch(setSelectedStationChildrenCopy(children))
     const dispatchSetSelectedDevice = (selectedDevice) => dispatch(setSelectedDevice(selectedDevice))
-    const dispatchSideBarBack = (props) => dispatch(sideBarBack(props))
 
-    const dispatchDeleteLocationProcess = (props) => dispatch(deleteLocationProcess(props))
     const dispatchPostPosition = (position) => dispatch(postPosition(position))
     const dispatchPutPosition = (position) => dispatch(putPosition(position))
     const dispatchPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
@@ -161,7 +158,6 @@ const DevicesContent = () => {
     }
 
     const onBack = () => {
-        dispatchSideBarBack({ selectedStation, selectedStationChildrenCopy })
 
     }
 

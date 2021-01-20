@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import uuid from 'uuid'
 
 import * as styled from './edit_location.style'
 
@@ -19,7 +20,6 @@ import { StationTypes } from '../../../../../constants/station_constants'
 import { PositionTypes } from '../../../../../constants/position_constants'
 
 // Import actions
-import { sideBarBack, deleteLocationProcess } from '../../../../../redux/actions/locations_actions'
 import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition, setEditingPosition } from '../../../../../redux/actions/positions_actions'
 import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setSelectedStationChildrenCopy, setEditingStation, putStation, postStation } from '../../../../../redux/actions/stations_actions'
 
@@ -35,12 +35,14 @@ const EditLocation = () => {
     const dispatchSetSelectedStationChildrenCopy = (children) => dispatch(setSelectedStationChildrenCopy(children))
     const dispatchPutStation = async (station) => await dispatch(putStation(station))
     const dispatchPostStation = async (station) => await dispatch(postStation(station))
+    const dispatchDeleteStation = async (id) => await dispatch(deleteStation(id))
 
     // Position Dispatches
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
     const dispatchAddPosition = (pos) => dispatch(addPosition(pos))
     const dispatchSetPositionAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
     const dispatchSetEditingPosition = (bool) => dispatch(setEditingPosition(bool))
+    const dispatchDeletePosition = async (id) => dispatch(deletePosition(id))
 
     const stations = useSelector(state => state.stationsReducer.stations)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
@@ -101,6 +103,17 @@ const EditLocation = () => {
 
     const onDelete = () => {
 
+        // Station 
+        if (selectedLocation.schema === 'station') {
+            dispatchDeleteStation(selectedStation._id)
+        }
+
+        // Position
+        else {
+            dispatchDeletePosition(selectedPosition._id)
+        }
+
+        onBack()
     }
 
     const onBack = () => {
@@ -111,17 +124,38 @@ const EditLocation = () => {
         dispatchSetSelectedStation(null)
     }
 
+    /**
+     * The X and Y here are set in map view view dragNewEntity
+     */
     const onAddLocation = async (e, type) => {
 
-        console.log('QQQQ Whats here?', e, LocationTypes[type])
+        // TODO: Stick this into Constants
+        const defaultAttributes = {
+            name: '',
+            schema: null,
+            type: null,
+            pos_x: 0,
+            pos_y: 0,
+            rotation: 0,
+            x: 0,
+            y: 0,
+            _id: uuid.v4(),
+            map_id: currentMap._id,
+            temp: true
+        }
 
         const attributes = LocationTypes[type].attributes
 
+        const newStation = {
+            ...defaultAttributes,
+            ...attributes
+        }
+        console.log('QQQQ Whats here?', e, newStation)
+
         // Handle Station addition
         if (attributes.schema === 'station') {
-            await Object.assign(selectedStation, { ...attributes, temp: true, map_id: currentMap._id })
-            await dispatchAddStation(selectedStation)
-            await dispatchSetSelectedStation(selectedStation)
+            await dispatchAddStation(newStation)
+            await dispatchSetSelectedStation(newStation)
         }
 
         else if (attributes.schema === 'position') {

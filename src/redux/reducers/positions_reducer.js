@@ -73,8 +73,21 @@ const positionsReducer = (state = defaultState, action) => {
 
         // Sets Positions Attributes
         case SET_POSITION_ATTRIBUTES:
-            Object.assign(action.payload.position, action.payload.attr)
-            return onUpdatePosition(action.payload)
+            // If there is a selected station and the payload is that station, then edit the selected station and dont edit the station in state
+            if (!!state.selectedPosition && action.payload.id === state.selectedPosition._id) {
+                let updatedPosition = state.selectedPosition
+                Object.assign(updatedPosition, action.payload.attr)
+                return {
+                    ...state,
+                    selectedPosition: updatedPosition
+                }
+            }
+
+            else {
+                let updatedPosition = state.positions[action.payload.id]
+                Object.assign(updatedPosition, action.payload.attr)
+                return onUpdatePosition(updatedPosition)
+            }
 
         // Sets a selected Position
         case SET_SELECTED_POSITION:
@@ -92,6 +105,7 @@ const positionsReducer = (state = defaultState, action) => {
             return {
                 ...state,
                 positions: action.payload.positions,
+                selectedPosition: !!action.payload.selectedPosition && action.payload.selectedPosition,
                 d3: action.payload.d3
             }
 
@@ -117,7 +131,7 @@ const positionsReducer = (state = defaultState, action) => {
 
         case GET_POSITIONS_SUCCESS:
 
-            const parsedPositions = compareExistingVsIncomingLocations(deepCopy(action.payload), deepCopy(state.positions), this.d3)
+            const parsedPositions = compareExistingVsIncomingLocations(deepCopy(action.payload), deepCopy(state.positions), state.d3)
 
             return {
                 ...state,

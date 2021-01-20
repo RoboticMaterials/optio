@@ -7,7 +7,6 @@ import SideBarButton from '../side_bar_buttons/side_bar_button';
 import * as styled from './side_bar_switcher.style'
 import { setMode } from '../../../redux/actions/sidebar_actions'
 
-import { sideBarBack } from '../../../redux/actions/locations_actions'
 import { setSelectedStation } from '../../../redux/actions/stations_actions'
 import { setSelectedPosition } from '../../../redux/actions/positions_actions'
 import { deselectTask } from '../../../redux/actions/tasks_actions'
@@ -19,7 +18,6 @@ import { editingProcess } from '../../../redux/actions/processes_actions'
 const SideBarSwitcher = (props) => {
 
     const dispatch = useDispatch()
-    const dispatchSideBarBack = (props) => dispatch(sideBarBack(props))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
 
@@ -42,7 +40,6 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    dispatchSideBarBack()
                     dispatchTaskEditing(false)
                     dispatchProcessEditing(false)
                 }}
@@ -108,7 +105,6 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    dispatchSideBarBack()
                     dispatchTaskEditing(false)
                 }}
                 currentMode={url}
@@ -119,7 +115,6 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    dispatchSideBarBack()
                     dispatchTaskEditing(false)
                 }}
                 currentMode={url}
