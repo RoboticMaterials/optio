@@ -12,6 +12,7 @@ import { hexToRGBA, LightenDarkenColor, RGB_Linear_Shade } from '../../methods/u
 // import actions
 import { postStatus } from '../../redux/actions/status_actions'
 import * as taskQueueActions from '../../redux/actions/task_queue_actions'
+import { setWidth, setOpen} from "../../redux/actions/sidebar_actions";
 
 // import components
 import RightMenu from '../right_menu/right_menu'
@@ -41,18 +42,21 @@ const StatusHeader = (props) => {
 
     const sideBarWidth = useSelector(state => state.sidebarReducer.width)
     const toggle = useSelector(state => state.notificationsReducer.toggleNotificationTaskQueue)
-
-    const sidebarWidth = useSelector(state => state.sidebarReducer.width)
     const isSideBarOpen = useSelector(state => state.sidebarReducer.open)
     const taskQueueOpen = useSelector(state => state.taskQueueReducer.taskQueueOpen)
 
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
-
+    const [initialRender, setInitialRender] = useState (null)
     const [statusBarPath, setStatusBarPath] = useState(``)
     const [rightCurvePoint, setRightCurvePoint] = useState(``)
     const [overlapStatus, setOverlapStatus] = useState('')
 
     const prevNotificationRef = useRef()
+
+
+    let params = useParams()
+    const widgetPage = params.widgetPage
+
 
     const theme = useContext(ThemeContext)
     const widthBreakPoint = 1025
@@ -60,15 +64,21 @@ const StatusHeader = (props) => {
     const dispatch = useDispatch()
     const onHideNotifications = (displayType) => dispatch({ type: 'HIDDEN_NOTIFICATIONS', payload: displayType })
     const onTaskQueueOpen = (props) => dispatch(taskQueueActions.taskQueueOpen(props))
+    const onSetWidth = (props) => dispatch (setWidth(props))
+    const onSetOpen = (props) => dispatch (setOpen(props))
+
+
+
 
     // Used for determining break point of header
     const size = useWindowSize()
     const windowWidth = size.width
-    const params = useParams()
+
 
     const generatePath = () => {
 
         const pageWidth = window.innerWidth
+        const windowWidth = size.width
 
         if (windowWidth < 800 && isSideBarOpen && taskQueueOpen) {
             setRightCurvePoint(220)
@@ -79,8 +89,10 @@ const StatusHeader = (props) => {
             setOverlapStatus(false)
         }
 
+
         let x, mergeHeight
         let leftMargin = 200
+
         let rightMargin = 200
         if (window.innerWidth < widthBreakPoint) {
             x = 60
@@ -101,8 +113,8 @@ const StatusHeader = (props) => {
         const path = `
                 M0,0
                 L0,40
-                L${isSideBarOpen ? sideBarWidth : leftMargin},40
-                C${isSideBarOpen ? sideBarWidth + x / 2 : leftMargin + x / 2},40 ${isSideBarOpen ? sideBarWidth + x / 2 : leftMargin + x / 2},${mergeHeight} ${isSideBarOpen ? sideBarWidth + x : leftMargin + x},${mergeHeight}
+                L${isSideBarOpen && !widgetPage ? sideBarWidth : leftMargin},40
+                C${isSideBarOpen && !widgetPage ? sideBarWidth + x / 2 : leftMargin + x / 2},40 ${isSideBarOpen && !widgetPage ? sideBarWidth + x / 2 : leftMargin + x / 2},${mergeHeight} ${isSideBarOpen && !widgetPage ? sideBarWidth + x : leftMargin + x},${mergeHeight}
                 L${pageWidth - (taskQueueOpen ? rightCurvePoint : rightMargin) - x},${mergeHeight}
                 C${pageWidth - (taskQueueOpen ? rightCurvePoint : rightMargin) - x / 2},${mergeHeight} ${taskQueueOpen ? `${pageWidth - rightCurvePoint},${mergeHeight}` : `${pageWidth - rightMargin - x / 2},40`} ${pageWidth - (taskQueueOpen ? rightCurvePoint : rightMargin)},40
                 L${pageWidth},40
@@ -124,6 +136,7 @@ const StatusHeader = (props) => {
         prevNotificationRef.current = notifications
         handleNotifications()
     })
+
 
     // useeffect is used like componentdidmount
     useEffect(() => {
@@ -158,7 +171,9 @@ const StatusHeader = (props) => {
 
     useEffect(() => {
         generatePath()
-    }, [sideBarWidth, isSideBarOpen, taskQueueOpen, window.innerWidth, params.widgetPage])
+    })
+    //This should work but the header path isn't updating on windowResize with these conditions...
+    // [sideBarWidth, isSideBarOpen, taskQueueOpen, window.onresize, window.innerWidth, params.widgetPage, windowWidth, sidebarOpenPath]
 
     // Handles the play pause button
     const handleTogglePlayPause = async () => {
@@ -170,6 +185,7 @@ const StatusHeader = (props) => {
         //Post the status to the API
         await dispatch(postStatus({ pause_status: pause_status }));
     }
+
 
     // Renders the left side of the header
     const renderLeftHeader = useMemo(() => {

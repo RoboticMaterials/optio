@@ -385,6 +385,7 @@ const ApiContainer = (props) => {
         const dashboards = await onGetDashboards();
         await onGetReportEvents()
         await onGetCards()
+        await onGetTasks()
         onGetProcesses()
 
     }

@@ -6,7 +6,6 @@ import {
     SET_SELECTED_LOCATION_COPY,
     SET_SELECTED_LOCATION_CHILDREN_COPY,
     DESELECT_LOCATION,
-    WIDGET_LOADED,
     EDITING_LOCATION,
 } from '../types/locations_types'
 
@@ -168,9 +167,6 @@ export const setSelectedLocationChildrenCopy = (locationChildren) => {
     return { type: SET_SELECTED_LOCATION_CHILDREN_COPY, payload: locationChildren }
 }
 
-export const widgetLoaded = (bool) => {
-    return { type: WIDGET_LOADED, payload: bool }
-}
 
 export const editing = (bool) => {
     return { type: EDITING_LOCATION, payload: bool }
@@ -246,7 +242,7 @@ export const sideBarBack = (props) => {
                 })
             }
 
-            // TODO: This is just sloppy... 
+            // TODO: This is just sloppy...
             // The original copy should be stored in stations in the stations reducer
             // And the edited copy should be the 'selectedLocation'
             // For some reason, the station in stations is being edited as well

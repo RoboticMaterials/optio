@@ -5,7 +5,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
 // Import actions
-import { addLocation, setSelectedLocation, deselectLocation, widgetLoaded, setSelectedLocationCopy, setSelectedLocationChildrenCopy} from '../../../redux/actions/locations_actions'
+import { editing, addLocation, setSelectedLocation, deselectLocation, widgetLoaded, setSelectedLocationCopy, setSelectedLocationChildrenCopy} from '../../../redux/actions/locations_actions'
 
 import * as sidebarActions from "../../../redux/actions/sidebar_actions"
 import * as locationActions from '../../../redux/actions/locations_actions'
@@ -45,6 +45,7 @@ const RightClickMenu = (props) => {
     const dispatch = useDispatch()
     const onAddLocation = (loc) => dispatch(addLocation(loc))
     const onSetSelectedLocation = (loc) => dispatch(setSelectedLocation(loc))
+    const onEditing = (bool) => dispatch(locationActions.editing(bool))
     const onShowSideBar = (bool)=> dispatch(sidebarActions.setOpen(bool))
     const onSetSelectedLocationCopy = (location) => dispatch(setSelectedLocationCopy(location))
     const onSetSelectedLocationChildrenCopy = (locationChildren) => dispatch(setSelectedLocationChildrenCopy(locationChildren))
@@ -55,7 +56,6 @@ const RightClickMenu = (props) => {
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const showSideBar = useSelector(state=> state.sidebarReducer.open)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
-
     const history = useHistory()
 
 
@@ -119,10 +119,10 @@ const RightClickMenu = (props) => {
                 }
               }
 
-         await dispatch(locationActions.addLocation(tempSelectedLocation))
-         await dispatch(locationActions.setSelectedLocation(tempSelectedLocation))
+         await onAddLocation(tempSelectedLocation)
+         await onSetSelectedLocation(tempSelectedLocation)
 
-         dispatch(locationActions.editing(true))
+         onEditing(true)
          onShowSideBar(true)
 
          if(!showSideBar){

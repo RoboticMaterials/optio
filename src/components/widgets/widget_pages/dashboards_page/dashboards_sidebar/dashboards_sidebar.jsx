@@ -174,7 +174,13 @@ const DashboardsSidebar = (props) => {
     }
 
     const getRouteButtons = () => {
-        return availableTasks.map((task, index) => {
+        return availableTasks
+            .filter((currTask) => {
+            // If the task has an associated task and the device is human, then do not render button
+            // This means there's an associated device task, and that task should be the only one displayed
+            if(currTask.associated_task && currTask.device_type === 'human') return false  // filter out
+            return true // otherwise add
+        }).map((task, index) => {
             return {
                 name: task.name,
                 color: tempColors[index % tempColors.length],

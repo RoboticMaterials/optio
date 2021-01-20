@@ -30,6 +30,7 @@ import Widgets from './components/widgets/widgets'
 import ListView from "./components/list_view/list_view";
 import TestsContainer from "./containers/api_container/tests_container";
 import HILModals from "./components/hil_modals/hil_modals";
+import ErrorBoundary from './components/basic/error_boundary/error_boundary';
 
 const widthBreakPoint = 1000;
 
@@ -38,7 +39,7 @@ const widthBreakPoint = 1000;
 const App = (props) => {
 
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
-    const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
+    const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const maps = useSelector(state => state.mapReducer.maps)
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)

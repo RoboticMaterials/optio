@@ -6,17 +6,17 @@ import { useParams } from 'react-router-dom'
 import * as styled from './station.style'
 
 // Import actions
-import { hoverStationInfo } from '../../../../../redux/actions/stations_actions'
+import { hoverStationInfo } from '../../../../../redux/actions/widget_actions'
 import { selectLocation, deselectLocation } from '../../../../../redux/actions/locations_actions'
 import { setTaskAttributes } from '../../../../../redux/actions/tasks_actions'
 
 // Import Utils
 import { DeviceItemTypes } from '../../../../../methods/utils/device_utils'
-import { LocationTypes, handleWidgetHoverCoord } from '../../../../../methods/utils/locations_utils'
+import { handleWidgetHoverCoord } from '../../../../../methods/utils/widget_utils'
+import { LocationTypes } from '../../../../../methods/utils/locations_utils'
 import { deepCopy } from '../../../../../methods/utils/utils'
 
 function Station(props) {
-
 
     const {
         rd3tClassName,
@@ -35,7 +35,7 @@ function Station(props) {
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const hoveringID = useSelector(state => state.locationsReducer.hoverLocationID)
-    const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
+    const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
     const devices = useSelector(state => state.devicesReducer.devices)
     const editing = useSelector(state => state.locationsReducer.editingLocation)
 
@@ -164,7 +164,7 @@ function Station(props) {
     /**
      * This handles when a station is selected for a task
      * Can only add a station to a task if the station is a warehouse or a human
-     * 
+     *
      * For a warehouse, the thing to remember is that you push to a warehouse and pull from a warehouse
      */
     const onSetStationTask = () => {

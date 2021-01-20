@@ -10,8 +10,8 @@ import WidgetButton from './widget_button/widget_button'
 import useWindowSize from '../../hooks/useWindowSize'
 
 // Import Actions
-import { hoverStationInfo } from '../../redux/actions/stations_actions'
-import { selectLocation, deselectLocation, widgetLoaded, setSelectedLocationCopy, setSelectedLocationChildrenCopy } from '../../redux/actions/locations_actions'
+import { selectLocation, deselectLocation, setSelectedLocationCopy, setSelectedLocationChildrenCopy } from '../../redux/actions/locations_actions'
+import {widgetLoaded, hoverStationInfo} from '../../redux/actions/widget_actions'
 
 import * as sidebarActions from "../../redux/actions/sidebar_actions"
 import * as locationActions from '../../redux/actions/locations_actions'
@@ -48,7 +48,7 @@ const Widgets = (props) => {
     const showSideBar = useSelector(state => state.sidebarReducer.open)
 
     // Info passed from workstations/device_locations via redux
-    const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
+    const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
     const dispatch = useDispatch()
     const onHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const onWidgetLoaded = (bool) => dispatch(widgetLoaded(bool))
@@ -97,6 +97,8 @@ const Widgets = (props) => {
         }
 
         dispatch(locationActions.editing(true))
+        onHoverStationInfo(null)
+
 
     }
 

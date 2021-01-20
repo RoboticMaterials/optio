@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
-
 // Import Utils
 import { deepCopy } from '../../../../../methods/utils/utils'
-import { LocationTypes, handleWidgetHoverCoord } from '../../../../../methods/utils/locations_utils'
+import { handleWidgetHoverCoord } from '../../../../../methods/utils/widget_utils'
+import { LocationTypes } from '../../../../../methods/utils/locations_utils'
+
 
 // Import Actions
 import { setTaskAttributes } from '../../../../../redux/actions/tasks_actions'
-import { hoverStationInfo } from '../../../../../redux/actions/stations_actions'
+import { hoverStationInfo } from '../../../../../redux/actions/widget_actions'
 import { selectLocation, deselectLocation } from '../../../../../redux/actions/locations_actions'
 
 function Position(props) {
@@ -37,8 +38,8 @@ function Position(props) {
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
-    const hoveringID = useSelector(state => state.locationsReducer.hoverLocationID)
-    const hoveringInfo = useSelector(state => state.locationsReducer.hoverStationInfo)
+    const hoveringID = useSelector(state => state.widgetReducer.hoverLocationID)
+    const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
 
     useEffect(() => {
         //window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })

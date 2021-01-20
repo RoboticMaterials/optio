@@ -21,7 +21,6 @@ import {
     UPDATE_STATIONS,
     REMOVE_STATION,
 
-    HOVER_STATION_INFO,
 } from '../types/stations_types'
 
 import {
@@ -55,7 +54,6 @@ import {
     SET_SELECTED_LOCATION_COPY,
     SET_SELECTED_LOCATION_CHILDREN_COPY,
     DESELECT_LOCATION,
-    WIDGET_LOADED,
     EDITING_LOCATION,
 } from '../types/locations_types'
 
@@ -86,8 +84,6 @@ const defaultState = {
     selectedLocationCopy: null,
     selectedLocationChildrenCopy: null,
 
-    hoverStationInfo: null,
-    widgetLoaded: false,
     editingLocation: false,
 
     error: {},
@@ -710,23 +706,6 @@ export default function locationsReducer(state = defaultState, action) {
                 selectedLocationChildrenCopy: action.payload
             }
 
-        // ======================================== //
-        //                                          //
-        //                 WIDGETS                  //
-        //                                          //
-        // ======================================== //
-
-        case HOVER_STATION_INFO:
-            return {
-                ...state,
-                hoverStationInfo: action.payload.info,
-            }
-
-        case WIDGET_LOADED:
-            return {
-                ...state,
-                widgetLoaded: action.payload,
-            }
 
         case EDITING_LOCATION:
             return {
