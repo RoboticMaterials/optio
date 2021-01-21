@@ -39,13 +39,14 @@ const TextField = ({
 			<ContentContainer>
 				<InputContainer>
 					<InputComponent
-						style={{...inputStyle, ...style}}
+
 						// inputStyle={{...inputStyle, ...style}}
 						// inputStyle={inputStyle}
 						className='form-control'
 						{...field}
 						{...inputProps}
 						{...props}
+						style={{...style, ...inputStyle}}
 						value={field.value}
 						onChange={(event)=> {
 							// update touched if necessary
@@ -64,7 +65,8 @@ const TextField = ({
 								setFieldTouched(field.name, true)
 							}
 
-							validateOnBlur && validateField(field.name) // validate if necessary
+							// validateOnBlur && validateField(field.name) // validate if necessary
+							// validateField(field.name) // validate if necessary
 
 							onBlur(event) // call onBlur prop if passed
 						}}
@@ -94,7 +96,15 @@ const defaultInputStyleFunc = (hasError) => {
 	return {
 		// borderColor: hasError && 'red',
 		// border: hasError && '1px solid red',
-		boxShadow: hasError && `0 0 5px red`,
+		transition: "all .5s ease-in-out",
+		boxShadow: hasError && `0 0 5px red !important`,
+
+		borderLeft: hasError ? '1px solid red' : "1px solid transparent",
+		borderTop: hasError ? '1px solid red' : "1px solid transparent",
+		borderRight: hasError ? '1px solid red' : "1px solid transparent",
+		borderBottom: hasError && '1px solid red',
+
+
 		overflow: "hidden",
 		textOverflow: "ellipsis",
 		display: "flex",
@@ -132,7 +142,8 @@ TextField.defaultProps = {
 	IconContainerComponent: styled.IconContainerComponent,
 	ContentContainer: styled.DefaultContentContainer,
 	FieldContainer: styled.DefaultFieldContainer,
-	style: {}
+	style: {},
+	validateOnBlur: false
 };
 
 export default TextField;

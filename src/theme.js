@@ -60,6 +60,7 @@ export const theme = {
         good: '#52B853',
         okay: '#ffa200',
         bad: '#FF4B4B',
+        warn: '#ffe62b',
         disabled: '#808080',           // light grey
         radioButton: {
             active: '#FF4B4B',          // RM RED

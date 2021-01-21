@@ -1,10 +1,10 @@
-import styled from "styled-components";
+import styled from 'styled-components'
 
 export const DefaultContainer = styled.div`
 	position: relative;
 `;
 
-export const DefaultErrorContainerComponent = styled.div`
+export const IconContainerComponent = styled.div`
     width: auto;
     height: auto;
     position: absolute;

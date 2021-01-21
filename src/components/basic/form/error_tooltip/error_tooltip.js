@@ -17,6 +17,8 @@ const ErrorTooltip = (props) => {
         text,
         visible,
         onClick,
+        className,
+        color
     } = props
 
     // target input for initial display of tooltip
@@ -93,7 +95,8 @@ const ErrorTooltip = (props) => {
 
             <styled.WarningIcon
                 visible={visible}
-                className="fas fa-exclamation-triangle"
+                color={color}
+                className={className}
                 data-tip
                 data-for={id}
                 onClick={onClick}
@@ -106,7 +109,9 @@ const ErrorTooltip = (props) => {
 
 // Specifies the default values for props:
 ErrorTooltip.defaultProps = {
-    ContainerComponent: styled.IconContainer
+    ContainerComponent: styled.IconContainer,
+    className: "fas fa-exclamation-triangle",
+    color: '#FF4B4B',
 };
 
 export default React.memo(ErrorTooltip);

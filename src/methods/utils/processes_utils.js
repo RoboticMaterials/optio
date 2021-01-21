@@ -1,24 +1,33 @@
 import { deepCopy } from './utils'
+import {isObject} from "./object_utils";
+import store from "../../redux/store";
+import {getLoadStationId, getUnloadStationId} from "./route_utils";
 
 /**
  * This function checks to see if a process is broken. 
  * A process is broken because it has dissjointed routes, theres a gap between an unload station and a load station between 2 consecutive routes
  * 
  * 
- * @param {object} process Process to check and see if it is broken
+ * @param {object} processRoutes Process to check and see if it is broken
  * @param {object} routes All routes
  */
-export const isBrokenProcess = (process, routes) => {
+export const isBrokenProcess = (routes) => {
 
-    // Loops through and 
-    for (let i = 0; i < process.routes.length - 1; i++) {
-        const currentRoute = routes[process.routes[i]]
-        const nextRoute = routes[process.routes[i + 1]]
-        if (currentRoute.unload.station !== nextRoute.load.station) {
-            // Have to return the current route index plus 1 because if the route that is before the broken route is the first route in s process, then the index is 0, which is considered falsy
-            return i + 1
+    // can't be broken if there is only 1 route
+    if(routes.length > 1) {
+        // Loops through and
+        for (let i = 0; i < routes.length - 1; i++) {
+            const currentRoute = routes[i]
+            const nextRoute = routes[i + 1]
+            if (currentRoute.unload.station !== nextRoute.load.station) {
+                // Have to return the current route index plus 1 because if the route that is before the broken route is the first route in s process, then the index is 0, which is considered falsy
+                return i + 1
+            }
         }
     }
+
+    return 0
+
 }
 
 /**
@@ -30,19 +39,19 @@ export const isBrokenProcess = (process, routes) => {
  * RETURNS FALSE IF DELETE DOES NOT BREAK PROCESS
  * It returns an int of where the break will be (int's are truthy)
  * 
- * @param {object} process Selected Process
- * @param {objecet} route Selected Route
- * @param {object} routes All the routes
+ * @param {array} processRoutes Selected Process
+ * @param {object} routeId Selected Route
  */
-export const willRouteDeleteBreakProcess = (process, route, routes) => {
+export const willRouteDeleteBreakProcess = (routes, routeId) => {
 
-    if (route._id !== process.routes[process.routes.length - 1] && route._id !== process.routes[0]) {
+    // if not first or last route
+    if (routeId !== routes[routes.length - 1]._id && routeId !== routes[0]._id) {
 
-        const copyProcess = deepCopy(process)
-        const index = copyProcess.routes.indexOf(route._id)
-        copyProcess.routes.splice(index, 1)
+        const copyProcessRoutes = deepCopy(routes)
+        const index = copyProcessRoutes.findIndex((currRoute) => currRoute._id === routeId)
+        copyProcessRoutes.splice(index, 1)
 
-        return isBrokenProcess(copyProcess, routes)
+        return isBrokenProcess(copyProcessRoutes)
     }
     else {
         return false
@@ -63,22 +72,33 @@ export const willRouteDeleteBreakProcess = (process, route, routes) => {
  * RETURNS FALSE IF THE PROCESS IS FIXED
  * It returns an int of where the new break is if it's still broken (int's are truthy)
  * 
- * @param {object} process Selected Process
+ * @param {object} processRoutes Selected Process
+ * @param {int} brokenIndex index of broken route
  * @param {object} route New Route
  */
-export const willRouteAdditionFixProcess = (process, route, routes) => {
-    const copyProcess = deepCopy(process)
-    const routeBeforeBreak = routes[process.routes[process.broken - 1]]
-    const routeAfterBreak = routes[process.routes[process.broken]]
+export const willRouteAdditionFixProcess = (routes, brokenIndex, route) => {
+    const copyRoutes = deepCopy(routes)
+    const routeBeforeBreak = routes[brokenIndex - 1]
+    const routeAfterBreak = routes[brokenIndex]
 
-    if (routeBeforeBreak.unload.station === route.load.station && routeAfterBreak.load.station === route.unload.station) {
-        copyProcess.routes.splice(process.broken, 0, route._id)
-        if (!!isBrokenProcess(copyProcess, routes)) {
-            return isBrokenProcess(copyProcess, routes)
+    if (getUnloadStationId(routeBeforeBreak) === getLoadStationId(route) && getLoadStationId(routeAfterBreak) === getUnloadStationId(route) ) {
+
+        copyRoutes.splice(brokenIndex, 0, route) // splice route into arr
+
+        if (!!isBrokenProcess(copyRoutes)) {
+            return isBrokenProcess(copyRoutes)
         }
         else {
             return false
         }
+    }
+
+    copyRoutes.splice(brokenIndex, 0, route)
+    if (!!isBrokenProcess(copyRoutes)) {
+        return isBrokenProcess(copyRoutes)
+    }
+    else {
+        return false
     }
 }
 
@@ -139,3 +159,35 @@ export const getProcessStations = (process, routes) => {
     // return stationIds obj
     return stationIds
 }
+
+export const getPreviousRoute = (processRoutes, currentRouteId) => {
+    const storeState = store.getState()
+    const routes = storeState.tasksReducer.tasks
+    var previousRoute
+
+    const currentRouteindex = processRoutes.findIndex((currItem) => {
+        if(isObject(currItem)) {
+            return currItem._id === currentRouteId
+        }
+        else {
+            return currItem === currentRouteId
+        }
+
+    })
+
+    if(currentRouteindex > 0 ) {
+        previousRoute = processRoutes[currentRouteindex - 1]
+    }
+    else {
+        previousRoute = processRoutes[processRoutes.length - 1]
+    }
+
+    if(!isObject(previousRoute)) {
+        return routes[previousRoute]
+    }
+    else {
+        return previousRoute
+    }
+
+}
+
