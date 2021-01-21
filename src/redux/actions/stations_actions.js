@@ -30,6 +30,7 @@ import uuid from 'uuid';
 // Import External Actions
 import { deleteTask } from './tasks_actions'
 import { deletePosition } from './positions_actions'
+import { deleteDashboard, postDashboard } from './dashboards_actions'
 
 // Import API
 import * as api from '../../api/stations_api'
@@ -153,7 +154,7 @@ export const deleteStation = (ID) => {
 
         try {
             onStart();
-            const station = await onDeleteStation(ID)
+            const station = await dispatch(onDeleteStation(ID))
             const removeStation = await api.deleteStation(station._id);
             return onSuccess(ID)
         } catch (error) {
@@ -212,42 +213,50 @@ const onDeleteStation = (id) => {
 
     let station = stationsState.stations[id]
 
-    // If the station has children, delete them
-    if (!!station.children) {
+    return async dispatch => {
 
-        // TODO: Fix this, in positions, it'll put the station to tell it's deleted, but the station is about to be deleted, so no need to put
-        station.children.forEach(position => {
-            console.log('QQQQ Deleting pos', position)
-            return async dispatch =>{
+        // If the station has children, delete them
+        if (!!station.children) {
+
+            // TODO: Fix this, in positions, it'll put the station to tell it's deleted, but the station is about to be deleted, so no need to put
+            station.children.forEach(position => {
+                console.log('QQQQ Deleting pos', position)
+                console.log('QQQQ Dispatching')
                 dispatch(deletePosition(position))
-            }
-        })
+            })
+        }
+
+
+        // If the position is new, just remove it from the local station
+        // Since the position is new, it does not exist in the backend and there can't be any associated tasks
+        if (!!station.new) {
+            removeStation(station._id)
+            return null
+        }
+
+        // Else delete in backend and delete any associated tasks
+        else {
+
+            // Delete associated dashboards
+            station.dashboards.forEach(dashboard => {
+                dispatch(deleteDashboard(dashboard))
+            })
+
+            // Sees if any tasks are associated with the position and delete them
+            const tasks = tasksState.tasks
+            Object.values(tasks).filter(task => {
+                return task.load.station === station._id || task.unload.station === station._id
+            }).forEach(relevantTask => {
+                dispatch(deleteTask(relevantTask._id))
+            })
+
+
+        }
+        return station
     }
+}
 
-    // Delete Relevant Tasks
-
-
-    // If the position is new, just remove it from the local station
-    // Since the position is new, it does not exist in the backend and there can't be any associated tasks
-    if (!!station.new) {
-        removeStation(station._id)
-        return null
-    }
-
-    // Else delete in backend and delete any associated tasks
-    else {
-
-        const tasks = tasksState.tasks
-
-        // Sees if any tasks are associated with the position and delete them
-        Object.values(tasks).filter(task => {
-            return task.load.station === station._id || task.unload.station === station._id
-        }).forEach(relevantTask => {
-            deleteTask(relevantTask._id)
-        })
-
-
-    }
-    return station
+const onPostStation = (station) => {
+    // Add dashboard
 
 }

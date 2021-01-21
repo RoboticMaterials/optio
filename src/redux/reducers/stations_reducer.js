@@ -80,11 +80,12 @@ export default function stationsReducer(state = defaultState, action) {
 
             // If there is a selected station and the payload is that station, then edit the selected station and dont edit the station in state
             if (!!state.selectedStation && action.payload.id === state.selectedStation._id) {
-                let updatedStation = state.selectedStation
-                Object.assign(updatedStation, action.payload.attr)
                 return {
                     ...state,
-                    selectedStation: updatedStation
+                    selectedStation: {
+                        ...state.selectedStation,
+                        ...action.payload.attr
+                    }
                 }
             }
 
@@ -106,12 +107,12 @@ export default function stationsReducer(state = defaultState, action) {
             return onUpdateStation(action.payload)
 
         // Upates stations locally on the front-end
-        case UPDATE_STATIONS:            
+        case UPDATE_STATIONS:
             return {
                 ...state,
                 stations: action.payload.stations,
-                selectedStation: !!action.payload.selectedStation && action.payload.selectedStation,
-                d3: action.payload.d3
+                selectedStation: !!action.payload.selectedStation ? action.payload.selectedStation : state.selectedStation,
+                d3: !!action.payload.d3 ? action.payload.d3 : state.d3
             }
 
         case EDITING_STATION:

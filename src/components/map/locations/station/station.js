@@ -176,7 +176,7 @@ function Station(props) {
 
     const onMouseEnter = () => {
         // Only allow hovering if there is no selected task
-        if (!hoveringInfo && selectedTask === null) {
+        if (!hoveringInfo && selectedTask === null && !station.temp) {
             setHovering(true)
 
             if (!rotating && !translating && !selectedStation && !selectedTask) {

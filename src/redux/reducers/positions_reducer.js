@@ -93,11 +93,12 @@ const positionsReducer = (state = defaultState, action) => {
 
             // If there is a selected station and the payload is that station, then edit the selected station and dont edit the station in state
             else if (!!state.selectedPosition && action.payload.id === state.selectedPosition._id) {
-                let updatedPosition = state.selectedPosition
-                Object.assign(updatedPosition, action.payload.attr)
                 return {
                     ...state,
-                    selectedPosition: updatedPosition
+                    selectedPosition: {
+                        ...state.selectedPosition,
+                        ...action.payload.attr
+                    }
                 }
             }
 
