@@ -135,7 +135,6 @@ const positionsReducer = (state = defaultState, action) => {
             }
 
         case SET_SELECTED_STATION_CHILDREN_COPY:
-            console.log('QQQQ Setting children', action.payload)
             return {
                 ...state,
                 selectedStationChildrenCopy: action.payload
@@ -194,7 +193,6 @@ const positionsReducer = (state = defaultState, action) => {
             });
 
         case PUT_POSITION_SUCCESS:
-            console.log('QQQQ Deleted', action.payload)
             if (action.payload.change_key === 'deleted') {
                 return state
             }

@@ -218,14 +218,12 @@ const onDeleteStation = (id) => {
         const tasksState = store.getState().tasksReducer
 
         let station = !!stationsState.selectedStation ? stationsState.selectedStation : stationsState.stations[id]
-        console.log('QQQQ deleting station', station)
 
         // If the station has children, delete them
         if (!!station.children) {
 
             // TODO: Fix this, in positions, it'll put the station to tell it's deleted, but the station is about to be deleted, so no need to put
             station.children.forEach(async position => {
-                console.log('QQQQ Deleting pos', position)
 
                 // Passes in true to tell that the deleted postion's associated station is being deleted too
                 // This way, it wont update the station 
@@ -264,9 +262,7 @@ const onDeleteStation = (id) => {
 }
 
 const onPostStation = (station) => {
-
     return async dispatch => {
-
         // Add dashboard
         let defaultDashboard = {
             name: station.name + ' Dashboard',
@@ -275,10 +271,8 @@ const onPostStation = (station) => {
         }
 
         //// Now post the dashboard, and on return tie that dashboard to location.dashboards and put the location
-        const postDashboardPromise = dispatch(postDashboard(defaultDashboard))
-        postDashboardPromise.then(postedDashboard => {
-            station.dashboards = [postedDashboard._id.$oid]
-        })
+        const postedDashboard = await dispatch(postDashboard(defaultDashboard))
+        station.dashboards = [postedDashboard._id.$oid]
 
         // Save Children
         await dispatch(onSaveChildren())
@@ -298,7 +292,6 @@ const onSaveChildren = () => {
             Object.values(selectedStationChildrenCopy).map(async (child, ind) => {
                 // Post
                 if (!!child.new) {
-                    console.log('QQQQ Posting', child)
                     await dispatch(postPosition(child))
 
                 }

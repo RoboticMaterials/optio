@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom'
 import { deepCopy } from '../../../../methods/utils/utils'
 import { handleWidgetHoverCoord } from '../../../../methods/utils/widget_utils'
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
+import { editing } from '../../../../methods/utils/locations_utils'
 
 // Import Constants
 import { PositionTypes } from '../../../../constants/position_constants'
@@ -94,7 +95,10 @@ function Position(props) {
     const stations = useSelector(state => state.stationsReducer.stations)
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
 
-    const isSelected = !!selectedPosition && selectedPosition._id === position._id
+    let isSelected = false
+    if(!!selectedPosition && selectedPosition._id === position._id) isSelected = true
+    else if(!!selectedStationChildrenCopy && (position._id in selectedStationChildrenCopy)) isSelected = true
+    
 
     // TODO: Comment Disabled
     let disabled = false
@@ -180,7 +184,7 @@ function Position(props) {
         // Only hover if there is no selected task
         if (!hoveringInfo && selectedTask === null) {
             setHovering(true)
-            if (!rotating && !translating && !selectedPosition && !selectedStation && !selectedTask && !position.temp) {
+            if (!editing() && !rotating && !translating && !selectedPosition && !selectedStation && !selectedTask && !position.temp) {
                 dispatchHoverStationInfo(handleWidgetHover())
                 dispatchSetSelectedPosition(position)
 

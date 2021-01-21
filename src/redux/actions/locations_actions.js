@@ -188,7 +188,7 @@ export const editing = (bool) => {
  */
 
 export const sideBarBack = (props) => {
-    console.log('QQQQ Why?')
+    
 }
 
 

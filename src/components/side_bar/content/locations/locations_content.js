@@ -94,7 +94,6 @@ export default function LocationContent() {
                     copy[child] = positions[child]
                 })
 
-                console.log('QQQQ Copy', copy)
                 dispatchSetSelectedStationChildrenCopy(copy)
             }
         }

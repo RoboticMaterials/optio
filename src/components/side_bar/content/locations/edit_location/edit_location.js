@@ -71,7 +71,6 @@ const EditLocation = () => {
     }
 
     useEffect(() => {
-        console.log('QQQQ Editing location', selectedLocation)
         return () => {
             dispatchSetEditingStation(false)
             dispatchSetEditingPosition(false)

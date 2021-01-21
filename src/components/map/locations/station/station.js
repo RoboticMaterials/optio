@@ -13,6 +13,7 @@ import { setTaskAttributes } from '../../../../redux/actions/tasks_actions'
 import { handleWidgetHoverCoord } from '../../../../methods/utils/widget_utils'
 import { deepCopy } from '../../../../methods/utils/utils'
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
+import { editing } from '../../../../methods/utils/locations_utils'
 
 // Import Constants
 import { StationTypes } from '../../../../constants/station_constants'
@@ -139,13 +140,11 @@ function Station(props) {
                 // } else {
                 //     type = 'push'
                 // }
-                console.log('QQQQ Setting task in station', selectedTask)
                 dispatchSetTaskAttributes(selectedTask._id, { unload, type, handoff })
             }
 
             // Otherwise assign the load position and clear the unload position (to define a new unload)
             else {
-                console.log('QQQQ Setting task in station', selectedTask)
                 let load = deepCopy(selectedTask.load)
                 let unload = deepCopy(selectedTask.unload)
                 let type = selectedTask.type
@@ -179,7 +178,7 @@ function Station(props) {
         if (!hoveringInfo && selectedTask === null && !station.temp) {
             setHovering(true)
 
-            if (!rotating && !translating && !selectedStation && !selectedTask) {
+            if (!editing() && !rotating && !translating && !selectedStation && !selectedTask) {
                 dispatchHoverStationInfo(handleWidgetHover())
                 dispatchSetSelectedStation(station)
             }

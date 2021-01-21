@@ -51,7 +51,6 @@ export default function stationsReducer(state = defaultState, action) {
      * @param {object} station 
      */
     const onUpdateStation = (station) => {
-        console.log('QQQQ Station', station)
         return {
             ...state,
             stations: {

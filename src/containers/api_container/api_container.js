@@ -307,8 +307,6 @@ const ApiContainer = (props) => {
         // Data Update Functions
         // const dataUpdate = await onUpdateTaskData(tasks)
 
-        console.log('QQQQ Positions', positions)
-
         // Cleaner Functions
         const funtion = await handleDeviceWithoutADashboard(devices, dashboards)
         const funtion1 = await handleTasksWithBrokenPositions(tasks, stations, positions)

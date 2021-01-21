@@ -6,6 +6,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { deepCopy } from './utils'
 import { convertRealToD3 } from './map_utils'
 
+// Import Store
+import store from '../../redux/store/index'
+
 
 /**
  * All of these coordinates have been calc by adjusting them on map with chrome dev tools
@@ -30,6 +33,15 @@ export const locationsSortedAlphabetically = (locations) => {
 
     return locationsCopy
 }
+
+export const editing = () => {
+    const editingPosition = store.getState().positionsReducer.editingPosition
+    const editingStation = store.getState().stationsReducer.editingStation
+
+    return !!editingStation ? editingStation : editingPosition
+
+}
+
 
 /**
  * This function compares existing vs incoming locations
@@ -70,7 +82,7 @@ export const compareExistingVsIncomingLocations = (incomingLocations, existingLo
         else if (existingLocation.new == true) {
             incomingLocations[existingLocation._id] = existingLocation
         }
-        
+
     })
 
     // Compare incoming vs existing
