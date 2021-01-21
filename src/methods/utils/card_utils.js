@@ -40,3 +40,12 @@ export const parseMessageFromEvent = (eventName, username, data) => {
 			return [`${eventName} performed by ${username}`]
 	}
 }
+
+export const convertCardDate = (cardDate) => {
+	console.log("convertCardDate cardDate",cardDate)
+	const year = cardDate?.year || 0
+	const month = cardDate?.month || 0
+	const day = cardDate?.day || 0
+
+	return (year && (month + 1) && day) ? new Date(year, month, day, 0, 0, 0, 0) : new Date()
+}

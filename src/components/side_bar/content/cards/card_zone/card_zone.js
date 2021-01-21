@@ -16,6 +16,7 @@ import {setDataPage} from "../../../../../redux/actions/api_actions"
 // styles
 import * as styled from "./card_zone.style"
 import cardPageReducer from "../../../../../redux/reducers/card_page_reducer";
+import {sortBy} from "../../../../../methods/utils/array_utils";
 
 const CardZone = ((props) => {
 
@@ -26,19 +27,23 @@ const CardZone = ((props) => {
 		setShowCardEditor,
 		showCardEditor,
 		maxHeight,
-		lotFilterValue
+		lotFilterValue,
+		sortMode
 	} = props
 
 	// redux state
 	const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] }) || {}
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
-	const cards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || []
+	// const cards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || []
+	const a = useSelector(state => { return state.cardsReducer.processCards[processId] }) || []
 	const stations = useSelector(state => { return state.locationsReducer.stations })
 	const draggedLotInfo = useSelector(state => { return state.cardPageReducer.draggedLotInfo })
 	const {
 		lotId: draggingLotId = "",
 		binId: draggingBinId = ""
 	} = draggedLotInfo || {}
+
+	let cards = sortBy(Object.values(a), sortMode)
 
 	// console.log("draggedLotInfo",draggedLotInfo)
 
@@ -99,7 +104,7 @@ const CardZone = ((props) => {
 	var tempQueue = []		// temp var for storing queue lots
 	var tempFinished = []	// temp var for storing finished lots
 
-	Object.values(cards).forEach((card) => {
+	cards.forEach((card) => {
 
 		// extract card attributes
 		const {
