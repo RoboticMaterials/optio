@@ -24,6 +24,8 @@ import { putTaskQueueItem } from '../../api/task_queue_api'
 // Import Utils
 import { deepCopy } from '../../methods/utils/utils'
 import { getCards } from "../../redux/actions/card_actions";
+import {sortBy} from "../../methods/utils/card_utils";
+import {SORT_MODES} from "../../constants/common_contants";
 
 
 /**
@@ -81,6 +83,7 @@ const HILModals = (props) => {
     const [lotFilterValue, setLotFilterValue] = useState('')
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState('')
     const [changeQtyMouseHold, setChangeQtyMouseHold] = useState('')
+    const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
 
 
     const {
@@ -168,7 +171,7 @@ const HILModals = (props) => {
             const taskProcesses = selectedTask.processes
             const associatedsTaskProcess = !!associatedTask ? associatedTask.processes : []
 
-            const stationCards = Object.values(cards).filter((currCard) => {
+            let stationCards = Object.values(cards).filter((currCard) => {
                 const {
                     bins,
                     process_id: currCardProcessId
@@ -177,8 +180,9 @@ const HILModals = (props) => {
                 if (bins) {
                     if (bins[loadStationId] && bins[loadStationId].count > 0 && (taskProcesses.includes(currCardProcessId) || associatedsTaskProcess.includes(currCardProcessId))) return true
                 }
-
             })
+
+            sortBy(stationCards, sortMode)
 
             if (stationCards && Array.isArray(stationCards) && stationCards.length > 0) {
                 if ((stationCards.length === 1) && !selectedLot && !didSelectInitialLot) {

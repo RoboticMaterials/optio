@@ -16,7 +16,7 @@ const Column = ((props) => {
 		station_id,
 		stationName = "Unnamed",
 		handleCardClick,
-		cards: unsortedCards = [],
+		cards,
 		processId,
 		HeaderContent,
 		isCollapsed,
@@ -25,7 +25,9 @@ const Column = ((props) => {
 		sortMode
 	} = props
 
-	const cards = sortMode ? sortBy(unsortedCards, sortMode) : unsortedCards
+	if(sortMode) {
+		sortBy(cards, sortMode)
+	}
 
 	const objects = useSelector(state => { return state.objectsReducer.objects })
 	const reduxCards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || {}

@@ -232,7 +232,7 @@ const KickOffModal = (props) => {
 
 
         if(sortMode) {
-            tempAvailableCards = sortBy(tempAvailableCards, sortMode)
+            sortBy(tempAvailableCards, sortMode)
         }
         setAvailableKickOffCards(tempAvailableCards)
 

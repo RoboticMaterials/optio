@@ -65,16 +65,16 @@ export const convertCardDate = (cardDate) => {
 /*
 * This function receives an array of cards as an argument and sorts them based on the {sortMode} argument.
 *
-* The original array is copied and sorting is performed on the copy. This sorted copy is returned.
+* The original array is modified in place - THIS WILL MODIFY THE ARRAY - pass a copy if the original array shouldn't be modified
 *
 * @param {array} arr - array of cards
 * @param {string} sortMode - string identifier of mode to sort by
 * */
 export const sortBy = (arr, sortMode) => {
-	let arrCopy = deepCopy(arr)
+
 	switch(sortMode) {
 		case SORT_MODES.QUANTITY_ASCENDING: {
-			arrCopy.sort((itemA, itemB) => {
+			arr.sort((itemA, itemB) => {
 				const { count: countA } = itemA
 
 				const { count: countB } = itemB
@@ -86,7 +86,7 @@ export const sortBy = (arr, sortMode) => {
 			break
 		}
 		case SORT_MODES.QUANTITY_DESCENDING: {
-			arrCopy.sort((itemA, itemB) => {
+			arr.sort((itemA, itemB) => {
 				const { count: countA } = itemA
 
 				const { count: countB } = itemB
@@ -99,7 +99,7 @@ export const sortBy = (arr, sortMode) => {
 		}
 
 		case SORT_MODES.NAME_ASCENDING: {
-			arrCopy.sort((itemA, itemB) => {
+			arr.sort((itemA, itemB) => {
 				const { name: nameA } = itemA
 
 				const { name: nameB } = itemB
@@ -111,7 +111,7 @@ export const sortBy = (arr, sortMode) => {
 		}
 
 		case SORT_MODES.NAME_DESCENDING: {
-			arrCopy.sort((itemA, itemB) => {
+			arr.sort((itemA, itemB) => {
 				const { name: nameA } = itemA
 
 				const { name: nameB } = itemB
@@ -123,7 +123,7 @@ export const sortBy = (arr, sortMode) => {
 		}
 
 		case SORT_MODES.END_DESCENDING: {
-			arrCopy.sort((itemA, itemB) => {
+			arr.sort((itemA, itemB) => {
 				const { end_date: endDateA } = itemA
 				const convertedA = convertCardDate(endDateA)
 
@@ -138,7 +138,7 @@ export const sortBy = (arr, sortMode) => {
 			break
 		}
 		case SORT_MODES.END_ASCENDING: {
-			arrCopy.sort((itemA, itemB) => {
+			arr.sort((itemA, itemB) => {
 				const { end_date: endDateA } = itemA
 				const convertedA = convertCardDate(endDateA)
 
@@ -153,7 +153,7 @@ export const sortBy = (arr, sortMode) => {
 			break
 		}
 		case SORT_MODES.START_DESCENDING: {
-			arrCopy.sort((itemA, itemB) => {
+			arr.sort((itemA, itemB) => {
 				const { start_date: startDateA } = itemA
 				const convertedA = convertCardDate(startDateA)
 
@@ -167,7 +167,7 @@ export const sortBy = (arr, sortMode) => {
 			break
 		}
 		case SORT_MODES.START_ASCENDING: {
-			arrCopy.sort((itemA, itemB) => {
+			arr.sort((itemA, itemB) => {
 				const { start_date: startDateA } = itemA
 				const convertedA = convertCardDate(startDateA)
 
@@ -183,5 +183,5 @@ export const sortBy = (arr, sortMode) => {
 
 	}
 
-	return arrCopy
+	return arr
 }
