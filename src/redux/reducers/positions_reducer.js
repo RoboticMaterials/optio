@@ -53,7 +53,6 @@ const positionsReducer = (state = defaultState, action) => {
      * @param {object} position 
      */
     const onUpdatePosition = (position) => {
-        console.log('QQQQ position', position)
         return {
             ...state,
             positions: {
@@ -76,7 +75,6 @@ const positionsReducer = (state = defaultState, action) => {
 
         // Sets Positions Attributes
         case SET_POSITION_ATTRIBUTES:
-
             // If editing a child position then update the position in the childrencopy
             if (!!state.selectedStationChildrenCopy && action.payload.id in state.selectedStationChildrenCopy) {
                 return {
@@ -145,7 +143,8 @@ const positionsReducer = (state = defaultState, action) => {
 
         case REMOVE_POSITION:
             positionsCopy = deepCopy(state.positions)
-            positionsCopy.delete(action.payload)
+            delete positionsCopy[action.payload]
+            // positionsCopy.delete(action.payload)
             return {
                 ...state,
                 positions: positionsCopy
@@ -195,6 +194,10 @@ const positionsReducer = (state = defaultState, action) => {
             });
 
         case PUT_POSITION_SUCCESS:
+            console.log('QQQQ Deleted', action.payload)
+            if (action.payload.change_key === 'deleted') {
+                return state
+            }
             return onUpdatePosition(action.payload)
 
         case PUT_POSITION_FAILURE:

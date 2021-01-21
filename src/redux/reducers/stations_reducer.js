@@ -43,6 +43,7 @@ const defaultState = {
 }
 
 export default function stationsReducer(state = defaultState, action) {
+    let stationsCopy
 
     /**
      * Updates the state of stations to include the incoming payload station.
@@ -121,6 +122,14 @@ export default function stationsReducer(state = defaultState, action) {
                 editingStation: action.payload
             }
 
+        case REMOVE_STATION:
+            stationsCopy = deepCopy(state.stations)
+            delete stationsCopy[action.payload]
+            return {
+                ...state,
+                stations: stationsCopy
+            }
+
         // ========== GET ========== //
         case GET_STATIONS_STARTED:
             return Object.assign({}, state, {
@@ -180,7 +189,7 @@ export default function stationsReducer(state = defaultState, action) {
             });
 
         case DELETE_STATION_SUCCESS:
-            const stationsCopy = deepCopy(state.stations)
+            stationsCopy = deepCopy(state.stations)
             delete stationsCopy[action.payload]
             return {
                 ...state,

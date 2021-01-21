@@ -29,7 +29,7 @@ import uuid from 'uuid';
 
 // Import External Actions
 import { deleteTask } from './tasks_actions'
-import { deletePosition } from './positions_actions'
+import { deletePosition, putPosition, postPosition } from './positions_actions'
 import { deleteDashboard, postDashboard } from './dashboards_actions'
 
 // Import API
@@ -96,9 +96,12 @@ export const postStation = (station) => {
                 console.log('QQQQ Added UUID to Station, this shouldnt Happen!!')
                 alert('QQQQ Added UUID to Station, this shouldnt Happen!!')
             }
-            delete station.temp
-            delete station.new
-            const newStation = await api.postStation(station);
+
+            let stationCopy = deepCopy(station)
+            stationCopy = await dispatch(onPostStation(stationCopy))
+            delete stationCopy.temp
+            delete stationCopy.new
+            const newStation = await api.postStation(stationCopy);
             return onSuccess(newStation);
         } catch (error) {
             return onError(error);
@@ -126,6 +129,7 @@ export const putStation = (station) => {
         try {
             onStart();
             let stationCopy = deepCopy(station)
+            stationCopy = await dispatch(onSaveChildren())
             delete stationCopy.temp
             const updateStation = await api.putStation(stationCopy, stationCopy._id);
             return onSuccess(updateStation)
@@ -207,22 +211,25 @@ export const setEditingStation = (bool) => {
 
 const onDeleteStation = (id) => {
 
-    const stationsState = store.getState().stationsReducer
-    const positionsState = store.getState().positionsReducer
-    const tasksState = store.getState().tasksReducer
-
-    let station = stationsState.stations[id]
-
     return async dispatch => {
+
+        const stationsState = store.getState().stationsReducer
+        const positionsState = store.getState().positionsReducer
+        const tasksState = store.getState().tasksReducer
+
+        let station = !!stationsState.selectedStation ? stationsState.selectedStation : stationsState.stations[id]
+        console.log('QQQQ deleting station', station)
 
         // If the station has children, delete them
         if (!!station.children) {
 
             // TODO: Fix this, in positions, it'll put the station to tell it's deleted, but the station is about to be deleted, so no need to put
-            station.children.forEach(position => {
+            station.children.forEach(async position => {
                 console.log('QQQQ Deleting pos', position)
-                console.log('QQQQ Dispatching')
-                dispatch(deletePosition(position))
+
+                // Passes in true to tell that the deleted postion's associated station is being deleted too
+                // This way, it wont update the station 
+                await dispatch(deletePosition(position, true))
             })
         }
 
@@ -238,16 +245,16 @@ const onDeleteStation = (id) => {
         else {
 
             // Delete associated dashboards
-            station.dashboards.forEach(dashboard => {
-                dispatch(deleteDashboard(dashboard))
+            station.dashboards.forEach(async dashboard => {
+                await dispatch(deleteDashboard(dashboard))
             })
 
             // Sees if any tasks are associated with the position and delete them
             const tasks = tasksState.tasks
             Object.values(tasks).filter(task => {
                 return task.load.station === station._id || task.unload.station === station._id
-            }).forEach(relevantTask => {
-                dispatch(deleteTask(relevantTask._id))
+            }).forEach(async relevantTask => {
+                await dispatch(deleteTask(relevantTask._id))
             })
 
 
@@ -257,6 +264,52 @@ const onDeleteStation = (id) => {
 }
 
 const onPostStation = (station) => {
-    // Add dashboard
 
+    return async dispatch => {
+
+        // Add dashboard
+        let defaultDashboard = {
+            name: station.name + ' Dashboard',
+            buttons: [],
+            station: station._id
+        }
+
+        //// Now post the dashboard, and on return tie that dashboard to location.dashboards and put the location
+        const postDashboardPromise = dispatch(postDashboard(defaultDashboard))
+        postDashboardPromise.then(postedDashboard => {
+            station.dashboards = [postedDashboard._id.$oid]
+        })
+
+        // Save Children
+        await dispatch(onSaveChildren())
+
+        return station
+    }
+}
+
+const onSaveChildren = () => {
+
+    return async dispatch => {
+        const positionsState = store.getState().positionsReducer
+        const selectedStationChildrenCopy = positionsState.selectedStationChildrenCopy
+
+        // If there children Children Position, save them
+        if (!!selectedStationChildrenCopy) {
+            Object.values(selectedStationChildrenCopy).map(async (child, ind) => {
+                // Post
+                if (!!child.new) {
+                    console.log('QQQQ Posting', child)
+                    await dispatch(postPosition(child))
+
+                }
+                // Put
+                else {
+                    await dispatch(putPosition(child))
+
+                }
+            })
+        }
+
+        return
+    }
 }

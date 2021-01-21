@@ -93,7 +93,6 @@ export const postPosition = (position) => {
 
         try {
             onStart();
-            console.log('QQQQ Starting to post', position)
             if (!('_id' in position)) {
                 position._id = uuid.v4()
             }
@@ -111,7 +110,6 @@ export const postPosition = (position) => {
             delete position.new
             position.change_key = 'new'
             const postedPosition = await api.postPosition(position);
-            console.log('QQQQ Posted Pos', postedPosition)
             return onSuccess(postedPosition);
         } catch (error) {
             return onError(error);
@@ -152,7 +150,6 @@ export const putPosition = (position) => {
 
 
             // Tells the backend that a position has changed
-            console.log('QQQQ Position Copy', positionCopy)
             if (positionCopy.change_key !== 'deleted') positionCopy.change_key = 'changed'
             const updatePosition = await api.putPosition(positionCopy, positionCopy._id);
             return onSuccess(updatePosition)
@@ -165,7 +162,7 @@ export const putPosition = (position) => {
 
 // delete
 // ******************************
-export const deletePosition = (id) => {
+export const deletePosition = (id, stationDelete) => {
     return async dispatch => {
         function onStart() {
             dispatch({ type: DELETE_POSITION_STARTED });
@@ -181,9 +178,7 @@ export const deletePosition = (id) => {
 
         try {
             onStart();
-            console.log('QQQQ HERE!!!', id)
-            let positionCopy = deepCopy(onDeletePosition(id))
-            console.log('QQQQ Positioncopy', positionCopy)
+            let positionCopy = await dispatch(onDeletePosition(id, stationDelete))
             // If theres a position copy then tell the backend is deleted
             // There wouldnt be a position copy because the position did not exist on the backend
             if (!!positionCopy) {
@@ -191,7 +186,7 @@ export const deletePosition = (id) => {
                 // IMPORTANT!: Putting with change_key as deleted instead of deleting because it was causing back end issues
                 // Tells the backend that a position has been deleted
                 positionCopy.change_key = 'deleted'
-                console.log('QQQQ Should be here', positionCopy)
+                console.log('QQQQ Deletign pos action', positionCopy)
                 const updatePosition = await api.putPosition(positionCopy, positionCopy._id);
                 return onSuccess(positionCopy._id)
             }
@@ -244,62 +239,62 @@ export const setSelectedStationChildrenCopy = (positions) => {
 
 
 
-const onDeletePosition = (id) => {
+const onDeletePosition = (id, stationDelete) => {
+    return async dispatch => {
+        const stationsState = store.getState().stationsReducer
+        const positionsState = store.getState().positionsReducer
+        const tasksState = store.getState().tasksReducer
 
-    const stationsState = store.getState().stationsReducer
-    const positionsState = store.getState().positionsReducer
-    const tasksState = store.getState().tasksReducer
+        let position = deepCopy(positionsState.positions[id])
 
-    let position = positionsState.positions[id]
-    console.log('QQQQ Deleting pos in pos actions', position)
+        // If the position has a parent then remove from parent
+        // Make sure that the 
+        if (!!position.parent && !stationDelete) {
 
-    // If the position has a parent then remove from parent
-    if (!!position.parent) {
+            let selectedStation = deepCopy(stationsState.stations[position.parent])
 
-        let selectedStation = deepCopy(stationsState.stations[position.parent])
+            // If there is an associated parent station
+            if (!!selectedStation) {
+                // Remove the position from the list of children
+                const positionIndex = selectedStation.children.findIndex(p => p._id === position._id)
 
-        // If there is an associated parent station
-        if (!!selectedStation) {
-            // Remove the position from the list of children
-            const positionIndex = selectedStation.children.findIndex(p => p._id === position._id)
+                selectedStation.children.splice(positionIndex, 1)
+                await dispatch(putStation(selectedStation))
+            }
 
-            selectedStation.children.splice(positionIndex, 1)
-            putStation(selectedStation)
         }
 
+        // Remove from stations copy if need be
+        if (!!positionsState.selectedStationChildrenCopy) {
+            // Update the ChildrenCopy
+            let copyOfCopy = deepCopy(positionsState.selectedStationChildrenCopy)
+            delete copyOfCopy[position._id]
+            setSelectedStationChildrenCopy(
+                copyOfCopy
+            )
+        }
+
+
+        // If the position is new, just remove it from the local station
+        // Since the position is new, it does not exist in the backend and there can't be any associated tasks
+        if (!!position.new) {
+            removePosition(position._id)
+            return null
+        }
+
+        // Else delete in backend and delete any associated tasks
+        else {
+            const tasks = tasksState.tasks
+
+            // Sees if any tasks are associated with the position and delete them
+            Object.values(tasks).filter(task => {
+                return task.load.position == position._id || task.unload.position == position._id
+            }).forEach(async relevantTask => {
+                await dispatch(deleteTask(relevantTask._id))
+            })
+
+
+        }
+        return position
     }
-
-    // Remove from stations copy if need be
-    if (!!positionsState.selectedStationChildrenCopy) {
-        // Update the ChildrenCopy
-        let copyOfCopy = deepCopy(positionsState.selectedStationChildrenCopy)
-        delete copyOfCopy[position._id]
-        setSelectedStationChildrenCopy(
-            copyOfCopy
-        )
-    }
-
-
-    // If the position is new, just remove it from the local station
-    // Since the position is new, it does not exist in the backend and there can't be any associated tasks
-    if (!!position.new) {
-        removePosition(position._id)
-        return null
-    }
-
-    // Else delete in backend and delete any associated tasks
-    else {
-        const tasks = tasksState.tasks
-
-        // Sees if any tasks are associated with the position and delete them
-        Object.values(tasks).filter(task => {
-            return task.load.position == position._id || task.unload.position == position._id
-        }).forEach(relevantTask => {
-            deleteTask(relevantTask._id)
-        })
-
-
-    }
-    return position
-
 }

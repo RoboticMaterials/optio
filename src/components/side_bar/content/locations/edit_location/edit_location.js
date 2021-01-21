@@ -19,6 +19,9 @@ import Button from '../../../../basic/button/button'
 import { StationTypes } from '../../../../../constants/station_constants'
 import { PositionTypes } from '../../../../../constants/position_constants'
 
+// Import utils
+import { deepCopy } from '../../../../../methods/utils/utils'
+
 // Import actions
 import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition, setEditingPosition, putPosition, postPosition, setSelectedStationChildrenCopy } from '../../../../../redux/actions/positions_actions'
 import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setEditingStation, putStation, postStation } from '../../../../../redux/actions/stations_actions'
@@ -67,6 +70,18 @@ const EditLocation = () => {
         ...PositionTypes,
     }
 
+    useEffect(() => {
+        console.log('QQQQ Editing location', selectedLocation)
+        return () => {
+            dispatchSetEditingStation(false)
+            dispatchSetEditingPosition(false)
+
+            dispatchSetSelectedPosition(null)
+            dispatchSetSelectedStation(null)
+            dispatchSetSelectedStationChildrenCopy(null)
+        }
+    }, [])
+
     /**
      * This function is called when the save button is pressed. The location is POSTED or PUT to the backend.
      * If the location is new and is a station, this function also handles posting the default dashboard and
@@ -87,25 +102,6 @@ const EditLocation = () => {
             else {
                 await dispatchPutStation(selectedStation)
             }
-            console.log('QQQQ children copy', selectedStationChildrenCopy)
-            
-            // Children Positions
-            if (!!selectedStationChildrenCopy) {
-                Object.values(selectedStationChildrenCopy).map(async (child, ind) => {
-                    // Post
-                    if (!!child.new) {
-                        console.log('QQQQ Posting', child)
-                        await dispatchPostPosition(child)
-
-                    }
-                    // Put
-                    else {
-                        await dispatchPutPosition(child)
-
-                    }
-                })
-            }
-
         }
 
         // Position
@@ -132,18 +128,16 @@ const EditLocation = () => {
 
     }
 
-    const onDelete = () => {
-        console.log('QQQQ Deleting', selectedLocation)
+    const onDelete = async () => {
 
         // Station 
         if (selectedLocation.schema === 'station') {
-            dispatchDeleteStation(selectedStation._id)
+            await dispatchDeleteStation(selectedStation._id)
         }
 
         // Position
         else {
-            console.log('QQQQ Deleting Position')
-            dispatchDeletePosition(selectedPosition._id)
+            await dispatchDeletePosition(selectedPosition._id)
         }
 
         onBack()
@@ -178,13 +172,12 @@ const EditLocation = () => {
             temp: true
         }
 
-        const attributes = LocationTypes[type].attributes
+        const attributes = deepCopy(LocationTypes[type].attributes)
 
         const newLocation = {
             ...defaultAttributes,
             ...attributes
         }
-        console.log('QQQQ Whats here?', newLocation)
 
         // Handle Station addition
         if (attributes.schema === 'station') {
