@@ -88,11 +88,19 @@ function Position(props) {
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
+    const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const hoveringID = useSelector(state => state.widgetReducer.hoverLocationID)
     const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
     const stations = useSelector(state => state.stationsReducer.stations)
+    const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
 
     const isSelected = !!selectedPosition && selectedPosition._id === position._id
+
+    // TODO: Comment Disabled
+    let disabled = false
+    if (!!selectedPosition && selectedPosition._id !== position._id) disabled = true
+    else if (!!selectedStationChildrenCopy && !(position._id in selectedStationChildrenCopy)) disabled = true
+
     // Tells the position to glow
     const shouldGlow = selectedTask !== null &&
         ((selectedTask.load.position == position._id && selectedTask.type == 'push') ||
@@ -172,7 +180,7 @@ function Position(props) {
         // Only hover if there is no selected task
         if (!hoveringInfo && selectedTask === null) {
             setHovering(true)
-            if (!rotating && !translating && !selectedPosition && !selectedTask && !position.temp) {
+            if (!rotating && !translating && !selectedPosition && !selectedStation && !selectedTask && !position.temp) {
                 dispatchHoverStationInfo(handleWidgetHover())
                 dispatchSetSelectedPosition(position)
 
@@ -182,9 +190,12 @@ function Position(props) {
     }
 
     const renderParentLine = () => {
+        const parent = (!!position.new && !!selectedStation) ? selectedStation : stations[position.parent]
+        // TODO: Temp fix
+        if (!parent) return
         return (
             <line x1={`${position.x}`} y1={`${position.y}`}
-                x2={`${stations[position.parent].x}`} y2={`${stations[position.parent].y}`}
+                x2={`${parent.x}`} y2={`${parent.y}`}
                 stroke={color} strokeWidth="1.4" shapeRendering="geometricPrecision" style={{ opacity: '0.3', }}
             />
         )

@@ -120,11 +120,13 @@ const positionsReducer = (state = defaultState, action) => {
 
         // Upates positions locally on the front-end
         case UPDATE_POSITIONS:
+            // TODO Comment
             return {
                 ...state,
                 positions: action.payload.positions,
-                selectedPosition: !!action.payload.selectedPosition && action.payload.selectedPosition,
-                d3: action.payload.d3
+                selectedPosition: !!action.payload.selectedPosition ? action.payload.selectedPosition : state.selectedPosition,
+                selectedStationChildrenCopy: !!action.payload.childrenPositions ? action.payload.childrenPositions : state.selectedStationChildrenCopy,
+                d3: !!action.payload.d3 ? action.payload.d3 : state.d3
             }
 
         case EDITING_POSITION:

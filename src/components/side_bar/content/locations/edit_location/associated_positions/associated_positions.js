@@ -65,9 +65,8 @@ export default function Positions(props) {
      * TODO: FIX THIS SHIT!
      * @param {*} position
      */
-    const onDelete = async (position) => {
-        console.log('Deleting this pos', position)
-        dispatchDeletePosition(position)
+    const onDelete = (position) => {
+        dispatchDeletePosition(position._id)
     }
 
     const onAssociatedPositions = (associatedPositions, positionType) => {
@@ -117,6 +116,7 @@ export default function Positions(props) {
 
     }
 
+    // TODO: Comment
     const onAddAssociatedPosition = async (type) => {
 
         const newPositionName = selectedStation.name + ' ' + (selectedStation.children.filter((position) => positions[position].type === type).length + 1)
@@ -129,7 +129,6 @@ export default function Positions(props) {
             [newPosition._id]: newPosition
         })
 
-        console.log('QQQQ Adding', selectedStationChildrenCopy)
 
         await dispatchAddPosition(newPosition)
 
@@ -189,7 +188,6 @@ export default function Positions(props) {
                 button_1_text={"Yes"}
                 handleOnClick1={async () => {
                     await onDelete(deletingPosition)
-                    console.log('QQQQ CLick', deletingPosition)
                     setConfirmDeleteModal(null)
                 }}
                 button_2_text={"No"}

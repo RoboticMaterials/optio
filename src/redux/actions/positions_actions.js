@@ -33,7 +33,7 @@ import * as api from '../../api/positions_api'
 import { SET_SELECTED_OBJECT } from '../types/objects_types';
 
 // Import External Actions
-import { setStationAttributes } from './stations_actions'
+import { putStation } from './stations_actions'
 import { deleteTask } from './tasks_actions'
 
 // Import Store
@@ -181,6 +181,7 @@ export const deletePosition = (id) => {
 
         try {
             onStart();
+            console.log('QQQQ HERE!!!', id)
             let positionCopy = deepCopy(onDeletePosition(id))
             console.log('QQQQ Positioncopy', positionCopy)
             // If theres a position copy then tell the backend is deleted
@@ -217,8 +218,8 @@ export const revertChildren = (position) => {
     return { type: REVERT_CHILDREN, payload: position }
 }
 
-export const updatePositions = (positions, selectedPosition, d3) => {
-    return { type: UPDATE_POSITIONS, payload: { positions, selectedPosition, d3 } }
+export const updatePositions = (positions, selectedPosition, childrenPositions, d3) => {
+    return { type: UPDATE_POSITIONS, payload: { positions, selectedPosition, childrenPositions, d3 } }
 }
 
 export const removePosition = (id) => {
@@ -250,19 +251,32 @@ const onDeletePosition = (id) => {
     const tasksState = store.getState().tasksReducer
 
     let position = positionsState.positions[id]
+    console.log('QQQQ Deleting pos in pos actions', position)
 
     // If the position has a parent then remove from parent
     if (!!position.parent) {
 
         let selectedStation = deepCopy(stationsState.stations[position.parent])
 
-        if(!selectedStation) return position
+        // If there is an associated parent station
+        if (!!selectedStation) {
+            // Remove the position from the list of children
+            const positionIndex = selectedStation.children.findIndex(p => p._id === position._id)
 
-        // Remove the position from the list of children
-        const positionIndex = selectedStation.children.findIndex(p => p._id === position._id)
+            selectedStation.children.splice(positionIndex, 1)
+            putStation(selectedStation)
+        }
 
-        selectedStation.children.splice(positionIndex, 1)
-        setStationAttributes(selectedStation._id, { children: selectedStation.children })
+    }
+
+    // Remove from stations copy if need be
+    if (!!positionsState.selectedStationChildrenCopy) {
+        // Update the ChildrenCopy
+        let copyOfCopy = deepCopy(positionsState.selectedStationChildrenCopy)
+        delete copyOfCopy[position._id]
+        setSelectedStationChildrenCopy(
+            copyOfCopy
+        )
     }
 
 

@@ -27,7 +27,15 @@ import {
 import { deepCopy } from '../../methods/utils/utils';
 import uuid from 'uuid';
 
+// Import External Actions
+import { deleteTask } from './tasks_actions'
+import { deletePosition } from './positions_actions'
+
+// Import API
 import * as api from '../../api/stations_api'
+
+// Import Store
+import store from '../store/index'
 
 // get
 // ******************************
@@ -145,7 +153,8 @@ export const deleteStation = (ID) => {
 
         try {
             onStart();
-            const removeStation = await api.deleteStation(ID);
+            const station = await onDeleteStation(ID)
+            const removeStation = await api.deleteStation(station._id);
             return onSuccess(ID)
         } catch (error) {
             return onError(error)
@@ -178,8 +187,8 @@ export const updateStations = (stations, selectedStation, d3) => {
     return { type: UPDATE_STATIONS, payload: { stations, selectedStation, d3 } }
 }
 
-export const removeStationTO_BE_DELETED = (id) => {
-    return { type: REMOVE_STATION, payload: { id } }
+export const removeStation = (id) => {
+    return { type: REMOVE_STATION, payload: id }
 }
 
 export const setStationAttributes = (id, attr) => {
@@ -192,4 +201,53 @@ export const setSelectedStation = (station) => {
 
 export const setEditingStation = (bool) => {
     return { type: EDITING_STATION, payload: bool }
+}
+
+
+const onDeleteStation = (id) => {
+
+    const stationsState = store.getState().stationsReducer
+    const positionsState = store.getState().positionsReducer
+    const tasksState = store.getState().tasksReducer
+
+    let station = stationsState.stations[id]
+
+    // If the station has children, delete them
+    if (!!station.children) {
+
+        // TODO: Fix this, in positions, it'll put the station to tell it's deleted, but the station is about to be deleted, so no need to put
+        station.children.forEach(position => {
+            console.log('QQQQ Deleting pos', position)
+            return async dispatch =>{
+                dispatch(deletePosition(position))
+            }
+        })
+    }
+
+    // Delete Relevant Tasks
+
+
+    // If the position is new, just remove it from the local station
+    // Since the position is new, it does not exist in the backend and there can't be any associated tasks
+    if (!!station.new) {
+        removeStation(station._id)
+        return null
+    }
+
+    // Else delete in backend and delete any associated tasks
+    else {
+
+        const tasks = tasksState.tasks
+
+        // Sees if any tasks are associated with the position and delete them
+        Object.values(tasks).filter(task => {
+            return task.load.station === station._id || task.unload.station === station._id
+        }).forEach(relevantTask => {
+            deleteTask(relevantTask._id)
+        })
+
+
+    }
+    return station
+
 }

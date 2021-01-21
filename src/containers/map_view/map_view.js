@@ -207,8 +207,7 @@ export class MapView extends Component {
 
         // Else it's a stations child position
         else if (!!this.props.selectedStationChildrenCopy) {
-            const draggingChild = Object.values(this.props.positions).find(position => position.temp == true)
-
+            const draggingChild = Object.values(this.props.selectedStationChildrenCopy).find(position => position.temp === true)
             if (!!draggingChild && !this.props.selectedPosition) {
                 this.props.dispatchSetPositionAttributes(draggingChild._id, {
                     x: e.clientX,
@@ -248,9 +247,14 @@ export class MapView extends Component {
         }
 
         // Handle child positions of stations
-        else {
-            const newChildEntity = Object.values(this.props.positions).find(position => position.temp == true)
+        else if (!!this.props.selectedStationChildrenCopy) {
+            let newChildEntity = Object.values(this.props.selectedStationChildrenCopy).find(position => position.temp == true)
             if (!!newChildEntity) {
+
+                // Update the new entity to the edited child copy
+                // TODO: Add more explanation
+                newChildEntity = this.props.selectedStationChildrenCopy[newChildEntity._id]
+
                 const pos = convertD3ToReal([newChildEntity.x, newChildEntity.y], this.d3)
                 this.props.dispatchSetPositionAttributes(newChildEntity._id, {
                     pos_x: pos[0],
@@ -330,7 +334,7 @@ export class MapView extends Component {
 
                     })
 
-                    // Apply the event translation to selectedStation if there is one
+                    // Apply the event translation to selectedPosition if there is one
                     let updatedSelectedPosition = null
                     if (!!this.props.selectedPosition) {
                         [x, y] = convertRealToD3([this.props.selectedPosition.pos_x, this.props.selectedPosition.pos_y], this.d3)
@@ -338,7 +342,20 @@ export class MapView extends Component {
                         Object.assign(updatedSelectedPosition, { x, y })
                     }
 
-                    this.props.dispatchUpdatePositions(positions, updatedSelectedPosition, this.d3) // Bulk Update
+                    // TODO: This whole children copy business sucks a lot 
+                    // Apple the event translation to Children Copy if need be
+                    let updatedChildrenPositions = null
+                    if (!!this.props.selectedStationChildrenCopy) {
+                        updatedChildrenPositions = {}
+                        Object.values(this.props.selectedStationChildrenCopy).forEach(position => {
+                            [x, y] = convertRealToD3([position.pos_x, position.pos_y], this.d3)
+                            Object.assign(position, { x, y })
+                            updatedChildrenPositions[position._id] = position
+
+                        })
+                    }
+
+                    this.props.dispatchUpdatePositions(positions, updatedSelectedPosition, updatedChildrenPositions, this.d3) // Bulk Update
 
                     //// Apply the event translation to each position
                     Object.values(positions).forEach(position => {
@@ -753,7 +770,7 @@ const mapDispatchToProps = dispatch => {
         dispatchSetCurrentMap: (map) => dispatch(setCurrentMap(map)),
 
         dispatchUpdateStations: (stations, selectedStation, d3) => dispatch(updateStations(stations, selectedStation, d3)),
-        dispatchUpdatePositions: (positions) => dispatch(updatePositions(positions)),
+        dispatchUpdatePositions: (positions, selectedPosition, childrenPositions, d3) => dispatch(updatePositions(positions, selectedPosition, childrenPositions, d3)),
         dispatchUpdateDevices: (devices, d3) => dispatch(deviceActions.updateDevices(devices, d3)),
 
         dispatchPostPosition: (position) => dispatch(postPosition(position)),

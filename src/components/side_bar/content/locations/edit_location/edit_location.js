@@ -88,24 +88,28 @@ const EditLocation = () => {
                 await dispatchPutStation(selectedStation)
             }
             console.log('QQQQ children copy', selectedStationChildrenCopy)
+            
             // Children Positions
-            Object.values(selectedStationChildrenCopy).map(async (child, ind) => {
-                // Post
-                if (!!child.new) {
-                    console.log('QQQQ Posting', child)
-                    await dispatchPostPosition(child)
+            if (!!selectedStationChildrenCopy) {
+                Object.values(selectedStationChildrenCopy).map(async (child, ind) => {
+                    // Post
+                    if (!!child.new) {
+                        console.log('QQQQ Posting', child)
+                        await dispatchPostPosition(child)
 
-                }
-                // Put
-                else {
-                    await dispatchPutPosition(child)
+                    }
+                    // Put
+                    else {
+                        await dispatchPutPosition(child)
 
-                }
-            })
+                    }
+                })
+            }
+
         }
 
         // Position
-        else if(!!selectedPosition){
+        else if (!!selectedPosition) {
             // Post
             if (!!selectedPosition.new) {
                 await dispatchPostPosition(selectedPosition)
@@ -120,7 +124,7 @@ const EditLocation = () => {
         }
 
         else {
-            throw('You son of a bitch Trebech')
+            throw ('You son of a bitch Trebech')
         }
 
         onBack()
