@@ -14,7 +14,7 @@ import DropDownSearchField from "../basic/form/drop_down_search_field/drop_down_
 import Button from "../basic/button/button";
 
 // Import Actions
-import { postTaskQueue, putTaskQueue } from '../../redux/actions/task_queue_actions'
+import { postTaskQueue, putTaskQueue, deleteTaskQueueItem } from '../../redux/actions/task_queue_actions'
 import { postEvents } from '../../redux/actions/events_actions'
 import { getTasks } from '../../redux/actions/tasks_actions'
 
@@ -53,6 +53,7 @@ const HILModals = (props) => {
     const dispatchPostEvents = (event) => dispatch(postEvents)
     const dispatchLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
     const dispatchGetTasks = () => dispatch(getTasks())
+    const dispatchDeleteTaskQueueItem = (id) => dispatch(deleteTaskQueueItem(id))
 
     const hilTimers = useSelector(state => { return state.taskQueueReducer.hilTimers })
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
@@ -387,14 +388,14 @@ const HILModals = (props) => {
 
     // Posts HIL Failure to API
     const onHilFailure = async () => {
-
         let newItem = {
             ...item,
             hil_response: false
         }
-        delete newItem._id
-        await putTaskQueueItem(newItem, taskQueueID)
 
+        delete newItem._id
+
+        await putTaskQueueItem(newItem, taskQueueID)
         dispatchTaskQueueItemClicked('')
     }
 
@@ -986,7 +987,6 @@ const HILModals = (props) => {
                             onClick={onHilFailure}
                         >
                           <styled.HilIcon
-                              // onClick={onHilFailure}
                               className='fas fa-times'
                               color={'#ff1818'}
                               style = {{marginRight: '0.8rem'}}

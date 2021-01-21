@@ -22,7 +22,7 @@ import useWindowSize from '../../../../../hooks/useWindowSize'
 import { postStatus } from '../../../../../api/status_api'
 
 // Import Actions
-import { postTaskQueue, putTaskQueue } from '../../../../../redux/actions/task_queue_actions'
+import { handlePostTaskQueue,postTaskQueue, putTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import { dashboardOpen, setDashboardKickOffProcesses } from '../../../../../redux/actions/dashboards_actions'
 
 // Import styles
@@ -73,6 +73,7 @@ const DashboardScreen = (props) => {
     // actions
     const dispatch = useDispatch()
     const onDashboardOpen = (bol) => dispatch(dashboardOpen(bol))
+    const onHandlePostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
     const onHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
     const onLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
     const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
@@ -83,7 +84,7 @@ const DashboardScreen = (props) => {
 
     const stationID = params.stationID
     const dashboardID = params.dashboardID
-
+    const widgetPage = params.widgetPage
     const size = useWindowSize()
     const windowWidth = size.width
 
@@ -223,7 +224,8 @@ const DashboardScreen = (props) => {
     const handleTaskClick = async (type, Id, name, custom) => {
         switch (type.toUpperCase()) {
             case TYPES.ROUTES.key:
-                handleRouteClick(Id, name, custom)
+                onHandlePostTaskQueue({dashboardID, tasks, taskQueue, Id, name, custom})
+                //handleRouteClick(Id, name, custom)
                 break
             case TYPES.OPERATIONS.key:
                 handleOperationClick()
@@ -251,96 +253,6 @@ const DashboardScreen = (props) => {
     const handleReportClick = () => {
     }
 
-    const handleRouteClick = async (Id, name, custom) => {
-
-        // If a custom task then add custom task key to task q
-        if (Id === 'custom_task') {
-
-            await dispatch(postTaskQueue(
-                {
-                    _id: uuid.v4(),
-                    "task_id": Id,
-                    'custom_task': custom
-                })
-            )
-
-            setAddTaskAlert({
-                type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
-                label: "Task Added to Queue",
-                message: name
-            })
-
-            // clear alert after timeout
-            return setTimeout(() => setAddTaskAlert(null), 1800)
-
-        }
-
-        // Else if its a hil success, execute the HIL success function
-        else if (Id === 'hil_success') {
-
-            return handleHilSuccess(custom)
-
-        }
-
-        let inQueue = false
-        Object.values(taskQueue).map((item) => {
-            // If its in the Q and not a handoff, then alert the user saying its already there
-            if (item.task_id === Id && !tasks[item.task_id].handoff) inQueue = true
-        })
-
-        // add alert to notify task has been added
-        if (!inQueue) {
-
-            // If the task is a human task, its handled a little differently compared to a normal task
-            // Set hil_response to null because the backend does not dictate the load hil message
-            // Since the task is put into the q but automatically assigned to the person that clicks the button
-            if (tasks[Id]?.device_type === 'human') {
-                const postTask = {
-                    _id: uuid.v4(),
-                    "task_id": Id,
-                    dashboard: dashboardID,
-                    hil_response: null,
-                }
-                onLocalHumanTask(postTask._id)
-                // dispatch action to add task to queue
-                await dispatch(postTaskQueue(postTask)
-                )
-
-            } else {
-
-
-
-                // dispatch action to add task to queue
-                await dispatch(postTaskQueue(
-                    {
-                        _id: uuid.v4(),
-                        "task_id": Id,
-                    })
-                )
-            }
-
-            // setAddTaskAlert({
-            //     type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
-            //     label: "Task Added to Queue",
-            //     message: name
-            // })
-
-            // // clear alert after timeout
-            // return setTimeout(() => setAddTaskAlert(null), 1800)
-        }
-
-        else {
-            // display alert notifying user that task is already in queue
-            setAddTaskAlert({
-                type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
-                label: "Alert! Task Already in Queue",
-                message: `'${name}' not added`,
-            })
-
-            // clear alert after timeout
-            return setTimeout(() => setAddTaskAlert(null), 1800)
-        }
-    }
 
     // Posts HIL Success to API
     const handleHilSuccess = async (item) => {
