@@ -25,6 +25,8 @@ import { postStatus } from '../../../../../api/status_api'
 import { handlePostTaskQueue,postTaskQueue, putTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import { dashboardOpen, setDashboardKickOffProcesses } from '../../../../../redux/actions/dashboards_actions'
 
+import * as localActions from '../../../../../redux/actions/local_actions'
+
 // Import styles
 import * as pageStyle from '../dashboards_header/dashboards_header.style'
 import * as style from './dashboard_screen.style'
@@ -38,6 +40,8 @@ import ReportModal from "./report_modal/report_modal";
 import KickOffModal from "./kick_off_modal/kick_off_modal";
 import FinishModal from "./finish_modal/finish_modal";
 import { getProcesses } from "../../../../../redux/actions/processes_actions";
+
+
 
 const logger = log.getLogger("DashboardsPage");
 
@@ -61,6 +65,7 @@ const DashboardScreen = (props) => {
     const positions = useSelector(state => state.locationsReducer.positions)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
+    const stopAPICalls = useSelector(state => state.localReducer.stopAPICalls)
 
     //actions
     const dispatchGetProcesses = () => dispatch(getProcesses())
@@ -77,7 +82,7 @@ const DashboardScreen = (props) => {
     const onHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
     const onLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
     const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
-
+    const dispatchStopAPICalls = (bool) => dispatch(localActions.stopAPICalls(bool))
 
     const history = useHistory()
     const params = useParams()

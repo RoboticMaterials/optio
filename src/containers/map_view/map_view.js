@@ -363,7 +363,6 @@ export class MapView extends Component {
             scale = this.props.scaleExtent.min;
         } else {
             scale = this.props.zoom;
-            console.log(scale)
         }
 
         let translate

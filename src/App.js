@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Route, IndexRoute, Link, Switch, useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux'
+import { connect, useSelector, useDispatch } from 'react-redux'
 
 import { ThemeProvider } from "styled-components";
 import theme from './theme';
@@ -16,6 +16,7 @@ import * as styled from './App.style'
 
 // Import API
 import { deleteLocalSettings } from './api/local_api'
+import * as localActions from './redux/actions/local_actions'
 
 // import containers
 import ApiContainer from './containers/api_container/api_container';
@@ -30,7 +31,7 @@ import Widgets from './components/widgets/widgets'
 import ListView from "./components/list_view/list_view";
 import TestsContainer from "./containers/api_container/tests_container";
 import HILModals from "./components/hil_modals/hil_modals";
-import ErrorBoundary from './components/basic/error_boundary/error_boundary';
+import ConfirmDeleteModal from './components/basic/modals/confirm_delete_modal/confirm_delete_modal'
 
 const widthBreakPoint = 1000;
 
@@ -46,6 +47,11 @@ const App = (props) => {
     const positions = useSelector(state => state.locationsReducer.positions)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
+    const getFailureCount = useSelector(state => state.taskQueueReducer.getFailureCount)
+    const stopAPICalls = useSelector(state => state.localReducer.stopAPICalls)
+
+    const dispatch = useDispatch()
+    const dispatchStopAPICalls = (bool) => dispatch(localActions.stopAPICalls(bool))
 
     // Set to true for the time being, authentication is not 100% complete as of 09/14/2020
     const [authenticated, setAuthenticated] = useState(true)
@@ -55,6 +61,7 @@ const App = (props) => {
     const [stateTheme, setStateTheme] = useState('main')
 
     const [showSideBar, setShowSideBar] = useState(false)
+    const [showStopAPIModal, setShowStopAPIModal] = useState(true)
     const size = useWindowSize()
     const windowWidth = size.width
 
@@ -95,15 +102,25 @@ const App = (props) => {
         <>
             <Logger />
 
-
-
-
             {/*<TestsContainer/>*/}
 
             {/* <ThemeProvider theme={theme[this.state.theme]}> */}
             <ThemeProvider theme={theme[stateTheme]}>
 
                 <styled.Container>
+                  <ConfirmDeleteModal
+                        isOpen={getFailureCount<10 || showStopAPIModal===false ? false: true}
+                        title={"Oops! It looks like the server is diconnected. Would you like to turn off updates from the backend?"}
+                        button_1_text={"Yes"}
+                        handleOnClick1={() => {
+                          dispatchStopAPICalls(true)
+                          setShowStopAPIModal(false)
+                        }}
+                        button_2_text={"No"}
+                        handleOnClick2={() => {
+                          setShowStopAPIModal(false)
+                        }}
+                    />
                     <BrowserRouter>
                         {/* <Route
                             exact path="/clear_local"
