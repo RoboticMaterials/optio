@@ -182,7 +182,9 @@ const HILModals = (props) => {
                 }
             })
 
-            sortBy(stationCards, sortMode)
+            if(sortMode){
+                sortBy(stationCards, sortMode)
+            }
 
             if (stationCards && Array.isArray(stationCards) && stationCards.length > 0) {
                 if ((stationCards.length === 1) && !selectedLot && !didSelectInitialLot) {
