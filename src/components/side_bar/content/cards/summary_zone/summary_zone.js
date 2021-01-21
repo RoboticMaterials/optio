@@ -22,6 +22,7 @@ const SummaryZone = ((props) => {
 		handleCardClick,
 		setShowCardEditor,
 		showCardEditor,
+		lotFilterValue
 	} = props
 
 	// redux state
@@ -55,6 +56,7 @@ const SummaryZone = ((props) => {
 						<styled.ProcessName>{processName}</styled.ProcessName>
 
 						<CardZone
+							lotFilterValue={lotFilterValue}
 							setShowCardEditor={setShowCardEditor}
 							showCardEditor={showCardEditor}
 							maxHeight={"30rem"}
@@ -85,7 +87,8 @@ const SummaryZone = ((props) => {
 SummaryZone.propTypes = {
 	handleCardClick: PropTypes.func,
 	setShowCardEditor: PropTypes.func,
-	showCardEditor: PropTypes.bool
+	showCardEditor: PropTypes.bool,
+	lotFilterValue: PropTypes.string
 }
 
 // Specifies the default values for props:
@@ -93,6 +96,7 @@ SummaryZone.defaultProps = {
 	handleCardClick: () => {},
 	setShowCardEditor: () => {},
 	showCardEditor: false,
+	lotFilterValue: ""
 }
 
 export default SummaryZone
