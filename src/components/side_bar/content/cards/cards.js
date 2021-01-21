@@ -55,7 +55,7 @@ const Cards = (props) => {
         offsetTop: undefined,
     })
     const [lotFilterValue, setLotFilterValue] = useState('')
-    const [sortMode, setSortMode] = useState(SORT_MODES.NAME)
+    const [sortMode, setSortMode] = useState(SORT_MODES.NAME_ASCENDING)
     // internal component state
     const [selectedProcesses, setSelectedProcesses] = useState(Object.values(processes)) // array of {process} objects - the list of selected processes
 

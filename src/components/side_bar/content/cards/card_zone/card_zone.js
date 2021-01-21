@@ -15,8 +15,6 @@ import {setDataPage} from "../../../../../redux/actions/api_actions"
 
 // styles
 import * as styled from "./card_zone.style"
-import cardPageReducer from "../../../../../redux/reducers/card_page_reducer";
-import {sortBy} from "../../../../../methods/utils/array_utils";
 
 const CardZone = ((props) => {
 
@@ -35,7 +33,7 @@ const CardZone = ((props) => {
 	const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] }) || {}
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
 	// const cards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || []
-	const a = useSelector(state => { return state.cardsReducer.processCards[processId] }) || []
+	const cards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || []
 	const stations = useSelector(state => { return state.locationsReducer.stations })
 	const draggedLotInfo = useSelector(state => { return state.cardPageReducer.draggedLotInfo })
 	const {
@@ -43,7 +41,7 @@ const CardZone = ((props) => {
 		binId: draggingBinId = ""
 	} = draggedLotInfo || {}
 
-	let cards = sortBy(Object.values(a), sortMode)
+
 
 	// console.log("draggedLotInfo",draggedLotInfo)
 
@@ -104,7 +102,7 @@ const CardZone = ((props) => {
 	var tempQueue = []		// temp var for storing queue lots
 	var tempFinished = []	// temp var for storing finished lots
 
-	cards.forEach((card) => {
+	Object.values(cards).forEach((card) => {
 
 		// extract card attributes
 		const {
@@ -188,6 +186,7 @@ const CardZone = ((props) => {
 
 			return (
 				<StationsColumn
+					sortMode={sortMode}
 					maxHeight={maxHeight}
 					key={station_id + index}
 					id={route_id+"+"+station_id}
@@ -206,6 +205,7 @@ const CardZone = ((props) => {
 		<styled.Container>
 			<LotQueue
 				key={"QUEUE"}
+				sortMode={sortMode}
 				maxHeight={maxHeight}
 				station_id={"QUEUE"}
 				setShowCardEditor={setShowCardEditor}
@@ -220,6 +220,7 @@ const CardZone = ((props) => {
 
 			<FinishColumn
 				key={"FINISH"}
+				sortMode={sortMode}
 				maxHeight={maxHeight}
 				station_id={"FINISH"}
 				setShowCardEditor={setShowCardEditor}
