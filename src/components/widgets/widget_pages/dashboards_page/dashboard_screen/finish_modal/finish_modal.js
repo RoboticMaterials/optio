@@ -16,6 +16,8 @@ import * as styled from './finish_modal.style'
 import {useTheme} from "styled-components";
 import {getProcesses} from "../../../../../../redux/actions/processes_actions";
 import Textbox from "../../../../../basic/textbox/textbox";
+import {SORT_MODES} from "../../../../../../constants/common_contants";
+import {sortBy} from "../../../../../../methods/utils/card_utils";
 
 Modal.setAppElement('body');
 
@@ -49,6 +51,8 @@ const FinishModal = (props) => {
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
     const [submitting, setSubmitting] = useState(false)
     const [availableKickOffCards, setAvailableKickOffCards] = useState([])
+    const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
+
     const isButtons = availableKickOffCards.length > 0
 
     const stationId = dashboard.station
@@ -197,6 +201,9 @@ const FinishModal = (props) => {
             tempAvailableCards = tempAvailableCards.concat(filteredCards)
         })
 
+        if(sortMode) {
+            tempAvailableCards = sortBy(tempAvailableCards, sortMode)
+        }
         setAvailableKickOffCards(tempAvailableCards)
 
     }, [processCards])
@@ -226,7 +233,7 @@ const FinishModal = (props) => {
                 <styled.HeaderMainContentContainer>
                 <styled.Title>{title}</styled.Title>
 
-                    <div style={{display: "flex", maxWidth: "40rem", minWidth: "10rem", width: "50%"}}>
+                    <div style={{display: "flex", alignItems: "center", justifyContent: "center", width: "40rem", minWidth: "10rem", maxWidth: "50%"}}>
                         <Textbox
                             focus={shouldFocusLotFilter}
                             placeholder='Filter lots...'

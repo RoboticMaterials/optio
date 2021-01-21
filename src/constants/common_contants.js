@@ -14,8 +14,8 @@ export const SORT_OPTIONS = [
 	{description: "Name (z-a)", sortMode: SORT_MODES.NAME_DESCENDING},
 	{description: "Quantity (Increasing)", sortMode: SORT_MODES.QUANTITY_ASCENDING},
 	{description: "Quantity (Decreasing)", sortMode: SORT_MODES.QUANTITY_DESCENDING},
-	{description: "Start (Old to New)", sortMode: SORT_MODES.START_ASCENDING},
-	{description: "Start (New to Old)", sortMode: SORT_MODES.START_DESCENDING},
-	{description: "End (New to Old)", sortMode: SORT_MODES.END_DESCENDING},
-	{description: "End (Old to New)", sortMode: SORT_MODES.END_ASCENDING}
+	{description: "Start Date (Ascending)", sortMode: SORT_MODES.START_ASCENDING},
+	{description: "Start Date (Descending)", sortMode: SORT_MODES.START_DESCENDING},
+	{description: "End Date (Descending)", sortMode: SORT_MODES.END_DESCENDING},
+	{description: "End Date (Ascending)", sortMode: SORT_MODES.END_ASCENDING}
 ]

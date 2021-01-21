@@ -41,7 +41,6 @@ const ZoneHeader = (props) => {
 					values={selectedProcesses}
 					options={processes}
 					onChange={values => {
-						console.log("onChange values",values)
 						setSelectedProcesses(values)
 					}}
 					pattern={null}
@@ -50,7 +49,6 @@ const ZoneHeader = (props) => {
 					onDropdownOpen={() => {
 					}}
 					onRemoveItem={(values)=> {
-						console.log("onRemoveItem values",values)
 						setSelectedProcesses(values)
 
 					}}
@@ -62,7 +60,7 @@ const ZoneHeader = (props) => {
 				<styled.Description>Sort By:</styled.Description>
 				<DropDownSearch
 					schema={"lots"}
-					style={{background: themeContext.bg.tertiary, width: "15rem"}}
+					style={{background: themeContext.bg.tertiary, width: "18rem"}}
 					options={SORT_OPTIONS}
 					onChange={(values) => {
 						const selectedOption = values[0]

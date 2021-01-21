@@ -18,6 +18,8 @@ import {getProcesses} from "../../../../../../redux/actions/processes_actions";
 import FadeLoader from "react-spinners/FadeLoader";
 import CardEditor from "../../../../../side_bar/content/cards/card_editor/card_editor";
 import Textbox from "../../../../../basic/textbox/textbox";
+import {SORT_MODES} from "../../../../../../constants/common_contants";
+import {sortBy} from "../../../../../../methods/utils/card_utils";
 
 Modal.setAppElement('body');
 
@@ -53,6 +55,7 @@ const KickOffModal = (props) => {
     const [showLotEditor, setShowLotEditor] = useState(false)
     const [didLoadData, setDidLoadData] = useState(false)
     const [availableKickOffCards, setAvailableKickOffCards] = useState([])
+    const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
     const isButtons = availableKickOffCards.length > 0
 
     /*
@@ -227,6 +230,10 @@ const KickOffModal = (props) => {
             tempAvailableCards = tempAvailableCards.concat(filteredCards)
         })
 
+
+        if(sortMode) {
+            tempAvailableCards = sortBy(tempAvailableCards, sortMode)
+        }
         setAvailableKickOffCards(tempAvailableCards)
 
     }, [processCards])
@@ -271,14 +278,15 @@ const KickOffModal = (props) => {
                 <styled.HeaderMainContentContainer>
                     <styled.Title>{title}</styled.Title>
 
-                    <div style={{display: "flex", maxWidth: "40rem", minWidth: "10rem", width: "50%"}}>
+                    <div style={{display: "flex", alignItems: "center", justifyContent: "center", width: "40rem", minWidth: "10rem", maxWidth: "50%"}}>
                         <Textbox
                             focus={shouldFocusLotFilter}
                             placeholder='Filter lots...'
                             onChange={(e) => {
                                 setLotFilterValue(e.target.value)
                             }}
-                            style={{flex: 1, background: theme.bg.quaternary }}
+                            style={{background: theme.bg.quaternary }}
+                            textboxContainerStyle={{flex: 1}}
                         />
                     </div>
                 </styled.HeaderMainContentContainer>
