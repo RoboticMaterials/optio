@@ -15,3 +15,5 @@ export const PAGES = {
 	EDITING: "Editing",
 	DASHBOARD: "Dashboard"
 }
+
+export const DASHBOARD_BUTTON_COLORS = ['#FF4B4B', '#56d5f5', '#50de76', '#f2ae41', '#c7a0fa']

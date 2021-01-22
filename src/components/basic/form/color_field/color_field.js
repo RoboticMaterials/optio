@@ -17,7 +17,8 @@ const ColorField = (props) => {
 	const {
 		Container,
 		type,
-		mode
+		mode,
+		colors
 	} = props
 
 	// formik related
@@ -55,12 +56,11 @@ const ColorField = (props) => {
 						</styled.ColorButton>
 
 						<styled.DropdownMenu className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-							<styled.ColorOption type={type} className="dropdown-item" color={'#bcbcbc'} onClick={() => setFieldValue(field.name, '#bcbcbc')}>Gray</styled.ColorOption>
-							<styled.ColorOption type={type} className="dropdown-item" color={'#FF4B4B'} onClick={() => setFieldValue(field.name, '#FF4B4B')}>Red</styled.ColorOption>
-							<styled.ColorOption type={type} className="dropdown-item" color={'#56d5f5'} onClick={() => setFieldValue(field.name, '#56d5f5')}>Blue</styled.ColorOption>
-							<styled.ColorOption type={type} className="dropdown-item" color={'#50de76'} onClick={() => setFieldValue(field.name, '#50de76')}>Green</styled.ColorOption>
-							<styled.ColorOption type={type} className="dropdown-item" color={'#f2ae41'} onClick={() => setFieldValue(field.name, '#f2ae41')}>Orange</styled.ColorOption>
-							<styled.ColorOption type={type} className="dropdown-item" color={'#c7a0fa'} onClick={() => setFieldValue(field.name, '#c7a0fa')}>Purple</styled.ColorOption>
+							{colors.map((currColor) => {
+								return(
+									<styled.ColorOption type={type} className="dropdown-item" color={currColor} onClick={() => setFieldValue(field.name, '#bcbcbc')}>Gray</styled.ColorOption>
+								)
+							})}
 						</styled.DropdownMenu>
 					</div>
 				</styled.ColorPicker>
@@ -79,13 +79,15 @@ const ColorField = (props) => {
 // Specifies propTypes
 ColorField.propTypes = {
 	Container: PropTypes.elementType,
-	mode: PropTypes.string
+	mode: PropTypes.string,
+	colors: PropTypes.arrayOf(PropTypes.string),
 };
 
 // Specifies the default values for props:
 ColorField.defaultProps = {
 	Container: styled.DefaultContainer,
-	mode: null
+	mode: null,
+	colors: ['#FF4B4B', '#56d5f5', '#50de76', '#f2ae41', '#c7a0fa']
 };
 
 export default ColorField;

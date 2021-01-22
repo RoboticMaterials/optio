@@ -15,7 +15,7 @@ import TaskAddedAlert from "../dashboard_screen/task_added_alert/task_added_aler
 import { handleAvailableTasks } from "../../../../../methods/utils/dashboards_utils";
 
 // Import Utils
-import { ADD_TASK_ALERT_TYPE } from "../../../../../constants/dashboard_contants";
+import {ADD_TASK_ALERT_TYPE, DASHBOARD_BUTTON_COLORS} from "../../../../../constants/dashboard_contants";
 import uuid from 'uuid'
 
 // Import Actions
@@ -26,7 +26,7 @@ import WidgetButton from "../../../../basic/widget_button/widget_button";
 
 const logger = log.getLogger("Dashboards")
 
-const tempColors = ['#FF4B4B', '#56d5f5', '#50de76', '#f2ae41', '#c7a0fa']
+
 
 export const OPERATION_TYPES = {
     REPORT: {
@@ -183,7 +183,7 @@ const DashboardsSidebar = (props) => {
         }).map((task, index) => {
             return {
                 name: task.name,
-                color: tempColors[index % tempColors.length],
+                color: DASHBOARD_BUTTON_COLORS[index % DASHBOARD_BUTTON_COLORS.length],
                 type: TYPES.ROUTES.key,
                 task_id: task._id,
                 id: task._id,
@@ -212,7 +212,8 @@ const DashboardsSidebar = (props) => {
 
             return {
                 name: currValue.name,
-                color: themeContext.schema[currValue.schema].solid,
+                color: DASHBOARD_BUTTON_COLORS[ind % DASHBOARD_BUTTON_COLORS.length],
+                // themeContext.schema[currValue.schema].solid,
                 id: currValue._id,
                 type: currKey,
             }
