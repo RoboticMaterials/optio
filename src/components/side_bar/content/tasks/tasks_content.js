@@ -21,7 +21,13 @@ import { tasksSortedAlphabetically } from '../../../../methods/utils/task_utils'
 import RouteTask from './tasks_templates/route_task'
 import uuid from 'uuid'
 import TaskForm from "./task_form/route_form";
-import {generateDefaultRoute, isHumanTask, isMiRTask} from "../../../../methods/utils/route_utils";
+import {
+    generateDefaultRoute,
+    getLoadStationDashboard,
+    getLoadStationId,
+    isHumanTask,
+    isMiRTask
+} from "../../../../methods/utils/route_utils";
 import {willRouteDeleteBreakProcess} from "../../../../methods/utils/processes_utils";
 import {deleteRouteClean} from "../../../../redux/actions/tasks_actions";
 import {isObject} from "../../../../methods/utils/object_utils";
@@ -63,9 +69,8 @@ export default function TaskContent(props) {
     console.log('QQQQ Selected Task', selectedTask)
 
     //Parameters to pass into handlePostTaskQueue dispatch
-    const dashboardID = selectedTask ? stations[selectedTask?.load?.station].dashboards[0] : {}
+    const dashboardID = getLoadStationDashboard(selectedTask)
     const Id = selectedTask ? selectedTask._id : {}
-    const deviceTypes = selectedTask ? (selectedTask.device_types || []) : []
     const name = selectedTask ? selectedTask.name : {}
     const custom = false
     const fromSideBar = true

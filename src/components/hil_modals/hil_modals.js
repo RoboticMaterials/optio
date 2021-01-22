@@ -71,11 +71,11 @@ const HILModals = (props) => {
     const [isProcessTask, setIsProcessTask] = useState(true)
     const [availableLots, setAvailableLots] = useState([])
     const [selectedDashboard, setSelectedDashboard] = useState(null)
-    const [cardsLoaded, setCardsLoaded] = useState([false])
     const [showLotSelector, setShowLotSelector] = useState(false)
     const [didDisplayLots, setDidDisplayLots] = useState(false)
     const [didSelectInitialLot, setDidSelectInitialLot] = useState(false)
     const [hilLoadUnload, setHilLoadUnload] = useState('')
+    const [dataLoaded, setDataLoaded] = useState(false)
     const [lotFilterValue, setLotFilterValue] = useState('')
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState('')
     const [changeQtyMouseHold, setChangeQtyMouseHold] = useState('')
@@ -121,12 +121,6 @@ const HILModals = (props) => {
         setQuantity(0)
     }
 
-    // load card data on load for selecting lot
-    useEffect(() => {
-        dispatchGetCards()
-        setCardsLoaded(true)
-    }, [])
-
     // if number of available lots >= 5, auto focus lot filter text box
     useEffect(() => {
         if(availableLots.length >= 5 ) {
@@ -149,7 +143,7 @@ const HILModals = (props) => {
       if(!!currentTask.processes[0]){
         setTaskHasProcess(true)
         // Only show lot selector if they're cards loaded, lots have not been dispalyed yet, it's a load hil and there's available lots
-        if (cardsLoaded && !didDisplayLots && hilLoadUnload && hilLoadUnload !== 'unload') {
+        if (!didDisplayLots && hilLoadUnload && hilLoadUnload !== 'unload') {
             setShowLotSelector(true)
             setDidDisplayLots(true)
         }
@@ -160,7 +154,7 @@ const HILModals = (props) => {
         setShowLotSelector(false) // hide lot selector
       }
 
-    }, [cardsLoaded, availableLots, didDisplayLots, hilLoadUnload, isProcessTask])
+    }, [availableLots, didDisplayLots, hilLoadUnload, isProcessTask])
 
     /*
     * Get dropdownsearch options for cards
@@ -304,6 +298,8 @@ const HILModals = (props) => {
 
     // Use Effect for when page loads, handles wether the HIL is a load or unload
     useEffect(() => {
+        dispatchGetCards()
+
         const currentTask = tasks[item.task_id]
         setSelectedTask(currentTask)
         if (currentTask) {
@@ -314,12 +310,14 @@ const HILModals = (props) => {
         if (currentTask && currentTask?.load?.station === item.hil_station_id || !!item.dashboard) {
             // load
             setHilLoadUnload('load')
+            setShowLotSelector(true)
         } else {
             // unload
             setHilLoadUnload('unload')
         }
 
 
+        setDataLoaded(true)
         // On unmount, set the task q item to none
         return () => {
             dispatchTaskQueueItemClicked('')
@@ -1072,7 +1070,7 @@ const HILModals = (props) => {
      * HIL Check will only show on a pull request
      */
 
-    return (
+    if(dataLoaded) return (
         <styled.HilContainer >
 
             {/*<styled.HilBorderContainer >*/}
@@ -1098,6 +1096,10 @@ const HILModals = (props) => {
 
         </styled.HilContainer>
     )
+
+    else {
+        return null
+    }
 }
 
 export default HILModals
