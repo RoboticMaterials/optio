@@ -17,6 +17,9 @@ import {showEditor} from '../../../../redux/actions/card_actions'
 import * as styled from './cards.style'
 import Textbox from "../../../basic/textbox/textbox";
 import {ThemeContext} from "styled-components";
+import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
+import ZoneHeader from "./zone_header/zone_header";
+import {SORT_MODES} from "../../../../constants/common_contants";
 
 const Cards = (props) => {
 
@@ -52,6 +55,9 @@ const Cards = (props) => {
         offsetTop: undefined,
     })
     const [lotFilterValue, setLotFilterValue] = useState('')
+    const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
+    // internal component state
+    const [selectedProcesses, setSelectedProcesses] = useState(Object.values(processes)) // array of {process} objects - the list of selected processes
 
     // refs
     const zoneRef = useRef(null);
@@ -178,22 +184,19 @@ const Cards = (props) => {
                 }
                 <div style={{flex: 1, flexDirection:"column", display: "flex", alignItems: "center", justifyContent: "center"}}>
                 <styled.Title>{title ? title : "untitled"}</styled.Title>
-                <div style={{display: "flex", maxWidth: "50rem", minWidth: "1rem", width: "50%"}}>
-                    <Textbox
-                        // focus={shouldFocusLotFilter}
-                        placeholder='Filter lots...'
-                        onChange={(e) => {
-                            setLotFilterValue(e.target.value)
-                        }}
-                        style={{ background: themeContext.bg.tertiary }}
-                        textboxContainerStyle={{flex: 1 }}
-                    />
-                </div>
                 </div>
                 <styled.InvisibleItem
                     style={{marginLeft: "auto"}}
                 />
             </styled.Header>
+            <ZoneHeader
+                sortMode={sortMode}
+                setSortMode={setSortMode}
+                setLotFilterValue={setLotFilterValue}
+                selectedProcesses={selectedProcesses}
+                setSelectedProcesses={setSelectedProcesses}
+                zone={id}
+            />
 
             <styled.Body id={"cards-body"}>
                 {showMenu &&
@@ -207,6 +210,8 @@ const Cards = (props) => {
                     {
                         'summary':
                             <SummaryZone
+                                sortMode={sortMode}
+                                selectedProcesses={selectedProcesses}
                                 lotFilterValue={lotFilterValue}
                                 handleCardClick={handleCardClick}
                                 setShowCardEditor={onShowCardEditor}
@@ -226,6 +231,7 @@ const Cards = (props) => {
                             handleCardClick={handleCardClick}
                             processId={id}
                             lotFilterValue={lotFilterValue}
+                            sortMode={sortMode}
                         />
                     </styled.CardZoneContainer>
                 }

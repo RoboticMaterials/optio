@@ -13,7 +13,8 @@ const FinishColumn = ((props) => {
 		handleCardClick,
 		cards = [],
 		processId,
-		maxHeight
+		maxHeight,
+		sortMode
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
@@ -21,6 +22,7 @@ const FinishColumn = ((props) => {
 	return(
 		<Column
 			maxHeight={maxHeight}
+			sortMode={sortMode}
 			maxWidth={"15rem"}
 			HeaderContent={
 				!isCollapsed ?

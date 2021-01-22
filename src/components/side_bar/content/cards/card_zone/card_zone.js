@@ -15,7 +15,6 @@ import {setDataPage} from "../../../../../redux/actions/api_actions"
 
 // styles
 import * as styled from "./card_zone.style"
-import cardPageReducer from "../../../../../redux/reducers/card_page_reducer";
 
 const CardZone = ((props) => {
 
@@ -26,7 +25,8 @@ const CardZone = ((props) => {
 		setShowCardEditor,
 		showCardEditor,
 		maxHeight,
-		lotFilterValue
+		lotFilterValue,
+		sortMode
 	} = props
 
 	// redux state
@@ -39,6 +39,8 @@ const CardZone = ((props) => {
 		lotId: draggingLotId = "",
 		binId: draggingBinId = ""
 	} = draggedLotInfo || {}
+
+
 
 	// console.log("draggedLotInfo",draggedLotInfo)
 
@@ -183,6 +185,7 @@ const CardZone = ((props) => {
 
 			return (
 				<StationsColumn
+					sortMode={sortMode}
 					maxHeight={maxHeight}
 					key={station_id + index}
 					id={route_id+"+"+station_id}
@@ -201,6 +204,7 @@ const CardZone = ((props) => {
 		<styled.Container>
 			<LotQueue
 				key={"QUEUE"}
+				sortMode={sortMode}
 				maxHeight={maxHeight}
 				station_id={"QUEUE"}
 				setShowCardEditor={setShowCardEditor}
@@ -215,6 +219,7 @@ const CardZone = ((props) => {
 
 			<FinishColumn
 				key={"FINISH"}
+				sortMode={sortMode}
 				maxHeight={maxHeight}
 				station_id={"FINISH"}
 				setShowCardEditor={setShowCardEditor}

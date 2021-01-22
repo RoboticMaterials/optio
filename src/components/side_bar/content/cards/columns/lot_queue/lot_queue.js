@@ -20,13 +20,15 @@ const LotQueue = ((props) => {
 		processId,
 		setShowCardEditor,
 		showCardEditor,
-		maxHeight
+		maxHeight,
+		sortMode
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
 
 	return(
 		<Column
+			sortMode={sortMode}
 			maxHeight={maxHeight}
 			maxWidth={"fit-content"}
 			HeaderContent={

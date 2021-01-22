@@ -13,7 +13,8 @@ const StationsColumn = ((props) => {
 		handleCardClick,
 		cards = [],
 		processId,
-		maxHeight
+		maxHeight,
+		sortMode
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
@@ -21,6 +22,7 @@ const StationsColumn = ((props) => {
 	return(
 		<Column
 			maxWidth={"15rem"}
+			sortMode={sortMode}
 			maxHeight={maxHeight}
 			HeaderContent={
 				!isCollapsed ?
