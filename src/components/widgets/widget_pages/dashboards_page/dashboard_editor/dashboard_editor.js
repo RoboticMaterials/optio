@@ -41,7 +41,7 @@ import * as pageStyle from '../dashboards_page.style'
 // Import logger
 import log from '../../../../../logger.js';
 import DashboardAddButton from "./dashboard_add_button/dashboard_add_button";
-import { useChanged } from "../../../../basic/form/useChange";
+import { useChange } from "../../../../basic/form/useChange";
 import { PAGES } from "../../../../../constants/dashboard_contants";
 
 const logger = log.getLogger("Dashboards", "EditDashboard");

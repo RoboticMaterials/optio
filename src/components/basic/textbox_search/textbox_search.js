@@ -24,6 +24,7 @@ import theme from '../../../theme.js'
 export class TextBoxSearch extends Component {
   static propTypes = {
     onChange: PropTypes.func.isRequired,
+    onBlur: PropTypes.func,
     onTextboxClose: PropTypes.func,
     onTextboxOpen: PropTypes.func,
     onClearAll: PropTypes.func,

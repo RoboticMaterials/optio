@@ -22,13 +22,10 @@ const SummaryZone = ((props) => {
 		handleCardClick,
 		setShowCardEditor,
 		showCardEditor,
+		lotFilterValue,
+		selectedProcesses,
+		sortMode
 	} = props
-
-	// redux state
-	const processes = useSelector(state => { return Object.values(state.processesReducer.processes) })
-
-	// internal component state
-	const [selectedProcesses, setSelectedProcesses] = useState(processes) // array of {process} objects - the list of selected processes
 
 	/*
    * This function renders a CardZone for each process in {selectedProcesses}
@@ -55,6 +52,8 @@ const SummaryZone = ((props) => {
 						<styled.ProcessName>{processName}</styled.ProcessName>
 
 						<CardZone
+							sortMode={sortMode}
+							lotFilterValue={lotFilterValue}
 							setShowCardEditor={setShowCardEditor}
 							showCardEditor={showCardEditor}
 							maxHeight={"30rem"}
@@ -69,11 +68,6 @@ const SummaryZone = ((props) => {
 
 	return(
 		<styled.Container >
-			<ZoneHeader
-				selectedProcesses={selectedProcesses}
-				setSelectedProcesses={setSelectedProcesses}
-			/>
-
 			<styled.ProcessesContainer>
 				{renderSelectedProcesses()}
 			</styled.ProcessesContainer>
@@ -85,7 +79,8 @@ const SummaryZone = ((props) => {
 SummaryZone.propTypes = {
 	handleCardClick: PropTypes.func,
 	setShowCardEditor: PropTypes.func,
-	showCardEditor: PropTypes.bool
+	showCardEditor: PropTypes.bool,
+	lotFilterValue: PropTypes.string
 }
 
 // Specifies the default values for props:
@@ -93,6 +88,7 @@ SummaryZone.defaultProps = {
 	handleCardClick: () => {},
 	setShowCardEditor: () => {},
 	showCardEditor: false,
+	lotFilterValue: ""
 }
 
 export default SummaryZone

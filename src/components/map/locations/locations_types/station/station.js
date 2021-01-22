@@ -168,6 +168,7 @@ function Station(props) {
      * For a warehouse, the thing to remember is that you push to a warehouse and pull from a warehouse
      */
     const onSetStationTask = () => {
+        console.log("onSetStationTask")
 
         // Make sure there is a selected task and that its a station type you can assign a task too
         if (selectedTask !== null && (location.type === 'human' || location.type === 'warehouse')) {

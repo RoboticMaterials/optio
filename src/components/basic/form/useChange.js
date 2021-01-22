@@ -1,18 +1,45 @@
 import React, { useState } from "react";
 import { isEquivalent } from "../../../methods/utils/utils";
+import {useField, useFormikContext} from "formik";
 
 // Updates fields in parent form
-const useChanged = (form) => {
+const useChange = (fieldName) => {
+	const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext();
+	const [field, meta] = useField(fieldName);
+
+	const {
+		// initialValue,
+		value
+	} = meta
+
+	const {
+		changed: changedSet
+	} = value
+
 	const [changed, setChanged] = useState(false);
+	const [initialValue, setInitialValue] = useState(value);
 
 	React.useEffect(() => {
-		const issEquivalent = isEquivalent(form.initialValues, form.values);
 
 		// if values have changed from initial values, set changed to true
+
 		if(!changed) {
+
+			const issEquivalent = isEquivalent(initialValue, value)
+
+
 			if(!issEquivalent) {
+				console.log("initialValue boi",initialValue)
+				console.log("value a",value)
 				setChanged(true);
-				form.setFieldValue("changed", true);
+				setFieldValue(fieldName ? `${fieldName}.changed` : 'changed', true);
+			}
+		}
+
+		else {
+			if(!changedSet) {
+				setChanged(false)
+				setInitialValue(value)
 			}
 		}
 
@@ -26,7 +53,7 @@ const useChanged = (form) => {
 		// 	}
 		// }
 
-	}, [form.values]);
+	}, [value]);
 
 	// handle mount and dismount
 	React.useEffect(() => {
@@ -43,4 +70,4 @@ const useChanged = (form) => {
 	}, []);
 };
 
-export default useChanged
+export default useChange

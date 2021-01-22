@@ -25,6 +25,9 @@ const composeEnhancers =
   window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
       // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
+      // actionCreators,
+      trace: true,
+      traceLimit: 25,
     }) : compose;
 
 const enhancer = composeEnhancers(

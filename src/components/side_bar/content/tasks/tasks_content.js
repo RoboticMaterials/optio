@@ -5,7 +5,7 @@ import {useParams} from 'react-router-dom'
 
 // Import Components
 import ContentList from '../content_list/content_list'
-import EditTask from './edit_task/edit_task'
+
 
 // Import actions
 import * as taskActions from '../../../../redux/actions/tasks_actions'
@@ -20,6 +20,18 @@ import { deepCopy } from '../../../../methods/utils/utils'
 import { tasksSortedAlphabetically } from '../../../../methods/utils/task_utils'
 import RouteTask from './tasks_templates/route_task'
 import uuid from 'uuid'
+import TaskForm from "./task_form/route_form";
+import {
+    generateDefaultRoute,
+    getLoadStationDashboard,
+    getLoadStationId,
+    isHumanTask,
+    isMiRTask
+} from "../../../../methods/utils/route_utils";
+import {willRouteDeleteBreakProcess} from "../../../../methods/utils/processes_utils";
+import {deleteRouteClean} from "../../../../redux/actions/tasks_actions";
+import {isObject} from "../../../../methods/utils/object_utils";
+import {DEVICE_CONSTANTS} from "../../../../constants/device_constants";
 
 export default function TaskContent(props) {
 
@@ -28,33 +40,38 @@ export default function TaskContent(props) {
     const params = useParams()
     const onPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
     const onTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
-    const onEditing = (props) => dispatch(taskActions.editingTask(props))
     const onHandlePostTaskQueue = (props) => dispatch(taskQueueActions.handlePostTaskQueue(props))
+    const onEditing = async (props) => await dispatch(taskActions.editingTask(props))
+    const dispatchSetSelectedTask = async (task) => await dispatch(taskActions.setSelectedTask(task))
+    const dispatchAddTask = async (task) => await dispatch(taskActions.addTask(task))
 
-    let tasks = useSelector(state => state.tasksReducer.tasks)
-    let taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
-    let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
+    const tasks = useSelector(state => state.tasksReducer.tasks)
+    const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
+    const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
 
     const stations = useSelector(state => state.locationsReducer.stations)
     const editing = useSelector(state => state.tasksReducer.editingTask) //Moved to redux so the variable can be accesed in the sideBar files for confirmation modal
+    const objects = useSelector(state => state.objectsReducer.objects)
 
     /**
     * @param {*} Id
     */
-    const Id = selectedTask ? selectedTask._id: {}
-    const name = selectedTask ? selectedTask.name : {}
-    const custom = false
-    const fromSideBar = true
+
     // State definitions
     //const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
     const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)  // Current task
     const [shift, setShift] = useState(false) // Is shift key pressed ?
-    const [isTransportTask, setIsTransportTask] = useState(true) // Is this task a transport task (otherwise it may be a 'go to idle' type task)
+
     // To be able to remove the listeners, the function needs to be stored in state
 
-
+    //Parameters to pass into handlePostTaskQueue dispatch
+    const dashboardID = getLoadStationDashboard(selectedTask)
+    const Id = selectedTask ? selectedTask._id : {}
+    const name = selectedTask ? selectedTask.name : {}
+    const custom = false
+    const fromSideBar = true
 
     const [shiftCallback] = useState(() => e => {
         setShift(e.shiftKey)
@@ -73,40 +90,17 @@ export default function TaskContent(props) {
         }
     })
 
-    useEffect(() => {
-        if (!selectedTask) { return }
-        if (selectedTask.load.position === null) {
-            // No load position has been defined - ask user to define load (start) position
-            setIsTransportTask(true)
-        } else if (selectedTask.load.station === null) {
-            // Load position is not tied to a station - task is no longer a transport task
-            setIsTransportTask(false)
-        } else {
-            // Load position has been defined and is a station - now handle unload position
-            if (selectedTask.unload.position === null) {
-                // No unload position has been defined - ask user to define load (end) position
-                setIsTransportTask(true)
-            } else if (selectedTask.unload.station === null) {
-                // Unload position is not a station - task is no longer a transport task
-                setIsTransportTask(false)
-            } else {
-                // Load AND Unload positions have been defined. Display load/unload parameter fields
-                setIsTransportTask(true)
-            }
+    const handleDefaultObj = (objId, prevObj) => {
+
+        if(isObject(objects[objId])) {
+            return objects[objId]
         }
-    }, [selectedTask])
-
-
-
-    const handleInQueue = (task) => {
-      if(!!task){
-        Object.values(taskQueue).forEach((taskQueueItem, index) => {
-            if(taskQueueItem.task_id === task._id){
-            }
-        })
-
-      }
-      //return inQueue
+        else if (prevObj) {
+            return prevObj
+        }
+        else {
+            return null
+        }
     }
 
 
@@ -114,11 +108,12 @@ export default function TaskContent(props) {
 
     if (editing && selectedTask !== null) { // Editing Mode
         return (
-            <EditTask
-                selectedTaskCopy={selectedTaskCopy}
-                setSelectedTaskCopy={props => setSelectedTaskCopy(props)}
+            <TaskForm
+                initialValues={{
+                    ...selectedTask,
+                    obj: handleDefaultObj(selectedTask.obj)
+                }}
                 shift={shift}
-                isTransportTask={isTransportTask}
                 toggleEditing={props => onEditing(props)}
             />
         )
@@ -130,9 +125,7 @@ export default function TaskContent(props) {
                 elements={
 
                     tasksSortedAlphabetically(Object.values(tasks))
-                        // Filters outs any tasks that don't belong to the current map or apart of a process
-                        // .filter(task => !task.process && (task.map_id === currentMap._id))
-                        // .filter(task => task.map_id === currentMap._id)
+                        // Filters outs any tasks that don't belong to the current map
                         .filter(task => task.map_id === currentMap._id)
                         // Filter out empty tasks that are somehow created when choosing an existing task to add to a process in the process tab
                         // These are deleted by the cleaner function on page refresh but in the meantime dont show in the list view
@@ -142,50 +135,30 @@ export default function TaskContent(props) {
 
                 }
                 onMouseEnter={(task) => {
-                    dispatch(taskActions.selectTask(task._id))
+                    dispatchSetSelectedTask(task)
                 }}
-                onMouseLeave={(task) => dispatch(taskActions.deselectTask())}
+                onMouseLeave={(task) => dispatchSetSelectedTask(null)}
                 onClick={(task) => {
                     // If task button is clicked, start editing it
-                    setSelectedTaskCopy(deepCopy(selectedTask))
+                    dispatchSetSelectedTask(task)
                     onEditing(true)
                 }}
 
                 executeTask={()=> {
-                    //Parameters to pass into handlePostTaskQueue dispatch
-                    const dashboardID = selectedTask && stations ? stations[selectedTask.load.station].dashboards[0]: {}
-                    onHandlePostTaskQueue({dashboardID, tasks, taskQueue, Id, name, custom, fromSideBar})
+                    let deviceType
+                    if(isMiRTask(selectedTask)) {
+                        deviceType = DEVICE_CONSTANTS.MIR_100
+                    }
+                    else if(isHumanTask(selectedTask)){
+                        deviceType = DEVICE_CONSTANTS.HUMAN
+                    }
+                    onHandlePostTaskQueue({dashboardID, tasks, deviceType, taskQueue, Id, name, custom, fromSideBar})
                 }}
 
                 onPlus={() => {
-                    const newTask = {
-                        name: '',
-                        obj: null,
-                        type: 'push',
-                        quantity: 1,
-                        device_type: !!MiRMapEnabled ? 'MiR_100' : 'human',
-                        handoff: !!MiRMapEnabled ? false : true,
-                        track_quantity: true,
-                        map_id: currentMap._id,
-                        new: true,
-                        processes: [],
-                        load: {
-                            position: null,
-                            station: null,
-                            sound: null,
-                            instructions: 'Load',
-                            timeout: '01:00'
-                        },
-                        unload: {
-                            position: null,
-                            station: null,
-                            sound: null,
-                            instructions: 'Unload'
-                        },
-                        _id: uuid.v4(),
-                    }
-                    dispatch(taskActions.addTask(newTask))
-                    dispatch(taskActions.setSelectedTask(newTask))
+                    const newTask = generateDefaultRoute()
+                    dispatchAddTask(newTask)
+                    dispatchSetSelectedTask(newTask)
                     onEditing(true)
                 }}
             />

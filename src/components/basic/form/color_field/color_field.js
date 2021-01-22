@@ -17,7 +17,9 @@ const ColorField = (props) => {
 	const {
 		Container,
 		type,
-		mode
+		mode,
+		colors,
+		...rest
 	} = props
 
 	// formik related
@@ -42,7 +44,8 @@ const ColorField = (props) => {
 						// setFieldValue(field.name, color.hex);
 					}}
 					style={{zIndex: 10}}
-					{...props}
+					colors={colors.map(currColor => currColor.hex)}
+					{...rest}
 					triangle={"hide"}
 				/>
 				</styled.StyledTwitterPicker>
@@ -55,12 +58,16 @@ const ColorField = (props) => {
 						</styled.ColorButton>
 
 						<styled.DropdownMenu className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-							<styled.ColorOption type={type} className="dropdown-item" color={'#bcbcbc'} onClick={() => setFieldValue(field.name, '#bcbcbc')}>Gray</styled.ColorOption>
-							<styled.ColorOption type={type} className="dropdown-item" color={'#FF4B4B'} onClick={() => setFieldValue(field.name, '#FF4B4B')}>Red</styled.ColorOption>
-							<styled.ColorOption type={type} className="dropdown-item" color={'#56d5f5'} onClick={() => setFieldValue(field.name, '#56d5f5')}>Blue</styled.ColorOption>
-							<styled.ColorOption type={type} className="dropdown-item" color={'#50de76'} onClick={() => setFieldValue(field.name, '#50de76')}>Green</styled.ColorOption>
-							<styled.ColorOption type={type} className="dropdown-item" color={'#f2ae41'} onClick={() => setFieldValue(field.name, '#f2ae41')}>Orange</styled.ColorOption>
-							<styled.ColorOption type={type} className="dropdown-item" color={'#c7a0fa'} onClick={() => setFieldValue(field.name, '#c7a0fa')}>Purple</styled.ColorOption>
+							{colors.map((currColor) => {
+								const {
+									hex,
+									label
+								} = currColor
+
+								return(
+									<styled.ColorOption type={type} className="dropdown-item" color={hex} onClick={() => setFieldValue(field.name, hex)}>{label}</styled.ColorOption>
+								)
+							})}
 						</styled.DropdownMenu>
 					</div>
 				</styled.ColorPicker>
@@ -79,13 +86,36 @@ const ColorField = (props) => {
 // Specifies propTypes
 ColorField.propTypes = {
 	Container: PropTypes.elementType,
-	mode: PropTypes.string
+	mode: PropTypes.string,
+	colors: PropTypes.arrayOf(PropTypes.string),
 };
 
 // Specifies the default values for props:
 ColorField.defaultProps = {
 	Container: styled.DefaultContainer,
-	mode: null
+	mode: null,
+	colors: [
+		{
+			hex: '#FF4B4B',
+			label: "Red"
+		},
+		{
+			hex: '#56d5f5',
+			label: "Blue"
+		},
+		{
+			hex: '#50de76',
+			label: "Green"
+		},
+		{
+			hex: '#f2ae41',
+			label: "Orange"
+		},
+		{
+			hex: '#c7a0fa',
+			label: "Purple"
+		}
+	]
 };
 
 export default ColorField;

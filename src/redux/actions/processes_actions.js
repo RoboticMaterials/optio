@@ -26,6 +26,9 @@ import {
 import * as api from '../../api/processes_api'
 import { processesSchema } from '../../normalizr/schema';
 import { deepCopy } from '../../methods/utils/utils'
+import {putDashboard} from "./dashboards_actions";
+import {getRouteProcesses} from "../../methods/utils/route_utils";
+import {willRouteDeleteBreakProcess} from "../../methods/utils/processes_utils";
 
 
 export const getProcesses = () => {
@@ -75,6 +78,8 @@ export const postProcesses = (process) => {
         try {
             onStart();
             delete process.new
+            delete process.changed
+
             const newProcesses = await api.postProcesses(process);
             return onSuccess(newProcesses)
         } catch (error) {
@@ -99,6 +104,13 @@ export const putProcesses = (process) => {
         try {
             onStart();
             const ID = deepCopy(process._id)
+
+            if(process.new) {
+                delete process.new
+            }
+            if(process.changed) {
+                delete process.changed
+            }
             // delete process._id
             const updateProcesses = await api.putProcesses(process, ID);
             return onSuccess(updateProcesses)
@@ -130,6 +142,41 @@ export const deleteProcesses = (ID) => {
         }
     }
 }
+
+// deletes all buttons with routeId from all dashboards
+// ******************************
+export const removeRouteFromAllProcesses = (routeId) => {
+    return async (dispatch, getState) => {
+
+        // current state
+        const state = getState()
+        const routes = state.tasksReducer.tasks || {}
+
+        // get all processes that contain routeId
+        const routeProcesses = getRouteProcesses(routeId)
+
+        console.log("removeRouteFromAllProcesses routeProcesses",routeProcesses)
+
+        // loop through each of these processes, check if removing the route will break the process, then remove the route
+        for (const currProcess of routeProcesses) {
+
+            const processRoutes = currProcess.routes.map((currRoute) => routes[currRoute])
+
+            // will removing route break the process?
+            const willBreak = willRouteDeleteBreakProcess(processRoutes, routeId)
+            console.log("willBreak",willBreak)
+
+            // dispatch update
+            await dispatch(putProcesses({
+                ...currProcess,
+                broken: willBreak,
+                routes: currProcess.routes.filter((currRoute) => currRoute !== routeId)
+            }))
+        }
+
+    }
+}
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 export const updateProcesses = (processes, d3) => {
     return { type: 'UPDATE_PROCESSES', payload: { processes, d3 } }

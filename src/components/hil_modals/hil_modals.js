@@ -24,6 +24,8 @@ import { putTaskQueueItem } from '../../api/task_queue_api'
 // Import Utils
 import { deepCopy } from '../../methods/utils/utils'
 import { getCards } from "../../redux/actions/card_actions";
+import {sortBy} from "../../methods/utils/card_utils";
+import {SORT_MODES} from "../../constants/common_contants";
 
 
 /**
@@ -44,16 +46,12 @@ const HILModals = (props) => {
     } = item || {}
 
     const dispatch = useDispatch()
-    const dispatchPostTaskQueue = (response) => dispatch(postTaskQueue(response))
     const dispatchGetCards = () => dispatch(getCards())
     const dispatchTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
     const disptachHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
     const disptachPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
     const dispatchSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
-    const dispatchPostEvents = (event) => dispatch(postEvents)
     const dispatchLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
-    const dispatchGetTasks = () => dispatch(getTasks())
-    const dispatchDeleteTaskQueueItem = (id) => dispatch(deleteTaskQueueItem(id))
 
     const hilTimers = useSelector(state => { return state.taskQueueReducer.hilTimers })
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
@@ -73,14 +71,15 @@ const HILModals = (props) => {
     const [isProcessTask, setIsProcessTask] = useState(true)
     const [availableLots, setAvailableLots] = useState([])
     const [selectedDashboard, setSelectedDashboard] = useState(null)
-    const [cardsLoaded, setCardsLoaded] = useState([false])
     const [showLotSelector, setShowLotSelector] = useState(false)
     const [didDisplayLots, setDidDisplayLots] = useState(false)
     const [didSelectInitialLot, setDidSelectInitialLot] = useState(false)
     const [hilLoadUnload, setHilLoadUnload] = useState('')
+    const [dataLoaded, setDataLoaded] = useState(false)
     const [lotFilterValue, setLotFilterValue] = useState('')
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState('')
     const [changeQtyMouseHold, setChangeQtyMouseHold] = useState('')
+    const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
     const [lotsAtStation, setLotsAtStation] = useState(false)
     const [taskHasProcess, setTaskHasProcess] = useState(false)
 
@@ -122,12 +121,6 @@ const HILModals = (props) => {
         setQuantity(0)
     }
 
-    // load card data on load for selecting lot
-    useEffect(() => {
-        dispatchGetCards()
-        setCardsLoaded(true)
-    }, [])
-
     // if number of available lots >= 5, auto focus lot filter text box
     useEffect(() => {
         if(availableLots.length >= 5 ) {
@@ -150,7 +143,7 @@ const HILModals = (props) => {
       if(!!currentTask.processes[0]){
         setTaskHasProcess(true)
         // Only show lot selector if they're cards loaded, lots have not been dispalyed yet, it's a load hil and there's available lots
-        if (cardsLoaded && !didDisplayLots && hilLoadUnload && hilLoadUnload !== 'unload') {
+        if (!didDisplayLots && hilLoadUnload && hilLoadUnload !== 'unload') {
             setShowLotSelector(true)
             setDidDisplayLots(true)
         }
@@ -161,7 +154,7 @@ const HILModals = (props) => {
         setShowLotSelector(false) // hide lot selector
       }
 
-    }, [cardsLoaded, availableLots, didDisplayLots, hilLoadUnload, isProcessTask])
+    }, [availableLots, didDisplayLots, hilLoadUnload, isProcessTask])
 
     /*
     * Get dropdownsearch options for cards
@@ -180,7 +173,7 @@ const HILModals = (props) => {
             const taskProcesses = selectedTask.processes
             const associatedsTaskProcess = !!associatedTask ? associatedTask.processes : []
 
-            const stationCards = Object.values(cards).filter((currCard) => {
+            let stationCards = Object.values(cards).filter((currCard) => {
                 const {
                     bins,
                     process_id: currCardProcessId
@@ -189,8 +182,11 @@ const HILModals = (props) => {
                 if (bins) {
                     if (bins[loadStationId] && bins[loadStationId].count > 0 && (taskProcesses.includes(currCardProcessId) || associatedsTaskProcess.includes(currCardProcessId))) return true
                 }
-
             })
+
+            if(sortMode){
+                sortBy(stationCards, sortMode)
+            }
 
             if (stationCards && Array.isArray(stationCards) && stationCards.length > 0) {
                 if ((stationCards.length === 1) && !selectedLot && !didSelectInitialLot) {
@@ -302,6 +298,8 @@ const HILModals = (props) => {
 
     // Use Effect for when page loads, handles wether the HIL is a load or unload
     useEffect(() => {
+        dispatchGetCards()
+
         const currentTask = tasks[item.task_id]
         setSelectedTask(currentTask)
         if (currentTask) {
@@ -312,12 +310,14 @@ const HILModals = (props) => {
         if (currentTask && currentTask?.load?.station === item.hil_station_id || !!item.dashboard) {
             // load
             setHilLoadUnload('load')
+            setShowLotSelector(true)
         } else {
             // unload
             setHilLoadUnload('unload')
         }
 
 
+        setDataLoaded(true)
         // On unmount, set the task q item to none
         return () => {
             dispatchTaskQueueItemClicked('')
@@ -1070,7 +1070,7 @@ const HILModals = (props) => {
      * HIL Check will only show on a pull request
      */
 
-    return (
+    if(dataLoaded) return (
         <styled.HilContainer >
 
             {/*<styled.HilBorderContainer >*/}
@@ -1096,6 +1096,10 @@ const HILModals = (props) => {
 
         </styled.HilContainer>
     )
+
+    else {
+        return null
+    }
 }
 
 export default HILModals

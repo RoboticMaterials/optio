@@ -15,7 +15,6 @@ import {setDataPage} from "../../../../../redux/actions/api_actions"
 
 // styles
 import * as styled from "./card_zone.style"
-import cardPageReducer from "../../../../../redux/reducers/card_page_reducer";
 
 const CardZone = ((props) => {
 
@@ -25,7 +24,9 @@ const CardZone = ((props) => {
 		processId,
 		setShowCardEditor,
 		showCardEditor,
-		maxHeight
+		maxHeight,
+		lotFilterValue,
+		sortMode
 	} = props
 
 	// redux state
@@ -38,6 +39,8 @@ const CardZone = ((props) => {
 		lotId: draggingLotId = "",
 		binId: draggingBinId = ""
 	} = draggedLotInfo || {}
+
+
 
 	// console.log("draggedLotInfo",draggedLotInfo)
 
@@ -107,7 +110,9 @@ const CardZone = ((props) => {
 			...rest
 		} = card
 
-		if(card.bins) {
+		const matchesFilter = card.name.toLowerCase().includes(lotFilterValue.toLowerCase())
+
+		if(card.bins && matchesFilter) {
 
 			// loop through this lot's bins
 			Object.entries(card.bins).forEach((binEntry) => {
@@ -180,6 +185,7 @@ const CardZone = ((props) => {
 
 			return (
 				<StationsColumn
+					sortMode={sortMode}
 					maxHeight={maxHeight}
 					key={station_id + index}
 					id={route_id+"+"+station_id}
@@ -198,6 +204,7 @@ const CardZone = ((props) => {
 		<styled.Container>
 			<LotQueue
 				key={"QUEUE"}
+				sortMode={sortMode}
 				maxHeight={maxHeight}
 				station_id={"QUEUE"}
 				setShowCardEditor={setShowCardEditor}
@@ -212,6 +219,7 @@ const CardZone = ((props) => {
 
 			<FinishColumn
 				key={"FINISH"}
+				sortMode={sortMode}
 				maxHeight={maxHeight}
 				station_id={"FINISH"}
 				setShowCardEditor={setShowCardEditor}
@@ -230,6 +238,7 @@ CardZone.propTypes = {
 	handleCardClick: PropTypes.func,
 	setShowCardEditor: PropTypes.func,
 	processId: PropTypes.string,
+	lotFilterValue: PropTypes.string,
 	showCardEditor: PropTypes.bool,
 	maxHeight: PropTypes.number
 }
@@ -240,7 +249,8 @@ CardZone.defaultProps = {
 	processId: null,
 	setShowCardEditor: () => {},
 	showCardEditor: false,
-	maxHeight: "30rem"
+	maxHeight: "30rem",
+	lotFilterValue: ""
 }
 
 export default CardZone
