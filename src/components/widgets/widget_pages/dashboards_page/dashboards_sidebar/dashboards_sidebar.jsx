@@ -183,7 +183,7 @@ const DashboardsSidebar = (props) => {
         }).map((task, index) => {
             return {
                 name: task.name,
-                color: DASHBOARD_BUTTON_COLORS[index % DASHBOARD_BUTTON_COLORS.length],
+                color: DASHBOARD_BUTTON_COLORS[index % DASHBOARD_BUTTON_COLORS.length].hex,
                 type: TYPES.ROUTES.key,
                 task_id: task._id,
                 id: task._id,
@@ -212,7 +212,7 @@ const DashboardsSidebar = (props) => {
 
             return {
                 name: currValue.name,
-                color: DASHBOARD_BUTTON_COLORS[ind % DASHBOARD_BUTTON_COLORS.length],
+                color: DASHBOARD_BUTTON_COLORS[ind % DASHBOARD_BUTTON_COLORS.length].hex,
                 // themeContext.schema[currValue.schema].solid,
                 id: currValue._id,
                 type: currKey,

@@ -18,7 +18,8 @@ const ColorField = (props) => {
 		Container,
 		type,
 		mode,
-		colors
+		colors,
+		...rest
 	} = props
 
 	// formik related
@@ -43,7 +44,8 @@ const ColorField = (props) => {
 						// setFieldValue(field.name, color.hex);
 					}}
 					style={{zIndex: 10}}
-					{...props}
+					colors={colors.map(currColor => currColor.hex)}
+					{...rest}
 					triangle={"hide"}
 				/>
 				</styled.StyledTwitterPicker>
@@ -57,8 +59,13 @@ const ColorField = (props) => {
 
 						<styled.DropdownMenu className="dropdown-menu" aria-labelledby="dropdownMenuButton">
 							{colors.map((currColor) => {
+								const {
+									hex,
+									label
+								} = currColor
+
 								return(
-									<styled.ColorOption type={type} className="dropdown-item" color={currColor} onClick={() => setFieldValue(field.name, '#bcbcbc')}>Gray</styled.ColorOption>
+									<styled.ColorOption type={type} className="dropdown-item" color={hex} onClick={() => setFieldValue(field.name, hex)}>{label}</styled.ColorOption>
 								)
 							})}
 						</styled.DropdownMenu>
@@ -87,7 +94,28 @@ ColorField.propTypes = {
 ColorField.defaultProps = {
 	Container: styled.DefaultContainer,
 	mode: null,
-	colors: ['#FF4B4B', '#56d5f5', '#50de76', '#f2ae41', '#c7a0fa']
+	colors: [
+		{
+			hex: '#FF4B4B',
+			label: "Red"
+		},
+		{
+			hex: '#56d5f5',
+			label: "Blue"
+		},
+		{
+			hex: '#50de76',
+			label: "Green"
+		},
+		{
+			hex: '#f2ae41',
+			label: "Orange"
+		},
+		{
+			hex: '#c7a0fa',
+			label: "Purple"
+		}
+	]
 };
 
 export default ColorField;

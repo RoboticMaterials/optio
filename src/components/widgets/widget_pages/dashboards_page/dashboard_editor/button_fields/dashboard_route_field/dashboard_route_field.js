@@ -13,6 +13,7 @@ import {ThemeContext} from "styled-components";
 
 // import logging
 import log from '../../../../../../../logger'
+import {DASHBOARD_BUTTON_COLORS} from "../../../../../../../constants/dashboard_contants";
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
 
@@ -42,6 +43,7 @@ const DashboardRouteField = props => {
 					name={`buttons[${ind}].color`}
 					Container={buttonFieldStyles.ColorDropdownInnerContainer}
 					type={"button"}
+					colors={DASHBOARD_BUTTON_COLORS}
 				/>
 
 				<buttonFieldStyles.CenterContainer>

@@ -7,6 +7,7 @@ import ColorField from "../../../../../../basic/form/color_field/color_field";
 
 // constants
 import {OPERATION_TYPES} from "../../../dashboards_sidebar/dashboards_sidebar";
+import {DASHBOARD_BUTTON_COLORS} from "../../../../../../../constants/dashboard_contants";
 
 // styles
 import * as styled from './dashboard_report_field.style';
@@ -15,6 +16,7 @@ import {theme} from "../../../../../../../theme";
 
 // logging
 import log from '../../../../../../../logger'
+
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
 const DashboardReportField = props => {
@@ -39,6 +41,7 @@ const DashboardReportField = props => {
 					name={`buttons[${ind}].color`}
 					Container={buttonFieldStyles.ColorDropdownInnerContainer}
 					type={"button"}
+					colors={DASHBOARD_BUTTON_COLORS}
 				/>
 
 				<buttonFieldStyles.CenterContainer>

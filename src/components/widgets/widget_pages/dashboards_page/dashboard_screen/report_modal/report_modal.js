@@ -28,6 +28,7 @@ import DeleteFieldButton from "../../../../../basic/form/delete_field_button/del
 import DashboardButton from "../../dashboard_buttons/dashboard_button/dashboard_button";
 import {postReportEvent, putReportEvent} from "../../../../../../redux/actions/report_event_actions";
 import {reportEventSchema, scheduleSchema} from "../../../../../../methods/utils/form_schemas";
+import {DASHBOARD_BUTTON_COLORS} from "../../../../../../constants/dashboard_contants";
 
 Modal.setAppElement('body');
 
@@ -274,6 +275,7 @@ const NewButtonForm = (props) => {
                                 Container={styled.ColorFieldContainer}
                                 type={"button"}
                                 mode={"twitter"}
+                                colors={DASHBOARD_BUTTON_COLORS}
                             />
                         </div>
                         }

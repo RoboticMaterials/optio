@@ -16,4 +16,25 @@ export const PAGES = {
 	DASHBOARD: "Dashboard"
 }
 
-export const DASHBOARD_BUTTON_COLORS = ['#FF4B4B', '#56d5f5', '#50de76', '#f2ae41', '#c7a0fa']
+export const DASHBOARD_BUTTON_COLORS = [
+	{
+		hex: '#FF4B4B',
+		label: "Red"
+	},
+	{
+		hex: '#56d5f5',
+		label: "Blue"
+	},
+	{
+		hex: '#50de76',
+		label: "Green"
+	},
+	{
+		hex: '#f2ae41',
+		label: "Orange"
+	},
+	{
+		hex: '#c7a0fa',
+		label: "Purple"
+	}
+	]
