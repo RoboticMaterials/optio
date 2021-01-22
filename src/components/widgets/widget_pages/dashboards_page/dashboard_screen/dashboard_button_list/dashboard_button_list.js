@@ -54,7 +54,7 @@ const DashboardButtonList = ((props) => {
         let taskID = currentButton.task_id
         const task = tasks[taskID]
         // const associatedTaskId = task?.associated_task
-        const deviceTypes = task.device_types || []
+        const deviceTypes = task?.device_types || []
 
         // If the task is in tasks or it's a custom task or hil success, then it exists
         const taskExists = !!tasks[taskID] ? true : taskID === 'custom_task' ? true : taskID === 'hil_success' ? true : false

@@ -3,6 +3,7 @@ import {DEVICE_CONSTANTS} from "../../constants/device_constants";
 import  store  from "../../redux/store/index";
 import {defaultTask} from "../../constants/route_constants";
 import {isArray} from "./array_utils";
+import {useSelector} from "react-redux";
 
 /**
  * Creates a default route based on store state
@@ -79,4 +80,17 @@ export const getUnloadStationId = (route) => {
 
 export const getLoadStationId = (route) => {
     return route?.load?.station
+}
+
+export const getLoadStationDashboard = (route) => {
+    const storeState = store.getState()
+    const stations = storeState.locationsReducer.stations || {}
+
+    const loadStationId = getLoadStationId(route)
+
+    const station = stations[loadStationId] || {}
+
+    const dashboards = isArray(station.dashboards) ?  station.dashboards : [null]
+
+    return dashboards[0]
 }
