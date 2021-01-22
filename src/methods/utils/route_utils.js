@@ -2,6 +2,7 @@ import uuid from 'uuid'
 import {DEVICE_CONSTANTS} from "../../constants/device_constants";
 import  store  from "../../redux/store/index";
 import {defaultTask} from "../../constants/route_constants";
+import {isArray} from "./array_utils";
 
 /**
  * Creates a default route based on store state
@@ -25,7 +26,7 @@ export const generateDefaultRoute = (obj) => {
 
 export const isHumanTask = (task) => {
     console.log("isHumanTask task",task)
-    return task.device_types.includes(DEVICE_CONSTANTS.HUMAN)
+    return task && isArray(task.device_types) && task.device_types.includes(DEVICE_CONSTANTS.HUMAN)
 }
 
 /*
@@ -34,21 +35,24 @@ export const isHumanTask = (task) => {
 export const isOnlyHumanTask = (task) => {
     var containsHuman = false
     var containsNonHuman = false
-    task.device_types.forEach((currType) => {
-        if( currType === DEVICE_CONSTANTS.HUMAN ) containsHuman = true
-        if( currType !== DEVICE_CONSTANTS.HUMAN )  containsNonHuman = true
-    })
+    if(task && isArray(task.device_types)) {
+        task.device_types.forEach((currType) => {
+            if( currType === DEVICE_CONSTANTS.HUMAN ) containsHuman = true
+            if( currType !== DEVICE_CONSTANTS.HUMAN )  containsNonHuman = true
+        })
+    }
+
 
     return !containsNonHuman && containsHuman
 }
 
 export const isMiRandHumanTask = (task) => {
-    return task.device_types.includes(DEVICE_CONSTANTS.MIR_100) && task.device_types.includes(DEVICE_CONSTANTS.HUMAN)
+    return task && isArray(task.device_types) && task.device_types.includes(DEVICE_CONSTANTS.MIR_100) && task.device_types.includes(DEVICE_CONSTANTS.HUMAN)
 }
 
 
 export const isMiRTask = (task) => {
-    return task.device_types.includes(DEVICE_CONSTANTS.MIR_100)
+    return task && isArray(task.device_types) && task.device_types.includes(DEVICE_CONSTANTS.MIR_100)
 }
 
 export const getRouteProcesses = (routeId) => {

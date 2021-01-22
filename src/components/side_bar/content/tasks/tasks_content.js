@@ -5,7 +5,7 @@ import {useParams} from 'react-router-dom'
 
 // Import Components
 import ContentList from '../content_list/content_list'
-import EditTask from './edit_task/edit_task'
+
 
 // Import actions
 import * as taskActions from '../../../../redux/actions/tasks_actions'
@@ -34,7 +34,6 @@ export default function TaskContent(props) {
     const params = useParams()
     const onPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
     const onTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
-    const onEditing = (props) => dispatch(taskActions.editingTask(props))
     const onHandlePostTaskQueue = (props) => dispatch(taskQueueActions.handlePostTaskQueue(props))
     const onEditing = async (props) => await dispatch(taskActions.editingTask(props))
     const dispatchSetSelectedTask = async (task) => await dispatch(taskActions.setSelectedTask(task))
@@ -110,7 +109,6 @@ export default function TaskContent(props) {
                     obj: handleDefaultObj(selectedTask.obj)
                 }}
                 shift={shift}
-                isTransportTask={isTransportTask}
                 toggleEditing={props => onEditing(props)}
             />
         )
