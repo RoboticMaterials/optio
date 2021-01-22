@@ -124,8 +124,13 @@ export const ProcessField = (props) => {
             const {
                 needsSubmit,    // remove from route
                 new: isNew,     // remove from route
+                temp,
                 ...remainingRoute
             } = values.newRoute || {}
+
+            const {
+                insertIndex
+            } = temp || {}
 
             // add unsaved key if route being added doesn't already exist - used to determine if a route has been saved or not
             var newRoute
@@ -138,43 +143,23 @@ export const ProcessField = (props) => {
                 newRoute = {...remainingRoute, new: isNew}
             }
 
-            // fixing broken process
-            if(values.broken && fixingProcess) {
+            // make copy of routes
+            let updatedRoutes = [...values.routes]
 
+            // add route to values at broken index
+            updatedRoutes.splice(insertIndex, 0, newRoute)
 
-                // check if new route will fix process
-                let updatedRoutes = [...values.routes]
-                let willFix = willRouteAdditionFixProcess(values.routes, values.broken, remainingRoute)
-
-                // add route to values at broken index
-                updatedRoutes.splice(values.broken, 0, newRoute)
-
-                // if not a new process, go ahead and save new route
-                if(!values.new) {
-                    await onSave({
-                        ...values,
-                        routes:  updatedRoutes
-                    }, false)
-                }
-
-                // update values
-                setFieldValue("routes", updatedRoutes)
-                setFieldValue("broken", willFix)
+            // if not a new process, go ahead and save new route
+            if(!values.new) {
+                await onSave({
+                    ...values,
+                    routes:  updatedRoutes
+                }, false)
             }
 
-            // not fixing broken process
-            else {
-                // if not a new process, go ahead and save new route
-                if(!values.new) {
-                    await onSave({
-                        ...values,
-                        routes:  [...values.routes, newRoute]   // append new route
-                    }, false)
-                }
-
-                // not broken, just append to routes
-                setFieldValue("routes", [...values.routes, newRoute])
-            }
+            // update values
+            setFieldValue("routes", updatedRoutes)
+            setFieldValue("broken", isBrokenProcess(updatedRoutes))
         }
 
         // not a new route
@@ -428,8 +413,7 @@ export const ProcessField = (props) => {
                                 prevObj = values.routes[values.routes.length - 1].obj
                             }
 
-                            const newTask = generateDefaultRoute(prevObj)
-
+                            const newTask = {...generateDefaultRoute(prevObj), temp: {insertIndex: values.broken}}
 
                             dispatchSetSelectedTask(newTask)
                             setFieldValue("newRoute", newTask)
@@ -466,14 +450,67 @@ export const ProcessField = (props) => {
                             prevObj = values.routes[values.routes.length - 1].obj
                         }
 
-                        const newTask = generateDefaultRoute(prevObj)
-
+                        const newTask = {...generateDefaultRoute(prevObj), temp: {insertIndex: values.routes.length}}
                         setFieldValue("newRoute", newTask)
                         dispatchSetSelectedTask(newTask)
                         setEditingTask(true)
                     }}
                 >
                     Add Route
+                </Button>
+
+                {!!values.newRoute &&
+                <styled.TaskContainer schema={'processes'}>
+                    <TaskField
+                        onSave={handleAddTask}
+                        onDelete={handleDeleteRoute}
+                        onRemove={handleRemoveRoute}
+                        onBackClick={handleTaskBack}
+                        {...formikProps}
+                        values={values}
+                        errors={errors}
+                        touched={touched}
+                        setFieldValue={setFieldValue}
+                        fieldParent={'newRoute'}
+                        shift={shift}
+                        isTransportTask={isTransportTask}
+                        isProcessTask={true}
+                        toggleEditing={(props) => {
+                            setEditingTask(props)
+                        }}
+
+                    />
+                </styled.TaskContainer>
+                }
+
+            </>
+        )
+    }
+
+    const handleAddBeginningRoute = () => {
+
+        return (
+            <>
+                <Button
+                    schema={'processes'}
+                    // disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
+                    secondary
+                    disabled={selectedTask?.new}
+                    onClick={() => {
+
+                        let prevObj
+                        if(values.routes.length > 0) {
+                            prevObj = values.routes[values.routes.length - 1].obj
+                        }
+
+                        const newTask = {...generateDefaultRoute(prevObj), temp: {insertIndex: 0}}
+
+                        setFieldValue("newRoute", newTask)
+                        dispatchSetSelectedTask(newTask)
+                        setEditingTask(true)
+                    }}
+                >
+                    Add Route To Beginning
                 </Button>
 
                 {!!values.newRoute &&
@@ -595,6 +632,8 @@ export const ProcessField = (props) => {
                 </div>
 
                 <styled.Title schema={'processes'}>Associated Routes</styled.Title>
+
+                {values.routes.length > 0 && handleAddBeginningRoute()}
 
                 <styled.SectionContainer>
                     {renderRoutes(values.routes)}

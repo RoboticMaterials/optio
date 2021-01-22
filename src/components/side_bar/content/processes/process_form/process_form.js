@@ -2,7 +2,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {Formik} from "formik";
 import {processSchema} from "../../../../../methods/utils/form_schemas";
 import React from "react";
-import {ProcessField} from "../edit_process/process_field";
+import {ProcessField} from "../process_field/process_field";
 import uuid from 'uuid'
 import {
 	deleteRouteClean,

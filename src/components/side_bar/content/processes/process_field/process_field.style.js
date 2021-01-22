@@ -33,6 +33,8 @@ export const Title = styled.h1`
 export const SectionContainer = styled.div`
     border-bottom: 0.1rem solid ${props => props.theme.bg.septenary};
     margin-bottom: 1rem;
+  	border-top: 0.1rem solid ${props => props.theme.bg.septenary};
+    margin-top: 1rem;
 `
 
 export const TaskContainer = styled.div`
