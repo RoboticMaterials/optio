@@ -96,15 +96,39 @@ function Position(props) {
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
 
     let isSelected = false
-    if(!!selectedTask && (selectedTask.load.position === position._id || selectedTask.unload.position === position._id)) isSelected = true
+    // Set selected to true if the selected task inculdes the position
+    if (!!selectedTask && (selectedTask.load.position === position._id || selectedTask.unload.position === position._id)) isSelected = true
     // else if(!!selectedStationChildrenCopy && (position._id in selectedStationChildrenCopy)) isSelected = true
-    
 
-    // TODO: Comment Disabled
+    if (!!selectedProcess) console.log('QQQQ Selected Process', selectedProcess)
+
+
     let disabled = false
+    // Disable if the selectedPosition is not this position
     if (!!selectedPosition && selectedPosition._id !== position._id) disabled = true
+    // Disable if the position does not belong to the children copy
     else if (!!selectedStationChildrenCopy && !(position._id in selectedStationChildrenCopy)) disabled = true
-    else if(!!selectedStation && !selectedStation.children.includes(position._id)) disabled = true
+    // Disbale if the selected stations children does not include this station
+    else if (!!selectedStation && !selectedStation.children.includes(position._id)) disabled = true
+
+    // This filters positions when making a process
+    // If the process has routes, and you're adding a new route, you should only be able to add a route starting at the last station
+    // This eliminates process with gaps between stations
+    else if (!!selectedProcess && !!selectedTask && selectedProcess.routes.length > 0 && selectedTask.load.position === null) {
+        // Gets the last route in the routes array
+        const previousRoute = this.props.selectedProcess.routes[this.props.selectedProcess.routes.length - 1]
+        const previousTask = this.props.tasks[previousRoute]
+
+        if (!!previousTask.unload) {
+
+            const unloadStationID = previousTask.unload.station
+            const unloadStation = this.props.locations[unloadStationID]
+
+            if (!unloadStation.children.includes(position._id)) {
+                disabled = true
+            }
+        }
+    }
 
     // Tells the position to glow
     const shouldGlow = selectedTask !== null &&
@@ -207,7 +231,7 @@ function Position(props) {
     }
 
     const onMouseDown = () => {
-        onSetPositionTask()
+        if (!disabled) onSetPositionTask()
     }
 
     const onTranslating = (bool) => {

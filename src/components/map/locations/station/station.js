@@ -39,6 +39,7 @@ function Station(props) {
     const [translating, setTranslating] = useState(false)
 
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
+    const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
@@ -49,12 +50,18 @@ function Station(props) {
     const dispatchSetStationAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
     const dispatchSetTaskAttributes = (id, load) => dispatch(setTaskAttributes(id, load))
 
-    const isSelected = !!selectedStation && selectedStation._id === station._id
-    const shouldGlow = hovering && !isSelected && selectedTask == null
+    let isSelected = false
+    if (!!selectedTask && (selectedTask.load.station === station._id || selectedTask.unload.station === station._id)) isSelected = true
+
+    // TODO: Comment Disabled
+    let disabled = false
+    if (!!selectedStation && selectedStation._id !== station._id) disabled = true
+    if (!!selectedPosition && !station.children.includes(selectedPosition._id)) disabled = true
+    const shouldGlow = false
 
     // Set Color
     let color = StationTypes[station.type].color
-    if (!isSelected && !!selectedStation) color = '#afb5c9' // Grey
+    if (!isSelected && disabled) color = '#afb5c9' // Grey
     else if (isSelected) color = '#38eb87' // Green
 
     // Used to see if a widget Page is opened
@@ -190,7 +197,7 @@ function Station(props) {
     }
 
     const onMouseDown = () => {
-        onSetStationTask()
+        if (!disabled) onSetStationTask()
     }
 
     const onTranslating = (bool) => {
