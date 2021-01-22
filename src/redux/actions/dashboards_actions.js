@@ -197,7 +197,7 @@ export const addRouteToDashboards = (route) => {
         // current state
         const state = getState()
         const dashboards = state.dashboardsReducer.dashboards || {}
-        const stations = state.locationsReducer.stations || {}
+        const stations = state.stationsReducer.stations || {}
 
         const {
             _id: routeId,

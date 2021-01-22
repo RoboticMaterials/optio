@@ -66,8 +66,6 @@ export default function TaskContent(props) {
 
     // To be able to remove the listeners, the function needs to be stored in state
 
-    console.log('QQQQ Selected Task', selectedTask)
-
     //Parameters to pass into handlePostTaskQueue dispatch
     const dashboardID = getLoadStationDashboard(selectedTask)
     const Id = selectedTask ? selectedTask._id : {}

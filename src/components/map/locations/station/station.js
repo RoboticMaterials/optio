@@ -111,6 +111,8 @@ function Station(props) {
      */
     const onSetStationTask = () => {
 
+        console.log("onSetStationTask")
+
         // Make sure there is a selected task and that its a station type you can assign a task too
         if (selectedTask !== null && (station.type === 'human' || station.type === 'warehouse')) {
 
@@ -140,11 +142,13 @@ function Station(props) {
                 // } else {
                 //     type = 'push'
                 // }
+                console.log('QQQQ Setting task in station', selectedTask)
                 dispatchSetTaskAttributes(selectedTask._id, { unload, type, handoff })
             }
 
             // Otherwise assign the load position and clear the unload position (to define a new unload)
             else {
+                console.log('QQQQ Setting task in station', selectedTask)
                 let load = deepCopy(selectedTask.load)
                 let unload = deepCopy(selectedTask.unload)
                 let type = selectedTask.type

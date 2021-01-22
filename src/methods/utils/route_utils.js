@@ -84,7 +84,7 @@ export const getLoadStationId = (route) => {
 
 export const getLoadStationDashboard = (route) => {
     const storeState = store.getState()
-    const stations = storeState.locationsReducer.stations || {}
+    const stations = storeState.stationsReducer.stations || {}
 
     const loadStationId = getLoadStationId(route)
 

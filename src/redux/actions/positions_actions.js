@@ -186,7 +186,6 @@ export const deletePosition = (id, stationDelete) => {
                 // IMPORTANT!: Putting with change_key as deleted instead of deleting because it was causing back end issues
                 // Tells the backend that a position has been deleted
                 positionCopy.change_key = 'deleted'
-                console.log('QQQQ Deletign pos action', positionCopy)
                 const updatePosition = await api.putPosition(positionCopy, positionCopy._id);
                 return onSuccess(positionCopy._id)
             }

@@ -114,7 +114,7 @@ const TaskField = (props) => {
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
 
-    const stations = useSelector(state => state.locationsReducer.stations)
+    const stations = useSelector(state => state.stationsReducer.stations)
 
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
