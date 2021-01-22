@@ -36,8 +36,8 @@ import Position from '../../components/map/locations/position/position'
 // logging
 import log from "../../logger"
 import { setCurrentMap } from "../../redux/actions/map_actions";
-import {getPreviousRoute} from "../../methods/utils/processes_utils";
-import {isObject} from "../../methods/utils/object_utils";
+import { getPreviousRoute } from "../../methods/utils/processes_utils";
+import { isObject } from "../../methods/utils/object_utils";
 
 const logger = log.getLogger("MapView")
 
@@ -303,16 +303,30 @@ export class MapView extends Component {
 
                     //// Apply the event translation to image
                     map.attr('transform', `translate(${d3.event.translate}) scale(${d3.event.scale})`)
-                    Object.assign(this.d3, {
+                    this.d3 = {
+                        ...this.d3,
                         translate: d3.event.translate,
                         scale: d3.event.scale
-                    })
+                    }
+
+                    // TODO: Delete
+                    // Object.assign(this.d3, {
+                    //     translate: d3.event.translate,
+                    //     scale: d3.event.scale
+                    // })
 
                     //// Apply the event translation to each station
                     Object.values(stations).forEach(station => {
 
                         [x, y] = convertRealToD3([station.pos_x, station.pos_y], this.d3)
-                        Object.assign(station, { x, y })
+                        station = {
+                            ...station,
+                            x: x,
+                            y: y,
+                        }
+
+                        // TODO: Delete
+                        // Object.assign(station, { x, y })
                         stations[station._id] = station
 
                     })
@@ -322,7 +336,14 @@ export class MapView extends Component {
                     if (!!this.props.selectedStation) {
                         [x, y] = convertRealToD3([this.props.selectedStation.pos_x, this.props.selectedStation.pos_y], this.d3)
                         updatedSelectedStation = this.props.selectedStation
-                        Object.assign(updatedSelectedStation, { x, y })
+                        updatedSelectedStation = {
+                            ...updatedSelectedStation,
+                            x: x,
+                            y: y,
+                        }
+
+                        // TODO: Delete
+                        // Object.assign(updatedSelectedStation, { x, y })
                     }
 
                     this.props.dispatchUpdateStations(stations, updatedSelectedStation, this.d3) // Bulk Update
@@ -331,7 +352,14 @@ export class MapView extends Component {
                     Object.values(positions).forEach(position => {
 
                         [x, y] = convertRealToD3([position.pos_x, position.pos_y], this.d3)
-                        Object.assign(position, { x, y })
+                        position = {
+                            ...position,
+                            x: x,
+                            y: y,
+                        }
+
+                        // TODO: Delete
+                        // Object.assign(position, { x, y })
                         positions[position._id] = position
 
                     })
@@ -341,7 +369,13 @@ export class MapView extends Component {
                     if (!!this.props.selectedPosition) {
                         [x, y] = convertRealToD3([this.props.selectedPosition.pos_x, this.props.selectedPosition.pos_y], this.d3)
                         updatedSelectedPosition = this.props.selectedPosition
-                        Object.assign(updatedSelectedPosition, { x, y })
+                        updatedSelectedPosition = {
+                            ...updatedSelectedPosition,
+                            x: x,
+                            y: y,
+                        }
+                        // TODO: Delete
+                        // Object.assign(updatedSelectedPosition, { x, y })
                     }
 
                     // TODO: This whole children copy business sucks a lot 
@@ -351,7 +385,14 @@ export class MapView extends Component {
                         updatedChildrenPositions = {}
                         Object.values(this.props.selectedStationChildrenCopy).forEach(position => {
                             [x, y] = convertRealToD3([position.pos_x, position.pos_y], this.d3)
-                            Object.assign(position, { x, y })
+
+                            position = {
+                                ...position,
+                                x: x,
+                                y: y,
+                            }
+                            // TODO: Delete
+                            // Object.assign(position, { x, y })
                             updatedChildrenPositions[position._id] = position
 
                         })
@@ -362,7 +403,13 @@ export class MapView extends Component {
                     //// Apply the event translation to each position
                     Object.values(positions).forEach(position => {
                         [x, y] = convertRealToD3([position.pos_x, position.pos_y], this.d3)
-                        Object.assign(position, { x, y })
+                        position = {
+                            ...position,
+                            x: x,
+                            y: y,
+                        }
+                        // TODO: Delete
+                        // Object.assign(position, { x, y })
                         positions[position._id] = position
                     })
                     this.props.dispatchUpdatePositions(positions) // Bulk Update
@@ -370,7 +417,14 @@ export class MapView extends Component {
                     //// Apply the event translation to each mobile device
                     Object.values(devices).filter(device => device.device_model == 'MiR100').map(device => {
                         [x, y] = convertRealToD3([device.position.pos_x, device.position.pos_y], this.d3)
-                        Object.assign(device.position, { x, y })
+
+                        device.position = {
+                            ...device.position,
+                            x: x,
+                            y: y,
+                        }
+                        // TODO: Delete
+                        // Object.assign(device.position, { x, y })
                         devices[device._id] = device
                     })
                     this.props.dispatchUpdateDevices(devices, this.d3) // Bulk Update
@@ -499,7 +553,13 @@ export class MapView extends Component {
             //// Apply the event translation to each station
             Object.values(stations).forEach(station => {
                 [x, y] = convertRealToD3([station.pos_x, station.pos_y], this.d3)
-                Object.assign(station, { x, y })
+                station = {
+                    ...station,
+                    x: x,
+                    y: y,
+                }
+                // TODO: Delete
+                // Object.assign(station, { x, y })
                 stations[station._id] = station
             })
             this.props.dispatchUpdateStations(stations) // Bulk Update
@@ -507,7 +567,13 @@ export class MapView extends Component {
             //// Apply the event translation to each position
             Object.values(positions).forEach(position => {
                 [x, y] = convertRealToD3([position.pos_x, position.pos_y], this.d3)
-                Object.assign(position, { x, y })
+                position = {
+                    ...position,
+                    x: x,
+                    y: y,
+                }
+                // TODO: Delete
+                // Object.assign(position, { x, y })
                 positions[position._id] = position
             })
             this.props.dispatchUpdatePositions(positions) // Bulk Update
@@ -515,7 +581,13 @@ export class MapView extends Component {
             //// Apply the event translation to each mobile device
             Object.values(devices).filter(device => device.device_model == 'MiR100').map(device => {
                 [x, y] = convertRealToD3([device.position.pos_x, device.position.pos_y], this.d3)
-                Object.assign(device.position, { x, y })
+                device.position = {
+                    ...device.position,
+                    x: x,
+                    y: y,
+                }
+                // TODO: Delete
+                // Object.assign(device.position, { x, y })
                 devices[device._id] = device
             })
             this.props.dispatchUpdateDevices(devices, this.d3) // Bulk Update

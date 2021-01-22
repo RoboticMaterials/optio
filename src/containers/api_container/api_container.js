@@ -310,7 +310,7 @@ const ApiContainer = (props) => {
         // Cleaner Functions
         const funtion = await handleDeviceWithoutADashboard(devices, dashboards)
         const funtion1 = await handleTasksWithBrokenPositions(tasks, stations, positions)
-        const funtion2 = await handlePositionsWithBrokenParents(stations, positions)
+        // const funtion2 = await handlePositionsWithBrokenParents(stations, positions)
         const funtion3 = await handleDevicesWithBrokenStations(devices, stations)
         const funtion4 = await handleStationsWithBrokenDevices(devices, stations)
         const funtion5 = await handleDashboardsWithBrokenStations(dashboards, stations)
@@ -578,7 +578,7 @@ const ApiContainer = (props) => {
 
         Object.values(positions).map(async (position) => {
 
-            if (!!position.parent && !Object.keys(stations).includes(position.parent)) {
+            if (!!position.parent && !Object.keys(stations).includes(position.parent && position.change_key !== 'deleted')) {
                 console.log('QQQQ This position should be deleted', position)
                 alert('This position should be deleted')
                 onDeletePosition(position)

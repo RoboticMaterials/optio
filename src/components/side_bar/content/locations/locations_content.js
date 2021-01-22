@@ -68,7 +68,19 @@ export default function LocationContent() {
     }
 
     const onSetSelectedLocation = (id) => {
+        if (id in stations) {
+            dispatchSetSelectedStation(stations[id])
+        }
 
+        else if (id in positions) {
+            dispatchSetSelectedPosition(positions[id])
+        }
+
+        else if (id === null) {
+            dispatchSetSelectedStation(null)
+            dispatchSetSelectedPosition(null)
+
+        }
     }
 
     /**
@@ -87,7 +99,7 @@ export default function LocationContent() {
             dispatchSetSelectedStation(editingLocation)
 
             // Copy Children
-            if(editingLocation.children.length > 0){
+            if (editingLocation.children.length > 0) {
                 let copy = {}
 
                 editingLocation.children.forEach(child => {

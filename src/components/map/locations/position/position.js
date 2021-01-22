@@ -96,14 +96,15 @@ function Position(props) {
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
 
     let isSelected = false
-    if(!!selectedPosition && selectedPosition._id === position._id) isSelected = true
-    else if(!!selectedStationChildrenCopy && (position._id in selectedStationChildrenCopy)) isSelected = true
+    if(!!selectedTask && (selectedTask.load.position === position._id || selectedTask.unload.position === position._id)) isSelected = true
+    // else if(!!selectedStationChildrenCopy && (position._id in selectedStationChildrenCopy)) isSelected = true
     
 
     // TODO: Comment Disabled
     let disabled = false
     if (!!selectedPosition && selectedPosition._id !== position._id) disabled = true
     else if (!!selectedStationChildrenCopy && !(position._id in selectedStationChildrenCopy)) disabled = true
+    else if(!!selectedStation && !selectedStation.children.includes(position._id)) disabled = true
 
     // Tells the position to glow
     const shouldGlow = selectedTask !== null &&
@@ -114,7 +115,7 @@ function Position(props) {
 
     // Set Color
     let color = PositionTypes[position.type].color
-    if (!isSelected && !!selectedPosition) color = '#afb5c9' // Grey
+    if (!isSelected && disabled) color = '#afb5c9' // Grey
     else if (isSelected) color = '#38eb87' // Green
 
     useEffect(() => {
