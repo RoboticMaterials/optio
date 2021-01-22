@@ -20,15 +20,14 @@ const SideBarSwitcher = (props) => {
     const dispatch = useDispatch()
     const onSetSelectedDevice = (selectedDevice) => dispatch(setSelectedDevice(selectedDevice))
     const onSideBarBack = (props) => dispatch(sideBarBack(props))
-
     const onTaskEditing = (props) => dispatch(editingTask(props))
     const onProcessEditing = (props) => dispatch(editingProcess(props))
+
 
     const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
     const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
-
     const mode = useSelector(state => state.sidebarReducer.mode)
     const wrapperRef = useRef(null)
 

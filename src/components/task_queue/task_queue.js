@@ -29,7 +29,12 @@ const logger = log.getLogger("TaskQueueMenu");
 const TaskQueueMenu = (props) => {
 
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
-    let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
+    const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
+
+    const onDeleteTaskQueueAll = () => dispatch(deleteTaskQueueAll()) // Clear Task Q
+    const onGetStatus = (props) => dispatch(getStatus(props))	// fetch update to status
+
+
 
     const taskQueue = useSelector(state => {
 
@@ -100,8 +105,8 @@ const TaskQueueMenu = (props) => {
     }
 
     const clearTaskQueue = async () => {
-        dispatch(deleteTaskQueueAll())	// clear task queue
-        dispatch(getStatus(props.statusApi))	// fetch update to status
+        onDeleteTaskQueueAll()
+        onGetStatus(props.statusApi)
     }
 
     return (

@@ -257,3 +257,46 @@ export const getCardSchema = (mode, availableBinItems) => {
 
 }
 
+const routeStationSchema = Yup.object().shape({
+    instructions: Yup.string().nullable(),
+    position: Yup.string().nullable().required('No position selected.'),
+    station: Yup.string().nullable().required('No station selected.'),
+    timeout: Yup.string().nullable(),
+})
+
+export const routeSchema = Yup.object().shape({
+    name: Yup.string()
+        .min(1, '1 character minimum.')
+        .max(50, '50 character maximum.')
+        .required('Please enter a name.'),
+    obj: Yup.object().shape({
+        name: Yup.string()
+            .required('Please enter a name.'),
+    }).nullable(),
+    track_quantity: Yup.bool().required('Please select whether to use quantities or fractions.'),
+    load: routeStationSchema.required("Required."),
+    unload: routeStationSchema.required("Required."),
+})
+
+
+
+export const routesSchema = Yup.array().of(
+            routeSchema
+        )
+
+export const processSchema = Yup.object().shape({
+    name: Yup.string()
+        .min(1, '1 character minimum.')
+        .max(50, '50 character maximum.')
+        .required('Please enter a name.'),
+    routes: routesSchema,
+    newRoute: routeSchema.nullable(),
+
+})
+
+export const getProcessSchema = () => {
+    return
+}
+
+
+

@@ -5,6 +5,7 @@ import * as style from './task_buttons.style';
 
 
 const TaskButtons = React.memo(props => {
+
     return(
         <>
             <style.AddContainer className='container'>

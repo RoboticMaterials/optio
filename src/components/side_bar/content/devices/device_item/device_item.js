@@ -29,9 +29,11 @@ const DeviceItem = (props) => {
     const deviceName = device.device_name
 
     const dispatch = useDispatch()
+    const onSelectLocation = (location) => dispatch(locationActions.selectLocation(location))
+    const onDeselectLocation = (location) => dispatch(locationActions.deselectLocation(location))
 
     const [stationId, setStationId] = useState(false)
-    
+
 
     // Sets the type of device
     let deviceType = DeviceItemTypes['generic']
@@ -49,7 +51,7 @@ const DeviceItem = (props) => {
 
     // Handles Device status, this might have to be tailord for each device
     const handleDeviceStatus = () => {
-        // Sets the current task of the device 
+        // Sets the current task of the device
 
         let deviceStatus = ''
 
@@ -208,9 +210,9 @@ const DeviceItem = (props) => {
 
         <styled.DeviceContainer key={ind}
             onMouseEnter={() => {
-                !!stationId && dispatch(locationActions.selectLocation(stationId))
+                !!stationId && onSelectLocation(stationId)
             }}
-            onMouseLeave={() => { !!stationId && dispatch(locationActions.deselectLocation()) }}>
+            onMouseLeave={() => { !!stationId && onDeselectLocation() }}>
 
             <styled.BigCircle isSmall={isSmall}>
 

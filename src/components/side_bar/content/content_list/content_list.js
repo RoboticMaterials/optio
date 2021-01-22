@@ -19,6 +19,7 @@ export default function ContentList(props) {
         executeTask,
         hideHeader,
         handleCardView,
+        elements,
     } = props
 
     let taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
@@ -41,7 +42,7 @@ export default function ContentList(props) {
     const renderLocationTypeIcon = (element) => {
 
         switch (element.type) {
-                
+
             case 'charger_position':
                 return (
                     <styled.LocationTypeGraphic fill={LocationTypes['shelf_position'].color} stroke={LocationTypes['shelf_position'].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
@@ -88,7 +89,7 @@ export default function ContentList(props) {
             }
 
             <styled.List>
-                {props.elements.map((element, ind) => {
+                {elements.map((element, ind) => {
                     const error = (props.schema === 'processes' && element.broken) ? true : false
                     return (
                         <>

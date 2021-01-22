@@ -10,67 +10,99 @@ import ErrorTooltip from "../error_tooltip/error_tooltip";
 
 // import styles
 import * as styled from './time_picker_field.style'
+import PropTypes from "prop-types";
+import {getMessageFromError} from "../../../../methods/utils/form_utils";
 
-const TimePickerField = ({LabelComponent, ErrorComponent, TimePickerCss, testInitialVal,label, ...props }) => {
-	const { setFieldValue } = useFormikContext();
+const TimePickerField = (props) => {
+
+	const {
+		TimePickerCss,
+		Container,
+		ErrorContainerComponent,
+		containerStyle,
+		style,
+		onChange,
+		defaultOpenValue,
+		defaultValue,
+		mapOutput,
+		mapInput,
+		...rest
+	} = props
+
+	const { setFieldValue, setFieldTouched } = useFormikContext();
 	const [field, meta] = useField(props);
 
-	//const format = 'h:mm a';
-	const now = moment().hour(1).minute(0);
-	const displayVal = moment(testInitialVal)
-	const valString  = field.value;
-	const hasError = meta.touched && meta.error;
-	/*{styled.sharedStyle}*/
+	const {
+		value: fieldValue,
+		name: fieldName
+	} = field
+
+	const {
+		touched,
+		error
+	} = meta
+
+	const hasError = touched && error;
+	const errorMessage = getMessageFromError(error);
+
+	console.log("TimePickerField fieldValue", fieldValue)
+	console.log("TimePickerField mapInput(fieldValue)", mapInput(fieldValue))
+	console.log("TimePickerField defaultValue", defaultValue)
 
 	return (
-		<>
-			{label &&
-				<LabelComponent htmlFor={props.id || props.name}>{label}</LabelComponent>
-			}
-
-
-			<styled.ContentContainer>
+			// <Container
+			// 	style={containerStyle}
+			// >
 				<styled.TimePickerComponent
+					{...style}
+					{...field}
+					{...rest}
 					css={TimePickerCss}
 					hasError={hasError}
-					{...field}
-					{...props}
-					showSecond={false}
-					value={field.value}
-					onChange={val => {
-						setFieldValue(field.name, val);
+					// showSecond={false}
+					value={mapInput(fieldValue)}
+					onChange={(val) => {
+
+						console.log("TimePickerField onChange val", val)
+						console.log("TimePickerField onChange mapOutput(val)", mapOutput(val))
+
+
+
+						if(!touched) setFieldTouched(fieldName, true)
+						setFieldValue(fieldName, mapOutput(val))
+
+						onChange && onChange(val)
 					}}
 				/>
-				<ErrorTooltip
-					visible={hasError}
-					text={meta.error}
-					ContainerComponent={styled.ErrorContainerComponent}
-				/>
-			</styled.ContentContainer>
-
-
-			{/*
-			{hasError ? (
-				<ErrorComponent className="error">{meta.error}</ErrorComponent>
-			) : null}
-			*/}
-
-
-		</>
-
-	);
-};
+			// 	<ErrorTooltip
+			// 		visible={hasError}
+			// 		text={errorMessage}
+			// 		ContainerComponent={ErrorContainerComponent}
+			// 	/>
+			// </Container>
+	)
+}
 
 // Specifies propTypes
 TimePickerField.propTypes = {
-
+	Container: PropTypes.elementType,
+	ErrorContainerComponent: PropTypes.elementType,
+	containerStyle: PropTypes.object,
+	style: PropTypes.object,
+	onChange: PropTypes.func,
+	mapOutput: PropTypes.func,
+	mapInput: PropTypes.func,
 };
 
 // Specifies the default values for props:
 TimePickerField.defaultProps = {
-	LabelComponent: null,
-	ErrorComponent: "div",
-	// TimePickerCss: styled.TimePickerComponent
+	Container: styled.DefaultContainer,
+	ErrorContainerComponent: styled.DefaultErrorContainerComponent,
+	containerStyle: {},
+	style: {},
+	onChange: () => {},
+	mapOutput: () => {},
+	mapInput: () => {},
 };
 
 export default TimePickerField;

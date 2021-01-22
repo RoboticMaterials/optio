@@ -75,6 +75,13 @@ const DashboardsList = (props) => {
     const devices = useSelector(state => state.devicesReducer.devices)
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
 
+    const onPutDashboard = (dashboard, copy, id) => dispatch(dashboardActions.putDashboard(dashboard, copy, id))
+    const onPostDashboard = (dashboard) => dispatch(dashboardActions.postDashboard(dashboard))
+    const onPutStation = (station, id) => dispatch(stationActions.putStation(station, id))
+    const onDeleteDashboard = (dashboard) => dispatch(dashboardActions.deleteDashboard(dashboard))
+
+
+
     const station = stations[stationID]
     const device = devices[stationID]
 
@@ -110,7 +117,7 @@ const DashboardsList = (props) => {
         targetDashboardCopy.buttons.push(button) // add new button
 
         // dispatch action to update api and redux
-        dispatch(dashboardActions.putDashboard(targetDashboardCopy, targetDashboardCopy._id.$oid))
+        onPutDashboard(targetDashboardCopy, targetDashboardCopy._id.$oid)
     }
 
     const handleNew = (button) => {
@@ -137,7 +144,7 @@ const DashboardsList = (props) => {
         if (!!button) {
             newDash.buttons.push(button)
         }
-        const postDashboardPromise = dispatch(dashboardActions.postDashboard(newDash))
+        const postDashboardPromise = onPostDashboard(newDash)
 
         // Add this new dashboard to the station
         postDashboardPromise.then(async postedDashboard => {
@@ -147,7 +154,7 @@ const DashboardsList = (props) => {
             await dispatch(stationActions.setStationAttributes(station._id, { dashboards: stationDashboards }))
             const stationID = station._id
             delete station._id
-            await dispatch(stationActions.putStation(station, stationID))
+            await onPutStation(station, stationID)
 
             if (button == null) { // Drop not click
                 // Go into the new dashboard
@@ -239,7 +246,7 @@ const DashboardsList = (props) => {
                 caption={''}
                 onCancelClick={() => setDashboardToDelete(null)}
                 onDeleteClick={() => {
-                    dispatch(dashboardActions.deleteDashboard(dashboardToDelete)) // delete dashboard
+                    onDeleteDashboard(dashboardToDelete)
                     setDashboardToDelete(null)// reset dashboardToDelete
                 }}
             />

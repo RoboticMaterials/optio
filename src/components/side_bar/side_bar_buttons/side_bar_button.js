@@ -13,6 +13,11 @@ import ConfirmDeleteModal from '../../basic/modals/confirm_delete_modal/confirm_
 
 const SideBarButton = (props) => {
 
+    const {
+      mode,
+      currentMode
+    } = props
+
     const history = useHistory()
 
     const locationEditing = useSelector(state => state.locationsReducer.editingLocation)
@@ -23,7 +28,6 @@ const SideBarButton = (props) => {
     const onLocationEditing = (props) => dispatch(locationActions.editing(props))
     const onTaskEditing = (props) => dispatch(tasksActions.editingTask(props))
     const onProcessEditing = (props) => dispatch(processesActions.editingProcess(props))
-
 
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
@@ -63,7 +67,7 @@ const SideBarButton = (props) => {
 
 
 
-    if (props.mode === 'locations') {
+    if (mode === 'locations') {
 
         return (
             <>
@@ -74,10 +78,10 @@ const SideBarButton = (props) => {
                         if(locationEditing || taskEditing || processEditing){
                             setConfirmDeleteModal(true)
                         }
-                        else{props.setShowSideBarPage(props.mode)}
+                        else{props.setShowSideBarPage(mode)}
                     }}
-                    currentMode={props.currentMode}
-                    mode={props.mode}
+                    currentMode={currentMode}
+                    mode={mode}
                 >
                     <style.SideBarButtonText>Locations</style.SideBarButtonText>
                 </style.SideBarButtonIcon>
@@ -85,7 +89,7 @@ const SideBarButton = (props) => {
         )
     }
 
-    else if (props.mode === 'devices') {
+    else if (mode === 'devices') {
         return (
             <>
                 {handleConfirmationModal()}
@@ -95,10 +99,10 @@ const SideBarButton = (props) => {
                         if(locationEditing || taskEditing || processEditing){
                             setConfirmDeleteModal(true)
                         }
-                        else{props.setShowSideBarPage(props.mode)}
+                        else{props.setShowSideBarPage(mode)}
                     }}
-                    currentMode={props.currentMode}
-                    mode={props.mode}
+                    currentMode={currentMode}
+                    mode={mode}
                 >
                     <style.SideBarButtonText>Devices</style.SideBarButtonText>
                 </style.SideBarButtonIcon>
@@ -106,7 +110,7 @@ const SideBarButton = (props) => {
         )
     }
 
-    else if (props.mode === 'lots') {
+    else if (mode === 'lots') {
         return (
             <>
                 {handleConfirmationModal()}
@@ -120,8 +124,8 @@ const SideBarButton = (props) => {
                               const currentPath = history.location.pathname
                               history.push('/lots/summary')}
                             }}
-                    currentMode={props.currentMode}
-                    mode={props.mode}
+                    currentMode={currentMode}
+                    mode={mode}
                 >
                     <style.SideBarButtonText>Lot Summary</style.SideBarButtonText>
                 </style.SideBarButtonIcon>
@@ -129,7 +133,7 @@ const SideBarButton = (props) => {
         )
     }
 
-    else if (props.mode === 'processes') {
+    else if (mode === 'processes') {
         return (
             <>
                 {handleConfirmationModal()}
@@ -139,10 +143,10 @@ const SideBarButton = (props) => {
                         if(locationEditing || taskEditing || processEditing){
                             setConfirmDeleteModal(true)
                         }
-                        else{props.setShowSideBarPage(props.mode)}
+                        else{props.setShowSideBarPage(mode)}
                     }}
-                    currentMode={props.currentMode}
-                    mode={props.mode}
+                    currentMode={currentMode}
+                    mode={mode}
                 >
                     <style.SideBarButtonText>Processes</style.SideBarButtonText>
                 </style.SideBarButtonIcon>
@@ -150,7 +154,7 @@ const SideBarButton = (props) => {
         )
     }
 
-    else if (props.mode === 'scheduler') {
+    else if (mode === 'scheduler') {
         return (
             <>
                 <style.SideBarButtonIcon
@@ -159,10 +163,10 @@ const SideBarButton = (props) => {
                         if(locationEditing || taskEditing || processEditing){
                             setConfirmDeleteModal(true)
                         }
-                        else{props.setShowSideBarPage(props.mode)}
+                        else{props.setShowSideBarPage(mode)}
                     }}
-                    currentMode={props.currentMode}
-                    mode={props.mode}
+                    currentMode={currentMode}
+                    mode={mode}
                 >
                     <style.SideBarButtonText>Schedules</style.SideBarButtonText>
                 </style.SideBarButtonIcon>
@@ -170,7 +174,7 @@ const SideBarButton = (props) => {
         )
     }
 
-    else if (props.mode === 'tasks') {
+    else if (mode === 'tasks') {
         return (
             <>
                 {handleConfirmationModal()}
@@ -180,10 +184,10 @@ const SideBarButton = (props) => {
                         if(locationEditing || taskEditing || processEditing){
                             setConfirmDeleteModal(true)
                         }
-                        else{props.setShowSideBarPage(props.mode)}
+                        else{props.setShowSideBarPage(mode)}
                     }}
-                    currentMode={props.currentMode}
-                    mode={props.mode}
+                    currentMode={currentMode}
+                    mode={mode}
                 >
                     <style.SideBarButtonText>Routes</style.SideBarButtonText>
                 </style.SideBarButtonIcon>
@@ -191,7 +195,7 @@ const SideBarButton = (props) => {
         )
     }
 
-    else if (props.mode === 'settings') {
+    else if (mode === 'settings') {
         return (
             <>
                 {handleConfirmationModal()}
@@ -201,10 +205,10 @@ const SideBarButton = (props) => {
                         if(locationEditing || taskEditing || processEditing){
                             setConfirmDeleteModal(true)
                         }
-                        else{props.setShowSideBarPage(props.mode)}
+                        else{props.setShowSideBarPage(mode)}
                     }}
-                    currentMode={props.currentMode}
-                    mode={props.mode}
+                    currentMode={currentMode}
+                    mode={mode}
 
                 >
                     <style.SideBarButtonText>Settings</style.SideBarButtonText>
@@ -216,12 +220,12 @@ const SideBarButton = (props) => {
     else {
         return (
             <style.SideBarButtonIcon
-                className={"icon-" + props.mode}
+                className={"icon-" + mode}
                 onClick={() => {
-                    props.setShowSideBarPage(props.mode)
+                    props.setShowSideBarPage(mode)
                 }}
-                currentMode={props.currentMode}
-                mode={props.mode}
+                currentMode={currentMode}
+                mode={mode}
             />
         )
     }
