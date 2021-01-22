@@ -25,6 +25,7 @@ import {
     DELETE_TASK_FAILURE,
 
     ADD_TASK,
+    SET_TASKS,
     UPDATE_TASK,
     UPDATE_TASKS,
     REMOVE_TASK,
@@ -33,11 +34,12 @@ import {
     SELECT_TASK,
     SET_SELECTED_TASK,
     DESELECT_TASK,
-    EDITING_TASK,
+    EDITING_TASK, REMOVE_TASKS,
 
 } from '../types/tasks_types'
 
 import { deepCopy } from '../../methods/utils/utils';
+import {isObject} from "../../methods/utils/object_utils";
 
 
 const defaultState = {
@@ -72,7 +74,7 @@ export default function tasksReducer(state = defaultState, action) {
             tasksCopy = deepCopy(action.payload)
             return {
                 ...state,
-                tasks: action.payload,
+                tasks: {...state.tasks, ...action.payload},
                 pending: false
             }
 
@@ -182,6 +184,15 @@ export default function tasksReducer(state = defaultState, action) {
                 tasks: tasksCopy
             }
 
+        case SET_TASKS:
+            return {
+                ...state,
+                tasks: {
+                    ...state.tasks,
+                    ...action.payload
+                }
+            }
+
         case UPDATE_TASK:
             tasksCopy = deepCopy(state.tasks)
             tasksCopy[action.payload.task._id] = action.payload.task
@@ -215,44 +226,82 @@ export default function tasksReducer(state = defaultState, action) {
                 }
             }
 
-        case REMOVE_TASK:
-            tasksCopy = deepCopy(state.tasks)
-            delete tasksCopy[action.payload.id]
+        case REMOVE_TASK: {
+            const {
+                [action.payload.id]: taskToRemove,  // extract task to remove
+                ...remainingTasks                   // all other tasks are left here
+            } = state.tasks
 
             return {
                 ...state,
-                tasks: tasksCopy,
+                tasks: {...remainingTasks},         // keep all tasks but the one to remove
             }
+        }
+
+        case REMOVE_TASKS: {
 
 
-        case SET_TASK_ATTRIBUTES:
-            tasksCopy = deepCopy(state.tasks)
-            Object.assign(tasksCopy[action.payload.id], action.payload.attr)
+            let temp = {...state.tasks}
 
-            // tasksCopy = {
-            //     ...tasksCopy,
-            //     [action.payload.id]: action.payload.attr,
-            // }
+            action.payload.ids.forEach((currId) => {
+                const {
+                    [currId]: removed,
+                    ...remainingTasks
+                } = temp
 
-            if (state.selectedTask !== null) {
-                return {
-                    ...state,
-                    tasks: tasksCopy,
-                    selectedTask: deepCopy(tasksCopy[state.selectedTask._id])
+                temp = remainingTasks
+            })
+
+            return {
+                ...state,
+                tasks: {...temp},         // keep all tasks but the one to remove
+            }
+        }
+
+
+        case SET_TASK_ATTRIBUTES: {
+                var newState
+
+                if (isObject(state.selectedTask) && state.selectedTask._id === action.payload.id) {
+                    newState = {
+                        ...state,
+                        tasks: state.tasks[action.payload.id] ?
+                            {
+                                ...state.tasks,
+                                [action.payload.id]: {...state.tasks[action.payload.id], ...action.payload.attr},
+                            }
+                        :
+                            {
+                                ...state.tasks
+                            },
+                        selectedTask: {
+                            ...state.selectedTask,
+                            ...action.payload.attr
+                        }
+                    }
+                } else {
+                    newState = {
+                        ...state,
+                        tasks: state.tasks[action.payload.id] ? {
+                                ...state.tasks,
+                                [action.payload.id]: {...state.tasks[action.payload.id], ...action.payload.attr},
+                            }
+                        :
+                            {
+                                ...state.tasks
+                            }
+                    }
                 }
-            } else {
-                return {
-                    ...state,
-                    tasks: tasksCopy,
-                }
+
+                return newState
+
             }
 
 
         case SELECT_TASK:
-            tasksCopy = deepCopy(state.tasks)
             return {
                 ...state,
-                selectedTask: tasksCopy[action.payload.id]
+                selectedTask: state.tasks[action.payload.id]
             }
 
         case SET_SELECTED_TASK:

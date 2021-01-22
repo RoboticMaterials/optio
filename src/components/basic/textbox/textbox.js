@@ -15,6 +15,12 @@ export default function Textbox(props) {
         }
     }, [props.focus])
 
+    useEffect(() => {
+        if (props.keepFocus === true) {
+            inputRef.current.focus()
+        }
+    })
+
     return (
         <React.Fragment>
             {(!props.inline && props.label) && <styled.TextboxLabel style={props.labelStyle}>{props.label}</styled.TextboxLabel>}

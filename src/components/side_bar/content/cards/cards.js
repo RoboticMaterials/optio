@@ -184,7 +184,6 @@ const Cards = (props) => {
                 }
                 <div style={{flex: 1, flexDirection:"column", display: "flex", alignItems: "center", justifyContent: "center"}}>
                 <styled.Title>{title ? title : "untitled"}</styled.Title>
-
                 </div>
                 <styled.InvisibleItem
                     style={{marginLeft: "auto"}}

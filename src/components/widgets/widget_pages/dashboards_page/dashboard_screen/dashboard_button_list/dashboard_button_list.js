@@ -53,7 +53,8 @@ const DashboardButtonList = ((props) => {
         const type = currentButton?.type
         let taskID = currentButton.task_id
         const task = tasks[taskID]
-        const associatedTaskId = task?.associated_task
+        // const associatedTaskId = task?.associated_task
+        const deviceTypes = task.device_types || []
 
         // If the task is in tasks or it's a custom task or hil success, then it exists
         const taskExists = !!tasks[taskID] ? true : taskID === 'custom_task' ? true : taskID === 'hil_success' ? true : false
@@ -65,11 +66,11 @@ const DashboardButtonList = ((props) => {
         const handleRouteClick = () => {
             disabled = addedTaskAlert || currentButton.deleted || broken || !taskExists
             error = !taskExists ? "This buttons task has been deleted." : null
-            onClick = (associatedTaskIdArg) => {
+            onClick = (associatedTaskIdArg, deviceType) => {
                 if (taskID === 'custom_task' || taskID === 'hil_success') {
-                    onTaskClick(TYPES.ROUTES.key, associatedTaskIdArg, name, currentButton.custom_task)
+                    onTaskClick(TYPES.ROUTES.key, associatedTaskIdArg, name, currentButton.custom_task, deviceType)
                 } else {
-                    onTaskClick(TYPES.ROUTES.key, associatedTaskIdArg, name)
+                    onTaskClick(TYPES.ROUTES.key, associatedTaskIdArg, name, null, deviceType)
                 }
             }
         }
@@ -116,10 +117,9 @@ const DashboardButtonList = ((props) => {
             iconColor = schema?.solid
         }
 
-        if (associatedTaskId) return (
+        if (deviceTypes.length > 1) return (
             <DashboardSplitButton
                 title={name}
-                associatedTaskId={associatedTaskId}
                 iconColor={"black"}
                 iconClassName={iconClassName}
                 key={index}

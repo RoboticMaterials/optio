@@ -25,6 +25,7 @@ import {
     DELETE_TASK_FAILURE,
 
     ADD_TASK,
+    SET_TASKS,
     UPDATE_TASK,
     UPDATE_TASKS,
     REMOVE_TASK,
@@ -32,17 +33,23 @@ import {
     SELECT_TASK,
     SET_SELECTED_TASK,
     DESELECT_TASK,
-    EDITING_TASK,
+    EDITING_TASK, REMOVE_TASKS,
 } from '../types/tasks_types'
 
 import { deepCopy } from '../../methods/utils/utils';
 
 import * as api from '../../api/tasks_api'
+import * as dashboardActions from "./dashboards_actions";
+import {getRouteProcesses} from "../../methods/utils/route_utils";
+import {willRouteDeleteBreakProcess} from "../../methods/utils/processes_utils";
+import {useSelector} from "react-redux";
+import * as processesActions from "./processes_actions";
+import * as dashboardsActions from "./dashboards_actions";
 
 // get
 // ******************************
 export const getTasks = () => {
-    return async dispatch => {
+    return async (dispatch) => {
 
         function onStart() {
             dispatch({ type: GET_TASKS_STARTED });
@@ -125,6 +132,9 @@ export const postTask = (task) => {
             if(!!task.new){
                 delete task.new
             }
+            if(task.changed) {
+                delete task.changed
+            }
             const newTask = await api.postTask(task);
             return onSuccess(newTask);
         } catch (error) {
@@ -153,6 +163,12 @@ export const putTask = (task, ID) => {
         try {
             onStart();
             let taskCopy = deepCopy(task)
+            if(!!taskCopy.new){
+                delete taskCopy.new
+            }
+            if(taskCopy.changed) {
+                delete taskCopy.changed
+            }
             // delete taskCopy._id
             const updateTask = await api.putTask(taskCopy, ID);
             return onSuccess(updateTask)
@@ -190,8 +206,106 @@ export const deleteTask = (ID) => {
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// delete
+// ******************************
+export const deleteRouteClean = (routeId) => {
+    return async (dispatch, getState) => {
+
+        // remove route from all dashboards
+        await dispatch(dashboardsActions.removeRouteFromAllDashboards(routeId))
+
+        // remove route from all processes
+        await dispatch(processesActions.removeRouteFromAllProcesses(routeId))
+
+        // delete route
+        await dispatch(deleteTask(routeId));
+    }
+}
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// PUT clean
+// ******************************
+export const putRouteClean = (route, routeId) => {
+    return async (dispatch, getState) => {
+        console.log("putRouteClean route",route)
+        console.log("putRouteClean routeId",routeId)
+
+        // put task
+        await dispatch(putTask(route, routeId));
+
+        // remove buttons associated with route at dashboards at the wrong station
+        await dispatch(dashboardsActions.removeRouteFromWrongDashboards(route))
+
+        // handle adding buttons to dashboards
+        await dispatch(dashboardsActions.addRouteToDashboards(route))
+    }
+}
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// POST clean
+// ******************************
+export const postRouteClean = (route) => {
+    return async (dispatch, getState) => {
+        console.log("postRouteClean route",route)
+
+        // post route
+        await dispatch(postTask(route));
+
+        // remove buttons associated with route at dashboards at the wrong station
+        await dispatch(dashboardsActions.removeRouteFromWrongDashboards(route))
+
+        // handle adding buttons to dashboards
+        await dispatch(dashboardsActions.addRouteToDashboards(route))
+    }
+}
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+//
+// ******************************
+export const saveFormRoute = (formRoute) => {
+    return async (dispatch) => {
+
+        // extract values
+        const {
+            unsaved,        // remove key
+            new: isNew,     // remove key
+            changed,        // remove key
+            needsSubmit,    // remove key
+            obj = {},
+            ...remainingRoute
+        } = formRoute
+
+        // get objectId
+        const {
+            _id: objectId
+        } = obj || {}
+
+        // create payload
+        const payload = {
+            ...remainingRoute,
+            obj: objectId
+        }
+
+        // create new route
+        if(isNew) {
+            dispatch(postRouteClean(payload))
+        }
+
+        // update existing route
+        else {
+            dispatch(putRouteClean(payload, payload._id))
+        }
+    }
+}
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
 export const addTask = (task) => {
     return { type: ADD_TASK, payload: { task } }
+}
+
+export const setTasks = (tasks) => {
+    return { type: SET_TASKS, payload: tasks}
 }
 
 export const updateTask = (task) => {
@@ -204,6 +318,10 @@ export const updateTasks = (tasks) => {
 
 export const removeTask = (id) => {
     return { type: REMOVE_TASK, payload: { id } }
+}
+
+export const removeTasks = (ids) => {
+    return { type: REMOVE_TASKS, payload: { ids } }
 }
 
 export const setTaskAttributes = (id, attr) => {

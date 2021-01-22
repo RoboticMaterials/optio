@@ -221,10 +221,10 @@ const DashboardScreen = (props) => {
      * @param {*} name
      * @param {*} custom
      */
-    const handleTaskClick = async (type, Id, name, custom) => {
+    const handleTaskClick = async (type, Id, name, custom, deviceType) => {
         switch (type.toUpperCase()) {
             case TYPES.ROUTES.key:
-                onHandlePostTaskQueue({dashboardID, tasks, taskQueue, Id, name, custom})
+                onHandlePostTaskQueue({dashboardID, tasks, deviceType, taskQueue, Id, name, custom})
                 //handleRouteClick(Id, name, custom)
                 break
             case TYPES.OPERATIONS.key:

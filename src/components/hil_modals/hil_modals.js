@@ -46,16 +46,12 @@ const HILModals = (props) => {
     } = item || {}
 
     const dispatch = useDispatch()
-    const dispatchPostTaskQueue = (response) => dispatch(postTaskQueue(response))
     const dispatchGetCards = () => dispatch(getCards())
     const dispatchTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
     const disptachHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
     const disptachPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
     const dispatchSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
-    const dispatchPostEvents = (event) => dispatch(postEvents)
     const dispatchLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
-    const dispatchGetTasks = () => dispatch(getTasks())
-    const dispatchDeleteTaskQueueItem = (id) => dispatch(deleteTaskQueueItem(id))
 
     const hilTimers = useSelector(state => { return state.taskQueueReducer.hilTimers })
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
@@ -84,6 +80,8 @@ const HILModals = (props) => {
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState('')
     const [changeQtyMouseHold, setChangeQtyMouseHold] = useState('')
     const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
+    const [lotsAtStation, setLotsAtStation] = useState(false)
+    const [taskHasProcess, setTaskHasProcess] = useState(false)
 
 
     const {
@@ -146,11 +144,21 @@ const HILModals = (props) => {
     // handles initial display of lot selector
     useEffect(() => {
 
+      const currentTask = tasks[item.task_id]
+      //If the task doesn't belong to a process, skip the lot selector screen and go straight to HIL modal
+      if(!!currentTask.processes[0]){
+        setTaskHasProcess(true)
         // Only show lot selector if they're cards loaded, lots have not been dispalyed yet, it's a load hil and there's available lots
         if (cardsLoaded && !didDisplayLots && hilLoadUnload && hilLoadUnload !== 'unload') {
             setShowLotSelector(true)
             setDidDisplayLots(true)
         }
+      }
+
+      else{
+        setSelectedLot(null) // clear selected lot
+        setShowLotSelector(false) // hide lot selector
+      }
 
     }, [cardsLoaded, availableLots, didDisplayLots, hilLoadUnload, isProcessTask])
 
@@ -334,7 +342,23 @@ const HILModals = (props) => {
 
     useEffect(() => {
       const currentTask = tasks[item.task_id]
-      setTrackQuantity(currentTask.track_quantity)
+
+      //If the route is part of a process and at least 1 lot is present display the
+      //fraction or quantity modal depending on what was chosen during route creation
+      //Else display quantity HIL
+      if(!!currentTask.processes[0]){
+      Object.values(cards).map((card) => {
+        if(!!card.bins[currentTask.load.station]){
+          setLotsAtStation(true)
+        }
+      })
+    }
+
+      if(lotsAtStation){
+        setTrackQuantity(currentTask.track_quantity)
+      }
+      else{setTrackQuantity(true)}
+
     }, [tasks])
 
     // Posts HIL Success to API
@@ -447,35 +471,41 @@ const HILModals = (props) => {
 
     const renderSelectedLot = () => {
         return (
-            <styled.SelectedLotContainer>
-                {selectedLot ?
-                    <styled.LotTitleDescription>Selected Lot:</styled.LotTitleDescription>
-                    :
-                    <styled.FooterButton
-                        onClick={() => {
-                            setShowLotSelector(true)
-                        }}
-                    >
-                        <styled.LotTitleDescription>Select Lot</styled.LotTitleDescription>
-                    </styled.FooterButton>
-                }
+          <>
+            {taskHasProcess && //If the task isn't part of a process don't render the choose lot stuff on the HIL
+              <styled.SelectedLotContainer>
 
-                {(selectedLot) &&
-                    <styled.SelectedLotName>
-                        {selectedLotName &&
-                            <styled.LotTitleName>{selectedLotName}</styled.LotTitleName>
-                        }
-                        {!showLotSelector &&
-                            <styled.EditLotIcon
-                                className="fas fa-edit"
-                                onClick={() => {
-                                    setShowLotSelector(true)
-                                }}
-                            />
-                        }
-                    </styled.SelectedLotName>
-                }
-            </styled.SelectedLotContainer>
+                  {selectedLot ?
+                      <styled.LotTitleDescription>Selected Lot:</styled.LotTitleDescription>
+                      :
+                      <styled.FooterButton
+                          onClick={() => {
+                              setShowLotSelector(true)
+                          }}
+                      >
+
+                          <styled.LotTitleDescription>Select Lot</styled.LotTitleDescription>
+                      </styled.FooterButton>
+                  }
+
+                  {(selectedLot) &&
+                      <styled.SelectedLotName>
+                          {selectedLotName &&
+                              <styled.LotTitleName>{selectedLotName}</styled.LotTitleName>
+                          }
+                          {!showLotSelector &&
+                              <styled.EditLotIcon
+                                  className="fas fa-edit"
+                                  onClick={() => {
+                                      setShowLotSelector(true)
+                                  }}
+                              />
+                          }
+                      </styled.SelectedLotName>
+                  }
+              </styled.SelectedLotContainer>
+            }
+          </>
         )
     }
 

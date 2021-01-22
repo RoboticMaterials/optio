@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import { RGB_Linear_Shade, hexToRGBA } from '../../../../methods/utils/color_utils'
+import * as commonCss from "../../../../common_css/common_css";
 
 
 // ========== Content ========== //
@@ -50,6 +51,10 @@ export const ListItem = styled.div`
     border-radius: 0.5rem;
     border: 0.1rem solid;
     border-color: ${props => props.error ? 'red' : 'white'};
+  
+    // border-color: ${props => props.isNew ? 'blue' : 'white'};
+
+  ${props => props.isNew &&  commonCss.newGlow};
 
     margin-bottom: 1rem;
 
@@ -107,6 +112,7 @@ export const ListItemIcon = styled.i`
 `
 
 export const ListItemIconContainer = styled.div`
+    position: relative;
     display: flex;
     width: 10%;
 `

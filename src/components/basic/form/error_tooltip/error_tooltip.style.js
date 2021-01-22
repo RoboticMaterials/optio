@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const WarningIcon = styled.i`
-    color: ${props => props.theme.bad};
+    color: ${props => props.color};
     z-index: 10;
     pointer-events:all;
 

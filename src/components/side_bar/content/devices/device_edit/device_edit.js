@@ -31,8 +31,8 @@ import { locationsSortedAlphabetically } from '../../../../../methods/utils/loca
  * This handles editing device informaton
  * This also handles adding devices to the map
  * Currently using 'location' vs 'device' nominclature to match adding a location to the map and because devices really are just locations to the map
- * 
- * @param {*} props 
+ *
+ * @param {*} props
  */
 const DeviceEdit = (props) => {
 
@@ -49,6 +49,7 @@ const DeviceEdit = (props) => {
     const onAddLocation = (selectedLocation) => dispatch(locationActions.addLocation(selectedLocation))
     const onSetSelectedLocation = (selectedLocation) => dispatch(locationActions.setSelectedLocation(selectedLocation))
     const onSetSelectedDevice = (selectedDevice) => dispatch(deviceActions.setSelectedDevice(selectedDevice))
+    const onAddPosition = (updatedPosition) => dispatch(positionActions.addPosition(updatedPosition))
 
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const selectedDevice = useSelector(state => state.devicesReducer.selectedDevice)
@@ -213,7 +214,7 @@ const DeviceEdit = (props) => {
                     rotation: devicePosition.orientation,
                 }
 
-                dispatch(positionActions.addPosition(updatedPosition))
+                onAddPosition(updatedPosition)
 
             }
         })

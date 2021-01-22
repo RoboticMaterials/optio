@@ -21,7 +21,7 @@ import { getRefreshToken } from '../../api/authentication_api'
 
 /**
  * This page handles both sign in and sign up for RMStudio
- * @param {signIn} props 
+ * @param {signIn} props
  */
 const SignInUpPage = (props) => {
 
@@ -32,6 +32,7 @@ const SignInUpPage = (props) => {
 
     const dispatch = useDispatch()
     const onRefreshToken = (token, expiration) => dispatch(postRefreshToken(token, expiration))
+    
     const refreshToken = useSelector(state => state.authenticationReducer.refreshToken)
 
     const [email, setEmail] = useState('')
