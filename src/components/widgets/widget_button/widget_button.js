@@ -168,8 +168,6 @@ const WidgetButton = (props) => {
 
                 handleOnClick()
 
-                //const hamburger = document.querySelector('.hamburger')
-                //hamburger.classList.toggle(false)
             }}
             pageID={type}
             currentPage={currentPage}

@@ -51,7 +51,7 @@ const DeviceItem = (props) => {
 
     // Handles Device status, this might have to be tailord for each device
     const handleDeviceStatus = () => {
-        // Sets the current task of the device 
+        // Sets the current task of the device
 
         let deviceStatus = ''
 

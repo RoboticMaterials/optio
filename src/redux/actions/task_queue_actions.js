@@ -207,8 +207,10 @@ export const handlePostTaskQueue = (props) => {
       Id,
       name,
       custom,
-      fromSideBar
+      fromSideBar,
+      deviceType
   } = props
+
   return async dispatch => {
     // If a custom task then add custom task key to task q
     if (Id === 'custom_task') {
@@ -217,7 +219,8 @@ export const handlePostTaskQueue = (props) => {
             {
                 _id: uuid.v4(),
                 "task_id": Id,
-                'custom_task': custom
+                'custom_task': custom,
+                "device_type": deviceType
             }
           ))
         }
@@ -232,10 +235,11 @@ export const handlePostTaskQueue = (props) => {
         // If the task is a human task, its handled a little differently compared to a normal task
         // Set hil_response to null because the backend does not dictate the load hil message
         // Since the task is put into the q but automatically assigned to the person that clicks the button
-        if (tasks[Id]?.device_type === 'human') {
+        if (deviceType === 'human') {
 
             const postTask = {
                 _id: uuid.v4(),
+                "device_type": deviceType,
                 "task_id": Id,
                 dashboard: dashboardID,
                 hil_response: null,
@@ -255,6 +259,7 @@ export const handlePostTaskQueue = (props) => {
              await dispatch(postTaskQueue(
                 {
                     _id: uuid.v4(),
+                    "device_type": deviceType,
                     "task_id": Id,
                 })
             )

@@ -25,7 +25,6 @@ const SideBarSwitcher = (props) => {
     const dispatchProcessEditing = (props) => dispatch(editingProcess(props))
 
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
-
     const mode = useSelector(state => state.sidebarReducer.mode)
     const wrapperRef = useRef(null)
 

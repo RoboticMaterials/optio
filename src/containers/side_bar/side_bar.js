@@ -48,6 +48,11 @@ const SideBar = (props) => {
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchEditingStation = (bool) => dispatch(setEditingStation(bool))
     const dispatchEditingPosition = (bool) => dispatch(setEditingPosition(bool))
+    const onSetOpen = (sideBarOpen) => dispatch(sidebarActions.setOpen(sideBarOpen))
+    const onSetWidth = (width) => dispatch(sidebarActions.setWidth(width))
+    const onDeselectTask = () => dispatch(taskActions.deselectTask())
+    const dispatchEditingTask = (bool) => dispatch(editingTask(bool))
+    const dispatchEditingProcess = (bool) => dispatch(editingProcess(bool))
 
     const [width, setWidth] = useState(450)
     const [prevWidth, setPrevWidth] = useState(width)
@@ -72,7 +77,7 @@ const SideBar = (props) => {
     const boundToWindowSize = () => {
         const newWidth = Math.min(window.innerWidth, Math.max(360, width))
         setWidth(newWidth)
-        dispatch(sidebarActions.setWidth(newWidth));
+        onSetWidth(newWidth)
     }
     useEffect(() => {
         window.addEventListener('resize', boundToWindowSize, { passive: true })
@@ -83,9 +88,9 @@ const SideBar = (props) => {
     }, [])
 
 
-    useEffect(() => {
-        dispatch(sidebarActions.setOpen(sideBarOpen))
-    })
+  useEffect(() => {
+    onSetOpen(sideBarOpen)
+  })
 
 
     // sets width to full screen if card subpage is open in processes
@@ -104,12 +109,12 @@ const SideBar = (props) => {
 
             if (!prevWidth) setPrevWidth(width) // store previous width to restore when card page is left
             setWidth(window.innerWidth)
-            dispatch(sidebarActions.setWidth(window.innerWidth))
+            onSetWidth(window.innerWidth)
 
         }
         else if ((((prevSubpage === "lots") || (prevId === "timeline") || (prevId === "summary")) && (prevPage === "processes" || prevPage === "lots")) && ((subpage !== "lots") || (id === "timeline") || (id === "summary"))) {
             setWidth(prevWidth)
-            dispatch(sidebarActions.setWidth(prevWidth))
+            onSetWidth(prevWidth)
             setPrevWidth(null)
         }
 
@@ -117,7 +122,7 @@ const SideBar = (props) => {
 
         if (!showSideBar) {
             setWidth(450)
-            dispatch(sidebarActions.setWidth(450))
+            onSetWidth(450)
         }
 
         return () => { }
@@ -154,7 +159,7 @@ const SideBar = (props) => {
         } else {
             const newSideBarState = !showSideBar
             setShowSideBar(newSideBarState)
-            dispatch(sidebarActions.setOpen(newSideBarState))
+            onSetOpen(newSideBarState)
         }
 
     }
@@ -186,7 +191,7 @@ const SideBar = (props) => {
     function handleDrag(e, ui) {
         const newWidth = Math.min(window.innerWidth, Math.max(360, width + ui.deltaX))
         setWidth(newWidth)
-        dispatch(sidebarActions.setWidth(newWidth));
+        onSetWidth(newWidth)
     }
 
     let content

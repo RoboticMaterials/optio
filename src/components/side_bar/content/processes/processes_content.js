@@ -12,7 +12,6 @@ import DropDownSearch from '../../../basic/drop_down_search_v2/drop_down_search'
 import TextBoxSearch from '../../../basic/textbox_search/textbox_search'
 
 import ContentList from '../content_list/content_list'
-import EditProcess from './edit_process/edit_process'
 
 // Import actions
 import { setSelectedProcess, editingProcess, putProcesses } from '../../../../redux/actions/processes_actions'
@@ -24,13 +23,13 @@ import { isBrokenProcess } from '../../../../methods/utils/processes_utils'
 
 import uuid from 'uuid'
 import { uuidv4 } from "../../../../methods/utils/utils";
+import ProcessForm from "./process_form/process_form";
 
 const ProcessesContent = () => {
 
     const history = useHistory()
 
     const dispatch = useDispatch()
-    const dispatchPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
     const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
     const dispatchEditing = (props) => dispatch(editingProcess(props))
     const dispatchPutProcess = (process) => dispatch(putProcesses(process))
@@ -42,8 +41,6 @@ const ProcessesContent = () => {
     const editing = useSelector(state => state.processesReducer.editingProcess)
 
     // State definitions
-    //const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
-    const [selectedProcessCopy, setSelectedProcessCopy] = useState(null)  // Current task
     const [shift, setShift] = useState(false) // Is shift key pressed ?
     const [isTransportTask, setIsTransportTask] = useState(true)
 
@@ -58,18 +55,22 @@ const ProcessesContent = () => {
     useEffect(() => {
         // Maps through all process and sees if they're broken
         Object.values(processes).map((process) => {
+            console.log("abc process", process)
+            const processRoutes = process.routes.map((currRoute) => tasks[currRoute])
+
+            console.log("abc processRoutes", processRoutes)
 
             // If it was previously broken, but not anymore, then correct that ish
-            if (!!process.broken && !isBrokenProcess(process, tasks)) {
+            if (!!process.broken && !isBrokenProcess(processRoutes, tasks)) {
                 console.log('Process was broken but now fixed')
                 process.broken = null
                 dispatchPutProcess(process)
             }
 
             // Else if the process is broken, so fix that ish
-            else if (!!isBrokenProcess(process, tasks) && process.broken === null) {
+            else if (!!isBrokenProcess(processRoutes, tasks) && process.broken === null) {
                 console.log('QQQQ Process is broken')
-                process.broken = isBrokenProcess(process, tasks)
+                process.broken = isBrokenProcess(processRoutes, tasks)
                 dispatchPutProcess(process)
             }
         })
@@ -85,9 +86,7 @@ const ProcessesContent = () => {
 
     if (editing && selectedProcess !== null) { // Editing Mode
         return (
-            <EditProcess
-                selectedProcessCopy={selectedProcessCopy}
-                setSelectedProcessCopy={props => setSelectedProcessCopy(props)}
+            <ProcessForm
                 toggleEditingProcess={props => dispatchEditing(props)}
             />
         )
@@ -103,7 +102,6 @@ const ProcessesContent = () => {
                 handleCardView={(element) => onCardView(element)}
                 onClick={(process) => {
                     // If task button is clicked, start editing it
-                    setSelectedProcessCopy(deepCopy(process))
                     dispatchSetSelectedProcess(process)
                     dispatchEditing(true)
                 }}
@@ -118,7 +116,6 @@ const ProcessesContent = () => {
                     // TODO: May have to do this with processes
                     // dispatch(taskActions.addTask(newTask))
                     dispatchSetSelectedProcess(newProcess)
-                    setSelectedProcessCopy(deepCopy(newProcess))
                     dispatchEditing(true)
                 }}
             />

@@ -130,9 +130,9 @@ const DevicesContent = () => {
     }
 
     /**
-     * This function is called when the save button is pressed. The location is POSTED or PUT to the backend. 
+     * This function is called when the save button is pressed. The location is POSTED or PUT to the backend.
      * If the location is new and is a station, this function also handles posting the default dashboard and
-     * tieing it to this location. Each child position for a station is also either POSTED or PUT. 
+     * tieing it to this location. Each child position for a station is also either POSTED or PUT.
      */
     const handleSaveDevice = () => {
 
@@ -150,7 +150,7 @@ const DevicesContent = () => {
     }
 
     /**
-    * Called when the delete button is pressed. Deletes the location, its children, its dashboards, 
+    * Called when the delete button is pressed. Deletes the location, its children, its dashboards,
     * and any tasks associated with the location
     */
     const onDeleteDeviceLocation = () => {
@@ -161,7 +161,7 @@ const DevicesContent = () => {
     return (
         <styled.ContentContainer>
 
-            {/* Content header changes based on whats going on with devices 
+            {/* Content header changes based on whats going on with devices
                 If in standard list mode then header should be in list mode (add button)
                 If in editing/adding then the header should be in create mode (save button)
                 If in stats then the header should be in title mode with back enabled

@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../test/gstreamer/.idea/gstreamer.iml" filepath="$PROJECT_DIR$/../test/gstreamer/.idea/gstreamer.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/rmstudio.iml" filepath="$PROJECT_DIR$/.idea/rmstudio.iml" />
     </modules>
   </component>

@@ -6,7 +6,8 @@ import {Container} from "react-smooth-dnd";
 import Card from "../../card/card";
 import React, {useState} from "react";
 import {setCardDragging, setColumnHovering} from "../../../../../../redux/actions/card_page_actions";
-import {generateBinId} from "../../../../../../methods/utils/card_utils";
+import {generateBinId, sortBy} from "../../../../../../methods/utils/card_utils";
+
 
 // const animationDuration = 500
 const Column = ((props) => {
@@ -15,13 +16,18 @@ const Column = ((props) => {
 		station_id,
 		stationName = "Unnamed",
 		handleCardClick,
-		cards = [],
+		cards,
 		processId,
 		HeaderContent,
 		isCollapsed,
 		maxWidth,
-		maxHeight
+		maxHeight,
+		sortMode
 	} = props
+
+	if(sortMode) {
+		sortBy(cards, sortMode)
+	}
 
 	const objects = useSelector(state => { return state.objectsReducer.objects })
 	const reduxCards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || {}

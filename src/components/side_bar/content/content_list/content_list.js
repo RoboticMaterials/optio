@@ -22,6 +22,7 @@ export default function ContentList(props) {
         executeTask,
         hideHeader,
         handleCardView,
+        elements,
     } = props
 
     let taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
@@ -96,7 +97,7 @@ export default function ContentList(props) {
             }
 
             <styled.List>
-                {props.elements.map((element, ind) => {
+                {elements.map((element, ind) => {
                     const error = (props.schema === 'processes' && element.broken) ? true : false
                     return (
                         <>

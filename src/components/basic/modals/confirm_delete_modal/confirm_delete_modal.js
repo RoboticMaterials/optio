@@ -23,7 +23,8 @@ const ConfirmDeleteModal = (props) => {
         handleOnClick1,
         handleOnClick2,
         button_1_text,
-        button_2_text
+        button_2_text,
+        children
     } = props
 
 
@@ -60,6 +61,7 @@ const ConfirmDeleteModal = (props) => {
 
                         <styled.ContentContainer>
 
+                            {children}
                         </styled.ContentContainer>
 
                         <styled.ButtonForm>
