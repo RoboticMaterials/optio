@@ -45,6 +45,9 @@ const LocationSvg = (props) => {
             onMouseDown={() => {
                 handleMouseDown()
             }}
+            onMouseLeave={() => {
+                handleMouseLeave()
+            }}
             transform={`translate(${location.x},${location.y}) rotate(${location.rotation}) scale(${d3.scale / d3.imgResolution})`}
         >
             <defs>
@@ -78,14 +81,17 @@ const LocationSvg = (props) => {
                 }}
 
             >
-                <circle x="-20" y="-20" r="20" strokeWidth="0" fill="transparent" style={{ cursor: rotating ? "pointer" : "grab" }} />
+                <circle x="-20" y="-20" r="20" strokeWidth="0" fill="transparent" style={{ cursor: rotating ? "pointer" : "grab" }}
+                />
                 {isSelected && (hovering || rotating) && hoveringInfo === null &&
                     <>
                         <circle x="-20" y="-20" r="18" fill="none" strokeWidth="4" stroke="transparent" style={{ cursor: "pointer" }}
                             onMouseDown={() => handleRotating(true)}
                             onMouseUp={() => handleRotating(false)}
+
                         />
-                        <circle x="-18" y="-18" r="18" fill="none" strokeWidth="0.8" style={{ filter: "url(#glow)", cursor: "pointer" }} />
+                        <circle x="-18" y="-18" r="18" fill="none" strokeWidth="0.8" style={{ filter: "url(#glow)", cursor: "pointer" }}
+                        />
                     </>
                 }
             </g>
