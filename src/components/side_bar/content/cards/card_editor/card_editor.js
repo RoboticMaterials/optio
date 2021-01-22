@@ -353,6 +353,8 @@ const FormComponent = (props) => {
 							<TextField
 								name={`bins.${binId}.count`}
 								type="number"
+								mapOutput={(val)=>parseInt(val)}
+								mapInput={(val)=>parseInt(val)}
 								InputComponent={styled.CountInput}
 								IconContainerComponent={styled.QuantityErrorContainerComponent}
 							/>
