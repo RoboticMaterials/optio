@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components'
 import * as style from '../devices_content.style'
 import * as styles from '../../settings/settings.style'
-import * as stylel from '../../locations/locations_content.style'
+import * as stylel from '../../locations/edit_location/location_button/location_button.style'
 
 export const Container = styled(style.SettingsContainer)`
 `

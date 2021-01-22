@@ -64,7 +64,7 @@ const DashboardEditor = (props) => {
     const onPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
 
 
-    const stations = useSelector(state => state.locationsReducer.stations)
+    const stations = useSelector(state => state.stationsReducer.stations)
 
     /*
     * Returns initialValues object for Formik

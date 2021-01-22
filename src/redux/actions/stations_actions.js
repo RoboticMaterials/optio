@@ -20,13 +20,23 @@ import {
     UPDATE_STATIONS,
     REMOVE_STATION,
     SET_STATION_ATTRIBUTES,
-
+    SET_SELECTED_STATION,
+    EDITING_STATION,
 } from '../types/stations_types'
 
 import { deepCopy } from '../../methods/utils/utils';
 import uuid from 'uuid';
 
+// Import External Actions
+import { deleteTask } from './tasks_actions'
+import { deletePosition, putPosition, postPosition } from './positions_actions'
+import { deleteDashboard, postDashboard } from './dashboards_actions'
+
+// Import API
 import * as api from '../../api/stations_api'
+
+// Import Store
+import store from '../store/index'
 
 // get
 // ******************************
@@ -37,7 +47,7 @@ export const getStations = () => {
             dispatch({ type: GET_STATIONS_STARTED });
         }
         function onSuccess(stations) {
-            dispatch({ type: GET_STATIONS_SUCCESS, payload: { stations } });
+            dispatch({ type: GET_STATIONS_SUCCESS, payload: stations });
             return stations;
         }
         function onError(error) {
@@ -71,7 +81,7 @@ export const postStation = (station) => {
             dispatch({ type: POST_STATION_STARTED });
         }
         function onSuccess(station) {
-            dispatch({ type: POST_STATION_SUCCESS, payload: { station } });
+            dispatch({ type: POST_STATION_SUCCESS, payload: station });
             return station;
         }
         function onError(error) {
@@ -83,11 +93,15 @@ export const postStation = (station) => {
             onStart();
             if (!('_id' in station)) {
                 station._id = uuid.v4()
-                console.log('ASSIGNED NEW GUID')
+                console.log('QQQQ Added UUID to Station, this shouldnt Happen!!')
+                alert('QQQQ Added UUID to Station, this shouldnt Happen!!')
             }
-            delete station.temp
-            delete station.new
-            const newStation = await api.postStation(station);
+
+            let stationCopy = deepCopy(station)
+            stationCopy = await dispatch(onPostStation(stationCopy))
+            delete stationCopy.temp
+            delete stationCopy.new
+            const newStation = await api.postStation(stationCopy);
             return onSuccess(newStation);
         } catch (error) {
             return onError(error);
@@ -98,13 +112,13 @@ export const postStation = (station) => {
 
 // put
 // ******************************
-export const putStation = (station, ID) => {
+export const putStation = (station) => {
     return async dispatch => {
         function onStart() {
             dispatch({ type: PUT_STATION_STARTED });
         }
         function onSuccess(station) {
-            dispatch({ type: PUT_STATION_SUCCESS, payload: { station } });
+            dispatch({ type: PUT_STATION_SUCCESS, payload: station });
             return station;
         }
         function onError(error) {
@@ -115,9 +129,9 @@ export const putStation = (station, ID) => {
         try {
             onStart();
             let stationCopy = deepCopy(station)
-            delete stationCopy._id
+            stationCopy = await dispatch(onSaveChildren())
             delete stationCopy.temp
-            const updateStation = await api.putStation(stationCopy, ID);
+            const updateStation = await api.putStation(stationCopy, stationCopy._id);
             return onSuccess(updateStation)
         } catch (error) {
             return onError(error)
@@ -134,7 +148,7 @@ export const deleteStation = (ID) => {
             dispatch({ type: DELETE_STATION_STARTED });
         }
         function onSuccess(id) {
-            dispatch({ type: DELETE_STATION_SUCCESS, payload: { id } });
+            dispatch({ type: DELETE_STATION_SUCCESS, payload: id });
             return id;
         }
         function onError(error) {
@@ -144,7 +158,8 @@ export const deleteStation = (ID) => {
 
         try {
             onStart();
-            const removeStation = await api.deleteStation(ID);
+            const station = await dispatch(onDeleteStation(ID))
+            const removeStation = await api.deleteStation(station._id);
             return onSuccess(ID)
         } catch (error) {
             return onError(error)
@@ -166,21 +181,128 @@ export const getStationAnalytics = async (id, timeSpan) => {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 export const addStation = (station) => {
-    return { type: ADD_STATION, payload: { station } }
+    return { type: ADD_STATION, payload: station }
 }
 
 export const updateStation = (station) => {
-    return { type: UPDATE_STATION, payload: { station } }
+    return { type: UPDATE_STATION, payload: station }
 }
 
-export const updateStations = (stations) => {
-    return { type: UPDATE_STATIONS, payload: { stations } }
+export const updateStations = (stations, selectedStation, d3) => {
+    return { type: UPDATE_STATIONS, payload: { stations, selectedStation, d3 } }
 }
 
 export const removeStation = (id) => {
-    return { type: REMOVE_STATION, payload: { id } }
+    return { type: REMOVE_STATION, payload: id }
 }
 
 export const setStationAttributes = (id, attr) => {
     return { type: SET_STATION_ATTRIBUTES, payload: { id, attr } }
+}
+
+export const setSelectedStation = (station) => {
+    return { type: SET_SELECTED_STATION, payload: station }
+}
+
+export const setEditingStation = (bool) => {
+    return { type: EDITING_STATION, payload: bool }
+}
+
+
+const onDeleteStation = (id) => {
+
+    return async dispatch => {
+
+        const stationsState = store.getState().stationsReducer
+        const positionsState = store.getState().positionsReducer
+        const tasksState = store.getState().tasksReducer
+
+        let station = !!stationsState.selectedStation ? stationsState.selectedStation : stationsState.stations[id]
+
+        // If the station has children, delete them
+        if (!!station.children) {
+
+            // TODO: Fix this, in positions, it'll put the station to tell it's deleted, but the station is about to be deleted, so no need to put
+            station.children.forEach(async position => {
+
+                // Passes in true to tell that the deleted postion's associated station is being deleted too
+                // This way, it wont update the station 
+                await dispatch(deletePosition(position, true))
+            })
+        }
+
+
+        // If the position is new, just remove it from the local station
+        // Since the position is new, it does not exist in the backend and there can't be any associated tasks
+        if (!!station.new) {
+            removeStation(station._id)
+            return null
+        }
+
+        // Else delete in backend and delete any associated tasks
+        else {
+
+            // Delete associated dashboards
+            station.dashboards.forEach(async dashboard => {
+                await dispatch(deleteDashboard(dashboard))
+            })
+
+            // Sees if any tasks are associated with the position and delete them
+            const tasks = tasksState.tasks
+            Object.values(tasks).filter(task => {
+                return task.load.station === station._id || task.unload.station === station._id
+            }).forEach(async relevantTask => {
+                await dispatch(deleteTask(relevantTask._id))
+            })
+
+
+        }
+        return station
+    }
+}
+
+const onPostStation = (station) => {
+    return async dispatch => {
+        // Add dashboard
+        let defaultDashboard = {
+            name: station.name + ' Dashboard',
+            buttons: [],
+            station: station._id
+        }
+
+        //// Now post the dashboard, and on return tie that dashboard to location.dashboards and put the location
+        const postedDashboard = await dispatch(postDashboard(defaultDashboard))
+        station.dashboards = [postedDashboard._id.$oid]
+
+        // Save Children
+        await dispatch(onSaveChildren())
+
+        return station
+    }
+}
+
+const onSaveChildren = () => {
+
+    return async dispatch => {
+        const positionsState = store.getState().positionsReducer
+        const selectedStationChildrenCopy = positionsState.selectedStationChildrenCopy
+
+        // If there children Children Position, save them
+        if (!!selectedStationChildrenCopy) {
+            Object.values(selectedStationChildrenCopy).map(async (child, ind) => {
+                // Post
+                if (!!child.new) {
+                    await dispatch(postPosition(child))
+
+                }
+                // Put
+                else {
+                    await dispatch(putPosition(child))
+
+                }
+            })
+        }
+
+        return
+    }
 }

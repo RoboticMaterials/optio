@@ -9,8 +9,11 @@ import ContentHeader from '../content_header/content_header'
 import ErrorTooltip from '../../../basic/form/error_tooltip/error_tooltip'
 
 // Import Utils
-import { LocationTypes } from '../../../../methods/utils/locations_utils'
 import { deepCopy } from '../../../../methods/utils/utils'
+
+// Import Constants
+import { StationTypes } from '../../../../constants/station_constants'
+import { PositionTypes } from '../../../../constants/position_constants'
 
 
 export default function ContentList(props) {
@@ -40,6 +43,11 @@ export default function ContentList(props) {
     }
 
     const renderLocationTypeIcon = (element) => {
+
+        const LocationTypes ={
+            ...StationTypes,
+            ...PositionTypes,
+        }
 
         switch (element.type) {
 

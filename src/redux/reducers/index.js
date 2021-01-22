@@ -1,7 +1,8 @@
 import { combineReducers } from 'redux'
 import schedulesReducer from './schedules_reducer_v2';
 import skillsReducer from './skills_reducer';
-import locationsReducer from './locations_reducer';
+import stationsReducer from './stations_reducer';
+import positionsReducer from './positions_reducer'
 import objectsReducer from './objects_reducer';
 import apiReducer from './api_reducer';
 import dashboardsReducer from './dashboards_reducer'
@@ -31,6 +32,7 @@ import cardsReducer from './cards_reducer'
 import lotsReducer from './lots_reducer'
 import testReducer from './test_reducer'
 import cardPageReducer from "./card_page_reducer"
+// TEST
 
 export default combineReducers({
     cardPageReducer,
@@ -40,7 +42,8 @@ export default combineReducers({
     lotsReducer,
     schedulesReducer,
     skillsReducer,
-    locationsReducer,
+    positionsReducer,
+    stationsReducer,
     objectsReducer,
     dashboardsReducer,
     errorReducer,

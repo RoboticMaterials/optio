@@ -33,18 +33,19 @@ const LotsPage = (props) => {
     const onShowCardEditor = (bool) => dispatch(showEditor(bool))
 
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
-    const locations = useSelector(state => state.locationsReducer.locations)
+    const stations = useSelector(state => state.stationsReducer.stations)
     const cards = useSelector(state=>state.cardsReducer.cards)
     const showCardEditor = useSelector(state=>state.cardsReducer.showEditor)
     const [locationName, setLocationName] = useState("")
-    const location = locations[stationID]
     const [selectedCard, setSelectedCard] = useState(null)
+
+    const location = stations[stationID]
 
     // update location properties
     useEffect(() => {
-        const location = locations[stationID]
+        const location = stations[stationID]
         setLocationName(location.name)
-    }, [stationID, locations])
+    }, [stationID, stations])
 
     const goToCardPage = () => {
         onWidgetLoaded(false)

@@ -40,7 +40,7 @@ const StatisticsOverview = (props) => {
 
     const [delayChartRender, setDelayChartRender] = useState('none')
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
-    const locations = useSelector(state => state.locationsReducer.locations)
+    const stations = useSelector(state => state.stationsReducer.stations)
     const devices = useSelector(state => state.devicesReducer.devices)
     const reportEvents = useSelector(state => { return state.reportEventsReducer.reportEvents }) || {}
     const dashboards = useSelector(state => { return state.dashboardsReducer.dashboards }) || {}
@@ -64,7 +64,7 @@ const StatisticsOverview = (props) => {
     // update location properties
     useEffect(() => {
 
-        const location = locations[stationID]
+        const location = stations[stationID]
         setLocationName(location.name)
 
         // get report buttons
@@ -75,7 +75,7 @@ const StatisticsOverview = (props) => {
         // store as object of ids to prevent excessive looping
         setReportButtons(convertArrayToObject(currReportButtons, "_id"))
 
-    }, [stationID, dashboards, locations])
+    }, [stationID, dashboards, stations])
 
 
     const colors = {
@@ -89,7 +89,7 @@ const StatisticsOverview = (props) => {
         onGetReportEvents() // load report events
 
 
-        if (locations[params.stationID].device_id !== undefined) {
+        if (stations[params.stationID].device_id !== undefined) {
             setIsDevice(true)
         }
 
@@ -127,7 +127,7 @@ const StatisticsOverview = (props) => {
 
     const handleDeviceStatistics = () => {
 
-        const device = devices[locations[params.stationID].device_id]
+        const device = devices[stations[params.stationID].device_id]
         if (device === undefined) return
         return (
 

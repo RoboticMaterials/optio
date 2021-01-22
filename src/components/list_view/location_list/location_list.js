@@ -33,7 +33,7 @@ const LocationList = (props) => {
         name: ""
     }
 
-    const locations = useSelector(state => state.locationsReducer.stations)
+    const locations = useSelector(state => state.stationsReducer.stations)
     const devices = useSelector(state => state.devicesReducer.devices)
 
     const locationsArr = locationsSortedAlphabetically(Object.values(locations))

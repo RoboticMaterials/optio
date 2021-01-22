@@ -12,11 +12,8 @@ import Textbox from '../../../../basic/textbox/textbox'
 import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
 import Button from '../../../../basic/button/button'
 
-// Import componenets
-import Positions from '../../locations/positions/positions'
-
 // Import actions
-import * as locationActions from '../../../../../redux/actions/locations_actions'
+import { addStation, setSelectedStation } from '../../../../../redux/actions/stations_actions'
 import * as deviceActions from '../../../../../redux/actions/devices_actions'
 import * as positionActions from '../../../../../redux/actions/positions_actions'
 
@@ -43,52 +40,24 @@ const DeviceEdit = (props) => {
     const [connectionText, setConnectionText] = useState('Not Connected')
     const [connectionIcon, setConnectionIcon] = useState('fas fa-question')
     const [deviceType, setDeviceType] = useState('')
-    const [showPositions, setShowPositions] = useState(false)
 
     const dispatch = useDispatch()
-    const onAddLocation = (selectedLocation) => dispatch(locationActions.addLocation(selectedLocation))
-    const onSetSelectedLocation = (selectedLocation) => dispatch(locationActions.setSelectedLocation(selectedLocation))
+    const dispatchAddStation = (selectedStation) => dispatch(addStation(selectedStation))
+    const dispatchSetSelectedStation = (selectedStation) => dispatch(setSelectedStation(selectedStation))
     const onSetSelectedDevice = (selectedDevice) => dispatch(deviceActions.setSelectedDevice(selectedDevice))
     const onAddPosition = (updatedPosition) => dispatch(positionActions.addPosition(updatedPosition))
 
     const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const selectedDevice = useSelector(state => state.devicesReducer.selectedDevice)
     const devices = useSelector(state => state.devicesReducer.devices)
-    const positions = useSelector(state => state.locationsReducer.positions)
+    const positions = useSelector(state => state.positionsReducer.positions)
 
     // On page load, see if the device is a new device or existing device
     // TODO: This is going to fundementally change with how devices 'connect' to the cloud.
     useEffect(() => {
 
-        // If the selected device is not a AMR then set a location. If an AMR, it does not need a location
-        if (selectedDevice.device_model !== 'MiR100') {
-            // If the selected device does not have a location, then give it a temp one
-            if (!selectedLocation) {
-                onSetSelectedLocation({
-                    name: selectedDevice.device_name,
-                    device_id: selectedDevice._id,
-                    schema: null,
-                    type: null,
-                    pos_x: 0,
-                    pos_y: 0,
-                    rotation: 0,
-                    x: 0,
-                    y: 0,
-                    _id: uuid.v4(),
-                })
-            } else {
-                // If selected device has children then it has positions to show
-                if (!!selectedLocation.children) {
-                    setShowPositions(true)
-                }
-
-            }
-        }
-
         // Sets the type of device, unknown devic defaults to an RM logo while known devices use their own custom SVGs
         if (selectedDevice.device_model === 'MiR100') setDeviceType('cart')
-        else { setDeviceType('unknown') }
-
 
     }, [])
 
@@ -148,13 +117,9 @@ const DeviceEdit = (props) => {
 
                 <styled.DeviceIcon
                     className={deviceType.icon}
-                    style={{ color: !!showPositions ? deviceType.primaryColor : 'white' }}
+                    style={{ color: 'white' }}
                     onMouseDown={async e => {
-                        if (selectedLocation.type !== null) { return }
-                        await Object.assign(selectedLocation, { ...template, temp: true })
-                        await onAddLocation(selectedLocation)
-                        await onSetSelectedLocation(selectedLocation)
-                        setShowPositions(true)
+
                     }}
                 />
 
@@ -220,30 +185,9 @@ const DeviceEdit = (props) => {
         })
     }
 
-    // Handles adding positions to the device
-    const handlePositions = () => {
-
-        return (
-            <>
-                <styled.SectionsContainer style={{ alignItems: 'center', textAlign: 'center', userSelect: 'none' }}>
-
-                    <styled.ConnectionText>Add Cart Position associated with this device</styled.ConnectionText>
-                    <Positions type='cart_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
-
-                </styled.SectionsContainer>
-
-                <styled.SectionsContainer style={{ alignItems: 'center', textAlign: 'center', userSelect: 'none' }}>
-
-                    <styled.ConnectionText>Add Shelf Positions associated with this device</styled.ConnectionText>
-                    <Positions type='shelf_position' handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
-                </styled.SectionsContainer>
-            </>
-        )
-    }
-
     // This sets both the device name and station name to the same name
     const handleSetDeviceName = (event) => {
-        onSetSelectedLocation({
+        dispatchSetSelectedStation({
             ...selectedLocation,
             name: event.target.value
         })
@@ -307,10 +251,6 @@ const DeviceEdit = (props) => {
                 handleAMRIdleLocation()
             }
 
-            {!!showPositions &&
-
-                handlePositions()
-            }
 
             <Button schema={'devices'} secondary style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: '2rem' }}
                 onClick={() => {

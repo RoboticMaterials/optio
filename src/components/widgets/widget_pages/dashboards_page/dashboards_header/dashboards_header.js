@@ -49,7 +49,14 @@ const DashboardsHeader = (props) => {
     const onGetCards = () => dispatch(getCards())
 
     const cards = useSelector(state => state.cardsReducer.cards)
-    const locations = useSelector(state => state.locationsReducer.locations)
+    const stations = useSelector(state => state.stationsReducer.stations)
+    const positions = useSelector(state => state.positionsReducer.positions)
+
+    const locations = {
+        ...positions,
+        ...stations
+    }
+
     const location = locations[stationID]
 
     const [slice, setSlice] = useState(null)
@@ -69,7 +76,7 @@ const DashboardsHeader = (props) => {
     const renderLotsTitle = useMemo(() => {
 
         //  If there is a location then see if it has lots. There wouldnt be a location because its a Mir dashboard
-        if(location === undefined) return
+        if (location === undefined) return
 
         let hasLot = false
 
