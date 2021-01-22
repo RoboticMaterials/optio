@@ -71,7 +71,7 @@ export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
     // Else its a postion/station
     else {
         // Gets the element based on whether its a station or not
-        const el = location.schema === 'station' ? document.getElementById(`${rd3tClassName}-station`) : document.getElementById(`${rd3tClassName}-trans`)
+        const el = location.schema === 'station' ? document.getElementById(`${rd3tClassName}-station`) : document.getElementById(`${rd3tClassName}-position`)
         let bBox = null
 
         // Try catch for when page refreshses when in a widget. When refreshing in a widget, the elements is unmounted and cant get the bounding because of an unmounted element
