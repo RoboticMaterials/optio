@@ -77,7 +77,7 @@ export const ProcessField = (props) => {
     const dispatchDeleteRouteClean = async (routeId) => await dispatch(deleteRouteClean(routeId))
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
-    const stations = useSelector(state => state.locationsReducer.stations)
+    const stations = useSelector(state => state.stationsReducer.stations)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)

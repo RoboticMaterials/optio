@@ -18,6 +18,8 @@ const TextField = ({
 					   IconContainerComponent,
 					   ContentContainer,
 					   FieldContainer,
+					   mapInput,
+	mapOutput,
 	inputProps,
 
 					   style,
@@ -47,14 +49,14 @@ const TextField = ({
 						{...inputProps}
 						{...props}
 						style={{...style, ...inputStyle}}
-						value={field.value}
+						value={mapInput(field.value)}
 						onChange={(event)=> {
 							// update touched if necessary
 							if(!touched) {
 								setFieldTouched(field.name, true)
 							}
 
-							setFieldValue(field.name, event.target.value) // update field value
+							setFieldValue(field.name, mapOutput(event.target.value)) // update field value
 
 							onChange(event) // call additional onChange prop if necessary
 						}}
@@ -143,7 +145,9 @@ TextField.defaultProps = {
 	ContentContainer: styled.DefaultContentContainer,
 	FieldContainer: styled.DefaultFieldContainer,
 	style: {},
-	validateOnBlur: false
+	validateOnBlur: false,
+	mapInput: (val) => val,
+	mapOutput: (val) => val,
 };
 
 export default TextField;

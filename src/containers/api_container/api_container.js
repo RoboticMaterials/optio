@@ -425,11 +425,13 @@ const ApiContainer = (props) => {
     const loadCardsData = async (processId) => {
         if (processId) {
             await onGetProcessCards(processId)
+
         } else {
             onGetCards()
         }
-        // dispatchGetLots()
 
+        onGetProcesses()
+        onGetTasks()
     }
 
     /*

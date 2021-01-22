@@ -33,7 +33,7 @@ const CardZone = ((props) => {
 	const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] }) || {}
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
 	const cards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || []
-	const stations = useSelector(state => { return state.locationsReducer.stations })
+	const stations = useSelector(state => { return state.stationsReducer.stations })
 	const draggedLotInfo = useSelector(state => { return state.cardPageReducer.draggedLotInfo })
 	const {
 		lotId: draggingLotId = "",
