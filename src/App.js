@@ -99,7 +99,7 @@ const App = (props) => {
         )
     }
     return (
-        <>
+        <PageErrorBoundary deleteLocalSettings = {handleClearLocalSettings}>
             <Logger />
 
             {/*<TestsContainer/>*/}
@@ -118,6 +118,9 @@ const App = (props) => {
                         }}
                         button_2_text={"No"}
                         handleOnClick2={() => {
+                          setShowStopAPIModal(false)
+                        }}
+                        handleClose={() => {
                           setShowStopAPIModal(false)
                         }}
                     />
@@ -247,7 +250,7 @@ const App = (props) => {
                     </BrowserRouter>
                 </styled.Container>
             </ThemeProvider>
-        </>
+        </PageErrorBoundary>
     );
 
 }
