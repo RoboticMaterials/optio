@@ -102,7 +102,7 @@ const FormComponent = (props) => {
 	const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] })
 	const cardHistory = useSelector(state => { return state.cardsReducer.cardHistories[cardId] })
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
-	const stations = useSelector(state => { return state.locationsReducer.stations })
+	const stations = useSelector(state => { return state.stationsReducer.stations })
 	const processes = useSelector(state => { return state.processesReducer.processes }) || {}
 
 	// component state
