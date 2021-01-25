@@ -396,7 +396,7 @@ const EditLocation = () => {
                 {/* Delete Location Button */}
                 <Button schema={'locations'} secondary onClick={() => setConfirmDeleteModal(true)} >Delete</Button>
             </styled.ContentContainer>
-    )
+
         </>
     )
 }
