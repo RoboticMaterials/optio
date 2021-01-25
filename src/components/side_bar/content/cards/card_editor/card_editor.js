@@ -50,7 +50,6 @@ const FORM_BUTTON_TYPES = {
 	SAVE: "SAVE",
 	ADD: "ADD",
 	ADD_AND_NEXT: "ADD_AND_NEXT",
-	ADD_AND_EDIT: "ADD_AND_EDIT",
 	MOVE_OK: "MOVE_OK"
 }
 
@@ -411,20 +410,6 @@ const FormComponent = (props) => {
 							}}
 						>
 							Add & Next
-						</Button>
-
-						<Button
-							schema={'lots'}
-							type={"button"}
-							disabled={submitDisabled}
-							style={{ ...buttonStyle, marginBottom: '0rem', marginTop: 0 }}
-							secondary
-							onClick={async () => {
-								setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD_AND_EDIT)
-								submitForm()
-							}}
-						>
-							Add & Edit
 						</Button>
 					</styled.ButtonContainer>
 					:
@@ -980,18 +965,6 @@ const CardEditor = (props) => {
 
 				if(!(postResult instanceof Error)) {
 
-					// if editor should stay on the same lot that was just created, set cardId and binId
-					if(buttonType === FORM_BUTTON_TYPES.ADD_AND_EDIT) {
-						const {
-							_id
-						} = postResult
-
-						// set cardId to the id of the newly created lot
-						setCardId(_id)
-
-						// new lots are created in the queue, so set binId to QUEUE
-						setBinId("QUEUE")
-					}
 				}
 				else {
 					console.log("postResult",postResult)
