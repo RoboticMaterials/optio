@@ -19,6 +19,7 @@ import { hoverStationInfo } from '../../../../redux/actions/widget_actions'
 // Import Components
 import LocationSvg from '../location_svg/location_svg'
 import DragEntityProto from '../drag_entity_proto'
+import {getPreviousRoute} from "../../../../methods/utils/processes_utils";
 
 // Commented out for now, but will need to use logic for disabling locations
 // // This filters out positions when fixing a process
@@ -101,8 +102,7 @@ function Position(props) {
     else if (!!selectedProcess && !!selectedTask && selectedProcess.routes.length > 0 && selectedTask.load.position === null) {
 
         // Gets the last route in the routes array
-        const previousRoute = selectedProcess.routes[selectedProcess.routes.length - 1]
-        const previousTask = tasks[previousRoute._id]
+        const previousTask = getPreviousRoute(selectedProcess.routes, selectedTask._id)
 
         // If there's an unload (which there should be), then find the unload station
         if (!!previousTask.unload) {

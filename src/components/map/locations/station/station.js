@@ -21,6 +21,7 @@ import { StationTypes } from '../../../../constants/station_constants'
 // Import Components
 import LocationSvg from '../location_svg/location_svg'
 import DragEntityProto from '../drag_entity_proto'
+import {getPreviousRoute} from "../../../../methods/utils/processes_utils";
 
 function Station(props) {
 
@@ -76,8 +77,7 @@ function Station(props) {
     else if (!!selectedProcess && !!selectedTask && selectedProcess.routes.length > 0 && selectedTask.load.station === null) {
 
         // Gets the last route in the routes array
-        const previousRoute = selectedProcess.routes[selectedProcess.routes.length - 1]
-        const previousTask = tasks[previousRoute._id]
+        const previousTask = getPreviousRoute(selectedProcess.routes, selectedTask._id)
 
         // If there's an unload (which there should be), then find the unload station
         if (!!previousTask.unload) {

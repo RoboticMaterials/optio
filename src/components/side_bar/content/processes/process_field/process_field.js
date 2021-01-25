@@ -160,6 +160,7 @@ export const ProcessField = (props) => {
             // update values
             setFieldValue("routes", updatedRoutes)
             setFieldValue("broken", isBrokenProcess(updatedRoutes))
+            setEditingTask(false)
         }
 
         // not a new route
@@ -211,6 +212,7 @@ export const ProcessField = (props) => {
 
         // if not new route, only thing to check is if any changes broke the process
         setFieldValue("broken", isBrokenProcess(values.routes, tasks))
+        setEditingTask(false)
     }
     
     console.log("papdawd values",values)
@@ -262,6 +264,7 @@ export const ProcessField = (props) => {
 
         // if not new route, only thing to check is if any changes broke the process
         setFieldValue("broken", isBrokenProcess(values.routes, tasks))
+        setEditingTask(false)
     }
 
     /**
@@ -291,6 +294,7 @@ export const ProcessField = (props) => {
         // clear newRoute and selectedTask
         setFieldValue("newRoute", null)
         await dispatchSetSelectedTask(null)
+        setEditingTask(false)
 
         // run validation
         validateForm()
@@ -347,11 +351,13 @@ export const ProcessField = (props) => {
                 _id: currRouteId = "",
             } = currRoute || {}
 
+            const isLast = currIndex === routes.length - 1
             const fieldName = `routes[${currIndex}]`
 
             return (
                 <div key={`li-${currIndex}`}>
                     <ListItemField
+                        containerStyle={{marginBottom: isLast ? 0 : "1rem"}}
                         name={fieldName}
                         onMouseEnter={() => {
                             if (!selectedTask && !editingTask) {
@@ -378,25 +384,7 @@ export const ProcessField = (props) => {
                         key={`li-${currIndex}`}
                     />
 
-                    {editingTask && selectedTask && selectedTask._id === currRouteId &&
-                    <styled.TaskContainer schema={'processes'}>
 
-                        <TaskField
-                            {...formikProps}
-                            onRemove={handleRemoveRoute}
-                            onDelete={handleDeleteRoute}
-                            onBackClick={handleTaskBack}
-                            onSave={handleAddTask}
-                            fieldParent={fieldName}
-                            shift={shift}
-                            isTransportTask={isTransportTask}
-                            isProcessTask={true}
-                            toggleEditing={(props) => {
-                                setEditingTask(props)
-                            }}
-                        />
-                    </styled.TaskContainer>
-                    }
 
                     {/* If the process is broken and it's at the broken index, then show a button there to fix it */}
                     {(!!values.broken && currIndex === values.broken - 1) &&
@@ -404,7 +392,7 @@ export const ProcessField = (props) => {
                     <Button
                         schema={'devices'}
                         // disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
-                        style={{marginBottom: '1rem', width: '100%', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden'}}
+                        style={{margin: 0, marginBottom: '1rem', width: "100%", textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden'}}
                         secondary
                         disabled={selectedTask?.new}
                         onClick={() => {
@@ -422,7 +410,7 @@ export const ProcessField = (props) => {
                             // This means instead of only allowing to to pick a location that belongs to the last route
                             // Now you must pick a location that is connected to the location before the broken route occurs
                             dispatchSetFixingProcess(true)
-                            setEditingTask(true)
+                            setEditingTask("newRoute")
                         }}
                     >
                         Add Route To Fix Process
@@ -453,35 +441,11 @@ export const ProcessField = (props) => {
                         const newTask = {...generateDefaultRoute(prevObj), temp: {insertIndex: values.routes.length}}
                         setFieldValue("newRoute", newTask)
                         dispatchSetSelectedTask(newTask)
-                        setEditingTask(true)
+                        setEditingTask("newRoute")
                     }}
                 >
                     Add Route
                 </Button>
-
-                {!!values.newRoute &&
-                <styled.TaskContainer schema={'processes'}>
-                    <TaskField
-                        onSave={handleAddTask}
-                        onDelete={handleDeleteRoute}
-                        onRemove={handleRemoveRoute}
-                        onBackClick={handleTaskBack}
-                        {...formikProps}
-                        values={values}
-                        errors={errors}
-                        touched={touched}
-                        setFieldValue={setFieldValue}
-                        fieldParent={'newRoute'}
-                        shift={shift}
-                        isTransportTask={isTransportTask}
-                        isProcessTask={true}
-                        toggleEditing={(props) => {
-                            setEditingTask(props)
-                        }}
-
-                    />
-                </styled.TaskContainer>
-                }
 
             </>
         )
@@ -507,35 +471,11 @@ export const ProcessField = (props) => {
 
                         setFieldValue("newRoute", newTask)
                         dispatchSetSelectedTask(newTask)
-                        setEditingTask(true)
+                        setEditingTask("newRoute")
                     }}
                 >
                     Add Route To Beginning
                 </Button>
-
-                {!!values.newRoute &&
-                <styled.TaskContainer schema={'processes'}>
-                    <TaskField
-                        onSave={handleAddTask}
-                        onDelete={handleDeleteRoute}
-                        onRemove={handleRemoveRoute}
-                        onBackClick={handleTaskBack}
-                        {...formikProps}
-                        values={values}
-                        errors={errors}
-                        touched={touched}
-                        setFieldValue={setFieldValue}
-                        fieldParent={'newRoute'}
-                        shift={shift}
-                        isTransportTask={isTransportTask}
-                        isProcessTask={true}
-                        toggleEditing={(props) => {
-                            setEditingTask(props)
-                        }}
-
-                    />
-                </styled.TaskContainer>
-                }
 
             </>
         )
@@ -631,30 +571,60 @@ export const ProcessField = (props) => {
                     />
                 </div>
 
-                <styled.Title schema={'processes'}>Associated Routes</styled.Title>
+                {editingTask && selectedTask ?
+                <styled.TaskContainer schema={'processes'}>
+                    <TaskField
+                        {...formikProps}
+                        onRemove={handleRemoveRoute}
+                        onDelete={handleDeleteRoute}
+                        onBackClick={handleTaskBack}
+                        onSave={handleAddTask}
+                        fieldParent={editingTask}
+                        shift={shift}
+                        isTransportTask={isTransportTask}
+                        isProcessTask={true}
+                        toggleEditing={(props) => {
+                            setEditingTask(props)
+                        }}
+                    />
+                </styled.TaskContainer>
+                    :
+                    <>
+                        <styled.Title schema={'processes'}>Associated Routes</styled.Title>
 
-                {values.routes.length > 0 && handleAddBeginningRoute()}
+                        {values.routes.length > 0 && handleAddBeginningRoute()}
 
-                <styled.SectionContainer>
-                    {renderRoutes(values.routes)}
-                </styled.SectionContainer>
+                        <styled.SectionContainer
+                            showTopBorder={values.routes.length > 0}
+                        >
+                            {values.routes.length > 0 ?
+                                renderRoutes(values.routes)
+                                :
+                                <styled.InfoText></styled.InfoText>
 
-                {handleAddRoute()}
+                            }
+                        </styled.SectionContainer>
 
-                <div style={{ height: "100%", paddingTop: "1rem" }} />
+                        {handleAddRoute()}
 
-                {/* Delete Task Button */}
-                <Button
-                    schema={'processes'}
-                    disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
-                    style={{ marginBottom: '0rem', borderColor: 'red' }}
-                    secondary
-                    onClick={() => {
-                        setConfirmDeleteModal(true)
-                    }}
-                >
-                    Delete
-                </Button>
+                        {/*<div style={{ height: "100%", paddingTop: "1rem" }} />*/}
+
+                        {/* Delete Task Button */}
+                        <Button
+                            schema={'processes'}
+                            disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
+                            style={{ marginBottom: '0rem', borderColor: 'red' }}
+                            secondary
+                            onClick={() => {
+                                setConfirmDeleteModal(true)
+                            }}
+                        >
+                            Delete
+                        </Button>
+                    </>
+                }
+
+
 
             </styled.Container>
         </>

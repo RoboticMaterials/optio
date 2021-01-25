@@ -55,9 +55,9 @@ const RightClickMenu = (props) => {
 
     const dispatchShowSideBar = (bool) => dispatch(setOpen(bool))
 
-    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
-    const positions = useSelector(state => state.positionsReducer.positions)
-    const editing = useSelector(state => state.locationsReducer.editingLocation)
+    // const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
+    // const positions = useSelector(state => state.positionsReducer.positions)
+    // const editing = useSelector(state => state.locationsReducer.editingLocation)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const showSideBar = useSelector(state => state.sidebarReducer.open)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
