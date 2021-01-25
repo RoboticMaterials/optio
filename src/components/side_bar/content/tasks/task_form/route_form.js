@@ -86,7 +86,7 @@ const TaskForm = (props) => {
 					<TaskField
 						{...formikProps}
 						onDelete={handleDelete}
-						isTransportTask={null}
+						isTransportTask={true}
 						toggleEditing={toggleEditing}
 						isProcessTask={null}
 						onSave={submitForm}
