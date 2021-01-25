@@ -123,10 +123,12 @@ const TaskField = (props) => {
 
         // update load & unload from selectedTask - currently have to do it this way since selectedTask is used in so many places
         if (selectedTask && selectedTask.load) {
-            setFieldValue(fieldParent ? `${fieldParent}.load` : "load", selectedTask.load)
+            setFieldValue(fieldParent ? `${fieldParent}.load.station` : "load.station", selectedTask.load.station)
+            setFieldValue(fieldParent ? `${fieldParent}.load.position` : "load.position", selectedTask.load.position)
         }
         if (selectedTask && selectedTask.unload) {
-            setFieldValue(fieldParent ? `${fieldParent}.unload` : "unload", selectedTask.unload)
+            setFieldValue(fieldParent ? `${fieldParent}.unload.station` : "unload.station", selectedTask.unload.station)
+            setFieldValue(fieldParent ? `${fieldParent}.unload.position` : "unload.position", selectedTask.unload.position)
         }
 
         if (selectedTask && selectedTask.type) {

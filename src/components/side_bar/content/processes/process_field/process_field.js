@@ -37,7 +37,7 @@ import useChange from "../../../../basic/form/useChange";
 // styles
 import * as styled from './process_field.style'
 import {DEVICE_CONSTANTS} from "../../../../../constants/device_constants";
-
+import {throttle} from "../../../../../methods/utils/function_utils";
 
 export const ProcessField = (props) => {
     const {
@@ -90,14 +90,18 @@ export const ProcessField = (props) => {
     const [editingTask, setEditingTask] = useState(false) // Used to tell if a task is being edited
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [showExistingTaskWarning, setShowExistingTaskWarning] = useState(false);
+    // throttled func
+    const [dispatchSetSelectedProcess_Throttled, ] = useState(()=>throttle(
+        ()=> {
+            dispatchSetSelectedProcess({
+                ...values,
+            })
+        }, 500));
 
     useEffect(() => {
 
-        // map process values to selectedProcess (needed for map view to have access to process)
-        dispatchSetSelectedProcess({
-            ...values,
-            // routes: values.routes.map((currRoute) => currRoute._id) // processes in redux only store the route keys
-        })
+        // update selectedProcess (throttled to reduce lag from updating constantly
+        dispatchSetSelectedProcess_Throttled()
 
         return () => {}
 
