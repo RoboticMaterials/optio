@@ -180,7 +180,6 @@ export const deletePosition = (id, stationDelete) => {
         try {
             onStart();
             let positionCopy = await dispatch(onDeletePosition(id, stationDelete))
-            console.log('QQQQ Pos copy', positionCopy)
             // If theres a position copy then tell the backend is deleted
             // There wouldnt be a position copy because the position did not exist on the backend
             if (!!positionCopy) {
@@ -268,21 +267,19 @@ const onDeletePosition = (id, stationDelete) => {
 
         // Remove from stations copy if need be
         if (!!positionsState.selectedStationChildrenCopy) {
-            console.log('QQQQ Updating copy')
             // Update the ChildrenCopy
             let copyOfCopy = deepCopy(positionsState.selectedStationChildrenCopy)
             delete copyOfCopy[position._id]
-            setSelectedStationChildrenCopy(
+            dispatch(setSelectedStationChildrenCopy(
                 copyOfCopy
-            )
+            ))
         }
 
 
         // If the position is new, just remove it from the local station
         // Since the position is new, it does not exist in the backend and there can't be any associated tasks
         if (!!position.new) {
-            console.log('QQQQ Shes new')
-            removePosition(position._id)
+            dispatch(removePosition(position._id))
             return null
         }
 
@@ -302,7 +299,6 @@ const onDeletePosition = (id, stationDelete) => {
             Object.values(devices).filter(device => {
                 return !!device.idle_location && device.idle_location === position._id
             }).forEach(async relevantDevice => {
-                console.log('QQQQ Location is part of device')
                 relevantDevice.idle_location = null
                 await dispatch(putDevices(relevantDevice, relevantDevice._id))
             })

@@ -95,6 +95,7 @@ const EditLocation = () => {
 
             // Post
             if (!!selectedStation.new) {
+                console.log('QQQQ Posting', selectedStation)
                 await dispatchPostStation(selectedStation)
 
                 // Add dashboard
@@ -124,7 +125,7 @@ const EditLocation = () => {
             throw ('You son of a bitch Trebech')
         }
 
-        onBack()
+        onBack(true)
 
 
     }
@@ -151,16 +152,17 @@ const EditLocation = () => {
     /**
      * Handles Back
      * Sets editing to false
-     * Removes Station if new
+     * Removes Station if new and not a save
      * Sets selected Location to null
      */
-    const onBack = () => {
+    const onBack = (save) => {
 
         // The order of these functions matter
         dispatchSetEditingStation(false)
         dispatchSetEditingPosition(false)
+        console.log('QQQQ selected Location', selectedLocation)
 
-        if (!!selectedLocation.new) {
+        if (!!selectedLocation.new && !save) {
             if (selectedLocation.schema === 'station') {
                 dispatchRemoveStation(selectedLocation._id)
             }
@@ -204,6 +206,7 @@ const EditLocation = () => {
 
         // Handle Station addition
         if (attributes.schema === 'station') {
+            dispatchSetSelectedStationChildrenCopy({})
             await dispatchAddStation(newLocation)
             await dispatchSetSelectedStation(newLocation)
         }

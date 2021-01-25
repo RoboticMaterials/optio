@@ -44,13 +44,13 @@ const defaultState = {
 
 export default function stationsReducer(state = defaultState, action) {
     let stationsCopy
-
     /**
      * Updates the state of stations to include the incoming payload station.
      * If the payload is the current selected Station, then update that as well
      * @param {object} station 
      */
     const onUpdateStation = (station) => {
+        console.log('QQQQ Reducer', station)
         return {
             ...state,
             stations: {
@@ -73,6 +73,8 @@ export default function stationsReducer(state = defaultState, action) {
 
         // Adds station to front-end without adding it to the backend
         case ADD_STATION:
+            console.log('QQQQ Hur', action.payload)
+
             return onUpdateStation(action.payload)
 
         // Sets Stations Attributes
@@ -104,6 +106,7 @@ export default function stationsReducer(state = defaultState, action) {
 
         // Updates a station locally on the front-end
         case UPDATE_STATION:
+            console.log('QQQQ Hur', action.payload)
             return onUpdateStation(action.payload)
 
         // Upates stations locally on the front-end
@@ -158,6 +161,7 @@ export default function stationsReducer(state = defaultState, action) {
             });
 
         case POST_STATION_SUCCESS:
+            console.log('QQQQ Hur', action.payload)
             return onUpdateStation(action.payload)
 
         case POST_STATION_FAILURE:
@@ -173,6 +177,7 @@ export default function stationsReducer(state = defaultState, action) {
             });
 
         case PUT_STATION_SUCCESS:
+            console.log('QQQQ Hur', action.payload)
             return onUpdateStation(action.payload)
 
         case PUT_STATION_FAILURE:
@@ -188,6 +193,7 @@ export default function stationsReducer(state = defaultState, action) {
             });
 
         case DELETE_STATION_SUCCESS:
+            console.log('QQQQ Hur', action.payload)
             stationsCopy = deepCopy(state.stations)
             delete stationsCopy[action.payload]
             return {

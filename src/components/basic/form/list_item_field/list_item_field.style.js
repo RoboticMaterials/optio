@@ -33,9 +33,7 @@ export const ListItem = styled.div`
   ${props => props.isNew &&  commonCss.newGlow};
   ${props => props.edited &&  commonCss.newGlow};
   ${props => props.error &&  commonCss.errorGlow};
-
-    margin-bottom: 1rem;
-
+    
 
 `
 

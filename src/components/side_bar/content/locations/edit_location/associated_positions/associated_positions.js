@@ -64,50 +64,52 @@ export default function Positions(props) {
         dispatchDeletePosition(position._id)
     }
 
-    const renderAssociatedPositions = (associatedPositions, positionType) => {
+    const renderAssociatedPositions = () => {
 
-        return associatedPositions.map((position, i) => {
-
-            if (position.type === positionType) {
-
-                return (
-                    <styled.PositionListItem background={PositionTypes[positionType].color} key={`associatecd_pos_${i}`}>
-
-
-                        <MinusButton
-                            onClick={() => {
-                                setConfirmDeleteModal(true)
-                                setDeletingIndex(i)
-                                setDeletingPosition(position)
-                            }}
-                        />
-                        <Textbox
-                            style={{ flex: '1' }}
-                            schema="locations"
-                            focus={i == editingIndex}
-                            // defaultValue={position.name}
-                            value={position.name}
-                            onChange={(e) => {
-                                setEditingIndex(i)
-                                dispatch(positionActions.setPositionAttributes(position._id, { name: e.target.value }))
-                            }}
-
-                        />
+        return positionTypes.map((positionType) => {
+            return Object.values(selectedStationChildrenCopy).map((position, i) => {
+                if (position.type === positionType) {
+                    return (
+                        <styled.PositionListItem background={PositionTypes[positionType].color} key={`associatecd_pos_${i}`}>
 
 
-                        {/* If not a human position, then add ability to use cart location */}
-                        {position.type !== 'human_position' &&
-                            <styled.CartIcon className='icon-cart' onClick={() => handleSetChildPositionToCartCoords(position)} />
-                        }
+                            <MinusButton
+                                onClick={() => {
+                                    setConfirmDeleteModal(true)
+                                    setDeletingIndex(i)
+                                    setDeletingPosition(position)
+                                }}
+                            />
+                            <Textbox
+                                style={{ flex: '1' }}
+                                schema="locations"
+                                focus={i == editingIndex}
+                                // defaultValue={position.name}
+                                value={position.name}
+                                onChange={(e) => {
+                                    setEditingIndex(i)
+                                    dispatch(positionActions.setPositionAttributes(position._id, { name: e.target.value }))
+                                }}
 
-                        {/* Commenting out for now, not working with constent updating */}
-                        {/* <DragHandle></DragHandle> */}
+                            />
 
 
-                    </styled.PositionListItem>
-                )
-            }
+                            {/* If not a human position, then add ability to use cart location */}
+                            {position.type !== 'human_position' &&
+                                <styled.CartIcon className='icon-cart' onClick={() => handleSetChildPositionToCartCoords(position)} />
+                            }
+
+                            {/* Commenting out for now, not working with constent updating */}
+                            {/* <DragHandle></DragHandle> */}
+
+
+                        </styled.PositionListItem>
+                    )
+                }
+            })
         })
+
+
 
     }
 
@@ -210,14 +212,9 @@ export default function Positions(props) {
 
 
             <styled.ListContainer>
-                {positionTypes.map((positionType) => {
-                    return (
-                        <>
-                            {/* <styled.Label style={{fontSize:'1.25rem'}}>{positionType}</styled.Label> */}
-                            {renderAssociatedPositions(Object.values(positions).filter(position => position.parent == selectedStation._id), positionType)}
-                        </>
-                    )
-                })}
+
+                {/* <styled.Label style={{fontSize:'1.25rem'}}>{positionType}</styled.Label> */}
+                {renderAssociatedPositions()}
             </styled.ListContainer>
         </styled.PositionsContainer>
     )

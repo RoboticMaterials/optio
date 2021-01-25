@@ -102,6 +102,7 @@ export const postStation = (station) => {
             delete stationCopy.temp
             delete stationCopy.new
             const newStation = await api.postStation(stationCopy);
+            console.log('QQQQ New Station', newStation)
             return onSuccess(newStation);
         } catch (error) {
             return onError(error);

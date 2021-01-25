@@ -215,7 +215,7 @@ export const addRouteToDashboards = (route) => {
         }
 
         const station = stations[stationId] || getDefaultStation()
-        const dashboard = dashboards[station.dashboards[0]] || {}
+        const dashboard = dashboards[station.dashboards[0]]
 
         const newDashboardButton = {
             color: '#bcbcbc',
@@ -242,7 +242,6 @@ export const addRouteToDashboards = (route) => {
         }
 
         else {
-            console.log("adawd dashboard", dashboard)
             // see if button for task already exists
             const buttonIndex = dashboard.buttons.findIndex((currButton) => {
                 return currButton.task_id === route._id
