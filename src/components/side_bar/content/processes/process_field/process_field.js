@@ -37,28 +37,7 @@ import useChange from "../../../../basic/form/useChange";
 // styles
 import * as styled from './process_field.style'
 import {DEVICE_CONSTANTS} from "../../../../../constants/device_constants";
-
-
-const throttle = (func, limit) => {
-    let lastFunc
-    let lastRan
-    return function() {
-        const context = this
-        const args = arguments
-        if (!lastRan) {
-            func.apply(context, args)
-            lastRan = Date.now()
-        } else {
-            clearTimeout(lastFunc)
-            lastFunc = setTimeout(function() {
-                if ((Date.now() - lastRan) >= limit) {
-                    func.apply(context, args)
-                    lastRan = Date.now()
-                }
-            }, limit - (Date.now() - lastRan))
-        }
-    }
-}
+import {throttle} from "../../../../../methods/utils/function_utils";
 
 export const ProcessField = (props) => {
     const {
