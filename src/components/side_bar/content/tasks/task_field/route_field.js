@@ -36,7 +36,12 @@ import { setFixingProcess } from '../../../../../redux/actions/processes_actions
 import { putStation } from '../../../../../redux/actions/stations_actions'
 import { setSelectedStation } from '../../../../../redux/actions/stations_actions'
 import { setSelectedPosition } from '../../../../../redux/actions/positions_actions'
-import { getRouteProcesses, isNextRouteViable } from "../../../../../methods/utils/route_utils";
+import {
+    getLoadStationId,
+    getRouteProcesses,
+    getUnloadStationId,
+    isNextRouteViable
+} from "../../../../../methods/utils/route_utils";
 import TextField from "../../../../basic/form/text_field/text_field";
 import TextboxSearchField from "../../../../basic/form/textbox_search_field/textbox_search_field";
 import PropTypes from "prop-types";
@@ -82,22 +87,15 @@ const TaskField = (props) => {
     } = values
 
     const routeProcesses = getRouteProcesses(routeId)
-    console.log("EditTask props", props)
-    console.log("EditTask fieldMeta", fieldMeta)
 
     console.log("EditTask fieldParent", fieldParent)
-    console.log("EditTask touched", touched)
     console.log("EditTask values", values)
     console.log("EditTask errors", errors)
-    console.log("EditTask values[fieldParent]", values[fieldParent])
-    console.log("EditTask name", name)
-    console.log("EditTask track_quantity", track_quantity)
+    console.log("EditTask touched", touched)
 
     const errorCount = Object.keys(errors).length // get number of field errors
     // const touchedCount = Object.values(touched).length // number of touched fields
     const submitDisabled = ((errorCount > 0) || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
-
-
 
     const dispatch = useDispatch()
     const dispatchPutStation = (station, ID) => dispatch(putStation(station, ID))
@@ -118,19 +116,39 @@ const TaskField = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
 
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
+    const [userTypedName, setUserTypedName] = useState(false);
+    // const [, setConfirmDeleteModal] = useState(false);
 
     useEffect(() => {
+        const loadStationId = getLoadStationId(selectedTask)
+        const unloadStationId = getUnloadStationId(selectedTask)
 
         // update load & unload from selectedTask - currently have to do it this way since selectedTask is used in so many places
         if (selectedTask && selectedTask.load) {
-            setFieldValue(fieldParent ? `${fieldParent}.load` : "load", selectedTask.load)
+            setFieldValue(fieldParent ? `${fieldParent}.load.station` : "load.station", selectedTask.load.station)
+            setFieldValue(fieldParent ? `${fieldParent}.load.position` : "load.position", selectedTask.load.position)
         }
         if (selectedTask && selectedTask.unload) {
-            setFieldValue(fieldParent ? `${fieldParent}.unload` : "unload", selectedTask.unload)
+            setFieldValue(fieldParent ? `${fieldParent}.unload.station` : "unload.station", selectedTask.unload.station)
+            setFieldValue(fieldParent ? `${fieldParent}.unload.position` : "unload.position", selectedTask.unload.position)
         }
 
         if (selectedTask && selectedTask.type) {
             setFieldValue(fieldParent ? `${fieldParent}.type` : "type", selectedTask.type)
+        }
+
+        if(!name || !userTypedName) {
+            setUserTypedName(false) // set userTypedName to false to auto generate name
+
+            const loadStation = stations[loadStationId] || {name: ""}
+            const unloadStation = stations[unloadStationId] || {name: ""}
+
+            if(loadStationId && unloadStationId) {
+                setFieldValue(fieldParent ? `${fieldParent}.name` : "name", loadStation.name + " => " + unloadStation.name)
+            }
+            else if(loadStationId) {
+                setFieldValue(fieldParent ? `${fieldParent}.name` : "name", loadStation.name + " => ")
+            }
         }
 
         // if(selectedTask && selectedTask.handoff) {
@@ -439,6 +457,7 @@ const TaskField = (props) => {
                         InputComponent={Textbox}
                         name={fieldParent ? `${fieldParent}.name` : "name"}
                         placeholder="Route Name"
+                        onChange={()=>setUserTypedName(true)} // user changed value, so stop auto generating name
                         schema={'tasks'}
                         focus={!name}
                         style={{ fontSize: '1.2rem', fontWeight: '600' }}
