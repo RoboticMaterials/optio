@@ -61,7 +61,7 @@ export const CardName = styled.span`
 `
 
 export const Count = styled.span`
-	font-size: ${props => props.theme.fontSize.sz6};
+	// font-size: ${props => props.theme.fontSize.sz6};
 `
 
 export const LotName = styled.span`
@@ -73,13 +73,13 @@ export const LotName = styled.span`
 `
 
 export const FooterBar = styled.div`
-	height: 1rem;
+	height: fit-content;
 	background: ${props => props.theme.bg.septenary};
 	// background: ${props => props.color};
 	display: flex;
 	justify-content: space-between;
 	padding: 0 1rem 0 1rem;
-  font-size: ${props => props.theme.fontSize.sz6};
+  font-size: ${props => props.theme.fontSize.sz4};
 `
 
 export const HeaderBar = styled.div`
@@ -104,6 +104,7 @@ export const DatesContainer = styled.span`
 	align-items: center;
 	justify-content: center;
     width: fit-content;
+    
 `
 
 export const DateItem = styled.div`
