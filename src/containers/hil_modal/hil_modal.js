@@ -19,7 +19,7 @@ const HILModal = () => {
     const dashboards = useSelector(state => { return state.dashboardsReducer.dashboards })
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const taskQueueItemClicked = useSelector(state => state.taskQueueReducer.taskQueueItemClicked)
-    const locations = useSelector(state => state.locationsReducer.locations)
+    const stations = useSelector(state => state.stationsReducer.stations)
     const hilTimers = useSelector(state => state.taskQueueReducer.hilTimers)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
@@ -84,7 +84,7 @@ const HILModal = () => {
             if (!!item.hil_station_id && !!tasks[item.task_id] && tasks[item.task_id].device_type !== 'human') {
 
                 // Loops through all ascociated dashboards at that location
-                locations[item.hil_station_id].dashboards.map((dashboard, ind) => {
+                stations[item.hil_station_id].dashboards.map((dashboard, ind) => {
 
                     // if the list of active hil dashboards does not include the dashboard then add
                     if (!Object.keys(activeHilDashboards).includes(dashboard)) {

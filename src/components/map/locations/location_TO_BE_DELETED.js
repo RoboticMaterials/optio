@@ -9,12 +9,18 @@ import * as d3 from 'd3'
 import uuid from 'uuid';
 
 // Import Actions
-import { setLocationAttributes } from '../../../redux/actions/locations_actions'
 import { setPositionAttributes } from '../../../redux/actions/positions_actions'
+import { setStationAttributes } from '../../../redux/actions/stations_actions'
 
 // Import Utils
 import { convertD3ToReal, convertRealToD3, getRelativeD3, getRelativeOffset } from '../../../methods/utils/map_utils'
-import { LocationTypes } from '../../../methods/utils/locations_utils'
+
+// Import Constants
+import { StationTypes } from '../../../constants/station_constants'
+import { PositionTypes } from '../../../constants/position_constants'
+
+// Import Components
+import DragEntityProto from './drag_entity_proto'
 
 import { select } from 'd3'
 
@@ -202,11 +208,12 @@ const Location = (props) => {
     } = props
 
     const dispatch = useDispatch()
-    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
+    const dispatchSetStationAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
+    const dispatchSetPositionAttributes = (id, attr) => dispatch(setPositionAttributes(id, attr))
+
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
-    const stations = useSelector(state => state.locationsReducer.stations)
-    const positions = useSelector(state => state.locationsReducer.positions)
-    const locations = useSelector(state => state.locationsReducer.locations)
+    const stations = useSelector(state => state.stationsReducer.stations)
+    const positions = useSelector(state => state.positionsReducer.positions)
 
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     //const [showSideBar, setShowSideBar] = useState(false)
@@ -235,6 +242,11 @@ const Location = (props) => {
     let pos
 
     let color = '#6283f0' // Blue
+
+    const LocationTypes = {
+        ...StationTypes,
+        ...PositionTypes
+    }
 
     // Try catch for unknown location types
     try {
@@ -286,12 +298,12 @@ const Location = (props) => {
                         <Station isSelected={isSelected} color={color} {...props} />
                         <DragEntityProto isSelected={isSelected} {...props}
                             onRotate={(rotation) => {
-                                dispatch(setLocationAttributes(location._id, { rotation }))
+                                dispatchSetStationAttributes(location._id, { rotation })
                             }}
-                            onTranslate={({ x, y }) => dispatch(setLocationAttributes(location._id, { x, y }))}
+                            onTranslate={({ x, y }) => dispatchSetStationAttributes(location._id, { x, y })}
                             onTranslateEnd={({ x, y }) => {
                                 pos = convertD3ToReal([x, y], props.d3)
-                                dispatch(setLocationAttributes(location._id, { pos_x: pos[0], pos_y: pos[1] }))
+                                dispatchSetStationAttributes(location._id, { pos_x: pos[0], pos_y: pos[1] })
                             }}
                         />
                     </React.Fragment>
@@ -307,19 +319,20 @@ const Location = (props) => {
                         {location.parent !== null && location.parent !== undefined && location.parent.length > 0 &&
                             <line x1={`${location.x}`} y1={`${location.y}`}
                                 x2={`${stations[location.parent].x}`} y2={`${stations[location.parent].y}`}
-                                stroke={color} strokeWidth="1.4" shape-rendering="geometricPrecision" style={{ opacity: '0.3', }} />
+                                stroke={color} strokeWidth="1.4" shape-rendering="geometricPrecision" style={{ opacity: '0.3', }}
+                            />
                         }
                         <Position isSelected={isSelected} color={color} {...props} />
                         <DragEntityProto isSelected={isSelected} {...props}
                             onRotate={(rotation) => {
-                                dispatch(setLocationAttributes(location._id, { rotation }))
+                                dispatchSetPositionAttributes(location._id, { rotation })
                             }}
                             onTranslate={({ x, y }) => {
-                                dispatch(setLocationAttributes(location._id, { x, y }))
+                                dispatchSetPositionAttributes(location._id, { x, y })
                             }}
                             onTranslateEnd={({ x, y }) => {
                                 pos = convertD3ToReal([x, y], props.d3)
-                                dispatch(setLocationAttributes(location._id, { pos_x: pos[0], pos_y: pos[1] }))
+                                dispatchSetPositionAttributes(location._id, { pos_x: pos[0], pos_y: pos[1] })
                             }}
                         />
                     </React.Fragment>

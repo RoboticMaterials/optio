@@ -62,7 +62,7 @@ const DashboardScreen = (props) => {
     const currentDashboard = useSelector(state => { return state.dashboardsReducer.dashboards[dashboardId] })
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const devices = useSelector(state => state.devicesReducer.devices)
-    const positions = useSelector(state => state.locationsReducer.positions)
+    const positions = useSelector(state => state.positionsReducer.positions)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
     const stopAPICalls = useSelector(state => state.localReducer.stopAPICalls)

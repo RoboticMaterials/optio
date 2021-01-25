@@ -21,12 +21,23 @@ import {
     REMOVE_POSITION,
     SET_POSITION_ATTRIBUTES,
     REVERT_CHILDREN,
+    SET_SELECTED_POSITION,
+    EDITING_POSITION,
+    SET_SELECTED_STATION_CHILDREN_COPY
 } from '../types/positions_types'
 
 import { deepCopy } from '../../methods/utils/utils';
 import uuid from 'uuid';
 
 import * as api from '../../api/positions_api'
+import { SET_SELECTED_OBJECT } from '../types/objects_types';
+
+// Import External Actions
+import { putStation } from './stations_actions'
+import { deleteTask } from './tasks_actions'
+
+// Import Store
+import store from '../store/index'
 
 // get
 // ******************************
@@ -37,7 +48,7 @@ export const getPositions = () => {
             dispatch({ type: GET_POSITIONS_STARTED });
         }
         function onSuccess(positions) {
-            dispatch({ type: GET_POSITIONS_SUCCESS, payload: { positions } });
+            dispatch({ type: GET_POSITIONS_SUCCESS, payload: positions });
             return positions;
         }
         function onError(error) {
@@ -49,6 +60,7 @@ export const getPositions = () => {
             onStart();
             const positions = await api.getPositions();
 
+            // TODO: Add to normalizer
             const normalizedPositions = {}
             positions.map((position) => {
                 normalizedPositions[position._id] = position
@@ -71,7 +83,7 @@ export const postPosition = (position) => {
             dispatch({ type: POST_POSITION_STARTED });
         }
         function onSuccess(position) {
-            dispatch({ type: POST_POSITION_SUCCESS, payload: { position } });
+            dispatch({ type: POST_POSITION_SUCCESS, payload: position });
             return position;
         }
         function onError(error) {
@@ -108,13 +120,13 @@ export const postPosition = (position) => {
 
 // put
 // ******************************
-export const putPosition = (position, ID) => {
+export const putPosition = (position) => {
     return async dispatch => {
         function onStart() {
             dispatch({ type: PUT_POSITION_STARTED });
         }
         function onSuccess(position) {
-            dispatch({ type: PUT_POSITION_SUCCESS, payload: { position } });
+            dispatch({ type: PUT_POSITION_SUCCESS, payload: position });
             return position;
         }
         function onError(error) {
@@ -125,7 +137,6 @@ export const putPosition = (position, ID) => {
         try {
             onStart();
             let positionCopy = deepCopy(position)
-            delete positionCopy._id
             delete positionCopy.temp
 
             // Was used for a bug that didnt exit
@@ -139,8 +150,8 @@ export const putPosition = (position, ID) => {
 
 
             // Tells the backend that a position has changed
-            positionCopy.change_key = 'changed'
-            const updatePosition = await api.putPosition(positionCopy, ID);
+            if (positionCopy.change_key !== 'deleted') positionCopy.change_key = 'changed'
+            const updatePosition = await api.putPosition(positionCopy, positionCopy._id);
             return onSuccess(updatePosition)
         } catch (error) {
             return onError(error)
@@ -151,13 +162,13 @@ export const putPosition = (position, ID) => {
 
 // delete
 // ******************************
-export const deletePosition = (position, ID) => {
+export const deletePosition = (id, stationDelete) => {
     return async dispatch => {
         function onStart() {
             dispatch({ type: DELETE_POSITION_STARTED });
         }
         function onSuccess(id) {
-            dispatch({ type: DELETE_POSITION_SUCCESS, payload: { id } });
+            dispatch({ type: DELETE_POSITION_SUCCESS, payload: id });
             return id;
         }
         function onError(error) {
@@ -167,16 +178,21 @@ export const deletePosition = (position, ID) => {
 
         try {
             onStart();
-            // const removePosition = await api.deletePosition(ID);
+            let positionCopy = await dispatch(onDeletePosition(id, stationDelete))
+            // If theres a position copy then tell the backend is deleted
+            // There wouldnt be a position copy because the position did not exist on the backend
+            if (!!positionCopy) {
+                delete positionCopy.temp
+                // IMPORTANT!: Putting with change_key as deleted instead of deleting because it was causing back end issues
+                // Tells the backend that a position has been deleted
+                positionCopy.change_key = 'deleted'
+                const updatePosition = await api.putPosition(positionCopy, positionCopy._id);
+                return onSuccess(positionCopy._id)
+            }
+            else {
+                return
+            }
 
-            // IMPORTANT!: Putting with change_key as deleted instead of deleting because it was causing back end issues
-            let positionCopy = deepCopy(position)
-            delete positionCopy._id
-            delete positionCopy.temp
-            // Tells the backend that a position has been deleted
-            positionCopy.change_key = 'deleted'
-            const updatePosition = await api.putPosition(positionCopy, ID);
-            return onSuccess(ID)
         } catch (error) {
             return onError(error)
         }
@@ -185,19 +201,19 @@ export const deletePosition = (position, ID) => {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 export const addPosition = (position) => {
-    return { type: ADD_POSITION, payload: { position } }
+    return { type: ADD_POSITION, payload: position }
 }
 
 export const updatePosition = (position) => {
-    return { type: UPDATE_POSITION, payload: { position } }
+    return { type: UPDATE_POSITION, payload: position }
 }
 
 export const revertChildren = (position) => {
-    return { type: REVERT_CHILDREN, payload: { position } }
+    return { type: REVERT_CHILDREN, payload: position }
 }
 
-export const updatePositions = (positions) => {
-    return { type: UPDATE_POSITIONS, payload: { positions } }
+export const updatePositions = (positions, selectedPosition, childrenPositions, d3) => {
+    return { type: UPDATE_POSITIONS, payload: { positions, selectedPosition, childrenPositions, d3 } }
 }
 
 export const removePosition = (id) => {
@@ -206,4 +222,78 @@ export const removePosition = (id) => {
 
 export const setPositionAttributes = (id, attr) => {
     return { type: SET_POSITION_ATTRIBUTES, payload: { id, attr } }
+}
+
+export const setSelectedPosition = (position) => {
+    return { type: SET_SELECTED_POSITION, payload: position }
+}
+
+export const setEditingPosition = (bool) => {
+    return { type: EDITING_POSITION, payload: bool }
+}
+
+export const setSelectedStationChildrenCopy = (positions) => {
+    return { type: SET_SELECTED_STATION_CHILDREN_COPY, payload: positions }
+}
+
+
+
+const onDeletePosition = (id, stationDelete) => {
+    return async dispatch => {
+        const stationsState = store.getState().stationsReducer
+        const positionsState = store.getState().positionsReducer
+        const tasksState = store.getState().tasksReducer
+
+        let position = deepCopy(positionsState.positions[id])
+
+        // If the position has a parent then remove from parent
+        // Make sure that the 
+        if (!!position.parent && !stationDelete) {
+
+            let selectedStation = deepCopy(stationsState.stations[position.parent])
+
+            // If there is an associated parent station
+            if (!!selectedStation) {
+                // Remove the position from the list of children
+                const positionIndex = selectedStation.children.findIndex(p => p._id === position._id)
+
+                selectedStation.children.splice(positionIndex, 1)
+                await dispatch(putStation(selectedStation))
+            }
+
+        }
+
+        // Remove from stations copy if need be
+        if (!!positionsState.selectedStationChildrenCopy) {
+            // Update the ChildrenCopy
+            let copyOfCopy = deepCopy(positionsState.selectedStationChildrenCopy)
+            delete copyOfCopy[position._id]
+            setSelectedStationChildrenCopy(
+                copyOfCopy
+            )
+        }
+
+
+        // If the position is new, just remove it from the local station
+        // Since the position is new, it does not exist in the backend and there can't be any associated tasks
+        if (!!position.new) {
+            removePosition(position._id)
+            return null
+        }
+
+        // Else delete in backend and delete any associated tasks
+        else {
+            const tasks = tasksState.tasks
+
+            // Sees if any tasks are associated with the position and delete them
+            Object.values(tasks).filter(task => {
+                return task.load.position == position._id || task.unload.position == position._id
+            }).forEach(async relevantTask => {
+                await dispatch(deleteTask(relevantTask._id))
+            })
+
+
+        }
+        return position
+    }
 }

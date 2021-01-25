@@ -20,7 +20,9 @@ const SideBarButton = (props) => {
 
     const history = useHistory()
 
-    const locationEditing = useSelector(state => state.locationsReducer.editingLocation)
+    const editingStation = useSelector(state => state.stationsReducer.editingStation)
+    const editingPosition = useSelector(state => state.positionsReducer.editingPosition)
+    
     const taskEditing = useSelector(state => state.tasksReducer.editingTask)
     const processEditing = useSelector(state => state.processesReducer.editingProcess)
 
@@ -31,34 +33,36 @@ const SideBarButton = (props) => {
 
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
+    const locationEditing = !!editingStation ? editingStation : editingPosition
+
     const handleConfirmationModal = () => {
         return (
             <ConfirmDeleteModal
-                isOpen = {!!confirmDeleteModal}
+                isOpen={!!confirmDeleteModal}
                 title={"Are you sure you want to leave this page? Any changes will not be saved"}
                 button_1_text={"Yes"}
                 button_2_text={"No"}
                 handleClose={() => setConfirmDeleteModal(null)}
-                handleOnClick1 = {() => {
-                    if(props.mode==='lots'){
-                      const currentPath = history.location.pathname
-                      history.push('/lots/summary')
+                handleOnClick1={() => {
+                    if (props.mode === 'lots') {
+                        const currentPath = history.location.pathname
+                        history.push('/lots/summary')
 
-                      setConfirmDeleteModal(null)
-                      onLocationEditing(false)
-                      onTaskEditing(false)
-                      onProcessEditing(false)
+                        setConfirmDeleteModal(null)
+                        onLocationEditing(false)
+                        onTaskEditing(false)
+                        onProcessEditing(false)
                     }
-                    else{
-                      props.setShowSideBarPage(props.mode)
-                      setConfirmDeleteModal(null)
-                      onLocationEditing(false)
-                      onTaskEditing(false)
-                      onProcessEditing(false)
+                    else {
+                        props.setShowSideBarPage(props.mode)
+                        setConfirmDeleteModal(null)
+                        onLocationEditing(false)
+                        onTaskEditing(false)
+                        onProcessEditing(false)
                     }
 
                 }}
-                handleOnClick2 = {() => {
+                handleOnClick2={() => {
                     setConfirmDeleteModal(null)
                 }}
             />
@@ -75,7 +79,7 @@ const SideBarButton = (props) => {
                 <style.SideBarButtonIcon
                     className='fas fa-map-marker-alt'
                     onClick={() => {
-                        if(locationEditing || taskEditing || processEditing){
+                        if (locationEditing || taskEditing || processEditing) {
                             setConfirmDeleteModal(true)
                         }
                         else{props.setShowSideBarPage(mode)}
@@ -96,7 +100,7 @@ const SideBarButton = (props) => {
                 <style.SideBarButtonIcon
                     className={'icon-rmLogo'}
                     onClick={() => {
-                        if(locationEditing || taskEditing || processEditing){
+                        if (locationEditing || taskEditing || processEditing) {
                             setConfirmDeleteModal(true)
                         }
                         else{props.setShowSideBarPage(mode)}
@@ -140,7 +144,7 @@ const SideBarButton = (props) => {
                 <style.SideBarButtonIcon
                     className={'fas fa-route'}
                     onClick={() => {
-                        if(locationEditing || taskEditing || processEditing){
+                        if (locationEditing || taskEditing || processEditing) {
                             setConfirmDeleteModal(true)
                         }
                         else{props.setShowSideBarPage(mode)}
@@ -160,7 +164,7 @@ const SideBarButton = (props) => {
                 <style.SideBarButtonIcon
                     className={'far fa-calendar-alt'}
                     onClick={() => {
-                        if(locationEditing || taskEditing || processEditing){
+                        if (locationEditing || taskEditing || processEditing) {
                             setConfirmDeleteModal(true)
                         }
                         else{props.setShowSideBarPage(mode)}
@@ -181,7 +185,7 @@ const SideBarButton = (props) => {
                 <style.SideBarButtonIcon
                     className={'fa fa-tasks'}
                     onClick={() => {
-                        if(locationEditing || taskEditing || processEditing){
+                        if (locationEditing || taskEditing || processEditing) {
                             setConfirmDeleteModal(true)
                         }
                         else{props.setShowSideBarPage(mode)}
@@ -202,7 +206,7 @@ const SideBarButton = (props) => {
                 <style.SideBarButtonIcon
                     className={'fas fa-cog'}
                     onClick={() => {
-                        if(locationEditing || taskEditing || processEditing){
+                        if (locationEditing || taskEditing || processEditing) {
                             setConfirmDeleteModal(true)
                         }
                         else{props.setShowSideBarPage(mode)}

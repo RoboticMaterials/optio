@@ -11,8 +11,8 @@ export default function TaskPaths(props) {
     } = props
 
     const selectedTaskReducer = useSelector(state => state.tasksReducer.selectedTask)
-    const positions = useSelector(state => state.locationsReducer.positions)
-    const stations = useSelector(state => state.locationsReducer.stations)
+    const positions = useSelector(state => state.positionsReducer.positions)
+    const stations = useSelector(state => state.stationsReducer.stations)
     const dispatch = useDispatch()
 
     let selectedTask = null

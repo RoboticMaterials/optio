@@ -106,7 +106,7 @@ const DashboardsSidebar = (props) => {
     // redux state
     const dispatch = useDispatch()
     const tasks = useSelector(state => state.tasksReducer.tasks)
-    const stations = useSelector(state => state.locationsReducer.stations)
+    const stations = useSelector(state => state.stationsReducer.stations)
     const code409 = useSelector(state => { return state.taskQueueReducer.error })
 
     const kickOffEnabledInfo = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] })

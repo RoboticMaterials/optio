@@ -7,26 +7,23 @@ import SideBarButton from '../side_bar_buttons/side_bar_button';
 import * as styled from './side_bar_switcher.style'
 import { setMode } from '../../../redux/actions/sidebar_actions'
 
-import { deselectLocation, sideBarBack } from '../../../redux/actions/locations_actions'
+import { setSelectedStation } from '../../../redux/actions/stations_actions'
+import { setSelectedPosition } from '../../../redux/actions/positions_actions'
 import { deselectTask } from '../../../redux/actions/tasks_actions'
-import { setSelectedDevice } from '../../../redux/actions/devices_actions'
-import {editingTask} from '../../../redux/actions/tasks_actions'
-import {editingProcess} from '../../../redux/actions/processes_actions'
+import { editingTask } from '../../../redux/actions/tasks_actions'
+import { editingProcess } from '../../../redux/actions/processes_actions'
 
 
 
 const SideBarSwitcher = (props) => {
 
     const dispatch = useDispatch()
-    const onSetSelectedDevice = (selectedDevice) => dispatch(setSelectedDevice(selectedDevice))
-    const onSideBarBack = (props) => dispatch(sideBarBack(props))
-    const onTaskEditing = (props) => dispatch(editingTask(props))
-    const onProcessEditing = (props) => dispatch(editingProcess(props))
+    const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
+    const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
 
+    const dispatchTaskEditing = (props) => dispatch(editingTask(props))
+    const dispatchProcessEditing = (props) => dispatch(editingProcess(props))
 
-    const selectedLocationCopy = useSelector(state => state.locationsReducer.selectedLocationCopy)
-    const selectedLocationChildrenCopy = useSelector(state => state.locationsReducer.selectedLocationChildrenCopy)
-    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const mode = useSelector(state => state.sidebarReducer.mode)
     const wrapperRef = useRef(null)
@@ -42,9 +39,8 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    onSideBarBack({ selectedLocation, selectedLocationCopy, selectedLocationChildrenCopy })
-                    onTaskEditing(false)
-                    onProcessEditing(false)
+                    dispatchTaskEditing(false)
+                    dispatchProcessEditing(false)
                 }}
                 currentMode={url}
             />
@@ -54,10 +50,11 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    dispatch(deselectLocation())
+                    dispatchSetSelectedStation(null)
+                    dispatchSetSelectedPosition(null)
                     dispatch(deselectTask())
-                    onProcessEditing(false)
-                    onTaskEditing(false)
+                    dispatchProcessEditing(false)
+                    dispatchTaskEditing(false)
                 }}
                 currentMode={url}
             />
@@ -67,10 +64,11 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    dispatch(deselectLocation())
+                    dispatchSetSelectedStation(null)
+                    dispatchSetSelectedPosition(null)
                     dispatch(deselectTask())
-                    onTaskEditing(false)
-                    onProcessEditing(false)
+                    dispatchTaskEditing(false)
+                    dispatchProcessEditing(false)
                 }}
                 currentMode={url}
             />
@@ -81,7 +79,8 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    dispatch(deselectLocation())
+                    dispatchSetSelectedStation(null)
+                    dispatchSetSelectedPosition(null)
                     dispatch(deselectTask())
                 }}
                 currentMode={url}
@@ -92,7 +91,8 @@ const SideBarSwitcher = (props) => {
                   setShowSideBarPage={(page) => {
                       dispatch(setMode(page));
                       history.push(`/${page}`)
-                      dispatch(deselectLocation())
+                    dispatchSetSelectedStation(null)
+                    dispatchSetSelectedPosition(null)
                       dispatch(deselectTask())
                   }}
                   currentMode={url}
@@ -104,8 +104,7 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    onSideBarBack({ selectedLocation })
-                    onTaskEditing(false)
+                    dispatchTaskEditing(false)
                 }}
                 currentMode={url}
             />
@@ -115,8 +114,7 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    onSideBarBack({ selectedLocation })
-                    onTaskEditing(false)
+                    dispatchTaskEditing(false)
                 }}
                 currentMode={url}
             />
@@ -126,9 +124,10 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    dispatch(deselectLocation())
+                    dispatchSetSelectedStation(null)
+                    dispatchSetSelectedPosition(null)
                     dispatch(deselectTask())
-                    onTaskEditing(false)
+                    dispatchTaskEditing(false)
                 }}
                 currentMode={url}
             />

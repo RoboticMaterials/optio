@@ -6,7 +6,6 @@ import { useParams } from "react-router-dom";
 // Import Actions
 import { getMaps } from '../../redux/actions/map_actions'
 import { getTaskQueue, deleteTaskQueueItem } from '../../redux/actions/task_queue_actions'
-import { getLocations } from '../../redux/actions/locations_actions'
 import { getObjects } from '../../redux/actions/objects_actions'
 import { getTasks, deleteTask, putTask } from '../../redux/actions/tasks_actions'
 import { getDashboards, deleteDashboard, postDashboard } from '../../redux/actions/dashboards_actions'
@@ -23,8 +22,8 @@ import { getLocalSettings } from '../../redux/actions/local_actions'
 import { getLoggers } from '../../redux/actions/local_actions';
 import { getRefreshToken } from '../../redux/actions/authentication_actions'
 
-import { deletePosition, putPosition } from '../../redux/actions/positions_actions'
-import { putStation, deleteStation } from '../../redux/actions/stations_actions'
+import { getPositions, deletePosition, putPosition } from '../../redux/actions/positions_actions'
+import { getStations, putStation, deleteStation } from '../../redux/actions/stations_actions'
 
 import { postLocalSettings } from '../../redux/actions/local_actions'
 import * as localActions from '../../redux/actions/local_actions'
@@ -54,7 +53,8 @@ const ApiContainer = (props) => {
     // Dispatches
     const dispatch = useDispatch()
     const onGetMaps = async () => await dispatch(getMaps())
-    const onGetLocations = () => dispatch(getLocations())
+    const onGetStations = () => dispatch(getStations())
+    const onGetPositions = () => dispatch(getPositions())
     const onGetDashboards = () => dispatch(getDashboards())
     const onGetObjects = () => dispatch(getObjects())
     const onGetTasks = () => dispatch(getTasks())
@@ -82,7 +82,7 @@ const ApiContainer = (props) => {
 
     const onDeleteTask = (ID) => dispatch(deleteTask(ID))
     const onDeleteDashboard = (ID) => dispatch(deleteDashboard(ID))
-    const onDeletePosition = (position, ID) => dispatch(deletePosition(position, ID))
+    const onDeletePosition = (position, ID) => dispatch(deletePosition(position))
     const onDeleteStation = async (ID) => await dispatch(deleteStation(ID))
     const onDeleteTaskQItem = async (ID) => await dispatch(deleteTaskQueueItem(ID))
 
@@ -119,7 +119,7 @@ const ApiContainer = (props) => {
         // this interval is always on
         // loads essential info used on every page such as status and taskQueue
         setCriticalDataInterval(setInterval(() => loadCriticalData(), 500));
-        const mapDataInterval = setInterval(() => loadMapData(), 50000)
+        const mapDataInterval = setInterval(() => loadMapData(), 500)
 
         return () => {
             // clear intervals
@@ -302,7 +302,8 @@ const ApiContainer = (props) => {
             return
         }
 
-        const locations = await onGetLocations()
+        const stations = await onGetStations()
+        const positions = await onGetPositions()
         const dashboards = await onGetDashboards()
         const objects = await onGetObjects()
         const sounds = await onGetSounds()
@@ -323,12 +324,12 @@ const ApiContainer = (props) => {
 
         // Cleaner Functions
         const funtion = await handleDeviceWithoutADashboard(devices, dashboards)
-        const funtion1 = await handleTasksWithBrokenPositions(tasks, locations)
-        const funtion2 = await handlePositionsWithBrokenParents(locations)
-        const funtion3 = await handleDevicesWithBrokenStations(devices, locations)
-        const funtion4 = await handleStationsWithBrokenDevices(devices, locations)
-        const funtion5 = await handleDashboardsWithBrokenStations(dashboards, locations)
-        const funtion6 = await handleStationsWithBrokenChildren(locations)
+        const funtion1 = await handleTasksWithBrokenPositions(tasks, stations, positions)
+        // const funtion2 = await handlePositionsWithBrokenParents(stations, positions)
+        const funtion3 = await handleDevicesWithBrokenStations(devices, stations)
+        const funtion4 = await handleStationsWithBrokenDevices(devices, stations)
+        const funtion5 = await handleDashboardsWithBrokenStations(dashboards, stations)
+        const funtion6 = await handleStationsWithBrokenChildren(stations, positions)
         const funtion7 = await handleTasksWithBrokenProcess(processes, tasks)
         const funtion8 = await handleProcessesWithBrokenRoutes(processes, tasks)
 
@@ -415,7 +416,8 @@ const ApiContainer = (props) => {
       tasks, skills, objects, locations, dashboards, sounds
     */
     const loadMapData = async () => {
-        const locations = await onGetLocations();
+        const stations = await onGetStations();
+        const positions = await onGetPositions();
         const tasksAnalysis = await onGetTasksAnalysis()
     }
 
@@ -441,11 +443,13 @@ const ApiContainer = (props) => {
     const loadCardsData = async (processId) => {
         if (processId) {
             await onGetProcessCards(processId)
+
         } else {
             onGetCards()
         }
-        // dispatchGetLots()
 
+        onGetProcesses()
+        onGetTasks()
     }
 
     /*
@@ -547,12 +551,9 @@ const ApiContainer = (props) => {
      * a deleted position/station
      * a position thats parent station has been deleted
      *  */
-    const handleTasksWithBrokenPositions = async (tasks, locations) => {
+    const handleTasksWithBrokenPositions = async (tasks, stations, positions) => {
 
-        if (tasks === undefined || locations === undefined) return
-
-        const stations = locations.stations
-        const positions = locations.positions
+        if (tasks === undefined || stations === undefined || positions === undefined) return
 
         Object.values(tasks).map(async (task) => {
             // console.log('QQQQ Task', positions[task.load.position], positions[task.unload.position])
@@ -591,19 +592,16 @@ const ApiContainer = (props) => {
      * A broken parent is a parent that has been deleted
      * @param {*} locations
      */
-    const handlePositionsWithBrokenParents = async (locations) => {
+    const handlePositionsWithBrokenParents = async (stations, positions) => {
 
-        if (locations === undefined) return
-
-        const stations = locations.stations
-        const positions = locations.positions
+        if (stations === undefined || positions === undefined) return
 
         Object.values(positions).map(async (position) => {
 
-            if (!!position.parent && !Object.keys(stations).includes(position.parent)) {
+            if (!!position.parent && !Object.keys(stations).includes(position.parent && position.change_key !== 'deleted')) {
                 console.log('QQQQ This position should be deleted', position)
                 alert('This position should be deleted')
-                onDeletePosition(position, position._id)
+                onDeletePosition(position)
             }
 
         })
@@ -615,12 +613,9 @@ const ApiContainer = (props) => {
      * This happens because it happens... I have no idea why this happens....
      * @param {*} locations
      */
-    const handleStationsWithBrokenChildren = (locations) => {
+    const handleStationsWithBrokenChildren = (stations, positions) => {
 
-        if (locations === undefined) return
-
-        const stations = locations.stations
-        const positions = locations.positions
+        if (stations === undefined || positions === undefined) return
 
         Object.values(stations).map((station) => {
 
@@ -658,11 +653,9 @@ const ApiContainer = (props) => {
      * @param {*} devices
      * @param {*} locations
      */
-    const handleDevicesWithBrokenStations = async (devices, locations) => {
+    const handleDevicesWithBrokenStations = async (devices, stations) => {
 
-        if (devices === undefined || locations === undefined) return
-
-        const stations = locations.stations
+        if (devices === undefined || stations === undefined) return
 
         Object.values(devices).map(async (device) => {
             if (!!device.station_id && !Object.keys(stations).includes(device.station_id)) {
@@ -684,11 +677,9 @@ const ApiContainer = (props) => {
      * @param {*} devices
      * @param {*} locations
      */
-    const handleStationsWithBrokenDevices = (devices, locations) => {
+    const handleStationsWithBrokenDevices = (devices, stations) => {
 
-        if (devices === undefined || locations === undefined) return
-
-        const stations = locations.stations
+        if (devices === undefined || stations === undefined) return
 
         Object.values(stations).map((station) => {
 
@@ -719,11 +710,9 @@ const ApiContainer = (props) => {
      * @param {*} dashboards
      * @param {*} locations
      */
-    const handleDashboardsWithBrokenStations = (dashboards, locations) => {
+    const handleDashboardsWithBrokenStations = (dashboards, stations) => {
 
-        if (dashboards === undefined || locations === undefined) return
-
-        const stations = locations.stations
+        if (dashboards === undefined || stations === undefined) return
 
         Object.values(dashboards).map((dashboard) => {
             if (!!dashboard.location && !dashboard.device && !stations[dashboard.location]) {

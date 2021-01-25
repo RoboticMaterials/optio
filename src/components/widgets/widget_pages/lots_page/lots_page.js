@@ -33,18 +33,29 @@ const LotsPage = (props) => {
     const onShowCardEditor = (bool) => dispatch(showEditor(bool))
 
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
-    const locations = useSelector(state => state.locationsReducer.locations)
+    const stations = useSelector(state => state.stationsReducer.stations)
     const cards = useSelector(state=>state.cardsReducer.cards)
     const showCardEditor = useSelector(state=>state.cardsReducer.showEditor)
     const [locationName, setLocationName] = useState("")
-    const location = locations[stationID]
     const [selectedCard, setSelectedCard] = useState(null)
+    const [lotsPresent, setLotsPresent] = useState(false)
+
+    const location = stations[stationID]
 
     // update location properties
     useEffect(() => {
-        const location = locations[stationID]
+        const location = stations[stationID]
         setLocationName(location.name)
-    }, [stationID, locations])
+    }, [stationID, stations])
+
+    useEffect(() => {
+        for (let i = 0; i < Object.values(cards).length; i++) {
+            if (!!Object.values(cards)[i].bins[location._id]) {
+                setLotsPresent(true)
+                break
+            }
+        }
+      },[])
 
     const goToCardPage = () => {
         onWidgetLoaded(false)
@@ -84,10 +95,15 @@ const LotsPage = (props) => {
         </styled.HeaderContainer>
 
           <styled.SubtitleContainer>
+          {!!lotsPresent ?
             <styled.Subtitle>Lots at {locationName}:</styled.Subtitle>
+            :
+            <styled.Subtitle>No Lots</styled.Subtitle>
+          }
             <Button
                 schema={'devices'}
                 onClick = {goToCardPage}
+                style = {{position: 'absolute', right:'1.6rem'}}
             >
                 Go To Card View
             </Button>

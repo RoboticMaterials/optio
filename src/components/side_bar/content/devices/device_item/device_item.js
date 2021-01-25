@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react'
 
 import { useDispatch, useSelector } from 'react-redux'
 
 // Import actions
-import * as locationActions from '../../../../../redux/actions/locations_actions'
+import { setSelectedStation } from '../../../../../redux/actions/stations_actions'
 
 // Import styles
 import * as styled from './device_item.style'
@@ -29,8 +28,9 @@ const DeviceItem = (props) => {
     const deviceName = device.device_name
 
     const dispatch = useDispatch()
-    const onSelectLocation = (location) => dispatch(locationActions.selectLocation(location))
-    const onDeselectLocation = (location) => dispatch(locationActions.deselectLocation(location))
+    const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
+
+    const stations = useSelector(state => state.stationsreducer.stations)
 
     const [stationId, setStationId] = useState(false)
 
@@ -210,9 +210,9 @@ const DeviceItem = (props) => {
 
         <styled.DeviceContainer key={ind}
             onMouseEnter={() => {
-                !!stationId && onSelectLocation(stationId)
+                !!stationId && dispatchSetSelectedStation(stations[stationId])
             }}
-            onMouseLeave={() => { !!stationId && onDeselectLocation() }}>
+            onMouseLeave={() => { !!stationId && dispatchSetSelectedStation(null) }}>
 
             <styled.BigCircle isSmall={isSmall}>
 
