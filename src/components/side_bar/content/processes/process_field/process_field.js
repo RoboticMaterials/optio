@@ -39,6 +39,27 @@ import * as styled from './process_field.style'
 import {DEVICE_CONSTANTS} from "../../../../../constants/device_constants";
 
 
+const throttle = (func, limit) => {
+    let lastFunc
+    let lastRan
+    return function() {
+        const context = this
+        const args = arguments
+        if (!lastRan) {
+            func.apply(context, args)
+            lastRan = Date.now()
+        } else {
+            clearTimeout(lastFunc)
+            lastFunc = setTimeout(function() {
+                if ((Date.now() - lastRan) >= limit) {
+                    func.apply(context, args)
+                    lastRan = Date.now()
+                }
+            }, limit - (Date.now() - lastRan))
+        }
+    }
+}
+
 export const ProcessField = (props) => {
     const {
         formikProps,
@@ -90,14 +111,18 @@ export const ProcessField = (props) => {
     const [editingTask, setEditingTask] = useState(false) // Used to tell if a task is being edited
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [showExistingTaskWarning, setShowExistingTaskWarning] = useState(false);
+    // throttled func
+    const [dispatchSetSelectedProcess_Throttled, ] = useState(()=>throttle(
+        ()=> {
+            dispatchSetSelectedProcess({
+                ...values,
+            })
+        }, 500));
 
     useEffect(() => {
 
-        // map process values to selectedProcess (needed for map view to have access to process)
-        dispatchSetSelectedProcess({
-            ...values,
-            // routes: values.routes.map((currRoute) => currRoute._id) // processes in redux only store the route keys
-        })
+        // update selectedProcess (throttled to reduce lag from updating constantly
+        dispatchSetSelectedProcess_Throttled()
 
         return () => {}
 

@@ -134,13 +134,6 @@ const LoadUnloadFields = (props) => {
                 name={fieldParent ? `${fieldParent}.load.instructions` : "load.instructions"}
                 schema={'tasks'}
                 focus={!!selectedTask && selectedTask.type == null}
-                onChange={e => {
-                    let load = selectedTask.load
-                    dispatchSetTaskAttributes(selectedTask._id, { load: {
-                            ...selectedTask.load,
-                            instructions: e.target.value
-                        } })
-                }}
                 lines={2}
                 InputComponent={Textbox}
             />
@@ -197,14 +190,6 @@ const LoadUnloadFields = (props) => {
                     <TextField
                         name={fieldParent ? `${fieldParent}.unload.instructions` : "unload.instructions"}
                         schema={'tasks'}
-                        onChange={e => {
-                            dispatchSetTaskAttributes(selectedTask._id, {
-                                unload: {
-                                    ...selectedTask.unload,
-                                    instructions: e.target.value
-                                }
-                            })
-                        }}
                         focus={!!selectedTask && selectedTask.type == null}
                         lines={2}
                         InputComponent={Textbox}
