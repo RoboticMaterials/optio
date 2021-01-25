@@ -430,7 +430,7 @@ export const ProcessField = (props) => {
                     schema={'processes'}
                     // disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
                     secondary
-                    disabled={selectedTask?.new}
+                    disabled={editingTask}
                     onClick={() => {
 
                         let prevObj
@@ -459,7 +459,7 @@ export const ProcessField = (props) => {
                     schema={'processes'}
                     // disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
                     secondary
-                    disabled={selectedTask?.new}
+                    disabled={editingTask}
                     onClick={() => {
 
                         let prevObj

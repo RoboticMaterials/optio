@@ -94,3 +94,34 @@ export const getLoadStationDashboard = (route) => {
 
     return dashboards[0]
 }
+
+export const isStationInRoutes = (routes, stationId) => {
+    console.log("isStationInRoutes routes",routes)
+    console.log("isStationInRoutes stationId",stationId)
+    let containsStation = false
+
+    for(const currRoute of routes) {
+        console.log("currRoute ",currRoute)
+        if(containsStation) return containsStation
+
+            const {
+                load,
+                unload
+            } = currRoute || {}
+
+        const {
+            station: loadStationId
+        } = load || {}
+
+        const {
+            station: unloadStationId
+        } = unload || {}
+
+        console.log("isStationInRoutes loadStationId",loadStationId)
+        console.log("isStationInRoutes unloadStationId",unloadStationId)
+
+        if((loadStationId === stationId) || (unloadStationId === stationId)) containsStation = true
+    }
+
+    return containsStation
+}

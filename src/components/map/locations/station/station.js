@@ -22,6 +22,7 @@ import { StationTypes } from '../../../../constants/station_constants'
 import LocationSvg from '../location_svg/location_svg'
 import DragEntityProto from '../drag_entity_proto'
 import {getPreviousRoute} from "../../../../methods/utils/processes_utils";
+import {isNextRouteViable, isStationInRoutes} from "../../../../methods/utils/route_utils";
 
 function Station(props) {
 
@@ -71,43 +72,135 @@ function Station(props) {
     // Disable if theres a selected position and the station's children dont contain that position
     else if (!!selectedPosition && !station.children.includes(selectedPosition._id)) disabled = true
 
-    // This filters stations when making a process
-    // If the process has routes, and you're adding a new route, you should only be able to add a route starting at the last station
-    // This eliminates process with gaps between stations
-    else if (!!selectedProcess && !!selectedTask && selectedProcess.routes.length > 0 && selectedTask.load.station === null) {
-
-        // Gets the last route in the routes array
-        const previousTask = getPreviousRoute(selectedProcess.routes, selectedTask._id)
-
-        // If there's an unload (which there should be), then find the unload station
-        if (!!previousTask.unload) {
-
-            const unloadStationID = previousTask.unload.station
-
-            // If position is not in the unload station, then disable that pos
-            if (unloadStationID !== station._id) {
-                disabled = true
-            }
-        }
-    }
 
     // This filters out stations when fixing a process
     // If the process is broken, then you can only start the task at the route before break's unload location
-    else if (!!selectedTask && !!selectedProcess && !!fixingProcess && selectedTask.load.station === null) {
+    else if (!!selectedTask && !!selectedProcess && !!fixingProcess) {
 
-        // Gets the route before break
-        const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
-        const taskBeforeBreak = tasks[routeBeforeBreak._id]
+        if(selectedTask.load.station === null) {
 
-        if (!!taskBeforeBreak.unload) {
-            const unloadStationID = taskBeforeBreak.unload.station
+            // Gets the route before break
+            const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
 
-            // If position is not in the unload station, then disable that pos
-            if (unloadStationID !== station._id) {
-                disabled = true
+            if (!!routeBeforeBreak.unload) {
+                const unloadStationID = routeBeforeBreak.unload.station
+
+                // If position is not in the unload station, then disable that pos
+                if (unloadStationID !== station._id) {
+                    disabled = true
+                }
+            }
+        }
+
+        else if(selectedTask.unload.station === null) {
+
+            // can't pick same station for load and unload
+            if(station._id === selectedTask.load.station) disabled = true
+
+            const containsStation = isStationInRoutes(selectedProcess.routes, station._id)
+            if(containsStation) disabled = true
+
+            const routeAfterBreak = selectedProcess.routes[selectedProcess.broken] || {}
+            if(routeAfterBreak.load) {
+                const loadStationID = routeAfterBreak.load.station
+
+                // If position is not in the unload station, then disable that pos
+                if (loadStationID === station._id) {
+                    disabled = false
+                }
             }
         }
     }
+
+
+
+    // This filters stations when making a process
+    // If the process has routes, and you're adding a new route, you should only be able to add a route starting at the last station
+    // This eliminates process with gaps between stations
+    else if (!!selectedProcess && !!selectedTask  ) {
+        if(selectedProcess.routes.length > 0) {
+            if(selectedTask.load.station === null) {
+                const {
+                    temp
+                } = selectedTask || {}
+                const {
+                    insertIndex
+                } = temp || {}
+
+                console.log("insertIndex",insertIndex)
+                if(insertIndex === 0 ) {
+                    const containsStation = isStationInRoutes(selectedProcess.routes, station._id)
+                    if(containsStation) disabled = true
+
+
+                }
+
+                else {
+                    // Gets the last route in the routes array
+                    const previousRoute = getPreviousRoute(selectedProcess.routes, selectedTask._id)
+
+                    // If there's an unload (which there should be), then find the unload station
+                    if (!!previousRoute.unload) {
+
+                        const unloadStationID = previousRoute.unload.station
+
+                        // If position is not in the unload station, then disable that pos
+                        if (unloadStationID !== station._id) {
+                            disabled = true
+                        }
+                    }
+                }
+            }
+
+            else if((selectedTask.unload.station === null)) {
+                const {
+                    temp
+                } = selectedTask || {}
+                const {
+                    insertIndex
+                } = temp || {}
+
+                console.log("insertIndex",insertIndex)
+                if(insertIndex === 0 ) {
+                    // const nextTask = selectedProcess.routes[0]
+                    // const loadStationId = nextTask.load.station
+                    //
+                    // if(loadStationId !== station._id) {
+                    //     disabled = true
+                    // }
+
+                    const containsStation = isStationInRoutes(selectedProcess.routes, station._id)
+                    console.log("containsStation",containsStation)
+                    if(containsStation) disabled = true
+
+                    if(station._id === selectedProcess.routes[0].load.station) disabled = false
+                }
+
+                else {
+                    const containsStation = isStationInRoutes(selectedProcess.routes, station._id)
+                    if(containsStation) disabled = true
+                }
+            }
+
+            else {
+                const containsStation = isStationInRoutes(selectedProcess.routes, station._id)
+                if(containsStation) disabled = true
+
+                if(selectedTask.load.station === station._id) disabled = false
+            }
+
+        }
+
+        // editing first route
+        else {
+            // don't allow selecting same station for load and unload
+            if((selectedTask.load.station && selectedTask.unload.station === null)) {
+                if(station._id === selectedTask.load.station) disabled = true
+            }
+        }
+    }
+
+
 
     const shouldGlow = false
 

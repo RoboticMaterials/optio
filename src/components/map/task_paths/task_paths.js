@@ -48,6 +48,7 @@ export default function TaskPaths(props) {
         if (e.key == 'Escape') {
             let load = stateRef.current.load
             load.position = null
+            load.station = null
             dispatch(setTaskAttributes(stateRef.current._id, { load }))
         }
     })
