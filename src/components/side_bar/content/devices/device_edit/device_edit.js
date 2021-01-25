@@ -47,7 +47,6 @@ const DeviceEdit = (props) => {
     const onSetSelectedDevice = (selectedDevice) => dispatch(deviceActions.setSelectedDevice(selectedDevice))
     const onAddPosition = (updatedPosition) => dispatch(positionActions.addPosition(updatedPosition))
 
-    const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
     const selectedDevice = useSelector(state => state.devicesReducer.selectedDevice)
     const devices = useSelector(state => state.devicesReducer.devices)
     const positions = useSelector(state => state.positionsReducer.positions)
@@ -187,16 +186,6 @@ const DeviceEdit = (props) => {
 
     // This sets both the device name and station name to the same name
     const handleSetDeviceName = (event) => {
-        dispatchSetSelectedStation({
-            ...selectedLocation,
-            name: event.target.value
-        })
-
-        onSetSelectedDevice({
-            ...selectedDevice,
-            device_name: event.target.value
-        })
-
     }
 
     return (

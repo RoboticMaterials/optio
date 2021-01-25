@@ -23,8 +23,8 @@ import { PositionTypes } from '../../../../../constants/position_constants'
 import { deepCopy } from '../../../../../methods/utils/utils'
 
 // Import actions
-import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition, setEditingPosition, putPosition, postPosition, setSelectedStationChildrenCopy } from '../../../../../redux/actions/positions_actions'
-import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setEditingStation, putStation, postStation } from '../../../../../redux/actions/stations_actions'
+import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition, setEditingPosition, putPosition, postPosition, setSelectedStationChildrenCopy, removePosition } from '../../../../../redux/actions/positions_actions'
+import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setEditingStation, putStation, postStation, removeStation } from '../../../../../redux/actions/stations_actions'
 
 const EditLocation = () => {
     const dispatch = useDispatch()
@@ -38,6 +38,7 @@ const EditLocation = () => {
     const dispatchPutStation = async (station) => await dispatch(putStation(station))
     const dispatchPostStation = async (station) => await dispatch(postStation(station))
     const dispatchDeleteStation = async (id) => await dispatch(deleteStation(id))
+    const dispatchRemoveStation = (id) => dispatch(removeStation(id))
 
     // Position Dispatches
     const dispatchSetSelectedPosition = async (position) => await dispatch(setSelectedPosition(position))
@@ -47,6 +48,7 @@ const EditLocation = () => {
     const dispatchDeletePosition = async (id) => dispatch(deletePosition(id))
     const dispatchPutPosition = async (position) => await dispatch(putPosition(position))
     const dispatchPostPosition = async (position) => await dispatch(postPosition(position))
+    const dispatchRemovePosition = (id) => dispatch(removePosition(id))
 
     const stations = useSelector(state => state.stationsReducer.stations)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
@@ -127,6 +129,10 @@ const EditLocation = () => {
 
     }
 
+    /**
+     * Deletes the selected location
+     * The whole delete process can be found in each locations respected actions
+     */
     const onDelete = async () => {
 
         // Station 
@@ -142,9 +148,27 @@ const EditLocation = () => {
         onBack()
     }
 
+    /**
+     * Handles Back
+     * Sets editing to false
+     * Removes Station if new
+     * Sets selected Location to null
+     */
     const onBack = () => {
+
+        // The order of these functions matter
         dispatchSetEditingStation(false)
         dispatchSetEditingPosition(false)
+
+        if (!!selectedLocation.new) {
+            if (selectedLocation.schema === 'station') {
+                dispatchRemoveStation(selectedLocation._id)
+            }
+
+            else if (selectedLocation.schema === 'position') {
+                dispatchRemovePosition(selectedLocation._id)
+            }
+        }
 
         dispatchSetSelectedPosition(null)
         dispatchSetSelectedStation(null)
@@ -255,10 +279,10 @@ const EditLocation = () => {
         // If there is a type selected and its not the button type, that means this type has not been selected so gray everything out
         const types = ['human', 'warehouse']
 
-        return types.map((type) => {
+        return types.map((type, i) => {
             const isSelected = (!!selectedStation && selectedStation.type !== null && selectedStation.type === type) ? selectedStation.type : false;
             return (
-                <LocationButton type={type} isSelected={isSelected} handleAddLocation={onAddLocation} />
+                <LocationButton key={`stat_button_${i}`} type={type} isSelected={isSelected} handleAddLocation={onAddLocation} />
             )
         })
 
@@ -267,10 +291,10 @@ const EditLocation = () => {
     const renderPositionButtons = () => {
         const types = ['cart_position', 'shelf_position']
 
-        return types.map((type) => {
+        return types.map((type, i) => {
             const isSelected = (!!selectedPosition && selectedPosition.type !== null && selectedPosition.type === type) ? selectedPosition.type : false;
             return (
-                <LocationButton type={type} isSelected={isSelected} handleAddLocation={onAddLocation} />
+                <LocationButton key={`pos_button_${i}`} type={type} isSelected={isSelected} handleAddLocation={onAddLocation} />
             )
         })
     }

@@ -10,12 +10,11 @@ import WidgetButton from './widget_button/widget_button'
 import useWindowSize from '../../hooks/useWindowSize'
 
 // Import Actions
-import { setSelectedStation } from '../../redux/actions/stations_actions'
-import { setSelectedPosition, setSelectedStationChildrenCopy } from '../../redux/actions/positions_actions'
+import { setSelectedStation, setEditingStation } from '../../redux/actions/stations_actions'
+import { setSelectedPosition, setSelectedStationChildrenCopy, setEditingPosition } from '../../redux/actions/positions_actions'
 import { widgetLoaded, hoverStationInfo } from '../../redux/actions/widget_actions'
 
 import { setOpen } from "../../redux/actions/sidebar_actions"
-import * as locationActions from '../../redux/actions/locations_actions'
 
 import { deepCopy } from '../../methods/utils/utils'
 
@@ -55,15 +54,16 @@ const Widgets = (props) => {
 
     // Info passed from workstations/device_locations via redux
     const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
+
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchWidgetLoaded = (bool) => dispatch(widgetLoaded(bool))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
+    const dispatchSetEditingStation = (bool) => dispatch(setEditingStation(bool))
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
+    const dispatchSetEditingPosition = (bool) => dispatch(setEditingPosition(bool))
     const dispatchSetSelectedStationChildrenCopy = (locationChildren) => dispatch(setSelectedStationChildrenCopy(locationChildren))
     const dispatchShowSideBar = (bool) => dispatch(setOpen(bool))
-    const [hoverX, setHoverX] = useState(null)
-    const [hoverY, setHoverY] = useState(null)
 
     // Location ID passed down through workstations via redux
     const stationID = hoveringInfo.id
@@ -78,17 +78,27 @@ const Widgets = (props) => {
         // setTimeout(() => dispatchWidgetLoaded(true), 100)
         dispatchWidgetLoaded(true)
         return () => {
-            dispatchHoverStationInfo(null)
-
-            dispatchSetSelectedStation(null)
-            dispatchSetSelectedPosition(null)
-
-            dispatchSetSelectedStation(null)
-            dispatchSetSelectedPosition(null)
-
-            dispatchWidgetLoaded(false)
+            onWidgetClose(true)
         }
     }, [])
+
+
+    /**
+     * Closes the widget
+     * If editing, then dont set the selected location to null
+     * @param {*} edit 
+     */
+    const onWidgetClose = (edit) => {
+        if (!edit) {
+            console.log('QQQQ Deselect')
+            dispatchSetSelectedStation(null)
+            dispatchSetSelectedPosition(null)
+        }
+
+        dispatchHoverStationInfo(null)
+        dispatchWidgetLoaded(false)
+
+    }
 
     // If widgetPage exists in URL params, then the widget pages are open
     const HandleWidgetPageOpen = () => {
@@ -99,7 +109,19 @@ const Widgets = (props) => {
         }
     }
 
-    const onClickLocation = () => {
+    const onClickLocation = async () => {
+        if (!!selectedStation) {
+            dispatchSetEditingStation(true)
+            console.log('QQQQ HUR BABE', editingStation)
+            dispatchSetSelectedStationChildrenCopy(selectedStation.children.map(positionID => deepCopy(positions[positionID])))
+            dispatchSetSelectedStation(selectedStation)
+        }
+        else if (!!selectedPosition) {
+            dispatchSetEditingPosition(true)
+            dispatchSetSelectedPosition(selectedPosition)
+
+        }
+
         history.push('/locations')
 
         if (!showSideBar) {
@@ -108,12 +130,8 @@ const Widgets = (props) => {
         }
 
         dispatchShowSideBar(true)
-        if (!!selectedStation) {
-            // TODO: Not sure why this is here...
-            // dispatchSetSelectedStationChildrenCopy(selectedStation.children.map(positionID => deepCopy(positions[positionID])))
-        }
 
-        dispatch(locationActions.editing(true))
+        onWidgetClose(true)
         dispatchHoverStationInfo(null)
 
 
@@ -359,9 +377,7 @@ const Widgets = (props) => {
 
                 onMouseLeave={() => {
                     if (!widgetPage && !!selectedLocation && selectedLocation.name !== 'TempRightClickMovePosition' && !editing) {
-                        dispatchHoverStationInfo(null)
-                        dispatchSetSelectedStation(null)
-                        dispatchSetSelectedPosition(null)
+                        onWidgetClose()
                     }
                 }}
 

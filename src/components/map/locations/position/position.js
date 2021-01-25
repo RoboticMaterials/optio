@@ -85,6 +85,8 @@ function Position(props) {
     if (!!selectedStationChildrenCopy && (position._id in selectedStationChildrenCopy) && !selectedTask) isSelected = true
     // Set selected if there is a selected postion that is this position and no selected task
     else if (!!selectedPosition && selectedPosition._id === position._id && !selectedTask) isSelected = true
+    // Set selected if the position is a temp right click
+    else if(position.name === 'TempRightClickMovePosition') isSelected = true
 
     // Used to disable the ability to add position as a task
     let disabled = false
@@ -167,8 +169,7 @@ function Position(props) {
     // ======================================== //
 
     useEffect(() => {
-        //window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
-
+        window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         return () => {
             window.removeEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
         }
@@ -177,6 +178,7 @@ function Position(props) {
     // Automatically opens widget pages and sets hovering to true in the position is a temp right click
     useEffect(() => {
         if (position !== null && position.name === 'TempRightClickMovePosition') {
+            console.log('QQQQ Heyo')
             setHovering(true)
             dispatchHoverStationInfo(handleWidgetHover())
             dispatchSetSelectedPosition(position)
@@ -231,9 +233,9 @@ function Position(props) {
 
     const onMouseEnter = () => {
         // Only hover if there is no selected task
-        if (!hoveringInfo && selectedTask === null) {
+        if (!hoveringInfo && selectedTask === null && !position.temp) {
             setHovering(true)
-            if (!editing() && !rotating && !translating && !selectedPosition && !selectedStation && !selectedTask && !position.temp) {
+            if (!editing() && !rotating && !translating && !selectedPosition && !selectedStation && !selectedTask) {
                 dispatchHoverStationInfo(handleWidgetHover())
                 dispatchSetSelectedPosition(position)
 
@@ -287,7 +289,7 @@ function Position(props) {
                 isSelected={isSelected}
                 hovering={hovering}
                 rotating={rotating}
-                hoveringInfo={hoveringInfo}
+                hoveringInfo={position.name !== 'TempRightClickMovePosition' ? hoveringInfo : null}
                 shouldGlow={shouldGlow}
 
                 handleMouseEnter={onMouseEnter}

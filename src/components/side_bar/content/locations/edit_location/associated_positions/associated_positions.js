@@ -52,12 +52,7 @@ export default function Positions(props) {
     const [deletingIndex, setDeletingIndex] = useState()
     const [deletingPosition, setDeletingPosition] = useState()
 
-
-    // const [selectedPositions, setSelectedPositions] = useState([])
-
-
     const positionTypes = !!MiRMapEnabled ? ['cart_position', 'shelf_position',] : []
-    const selectedPositions = Object.values(positions).filter(position => position.parent == selectedStation._id)
 
     /**
      * Handles deleting positions
@@ -69,14 +64,14 @@ export default function Positions(props) {
         dispatchDeletePosition(position._id)
     }
 
-    const onAssociatedPositions = (associatedPositions, positionType) => {
+    const renderAssociatedPositions = (associatedPositions, positionType) => {
 
         return associatedPositions.map((position, i) => {
 
             if (position.type === positionType) {
 
                 return (
-                    <styled.PositionListItem background={PositionTypes[positionType].color}>
+                    <styled.PositionListItem background={PositionTypes[positionType].color} key={`associatecd_pos_${i}`}>
 
 
                         <MinusButton
@@ -138,7 +133,12 @@ export default function Positions(props) {
         dispatchSetStationAttributes(selectedStation._id, { children })
     }
 
-    const onPositionCards = () => {
+    const onDeleteAssociatedPosition = async () => {
+        await onDelete(deletingPosition)
+        setConfirmDeleteModal(null)
+    }
+
+    const renderPositionCards = () => {
 
         return positionTypes.map((positionType) => {
 
@@ -187,8 +187,7 @@ export default function Positions(props) {
                 title={"Are you sure you want to delete this Position?"}
                 button_1_text={"Yes"}
                 handleOnClick1={async () => {
-                    await onDelete(deletingPosition)
-                    setConfirmDeleteModal(null)
+                    await onDeleteAssociatedPosition()
                 }}
                 button_2_text={"No"}
                 handleOnClick2={() => setConfirmDeleteModal(null)}
@@ -201,7 +200,7 @@ export default function Positions(props) {
             {!!MiRMapEnabled &&
                 <>
                     <styled.CardContainer>
-                        {onPositionCards()}
+                        {renderPositionCards()}
                     </styled.CardContainer>
 
                     <styled.Label>Associated Positions</styled.Label>
@@ -215,7 +214,7 @@ export default function Positions(props) {
                     return (
                         <>
                             {/* <styled.Label style={{fontSize:'1.25rem'}}>{positionType}</styled.Label> */}
-                            {onAssociatedPositions(selectedPositions, positionType)}
+                            {renderAssociatedPositions(Object.values(positions).filter(position => position.parent == selectedStation._id), positionType)}
                         </>
                     )
                 })}

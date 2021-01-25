@@ -57,6 +57,12 @@ export default function LocationContent() {
         ...stations,
         ...positions
     }
+    
+    useEffect(() => {
+        return () => {
+            
+        }
+    }, [])
 
     /**
      * This function is called when the back button is pressed. If the location is new, it is deleted;
