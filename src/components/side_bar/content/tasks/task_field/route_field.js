@@ -144,10 +144,10 @@ const TaskField = (props) => {
             const unloadStation = stations[unloadStationId] || {name: ""}
 
             if(loadStationId && unloadStationId) {
-                setFieldValue(fieldParent ? `${fieldParent}.name` : "name", loadStation.name + " - " + unloadStation.name)
+                setFieldValue(fieldParent ? `${fieldParent}.name` : "name", loadStation.name + " => " + unloadStation.name)
             }
             else if(loadStationId) {
-                setFieldValue(fieldParent ? `${fieldParent}.name` : "name", loadStation.name + " - ")
+                setFieldValue(fieldParent ? `${fieldParent}.name` : "name", loadStation.name + " => ")
             }
         }
 
