@@ -121,8 +121,8 @@ export const DateItem = styled.div`
 `
 
 export const DateArrow = styled.i`
-	margin-left: 1rem;
-	margin-right: 1rem;
+	margin-left: .35rem;
+	margin-right: .35rem;
 	color: ${props => props.theme.bg.secondary};
 `
 
