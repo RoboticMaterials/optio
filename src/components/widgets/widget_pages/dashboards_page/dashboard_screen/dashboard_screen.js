@@ -136,7 +136,10 @@ const DashboardScreen = (props) => {
                 task_id
             } = currButton
 
-            if(!(tasks[task_id])) return false
+            if(!(tasks[task_id])) {
+                console.error('Task does not exist! Hidding button from dashboard')
+                return false
+            }
             return true
         })
 
