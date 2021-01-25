@@ -30,7 +30,7 @@ const LotQueue = ((props) => {
 		<Column
 			sortMode={sortMode}
 			maxHeight={maxHeight}
-			maxWidth={"fit-content"}
+			maxWidth={"20rem"}
 			HeaderContent={
 				!isCollapsed ?
 					<styled.StationHeader>

@@ -21,7 +21,7 @@ const StationsColumn = ((props) => {
 
 	return(
 		<Column
-			maxWidth={"15rem"}
+			maxWidth={"20rem"}
 			sortMode={sortMode}
 			maxHeight={maxHeight}
 			HeaderContent={

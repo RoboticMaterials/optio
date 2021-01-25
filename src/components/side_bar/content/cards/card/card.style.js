@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Draggable } from 'react-smooth-dnd';
+import {rowCss} from "../card_editor/card_editor.style";
 
 export const Container = styled.div`
  
@@ -76,8 +77,8 @@ export const FooterBar = styled.div`
 	background: ${props => props.theme.bg.septenary};
 	// background: ${props => props.color};
 	display: flex;
-	justify-content: flex-end;
-	padding: 0 1rem 0 0;
+	justify-content: space-between;
+	padding: 0 1rem 0 1rem;
   font-size: ${props => props.theme.fontSize.sz6};
 `
 
@@ -96,4 +97,34 @@ export const StyledDraggable = styled(Draggable)`
 		background: blue;
 		padding: 2rem;
 	}
+`
+
+export const DatesContainer = styled.span`
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+    width: fit-content;
+`
+
+export const DateItem = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	
+	&:hover {
+		cursor: pointer;
+	}
+	
+`
+
+export const DateArrow = styled.i`
+	margin-left: 1rem;
+	margin-right: 1rem;
+	color: ${props => props.theme.bg.secondary};
+`
+
+export const DateText = styled.span`
+
 `

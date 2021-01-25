@@ -23,7 +23,7 @@ const FinishColumn = ((props) => {
 		<Column
 			maxHeight={maxHeight}
 			sortMode={sortMode}
-			maxWidth={"15rem"}
+			maxWidth={"20rem"}
 			HeaderContent={
 				!isCollapsed ?
 				<styled.StationHeader>
