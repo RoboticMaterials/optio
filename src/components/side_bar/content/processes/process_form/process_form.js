@@ -59,7 +59,7 @@ const ProcessForm = (props) => {
 
 		// perform any updates for routes
 		for (const currRoute of remainingValues.routes) {
-			dispatchSaveFormRoute(currRoute)
+			await dispatchSaveFormRoute(currRoute)
 			cleanRoute(currRoute)
 		}
 

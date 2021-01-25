@@ -108,6 +108,8 @@ function Position(props) {
     // If the process is broken, then you can only start the task at the route before break's unload location
     else if (!!selectedTask && !!selectedProcess && !!fixingProcess) {
         console.log("FIXING FIXING")
+
+        // setting load
         if(selectedTask.load.station === null) {
             // Gets the route before break
             const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
@@ -122,6 +124,19 @@ function Position(props) {
 
                 }
             }
+        }
+
+        // setting unload
+        else if(selectedTask.unload.station === null) {
+            disabled = isPositionInRoutes(selectedProcess.routes, position._id)
+            const routeAfterBreak = selectedProcess.routes[selectedProcess.broken]
+
+            if(isPositionAtLoadStation(routeAfterBreak, position._id)) disabled = false
+        }
+
+        // both are set, click again would set load, so use load rules
+        else {
+
         }
 
 
@@ -142,15 +157,23 @@ function Position(props) {
 
             // setting load
             if(selectedTask.load.position === null) {
-                // Gets the last route in the routes array
-                const previousTask = getPreviousRoute(selectedProcess.routes, selectedTask._id)
 
-                // If there's an unload (which there should be), then find the unload station
-                if (!!previousTask.unload) {
-
-                    // must pick position at unload station
-                    disabled = !isPositionAtUnloadStation(previousTask, position._id)
+                if(insertIndex === 0) {
+                    disabled = isPositionInRoutes(selectedProcess.routes, position._id)
                 }
+
+                else {
+                    // Gets the last route in the routes array
+                    const previousTask = getPreviousRoute(selectedProcess.routes, selectedTask._id)
+
+                    // If there's an unload (which there should be), then find the unload station
+                    if (!!previousTask.unload) {
+
+                        // must pick position at unload station
+                        disabled = !isPositionAtUnloadStation(previousTask, position._id)
+                    }
+                }
+
             }
 
             // setting unload
@@ -162,7 +185,11 @@ function Position(props) {
 
                     // enable positions at first route since inserting at beginning
                     const firstRoute = selectedProcess.routes[0]
-                    disabled = !isPositionAtLoadStation(firstRoute, position._id)
+                    const atLoad = isPositionAtLoadStation(firstRoute, position._id)
+                    if(atLoad) disabled = false
+
+                    const atSameStation = isPositionAtLoadStation(selectedTask, position._id)
+                    if(atSameStation) disabled = true
 
                 }
 
@@ -176,15 +203,22 @@ function Position(props) {
 
             // both load and unload have been selected
             else {
-                // Gets the last route in the routes array
-                const previousTask = getPreviousRoute(selectedProcess.routes, selectedTask._id)
 
-                // If there's an unload (which there should be), then find the unload station
-                if (!!previousTask.unload) {
-
-                    // must pick position at unload station
-                    disabled = !isPositionAtUnloadStation(previousTask, position._id)
+                if(insertIndex === 0) {
+                    disabled = isPositionInRoutes(selectedProcess.routes, position._id)
                 }
+                else {
+                    // Gets the last route in the routes array
+                    const previousTask = getPreviousRoute(selectedProcess.routes, selectedTask._id)
+
+                    // If there's an unload (which there should be), then find the unload station
+                    if (!!previousTask.unload) {
+
+                        // must pick position at unload station
+                        disabled = !isPositionAtUnloadStation(previousTask, position._id)
+                    }
+                }
+
             }
         }
 

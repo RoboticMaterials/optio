@@ -22,7 +22,7 @@ import { StationTypes } from '../../../../constants/station_constants'
 import LocationSvg from '../location_svg/location_svg'
 import DragEntityProto from '../drag_entity_proto'
 import {getPreviousRoute} from "../../../../methods/utils/processes_utils";
-import {isNextRouteViable, isStationInRoutes} from "../../../../methods/utils/route_utils";
+import {getUnloadStationId, isNextRouteViable, isStationInRoutes} from "../../../../methods/utils/route_utils";
 
 function Station(props) {
 
@@ -118,16 +118,16 @@ function Station(props) {
     // If the process has routes, and you're adding a new route, you should only be able to add a route starting at the last station
     // This eliminates process with gaps between stations
     else if (!!selectedProcess && !!selectedTask  ) {
+        const {
+            temp
+        } = selectedTask || {}
+        const {
+            insertIndex
+        } = temp || {}
+
         if(selectedProcess.routes.length > 0) {
             if(selectedTask.load.station === null) {
-                const {
-                    temp
-                } = selectedTask || {}
-                const {
-                    insertIndex
-                } = temp || {}
 
-                console.log("insertIndex",insertIndex)
                 if(insertIndex === 0 ) {
                     const containsStation = isStationInRoutes(selectedProcess.routes, station._id)
                     if(containsStation) disabled = true
@@ -138,27 +138,16 @@ function Station(props) {
                 else {
                     // Gets the last route in the routes array
                     const previousRoute = getPreviousRoute(selectedProcess.routes, selectedTask._id)
+                    const unloadStationId = getUnloadStationId(previousRoute)
 
-                    // If there's an unload (which there should be), then find the unload station
-                    if (!!previousRoute.unload) {
-
-                        const unloadStationID = previousRoute.unload.station
-
-                        // If position is not in the unload station, then disable that pos
-                        if (unloadStationID !== station._id) {
-                            disabled = true
-                        }
+                    if (unloadStationId !== station._id) {
+                        disabled = true
                     }
                 }
             }
 
             else if((selectedTask.unload.station === null)) {
-                const {
-                    temp
-                } = selectedTask || {}
-                const {
-                    insertIndex
-                } = temp || {}
+
 
                 console.log("insertIndex",insertIndex)
                 if(insertIndex === 0 ) {
@@ -184,10 +173,19 @@ function Station(props) {
             }
 
             else {
-                const containsStation = isStationInRoutes(selectedProcess.routes, station._id)
-                if(containsStation) disabled = true
+                if(insertIndex === 0 ) {
+                    const containsStation = isStationInRoutes(selectedProcess.routes, station._id)
+                    if(containsStation) disabled = true
+                }
+                else {
+                    const previousRoute = getPreviousRoute(selectedProcess.routes, selectedTask._id)
+                    const unloadStationId = getUnloadStationId(previousRoute)
 
-                if(selectedTask.load.station === station._id) disabled = false
+                    if (unloadStationId !== station._id) {
+                        disabled = true
+                    }
+                }
+
             }
 
         }
