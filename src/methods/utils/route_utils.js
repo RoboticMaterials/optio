@@ -82,6 +82,14 @@ export const getLoadStationId = (route) => {
     return route?.load?.station
 }
 
+export const isStationLoadStation = (route, stationId) => {
+    return stationId === getLoadStationId(route)
+}
+
+export const isStationUnloadStation = (route, stationId) => {
+    return stationId === getUnloadStationId(route)
+}
+
 export const isPositionAtLoadStation = (route, positionId) => {
     const storeState = store.getState()
     const stations = storeState.stationsReducer.stations || {}
@@ -96,7 +104,6 @@ export const isPositionAtLoadStation = (route, positionId) => {
 
     // otherwise return false
     return false
-
 }
 
 export const isPositionAtUnloadStation = (route, positionId) => {
