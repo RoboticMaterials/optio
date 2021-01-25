@@ -42,20 +42,9 @@ const DragEntityProto = (props) => {
         // is layered.
         let angle
         if (event.sourceEvent.type == "mousemove") {    // Computer
-            // For some reason, position rotation is mapped backwards
-            if (location.schema === 'position' || location.schema === 'positions') {
-                angle = - Math.atan2(event.sourceEvent.clientY - location.y, event.sourceEvent.clientX - location.x) * 180 / Math.PI
-            }
-            else {
-                angle = Math.atan2(event.sourceEvent.clientY - location.y, event.sourceEvent.clientX - location.x) * 180 / Math.PI
-            }
+            angle = Math.atan2(event.sourceEvent.clientY - location.y, event.sourceEvent.clientX - location.x) * 180 / Math.PI
         } else if (event.sourceEvent.type == "touchmove") { // Tablet
-            if (location.schema === 'position') {
-                angle = - Math.atan2(event.sourceEvent.touches[0].clientY - location.y, event.sourceEvent.touches[0].clientX - location.x) * 180 / Math.PI
-            }
-            else {
-                angle = Math.atan2(event.sourceEvent.touches[0].clientY - location.y, event.sourceEvent.touches[0].clientX - location.x) * 180 / Math.PI
-            }
+            angle = Math.atan2(event.sourceEvent.touches[0].clientY - location.y, event.sourceEvent.touches[0].clientX - location.x) * 180 / Math.PI
         }
 
         // Keep track of BOTH the initial rotation of the position, and the start angle of the drag
