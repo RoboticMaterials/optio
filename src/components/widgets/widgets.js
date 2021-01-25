@@ -90,7 +90,6 @@ const Widgets = (props) => {
      */
     const onWidgetClose = (edit) => {
         if (!edit) {
-            console.log('QQQQ Deselect')
             dispatchSetSelectedStation(null)
             dispatchSetSelectedPosition(null)
         }
@@ -112,7 +111,6 @@ const Widgets = (props) => {
     const onClickLocation = async () => {
         if (!!selectedStation) {
             dispatchSetEditingStation(true)
-            console.log('QQQQ HUR BABE', editingStation)
             dispatchSetSelectedStationChildrenCopy(selectedStation.children.map(positionID => deepCopy(positions[positionID])))
             dispatchSetSelectedStation(selectedStation)
         }

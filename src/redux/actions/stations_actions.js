@@ -91,18 +91,11 @@ export const postStation = (station) => {
 
         try {
             onStart();
-            if (!('_id' in station)) {
-                station._id = uuid.v4()
-                console.log('QQQQ Added UUID to Station, this shouldnt Happen!!')
-                alert('QQQQ Added UUID to Station, this shouldnt Happen!!')
-            }
-
             let stationCopy = deepCopy(station)
             stationCopy = await dispatch(onPostStation(stationCopy))
             delete stationCopy.temp
             delete stationCopy.new
             const newStation = await api.postStation(stationCopy);
-            console.log('QQQQ New Station', newStation)
             return onSuccess(newStation);
         } catch (error) {
             return onError(error);
