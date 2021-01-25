@@ -56,37 +56,37 @@ const LoadUnloadFields = (props) => {
 
     return (
         <>
-            {!humanLocation &&
-                <>
-                    <styled.RowContainer>
-                        <styled.Header>Robot Enabled</styled.Header>
-                        <SwitchField
-                            name={fieldParent ? `${fieldParent}.device_types` : "device_types"}
-                            // checked={mirEnabled}
-                            mapInput={(devices)=> {
-                                if(devices.includes(DEVICE_CONSTANTS.MIR_100) && devices.includes(DEVICE_CONSTANTS.HUMAN)) {
-                                    return true
-                                }
-                                else {
-                                    return false
-                                }
-                            }}
-                            mapOutput={(enable) => {
-                                if(enable) {
-                                    return([DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN])
-                                }
-                                else {
-                                    return([DEVICE_CONSTANTS.HUMAN])
-                                }
-                            }}
-                            onColor='red'
-                            style={{ marginRight: '1rem' }}
-                        />
+            {/*{!humanLocation &&*/}
+            {/*    <>*/}
+            {/*        <styled.RowContainer>*/}
+            {/*            <styled.Header>Robot Enabled</styled.Header>*/}
+            {/*            <SwitchField*/}
+            {/*                name={fieldParent ? `${fieldParent}.device_types` : "device_types"}*/}
+            {/*                // checked={mirEnabled}*/}
+            {/*                mapInput={(devices)=> {*/}
+            {/*                    if(devices.includes(DEVICE_CONSTANTS.MIR_100) && devices.includes(DEVICE_CONSTANTS.HUMAN)) {*/}
+            {/*                        return true*/}
+            {/*                    }*/}
+            {/*                    else {*/}
+            {/*                        return false*/}
+            {/*                    }*/}
+            {/*                }}*/}
+            {/*                mapOutput={(enable) => {*/}
+            {/*                    if(enable) {*/}
+            {/*                        return([DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN])*/}
+            {/*                    }*/}
+            {/*                    else {*/}
+            {/*                        return([DEVICE_CONSTANTS.HUMAN])*/}
+            {/*                    }*/}
+            {/*                }}*/}
+            {/*                onColor='red'*/}
+            {/*                style={{ marginRight: '1rem' }}*/}
+            {/*            />*/}
 
-                    </styled.RowContainer>
-                    <styled.HelpText>Do you want a robot to perform this task? If selected, there will be an option for a person to take over the task when the button is placed onto the dashboard.</styled.HelpText>
-                </>
-            }
+            {/*        </styled.RowContainer>*/}
+            {/*        <styled.HelpText>Do you want a robot to perform this task? If selected, there will be an option for a person to take over the task when the button is placed onto the dashboard.</styled.HelpText>*/}
+            {/*    </>*/}
+            {/*}*/}
 
 
 
@@ -134,13 +134,6 @@ const LoadUnloadFields = (props) => {
                 name={fieldParent ? `${fieldParent}.load.instructions` : "load.instructions"}
                 schema={'tasks'}
                 focus={!!selectedTask && selectedTask.type == null}
-                onChange={e => {
-                    let load = selectedTask.load
-                    dispatchSetTaskAttributes(selectedTask._id, { load: {
-                            ...selectedTask.load,
-                            instructions: e.target.value
-                        } })
-                }}
                 lines={2}
                 InputComponent={Textbox}
             />
@@ -190,21 +183,13 @@ const LoadUnloadFields = (props) => {
             }
 
             {/* Hides the unload field if its a handoff task */}
-            {!selectedTask.handoff &&
+            {!values.handoff &&
 
                 <>
                     <styled.Header>Unload</styled.Header>
                     <TextField
                         name={fieldParent ? `${fieldParent}.unload.instructions` : "unload.instructions"}
                         schema={'tasks'}
-                        onChange={e => {
-                            dispatchSetTaskAttributes(selectedTask._id, {
-                                unload: {
-                                    ...selectedTask.unload,
-                                    instructions: e.target.value
-                                }
-                            })
-                        }}
                         focus={!!selectedTask && selectedTask.type == null}
                         lines={2}
                         InputComponent={Textbox}
