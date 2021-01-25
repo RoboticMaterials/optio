@@ -291,8 +291,6 @@ export class MapView extends Component {
                     // Disables the ability to hover over location on mouse drag when a loction is selected that is not new or a right click
                     if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.name !== 'TempRightClickMovePosition')) && (!this.props.editingStation || !this.props.editingPosition)) {
                         this.props.dispatchHoverStationInfo(null)
-                        this.props.dispatchSetSelectedPosition(null)
-                        this.props.dispatchSetSelectedPosition(null)
                     }
 
                     //// Saving the last event is usefull for saving d3 state when draggable is toggled (when moving locations)
@@ -308,12 +306,6 @@ export class MapView extends Component {
                         scale: d3.event.scale
                     }
 
-                    // TODO: Delete
-                    // Object.assign(this.d3, {
-                    //     translate: d3.event.translate,
-                    //     scale: d3.event.scale
-                    // })
-
                     //// Apply the event translation to each station
                     Object.values(stations).forEach(station => {
 
@@ -323,9 +315,6 @@ export class MapView extends Component {
                             x: x,
                             y: y,
                         }
-
-                        // TODO: Delete
-                        // Object.assign(station, { x, y })
                         stations[station._id] = station
 
                     })
@@ -341,8 +330,6 @@ export class MapView extends Component {
                             y: y,
                         }
 
-                        // TODO: Delete
-                        // Object.assign(updatedSelectedStation, { x, y })
                     }
 
                     this.props.dispatchUpdateStations(stations, updatedSelectedStation, this.d3) // Bulk Update
@@ -357,8 +344,6 @@ export class MapView extends Component {
                             y: y,
                         }
 
-                        // TODO: Delete
-                        // Object.assign(position, { x, y })
                         positions[position._id] = position
 
                     })
@@ -373,8 +358,6 @@ export class MapView extends Component {
                             x: x,
                             y: y,
                         }
-                        // TODO: Delete
-                        // Object.assign(updatedSelectedPosition, { x, y })
                     }
 
                     // TODO: This whole children copy business sucks a lot
@@ -390,28 +373,12 @@ export class MapView extends Component {
                                 x: x,
                                 y: y,
                             }
-                            // TODO: Delete
-                            // Object.assign(position, { x, y })
                             updatedChildrenPositions[position._id] = position
 
                         })
                     }
 
                     this.props.dispatchUpdatePositions(positions, updatedSelectedPosition, updatedChildrenPositions, this.d3) // Bulk Update
-
-                    //// Apply the event translation to each position
-                    Object.values(positions).forEach(position => {
-                        [x, y] = convertRealToD3([position.pos_x, position.pos_y], this.d3)
-                        position = {
-                            ...position,
-                            x: x,
-                            y: y,
-                        }
-                        // TODO: Delete
-                        // Object.assign(position, { x, y })
-                        positions[position._id] = position
-                    })
-                    this.props.dispatchUpdatePositions(positions) // Bulk Update
 
                     //// Apply the event translation to each mobile device
                     Object.values(devices).filter(device => device.device_model == 'MiR100').map(device => {
@@ -422,8 +389,6 @@ export class MapView extends Component {
                             x: x,
                             y: y,
                         }
-                        // TODO: Delete
-                        // Object.assign(device.position, { x, y })
                         devices[device._id] = device
                     })
                     this.props.dispatchUpdateDevices(devices, this.d3) // Bulk Update

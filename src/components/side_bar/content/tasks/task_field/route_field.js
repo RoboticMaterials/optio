@@ -61,6 +61,7 @@ const TaskField = (props) => {
         onDelete
     } = props
 
+    console.log("TaskField fieldParent",fieldParent)
     const fieldMeta = getFieldMeta(fieldParent)
 
     const {

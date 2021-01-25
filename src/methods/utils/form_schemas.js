@@ -259,8 +259,14 @@ export const getCardSchema = (mode, availableBinItems) => {
 
 const routeStationSchema = Yup.object().shape({
     instructions: Yup.string().nullable(),
-    position: Yup.string().nullable().required('No position selected.'),
-    station: Yup.string().nullable().required('No station selected.'),
+
+    position: Yup.string().nullable().when('station', {
+        is: (station) => !station,
+        then: Yup.string().nullable()
+            .required('Please select a location.')
+    }),
+    station: Yup.string().nullable(),
+
     timeout: Yup.string().nullable(),
 })
 
@@ -274,8 +280,8 @@ export const routeSchema = Yup.object().shape({
             .required('Please enter a name.'),
     }).nullable(),
     track_quantity: Yup.bool().required('Please select whether to use quantities or fractions.'),
-    load: routeStationSchema.required("Required."),
-    unload: routeStationSchema.required("Required."),
+    load: routeStationSchema, //.required("Required."),
+    unload: routeStationSchema//.required("Required."),
 })
 
 

@@ -40,6 +40,7 @@ import ReportModal from "./report_modal/report_modal";
 import KickOffModal from "./kick_off_modal/kick_off_modal";
 import FinishModal from "./finish_modal/finish_modal";
 import { getProcesses } from "../../../../../redux/actions/processes_actions";
+import {isEmpty} from "../../../../../methods/utils/object_utils";
 
 
 
@@ -133,6 +134,19 @@ const DashboardScreen = (props) => {
      */
     const handleDashboardButtons = () => {
         let { buttons } = currentDashboard	// extract buttons from dashboard
+
+        // filter out buttons with missing task
+        buttons = buttons.filter((currButton) => {
+            const {
+                task_id
+            } = currButton
+
+            if(!(tasks[task_id])) {
+                console.error('Task does not exist! Hidding button from dashboard')
+                return false
+            }
+            return true
+        })
 
         // If this dashboard belongs to a device and the device is a cart, add some unique buttons
         if (!!devices[stationID] && devices[stationID].device_model === 'MiR100') {

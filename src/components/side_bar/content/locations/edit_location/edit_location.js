@@ -306,7 +306,7 @@ const EditLocation = () => {
                 {/* Location Title */}
                 <Textbox
                     placeholder="Location Name"
-                    defaultValue={!!selectedLocation && selectedLocation.name}
+                    defaultValue={!!selectedLocation ? selectedLocation.name : null}
                     schema={'locations'}
                     focus={!!selectedLocation && selectedLocation.type == null}
                     onChange={(e) => {
@@ -321,13 +321,17 @@ const EditLocation = () => {
                         <>
                             <styled.LocationTypeContainer>
                                 <styled.Label schema={'locations'}>Stations</styled.Label>
-                                {renderStationButtons()}
+                                <styled.LocationButtonConatiner>
+                                    {renderStationButtons()}
+                                </styled.LocationButtonConatiner>
                             </styled.LocationTypeContainer>
 
                             {MiRMapEnabled &&
                                 <styled.LocationTypeContainer>
                                     <styled.Label schema={'locations'}>Positions</styled.Label>
-                                    {renderPositionButtons()}
+                                    <styled.LocationButtonConatiner>
+                                        {renderPositionButtons()}
+                                    </styled.LocationButtonConatiner>
 
                                 </styled.LocationTypeContainer>
                             }

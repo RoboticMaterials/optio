@@ -19,6 +19,13 @@ import { hoverStationInfo } from '../../../../redux/actions/widget_actions'
 // Import Components
 import LocationSvg from '../location_svg/location_svg'
 import DragEntityProto from '../drag_entity_proto'
+import {getPreviousRoute} from "../../../../methods/utils/processes_utils";
+import {
+    getLoadStationId,
+    isPositionAtLoadStation, isPositionAtUnloadStation,
+    isPositionInRoutes,
+    isStationInRoutes
+} from "../../../../methods/utils/route_utils";
 
 // Commented out for now, but will need to use logic for disabling locations
 // // This filters out positions when fixing a process
@@ -40,31 +47,6 @@ import DragEntityProto from '../drag_entity_proto'
 //     }
 // }
 
-// // This filters positions when making a process
-// // If the process has routes, and you're adding a new route, you should only be able to add a route starting at the last station
-// // This eliminates process with gaps between stations
-// else if (!!this.props.selectedTask && !!this.props.selectedProcess && this.props.selectedProcess.routes.length > 0 && this.props.selectedTask.load.position === null) {
-//     // Gets the last route in the routes array
-//     const previousRoute = this.props.selectedProcess.routes[this.props.selectedProcess.routes.length - 1]
-//     const previousTask = this.props.tasks[previousRoute]
-
-//     if (!!previousTask.unload) {
-
-//         const unloadStationID = previousTask.unload.station
-//         const unloadStation = this.props.locations[unloadStationID]
-
-//         if (unloadStation.children.includes(position._id)) {
-//             return true
-
-//         }
-//     }
-// }
-
-// This filters out positions that aren't apart of a station when making a task
-// Should not be able to make a task for a random position
-// else if (!!this.props.selectedTask) {
-//     return !!position.parent
-// }
 
 function Position(props) {
 
@@ -75,6 +57,10 @@ function Position(props) {
         handleEnableDrag,
         handleDisableDrag,
     } = props
+
+    const {
+        _id: positionId
+    } = position
 
     const [hovering, setHovering] = useState(false)
     const [rotating, setRotating] = useState(false)
@@ -93,30 +79,158 @@ function Position(props) {
     const hoveringID = useSelector(state => state.widgetReducer.hoverLocationID)
     const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
     const stations = useSelector(state => state.stationsReducer.stations)
+    const tasks = useSelector(state => state.tasksReducer.tasks)
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
+    const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
 
+
+
+
+    // ======================================== //
+    //                                          //
+    //       Position Characteristics           //
+    //                                          //
+    // ======================================== //
+
+    // Used to allow translating/rotation
     let isSelected = false
-    if(!!selectedTask && (selectedTask.load.position === position._id || selectedTask.unload.position === position._id)) isSelected = true
-    // else if(!!selectedStationChildrenCopy && (position._id in selectedStationChildrenCopy)) isSelected = true
-    
+    // Set selected if the positon is part of a stations children copy and no selected task
+    if (!!selectedStationChildrenCopy && (positionId in selectedStationChildrenCopy) && !selectedTask) isSelected = true
+    // Set selected if there is a selected postion that is this position and no selected task
+    else if (!!selectedPosition && selectedPosition._id === positionId && !selectedTask) isSelected = true
 
-    // TODO: Comment Disabled
+    // Used to disable the ability to add position as a task
     let disabled = false
-    if (!!selectedPosition && selectedPosition._id !== position._id) disabled = true
-    else if (!!selectedStationChildrenCopy && !(position._id in selectedStationChildrenCopy)) disabled = true
-    else if(!!selectedStation && !selectedStation.children.includes(position._id)) disabled = true
+    // Disable if the selectedPosition is not this position
+    if (!!selectedPosition && selectedPosition._id !== positionId) disabled = true
+    // Disable if the position does not belong to the children copy
+    else if (!!selectedStationChildrenCopy && !(positionId in selectedStationChildrenCopy)) disabled = true
+    // Disbale if the selected stations children does not include this station
+    else if (!!selectedStation && !selectedStation.children.includes(positionId)) disabled = true
+
+    // This filters out positions when fixing a process
+    // If the process is broken, then you can only start the task at the route before break's unload location
+    else if (!!selectedTask && !!selectedProcess && !!fixingProcess) {
+
+        // setting load (or both are set, in which case logic is the same, as click another position would be setting the load
+        if( (selectedTask.load.station === null) || ((selectedTask.load.station !== null) && (selectedTask.unload.station !== null))) {
+            // disable all positions except those at unload station of the route before the break
+            const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
+            disabled = !isPositionAtUnloadStation(routeBeforeBreak, positionId)
+        }
+
+        // setting unload
+        else if(selectedTask.unload.station === null) {
+
+            // don't allow selecting positions at stations already in process
+            disabled = isPositionInRoutes(selectedProcess.routes, positionId)
+
+            // if position is at station load station after the break, it should be enabled
+            const routeAfterBreak = selectedProcess.routes[selectedProcess.broken]
+            if(isPositionAtLoadStation(routeAfterBreak, positionId)) disabled = false
+        }
+    }
+    // This filters positions when making a process
+    // If the process has routes, and you're adding a new route, you should only be able to add a route starting at the last station
+    // This eliminates process with gaps between stations
+    else if (!!selectedProcess && !!selectedTask) {
+        // extract insertIndex for adding new routes to beginning of a process
+        const {
+            temp
+        } = selectedTask || {}
+        const {
+            insertIndex
+        } = temp || {}
+
+        // not first route
+        if(selectedProcess.routes.length > 0) {
+
+            // setting load (or both have been set)
+            if( (selectedTask.load.station === null) || ((selectedTask.load.station !== null) && (selectedTask.unload.station !== null))) {
+
+                // adding to beginning of process
+                if(insertIndex === 0) {
+                    // disable all positions already in the process
+                    disabled = isPositionInRoutes(selectedProcess.routes, positionId)
+                }
+
+                else {
+                    // must start at position at unload station of previous route
+                    const previousRoute = getPreviousRoute(selectedProcess.routes, selectedTask._id)
+                    disabled = !isPositionAtUnloadStation(previousRoute, positionId)
+                }
+            }
+
+            // setting unload
+            else if(selectedTask.unload.position === null) {
+
+                // adding new to beginning of process
+                if(insertIndex === 0) {
+                    // disable positions already used
+                    disabled = isPositionInRoutes(selectedProcess.routes, positionId)
+
+                    // enable positions at first route since inserting at beginning
+                    const firstRoute = selectedProcess.routes[0]
+                    if(isPositionAtLoadStation(firstRoute, positionId)) disabled = false
+
+                    // disable positions at load station of current route, as unload and load shouldn't be at same route
+                    if(isPositionAtLoadStation(selectedTask, positionId)) disabled = true
+                }
+
+                else {
+                    // disable positions already used
+                    if(isPositionInRoutes(selectedProcess.routes, positionId)) disabled = true
+
+                    // disable positions at load station of current route, as unload and load shouldn't be at same route
+                    if(isPositionAtLoadStation(selectedTask, positionId)) disabled = true
+                }
+            }
+        }
+
+        // first route
+        else {
+            // setting load
+            if(selectedTask.load.position === null) {
+                // all positions are available for load position of first route
+            }
+
+            // setting unload
+            else if(selectedTask.unload.position === null) {
+                // disable positions at load station of current route, as unload and load shouldn't be at same route
+                if(isPositionAtLoadStation(selectedTask, positionId)) disabled = true
+            }
+        }
+    }
+
+    // This filters out positions that aren't apart of a station when making a task
+    // Should not be able to make a task for a random position
+    else if (!!selectedTask && !position.parent) {
+        disabled = true
+    }
 
     // Tells the position to glow
     const shouldGlow = selectedTask !== null &&
-        ((selectedTask.load.position == position._id && selectedTask.type == 'push') ||
-            (selectedTask.unload.position == position._id && selectedTask.type == 'pull') ||
-            (selectedTask.load.position == position._id && selectedTask.type == 'both') ||
-            (selectedTask.unload.position == position._id && selectedTask.type == 'both'))
+        ((selectedTask.load.position == positionId && selectedTask.type == 'push') ||
+            (selectedTask.unload.position == positionId && selectedTask.type == 'pull') ||
+            (selectedTask.load.position == positionId && selectedTask.type == 'both') ||
+            (selectedTask.unload.position == positionId && selectedTask.type == 'both'))
+
+
+    // Used to highlight position if the position is part of the selected task
+    let highlight = false
+    if (!!selectedTask && (selectedTask.load.position === positionId || selectedTask.unload.position === positionId)) highlight = true
+
 
     // Set Color
     let color = PositionTypes[position.type].color
     if (!isSelected && disabled) color = '#afb5c9' // Grey
-    else if (isSelected) color = '#38eb87' // Green
+    else if (highlight) color = '#38eb87' // Green
+
+    // ======================================== //
+    //                                          //
+    //           Position Functions             //
+    //                                          //
+    // ======================================== //
 
     useEffect(() => {
         //window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
@@ -157,7 +271,7 @@ function Position(props) {
             if (selectedTask.load.position !== null && selectedTask.unload.position === null) {
                 let unload = deepCopy(selectedTask.unload)
                 let type = selectedTask.type
-                unload.position = position._id
+                unload.position = positionId
                 if (position.parent !== null) {
                     unload.station = position.parent
                 } else {
@@ -168,7 +282,7 @@ function Position(props) {
                 let load = deepCopy(selectedTask.load)
                 let unload = deepCopy(selectedTask.unload)
                 let type = selectedTask.type
-                load.position = position._id
+                load.position = positionId
                 if (position.parent !== null) {
                     load.station = position.parent
                 } else {
@@ -195,7 +309,8 @@ function Position(props) {
     }
 
     const renderParentLine = () => {
-        const parent = (!!position.new && !!selectedStation) ? selectedStation : stations[position.parent]
+
+        const parent = ((!!selectedStationChildrenCopy && positionId in selectedStationChildrenCopy) && !!selectedStation) ? selectedStation : stations[position.parent]
         // TODO: Temp fix
         if (!parent) return
         return (
@@ -207,15 +322,20 @@ function Position(props) {
     }
 
     const onMouseDown = () => {
-        onSetPositionTask()
+        if (!disabled) onSetPositionTask()
     }
 
     const onTranslating = (bool) => {
-        setTranslating(bool)
+        if (!isSelected) {
+            setTranslating(bool)
+        }
     }
 
     const onRotating = (bool) => {
         setRotating(bool)
+        if (!bool) {
+            setHovering(false)
+        }
     }
 
     const onMouseLeave = () => {
@@ -223,7 +343,7 @@ function Position(props) {
     }
 
     return (
-        <React.Fragment key={`frag-loc-${position._id}`}>
+        <React.Fragment key={`frag-loc-${positionId}`}>
             {!!position.parent && renderParentLine()}
             <LocationSvg
                 location={position}
@@ -250,11 +370,11 @@ function Position(props) {
                 rd3tClassName={rd3tClassName}
                 d3={() => d3()}
 
-                handleRotate={(rotation) => { dispatchSetPositionAttributes(position._id, { rotation }) }}
-                handleTranslate={({ x, y }) => dispatchSetPositionAttributes(position._id, { x, y })}
+                handleRotate={(rotation) => { dispatchSetPositionAttributes(positionId, { rotation }) }}
+                handleTranslate={({ x, y }) => dispatchSetPositionAttributes(positionId, { x, y })}
                 handleTranslateEnd={({ x, y }) => {
                     const pos = convertD3ToReal([x, y], props.d3)
-                    dispatchSetPositionAttributes(position._id, { pos_x: pos[0], pos_y: pos[1] })
+                    dispatchSetPositionAttributes(positionId, { pos_x: pos[0], pos_y: pos[1] })
                 }}
 
                 handleEnableDrag={() => {
@@ -267,82 +387,6 @@ function Position(props) {
 
             />
         </React.Fragment>
-    )
-
-    return (
-        <g
-            className={rd3tClassName}
-            style={{ fill: color, stroke: color, strokeWidth: '0', opacity: '0.8', cursor: "pointer" }}
-            onMouseEnter={() => {
-
-            }}
-            onMouseLeave={() => { }}
-            onMouseDown={() => {
-
-            }}
-            transform={`translate(${position.x},${position.y}) rotate(${360 - position.rotation}) scale(${d3.scale / d3.imgResolution})`}
-        >
-            <defs>
-
-                {/* a transparent glow that takes on the colour of the object it's applied to */}
-                <filter id="glow">
-                    <feGaussianBlur stdDeviation="1" result="coloredBlur" />
-                    <feMerge>
-                        <feMergeNode in="coloredBlur" />
-                        <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                </filter>
-
-                <filter id={`glow-${rd3tClassName}`} height="300%" width="300%" x="-75%" y="-75%">
-                    <feMorphology operator="dilate" radius="2" in="SourceAlpha" result="thicken" />
-                    <feGaussianBlur in="thicken" stdDeviation="3" result="blurred" />
-                    <feFlood floodColor={color} result="glowColor" />
-                    <feComposite in="glowColor" in2="blurred" operator="in" result="softGlow_colored" />
-                    <feMerge>
-                        <feMergeNode in="softGlow_colored" />
-                        <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                </filter>
-
-            </defs>
-
-
-            <g className={`${rd3tClassName}-rot`}>
-                {/* Only show rotating when editing or its a right click position */}
-                {isSelected && (hovering || rotating) && (hoveringInfo === null || position.name === 'TempRightClickMovePosition') &&
-                    <>
-                        <circle x="-16" y="-16" r="16" strokeWidth="0" fill="transparent" style={{ cursor: "pointer" }}></circle>
-                        <circle x="-18" y="-18" r="14" fill="none" strokeWidth="4" stroke="transparent" style={{ cursor: "pointer" }}
-                            //  onMouseDown={() => {setRotating(true)
-                            //  }}
-
-                            onMouseUp={() => {
-                                //  setRotating(false)
-                            }}
-                        />
-                        <circle x="-14" y="-14" r="14" fill="none" strokeWidth="0.6" style={{ filter: "url(#glow)", cursor: "pointer" }}></circle>
-                    </>
-                }
-            </g>
-
-            <g className={`${rd3tClassName}-trans`} id={`${rd3tClassName}-trans`} transform={"scale(1, 1)", position.type === 'shelf_position' && "rotate(90)"}
-            >
-
-
-                <svg x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400" style={{ filter: shouldGlow && `url(#glow-${rd3tClassName})` }}>
-
-                    {PositionTypes[position.type].svgPath}
-
-                </svg>
-            </g>
-
-            {/* Commented out for now, glowing just adds a rando rectangle that no one wants arround. But we're all too awkward to say anything about this rectangle. Rectangle's life is hard. */}
-            {/* {shouldGlow &&
-                <rect x="-8" y="-5" height="10" width="16" rx="1.5" style={{ filter: `url(#glow-${rd3tClassName})` }} fill="none" strokeMiterlimit="0.5" strokeWidth="1"></rect>
-            } */}
-
-
-        </g>
     )
 }
 

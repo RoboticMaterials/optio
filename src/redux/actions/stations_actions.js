@@ -129,7 +129,7 @@ export const putStation = (station) => {
         try {
             onStart();
             let stationCopy = deepCopy(station)
-            stationCopy = await dispatch(onSaveChildren())
+            await dispatch(onSaveChildren())
             delete stationCopy.temp
             const updateStation = await api.putStation(stationCopy, stationCopy._id);
             return onSuccess(updateStation)
