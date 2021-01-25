@@ -56,37 +56,37 @@ const LoadUnloadFields = (props) => {
 
     return (
         <>
-            {!humanLocation &&
-                <>
-                    <styled.RowContainer>
-                        <styled.Header>Robot Enabled</styled.Header>
-                        <SwitchField
-                            name={fieldParent ? `${fieldParent}.device_types` : "device_types"}
-                            // checked={mirEnabled}
-                            mapInput={(devices)=> {
-                                if(devices.includes(DEVICE_CONSTANTS.MIR_100) && devices.includes(DEVICE_CONSTANTS.HUMAN)) {
-                                    return true
-                                }
-                                else {
-                                    return false
-                                }
-                            }}
-                            mapOutput={(enable) => {
-                                if(enable) {
-                                    return([DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN])
-                                }
-                                else {
-                                    return([DEVICE_CONSTANTS.HUMAN])
-                                }
-                            }}
-                            onColor='red'
-                            style={{ marginRight: '1rem' }}
-                        />
+            {/*{!humanLocation &&*/}
+            {/*    <>*/}
+            {/*        <styled.RowContainer>*/}
+            {/*            <styled.Header>Robot Enabled</styled.Header>*/}
+            {/*            <SwitchField*/}
+            {/*                name={fieldParent ? `${fieldParent}.device_types` : "device_types"}*/}
+            {/*                // checked={mirEnabled}*/}
+            {/*                mapInput={(devices)=> {*/}
+            {/*                    if(devices.includes(DEVICE_CONSTANTS.MIR_100) && devices.includes(DEVICE_CONSTANTS.HUMAN)) {*/}
+            {/*                        return true*/}
+            {/*                    }*/}
+            {/*                    else {*/}
+            {/*                        return false*/}
+            {/*                    }*/}
+            {/*                }}*/}
+            {/*                mapOutput={(enable) => {*/}
+            {/*                    if(enable) {*/}
+            {/*                        return([DEVICE_CONSTANTS.MIR_100, DEVICE_CONSTANTS.HUMAN])*/}
+            {/*                    }*/}
+            {/*                    else {*/}
+            {/*                        return([DEVICE_CONSTANTS.HUMAN])*/}
+            {/*                    }*/}
+            {/*                }}*/}
+            {/*                onColor='red'*/}
+            {/*                style={{ marginRight: '1rem' }}*/}
+            {/*            />*/}
 
-                    </styled.RowContainer>
-                    <styled.HelpText>Do you want a robot to perform this task? If selected, there will be an option for a person to take over the task when the button is placed onto the dashboard.</styled.HelpText>
-                </>
-            }
+            {/*        </styled.RowContainer>*/}
+            {/*        <styled.HelpText>Do you want a robot to perform this task? If selected, there will be an option for a person to take over the task when the button is placed onto the dashboard.</styled.HelpText>*/}
+            {/*    </>*/}
+            {/*}*/}
 
 
 
