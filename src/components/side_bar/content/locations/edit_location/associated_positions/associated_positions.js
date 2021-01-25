@@ -212,9 +212,9 @@ export default function Positions(props) {
 
 
             <styled.ListContainer>
-
-                {/* <styled.Label style={{fontSize:'1.25rem'}}>{positionType}</styled.Label> */}
-                {renderAssociatedPositions()}
+                {!!selectedStationChildrenCopy &&
+                    renderAssociatedPositions()
+                }
             </styled.ListContainer>
         </styled.PositionsContainer>
     )
