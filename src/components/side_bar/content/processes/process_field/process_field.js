@@ -90,13 +90,20 @@ export const ProcessField = (props) => {
     const [editingTask, setEditingTask] = useState(false) // Used to tell if a task is being edited
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [showExistingTaskWarning, setShowExistingTaskWarning] = useState(false);
+
+    const valuesRef = useRef(values);
+
     // throttled func
     const [dispatchSetSelectedProcess_Throttled, ] = useState(()=>throttle(
         ()=> {
-            dispatchSetSelectedProcess({
-                ...values,
+            if(valuesRef.current) dispatchSetSelectedProcess({
+                ...valuesRef.current,
             })
         }, 500));
+
+    useEffect(() => {
+        valuesRef.current = values;
+    }, [values]);
 
     useEffect(() => {
 
