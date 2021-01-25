@@ -82,6 +82,67 @@ export const getLoadStationId = (route) => {
     return route?.load?.station
 }
 
+export const isPositionAtLoadStation = (route, positionId) => {
+    const storeState = store.getState()
+    const stations = storeState.stationsReducer.stations || {}
+
+    // get load station
+    const loadStationId = getLoadStationId(route)
+    const loadStation = stations[loadStationId] || { children: [] }
+
+
+    // if loadStation's children includes positionId, return true
+    if (loadStation.children.includes(positionId)) return true
+
+    // otherwise return false
+    return false
+
+}
+
+export const isPositionAtUnloadStation = (route, positionId) => {
+    const storeState = store.getState()
+    const stations = storeState.stationsReducer.stations || {}
+
+    // get load station
+    const unloadStationId = getUnloadStationId(route)
+    const unloadStation = stations[unloadStationId] || { children: [] }
+
+
+    // if loadStation's children includes positionId, return true
+    if (unloadStation.children.includes(positionId)) return true
+
+    // otherwise return false
+    return false
+
+}
+
+export const isPositionInRoutes = (routes, positionId) => {
+    const storeState = store.getState()
+    const stations = storeState.stationsReducer.stations || {}
+
+    for(const currRoute of routes) {
+
+        const {
+            load,
+            unload
+        } = currRoute || {}
+
+        const {
+            station: loadStationId
+        } = load || {}
+        const loadStation = stations[loadStationId] || { children: [] }
+        if(loadStation.children.includes(positionId)) return true   // found station with position as child, return true
+
+        const {
+            station: unloadStationId
+        } = unload || {}
+        const unloadStation = stations[unloadStationId] || { children: [] }
+        if(unloadStation.children.includes(positionId)) return true // found station with position as child, return true
+    }
+
+    return false // none of the station's contained the position
+}
+
 export const getLoadStationDashboard = (route) => {
     const storeState = store.getState()
     const stations = storeState.stationsReducer.stations || {}

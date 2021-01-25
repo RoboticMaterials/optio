@@ -172,6 +172,7 @@ function Station(props) {
                     const containsStation = isStationInRoutes(selectedProcess.routes, station._id)
                     console.log("containsStation",containsStation)
                     if(containsStation) disabled = true
+                    if(selectedTask.load.station === station._id) disabled = true
 
                     if(station._id === selectedProcess.routes[0].load.station) disabled = false
                 }

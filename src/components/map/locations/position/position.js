@@ -20,6 +20,12 @@ import { hoverStationInfo } from '../../../../redux/actions/widget_actions'
 import LocationSvg from '../location_svg/location_svg'
 import DragEntityProto from '../drag_entity_proto'
 import {getPreviousRoute} from "../../../../methods/utils/processes_utils";
+import {
+    getLoadStationId,
+    isPositionAtLoadStation, isPositionAtUnloadStation,
+    isPositionInRoutes,
+    isStationInRoutes
+} from "../../../../methods/utils/route_utils";
 
 // Commented out for now, but will need to use logic for disabling locations
 // // This filters out positions when fixing a process
@@ -74,6 +80,8 @@ function Position(props) {
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
 
 
+
+
     // ======================================== //
     //                                          //
     //       Position Characteristics           //
@@ -96,45 +104,105 @@ function Position(props) {
     // Disbale if the selected stations children does not include this station
     else if (!!selectedStation && !selectedStation.children.includes(position._id)) disabled = true
 
+    // This filters out positions when fixing a process
+    // If the process is broken, then you can only start the task at the route before break's unload location
+    else if (!!selectedTask && !!selectedProcess && !!fixingProcess) {
+        console.log("FIXING FIXING")
+        if(selectedTask.load.station === null) {
+            // Gets the route before break
+            const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
+            const taskBeforeBreak = tasks[routeBeforeBreak._id]
+
+            if (!!taskBeforeBreak.unload) {
+                const unloadStationID = taskBeforeBreak.unload.station
+                const unloadStation = stations[unloadStationID]
+
+                if (!unloadStation.children.includes(position._id)) {
+                    disabled = true
+
+                }
+            }
+        }
+
+
+    }
     // This filters positions when making a process
     // If the process has routes, and you're adding a new route, you should only be able to add a route starting at the last station
     // This eliminates process with gaps between stations
-    else if (!!selectedProcess && !!selectedTask && selectedProcess.routes.length > 0 && selectedTask.load.position === null) {
+    else if (!!selectedProcess && !!selectedTask) {
+        const {
+            temp
+        } = selectedTask || {}
+        const {
+            insertIndex
+        } = temp || {}
 
-        // Gets the last route in the routes array
-        const previousTask = getPreviousRoute(selectedProcess.routes, selectedTask._id)
+        // not first route
+        if(selectedProcess.routes.length > 0) {
 
-        // If there's an unload (which there should be), then find the unload station
-        if (!!previousTask.unload) {
+            // setting load
+            if(selectedTask.load.position === null) {
+                // Gets the last route in the routes array
+                const previousTask = getPreviousRoute(selectedProcess.routes, selectedTask._id)
 
-            const unloadStationID = previousTask.unload.station
-            const unloadStation = stations[unloadStationID]
+                // If there's an unload (which there should be), then find the unload station
+                if (!!previousTask.unload) {
 
-            // If position is not in the unload station, then disable that pos
-            if (!unloadStation.children.includes(position._id)) {
-                disabled = true
+                    // must pick position at unload station
+                    disabled = !isPositionAtUnloadStation(previousTask, position._id)
+                }
+            }
+
+            // setting unload
+            else if(selectedTask.unload.position === null) {
+
+                if(insertIndex === 0) {
+                    // disable positions already used
+                    disabled = isPositionInRoutes(selectedProcess.routes, position._id)
+
+                    // enable positions at first route since inserting at beginning
+                    const firstRoute = selectedProcess.routes[0]
+                    disabled = !isPositionAtLoadStation(firstRoute, position._id)
+
+                }
+
+                else {
+                    // if position is at load station of selected task, disable
+                    disabled = isPositionAtLoadStation(selectedTask, position._id)
+
+                    if(!disabled) disabled = isPositionInRoutes(selectedProcess.routes, position._id)
+                }
+            }
+
+            // both load and unload have been selected
+            else {
+                // Gets the last route in the routes array
+                const previousTask = getPreviousRoute(selectedProcess.routes, selectedTask._id)
+
+                // If there's an unload (which there should be), then find the unload station
+                if (!!previousTask.unload) {
+
+                    // must pick position at unload station
+                    disabled = !isPositionAtUnloadStation(previousTask, position._id)
+                }
+            }
+        }
+
+        // first route
+        else {
+            // setting load
+            if(selectedTask.load.position === null) {
+
+            }
+
+            // setting unload
+            else if(selectedTask.unload.position === null) {
+                disabled = isPositionAtLoadStation(selectedTask, position._id)
             }
         }
     }
 
-    // This filters out positions when fixing a process
-    // If the process is broken, then you can only start the task at the route before break's unload location
-    else if (!!selectedTask && !!selectedProcess && !!fixingProcess && selectedTask.load.station === null) {
 
-        // Gets the route before break
-        const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
-        const taskBeforeBreak = tasks[routeBeforeBreak._id]
-
-        if (!!taskBeforeBreak.unload) {
-            const unloadStationID = taskBeforeBreak.unload.station
-            const unloadStation = stations[unloadStationID]
-
-            if (!unloadStation.children.includes(position._id)) {
-                disabled = true
-
-            }
-        }
-    }
 
     // This filters out positions that aren't apart of a station when making a task
     // Should not be able to make a task for a random position
