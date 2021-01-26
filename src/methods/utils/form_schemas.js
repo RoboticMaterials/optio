@@ -257,24 +257,59 @@ export const getCardSchema = (mode, availableBinItems) => {
 
 }
 
-const routeStationSchema = Yup.object().shape({
-    instructions: Yup.string().nullable(),
+const routeStationSchema = lazy(obj => {
 
-    position: Yup.string().nullable().when('station', {
-        is: (station) => !station,
-        then: Yup.string().nullable()
-            .required('Please select a location.')
-    }),
-    station: Yup.string().nullable(),
+    let positionSchema
+    let stationSchema
+    if(!obj.position && !obj.station) {
+        positionSchema = Yup.string().nullable()
+        stationSchema = Yup.string().nullable().required('Please select a location.')
+    }
+    else if(obj.station && !obj.position) {
+        positionSchema = Yup.string().nullable()
+        stationSchema = Yup.string().nullable().required('Please select a location.')
+    }
+    else if(obj.position && !obj.station) {
+        positionSchema = Yup.string().nullable().required('Please select a location.')
+        stationSchema = Yup.string().nullable()
+    }
+    else {
+        positionSchema = Yup.string().nullable().required('Please select a location.')
+        stationSchema = Yup.string().nullable().required('Please select a location.')
+    }
 
-    timeout: Yup.string().nullable(),
-})
+
+    return Yup.object().shape({
+        instructions: Yup.string().nullable(),
+        position: positionSchema,
+        station: stationSchema,
+        timeout: Yup.string().nullable(),
+    })
+});
+
+
+// const routeStationSchema = Yup.object().shape({
+//     instructions: Yup.string().nullable(),
+//
+//     position: Yup.string().nullable().when('station', {
+//         is: (station) => true,
+//         then: Yup.string().nullable()
+//             .required('Please select a location.')
+//     }),
+//     station: Yup.string().nullable(),
+//
+//     timeout: Yup.string().nullable(),
+// })
 
 export const routeSchema = Yup.object().shape({
-    name: Yup.string()
-        .min(1, '1 character minimum.')
-        .max(50, '50 character maximum.')
-        .required('Please enter a name.'),
+    name: Yup.string().nullable().when('autoGenName', {
+        is: (autoGenName) => !autoGenName,
+        then: Yup.string()
+            .min(1, '1 character minimum.')
+            .max(50, '50 character maximum.')
+            .required('Please enter a name.')
+    }),
+    autoGenName: Yup.string().nullable(),
     obj: Yup.object().shape({
         name: Yup.string()
             .required('Please enter a name.'),

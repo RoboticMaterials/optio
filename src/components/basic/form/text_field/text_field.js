@@ -19,6 +19,7 @@ const TextField = ({
 					   ContentContainer,
 					   FieldContainer,
 					   mapInput,
+					   defaultValue,
 	mapOutput,
 	inputProps,
 
@@ -41,6 +42,7 @@ const TextField = ({
 			<ContentContainer>
 				<InputContainer>
 					<InputComponent
+						defaultValue={defaultValue}
 
 						// inputStyle={{...inputStyle, ...style}}
 						// inputStyle={inputStyle}

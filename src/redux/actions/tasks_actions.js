@@ -272,6 +272,8 @@ export const saveFormRoute = (formRoute) => {
             changed,        // remove key
             needsSubmit,    // remove key
             obj = {},
+            name: routeName,
+            autoGenName: autoGenRouteName,
             ...remainingRoute
         } = formRoute
 
@@ -283,7 +285,8 @@ export const saveFormRoute = (formRoute) => {
         // create payload
         const payload = {
             ...remainingRoute,
-            obj: objectId
+            obj: objectId,
+            name: routeName ? routeName : autoGenRouteName
         }
 
         // create new route
