@@ -110,7 +110,6 @@ const RightClickMenu = (props) => {
         history.push('/locations')
 
         if (!showSideBar) {
-          console.log('no side bar')
             const hamburger = document.querySelector('.hamburger')
             hamburger.classList.toggle('is-active')
         }
