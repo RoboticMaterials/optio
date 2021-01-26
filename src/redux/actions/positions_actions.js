@@ -1,3 +1,5 @@
+import { normalize, schema } from 'normalizr';
+
 import {
     GET_POSITIONS_STARTED,
     GET_POSITIONS_SUCCESS,
@@ -26,16 +28,20 @@ import {
     SET_SELECTED_STATION_CHILDREN_COPY
 } from '../types/positions_types'
 
-import { deepCopy } from '../../methods/utils/utils';
 import uuid from 'uuid';
 
 import * as api from '../../api/positions_api'
-import { SET_SELECTED_OBJECT } from '../types/objects_types';
+
+// Import Schema
+import { positionsSchema } from '../../normalizr/schema'
 
 // Import External Actions
 import { putStation, setStationAttributes } from './stations_actions'
 import { deleteTask } from './tasks_actions'
 import { putDevices } from './devices_actions'
+
+// Import Utils
+import { deepCopy } from '../../methods/utils/utils';
 
 // Import Store
 import store from '../store/index'
@@ -61,11 +67,7 @@ export const getPositions = () => {
             onStart();
             const positions = await api.getPositions();
 
-            // TODO: Add to normalizer
-            const normalizedPositions = {}
-            positions.map((position) => {
-                normalizedPositions[position._id] = position
-            })
+            const normalizedPositions = normalize(positions, positionsSchema).entities.positions
 
             return onSuccess(normalizedPositions);
         } catch (error) {

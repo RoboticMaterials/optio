@@ -23,9 +23,6 @@ import { deepCopy } from '../../methods/utils/utils'
 // Import Utils
 import { DeviceItemTypes } from '../../methods/utils/device_utils'
 
-// TODO: DELETE ME, FOR PROTOTYPING ONLY
-import HILModals from '../hil_modals/hil_modals'
-
 import * as styled from './widgets.style'
 
 const Widgets = (props) => {

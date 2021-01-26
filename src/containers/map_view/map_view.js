@@ -254,7 +254,7 @@ export class MapView extends Component {
             if (!!newChildEntity) {
 
                 // Update the new entity to the edited child copy
-                // TODO: Add more explanation
+                // Uses copy instead of the naked state in case you dont want to keep changes
                 newChildEntity = this.props.selectedStationChildrenCopy[newChildEntity._id]
 
                 const pos = convertD3ToReal([newChildEntity.x, newChildEntity.y], this.d3)
@@ -361,7 +361,6 @@ export class MapView extends Component {
                         }
                     }
 
-                    // TODO: This whole children copy business sucks a lot 
                     // Apple the event translation to Children Copy if need be
                     let updatedChildrenPositions = null
                     if (!!this.props.selectedStationChildrenCopy) {
@@ -446,14 +445,6 @@ export class MapView extends Component {
     }
 
     /**
-     * Should move center map when the sidebar is resized
-     * TODO: make this work...
-     */
-    onResize = () => {
-
-    }
-
-    /**
      * x: 0,
      * y: 0property, instead of going
      * through D3's scaling mechanism, which would have picked up both properties.
@@ -523,8 +514,6 @@ export class MapView extends Component {
                     x: x,
                     y: y,
                 }
-                // TODO: Delete
-                // Object.assign(station, { x, y })
                 stations[station._id] = station
             })
             this.props.dispatchUpdateStations(stations) // Bulk Update
@@ -551,8 +540,6 @@ export class MapView extends Component {
                     x: x,
                     y: y,
                 }
-                // TODO: Delete
-                // Object.assign(device.position, { x, y })
                 devices[device._id] = device
             })
             this.props.dispatchUpdateDevices(devices, this.d3) // Bulk Update

@@ -160,9 +160,10 @@ const EditLocation = () => {
         // The order of these functions matter
         dispatchSetEditingStation(false)
         dispatchSetEditingPosition(false)
-        console.log('QQQQ selected Location', selectedLocation)
+        console.log('QQQQ selected Location', selectedLocation, save)
 
         if (!!selectedLocation.new && !save) {
+            console.log('QQQQ Removing')
             if (selectedLocation.schema === 'station') {
                 dispatchRemoveStation(selectedLocation._id)
             }
@@ -325,7 +326,7 @@ const EditLocation = () => {
                     <ContentHeader
                         content={'locations'}
                         mode={'create'}
-                        onClickBack={onBack}
+                        onClickBack={() => onBack()}
                         onClickSave={onSave}
 
                     />

@@ -134,3 +134,45 @@ export const taskAnalysisSchema = new schema.Entity(
 );
 
 export const tasksAnalysisSchema = [taskAnalysisSchema]
+
+
+// positions schema
+export const positionSchema = new schema.Entity(
+    // key
+    'positions',
+    // definition
+    {
+        //condition: conditionSchema
+    },
+    // options
+    {
+        idAttribute: (value, parent, key) => {
+            return value._id
+        },
+
+    },
+
+);
+
+export const positionsSchema = [positionSchema]
+
+
+// positions schema
+export const stationSchema = new schema.Entity(
+    // key
+    'stations',
+    // definition
+    {
+        //condition: conditionSchema
+    },
+    // options
+    {
+        idAttribute: (value, parent, key) => {
+            return value._id
+        },
+
+    },
+
+);
+
+export const stationsSchema = [stationSchema]

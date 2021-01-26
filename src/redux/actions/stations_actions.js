@@ -1,3 +1,5 @@
+import { normalize, schema } from 'normalizr';
+
 import {
     GET_STATIONS_STARTED,
     GET_STATIONS_SUCCESS,
@@ -24,13 +26,18 @@ import {
     EDITING_STATION,
 } from '../types/stations_types'
 
-import { deepCopy } from '../../methods/utils/utils';
 import uuid from 'uuid';
 
 // Import External Actions
 import { deleteTask } from './tasks_actions'
 import { deletePosition, putPosition, postPosition } from './positions_actions'
 import { deleteDashboard, postDashboard } from './dashboards_actions'
+
+// Import utils
+import { deepCopy } from '../../methods/utils/utils';
+
+// Import Schema
+import { stationsSchema } from '../../normalizr/schema'
 
 // Import API
 import * as api from '../../api/stations_api'
@@ -59,10 +66,7 @@ export const getStations = () => {
             onStart();
             const stations = await api.getStations();
 
-            const normalizedStations = {}
-            stations.map((station) => {
-                normalizedStations[station._id] = station
-            })
+            const normalizedStations = normalize(stations, stationsSchema).entities.stations
 
             return onSuccess(normalizedStations);
         } catch (error) {
