@@ -55,9 +55,6 @@ const RightClickMenu = (props) => {
 
     const dispatchShowSideBar = (bool) => dispatch(setOpen(bool))
 
-    // const selectedLocation = useSelector(state => state.locationsReducer.selectedLocation)
-    // const positions = useSelector(state => state.positionsReducer.positions)
-    // const editing = useSelector(state => state.locationsReducer.editingLocation)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const showSideBar = useSelector(state => state.sidebarReducer.open)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
@@ -89,7 +86,6 @@ const RightClickMenu = (props) => {
 
     const onAddStation = async () => {
 
-        history.push('/locations')
         const pos = convertD3ToReal([coords.x, coords.y], d3)
 
         const tempSelectedStation = {
@@ -107,11 +103,16 @@ const RightClickMenu = (props) => {
             children: [],
             dashboards: []
         }
-
-        await dispatchAddStation(tempSelectedStation)
-        await dispatchSetSelectedStation(tempSelectedStation)
-
         dispatchEditingStation(true)
+        dispatchAddStation(tempSelectedStation)
+        dispatchSetSelectedStation(tempSelectedStation)
+        
+        history.push('/locations')
+
+        if (!showSideBar) {
+            const hamburger = document.querySelector('.hamburger')
+            hamburger.classList.toggle('is-active')
+        }
         dispatchShowSideBar(true)
 
         if (!showSideBar) {

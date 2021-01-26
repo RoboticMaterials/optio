@@ -9,7 +9,7 @@ import { setSelectedStation } from '../../../../../redux/actions/stations_action
 import * as styled from './device_item.style'
 
 // Import utils
-import { DeviceItemTypes } from '../../../../../methods/utils/device_utils'
+import { DeviceTypes } from '../../../../../constants/device_constants'
 
 const DeviceItem = (props) => {
 
@@ -30,15 +30,15 @@ const DeviceItem = (props) => {
     const dispatch = useDispatch()
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
 
-    const stations = useSelector(state => state.stationsreducer.stations)
+    const stations = useSelector(state => state.stationsReducer.stations)
 
     const [stationId, setStationId] = useState(false)
 
 
     // Sets the type of device
-    let deviceType = DeviceItemTypes['generic']
-    if (!!DeviceItemTypes[device.device_model]) deviceType = DeviceItemTypes[device.device_model]
-    else if (device.device_model === 'MiR100') deviceType = DeviceItemTypes['cart']
+    let deviceType = DeviceTypes['generic']
+    if (!!DeviceTypes[device.device_model]) deviceType = DeviceTypes[device.device_model]
+    else if (device.device_model === 'MiR100') deviceType = DeviceTypes['cart']
 
     // Sets the location of the device
     useEffect(() => {

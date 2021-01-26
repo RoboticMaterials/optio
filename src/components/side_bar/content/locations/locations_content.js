@@ -57,15 +57,12 @@ export default function LocationContent() {
         ...stations,
         ...positions
     }
-
-    /**
-     * This function is called when the back button is pressed. If the location is new, it is deleted;
-     * otherwise, it is reverted to the state it was when editing begun.
-     * TODO: FIX THIS JUNKY JUNK (redo location logic, it sucks)
-     */
-    const onBack = () => {
-
-    }
+    
+    useEffect(() => {
+        return () => {
+            
+        }
+    }, [])
 
     const onSetSelectedLocation = (id) => {
         if (id in stations) {

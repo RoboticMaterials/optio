@@ -74,7 +74,6 @@ const EditTask = (props) => {
 
     useEffect(() => {
         console.log('QQQQ Selected Task', selectedTask)
-        if (!!selectedTask.associated_task) console.log('QQQQ Associated Task', tasks[selectedTask.associated_task])
         setSelectedTaskCopy(selectedTask)
 
         return () => {

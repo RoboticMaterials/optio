@@ -33,7 +33,7 @@ export const LocationTypeLabel = styled.p`
 `
 
 export const Card = styled.div`
-    height: 7rem;
+    height: 5rem;
     width: 100%;
     position:relative;
     margin: 0rem .5rem;
@@ -42,6 +42,7 @@ export const Card = styled.div`
 
 export const CardContainer = styled.div`
     display: flex;
+    margin-top: 1rem;
     
 `
 

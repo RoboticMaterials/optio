@@ -1,3 +1,5 @@
+import { normalize, schema } from 'normalizr';
+
 import {
     GET_POSITIONS_STARTED,
     GET_POSITIONS_SUCCESS,
@@ -26,15 +28,20 @@ import {
     SET_SELECTED_STATION_CHILDREN_COPY
 } from '../types/positions_types'
 
-import { deepCopy } from '../../methods/utils/utils';
 import uuid from 'uuid';
 
 import * as api from '../../api/positions_api'
-import { SET_SELECTED_OBJECT } from '../types/objects_types';
+
+// Import Schema
+import { positionsSchema } from '../../normalizr/schema'
 
 // Import External Actions
-import { putStation } from './stations_actions'
+import { putStation, setStationAttributes } from './stations_actions'
 import { deleteTask } from './tasks_actions'
+import { putDevices } from './devices_actions'
+
+// Import Utils
+import { deepCopy } from '../../methods/utils/utils';
 
 // Import Store
 import store from '../store/index'
@@ -60,11 +67,7 @@ export const getPositions = () => {
             onStart();
             const positions = await api.getPositions();
 
-            // TODO: Add to normalizer
-            const normalizedPositions = {}
-            positions.map((position) => {
-                normalizedPositions[position._id] = position
-            })
+            const normalizedPositions = normalize(positions, positionsSchema).entities.positions
 
             return onSuccess(normalizedPositions);
         } catch (error) {
@@ -217,7 +220,7 @@ export const updatePositions = (positions, selectedPosition, childrenPositions, 
 }
 
 export const removePosition = (id) => {
-    return { type: REMOVE_POSITION, payload: { id } }
+    return { type: REMOVE_POSITION, payload: id }
 }
 
 export const setPositionAttributes = (id, attr) => {
@@ -243,11 +246,11 @@ const onDeletePosition = (id, stationDelete) => {
         const stationsState = store.getState().stationsReducer
         const positionsState = store.getState().positionsReducer
         const tasksState = store.getState().tasksReducer
+        const devicesState = store.getState().devicesReducer
 
         let position = deepCopy(positionsState.positions[id])
 
         // If the position has a parent then remove from parent
-        // Make sure that the 
         if (!!position.parent && !stationDelete) {
 
             let selectedStation = deepCopy(stationsState.stations[position.parent])
@@ -256,9 +259,10 @@ const onDeletePosition = (id, stationDelete) => {
             if (!!selectedStation) {
                 // Remove the position from the list of children
                 const positionIndex = selectedStation.children.findIndex(p => p._id === position._id)
-
-                selectedStation.children.splice(positionIndex, 1)
-                await dispatch(putStation(selectedStation))
+                let children = deepCopy(selectedStation.children)
+                children.splice(positionIndex, 1)
+                dispatch(setStationAttributes(selectedStation._id, { children }))
+                // await dispatch(putStation(selectedStation))
             }
 
         }
@@ -268,16 +272,16 @@ const onDeletePosition = (id, stationDelete) => {
             // Update the ChildrenCopy
             let copyOfCopy = deepCopy(positionsState.selectedStationChildrenCopy)
             delete copyOfCopy[position._id]
-            setSelectedStationChildrenCopy(
+            dispatch(setSelectedStationChildrenCopy(
                 copyOfCopy
-            )
+            ))
         }
 
 
         // If the position is new, just remove it from the local station
         // Since the position is new, it does not exist in the backend and there can't be any associated tasks
         if (!!position.new) {
-            removePosition(position._id)
+            dispatch(removePosition(position._id))
             return null
         }
 
@@ -290,6 +294,15 @@ const onDeletePosition = (id, stationDelete) => {
                 return task.load.position == position._id || task.unload.position == position._id
             }).forEach(async relevantTask => {
                 await dispatch(deleteTask(relevantTask._id))
+            })
+
+            const devices = devicesState.devices
+            // See if the position belonged as an idle location for a device
+            Object.values(devices).filter(device => {
+                return !!device.idle_location && device.idle_location === position._id
+            }).forEach(async relevantDevice => {
+                relevantDevice.idle_location = null
+                await dispatch(putDevices(relevantDevice, relevantDevice._id))
             })
 
 

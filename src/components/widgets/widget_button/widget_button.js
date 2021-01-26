@@ -10,7 +10,8 @@ import uuid from 'uuid'
 // Import Actions
 import { postTaskQueue } from '../../../redux/actions/task_queue_actions'
 import { putStation, setSelectedStationChildrenCopy } from '../../../redux/actions/stations_actions'
-import {widgetLoaded, hoverStationInfo} from '../../../redux/actions/widget_actions'
+import { removePosition, setSelectedPosition } from '../../../redux/actions/positions_actions'
+import { widgetLoaded, hoverStationInfo } from '../../../redux/actions/widget_actions'
 import { postDashboard, dashboardOpen } from '../../../redux/actions/dashboards_actions'
 
 import { deepCopy } from '../../../methods/utils/utils'
@@ -33,12 +34,14 @@ const WidgetButton = (props) => {
     const widgetPage = params.widgetPage
 
     const dispatch = useDispatch()
-    const onPostTaskQueue = (q) => dispatch(postTaskQueue(q))
-    const onWidgetLoaded = (bol) => dispatch(widgetLoaded(bol))
-    const onHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
-    const onDashboardOpen = (props) => dispatch(dashboardOpen(props))
-    const onPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
-    const onPutStation = (station, ID) => dispatch(putStation(station, ID))
+    const dispatchPostTaskQueue = (q) => dispatch(postTaskQueue(q))
+    const dispatchWidgetLoaded = (bol) => dispatch(widgetLoaded(bol))
+    const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
+    const dispatchDashboardOpen = (props) => dispatch(dashboardOpen(props))
+    const dispatchPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
+    const dispatchPutStation = (station, ID) => dispatch(putStation(station, ID))
+    const dispatchRemovePosition = (id) => dispatch(removePosition(id))
+    const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
 
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
@@ -52,15 +55,15 @@ const WidgetButton = (props) => {
     const handleOnClick = () => {
         switch (props.type) {
             case 'cart':
-                handleCartButtonClick()
+                onCartButtonClick()
                 break;
 
             case 'cancel':
-                handleCancelClick()
+                onCancelClick()
                 break;
 
             case 'dashboards':
-                handleDashboardClick()
+                onDashboardClick()
                 break;
 
             default:
@@ -70,11 +73,11 @@ const WidgetButton = (props) => {
     }
 
     // Handles  if the widget button clicked was a cart
-    const handleCartButtonClick = () => {
+    const onCartButtonClick = () => {
         // If the button is for cart, then see if its a coord move or a simple task move
         // Coord move is for right click send cart to pos
         if (!!coordinateMove) {
-            onPostTaskQueue({
+            dispatchPostTaskQueue({
                 _id: uuid.v4(),
                 task_id: 'custom_task',
                 custom_task: {
@@ -87,11 +90,13 @@ const WidgetButton = (props) => {
                     device_type: 'MiR_100',
                 }
             })
-            onWidgetLoaded(false)
-            onHoverStationInfo(null)
+            dispatchWidgetLoaded(false)
+            dispatchHoverStationInfo(null)
+            dispatchRemovePosition(selectedPosition._id)
+            dispatchSetSelectedPosition(null)
         }
         else {
-            onPostTaskQueue({
+            dispatchPostTaskQueue({
                 _id: uuid.v4(),
                 task_id: 'custom_task',
                 custom_task: {
@@ -104,18 +109,20 @@ const WidgetButton = (props) => {
     }
 
     // Handles if the widget button clicked was cancel
-    const handleCancelClick = () => {
-        onWidgetLoaded(false)
-        onHoverStationInfo(null)
+    const onCancelClick = () => {
+        dispatchWidgetLoaded(false)
+        dispatchHoverStationInfo(null)
+        dispatchRemovePosition(selectedPosition._id)
+        dispatchSetSelectedPosition(null)
     }
 
     // Handles if a dashboard is clicked
-    const handleDashboardClick = async () => {
+    const onDashboardClick = async () => {
         let dashboardID
 
         // If there's no selected station, then see if theres a station in the url, if so, use that, else do nothing
-        if(!selectedLocation) {
-            if(!!params.stationID) {
+        if (!selectedLocation) {
+            if (!!params.stationID) {
                 dashboardID = stations[params.stationID].dashboards[0]
             } else {
                 return null
@@ -138,13 +145,13 @@ const WidgetButton = (props) => {
             }
 
             //// Now post the dashboard, and on return tie that dashboard to location.dashboards and put the location
-            const postDashboardPromise = onPostDashboard(defaultDashboard)
+            const postDashboardPromise = dispatchPostDashboard(defaultDashboard)
 
             postDashboardPromise.then(async postedDashboard => {
 
                 selectedLocation.dashboards = [postedDashboard._id.$oid]
 
-                await onPutStation(selectedLocation, selectedLocation._id)
+                await dispatchPutStation(selectedLocation, selectedLocation._id)
 
                 history.push('/locations/' + id + '/' + type + '/' + dashboardID)
 
@@ -154,7 +161,7 @@ const WidgetButton = (props) => {
             history.push('/locations/' + id + '/' + type + '/' + dashboardID)
         }
 
-        onDashboardOpen(true)
+        dispatchDashboardOpen(true)
     }
 
 
@@ -182,15 +189,15 @@ const WidgetButton = (props) => {
                     </>
                     :
                     type === 'lots' ?
-                    <>
-                        <styled.WidgetButtonIcon className="far fa-clone" pageID={type} currentPage={currentPage} />
-                        <styled.WidgetButtonText>{label}</styled.WidgetButtonText>
-                    </>
-                    :
-                    <>
-                        <styled.WidgetButtonIcon style={{ fontSize: type === 'cart' && '1.2rem', paddingTop: type === 'cart' && '.8rem' }} className={"icon-" + type} pageID={type} currentPage={currentPage} />
-                        <styled.WidgetButtonText>{label}</styled.WidgetButtonText>
-                    </>
+                        <>
+                            <styled.WidgetButtonIcon className="far fa-clone" pageID={type} currentPage={currentPage} />
+                            <styled.WidgetButtonText>{label}</styled.WidgetButtonText>
+                        </>
+                        :
+                        <>
+                            <styled.WidgetButtonIcon style={{ fontSize: type === 'cart' && '1.2rem', paddingTop: type === 'cart' && '.8rem' }} className={"icon-" + type} pageID={type} currentPage={currentPage} />
+                            <styled.WidgetButtonText>{label}</styled.WidgetButtonText>
+                        </>
             }
             {/* <styled.ButtonText>{props.type}</styled.ButtonText> */}
 

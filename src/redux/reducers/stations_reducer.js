@@ -44,7 +44,6 @@ const defaultState = {
 
 export default function stationsReducer(state = defaultState, action) {
     let stationsCopy
-
     /**
      * Updates the state of stations to include the incoming payload station.
      * If the payload is the current selected Station, then update that as well
