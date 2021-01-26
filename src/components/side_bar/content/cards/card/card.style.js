@@ -66,10 +66,11 @@ export const CardName = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-weight: 800;
 `
 
 export const Count = styled.span`
-	// font-size: ${props => props.theme.fontSize.sz6};
+	font-size: ${props => props.theme.fontSize.sz4};
 `
 
 export const LotName = styled.span`
@@ -137,5 +138,12 @@ export const DateArrow = styled.i`
 export const DateText = styled.span`
 
 font-size: ${props => props.theme.fontSize.sz4};
+
+`
+
+export const Label = styled.span`
+
+font-size: ${props => props.theme.fontSize.sz4};
+font-weight: 600;
 
 `

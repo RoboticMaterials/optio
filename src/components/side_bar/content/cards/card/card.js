@@ -57,15 +57,12 @@ const Card = (props) => {
                 <styled.HeaderBar
                     color={lotColor}
                 >
-                    {lotName &&
-                        <styled.LotName style={{marginRight: "1rem"}}>Lot: {lotName}</styled.LotName>
-                    }
                     <styled.CardName>{name}</styled.CardName>
                 </styled.HeaderBar>
                 <styled.ContentContainer>
 
                     <styled.Row>
-                        <styled.Count>Dates</styled.Count>
+                        <styled.Label>Dates</styled.Label>
                     <styled.DatesContainer>
                         <styled.DateItem>
                             <styled.DateText>{startDateText}</styled.DateText>
@@ -80,7 +77,7 @@ const Card = (props) => {
                     </styled.Row>
 
                     <styled.Row style={{border: "none"}}>
-                        <styled.Count>Quantity</styled.Count>
+                        <styled.Label>Quantity</styled.Label>
                         <styled.Count>{count}</styled.Count>
                     </styled.Row>
 
