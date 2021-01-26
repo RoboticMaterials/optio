@@ -26,6 +26,7 @@ import { deepCopy } from '../../methods/utils/utils'
 import { getCards } from "../../redux/actions/card_actions";
 import {sortBy} from "../../methods/utils/card_utils";
 import {SORT_MODES} from "../../constants/common_contants";
+import Card from "../side_bar/content/cards/card/card";
 
 
 /**
@@ -82,6 +83,9 @@ const HILModals = (props) => {
     const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
     const [lotsAtStation, setLotsAtStation] = useState(false)
     const [taskHasProcess, setTaskHasProcess] = useState(false)
+
+    console.log("selectedTask",selectedTask)
+    console.log("availableLots",availableLots)
 
 
     const {
@@ -955,40 +959,43 @@ const HILModals = (props) => {
                                         return false
                                     }
                                 })
-                                .map((currLot) => {
+                                .map((currLot, lotIndex) => {
+                                // const {
+                                //     name,
+                                //     _id: lotId,
+                                //     bins
+                                // } = currLot
                                 const {
-                                    name,
                                     _id: lotId,
-                                    bins
+                                    count = 0,
+                                    name,
+                                    object_id,
+                                    cardId,
+                                    start_date,
+                                    end_date
                                 } = currLot
 
                                 const isSelected = selectedLotId === lotId
 
-                                return (
-                                    <styled.LotButton
+                                // const lotName = lots[lot_id] ? lots[lot_id].name : null
+                                const objectName = objects[object_id] ? objects[object_id].name : null
+
+                                return(
+                                    <Card
+                                        name={name}
+                                        start_date={start_date}
+                                        end_date={end_date}
+                                        objectName={objectName}
+                                        count={count}
+                                        id={lotId}
+                                        index={lotIndex}
                                         isSelected={isSelected}
-                                        color={'orange'}
-                                        schema={"lots"}
                                         onClick={() => {
                                             // set selected lot and close lot selector
                                             setSelectedLot(currLot)
                                             setShowLotSelector(false)
                                         }}
-                                    >
-
-                                        {/*{isSelected &&*/}
-                                        {/*    <styled.DeselectLotIcon*/}
-                                        {/*        className='fas fa-times-circle'*/}
-                                        {/*        onClick={(e) => {*/}
-                                        {/*            e.stopPropagation()*/}
-                                        {/*            e.preventDefault()*/}
-                                        {/*            setSelectedLot(null)*/}
-                                        {/*        }}*/}
-                                        {/*    />*/}
-                                        {/*}*/}
-                                        <styled.LotButtonText isSelected={isSelected}
-                                            color={'#32a897'}>{name}</styled.LotButtonText>
-                                    </styled.LotButton>
+                                    />
                                 )
                             })
                             }
