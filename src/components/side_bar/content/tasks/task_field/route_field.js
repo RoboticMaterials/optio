@@ -66,7 +66,7 @@ const TaskField = (props) => {
         onDelete
     } = props
 
-    console.log("TaskField fieldParent",fieldParent)
+    console.log("TaskField fieldParent", fieldParent)
     const fieldMeta = getFieldMeta(fieldParent)
 
     const {
@@ -137,16 +137,16 @@ const TaskField = (props) => {
             setFieldValue(fieldParent ? `${fieldParent}.type` : "type", selectedTask.type)
         }
 
-        if(!name || !userTypedName) {
+        if (!name || !userTypedName) {
             setUserTypedName(false) // set userTypedName to false to auto generate name
 
-            const loadStation = stations[loadStationId] || {name: ""}
-            const unloadStation = stations[unloadStationId] || {name: ""}
+            const loadStation = stations[loadStationId] || { name: "" }
+            const unloadStation = stations[unloadStationId] || { name: "" }
 
-            if(loadStationId && unloadStationId) {
+            if (loadStationId && unloadStationId) {
                 setFieldValue(fieldParent ? `${fieldParent}.name` : "name", loadStation.name + " => " + unloadStation.name)
             }
-            else if(loadStationId) {
+            else if (loadStationId) {
                 setFieldValue(fieldParent ? `${fieldParent}.name` : "name", loadStation.name + " => ")
             }
         }
@@ -457,7 +457,7 @@ const TaskField = (props) => {
                         InputComponent={Textbox}
                         name={fieldParent ? `${fieldParent}.name` : "name"}
                         placeholder="Route Name"
-                        onChange={()=>setUserTypedName(true)} // user changed value, so stop auto generating name
+                        onChange={() => setUserTypedName(true)} // user changed value, so stop auto generating name
                         schema={'tasks'}
                         focus={!name}
                         style={{ fontSize: '1.2rem', fontWeight: '600' }}

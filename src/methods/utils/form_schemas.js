@@ -304,5 +304,7 @@ export const getProcessSchema = () => {
     return
 }
 
-
-
+export const locationSchema = Yup.object().shape({
+    locationName: Yup.string()
+        .required('Please enter a name'),
+})

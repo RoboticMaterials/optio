@@ -1,5 +1,3 @@
-import uuid from 'uuid'
-
 export const LocationDefaultAttributes = {
     name: null,
     schema: null,
@@ -9,7 +7,7 @@ export const LocationDefaultAttributes = {
     rotation: 0,
     x: 0,
     y: 0,
-    _id: uuid.v4(),
+    _id: '',
     map_id: null,
     temp: true
 }
