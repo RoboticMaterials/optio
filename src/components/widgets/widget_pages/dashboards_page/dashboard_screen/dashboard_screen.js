@@ -138,11 +138,12 @@ const DashboardScreen = (props) => {
         // filter out buttons with missing task
         buttons = buttons.filter((currButton) => {
             const {
-                task_id
+                task_id,
+                type
             } = currButton
 
-            if(!(tasks[task_id])) {
-                console.error('Task does not exist! Hidding button from dashboard')
+            if(task_id && !(tasks[task_id])) {
+                console.error('Task does not exist! Hiding button from dashboard')
                 return false
             }
             return true
