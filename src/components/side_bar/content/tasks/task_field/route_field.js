@@ -145,6 +145,10 @@ const TaskField = (props) => {
             setFieldValue(fieldParent ? `${fieldParent}.type` : "type", selectedTask.type, false)
         }
 
+        if (selectedTask && selectedTask.device_types) {
+            setFieldValue(fieldParent ? `${fieldParent}.device_types` : "device_types", selectedTask.device_types)
+        }
+
         if(!name || !userTypedName) {
             // setUserTypedName(false) // set userTypedName to false to auto generate name
 

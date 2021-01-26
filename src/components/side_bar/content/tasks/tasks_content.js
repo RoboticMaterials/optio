@@ -38,7 +38,6 @@ export default function TaskContent(props) {
     // Connect redux reducers
     const dispatch = useDispatch()
     const params = useParams()
-    const onPostTaskQueue = (ID) => dispatch(postTaskQueue(ID))
     const onTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
     const onHandlePostTaskQueue = (props) => dispatch(taskQueueActions.handlePostTaskQueue(props))
     const onEditing = async (props) => await dispatch(taskActions.editingTask(props))

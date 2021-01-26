@@ -67,9 +67,7 @@ export const getTaskQueue = () => {
             onStart();
 
             const taskQueue = await api.getTaskQueue();
-            // console.log('getTaskQueue: taskQueue:',taskQueue)
             const normalizedData = normalize(taskQueue, taskQueueSchema);
-            // console.log('getTaskQueue normalizedData', normalizedData)
 
             return onSuccess(normalizedData.entities.taskQueue);
         } catch (error) {
@@ -85,7 +83,7 @@ export const postTaskQueue = (queueItem) => {
     return async dispatch => {
 
         function onStart() {
-            dispatch({ type: POST_ + TASK_QUEUE + _STARTED });
+            dispatch({ type: POST_ + TASK_QUEUE + _STARTED, payload: queueItem });
         }
         function onSuccess(createdTaskQueueItem, oldTaskQueueItemId) {
             const payload = { createdTaskQueueItem, oldTaskQueueItemId };
