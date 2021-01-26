@@ -83,7 +83,7 @@ export const postTaskQueue = (queueItem) => {
     return async dispatch => {
 
         function onStart() {
-            dispatch({ type: POST_ + TASK_QUEUE + _STARTED });
+            dispatch({ type: POST_ + TASK_QUEUE + _STARTED, payload: queueItem });
         }
         function onSuccess(createdTaskQueueItem, oldTaskQueueItemId) {
             const payload = { createdTaskQueueItem, oldTaskQueueItemId };
@@ -199,6 +199,7 @@ export const deleteTaskQueueItem = (id) => {
  */
 
 export const handlePostTaskQueue = (props) => {
+    console.log("handlePostTaskQueue props",props)
 
   const {
       dashboardID,
