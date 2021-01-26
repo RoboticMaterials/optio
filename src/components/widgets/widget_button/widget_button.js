@@ -15,7 +15,7 @@ import { widgetLoaded, hoverStationInfo } from '../../../redux/actions/widget_ac
 import { postDashboard, dashboardOpen } from '../../../redux/actions/dashboards_actions'
 
 import { deepCopy } from '../../../methods/utils/utils'
-import * as taskQueueActions from "../../../redux/actions/task_queue_actions";
+import { handlePostTaskQueue } from "../../../redux/actions/task_queue_actions";
 
 
 
@@ -35,7 +35,7 @@ const WidgetButton = (props) => {
     const widgetPage = params.widgetPage
 
     const dispatch = useDispatch()
-    const dispatchHandlePostTaskQueue = (props) => dispatch(taskQueueActions.handlePostTaskQueue(props))
+    const dispatchHandlePostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
     const dispatchWidgetLoaded = (bol) => dispatch(widgetLoaded(bol))
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchDashboardOpen = (props) => dispatch(dashboardOpen(props))

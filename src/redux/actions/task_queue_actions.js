@@ -67,9 +67,7 @@ export const getTaskQueue = () => {
             onStart();
 
             const taskQueue = await api.getTaskQueue();
-            // console.log('getTaskQueue: taskQueue:',taskQueue)
             const normalizedData = normalize(taskQueue, taskQueueSchema);
-            // console.log('getTaskQueue normalizedData', normalizedData)
 
             return onSuccess(normalizedData.entities.taskQueue);
         } catch (error) {
@@ -201,7 +199,6 @@ export const deleteTaskQueueItem = (id) => {
  */
 
 export const handlePostTaskQueue = (props) => {
-    console.log("handlePostTaskQueue props",props)
 
   const {
       dashboardID,
