@@ -356,7 +356,6 @@ const Widgets = (props) => {
         }
 
     }
-    //gg
 
     return (
         <>
