@@ -15,6 +15,7 @@ import { widgetLoaded, hoverStationInfo } from '../../../redux/actions/widget_ac
 import { postDashboard, dashboardOpen } from '../../../redux/actions/dashboards_actions'
 
 import { deepCopy } from '../../../methods/utils/utils'
+import { handlePostTaskQueue } from "../../../redux/actions/task_queue_actions";
 
 
 
@@ -34,7 +35,7 @@ const WidgetButton = (props) => {
     const widgetPage = params.widgetPage
 
     const dispatch = useDispatch()
-    const dispatchPostTaskQueue = (q) => dispatch(postTaskQueue(q))
+    const dispatchHandlePostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
     const dispatchWidgetLoaded = (bol) => dispatch(widgetLoaded(bol))
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchDashboardOpen = (props) => dispatch(dashboardOpen(props))
@@ -77,18 +78,17 @@ const WidgetButton = (props) => {
         // If the button is for cart, then see if its a coord move or a simple task move
         // Coord move is for right click send cart to pos
         if (!!coordinateMove) {
-            dispatchPostTaskQueue({
-                _id: uuid.v4(),
-                task_id: 'custom_task',
-                custom_task: {
+            dispatchHandlePostTaskQueue({
+                Id: 'custom_task',
+                custom: {
                     type: 'coordinate_move',
                     coordinate: {
                         pos_x: selectedLocation.pos_x,
                         pos_y: selectedLocation.pos_y,
                         rotation: selectedLocation.rotation,
                     },
-                    device_type: 'MiR_100',
-                }
+                },
+                deviceType: 'MiR_100',
             })
             dispatchWidgetLoaded(false)
             dispatchHoverStationInfo(null)
@@ -96,14 +96,14 @@ const WidgetButton = (props) => {
             dispatchSetSelectedPosition(null)
         }
         else {
-            dispatchPostTaskQueue({
-                _id: uuid.v4(),
-                task_id: 'custom_task',
-                custom_task: {
+            dispatchHandlePostTaskQueue({
+                Id: 'custom_task',
+                custom: {
                     type: 'position_move',
                     position: id,
-                    device_type: 'MiR_100',
+
                 },
+                deviceType: 'MiR_100',
             })
         }
     }

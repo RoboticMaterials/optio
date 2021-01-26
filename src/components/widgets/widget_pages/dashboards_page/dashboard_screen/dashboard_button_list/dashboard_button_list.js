@@ -138,6 +138,7 @@ const DashboardButtonList = ((props) => {
 
         return (
             <DashboardButton
+                deviceType={deviceTypes[0]}
                 title={name}
                 iconColor={iconColor}
                 iconClassName={iconClassName}
