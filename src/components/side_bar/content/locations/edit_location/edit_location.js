@@ -18,6 +18,7 @@ import Button from '../../../../basic/button/button'
 // Import Constants
 import { StationTypes } from '../../../../../constants/station_constants'
 import { PositionTypes } from '../../../../../constants/position_constants'
+import { LocationDefaultAttributes } from '../../../../../constants/location_constants'
 
 // Import utils
 import { deepCopy } from '../../../../../methods/utils/utils'
@@ -95,7 +96,6 @@ const EditLocation = () => {
 
             // Post
             if (!!selectedStation.new) {
-                console.log('QQQQ Posting', selectedStation)
                 await dispatchPostStation(selectedStation)
 
                 // Add dashboard
@@ -160,10 +160,8 @@ const EditLocation = () => {
         // The order of these functions matter
         dispatchSetEditingStation(false)
         dispatchSetEditingPosition(false)
-        console.log('QQQQ selected Location', selectedLocation, save)
 
         if (!!selectedLocation.new && !save) {
-            console.log('QQQQ Removing')
             if (selectedLocation.schema === 'station') {
                 dispatchRemoveStation(selectedLocation._id)
             }
@@ -184,19 +182,10 @@ const EditLocation = () => {
     const onAddLocation = async (type) => {
 
         // TODO: Stick this into Constants
-        const defaultAttributes = {
-            name: newName,
-            schema: null,
-            type: null,
-            pos_x: 0,
-            pos_y: 0,
-            rotation: 0,
-            x: 0,
-            y: 0,
-            _id: uuid.v4(),
-            map_id: currentMap._id,
-            temp: true
-        }
+        const defaultAttributes = deepCopy(LocationDefaultAttributes)
+
+        defaultAttributes['neame'] = newName
+        defaultAttributes['map_id'] = currentMap._id
 
         const attributes = deepCopy(LocationTypes[type].attributes)
 
@@ -262,9 +251,9 @@ const EditLocation = () => {
         Object.values(devices).map(async (device, ind) => {
             if (device.device_model === 'MiR100') {
                 const devicePosition = device.position
-
+                const copyPos = deepCopy(position)
                 const updatedPosition = {
-                    ...position,
+                    ...copyPos,
                     pos_x: devicePosition.pos_x,
                     pos_y: devicePosition.pos_y,
                     x: devicePosition.x,
@@ -272,7 +261,25 @@ const EditLocation = () => {
                     rotation: devicePosition.orientation,
                 }
 
-                dispatchAddPosition(updatedPosition)
+                console.log('QQQQ updating', updatedPosition, device)
+
+
+                if (updatedPosition._id in selectedStationChildrenCopy) {
+                    console.log('QQQQ hur')
+                    let copyOfCopy = deepCopy(selectedStationChildrenCopy)
+                    copyOfCopy = {
+                        ...copyOfCopy,
+                        [updatedPosition._id]: updatedPosition,
+                    }
+                    dispatchSetSelectedStationChildrenCopy(selectedStationChildrenCopy)
+                }
+
+                else {
+                    console.log('QQQQ har')
+
+                    setSelectedPosition(updatedPosition)
+                }
+
 
             }
         })
