@@ -490,7 +490,7 @@ const TaskField = (props) => {
                     <TextField
                         InputComponent={Textbox}
                         name={fieldParent ? `${fieldParent}.name` : "name"}
-                        placeholder={values.autoGenName ? values.autoGenName : "Route Name"}
+                        placeholder={"Route Name"}
                         onChange={()=>setUserTypedName(true)} // user changed value, so stop auto generating name
                         schema={'tasks'}
                         focus={!name}
