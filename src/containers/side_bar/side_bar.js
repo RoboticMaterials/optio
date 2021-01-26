@@ -139,15 +139,6 @@ const SideBar = (props) => {
             hamburger.classList.toggle('is-active')
         }
 
-        // TODO: Not sure why these are here...
-        // dispatchEditingStation(false)
-        // dispatchEditingPosition(false)
-
-        // dispatch(editingProcess(false))
-
-        // dispatchSideBarBack()
-        // dispatch(taskActions.deselectTask())    // Deselect
-
         if (!showSideBar && url == '/') {
             history.push(`/locations`)
         }

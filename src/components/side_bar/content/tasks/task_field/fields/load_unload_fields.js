@@ -183,7 +183,7 @@ const LoadUnloadFields = (props) => {
             }
 
             {/* Hides the unload field if its a handoff task */}
-            {!values.handoff &&
+            {values.handoff &&
 
                 <>
                     <styled.Header>Unload</styled.Header>

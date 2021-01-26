@@ -119,7 +119,7 @@ const ApiContainer = (props) => {
         // this interval is always on
         // loads essential info used on every page such as status and taskQueue
         setCriticalDataInterval(setInterval(() => loadCriticalData(), 500));
-        const mapDataInterval = setInterval(() => loadMapData(), 5000)
+        const mapDataInterval = setInterval(() => loadMapData(), 1000)
 
 
         return () => {
@@ -325,14 +325,14 @@ const ApiContainer = (props) => {
 
         // Cleaner Functions
         const funtion = await handleDeviceWithoutADashboard(devices, dashboards)
-        const funtion1 = await handleTasksWithBrokenPositions(tasks, stations, positions)
+        // const funtion1 = await handleTasksWithBrokenPositions(tasks, stations, positions)
         // const funtion2 = await handlePositionsWithBrokenParents(stations, positions)
-        const funtion3 = await handleDevicesWithBrokenStations(devices, stations)
-        const funtion4 = await handleStationsWithBrokenDevices(devices, stations)
-        const funtion5 = await handleDashboardsWithBrokenStations(dashboards, stations)
-        const funtion6 = await handleStationsWithBrokenChildren(stations, positions)
-        const funtion7 = await handleTasksWithBrokenProcess(processes, tasks)
-        const funtion8 = await handleProcessesWithBrokenRoutes(processes, tasks)
+        // const funtion3 = await handleDevicesWithBrokenStations(devices, stations)
+        // const funtion4 = await handleStationsWithBrokenDevices(devices, stations)
+        // const funtion5 = await handleDashboardsWithBrokenStations(dashboards, stations)
+        // const funtion6 = await handleStationsWithBrokenChildren(stations, positions)
+        // const funtion7 = await handleTasksWithBrokenProcess(processes, tasks)
+        // const funtion8 = await handleProcessesWithBrokenRoutes(processes, tasks)
 
         // Commented out for now. Was causing an issue when sending a cart to a location using simple move. Since its just a one off task, the task is never added to the backend so if the page was refreshed, the task q item would be deleted
         // const funtion9 = await handleTaskQueueWithBrokenTasks(taskQueue, tasks)

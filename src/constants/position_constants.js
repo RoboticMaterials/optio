@@ -111,7 +111,7 @@ export const newPositionTemplate = (name, type, parent, map_id) => {
 
     return {
         name: name,
-        schema: 'positions',
+        schema: 'position',
         type: type,
         temp: true,
         new: true,

@@ -74,10 +74,6 @@ const DevicesContent = () => {
     //                                          //
     // ======================================== //
 
-    // Gets devices on component mount. TODO: Remove this once API container is back in place
-    useEffect(() => {
-    }, [])
-
     // Sets the editingDeviceID to new so that the save knows to post instead of put
     const handleAddDevice = () => {
     }

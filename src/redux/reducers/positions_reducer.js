@@ -120,7 +120,6 @@ const positionsReducer = (state = defaultState, action) => {
         // Upates positions locally on the front-end
         case UPDATE_POSITIONS:
             // TODO Comment
-            // console.log('QQQQ Updating Poss', action.payload)
             return {
                 ...state,
                 positions: action.payload.positions,
