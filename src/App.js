@@ -16,7 +16,9 @@ import * as styled from './App.style'
 
 // Import API
 import { deleteLocalSettings } from './api/local_api'
-import * as localActions from './redux/actions/local_actions'
+//import * as localActions from './redux/actions/local_actions'
+import { stopAPICalls } from './redux/actions/local_actions'
+
 
 // import containers
 import ApiContainer from './containers/api_container/api_container';
@@ -47,10 +49,9 @@ const App = (props) => {
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
     const getFailureCount = useSelector(state => state.taskQueueReducer.getFailureCount)
-    const stopAPICalls = useSelector(state => state.localReducer.stopAPICalls)
 
     const dispatch = useDispatch()
-    const dispatchStopAPICalls = (bool) => dispatch(localActions.stopAPICalls(bool))
+    const dispatchStopAPICalls = (bool) => dispatch(stopAPICalls(bool))
 
     // Set to true for the time being, authentication is not 100% complete as of 09/14/2020
     const [authenticated, setAuthenticated] = useState(true)

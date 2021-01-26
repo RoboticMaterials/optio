@@ -110,7 +110,7 @@ const ApiContainer = (props) => {
     const [apiError, setApiError] = useState(false)
     const [pageDataInterval, setPageDataInterval] = useState(null)
     const [criticalDataInterval, setCriticalDataInterval] = useState(null)
-
+    const [mapDataInterval, setMapDataInterval] = useState(null)
 
     const params = useParams()
 
@@ -119,14 +119,14 @@ const ApiContainer = (props) => {
         // this interval is always on
         // loads essential info used on every page such as status and taskQueue
         setCriticalDataInterval(setInterval(() => loadCriticalData(), 500));
-        const mapDataInterval = setInterval(() => loadMapData(), 1000)
+        setMapDataInterval(setInterval(() => loadMapData(), 500));
 
 
         return () => {
             // clear intervals
             clearInterval(pageDataInterval);
             clearInterval(criticalDataInterval);
-            // clearInterval(mapDataInterval)
+            //clearInterval(mapDataInterval)
         }
     }, [])
 
@@ -134,6 +134,7 @@ const ApiContainer = (props) => {
       if(stopAPICalls === true){
         clearInterval(criticalDataInterval);
         clearInterval(pageDataInterval);
+        clearInterval(mapDataInterval);
         //dispatchStopAPICalls(false)
       }
     }, [stopAPICalls])
