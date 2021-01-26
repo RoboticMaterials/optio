@@ -58,6 +58,7 @@ export default function LocationContent() {
         ...positions
     }
 
+
     /**
      * This function is called when the back button is pressed. If the location is new, it is deleted;
      * otherwise, it is reverted to the state it was when editing begun.
@@ -86,7 +87,7 @@ export default function LocationContent() {
     /**
      * Tells what location is being edited
      * Handles whether location is a station or a position
-     * @param {*} id 
+     * @param {*} id
      */
     const onEditLocation = (id) => {
         const editingLocation = locations[id]
@@ -129,7 +130,7 @@ export default function LocationContent() {
                 elements={
                     locationsSortedAlphabetically(Object.values(locations))
                         // Filters out devices, entry positions, other positions and right click to move positions
-                        .filter(location => !location.parent && location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.name !== 'TempRightClickMovePosition' && (location.map_id === currentMap._id))
+                        .filter(location => !location.parent && location.type !== 'device' && location.type !== 'cart_entry_position' && location.type !== 'shelf_entry_position' && location.type !== 'charger_entry_position' && location.type !== 'other' && location.schema !== 'temporary_position' && (location.map_id === currentMap._id))
                 }
                 // elements={Object.values(locations)}
                 onMouseEnter={(location) => onSetSelectedLocation(location._id)}

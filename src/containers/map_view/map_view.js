@@ -199,7 +199,7 @@ export class MapView extends Component {
         }
 
         // Handle Positions
-        else if (!!this.props.selectedPosition && this.props.selectedPosition.temp === true && this.props.selectedPosition.name !== "TempRightClickMovePosition") {
+        else if (!!this.props.selectedPosition && this.props.selectedPosition.temp === true && this.props.selectedPosition.schema !== "temporary_position") {
             this.props.dispatchSetPositionAttributes(this.props.selectedPosition._id, {
                 x: e.clientX,
                 y: e.clientY
@@ -238,7 +238,7 @@ export class MapView extends Component {
         }
 
         // Handle Posiitions
-        else if (!!this.props.selectedPosition && this.props.selectedPosition.temp === true && this.props.selectedPosition.name !== "TempRightClickMovePosition") {
+        else if (!!this.props.selectedPosition && this.props.selectedPosition.temp === true && this.props.selectedPosition.schema !== "temporary_position") {
             const pos = convertD3ToReal([this.props.selectedPosition.x, this.props.selectedPosition.y], this.d3)
             this.props.dispatchSetPositionAttributes(this.props.selectedPosition._id, {
                 pos_x: pos[0],
@@ -289,7 +289,7 @@ export class MapView extends Component {
                 .on('zoom', () => {
 
                     // Disables the ability to hover over location on mouse drag when a loction is selected that is not new or a right click
-                    if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.name !== 'TempRightClickMovePosition')) && (!this.props.editingStation || !this.props.editingPosition)) {
+                    if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.schema !== 'temporary_position')) && (!this.props.editingStation || !this.props.editingPosition)) {
                         this.props.dispatchHoverStationInfo(null)
                     }
 
@@ -608,7 +608,7 @@ export class MapView extends Component {
                             if (!!this.props.widgetLoaded) {
                                 // If there is a selected location and its not the right click menu location then hide
                                 // should always show widget if its the right click menu
-                                if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.name !== 'TempRightClickMovePosition')) && (!this.props.editingStation || !this.props.editingPosition)) {
+                                if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.schema !== 'temporary_position')) && (!this.props.editingStation || !this.props.editingPosition)) {
                                     this.props.dispatchHoverStationInfo(null)
                                     this.props.dispatchSetSelectedStation(null)
                                     this.props.dispatchSetSelectedPosition(null)
@@ -619,7 +619,7 @@ export class MapView extends Component {
                             if (!!this.props.widgetLoaded) {
                                 // If there is a selected location and its not the right click menu location then hide
                                 // should always show widget if its the right click menu
-                                if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.name !== 'TempRightClickMovePosition'))) {
+                                if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.schema !== 'temporary_position'))) {
                                     this.props.dispatchHoverStationInfo(null)
 
                                     if (!this.props.editingStation || !this.props.editingPosition) {

@@ -7,10 +7,10 @@ export const PositionTypes = {
      * Heads up, currently there are 2 different svg rectangles being used
      * One thats width is 200 and height is 320
      * One thats width is 378 and height 236
-     * 
+     *
      * Need to unify this and make all of them standard
      * Probably use the 200 by 320 since you don't need to add a 'y' offset to the svg
-     * 
+     *
      *  */
 
     shelf_position: {
@@ -59,6 +59,25 @@ export const PositionTypes = {
         attributes:
         {
             schema: 'position',
+            type: 'cart_position',
+            parent: null,
+            new: true,
+        },
+        color: '#6283f0',
+    },
+
+    temporary_cart_position: {
+        svgPath:
+            <>
+                <rect fill='transparent' x="100" y="40" width="200" height="320" rx="30" transform="translate(400 0) rotate(90)" strokeMiterlimit="10" strokeWidth="20" />
+                <path d="M315.5,200.87l-64,36.95A1,1,0,0,1,250,237v-73.9a1,1,0,0,1,1.5-.87l64,36.95A1,1,0,0,1,315.5,200.87Z" strokeMiterlimit="10" strokeWidth="10" />
+                <circle cx="200" cy="200" r="15" />
+                <circle cx="150" cy="200" r="10" />
+                <circle cx="102.5" cy="200" r="7.5" />
+            </>,
+        attributes:
+        {
+            schema: 'temporary_position',
             type: 'cart_position',
             parent: null,
             new: true,

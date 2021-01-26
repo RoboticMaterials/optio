@@ -242,7 +242,7 @@ function Position(props) {
 
     // Automatically opens widget pages and sets hovering to true in the position is a temp right click
     useEffect(() => {
-        if (position !== null && position.name === 'TempRightClickMovePosition') {
+        if (position !== null && position.schema === 'temporary_position') {
             setHovering(true)
             dispatchHoverStationInfo(handleWidgetHover())
             dispatchSetSelectedPosition(position)
@@ -339,7 +339,7 @@ function Position(props) {
     }
 
     const onMouseLeave = () => {
-        position.name !== 'TempRightClickMovePosition' && setHovering(false)
+        position.schema !== 'temporary_position' && setHovering(false)
     }
 
     return (

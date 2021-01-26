@@ -118,8 +118,8 @@ const ApiContainer = (props) => {
         await loadInitialData() // initial call to load data when app opens
         // this interval is always on
         // loads essential info used on every page such as status and taskQueue
-        setCriticalDataInterval(setInterval(() => loadCriticalData(), 50000));
-        const mapDataInterval = setInterval(() => loadMapData(), 50000)
+        setCriticalDataInterval(setInterval(() => loadCriticalData(), 500));
+        const mapDataInterval = setInterval(() => loadMapData(), 5000)
 
 
         return () => {
