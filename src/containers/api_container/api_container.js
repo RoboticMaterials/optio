@@ -109,8 +109,8 @@ const ApiContainer = (props) => {
 
     const params = useParams()
 
-    useEffect(async () => {
-        await loadInitialData() // initial call to load data when app opens
+    useEffect(() => {
+        loadInitialData() // initial call to load data when app opens
 
         // this interval is always on
         // loads essential info used on every page such as status and taskQueue
