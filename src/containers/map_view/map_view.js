@@ -80,20 +80,21 @@ export class MapView extends Component {
     }
 
     componentDidMount() {
-
         // Refresh the map on initial mount. This will only likely give you back the list of
         // maps, but componentDidUpdate will catch that and set the current map to the first map
         // in the returned list (which will be the active map)
         // this.refreshMap()
+
         this.checkForMapLoad()
         window.addEventListener('mousedown', () => this.mouseDown = true, { passive: false })
         window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, { passive: false })
 
         // Event listener that will recalculate the map geometry when the screen size changes
         window.addEventListener('resize', () => {
-            this.calculateD3Geometry()
+            //this.calculateD3Geometry()
             this.bindZoomListener()
         }, { passive: false })
+
     }
 
     checkForMapLoad = () => {
@@ -117,21 +118,19 @@ export class MapView extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
+
         // If new maps are available, refresh current map
         // NOTE: will be useless once we have a method to select map
         // if (prevProps.maps.length != this.props.maps.length) {
         //     this.refreshMap()
         // }
-        this.checkForMapLoad()
-
-
-
+        this.checkForMapLoad() //test
 
 
         // If the map has been changed, recalculate the geometry and bind the zoom
         // listener to default to the correct translation
         if (!isEquivalent(prevProps.currentMap, this.props.currentMap)) {
-            this.calculateD3Geometry(this.mapContainer)
+            //this.calculateD3Geometry(this.mapContainer)
             this.bindZoomListener()
         }
 
@@ -184,8 +183,8 @@ export class MapView extends Component {
 
     /**
      * Handles Draging new locations onto the map
-     * 
-     * @param {*} e 
+     *
+     * @param {*} e
      */
     dragNewEntity = e => {
 
@@ -200,7 +199,7 @@ export class MapView extends Component {
         }
 
         // Handle Positions
-        else if (!!this.props.selectedPosition && this.props.selectedPosition.temp === true && this.props.selectedPosition.name !== "TempRightClickMovePosition") {
+        else if (!!this.props.selectedPosition && this.props.selectedPosition.temp === true && this.props.selectedPosition.schema !== "temporary_position") {
             this.props.dispatchSetPositionAttributes(this.props.selectedPosition._id, {
                 x: e.clientX,
                 y: e.clientY
@@ -239,7 +238,7 @@ export class MapView extends Component {
         }
 
         // Handle Posiitions
-        else if (!!this.props.selectedPosition && this.props.selectedPosition.temp === true && this.props.selectedPosition.name !== "TempRightClickMovePosition") {
+        else if (!!this.props.selectedPosition && this.props.selectedPosition.temp === true && this.props.selectedPosition.schema !== "temporary_position") {
             const pos = convertD3ToReal([this.props.selectedPosition.x, this.props.selectedPosition.y], this.d3)
             this.props.dispatchSetPositionAttributes(this.props.selectedPosition._id, {
                 pos_x: pos[0],
@@ -290,7 +289,7 @@ export class MapView extends Component {
                 .on('zoom', () => {
 
                     // Disables the ability to hover over location on mouse drag when a loction is selected that is not new or a right click
-                    if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.name !== 'TempRightClickMovePosition')) && (!this.props.editingStation || !this.props.editingPosition)) {
+                    if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.schema !== 'temporary_position')) && (!this.props.editingStation || !this.props.editingPosition)) {
                         this.props.dispatchHoverStationInfo(null)
                     }
 
@@ -596,7 +595,7 @@ export class MapView extends Component {
                             if (!!this.props.widgetLoaded) {
                                 // If there is a selected location and its not the right click menu location then hide
                                 // should always show widget if its the right click menu
-                                if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.name !== 'TempRightClickMovePosition')) && (!this.props.editingStation || !this.props.editingPosition)) {
+                                if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.schema !== 'temporary_position')) && (!this.props.editingStation || !this.props.editingPosition)) {
                                     this.props.dispatchHoverStationInfo(null)
                                     this.props.dispatchSetSelectedStation(null)
                                     this.props.dispatchSetSelectedPosition(null)
@@ -607,7 +606,7 @@ export class MapView extends Component {
                             if (!!this.props.widgetLoaded) {
                                 // If there is a selected location and its not the right click menu location then hide
                                 // should always show widget if its the right click menu
-                                if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.name !== 'TempRightClickMovePosition'))) {
+                                if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.schema !== 'temporary_position'))) {
                                     this.props.dispatchHoverStationInfo(null)
 
                                     if (!this.props.editingStation || !this.props.editingPosition) {
@@ -682,7 +681,7 @@ export class MapView extends Component {
                                             <Station
                                                 key={`loc-${ind}`}
                                                 // If there is a selected station, then render the selected station vs station in redux
-                                                // Selected station could contain local edits that are not on the backend (naked redux) yet 
+                                                // Selected station could contain local edits that are not on the backend (naked redux) yet
                                                 station={(!!selectedStation && station._id === selectedStation._id) ? selectedStation : station}
                                                 // station={station}
                                                 rd3tClassName={`${this.rd3tStationClassName}_${ind}`}
@@ -703,7 +702,7 @@ export class MapView extends Component {
                                                 position={
                                                     (!!selectedPosition && position._id === selectedPosition._id) ?
                                                         // If there is a selected station, then render the selected station vs station in redux
-                                                        // Selected station could contain local edits that are not on the backend (naked redux) yet 
+                                                        // Selected station could contain local edits that are not on the backend (naked redux) yet
                                                         selectedPosition
                                                         :
                                                         // If the positions parent is currently being edited

@@ -26,6 +26,7 @@ import { getPositions, deletePosition, putPosition } from '../../redux/actions/p
 import { getStations, putStation, deleteStation } from '../../redux/actions/stations_actions'
 
 import { postLocalSettings } from '../../redux/actions/local_actions'
+import * as localActions from '../../redux/actions/local_actions'
 
 // Import components
 import Textbox from '../../components/basic/textbox/textbox'
@@ -92,6 +93,7 @@ const ApiContainer = (props) => {
     const dispatchPutTask = async (task, ID) => await dispatch(putTask(task, ID))
 
     const onPostDashoard = (dashboard) => dispatch(postDashboard(dashboard))
+    const dispatchStopAPICalls = (bool) => dispatch(localActions.stopAPICalls(bool))
 
 
     // Selectors
@@ -100,30 +102,43 @@ const ApiContainer = (props) => {
     const localReducer = useSelector(state => state.localReducer)
     const MiRMapEnabled = localReducer?.localSettings?.MiRMapEnabled
     const apiPage = useSelector(state => state.apiReducer.page)
+    const stopAPICalls = useSelector(state => state.localReducer.stopAPICalls)
 
     // States
     const [currentPage, setCurrentPage] = useState('')
     const [apiIpAddress, setApiIpAddress] = useState('')
     const [apiError, setApiError] = useState(false)
     const [pageDataInterval, setPageDataInterval] = useState(null)
+    const [criticalDataInterval, setCriticalDataInterval] = useState(null)
+    const [mapDataInterval, setMapDataInterval] = useState(null)
 
     const params = useParams()
 
     useEffect(async () => {
         await loadInitialData() // initial call to load data when app opens
-
         // this interval is always on
         // loads essential info used on every page such as status and taskQueue
+        setCriticalDataInterval(setInterval(() => loadCriticalData(), 500));
+        setMapDataInterval(setInterval(() => loadMapData(), 1000));
 
-        const criticalDataInterval = setInterval(() => loadCriticalData(), 500);
-        const mapDataInterval = setInterval(() => loadMapData(), 1000)
+
         return () => {
             // clear intervals
             clearInterval(pageDataInterval);
             clearInterval(criticalDataInterval);
-            // clearInterval(mapDataInterval)
+            //clearInterval(mapDataInterval)
         }
     }, [])
+
+    useEffect(() => {
+      if(stopAPICalls === true){
+        clearInterval(criticalDataInterval);
+        clearInterval(pageDataInterval);
+        clearInterval(mapDataInterval);
+        //dispatchStopAPICalls(false)
+      }
+    }, [stopAPICalls])
+
 
     useEffect(() => {
 
@@ -153,7 +168,9 @@ const ApiContainer = (props) => {
 
     useEffect(() => {
 
+      if(stopAPICalls !==true){
         updateCurrentPage();
+      }
 
     })
 
@@ -335,11 +352,14 @@ const ApiContainer = (props) => {
         required data:
         status, taskQueue, devices
     */
+
     const loadCriticalData = async () => {
         const status = await onGetStatus();
         const taskQueue = await onGetTaskQueue()
         const devices = await onGetDevices()
-    }
+      }
+
+
 
     /*
         Loads data pertinent to Objects page
@@ -820,7 +840,6 @@ const ApiContainer = (props) => {
                 alert('TaskQ associated task has been deleted')
                 await onDeleteTaskQItem(Q._id)
             }
-
         })
     }
 

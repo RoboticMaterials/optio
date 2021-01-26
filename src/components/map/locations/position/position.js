@@ -99,7 +99,7 @@ function Position(props) {
     // Set selected if there is a selected postion that is this position and no selected task
     else if (!!selectedPosition && selectedPosition._id === positionId && !selectedTask) isSelected = true
     // Set selected if the position is a temp right click
-    else if(position.name === 'TempRightClickMovePosition') isSelected = true
+    else if(position.schema === 'temporary_position') isSelected = true
 
     // Used to disable the ability to add position as a task
     let disabled = false
@@ -243,7 +243,7 @@ function Position(props) {
 
     // Automatically opens widget pages and sets hovering to true in the position is a temp right click
     useEffect(() => {
-        if (position !== null && position.name === 'TempRightClickMovePosition') {
+        if (position !== null && position.schema === 'temporary_position') {
             setHovering(true)
             dispatchHoverStationInfo(handleWidgetHover())
             dispatchSetSelectedPosition(position)
@@ -340,7 +340,7 @@ function Position(props) {
     }
 
     const onMouseLeave = () => {
-        position.name !== 'TempRightClickMovePosition' && setHovering(false)
+        position.schema !== 'temporary_position' && setHovering(false)
     }
 
     return (
@@ -354,7 +354,7 @@ function Position(props) {
                 isSelected={isSelected}
                 hovering={hovering}
                 rotating={rotating}
-                hoveringInfo={position.name !== 'TempRightClickMovePosition' ? hoveringInfo : null}
+                hoveringInfo={position.schema !== 'temporary_position' ? hoveringInfo : null}
                 shouldGlow={shouldGlow}
 
                 handleMouseEnter={onMouseEnter}

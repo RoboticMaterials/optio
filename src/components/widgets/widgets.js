@@ -83,7 +83,7 @@ const Widgets = (props) => {
     /**
      * Closes the widget
      * If editing, then dont set the selected location to null
-     * @param {*} edit 
+     * @param {*} edit
      */
     const onWidgetClose = (edit) => {
         if (!edit) {
@@ -240,7 +240,7 @@ const Widgets = (props) => {
             }
         }
         // If right menu position, have send cart and cancel (times)
-        else if (selectedPosition.name === 'TempRightClickMovePosition') {
+        else if (selectedPosition.schema === 'temporary_position') {
             return (
                 <>
                     <WidgetButton
@@ -333,7 +333,7 @@ const Widgets = (props) => {
         let widgetPosition = {}
 
         // Handles the x, use location x if right click menu so it can also move
-        if (!!selectedPosition && selectedPosition.name === 'TempRightClickMovePosition') {
+        if (!!selectedPosition && selectedPosition.schema === 'temporary_position') {
             widgetPosition.x = selectedPosition.x - elementWidth / 2 + 30 + 'px'
         }
         else {
@@ -341,7 +341,7 @@ const Widgets = (props) => {
         }
 
         // Handles the y, use location y if right click menu so it can also move
-        if (!!selectedPosition && selectedPosition.name === 'TempRightClickMovePosition') {
+        if (!!selectedPosition && selectedPosition.schema === 'temporary_position') {
             widgetPosition.y = selectedPosition.y + elementHeight / 2 + 20 + 'px'
         }
         else {
@@ -371,7 +371,7 @@ const Widgets = (props) => {
                 }}
 
                 onMouseLeave={() => {
-                    if (!widgetPage && !!selectedLocation && selectedLocation.name !== 'TempRightClickMovePosition' && !editing) {
+                    if (!widgetPage && !!selectedLocation && selectedLocation.schema !== 'temporary_position' && !editing) {
                         onWidgetClose()
                     }
                 }}
@@ -386,7 +386,7 @@ const Widgets = (props) => {
                 style={{ opacity: !widgetPage && element === null ? '0' : '1' }}
             >
                 {/* If not widget page and not a right click widget then add an invisable hover area */}
-                {!widgetPage && !!selectedLocation && selectedLocation.name !== 'TempRightClickMovePosition' &&
+                {!widgetPage && !!selectedLocation && selectedLocation.schema !== 'temporary_position' &&
                     <styled.WidgetHoverArea
                         hoverScale={hoveringInfo.realScale}
                         onMouseEnter={() => {
@@ -398,7 +398,7 @@ const Widgets = (props) => {
                 <styled.WidgetContainer widgetPage={widgetPage} type={!!selectedLocation && selectedLocation.type} >
                     {!widgetPage && !!selectedLocation &&
                         <>
-                            {selectedLocation.name == "TempRightClickMovePosition" ?
+                            {selectedLocation.schema == "temporary_position" ?
                                 <styled.WidgetStationName>{"Send Cart To Location"}</styled.WidgetStationName>
                                 :
                                 <>

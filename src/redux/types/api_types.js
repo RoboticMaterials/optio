@@ -6,6 +6,7 @@ export const SET_DASHBOARD_BUTTONS_API = 'SET_DASHBOARD_BUTTONS_API';
 export const SET_STATUS_API = 'SET_STATUS_API';
 export const SET_TASK_QUEUE_API = 'SET_TASK_QUEUE_API';
 export const SET_TASKS_API = 'SET_TASKS_API';
+export const STOP_API_CALLS = 'STOP_API_CALLS'
 
 export const GET_ = 'GET_';
 export const POST_ = 'POST_';

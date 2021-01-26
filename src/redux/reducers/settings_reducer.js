@@ -96,7 +96,7 @@ const settingsReducer = (state = defaultState, action) => {
             }
 
         case POST_SETTINGS_FAILURE:
-        return  Object.assign({}, state, {
+        return Object.assign({}, state, {
             error: action.payload,
             pending: false
         });
