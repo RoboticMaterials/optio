@@ -4,7 +4,7 @@ import {rowCss} from "../card_editor/card_editor.style";
 
 export const Container = styled.div`
  
-     height: 6rem;
+     height: fit-content;
 
     display: flex;
     flex-direction: column;
@@ -47,8 +47,16 @@ export const Container = styled.div`
     
 `
 
+export const Row = styled.div`
+    display: flex;
+    width: 100%;
+    border-bottom: 1px solid ${props => props.theme.bg.quaternary};
+    justify-content: space-between;
+    padding: .25rem 0 .25rem 0;
+`
+
 export const ContentContainer = styled.div`
-	padding: 0.5rem .25rem 0.5rem .25rem;
+	padding: 0.5rem .25rem 0rem .25rem;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -83,13 +91,13 @@ export const FooterBar = styled.div`
 `
 
 export const HeaderBar = styled.div`
-	height: 1rem;
+	height: fit-content;
 	background: ${props => props.theme.bg.septenary};
   	//background: ${props => props.color};
 	display: flex;
 	justify-content: flex-start;
 	padding: 0 0rem 0 1rem;
-  font-size: ${props => props.theme.fontSize.sz6};
+  font-size: ${props => props.theme.fontSize.sz3};
 `
 
 export const StyledDraggable = styled(Draggable)`
@@ -127,5 +135,7 @@ export const DateArrow = styled.i`
 `
 
 export const DateText = styled.span`
+
+font-size: ${props => props.theme.fontSize.sz4};
 
 `

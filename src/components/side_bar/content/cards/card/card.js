@@ -60,20 +60,12 @@ const Card = (props) => {
                     {lotName &&
                         <styled.LotName style={{marginRight: "1rem"}}>Lot: {lotName}</styled.LotName>
                     }
+                    <styled.CardName>{name}</styled.CardName>
                 </styled.HeaderBar>
                 <styled.ContentContainer>
 
-
-
-
-                    <styled.CardName>{name}</styled.CardName>
-
-                </styled.ContentContainer>
-
-
-                <styled.FooterBar
-                    color={lotColor}
-                >
+                    <styled.Row>
+                        <styled.Count>Dates</styled.Count>
                     <styled.DatesContainer>
                         <styled.DateItem>
                             <styled.DateText>{startDateText}</styled.DateText>
@@ -85,13 +77,32 @@ const Card = (props) => {
                             <styled.DateText>{endDateText}</styled.DateText>
                         </styled.DateItem>
                     </styled.DatesContainer>
+                    </styled.Row>
 
-                    {objectName &&
-                        <styled.Count style={{marginRight: "1rem"}}>{objectName}:</styled.Count>
-                    }
+                    <styled.Row style={{border: "none"}}>
+                        <styled.Count>Quantity</styled.Count>
+                        <styled.Count>{count}</styled.Count>
+                    </styled.Row>
 
-                    <styled.Count>{count}</styled.Count>
-                </styled.FooterBar>
+
+
+
+
+
+                </styled.ContentContainer>
+
+
+                {/*<styled.FooterBar*/}
+                {/*    color={lotColor}*/}
+                {/*>*/}
+
+
+                {/*    {objectName &&*/}
+                {/*        <styled.Count style={{marginRight: "1rem"}}>{objectName}:</styled.Count>*/}
+                {/*    }*/}
+
+
+                {/*</styled.FooterBar>*/}
 
             </styled.Container>
         </styled.StyledDraggable>
