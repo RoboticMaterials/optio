@@ -66,7 +66,7 @@ export const CardName = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-weight: 800;
+  font-weight: 600;
 `
 
 export const Count = styled.span`
@@ -142,8 +142,6 @@ font-size: ${props => props.theme.fontSize.sz4};
 `
 
 export const Label = styled.span`
-
-font-size: ${props => props.theme.fontSize.sz4};
-font-weight: 600;
-
+    font-size: ${props => props.theme.fontSize.sz4};
+    font-weight: 600;
 `
