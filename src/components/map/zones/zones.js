@@ -15,7 +15,6 @@ const Zones = () => {
      * @param {*} event 
      */
     const handleMouseMove = (event) => {
-        console.log('QQQQ Event', event)
     }
 
     document.onmousemove = handleMouseMove;

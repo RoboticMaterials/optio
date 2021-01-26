@@ -191,7 +191,12 @@ export const updateStations = (stations, selectedStation, d3) => {
 }
 
 export const removeStation = (id) => {
-    return { type: REMOVE_STATION, payload: id }
+    // Have to use dispatch here because of onRemoveStationFunction
+    return async dispatch => {
+
+        const updatedId = await dispatch(onRemoveStation(id))
+        dispatch({ type: REMOVE_STATION, payload: updatedId })
+    }
 }
 
 export const setStationAttributes = (id, attr) => {
@@ -204,6 +209,32 @@ export const setSelectedStation = (station) => {
 
 export const setEditingStation = (bool) => {
     return { type: EDITING_STATION, payload: bool }
+}
+
+
+/**
+ * Removes Station that is not on the backend yet
+ * If the station has children, it deletes those as well
+ * @param {*} id 
+ */
+const onRemoveStation = (id) => {
+    const stationsState = store.getState().stationsReducer
+    let station = !!stationsState.selectedStation ? stationsState.selectedStation : stationsState.stations[id]
+
+    return async dispatch => {
+
+        if (!!station.children) {
+
+            // TODO: Fix this, in positions, it'll put the station to tell it's deleted, but the station is about to be deleted, so no need to put
+            station.children.forEach(async position => {
+
+                // Passes in true to tell that the deleted postion's associated station is being deleted too
+                // This way, it wont update the station 
+                await dispatch(deletePosition(position, true))
+            })
+        }
+        return station._id
+    }
 }
 
 
@@ -233,7 +264,7 @@ const onDeleteStation = (id) => {
         // If the position is new, just remove it from the local station
         // Since the position is new, it does not exist in the backend and there can't be any associated tasks
         if (!!station.new) {
-            removeStation(station._id)
+            dispatch(removeStation(station._id))
             return null
         }
 

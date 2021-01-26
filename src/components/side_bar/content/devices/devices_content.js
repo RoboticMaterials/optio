@@ -88,17 +88,6 @@ const DevicesContent = () => {
 
             // Maps through the existing devices
             return devicesValue.map((device, ind) => {
-
-                // This handles devices that still have station ids but the station has been deleted
-                // Commented out for now because it may be causing other bugs
-                // if (!!device.station_id) {
-                //     if (!Object.keys(locations).includes(device.station_id)) {
-                //         delete device.station_id
-                //         dispatchPutDevice(device, device._id)
-                //         console.log('QQQQ Device has a station ID that does not exist')
-                //     }
-                // }
-
                 return (
                     <DeviceItem
                         key={ind}
@@ -142,7 +131,7 @@ const DevicesContent = () => {
     }
 
     const onBack = () => {
-
+        dispatchSetSelectedDevice(null)
     }
 
     /**

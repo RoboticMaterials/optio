@@ -46,6 +46,7 @@ function Station(props) {
     const [translating, setTranslating] = useState(false)
 
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
+    const editingStation = useSelector(state => state.stationsReducer.editingStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
@@ -69,7 +70,7 @@ function Station(props) {
     // Used to allow translating/rotation
     let isSelected = false
     // Set selected if there is a selected postion that is this position and no selected task
-    if (!!selectedStation && selectedStation._id === station._id && !selectedTask) isSelected = true
+    if (!!selectedStation && selectedStation._id === station._id && !selectedTask && !!editingStation) isSelected = true
 
     let disabled = false
     // Disable if the selected station is not this station
@@ -268,13 +269,11 @@ function Station(props) {
                 // } else {
                 //     type = 'push'
                 // }
-                console.log('QQQQ Setting task in station', selectedTask)
                 dispatchSetTaskAttributes(selectedTask._id, { unload, type, handoff })
             }
 
             // Otherwise assign the load position and clear the unload position (to define a new unload)
             else {
-                console.log('QQQQ Setting task in station', selectedTask)
                 let load = deepCopy(selectedTask.load)
                 let unload = deepCopy(selectedTask.unload)
                 let type = selectedTask.type

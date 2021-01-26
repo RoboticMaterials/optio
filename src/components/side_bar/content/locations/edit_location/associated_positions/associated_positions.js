@@ -116,7 +116,9 @@ export default function Positions(props) {
     // TODO: Comment
     const onAddAssociatedPosition = async (type) => {
 
-        const newPositionName = selectedStation.name + ' ' + (selectedStation.children.filter((position) => positions[position].type === type).length + 1)
+        // const newPositionName = selectedStation.name + ' ' + (selectedStation.children.filter((position) => positions[position].type === type).length + 1)
+        const newPositionName = `${type === 'cart_position' ? 'Cart Position' : 'Shelf Position'}` + ' ' + (selectedStation.children.filter((position) => positions[position].type === type).length + 1)
+        
         const newPositionType = type
 
         const newPosition = newPositionTemplate(newPositionName, newPositionType, selectedStation._id, currentMap._id)
