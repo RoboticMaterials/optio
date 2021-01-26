@@ -21,6 +21,8 @@ import {
   POST_LOCAL_SETTINGS_SUCCESS,
   POST_LOCAL_SETTINGS_FAILURE,
 
+  STOP_API_CALLS,
+
 } from '../types/local_types';
 
 import * as api from '../../api/local_api';
@@ -131,4 +133,8 @@ export const postLocalSettings =  (settings) => {
           return onError(error)
       }
   }
+}
+
+export const stopAPICalls = (bool) => {
+    return { type: STOP_API_CALLS, payload: bool }
 }

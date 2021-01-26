@@ -26,6 +26,7 @@ import {
 
     HANDLE_POST_TASK_QUEUE,
     TASK_QUEUE_OPEN,
+    INCREMENT_GET_DATA_FAILURE_COUNT
 } from '../types/task_queue_types';
 
 import {
@@ -58,6 +59,7 @@ export const getTaskQueue = () => {
         }
         function onError(error) {
             dispatch({ type: GET_ + TASK_QUEUE + _FAILURE, payload: error });
+            dispatch({type: INCREMENT_GET_DATA_FAILURE_COUNT, payload: null})
             return error;
         }
 

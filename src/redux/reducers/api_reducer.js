@@ -6,7 +6,7 @@ import {
   SET_DASHBOARD_BUTTONS_API,
   SET_STATUS_API,
   SET_TASK_QUEUE_API,
-  SET_TASKS_API
+  SET_TASKS_API,
 } from '../types/api_types';
 
 import {
@@ -26,7 +26,7 @@ const defaultState = {
   statusApi: null,
   taskQueueApi: null,
   tasksApi: null,
-  page: null
+  page: null,
 };
 
 export default function apiReducer(state = defaultState, action) {
@@ -64,9 +64,8 @@ export default function apiReducer(state = defaultState, action) {
         tasksApi: action.payload,
       });
 
-
-
     default:
       return state
   }
+
 }
