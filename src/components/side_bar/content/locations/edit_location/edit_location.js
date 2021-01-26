@@ -261,22 +261,16 @@ const EditLocation = () => {
                     rotation: devicePosition.orientation,
                 }
 
-                console.log('QQQQ updating', updatedPosition, device)
-
-
                 if (updatedPosition._id in selectedStationChildrenCopy) {
-                    console.log('QQQQ hur')
                     let copyOfCopy = deepCopy(selectedStationChildrenCopy)
                     copyOfCopy = {
                         ...copyOfCopy,
                         [updatedPosition._id]: updatedPosition,
                     }
-                    dispatchSetSelectedStationChildrenCopy(selectedStationChildrenCopy)
+                    dispatchSetSelectedStationChildrenCopy(copyOfCopy)
                 }
 
                 else {
-                    console.log('QQQQ har')
-
                     setSelectedPosition(updatedPosition)
                 }
 
