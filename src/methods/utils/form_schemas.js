@@ -287,29 +287,11 @@ const routeStationSchema = lazy(obj => {
     })
 });
 
-
-// const routeStationSchema = Yup.object().shape({
-//     instructions: Yup.string().nullable(),
-//
-//     position: Yup.string().nullable().when('station', {
-//         is: (station) => true,
-//         then: Yup.string().nullable()
-//             .required('Please select a location.')
-//     }),
-//     station: Yup.string().nullable(),
-//
-//     timeout: Yup.string().nullable(),
-// })
-
 export const routeSchema = Yup.object().shape({
-    name: Yup.string().nullable().when('autoGenName', {
-        is: (autoGenName) => !autoGenName,
-        then: Yup.string()
+    name: Yup.string()
             .min(1, '1 character minimum.')
             .max(50, '50 character maximum.')
-            .required('Please enter a name.')
-    }),
-    autoGenName: Yup.string().nullable(),
+            .required('Please enter a name.'),
     obj: Yup.object().shape({
         name: Yup.string()
             .required('Please enter a name.'),
