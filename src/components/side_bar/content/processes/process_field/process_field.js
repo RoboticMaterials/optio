@@ -136,8 +136,6 @@ export const ProcessField = (props) => {
                 needsSubmit,    // remove from route
                 new: isNew,     // remove from route
                 temp,
-                name: routeName,
-                autoGenName: autoGenRouteName,
                 ...remainingRoute
             } = values.newRoute || {}
 
@@ -146,13 +144,14 @@ export const ProcessField = (props) => {
             } = temp || {}
 
             // add unsaved key if route being added doesn't already exist - used to determine if a route has been saved or not
-            var newRoute = {...remainingRoute, name: routeName ? routeName : autoGenRouteName}
+            var newRoute
             if(tasks[remainingRoute._id]) {
                 // task exists
+                newRoute = {...remainingRoute}
             }
             else {
                 // task doesn't exist, add unsaved key
-                newRoute = {...newRoute, new: isNew}
+                newRoute = {...remainingRoute, new: isNew}
             }
 
             // make copy of routes
@@ -226,6 +225,10 @@ export const ProcessField = (props) => {
         setFieldValue("broken", isBrokenProcess(values.routes, tasks))
         setEditingTask(false)
     }
+    
+    console.log("papdawd values",values)
+
+    console.log("editingTask",editingTask)
 
     const cloneRoute = async () => {
         // get current route's meta data
@@ -239,15 +242,12 @@ export const ProcessField = (props) => {
         const {
             changed,
             needsSubmit,
-            temp,
-            name: routeName,
-            autoGenName: autoGenRouteName,
             ...remainingValues
         } = currRouteValue || {}
 
 
         const newId = uuid.v4()
-        const routeClone = {...remainingValues, _id: newId, new: true, name: routeName ? routeName : autoGenRouteName} // copy all attributes, but make new id
+        const routeClone = {...remainingValues, _id: newId, new: true} // copy all attributes, but make new id
 
         // Not a new process, so save changes now
         if(!values.new) {
