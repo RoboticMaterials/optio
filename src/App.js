@@ -99,7 +99,7 @@ const App = (props) => {
         )
     }
     return (
-        <PageErrorBoundary deleteLocalSettings = {handleClearLocalSettings}>
+        <>
             <Logger />
 
             {/*<TestsContainer/>*/}
@@ -250,7 +250,7 @@ const App = (props) => {
                     </BrowserRouter>
                 </styled.Container>
             </ThemeProvider>
-        </PageErrorBoundary>
+        </>
     );
 
 }
