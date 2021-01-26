@@ -56,11 +56,6 @@ const Settings = () => {
     useEffect(() => {
         setServerSettingsState(serverSettings)
         setLocalSettingsState(localSettings)
-
-        console.log('QQQQ devices', devices)
-        console.log('QQQQ status', status)
-        console.log('QQQQ server settings', serverSettings)
-        console.log('QQQQ Local settings', localSettings)
     }, [])
 
 

@@ -67,7 +67,6 @@ function Position(props) {
     //       Position Characteristics           //
     //                                          //
     // ======================================== //
-
     // Used to allow translating/rotation
     let isSelected = false
     // Set selected if the positon is part of a stations children copy and no selected task

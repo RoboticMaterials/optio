@@ -75,7 +75,7 @@ const Widgets = (props) => {
         // setTimeout(() => dispatchWidgetLoaded(true), 100)
         dispatchWidgetLoaded(true)
         return () => {
-            onWidgetClose(true)
+            onWidgetClose()
         }
     }, [])
 
@@ -86,11 +86,7 @@ const Widgets = (props) => {
      * @param {*} edit 
      */
     const onWidgetClose = (edit) => {
-        if (!edit) {
-            dispatchSetSelectedStation(null)
-            dispatchSetSelectedPosition(null)
-        }
-
+        
         dispatchHoverStationInfo(null)
         dispatchWidgetLoaded(false)
 
@@ -106,16 +102,7 @@ const Widgets = (props) => {
     }
 
     const onClickLocation = async () => {
-        if (!!selectedStation) {
-            dispatchSetEditingStation(true)
-            dispatchSetSelectedStationChildrenCopy(selectedStation.children.map(positionID => deepCopy(positions[positionID])))
-            dispatchSetSelectedStation(selectedStation)
-        }
-        else if (!!selectedPosition) {
-            dispatchSetEditingPosition(true)
-            dispatchSetSelectedPosition(selectedPosition)
 
-        }
 
         history.push('/locations')
 
@@ -128,6 +115,21 @@ const Widgets = (props) => {
 
         onWidgetClose(true)
         dispatchHoverStationInfo(null)
+
+        if (!!selectedStation) {
+            dispatchSetEditingStation(true)
+            let copy = {}
+            selectedStation.children.forEach(child => {
+                copy[child] = positions[child]
+            })
+            dispatchSetSelectedStationChildrenCopy(copy)
+            dispatchSetSelectedStation(selectedStation)
+        }
+        else if (!!selectedPosition) {
+            dispatchSetEditingPosition(true)
+            dispatchSetSelectedPosition(selectedPosition)
+
+        }
 
 
     }
@@ -373,6 +375,8 @@ const Widgets = (props) => {
                 onMouseLeave={() => {
                     if (!widgetPage && !!selectedLocation && selectedLocation.name !== 'TempRightClickMovePosition' && !editing) {
                         onWidgetClose()
+                        dispatchSetSelectedStation(null)
+                        dispatchSetSelectedPosition(null)
                     }
                 }}
 

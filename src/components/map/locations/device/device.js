@@ -29,9 +29,7 @@ const Device = () => {
             else if (device.device_model === 'MiR100') deviceType = DeviceItemTypes['cart']
 
         } catch (error) {
-            console.log('QQQQ error', device)
             throw 'Get Kalervo and show him the console logs'
-
         }
 
         try {

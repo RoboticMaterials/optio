@@ -166,6 +166,15 @@ const EditLocation = () => {
         dispatchSetEditingStation(false)
         dispatchSetEditingPosition(false)
 
+        // If theres a children copy check the children
+        if(!!selectedStationChildrenCopy){
+            Object.values(selectedStationChildrenCopy).forEach(child => {
+                // If it's a new child remove the position
+                if(!!child.new) dispatchRemovePosition(child._id)
+            })
+        }
+        dispatchSetSelectedStationChildrenCopy(null)
+
         if (!!selectedLocation && !!selectedLocation.new && !save) {
             if (selectedLocation.schema === 'station') {
                 dispatchRemoveStation(selectedLocation._id)
@@ -178,7 +187,6 @@ const EditLocation = () => {
 
         dispatchSetSelectedPosition(null)
         dispatchSetSelectedStation(null)
-        dispatchSetSelectedStationChildrenCopy(null)
     }
 
     /**
