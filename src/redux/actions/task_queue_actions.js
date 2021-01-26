@@ -26,6 +26,7 @@ import {
 
     HANDLE_POST_TASK_QUEUE,
     TASK_QUEUE_OPEN,
+    INCREMENT_GET_DATA_FAILURE_COUNT
 } from '../types/task_queue_types';
 
 import {
@@ -58,6 +59,7 @@ export const getTaskQueue = () => {
         }
         function onError(error) {
             dispatch({ type: GET_ + TASK_QUEUE + _FAILURE, payload: error });
+            dispatch({type: INCREMENT_GET_DATA_FAILURE_COUNT, payload: null})
             return error;
         }
 
@@ -65,9 +67,7 @@ export const getTaskQueue = () => {
             onStart();
 
             const taskQueue = await api.getTaskQueue();
-            // console.log('getTaskQueue: taskQueue:',taskQueue)
             const normalizedData = normalize(taskQueue, taskQueueSchema);
-            // console.log('getTaskQueue normalizedData', normalizedData)
 
             return onSuccess(normalizedData.entities.taskQueue);
         } catch (error) {
@@ -83,7 +83,7 @@ export const postTaskQueue = (queueItem) => {
     return async dispatch => {
 
         function onStart() {
-            dispatch({ type: POST_ + TASK_QUEUE + _STARTED });
+            dispatch({ type: POST_ + TASK_QUEUE + _STARTED, payload: queueItem });
         }
         function onSuccess(createdTaskQueueItem, oldTaskQueueItemId) {
             const payload = { createdTaskQueueItem, oldTaskQueueItemId };

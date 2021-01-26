@@ -36,6 +36,9 @@ class PageErrorBoundary extends React.Component {
           <styled.ReloadButton onClick={this.handleReloadPage} className="btn btn-outline-danger">
             Reload Page
           </styled.ReloadButton>
+          <styled.ReloadButton onClick={this.props.deleteLocalSettings} className="btn btn-outline-danger">
+            Delete Local Storage
+          </styled.ReloadButton>
         </styled.Container>
       )
 

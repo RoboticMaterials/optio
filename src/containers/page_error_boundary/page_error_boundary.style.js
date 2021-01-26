@@ -13,5 +13,5 @@ export const Text = styled.h1`
 `
 
 export const ReloadButton = styled.button`
-
+  margin-top: .5rem;
 `

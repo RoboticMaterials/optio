@@ -10,7 +10,7 @@ import {
     GET_MAP_FAILURE,
 
     SET_MAP_ATTRIBUTES,
-    SET_CURRENT_MAP
+    SET_CURRENT_MAP,
 } from '../types/map_types'
 
 import { object } from 'yup';
@@ -22,7 +22,8 @@ const defaultState = {
     currentMap: {},
 
     error: {},
-    pending: false
+    pending: false,
+    reduxZoom: 2
 };
 
 export default function mapReducer(state=defaultState, action) {
@@ -111,7 +112,6 @@ export default function mapReducer(state=defaultState, action) {
                 ...state,
                 currentMap: action.payload
             }
-
 
         default:
             return state;

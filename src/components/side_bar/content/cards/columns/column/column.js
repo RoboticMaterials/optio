@@ -154,8 +154,12 @@ const Column = ((props) => {
 								count = 0,
 								name,
 								object_id,
-								cardId
+								cardId,
+								start_date,
+								end_date
 							} = card
+
+							console.log("column card",card)
 
 							// const lotName = lots[lot_id] ? lots[lot_id].name : null
 							const objectName = objects[object_id] ? objects[object_id].name : null
@@ -163,6 +167,8 @@ const Column = ((props) => {
 							return(
 								<Card
 									name={name}
+									start_date={start_date}
+									end_date={end_date}
 									objectName={objectName}
 									count={count}
 									id={index}

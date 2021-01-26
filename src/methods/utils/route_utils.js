@@ -30,6 +30,11 @@ export const isHumanTask = (task) => {
     return task && isArray(task.device_types) && task.device_types.includes(DEVICE_CONSTANTS.HUMAN)
 }
 
+export const buildDefaultRouteName = (nameA, nameB) => {
+    if(!nameA) return ""
+    return nameA + " => " + nameB
+}
+
 /*
 * Returns true if task ONLY supports human device (and no other types), and false otherwise
 * */
