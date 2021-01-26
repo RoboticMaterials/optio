@@ -28,8 +28,8 @@ import uuid from 'uuid'
  * It does some funky things that will be explained here
  *
  * Send cart to location
- * Makes a temp position with a name of 'TempRightClickMovePosition'
- * That name is used in locations, widgets, map view and positions to tell if its a right click menu
+ * Makes a temp position with a schema of 'temporary_position'
+ * That schema is used in locations, widgets, map view and positions to tell if its a right click menu
  * If it is a right click menu position then the widgets should always be displayed for send or cancel, and not disappear on mouse leave. (see map_view and widgets)
  *
  * The widget buttons have custom actions, and those actions can be found inside of widget_button is widgets
@@ -65,8 +65,8 @@ const RightClickMenu = (props) => {
         const pos = convertD3ToReal([coords.x, coords.y], d3)
 
         const tempSelectedPosition = {
-            name: 'TempRightClickMovePosition',
-            schema: 'position',
+            name: '',
+            schema: 'temporary_position',
             type: 'cart_position',
             map_id: currentMap._id,
             pos_x: pos[0],
@@ -77,7 +77,7 @@ const RightClickMenu = (props) => {
             _id: uuid.v4()
         }
 
-        await Object.assign(tempSelectedPosition, { ...PositionTypes['cart_position'].attributes, temp: true })
+        await Object.assign(tempSelectedPosition, { ...PositionTypes['temporary_cart_position'].attributes, temp: true })
         await dispatchAddPositions(tempSelectedPosition)
         await dispatchSetSelectedPosition(tempSelectedPosition)
 
@@ -106,7 +106,7 @@ const RightClickMenu = (props) => {
         dispatchEditingStation(true)
         dispatchAddStation(tempSelectedStation)
         dispatchSetSelectedStation(tempSelectedStation)
-        
+
         history.push('/locations')
 
         if (!showSideBar) {
@@ -115,10 +115,6 @@ const RightClickMenu = (props) => {
         }
         dispatchShowSideBar(true)
 
-        if (!showSideBar) {
-            const hamburger = document.querySelector('.hamburger')
-            hamburger.classList.toggle('is-active')
-        }
 
         buttonClicked()
     }

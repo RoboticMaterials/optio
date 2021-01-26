@@ -21,6 +21,8 @@ import {
   POST_LOCAL_SETTINGS_SUCCESS,
   POST_LOCAL_SETTINGS_FAILURE,
 
+  STOP_API_CALLS,
+
 } from '../types/local_types';
 import {defaultLocalSettings} from "../../constants/local_settings_constants";
 
@@ -184,6 +186,12 @@ const localReducer = (state = defaultState, action) => {
             return  Object.assign({}, state, {
                 pending: true
             });
+
+        case STOP_API_CALLS:
+            return {
+                ...state,
+                stopAPICalls: action.payload,
+            }
         // ~~~~~~~~~~~~~~~
     }
 

@@ -92,6 +92,7 @@ export const Subtitle = styled.h1`
     color: ${props => props.theme.bg.septenary};
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz2};
+    position: flex-end;
 
 `
 
@@ -103,6 +104,7 @@ export const SubtitleContainer = styled.div`
     padding-top: 1rem;
     padding-right:1.5rem;
     padding-bottom:.5rem;
+    position: relative;
 `
 
 

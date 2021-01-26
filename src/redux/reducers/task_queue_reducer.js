@@ -28,6 +28,7 @@ import {
     DELETE_TASK_QUEUE_FAILURE,
 
     TASK_QUEUE_OPEN,
+    INCREMENT_GET_DATA_FAILURE_COUNT
 } from '../types/task_queue_types';
 
 import {
@@ -53,6 +54,7 @@ const defaultState = {
     activeHilDashboards: {},
     localHumanTask: null,
     taskQueueOpen: false,
+    getFailureCount: 1
 };
 
 export default function taskQueueReducer(state = defaultState, action) {
@@ -230,6 +232,12 @@ export default function taskQueueReducer(state = defaultState, action) {
             return {
                 ...state,
                 taskQueueOpen: action.payload,
+            }
+
+        case INCREMENT_GET_DATA_FAILURE_COUNT:
+            return {
+                ...state,
+                getFailureCount: state.getFailureCount + 1,
             }
         // ~~~~~~~~~~~~~~~
 

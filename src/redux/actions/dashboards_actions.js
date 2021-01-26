@@ -65,6 +65,8 @@ export const getDashboards = () => {
         }
         function onError(error) {
             dispatch({ type: GET_DASHBOARDS_FAILURE, payload: error });
+            console.log(error)
+
             return error;
         }
 
