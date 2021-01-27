@@ -26,7 +26,6 @@ export const generateDefaultRoute = (obj) => {
 }
 
 export const isHumanTask = (task) => {
-    console.log("isHumanTask task",task)
     return task && isArray(task.device_types) && task.device_types.includes(DEVICE_CONSTANTS.HUMAN)
 }
 

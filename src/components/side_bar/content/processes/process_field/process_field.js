@@ -25,7 +25,7 @@ import {handlePostTaskQueue, postTaskQueue} from '../../../../../redux/actions/t
 
 // Import Utils
 import {
-    generateDefaultRoute,
+    generateDefaultRoute, getLoadStationDashboard,
     getRouteProcesses,
     isHumanTask,
     isMiRTask
@@ -320,6 +320,7 @@ export const ProcessField = (props) => {
 
     const handleExecuteProcessTask = async (routeId) => {
         const task = tasks[routeId] || null
+        console.log("handleExecuteProcessTask task",task)
         if(!isObject(task)) return
 
         const routeName = task.name
@@ -334,8 +335,9 @@ export const ProcessField = (props) => {
             deviceType = DEVICE_CONSTANTS.HUMAN
         }
 
-        const dashboardId = stations[tasks[routeId].load.station].dashboards[0]
-        onHandlePostTaskQueue({dashboardId, tasks, deviceType, taskQueue, Id: routeId, routeName, custom: false, fromSideBar: true})
+        const dashboardID = getLoadStationDashboard(selectedTask)
+
+        onHandlePostTaskQueue({dashboardID, tasks, deviceType, taskQueue, Id: routeId, name: routeName, custom: false, fromSideBar: true})
     }
 
     // Maps through the list of existing routes
