@@ -145,7 +145,7 @@ const TaskField = (props) => {
             setFieldValue(fieldParent ? `${fieldParent}.device_types` : "device_types", selectedTask.device_types, false)
         }
 
-        if(isMiRTask(values)) {
+        if(isMiRTask(selectedTask)) {
             if(values.handoff) setFieldValue(fieldParent ? `${fieldParent}.handoff` : "handoff", false)
         }
 
