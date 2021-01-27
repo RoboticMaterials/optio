@@ -20,6 +20,7 @@ import CardEditor from "../../../../../side_bar/content/cards/card_editor/card_e
 import Textbox from "../../../../../basic/textbox/textbox";
 import {SORT_MODES} from "../../../../../../constants/common_contants";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
+import Card from "../../../../../side_bar/content/cards/card/card";
 
 Modal.setAppElement('body');
 
@@ -57,6 +58,7 @@ const KickOffModal = (props) => {
     const [availableKickOffCards, setAvailableKickOffCards] = useState([])
     const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
     const isButtons = availableKickOffCards.length > 0
+    const stationId = dashboard.station
 
     /*
     * handles the logic for when a kick-off button is pressed
@@ -160,26 +162,31 @@ const KickOffModal = (props) => {
                 }
             })
             .map((currCard, cardIndex) => {
-            const {
-                name,
-                _id
-            } = currCard
+                const {
+                    _id: lotId,
+                    name,
+                    start_date,
+                    end_date,
+                    bins = {}
+                } = currCard
 
-            return(
-            <DashboardButton
-                title={name}
-                key={_id}
-                type={null}
-                onClick={()=>{
-                    onButtonClick(currCard)
-                }}
-                containerStyle={{height: '4rem', minHeight: "4rem", lineHeight: '3rem', margin: '0.5rem auto 1rem auto', width: '80%'}}
-                hoverable={false}
-                taskID = {null}
-                color = {theme.schema.kick_off.solid}
-                disabled = {false}
-            />
-            )
+                const count = bins["QUEUE"]?.count || 0
+
+                return(
+                        <Card
+                            name={name}
+                            start_date={start_date}
+                            end_date={end_date}
+                            // objectName={objectName}
+                            count={count}
+                            id={lotId}
+                            index={cardIndex}
+                            onClick={()=>{
+                                onButtonClick(currCard)
+                            }}
+                            containerStyle={{marginBottom: "0.5rem", width: "80%", margin: '.5rem auto .5rem auto'}}
+                        />
+                )
         })
     }
 
