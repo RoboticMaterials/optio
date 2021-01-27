@@ -48,7 +48,6 @@ const ProcessForm = (props) => {
 	const objects = useSelector(state => state.objectsReducer.objects)
 
 	const handleSave = async (values, close) => {
-		console.log("handleSave values",values)
 
 		// extract some values
 		const {
@@ -146,7 +145,6 @@ const ProcessForm = (props) => {
 	}
 
 	const handleDefaultObj = (objId, prevObj) => {
-		console.log("handleDefaultObj objId",objId)
 
 		if(isObject(objects[objId])) {
 			return objects[objId]
@@ -164,10 +162,8 @@ const ProcessForm = (props) => {
 			let prevObj = null
 
 			return selectedProcess.routes.map((currRouteItem) => {
-				console.log("mapping currRouteId",currRouteItem)
 
 				const route = isObject(currRouteItem) ? currRouteItem : (tasks[currRouteItem] || {})
-				console.log("mapping route",route)
 
 				const obj = handleDefaultObj(route.obj, prevObj)
 				prevObj = obj

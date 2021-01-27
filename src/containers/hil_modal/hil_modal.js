@@ -51,7 +51,7 @@ const HILModal = () => {
             if (!!taskQueueItemClicked && !!taskQueue[taskQueueItemClicked]) {
 
                 const item = taskQueue[taskQueueItemClicked]
-                const type = tasks[item.task_id].device_type
+                const type = item.device_type
                 const hilType = tasks[item.task_id].type
 
                 // Sets the HIL Message, the reason why it would undefined is that its a human load task
@@ -81,7 +81,7 @@ const HILModal = () => {
             // most recent in the list
             //
             // Do not display HIL if the tasks device type is human, if it's a human, and unload button will appear on the dashboard
-            if (!!item.hil_station_id && !!tasks[item.task_id] && tasks[item.task_id].device_type !== 'human') {
+            if (!!item.hil_station_id && !!tasks[item.task_id] && item.device_type !== 'human') {
 
                 // Loops through all ascociated dashboards at that location
                 stations[item.hil_station_id].dashboards.map((dashboard, ind) => {

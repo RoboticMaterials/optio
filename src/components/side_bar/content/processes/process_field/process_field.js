@@ -25,7 +25,7 @@ import {handlePostTaskQueue, postTaskQueue} from '../../../../../redux/actions/t
 
 // Import Utils
 import {
-    generateDefaultRoute,
+    generateDefaultRoute, getLoadStationDashboard,
     getRouteProcesses,
     isHumanTask,
     isMiRTask
@@ -129,8 +129,6 @@ export const ProcessField = (props) => {
 
         // contains new route
         if(values.newRoute) {
-            console.log("IN 1")
-
             // extract newRoute values
             const {
                 needsSubmit,    // remove from route
@@ -176,7 +174,6 @@ export const ProcessField = (props) => {
 
         // not a new route
         else {
-            console.log("IN 2")
             // get data for route being edited
             const fieldMeta = getFieldMeta(editingTask)
             const {
@@ -225,10 +222,6 @@ export const ProcessField = (props) => {
         setFieldValue("broken", isBrokenProcess(values.routes, tasks))
         setEditingTask(false)
     }
-    
-    console.log("papdawd values",values)
-
-    console.log("editingTask",editingTask)
 
     const cloneRoute = async () => {
         // get current route's meta data
@@ -256,7 +249,6 @@ export const ProcessField = (props) => {
 
             const index = editingTask.match(/\d+/)[0] // "3"
             const updatedRoutes = [...values.routes]
-            console.log("index",index)
             updatedRoutes.splice(index, 1, routeClone) // replace existing route with new clone
 
             setFieldValue("routes", updatedRoutes)
@@ -328,6 +320,7 @@ export const ProcessField = (props) => {
 
     const handleExecuteProcessTask = async (routeId) => {
         const task = tasks[routeId] || null
+        console.log("handleExecuteProcessTask task",task)
         if(!isObject(task)) return
 
         const routeName = task.name
@@ -342,8 +335,9 @@ export const ProcessField = (props) => {
             deviceType = DEVICE_CONSTANTS.HUMAN
         }
 
-        const dashboardId = stations[tasks[routeId].load.station].dashboards[0]
-        onHandlePostTaskQueue({dashboardId, tasks, deviceType, taskQueue, Id: routeId, routeName, custom: false, fromSideBar: true})
+        const dashboardID = getLoadStationDashboard(selectedTask)
+
+        onHandlePostTaskQueue({dashboardID, tasks, deviceType, taskQueue, Id: routeId, name: routeName, custom: false, fromSideBar: true})
     }
 
     // Maps through the list of existing routes
@@ -493,7 +487,6 @@ export const ProcessField = (props) => {
     }
 
     const getChildren = () => {
-        console.log("in thingy editingTask",editingTask)
         const fieldMeta = getFieldMeta(editingTask)
         const {
             value: currRouteValue,
@@ -506,7 +499,6 @@ export const ProcessField = (props) => {
                     const {
                         name: currProcessName
                     } = currProcess
-                    console.log("currProcessName",currProcessName)
 
                     return <div>{currProcessName} aaaa</div>
                 })}

@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components'
+import * as commonCss from "../../common_css/common_css";
 
 export const HilContainer = styled.div`
     position: absolute;
@@ -501,3 +502,9 @@ export const HilButtonQuantityText = styled.p`
     margin-left: 1.5rem;
     padding-top: .6rem;
 `
+
+export const CardContainer = styled.div`
+    width: 80%;
+`
+
+

@@ -26,7 +26,6 @@ export const generateDefaultRoute = (obj) => {
 }
 
 export const isHumanTask = (task) => {
-    console.log("isHumanTask task",task)
     return task && isArray(task.device_types) && task.device_types.includes(DEVICE_CONSTANTS.HUMAN)
 }
 
@@ -83,13 +82,37 @@ export const getUnloadStationId = (route) => {
     return route?.unload?.station
 }
 
+export const getUnloadPositionId = (route) => {
+    return route?.unload?.position
+}
+
 export const getLoadStationId = (route) => {
     return route?.load?.station
+}
+
+export const getLoadPositionId = (route) => {
+    return route?.load?.station
+}
+
+export const getRouteStart = (route) => {
+    let hasStart = getLoadStationId(route)
+    if(!hasStart) hasStart = getLoadPositionId(route)
+
+    return hasStart
+}
+
+export const getRouteEnd = (route) => {
+    let hasEnd = getUnloadStationId(route)
+    if(!hasEnd) hasEnd = getUnloadPositionId(route)
+
+    return hasEnd
 }
 
 export const isStationLoadStation = (route, stationId) => {
     return stationId === getLoadStationId(route)
 }
+
+
 
 export const isStationUnloadStation = (route, stationId) => {
     return stationId === getUnloadStationId(route)
@@ -166,6 +189,10 @@ export const getLoadStationDashboard = (route) => {
     const dashboards = isArray(station.dashboards) ?  station.dashboards : [null]
 
     return dashboards[0]
+}
+
+export const getRouteIndexInRoutes = (processRouteIds, routeId) => {
+    return processRouteIds.indexOf(routeId)
 }
 
 export const isStationInRoutes = (routes, stationId) => {
