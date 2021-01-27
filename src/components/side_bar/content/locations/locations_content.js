@@ -130,6 +130,7 @@ export default function LocationContent() {
                 onMouseEnter={(location) => onSetSelectedLocation(location._id)}
                 onMouseLeave={() => onSetSelectedLocation(null)}
                 onClick={(location) => {
+                    console.log('QQQQ Editing Location', location)
                     onEditLocation(location._id)
                 }}
                 onPlus={() => {

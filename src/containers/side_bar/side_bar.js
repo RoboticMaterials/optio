@@ -136,6 +136,11 @@ const SideBar = (props) => {
      */
     const handleSideBarOpenCloseButtonClick = () => {
 
+        if(!!showSideBar){
+            dispatchSetSelectedStation(null)
+            dispatchSetSelectedPosition(null)
+        }
+
         if (!widgetPageLoaded || widgetPageLoaded && !sideBarOpen) {
             const hamburger = document.querySelector('.hamburger')
             hamburger.classList.toggle('is-active')

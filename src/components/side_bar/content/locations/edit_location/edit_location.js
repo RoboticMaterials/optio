@@ -167,10 +167,14 @@ const EditLocation = () => {
         dispatchSetEditingPosition(false)
 
         // If theres a children copy check the children
-        if(!!selectedStationChildrenCopy){
+        if (!!selectedStationChildrenCopy) {
             Object.values(selectedStationChildrenCopy).forEach(child => {
                 // If it's a new child remove the position
-                if(!!child.new) dispatchRemovePosition(child._id)
+                if (!!child.new) {
+
+                    dispatchRemovePosition(child._id)
+
+                }
             })
         }
         dispatchSetSelectedStationChildrenCopy(null)

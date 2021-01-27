@@ -36,7 +36,7 @@ import * as api from '../../api/positions_api'
 import { positionsSchema } from '../../normalizr/schema'
 
 // Import External Actions
-import { putStation, setStationAttributes } from './stations_actions'
+import { putStation, putStationWithoutSavingChildren, setStationAttributes, setSelectedStation } from './stations_actions'
 import { deleteTask } from './tasks_actions'
 import { putDevices } from './devices_actions'
 
@@ -100,7 +100,7 @@ export const postPosition = (position) => {
                 position._id = uuid.v4()
             }
 
-            // Was used for a bug that didnt exit
+            // Was used for a bug that didnt exist
             // if (position.rotation > 180) {
             //     position.rotation = position.rotation - 360
             // }
@@ -142,16 +142,6 @@ export const putPosition = (position) => {
             let positionCopy = deepCopy(position)
             delete positionCopy.temp
 
-            // Was used for a bug that didnt exit
-            // if (position.rotation > 180) {
-            //     position.rotation = position.rotation - 360
-            // }
-
-            // else if (position.rotation < -180) {
-            //     position.rotation = position.rotation + 360
-            // }
-
-
             // Tells the backend that a position has changed
             if (positionCopy.change_key !== 'deleted') positionCopy.change_key = 'changed'
             const updatePosition = await api.putPosition(positionCopy, positionCopy._id);
@@ -189,7 +179,7 @@ export const deletePosition = (id, stationDelete) => {
                 // IMPORTANT!: Putting with change_key as deleted instead of deleting because it was causing back end issues
                 // Tells the backend that a position has been deleted
                 positionCopy.change_key = 'deleted'
-                const updatePosition = await api.putPosition(positionCopy, positionCopy._id);
+                const updatePosition = await dispatch(putPosition(positionCopy))
                 return onSuccess(positionCopy._id)
             }
             else {
@@ -239,8 +229,6 @@ export const setSelectedStationChildrenCopy = (positions) => {
     return { type: SET_SELECTED_STATION_CHILDREN_COPY, payload: positions }
 }
 
-
-
 const onDeletePosition = (id, stationDelete) => {
     return async dispatch => {
         const stationsState = store.getState().stationsReducer
@@ -253,16 +241,45 @@ const onDeletePosition = (id, stationDelete) => {
         // If the position has a parent then remove from parent
         if (!!position.parent && !stationDelete) {
 
-            let selectedStation = deepCopy(stationsState.stations[position.parent])
-
+            let selectedStation = deepCopy(stationsState.selectedStation)
             // If there is an associated parent station
             if (!!selectedStation) {
                 // Remove the position from the list of children
-                const positionIndex = selectedStation.children.findIndex(p => p._id === position._id)
-                let children = deepCopy(selectedStation.children)
-                children.splice(positionIndex, 1)
-                dispatch(setStationAttributes(selectedStation._id, { children }))
-                // await dispatch(putStation(selectedStation))
+                const positionIndex = selectedStation.children.indexOf(position._id)
+                if (!!position.new) {
+                    let children = deepCopy(selectedStation.children)
+                    children.splice(positionIndex, 1)
+                    dispatch(setStationAttributes(selectedStation._id, { children }))
+
+                }
+
+                // TODO: For tommorow, 1/27 it looks like its removing the wrong position from the children array...
+                else {
+                    let children = deepCopy(selectedStation.children)
+                    children.splice(positionIndex, 1)
+                    dispatch(setStationAttributes(selectedStation._id, { children }))
+
+                    // This goes through and finds any nwe children that might be in the chidlren array
+                    // If the child is new, delete it from the array
+                    // A new child will not have been saved yet, and since this is deleting and saving the parent station then the children array will also be saved
+                    let newChildIndex = []
+                    children.forEach(child => {
+                        if (!!positionsState.selectedStationChildrenCopy[child].new) {
+                            let newChildInd = children.indexOf[child]
+                            newChildIndex.push(newChildInd)
+                        }
+                    })
+
+                    // Revers the array because this index is being used for deletes
+                    // If it starts at the begining and deletes that one, then the next index will have changed
+                    newChildIndex.reverse()
+                    newChildIndex.forEach(child => {
+                        children.splice(child, 1)
+                    })
+
+                    await dispatch(putStationWithoutSavingChildren({ ...selectedStation, children: children, }))
+                }
+
             }
 
         }
