@@ -525,7 +525,6 @@ const TaskField = (props) => {
                                 name of a new object to create one.
                     </styled.HelpText>
 
-                            {(obj) &&
                                 <>
                                     <styled.Label>Track Using Quantity or Fractions</styled.Label>
                                     <styled.RowContainer style={{ justifyContent: 'center' }}>
@@ -552,7 +551,6 @@ const TaskField = (props) => {
 
                                     </styled.RowContainer>
                                 </>
-                            }
                         </>
                     }
 
