@@ -138,6 +138,36 @@ export const putStation = (station) => {
 }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// put
+// ******************************
+export const putStationWithoutSavingChildren = (station) => {
+    return async dispatch => {
+        function onStart() {
+            dispatch({ type: PUT_STATION_STARTED });
+        }
+        function onSuccess(station) {
+            dispatch({ type: PUT_STATION_SUCCESS, payload: station });
+            return station;
+        }
+        function onError(error) {
+            dispatch({ type: PUT_STATION_FAILURE, payload: error });
+            return error;
+        }
+
+        try {
+            onStart();
+            let stationCopy = deepCopy(station)
+            delete stationCopy.temp
+            const updateStation = await api.putStation(stationCopy, stationCopy._id);
+            console.log('QQQQ Station without saving children action', updateStation)
+            return onSuccess(updateStation)
+        } catch (error) {
+            return onError(error)
+        }
+    }
+}
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 // delete
 // ******************************
 export const deleteStation = (ID) => {

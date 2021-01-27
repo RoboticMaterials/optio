@@ -167,10 +167,24 @@ const EditLocation = () => {
         dispatchSetEditingPosition(false)
 
         // If theres a children copy check the children
-        if(!!selectedStationChildrenCopy){
+        if (!!selectedStationChildrenCopy) {
+            console.log('QQQQ Backed copy', selectedStationChildrenCopy)
             Object.values(selectedStationChildrenCopy).forEach(child => {
                 // If it's a new child remove the position
-                if(!!child.new) dispatchRemovePosition(child._id)
+                if (!!child.new) {
+
+                    // TODO: This may not be nescacary 
+                    console.log('QQQQ naked station selected', stations[selectedStation._id])
+                    if (stations[selectedStation._id].children.includes(child._id)) {
+                        console.log('QQQQ the naked state includes it', stations[selectedStation._id])
+                        const positionIndex = selectedStation.children.findIndex(p => p._id === child._id)
+                        let stationCopy = deepCopy(selectedStation)
+                        stationCopy.children.splice(positionIndex, 1)
+                        dispatchPutStation(stationCopy)
+                    }
+                    dispatchRemovePosition(child._id)
+
+                }
             })
         }
         dispatchSetSelectedStationChildrenCopy(null)

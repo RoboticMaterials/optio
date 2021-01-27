@@ -135,6 +135,7 @@ const positionsReducer = (state = defaultState, action) => {
             }
 
         case SET_SELECTED_STATION_CHILDREN_COPY:
+            console.log('QQQQ Copy in reducer', action.payload)
             return {
                 ...state,
                 selectedStationChildrenCopy: action.payload

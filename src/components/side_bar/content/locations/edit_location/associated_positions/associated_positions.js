@@ -65,7 +65,6 @@ export default function Positions(props) {
     }
 
     const renderAssociatedPositions = () => {
-
         return positionTypes.map((positionType) => {
             return Object.values(selectedStationChildrenCopy).map((position, i) => {
                 if (position.type === positionType) {
@@ -138,6 +137,7 @@ export default function Positions(props) {
     }
 
     const onDeleteAssociatedPosition = async () => {
+        console.log('QQQQ deleting this pos', deletingPosition)
         await onDelete(deletingPosition)
         setConfirmDeleteModal(null)
     }
