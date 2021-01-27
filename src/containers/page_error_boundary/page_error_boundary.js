@@ -9,8 +9,13 @@ class PageErrorBoundary extends React.Component {
     this.state = {
        hasError: false,
        error:null,
-       infor:null
+       info:null
      };
+  }
+
+
+  getDerivedStateFromError(error) {
+    return {hasError:true}
   }
 
   componentDidCatch(error, info) {
@@ -21,6 +26,7 @@ class PageErrorBoundary extends React.Component {
     info: info
   });
 }
+
 
 
   handleReloadPage = () => {
@@ -43,8 +49,9 @@ class PageErrorBoundary extends React.Component {
       )
 
     }
-    //return null
-    return this.props.children;
+    else{
+      return this.props.children
+    }
   }
 }
 

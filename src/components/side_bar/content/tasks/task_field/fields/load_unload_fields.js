@@ -108,8 +108,10 @@ const LoadUnloadFields = (props) => {
 
                         <TimePickerField
                             mapInput={(value) => {
-                                const splitVal = value.split(':')
-                                return moment().set({ 'minute': splitVal[0], 'second': splitVal[1] })
+                                if(value) {
+                                    const splitVal = value.split(':')
+                                    return moment().set({ 'minute': splitVal[0], 'second': splitVal[1] })
+                                }
                             }}
                             mapOutput={(value) => {
                                 return value.format("mm:ss")

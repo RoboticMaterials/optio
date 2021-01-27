@@ -406,7 +406,7 @@ const Widgets = (props) => {
                                 <styled.WidgetStationName>{"Send Cart To Location"}</styled.WidgetStationName>
                                 :
                                 <>
-                                    {selectedLocation.schema == "positions" ?
+                                    {!!selectedLocation.parent ?
                                         <styled.WidgetPositionName>{selectedLocation.name}</styled.WidgetPositionName>
                                         :
                                         <styled.RowContainer>

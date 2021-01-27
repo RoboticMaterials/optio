@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 // Import Actions
 import { setTaskAttributes } from '../../../redux/actions/tasks_actions'
+import {getLoadPositionId, getUnloadPositionId} from "../../../methods/utils/route_utils";
 
 export default function TaskPaths(props) {
 
@@ -28,6 +29,9 @@ export default function TaskPaths(props) {
 
     const stateRef = useRef()
     stateRef.current = selectedTask
+
+    const loadPositionId = getLoadPositionId(selectedTask)
+    const unloadPositionId = getUnloadPositionId(selectedTask)
 
     const [mousePos] = useState({ x: 0, y: 0 })
 
@@ -55,16 +59,19 @@ export default function TaskPaths(props) {
 
     // Set the start and end position if they exist
     useEffect(() => {
+        const loadPositionId = getLoadPositionId(selectedTask)
+        const unloadPositionId = getUnloadPositionId(selectedTask)
+
         if (selectedTask !== null) {
-            if (selectedTask.load.position !== null) {
+            if (loadPositionId !== null) {
                 // Check to see if its a station or position
-                const startPos = !!positions[selectedTask.load.position] ? positions[selectedTask.load.position] : stations[selectedTask.load.position]
+                const startPos = !!positions[loadPositionId] ? positions[loadPositionId] : stations[loadPositionId]
                 setX1(startPos.x)
                 setY1(startPos.y)
             }
-            if (selectedTask.unload.position !== null) {
+            if (unloadPositionId !== null) {
                 // Check to see if its a station or position
-                const endPos = !!positions[selectedTask.unload.position] ? positions[selectedTask.unload.position] : stations[selectedTask.unload.position]
+                const endPos = !!positions[unloadPositionId] ? positions[unloadPositionId] : stations[unloadPositionId]
                 setX2(endPos.x)
                 setY2(endPos.y)
             }
@@ -73,7 +80,10 @@ export default function TaskPaths(props) {
 
     // If there is a load position but not an unload, set a listener to set the endpoint to the mouse position
     useEffect(() => {
-        if (selectedTask !== null && selectedTask.load.position !== null && selectedTask.unload.position === null) {
+        const loadPositionId = getLoadPositionId(selectedTask)
+        const unloadPositionId = getUnloadPositionId(selectedTask)
+
+        if (selectedTask !== null && loadPositionId !== null && unloadPositionId === null) {
             setX2(x1)
             setY2(y1)
             window.addEventListener('mousemove', lockToMouse, false)
@@ -89,12 +99,12 @@ export default function TaskPaths(props) {
         }
     }, [selectedTask])
 
-    if (selectedTask !== null && selectedTask.load.position != null) {
-        const startPos = positions[selectedTask.load.position]
+    if (selectedTask !== null && loadPositionId != null) {
+        const startPos = positions[loadPositionId]
 
         let endPos
-        if (selectedTask.unload.position !== null) { // The task has a start AND end position
-            endPos = positions[selectedTask.unload.position]
+        if (unloadPositionId !== null) { // The task has a start AND end position
+            endPos = positions[unloadPositionId]
         } else { // Task has a start position but no end position (instead snap to mouse position)
             endPos = mousePos
         }
@@ -102,8 +112,6 @@ export default function TaskPaths(props) {
         const lineLen = Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
         const lineRot = Math.atan2((y2 - y1), (x2 - x1))
         const arrowRot = lineRot * 180 / Math.PI
-
-        // console.log(lineLen, (10*props.d3.scale), Math.ceil(lineLen/(10*props.d3.scale)))
 
         const dashes = [...Array(Math.ceil(lineLen / (10 * props.d3.scale))).keys()]
 
