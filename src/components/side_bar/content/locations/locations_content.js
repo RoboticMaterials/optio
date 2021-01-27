@@ -58,6 +58,8 @@ export default function LocationContent() {
         ...positions
     }
 
+    console.log(locations)
+
     useEffect(() => {
         return () => {
 
