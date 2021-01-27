@@ -1,10 +1,12 @@
-import styled from "styled-components";
+import styled, {css} from "styled-components";
 import { Draggable } from 'react-smooth-dnd';
 import {rowCss} from "../card_editor/card_editor.style";
+import * as commonCss from "../../../../../common_css/common_css";
 
 export const Container = styled.div`
  
      height: fit-content;
+  
 
     display: flex;
     flex-direction: column;
@@ -14,13 +16,7 @@ export const Container = styled.div`
     background: white;
     border-radius: 0.6rem;
   	border: 3px solid ${props => props.color};
-        
-    // margins
-    margin: 0 0 0.5rem 0;
-        
-    // padding
-    
-    
+  
     outline: none;
     &:focus {
         outline: none;
@@ -40,11 +36,37 @@ export const Container = styled.div`
         transform: translateY(-2px);
         cursor: grabbing;
     }
+
+  &:hover {
+    box-shadow: 2px 2px 2px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+    cursor: grabbing;
+  }
     
     color: black;
+  
+  ${props => props.selectable && (props.isSelected ? selectedCss : notSelectedCss)};
+  ${props => props.containerStyle};
+`
 
+const selectedCss = css`
+	${commonCss.goodGlow};
 
-    
+  &:active {
+    ${commonCss.goodGlow};
+    transform: translateY(-2px);
+    cursor: grabbing;
+  }
+
+  &:hover {
+    ${commonCss.goodGlow};
+    transform: translateY(-2px);
+    cursor: grabbing;
+  }
+`
+
+const notSelectedCss = css`
+  filter: contrast(70%);
 `
 
 export const Row = styled.div`
