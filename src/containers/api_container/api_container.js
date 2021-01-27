@@ -852,10 +852,10 @@ const ApiContainer = (props) => {
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     return (
-        <SplashScreen
-            isApiLoaded={props.isApiLoaded}
-            apiError={apiError}
-        />
+          <SplashScreen
+              isApiLoaded={props.isApiLoaded}
+              apiError={apiError}
+          />
     )
 }
 

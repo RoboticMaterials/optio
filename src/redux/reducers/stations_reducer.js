@@ -78,13 +78,6 @@ export default function stationsReducer(state = defaultState, action) {
         case SET_STATION_ATTRIBUTES:
             // If there is a selected station and the payload is that station, then edit the selected station and dont edit the station in state
             if (!!state.selectedStation && action.payload.id === state.selectedStation._id) {
-                const test = {
-                    ...state,
-                    selectedStation: {
-                        ...state.selectedStation,
-                        ...action.payload.attr
-                    }
-                }
                 return {
                     ...state,
                     selectedStation: {

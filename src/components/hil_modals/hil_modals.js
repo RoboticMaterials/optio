@@ -84,6 +84,8 @@ const HILModals = (props) => {
     const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
     const [lotsAtStation, setLotsAtStation] = useState(false)
     const [taskHasProcess, setTaskHasProcess] = useState(false)
+    const [noLotsSelected, setNoLotsSelected] = useState(false)
+
 
     const {
         name: dashboardName,
@@ -145,6 +147,7 @@ const HILModals = (props) => {
 
         //If the task doesn't belong to a process, skip the lot selector screen and go straight to HIL modal
         if(!!routeProcesses[0]){
+            setTrackQuantity(currentTask.track_quantity)
             setTaskHasProcess(true)
             // Only show lot selector if they're cards loaded, lots have not been dispalyed yet, it's a load hil and there's available lots
             if (!didDisplayLots && hilLoadUnload && hilLoadUnload !== 'unload') {
@@ -156,7 +159,9 @@ const HILModals = (props) => {
         else{
             setSelectedLot(null) // clear selected lot
             setShowLotSelector(false) // hide lot selector
+            setTrackQuantity(true)
         }
+
 
     }, [availableLots, didDisplayLots, hilLoadUnload, isProcessTask])
 
@@ -339,23 +344,22 @@ const HILModals = (props) => {
     }, [selectedLot], [tasks])
 
     useEffect(() => {
+
         const currentTask = tasks[item.task_id]
+        const routeProcesses = getRouteProcesses(currentTask?._id).map((currProcess) => currProcess._id) || []
+
 
         //If the route is part of a process and at least 1 lot is present display the
         //fraction or quantity modal depending on what was chosen during route creation
         //Else display quantity HIL
-        if(!!currentTask.processes[0]){
+        if(!!routeProcesses[0]){
             Object.values(cards).map((card) => {
-                if(!!card.bins[currentTask.load.station]){
+
+                if(!!card.bins[currentTask.load.position]){
                     setLotsAtStation(true)
                 }
             })
         }
-
-        if(lotsAtStation){
-            setTrackQuantity(currentTask.track_quantity)
-        }
-        else{setTrackQuantity(true)}
 
     }, [tasks])
 
@@ -479,6 +483,7 @@ const HILModals = (props) => {
                         <styled.FooterButton
                             onClick={() => {
                                 setShowLotSelector(true)
+                                setNoLotsSelected(false)
                             }}
                         >
 
@@ -552,14 +557,6 @@ const HILModals = (props) => {
         return (
             <>
                 <styled.Header>
-
-                    {!!taskQueueItemClicked &&
-                    <styled.HilExitModal
-                        className='fas fa-times'
-                        onClick={() => dispatchTaskQueueItemClicked('')}
-                    />
-                    }
-
 
                     <styled.ColumnContainer>
                         <styled.HilMessage>{hilMessage}</styled.HilMessage>
@@ -1009,6 +1006,7 @@ const HILModals = (props) => {
                             color={'#90eaa8'}
                             onClick={() => {
                                 setSelectedLot(null) // clear selected lot
+                                setNoLotsSelected(true)
                                 setShowLotSelector(false) // hide lot selector
                             }}
                         >
@@ -1084,10 +1082,10 @@ const HILModals = (props) => {
                     renderLotSelector()
                     :
                     !!selectedTask && hilLoadUnload === 'load' ?
-                        trackQuantity == true ?
-                            renderQuantityOptions()
-                            :
+                        trackQuantity !== true && lotsAtStation === true && noLotsSelected!==true ?
                             renderFractionOptions()
+                            :
+                            renderQuantityOptions()
 
                         :
                         renderUnloadOptions()
