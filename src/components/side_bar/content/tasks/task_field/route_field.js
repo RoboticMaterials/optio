@@ -40,7 +40,7 @@ import {
     buildDefaultRouteName,
     getLoadStationId,
     getRouteProcesses,
-    getUnloadStationId,
+    getUnloadStationId, isMiRTask,
     isNextRouteViable
 } from "../../../../../methods/utils/route_utils";
 import TextField from "../../../../basic/form/text_field/text_field";
@@ -69,7 +69,6 @@ const TaskField = (props) => {
         onDelete
     } = props
 
-    console.log("TaskField fieldParent", fieldParent)
     const fieldMeta = getFieldMeta(fieldParent)
 
     const {
@@ -90,11 +89,6 @@ const TaskField = (props) => {
     } = values
 
     const routeProcesses = getRouteProcesses(routeId)
-
-    console.log("EditTask fieldParent", fieldParent)
-    console.log("EditTask values", values)
-    console.log("EditTask errors", errors)
-    console.log("EditTask touched", touched)
 
     const errorCount = Object.keys(errors).length // get number of field errors
     // const touchedCount = Object.values(touched).length // number of touched fields
@@ -146,7 +140,11 @@ const TaskField = (props) => {
         }
 
         if (selectedTask && selectedTask.device_types) {
-            setFieldValue(fieldParent ? `${fieldParent}.device_types` : "device_types", selectedTask.device_types)
+            setFieldValue(fieldParent ? `${fieldParent}.device_types` : "device_types", selectedTask.device_types, false)
+        }
+
+        if(isMiRTask(values)) {
+            if(values.handoff) setFieldValue(fieldParent ? `${fieldParent}.handoff` : "handoff", false)
         }
 
         const loadStation = stations[loadStationId] || {name: ""}
@@ -209,7 +207,6 @@ const TaskField = (props) => {
     // calls save function when values.needsSubmit is true - used for auto submit when selecting route from existing
     useEffect(() => {
         if (needsValidate) {
-            console.log("In validate effect")
             validateForm()
             setNeedsValidate(false)
         }
@@ -266,7 +263,6 @@ const TaskField = (props) => {
                     _id: uuid.v4(),
                 }
                 const response = await dispatch(objectActions.postObject(newObject))
-                console.log("response", response)
                 setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", newObject)
 
 
@@ -409,7 +405,6 @@ const TaskField = (props) => {
                                     Object.values(routes)
 
                                         .filter(task => {
-                                            console.log("Existing task", task)
 
                                             // This filters out tasks when fixing a process
                                             // If the process is broken, then you can only select tasks that are associated with the last route before break's unload station
@@ -512,7 +507,6 @@ const TaskField = (props) => {
                                 label={!values.obj?._id ? "New object will be created" : null}
                                 labelField="name"
                                 onChange={(val) => {
-                                    console.log("TextboxSearchField onChange val", val)
                                 }}
 
                                 valueField="name"

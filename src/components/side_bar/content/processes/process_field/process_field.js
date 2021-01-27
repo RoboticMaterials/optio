@@ -129,8 +129,6 @@ export const ProcessField = (props) => {
 
         // contains new route
         if(values.newRoute) {
-            console.log("IN 1")
-
             // extract newRoute values
             const {
                 needsSubmit,    // remove from route
@@ -176,7 +174,6 @@ export const ProcessField = (props) => {
 
         // not a new route
         else {
-            console.log("IN 2")
             // get data for route being edited
             const fieldMeta = getFieldMeta(editingTask)
             const {
@@ -225,10 +222,6 @@ export const ProcessField = (props) => {
         setFieldValue("broken", isBrokenProcess(values.routes, tasks))
         setEditingTask(false)
     }
-    
-    console.log("papdawd values",values)
-
-    console.log("editingTask",editingTask)
 
     const cloneRoute = async () => {
         // get current route's meta data
@@ -256,7 +249,6 @@ export const ProcessField = (props) => {
 
             const index = editingTask.match(/\d+/)[0] // "3"
             const updatedRoutes = [...values.routes]
-            console.log("index",index)
             updatedRoutes.splice(index, 1, routeClone) // replace existing route with new clone
 
             setFieldValue("routes", updatedRoutes)
@@ -493,7 +485,6 @@ export const ProcessField = (props) => {
     }
 
     const getChildren = () => {
-        console.log("in thingy editingTask",editingTask)
         const fieldMeta = getFieldMeta(editingTask)
         const {
             value: currRouteValue,
@@ -506,7 +497,6 @@ export const ProcessField = (props) => {
                     const {
                         name: currProcessName
                     } = currProcess
-                    console.log("currProcessName",currProcessName)
 
                     return <div>{currProcessName} aaaa</div>
                 })}
