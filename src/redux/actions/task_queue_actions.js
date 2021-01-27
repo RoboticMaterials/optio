@@ -59,7 +59,7 @@ export const getTaskQueue = () => {
         }
         function onError(error) {
             dispatch({ type: GET_ + TASK_QUEUE + _FAILURE, payload: error });
-            dispatch({type: INCREMENT_GET_DATA_FAILURE_COUNT, payload: null})
+            dispatch({ type: INCREMENT_GET_DATA_FAILURE_COUNT, payload: null })
             return error;
         }
 
@@ -188,7 +188,7 @@ export const deleteTaskQueueItem = (id) => {
             onStart();
             const response = await api.deleteTaskQueueItem(id);
             return onSuccess(response, id);
-        }   catch (error) {
+        } catch (error) {
             return onError(error);
         }
     };
@@ -200,72 +200,76 @@ export const deleteTaskQueueItem = (id) => {
 
 export const handlePostTaskQueue = (props) => {
 
-  const {
-      dashboardID,
-      tasks,
-      taskQueue,
-      Id,
-      name,
-      custom,
-      fromSideBar,
-      deviceType
-  } = props
+    const {
+        dashboardID,
+        tasks,
+        taskQueue,
+        Id,
+        name,
+        custom,
+        fromSideBar,
+        deviceType
+    } = props
 
-  return async dispatch => {
-    // If a custom task then add custom task key to task q
-    if (Id === 'custom_task') {
+    return async dispatch => {
+        // If a custom task then add custom task key to task q
+        if (Id === 'custom_task') {
 
-        await dispatch(postTaskQueue(
-            {
-                _id: uuid.v4(),
-                "task_id": Id,
-                'custom_task': custom,
-                "device_type": deviceType
-            }
-          ))
-        }
-
-    let inQueue = false
-    Object.values(taskQueue).map((item) => {
-        // If its in the Q and not a handoff, then alert the user saying its already there
-        if (item.task_id === Id && !tasks[item.task_id].handoff) inQueue = true
-    })
-    // add alert to notify task has been added
-    if (!inQueue) {
-        // If the task is a human task, its handled a little differently compared to a normal task
-        // Set hil_response to null because the backend does not dictate the load hil message
-        // Since the task is put into the q but automatically assigned to the person that clicks the button
-        if (deviceType === 'human') {
-
-            const postTask = {
-                _id: uuid.v4(),
-                "device_type": deviceType,
-                "task_id": Id,
-                dashboard: dashboardID,
-                hil_response: null,
-            }
-                 await dispatch({ type: 'LOCAL_HUMAN_TASK', payload: postTask._id })
-                 const postToQueue = dispatch(postTaskQueue(postTask))
-
-                 if(fromSideBar){
-                 postToQueue.then(item => {
-                     const id = item?._id
-                     dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
-            })
-          }
-        }
-
-        else {
-             await dispatch(postTaskQueue(
+            await dispatch(postTaskQueue(
                 {
+                    _id: uuid.v4(),
+                    "task_id": Id,
+                    'custom_task': custom,
+                    "device_type": deviceType
+                }
+            ))
+        }
+
+        let inQueue = false
+
+        if (!!taskQueue) {
+            Object.values(taskQueue).map((item) => {
+                // If its in the Q and not a handoff, then alert the user saying its already there
+                if (item.task_id === Id && !tasks[item.task_id].handoff) inQueue = true
+            })
+        }
+
+        // add alert to notify task has been added
+        if (!inQueue) {
+            // If the task is a human task, its handled a little differently compared to a normal task
+            // Set hil_response to null because the backend does not dictate the load hil message
+            // Since the task is put into the q but automatically assigned to the person that clicks the button
+            if (deviceType === 'human') {
+
+                const postTask = {
                     _id: uuid.v4(),
                     "device_type": deviceType,
                     "task_id": Id,
-                })
-            )
+                    dashboard: dashboardID,
+                    hil_response: null,
+                }
+                await dispatch({ type: 'LOCAL_HUMAN_TASK', payload: postTask._id })
+                const postToQueue = dispatch(postTaskQueue(postTask))
+
+                if (fromSideBar) {
+                    postToQueue.then(item => {
+                        const id = item?._id
+                        dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
+                    })
+                }
+            }
+
+            else {
+                await dispatch(postTaskQueue(
+                    {
+                        _id: uuid.v4(),
+                        "device_type": deviceType,
+                        "task_id": Id,
+                    })
+                )
+            }
         }
-    }
-  };
+    };
 };
 
 
