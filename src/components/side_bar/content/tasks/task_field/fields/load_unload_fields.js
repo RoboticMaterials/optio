@@ -180,6 +180,8 @@ const LoadUnloadFields = (props) => {
                     <styled.RowContainer>
                         <styled.Label style={{ marginBottom: '0rem' }}>Confirm Unload?</styled.Label>
                         <SwitchField
+                            mapInput={(val)=>!val}
+                            mapOutput={(val)=>!val}
                             name={fieldParent ? `${fieldParent}.handoff` : "handoff"}
                             onColor='red'
                             containerStyle={{ marginRight: '1rem' }}
@@ -190,7 +192,7 @@ const LoadUnloadFields = (props) => {
             }
 
             {/* Hides the unload field if its a handoff task */}
-            {values.handoff &&
+            {!values.handoff &&
 
                 <>
                     <styled.Header>Unload</styled.Header>
