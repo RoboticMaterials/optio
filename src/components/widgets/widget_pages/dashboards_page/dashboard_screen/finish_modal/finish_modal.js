@@ -18,6 +18,7 @@ import {getProcesses} from "../../../../../../redux/actions/processes_actions";
 import Textbox from "../../../../../basic/textbox/textbox";
 import {SORT_MODES} from "../../../../../../constants/common_contants";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
+import Card from "../../../../../side_bar/content/cards/card/card";
 
 Modal.setAppElement('body');
 
@@ -139,26 +140,29 @@ const FinishModal = (props) => {
                 }
             })
             .map((currCard, cardIndex) => {
-            const {
-                name,
-                _id
-            } = currCard
+                const {
+                    _id: lotId,
+                    count = 0,
+                    name,
+                    start_date,
+                    end_date
+                } = currCard
 
-            return(
-            <DashboardButton
-                title={name}
-                key={_id}
-                type={null}
-                onClick={()=>{
-                    onButtonClick(currCard)
-                }}
-                containerStyle={{height: '4rem', minHeight: "4rem", lineHeight: '3rem', margin: '0.5rem 0', width: '80%'}}
-                hoverable={false}
-                taskID = {null}
-                color = {theme.schema.finish.solid}
-                disabled = {false}
-            />
-            )
+                return(
+                    <Card
+                        name={name}
+                        start_date={start_date}
+                        end_date={end_date}
+                        // objectName={objectName}
+                        count={count}
+                        id={lotId}
+                        index={cardIndex}
+                        onClick={()=>{
+                            onButtonClick(currCard)
+                        }}
+                        containerStyle={{marginBottom: "0.5rem", width: "80%", margin: '.5rem auto .5rem auto'}}
+                    />
+                )
         })
     }
 
