@@ -150,7 +150,7 @@ const Settings = () => {
 
                 <TimezonePicker
                     value='Pacific/Honolulu'
-                    onChange={timezone => console.log('QQQQ Timezone selected', timezone, timezones)}
+                    onChange={() => {}}
                     inputProps={{
                         placeholder: 'Select Timezone ...',
                         name: 'timezone',

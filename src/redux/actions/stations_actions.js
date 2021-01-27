@@ -159,7 +159,6 @@ export const putStationWithoutSavingChildren = (station) => {
             let stationCopy = deepCopy(station)
             delete stationCopy.temp
             const updateStation = await api.putStation(stationCopy, stationCopy._id);
-            console.log('QQQQ Station without saving children action', updateStation)
             return onSuccess(updateStation)
         } catch (error) {
             return onError(error)

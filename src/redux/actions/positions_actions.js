@@ -141,17 +141,6 @@ export const putPosition = (position) => {
             onStart();
             let positionCopy = deepCopy(position)
             delete positionCopy.temp
-            console.log('QQQQ Putting pos here', position)
-
-            // Was used for a bug that didnt exit
-            // if (position.rotation > 180) {
-            //     position.rotation = position.rotation - 360
-            // }
-
-            // else if (position.rotation < -180) {
-            //     position.rotation = position.rotation + 360
-            // }
-
 
             // Tells the backend that a position has changed
             if (positionCopy.change_key !== 'deleted') positionCopy.change_key = 'changed'
@@ -185,13 +174,12 @@ export const deletePosition = (id, stationDelete) => {
             let positionCopy = await dispatch(onDeletePosition(id, stationDelete))
             // If theres a position copy then tell the backend is deleted
             // There wouldnt be a position copy because the position did not exist on the backend
-            console.log('QQQQ Position Copy action', positionCopy)
             if (!!positionCopy) {
                 delete positionCopy.temp
                 // IMPORTANT!: Putting with change_key as deleted instead of deleting because it was causing back end issues
                 // Tells the backend that a position has been deleted
                 positionCopy.change_key = 'deleted'
-                const updatePosition = await api.putPosition(positionCopy, positionCopy._id);
+                const updatePosition = await dispatch(putPosition(positionCopy))
                 return onSuccess(positionCopy._id)
             }
             else {
@@ -254,14 +242,10 @@ const onDeletePosition = (id, stationDelete) => {
         if (!!position.parent && !stationDelete) {
 
             let selectedStation = deepCopy(stationsState.selectedStation)
-            console.log('QQQQ Should be removing from station before', deepCopy(selectedStation))
             // If there is an associated parent station
             if (!!selectedStation) {
-                console.log('QQQQ position in action functions', deepCopy(position))
                 // Remove the position from the list of children
                 const positionIndex = selectedStation.children.indexOf(position._id)
-                console.log('QQQQ Pos index', positionIndex)
-
                 if (!!position.new) {
                     let children = deepCopy(selectedStation.children)
                     children.splice(positionIndex, 1)
@@ -271,10 +255,29 @@ const onDeletePosition = (id, stationDelete) => {
 
                 // TODO: For tommorow, 1/27 it looks like its removing the wrong position from the children array...
                 else {
-                    selectedStation.children.splice(positionIndex, 1)
-                    console.log('QQQQ Should be removing form station after', deepCopy(selectedStation))
-                    dispatch(setSelectedStation(selectedStation))
-                    await dispatch(putStationWithoutSavingChildren(selectedStation))
+                    let children = deepCopy(selectedStation.children)
+                    children.splice(positionIndex, 1)
+                    dispatch(setStationAttributes(selectedStation._id, { children }))
+
+                    // This goes through and finds any nwe children that might be in the chidlren array
+                    // If the child is new, delete it from the array
+                    // A new child will not have been saved yet, and since this is deleting and saving the parent station then the children array will also be saved
+                    let newChildIndex = []
+                    children.forEach(child => {
+                        if (!!positionsState.selectedStationChildrenCopy[child].new) {
+                            let newChildInd = children.indexOf[child]
+                            newChildIndex.push(newChildInd)
+                        }
+                    })
+
+                    // Revers the array because this index is being used for deletes
+                    // If it starts at the begining and deletes that one, then the next index will have changed
+                    newChildIndex.reverse()
+                    newChildIndex.forEach(child => {
+                        children.splice(child, 1)
+                    })
+
+                    await dispatch(putStationWithoutSavingChildren({ ...selectedStation, children: children, }))
                 }
 
             }

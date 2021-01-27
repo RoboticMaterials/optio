@@ -137,7 +137,6 @@ export default function Positions(props) {
     }
 
     const onDeleteAssociatedPosition = async () => {
-        console.log('QQQQ deleting this pos', deletingPosition)
         await onDelete(deletingPosition)
         setConfirmDeleteModal(null)
     }
