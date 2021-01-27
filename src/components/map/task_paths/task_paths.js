@@ -32,9 +32,6 @@ export default function TaskPaths(props) {
 
     const loadPositionId = getLoadPositionId(selectedTask)
     const unloadPositionId = getUnloadPositionId(selectedTask)
-    console.log("selectedTask",selectedTask)
-    console.log("loadPositionId",loadPositionId)
-    console.log("unloadPositionId",unloadPositionId)
 
     const [mousePos] = useState({ x: 0, y: 0 })
 
@@ -115,8 +112,6 @@ export default function TaskPaths(props) {
         const lineLen = Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
         const lineRot = Math.atan2((y2 - y1), (x2 - x1))
         const arrowRot = lineRot * 180 / Math.PI
-
-        // console.log(lineLen, (10*props.d3.scale), Math.ceil(lineLen/(10*props.d3.scale)))
 
         const dashes = [...Array(Math.ceil(lineLen / (10 * props.d3.scale))).keys()]
 
