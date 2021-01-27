@@ -956,20 +956,17 @@ const HILModals = (props) => {
                                     }
                                 })
                                 .map((currLot, lotIndex) => {
-                                    // const {
-                                    //     name,
-                                    //     _id: lotId,
-                                    //     bins
-                                    // } = currLot
                                     const {
                                         _id: lotId,
-                                        count = 0,
                                         name,
                                         object_id,
                                         cardId,
                                         start_date,
-                                        end_date
+                                        end_date,
+                                        bins = {}
                                     } = currLot
+
+                                    const count = bins[stationId]?.count
 
                                     const isSelected = selectedLotId === lotId
 

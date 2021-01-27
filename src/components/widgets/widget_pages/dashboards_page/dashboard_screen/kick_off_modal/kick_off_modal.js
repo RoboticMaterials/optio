@@ -58,6 +58,7 @@ const KickOffModal = (props) => {
     const [availableKickOffCards, setAvailableKickOffCards] = useState([])
     const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
     const isButtons = availableKickOffCards.length > 0
+    const stationId = dashboard.station
 
     /*
     * handles the logic for when a kick-off button is pressed
@@ -163,11 +164,13 @@ const KickOffModal = (props) => {
             .map((currCard, cardIndex) => {
                 const {
                     _id: lotId,
-                    count = 0,
                     name,
                     start_date,
-                    end_date
+                    end_date,
+                    bins = {}
                 } = currCard
+
+                const count = bins["QUEUE"]?.count || 0
 
                 return(
                         <Card

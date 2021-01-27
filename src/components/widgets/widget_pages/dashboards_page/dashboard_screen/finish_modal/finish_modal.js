@@ -142,11 +142,14 @@ const FinishModal = (props) => {
             .map((currCard, cardIndex) => {
                 const {
                     _id: lotId,
-                    count = 0,
+                    // count = 0,
                     name,
                     start_date,
-                    end_date
+                    end_date,
+                    bins = {}
                 } = currCard
+
+                const count = bins[stationId]?.count
 
                 return(
                     <Card
