@@ -27,27 +27,6 @@ import {
     isStationInRoutes
 } from "../../../../methods/utils/route_utils";
 
-// Commented out for now, but will need to use logic for disabling locations
-// // This filters out positions when fixing a process
-// // If the process is broken, then you can only start the task at the route before break's unload location
-// if (!!this.props.selectedTask && !!this.props.selectedProcess && !!this.props.fixingProcess && this.props.selectedTask.load.station === null) {
-
-//     // Gets the route before break
-//     const routeBeforeBreak = this.props.selectedProcess.routes[this.props.selectedProcess.broken - 1]
-//     const taskBeforeBreak = this.props.tasks[routeBeforeBreak]
-
-//     if (!!taskBeforeBreak.unload) {
-//         const unloadStationID = taskBeforeBreak.unload.station
-//         const unloadStation = this.props.locations[unloadStationID]
-
-//         if (unloadStation.children.includes(position._id)) {
-//             return true
-
-//         }
-//     }
-// }
-
-
 function Position(props) {
 
     const {
@@ -83,15 +62,11 @@ function Position(props) {
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
 
-
-
-
     // ======================================== //
     //                                          //
     //       Position Characteristics           //
     //                                          //
     // ======================================== //
-
     // Used to allow translating/rotation
     let isSelected = false
     // Set selected if the positon is part of a stations children copy and no selected task

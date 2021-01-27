@@ -21,8 +21,8 @@ import PageErrorBoundary from '../../containers/page_error_boundary/page_error_b
 import Cards from "../../components/side_bar/content/cards/cards";
 
 // Import Actions
-import { setEditingStation } from '../../redux/actions/stations_actions'
-import { setEditingPosition } from '../../redux/actions/positions_actions'
+import { setEditingStation, setSelectedStation } from '../../redux/actions/stations_actions'
+import { setEditingPosition, setSelectedPosition } from '../../redux/actions/positions_actions'
 import { hoverStationInfo } from '../../redux/actions/widget_actions'
 import { editingTask } from '../../redux/actions/tasks_actions'
 import { editingProcess } from '../../redux/actions/processes_actions'
@@ -53,6 +53,8 @@ const SideBar = (props) => {
     const onDeselectTask = () => dispatch(taskActions.deselectTask())
     const dispatchEditingTask = (bool) => dispatch(editingTask(bool))
     const dispatchEditingProcess = (bool) => dispatch(editingProcess(bool))
+    const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
+    const dispatchSetSelectedPosition = (station) => dispatch(setSelectedPosition(station))
 
     const [width, setWidth] = useState(450)
     const [prevWidth, setPrevWidth] = useState(width)
@@ -88,9 +90,9 @@ const SideBar = (props) => {
     }, [])
 
 
-  useEffect(() => {
-    onSetOpen(sideBarOpen)
-  })
+    useEffect(() => {
+        onSetOpen(sideBarOpen)
+    })
 
 
     // sets width to full screen if card subpage is open in processes
@@ -146,6 +148,8 @@ const SideBar = (props) => {
         // If widget page is active, the toggle the widget page, else toggle the side bar
         if (widgetPageLoaded) {
             history.push('/locations')
+            dispatchSetSelectedStation(null)
+            dispatchSetSelectedPosition(null)
             dispatchHoverStationInfo(null)
         } else {
             const newSideBarState = !showSideBar

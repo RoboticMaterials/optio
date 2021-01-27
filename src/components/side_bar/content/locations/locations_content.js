@@ -90,8 +90,6 @@ export default function LocationContent() {
     const onEditLocation = (id) => {
         const editingLocation = locations[id]
 
-        console.log('QQQQ Editing', editingLocation)
-
         // If a station
         if (editingLocation.schema === 'station') {
             dispatchSetEditingStation(true)

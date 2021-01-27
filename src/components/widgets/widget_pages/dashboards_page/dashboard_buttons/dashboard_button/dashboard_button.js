@@ -12,6 +12,7 @@ import { theme } from "../../../../../../theme"
 
 // import logging
 import log from '../../../../../../logger'
+import {DEVICE_CONSTANTS} from "../../../../../../constants/device_constants";
 
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
@@ -22,6 +23,7 @@ const DashboardButton = (props => {
         title,
         children,
         onClick,
+        deviceType,
         taskID,
         disabled,
         width,
@@ -45,7 +47,7 @@ const DashboardButton = (props => {
             width={width}
             height={height}
             background={color}
-            onClick={clickable ? ()=>onClick(taskID) : null}
+            onClick={clickable ? ()=>onClick(taskID, deviceType) : null}
             borderGlow={taskID === 'hil_success'}
             clickable={clickable}
             hoverable={hoverable}

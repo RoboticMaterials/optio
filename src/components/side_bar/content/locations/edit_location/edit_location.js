@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import uuid from 'uuid'
 
 import * as styled from './edit_location.style'
+import { Formik, Form } from 'formik'
 
 // Import Components
 import LocationButton from './location_button/location_button'
@@ -13,14 +14,17 @@ import AssociatedPositions from './associated_positions/associated_positions'
 // Import Basic Components
 import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
 import Textbox from '../../../../basic/textbox/textbox.js'
+import TextField from '../../../../basic/form/text_field/text_field.js'
 import Button from '../../../../basic/button/button'
 
 // Import Constants
 import { StationTypes } from '../../../../../constants/station_constants'
 import { PositionTypes } from '../../../../../constants/position_constants'
+import { LocationDefaultAttributes } from '../../../../../constants/location_constants'
 
 // Import utils
 import { deepCopy } from '../../../../../methods/utils/utils'
+import { locationSchema } from '../../../../../methods/utils/form_schemas'
 
 // Import actions
 import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition, setEditingPosition, putPosition, postPosition, setSelectedStationChildrenCopy, removePosition } from '../../../../../redux/actions/positions_actions'
@@ -88,35 +92,36 @@ const EditLocation = () => {
      * If the location is new and is a station, this function also handles posting the default dashboard and
      * tieing it to this location. Each child position for a station is also either POSTED or PUT.
      */
-    const onSave = async () => {
-
+    const onSave = async (name) => {
         // Station
         if (!!selectedStation) {
-
+            const copyStation = deepCopy(selectedStation)
+            copyStation.name = name
             // Post
-            if (!!selectedStation.new) {
-                console.log('QQQQ Posting', selectedStation)
-                await dispatchPostStation(selectedStation)
+            if (!!copyStation.new) {
+                await dispatchPostStation(copyStation)
 
                 // Add dashboard
             }
             // Put
             else {
-                await dispatchPutStation(selectedStation)
+                await dispatchPutStation(copyStation)
             }
         }
 
         // Position
         else if (!!selectedPosition) {
+            const copyPosition = deepCopy(selectedPosition)
+            copyPosition.name = name
             // Post
-            if (!!selectedPosition.new) {
-                await dispatchPostPosition(selectedPosition)
+            if (!!copyPosition.new) {
+                await dispatchPostPosition(copyPosition)
 
                 // Add dashboard
             }
             // Put
             else {
-                await dispatchPutPosition(selectedPosition)
+                await dispatchPutPosition(copyPosition)
             }
 
         }
@@ -160,10 +165,17 @@ const EditLocation = () => {
         // The order of these functions matter
         dispatchSetEditingStation(false)
         dispatchSetEditingPosition(false)
-        console.log('QQQQ selected Location', selectedLocation, save)
 
-        if (!!selectedLocation.new && !save) {
-            console.log('QQQQ Removing')
+        // If theres a children copy check the children
+        if(!!selectedStationChildrenCopy){
+            Object.values(selectedStationChildrenCopy).forEach(child => {
+                // If it's a new child remove the position
+                if(!!child.new) dispatchRemovePosition(child._id)
+            })
+        }
+        dispatchSetSelectedStationChildrenCopy(null)
+
+        if (!!selectedLocation && !!selectedLocation.new && !save) {
             if (selectedLocation.schema === 'station') {
                 dispatchRemoveStation(selectedLocation._id)
             }
@@ -175,7 +187,6 @@ const EditLocation = () => {
 
         dispatchSetSelectedPosition(null)
         dispatchSetSelectedStation(null)
-        dispatchSetSelectedStationChildrenCopy(null)
     }
 
     /**
@@ -184,19 +195,11 @@ const EditLocation = () => {
     const onAddLocation = async (type) => {
 
         // TODO: Stick this into Constants
-        const defaultAttributes = {
-            name: newName,
-            schema: null,
-            type: null,
-            pos_x: 0,
-            pos_y: 0,
-            rotation: 0,
-            x: 0,
-            y: 0,
-            _id: uuid.v4(),
-            map_id: currentMap._id,
-            temp: true
-        }
+        const defaultAttributes = deepCopy(LocationDefaultAttributes)
+
+        defaultAttributes['neame'] = newName
+        defaultAttributes['map_id'] = currentMap._id
+        defaultAttributes['_id'] = uuid.v4()
 
         const attributes = deepCopy(LocationTypes[type].attributes)
 
@@ -262,9 +265,9 @@ const EditLocation = () => {
         Object.values(devices).map(async (device, ind) => {
             if (device.device_model === 'MiR100') {
                 const devicePosition = device.position
-
+                const copyPos = deepCopy(position)
                 const updatedPosition = {
-                    ...position,
+                    ...copyPos,
                     pos_x: devicePosition.pos_x,
                     pos_y: devicePosition.pos_y,
                     x: devicePosition.x,
@@ -272,7 +275,19 @@ const EditLocation = () => {
                     rotation: devicePosition.orientation,
                 }
 
-                dispatchAddPosition(updatedPosition)
+                if (updatedPosition._id in selectedStationChildrenCopy) {
+                    let copyOfCopy = deepCopy(selectedStationChildrenCopy)
+                    copyOfCopy = {
+                        ...copyOfCopy,
+                        [updatedPosition._id]: updatedPosition,
+                    }
+                    dispatchSetSelectedStationChildrenCopy(copyOfCopy)
+                }
+
+                else {
+                    setSelectedPosition(updatedPosition)
+                }
+
 
             }
         })
@@ -321,27 +336,75 @@ const EditLocation = () => {
                     handleClose={() => setConfirmDeleteModal(null)}
                 />
 
-                <div style={{ marginBottom: '1rem' }}>
-
-                    <ContentHeader
-                        content={'locations'}
-                        mode={'create'}
-                        onClickBack={() => onBack()}
-                        onClickSave={onSave}
-
-                    />
-                </div>
-                {/* Location Title */}
-                <Textbox
-                    placeholder="Location Name"
-                    defaultValue={!!selectedLocation ? selectedLocation.name : null}
-                    schema={'locations'}
-                    focus={!!selectedLocation && selectedLocation.type == null}
-                    onChange={(e) => {
-                        onLocationNameChange(e)
+                <Formik
+                    initialValues={{
+                        locationName: !!selectedLocation ? selectedLocation.name : null,
                     }}
-                    style={{ fontSize: '1.2rem', fontWeight: '600' }}>
-                </Textbox>
+                    initialTouched={{
+                        locationName: false,
+                    }}
+                    validateOnChange={true}
+                    validateOnMount={true}
+                    validateOnBlur={true}
+                    // Chooses what schema to use based on whether it's a sign in or sign up
+                    // TODO: The schemas are not 100% working as of 9/14/2020. Need to figure out regex for passwords
+                    validationSchema={locationSchema}
+
+                    onSubmit={async (values, { setSubmitting }) => {
+                        setSubmitting(true)
+
+                        await onSave(deepCopy(values.locationName))
+
+                        setSubmitting(false)
+                    }}
+                >
+                    {formikProps => {
+                        const {
+                            submitForm
+                        } = formikProps
+                        return (
+                            <Form>
+
+                                <div style={{ marginBottom: '1rem' }}>
+
+                                    <ContentHeader
+                                        content={'locations'}
+                                        mode={'create'}
+                                        onClickBack={() => onBack()}
+                                        onClickSave={() => {
+                                        }}
+
+                                    />
+                                </div>
+
+                                <TextField
+                                    name={"locationName"}
+                                    textStyle={{ fontWeight: 'Bold' }}
+                                    placeholder='Enter Location Name'
+                                    type='text'
+                                    InputComponent={Textbox}
+                                    style={{
+                                        'fontSize': '1.2rem',
+                                        'fontWeight': '600',
+                                        'marginBottom': '.5rem',
+                                        'marginTop': '0',
+                                    }}
+                                />
+                                {/* <Textbox
+                                    name={'locationName'}
+                                    placeholder="Location Name"
+                                    defaultValue={!!selectedLocation ? selectedLocation.name : null}
+                                    schema={'locations'}
+                                    focus={!!selectedLocation && selectedLocation.type == null}
+                                    onChange={(e) => {
+                                        onLocationNameChange(e)
+                                    }}
+                                    style={{ fontSize: '1.2rem', fontWeight: '600' }}>
+                                </Textbox> */}
+                            </Form>
+                        )
+                    }}
+                </Formik>
                 {/* Location Type */}
                 <styled.DefaultTypesContainer>
 

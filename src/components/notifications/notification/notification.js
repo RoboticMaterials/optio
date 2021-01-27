@@ -52,13 +52,3 @@ const Notification = (props) => {
 };
 
 export default Notification;
-
-// {/* Alerts and HILs should not be able to be cleared */}
-// {!type.includes("alert") && !type.includes("hil") && (
-//     <styled.ClearNotification
-//         className="fas fa-times"
-//         onClick={() => {
-//             console.log("QQQQ Clear notification");
-//         }}
-//     />
-// )}
