@@ -12,3 +12,7 @@ export const errorGlow = css`
 export const newGlow = css`
   ${props => glow(props.theme.warn)};
 `;
+
+export const goodGlow = css`
+  ${props => glow(props.theme.good)};
+`;

@@ -159,8 +159,6 @@ const Column = ((props) => {
 								end_date
 							} = card
 
-							console.log("column card",card)
-
 							// const lotName = lots[lot_id] ? lots[lot_id].name : null
 							const objectName = objects[object_id] ? objects[object_id].name : null
 
@@ -174,6 +172,7 @@ const Column = ((props) => {
 									id={index}
 									index={index}
 									onClick={()=>handleCardClick(cardId, processId, station_id)}
+									containerStyle={{marginBottom: "0.5rem"}}
 								/>
 							)
 						})}
