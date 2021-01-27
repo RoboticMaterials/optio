@@ -304,6 +304,8 @@ export const ProcessField = (props) => {
     }
 
     const handleDeleteRoute = async (routeId) => {
+        setEditingTask(false)
+        dispatchSetSelectedTask(null)
 
         const willBreak = willRouteDeleteBreakProcess(values.routes, routeId)
         if (!!willBreak) {
@@ -313,9 +315,6 @@ export const ProcessField = (props) => {
         await dispatchDeleteRouteClean(routeId)
 
         setFieldValue("routes", values.routes.filter(((currRoute) => currRoute._id !== routeId)))
-
-        setEditingTask(false)
-        dispatchSetSelectedTask(null)
     }
 
     const handleExecuteProcessTask = async (routeId) => {
