@@ -141,6 +141,7 @@ export const putPosition = (position) => {
             onStart();
             let positionCopy = deepCopy(position)
             delete positionCopy.temp
+            console.log('QQQQ Putting pos here', position)
 
             // Was used for a bug that didnt exit
             // if (position.rotation > 180) {
@@ -184,6 +185,7 @@ export const deletePosition = (id, stationDelete) => {
             let positionCopy = await dispatch(onDeletePosition(id, stationDelete))
             // If theres a position copy then tell the backend is deleted
             // There wouldnt be a position copy because the position did not exist on the backend
+            console.log('QQQQ Position Copy action', positionCopy)
             if (!!positionCopy) {
                 delete positionCopy.temp
                 // IMPORTANT!: Putting with change_key as deleted instead of deleting because it was causing back end issues

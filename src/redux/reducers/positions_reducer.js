@@ -194,6 +194,7 @@ const positionsReducer = (state = defaultState, action) => {
             });
 
         case PUT_POSITION_SUCCESS:
+            console.log('QQQQ putting', action.payload)
             if (action.payload.change_key === 'deleted') {
                 return state
             }
