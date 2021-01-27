@@ -306,7 +306,7 @@ function Position(props) {
 
         const parent = ((!!selectedStationChildrenCopy && positionId in selectedStationChildrenCopy) && !!selectedStation) ? selectedStation : stations[position.parent]
         // TODO: Temp fix, Commented out to see if this temp fix is needed yet
-        // if (!parent) return
+        if (!parent) console.log('QQQQ Position in pos', position)
         return (
             <line x1={`${position.x}`} y1={`${position.y}`}
                 x2={`${parent.x}`} y2={`${parent.y}`}

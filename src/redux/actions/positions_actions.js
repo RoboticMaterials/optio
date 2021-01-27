@@ -100,7 +100,7 @@ export const postPosition = (position) => {
                 position._id = uuid.v4()
             }
 
-            // Was used for a bug that didnt exit
+            // Was used for a bug that didnt exist
             // if (position.rotation > 180) {
             //     position.rotation = position.rotation - 360
             // }
@@ -252,12 +252,13 @@ const onDeletePosition = (id, stationDelete) => {
         if (!!position.parent && !stationDelete) {
 
             let selectedStation = deepCopy(stationsState.selectedStation)
-            console.log('QQQQ Should be removing from station', selectedStation)
+            console.log('QQQQ Should be removing from station before', deepCopy(selectedStation))
             // If there is an associated parent station
             if (!!selectedStation) {
-
+                console.log('QQQQ position in action functions', deepCopy(position))
                 // Remove the position from the list of children
-                const positionIndex = selectedStation.children.findIndex(p => p._id === position._id)
+                const positionIndex = selectedStation.children.indexOf(position._id)
+                console.log('QQQQ Pos index', positionIndex)
 
                 if (!!position.new) {
                     let children = deepCopy(selectedStation.children)
@@ -269,6 +270,7 @@ const onDeletePosition = (id, stationDelete) => {
                 // TODO: For tommorow, 1/27 it looks like its removing the wrong position from the children array...
                 else {
                     selectedStation.children.splice(positionIndex, 1)
+                    console.log('QQQQ Should be removing form station after', deepCopy(selectedStation))
                     dispatch(setSelectedStation(selectedStation))
                     await dispatch(putStationWithoutSavingChildren(selectedStation))
                 }
