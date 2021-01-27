@@ -88,17 +88,26 @@ export const NoButtonsText = styled.span`
 	font: ${props => props.theme.font.primary};
 	font-size: ${props => props.theme.fontSize.sz3};
 `
+const buttonsCss = css`
+`
+
+const noButtonsCss = css`
+  overflow: auto;
+	display: flex;
+  flex-drection: column;
+  justify-content: center;
+`
 
 export const ReportButtonsContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	flex-wrap: nowrap;
-	overflow: auto;
-	min-height: 5rem;
-	width: 100%;
-	justify-content: ${props => !props.isButtons && "center"};
+  align-items: center;
+  overflow: auto;
+  min-height: 5rem;
+  width: 100%;
+
+  ${props => props.isButtons ? buttonsCss : noButtonsCss }
 `
+
+
 
 
 

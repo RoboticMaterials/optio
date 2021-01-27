@@ -2,6 +2,8 @@ import React, {useState} from "react";
 import {useSelector} from "react-redux";
 import * as styled from "./card.style";
 import { Draggable } from 'react-smooth-dnd';
+import PropTypes from "prop-types";
+import TextField from "../../../../basic/form/text_field/text_field";
 
 
 
@@ -35,24 +37,25 @@ const Card = (props) => {
         lotName,
         lotId = 2,
         start_date,
-        end_date
+        end_date,
+        containerStyle,
+        selectable,
+        isSelected
     } = props
-
-    console.log("card props",props)
 
     const startDateText = ((start_date?.month + 1) && start_date?.day && start_date?.year) ?  (start_date.month + 1) + "/" + start_date.day + "/" + start_date.year : "Start"
     const endDateText = ((end_date?.month + 1) && end_date?.day && end_date?.year) ?  (end_date.month + 1) + "/" + end_date.day + "/" +end_date.year : "End"
 
     const lotColor= "#" + intToRGB(hashCode(lotId))
 
-    console.log("card startDateText",startDateText)
-    console.log("card endDateText",endDateText)
-
     return(
         <styled.StyledDraggable key={id} index={index}>
             <styled.Container
+                selectable={selectable}
+                isSelected={isSelected}
                 onClick={onClick}
                 color={lotColor}
+                containerStyle={containerStyle}
             >
                 <styled.HeaderBar
                     color={lotColor}
@@ -105,5 +108,17 @@ const Card = (props) => {
         </styled.StyledDraggable>
     )
 }
+
+// Specifies propTypes
+Card.propTypes = {
+    isSelected: PropTypes.bool,
+    selectable: PropTypes.bool
+};
+
+// Specifies the default values for props:
+Card.defaultProps = {
+    isSelected: false,
+    selectable: false
+};
 
 export default Card

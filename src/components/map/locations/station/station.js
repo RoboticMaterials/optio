@@ -23,8 +23,10 @@ import LocationSvg from '../location_svg/location_svg'
 import DragEntityProto from '../drag_entity_proto'
 import {getPreviousRoute} from "../../../../methods/utils/processes_utils";
 import {
+    getRouteEnd,
+    getRouteIndexInRoutes, getRouteStart,
     getUnloadStationId,
-    isNextRouteViable,
+    isNextRouteViable, isPositionAtLoadStation, isPositionInRoutes,
     isStationInRoutes,
     isStationLoadStation, isStationUnloadStation
 } from "../../../../methods/utils/route_utils";
@@ -67,6 +69,9 @@ function Station(props) {
     //                                          //
     // ======================================== //
 
+    const routeStart = getRouteStart(selectedTask)
+    const routeEnd = getRouteEnd(selectedTask)
+
     // Used to allow translating/rotation
     let isSelected = false
     // Set selected if there is a selected postion that is this position and no selected task
@@ -78,13 +83,12 @@ function Station(props) {
     // Disable if theres a selected position and the station's children dont contain that position
     else if (!!selectedPosition && !station.children.includes(selectedPosition._id)) disabled = true
 
-
     // This filters out stations when fixing a process
     // If the process is broken, then you can only start the task at the route before break's unload location
     else if (!!selectedTask && !!selectedProcess && !!fixingProcess) {
 
         // setting load
-        if((selectedTask.load.station === null) || ((selectedTask.load.station !== null) && (selectedTask.unload.station !== null))) {
+        if(!routeStart || (routeStart && routeEnd)) {
 
             // must start at unload station of route before the break
             const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
@@ -92,7 +96,7 @@ function Station(props) {
         }
 
         // setting unload
-        else if(selectedTask.unload.station === null) {
+        else if(!routeEnd) {
 
             // can't pick same station for load and unload
             if(isStationLoadStation(selectedTask, station._id)) disabled = true
@@ -118,14 +122,23 @@ function Station(props) {
         } = temp || {}
 
         if(selectedProcess.routes.length > 0) {
+            const routeIndex = getRouteIndexInRoutes(selectedProcess.routes.map((currProcess) => currProcess._id), selectedTask?._id)
 
             // setting load station
-            if((selectedTask.load.station === null) || ((selectedTask.load.station !== null) && (selectedTask.unload.station !== null))) {
+            if(!routeStart || (routeStart && routeEnd)) {
 
                 // adding to beginning
+                console.log("routeIndex",routeIndex)
+
                 if(insertIndex === 0 ) {
                     // disable is station is already in process
                     if(isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
+                }
+
+
+                else if(routeIndex === 0) {
+                    if(isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
+                    if(isStationLoadStation(selectedTask, station._id)) disabled = false
                 }
 
                 else {
@@ -135,7 +148,7 @@ function Station(props) {
                 }
             }
 
-            else if((selectedTask.unload.station === null)) {
+            else if(!routeEnd) {
 
                 // adding to beginning of process
                 if(insertIndex === 0 ) {
@@ -151,9 +164,20 @@ function Station(props) {
                     if(isStationLoadStation(firstRoute, station._id)) disabled = false
                 }
 
+                else if(routeIndex === 0) {
+                    // disable stations already in process
+                    if(isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
+
+                    const nextRoute = selectedProcess.routes[1]
+                    if(isStationLoadStation(nextRoute, station._id)) disabled = false
+                }
+
                 else {
-                    const containsStation = isStationInRoutes(selectedProcess.routes, station._id)
-                    if(containsStation) disabled = true
+                    // disable stations already in process
+                    if(isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
+
+                    const nextRoute = selectedProcess.routes[routeIndex + 1]
+                    if(isStationLoadStation(nextRoute, station._id)) disabled = false
                 }
             }
         }
