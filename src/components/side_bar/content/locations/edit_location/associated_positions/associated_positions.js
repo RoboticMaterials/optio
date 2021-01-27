@@ -65,7 +65,6 @@ export default function Positions(props) {
     }
 
     const renderAssociatedPositions = () => {
-
         return positionTypes.map((positionType) => {
             return Object.values(selectedStationChildrenCopy).map((position, i) => {
                 if (position.type === positionType) {
