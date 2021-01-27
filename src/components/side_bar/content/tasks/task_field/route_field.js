@@ -88,7 +88,8 @@ const TaskField = (props) => {
         changed
     } = values
 
-    const routeProcesses = getRouteProcesses(routeId)
+    const routeProcesses = getRouteProcesses(routeId) || []
+    const isProcessRoute = routeProcesses.length > 0 || fieldParent
 
     const errorCount = Object.keys(errors).length // get number of field errors
     // const touchedCount = Object.values(touched).length // number of touched fields
@@ -525,32 +526,34 @@ const TaskField = (props) => {
                                 name of a new object to create one.
                     </styled.HelpText>
 
-                                <>
-                                    <styled.Label>Track Using Quantity or Fractions</styled.Label>
-                                    <styled.RowContainer style={{ justifyContent: 'center' }}>
-                                        <styled.DualSelectionButton
-                                            style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
-                                            onClick={() => {
-                                                setFieldValue(fieldParent ? `${fieldParent}.track_quantity` : "track_quantity", true)
-                                            }}
-                                            selected={values.track_quantity}
-                                        >
-                                            Quantity
-                            </styled.DualSelectionButton>
+                            {isProcessRoute &&
+                            <>
+                                <styled.Label>Track Using Quantity or Fractions</styled.Label>
+                                <styled.RowContainer style={{justifyContent: 'center'}}>
+                                    <styled.DualSelectionButton
+                                        style={{borderRadius: '.5rem 0rem 0rem .5rem'}}
+                                        onClick={() => {
+                                            setFieldValue(fieldParent ? `${fieldParent}.track_quantity` : "track_quantity", true)
+                                        }}
+                                        selected={values.track_quantity}
+                                    >
+                                        Quantity
+                                    </styled.DualSelectionButton>
 
-                                        <styled.DualSelectionButton
-                                            style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
-                                            onClick={() => {
-                                                setFieldValue(fieldParent ? `${fieldParent}.track_quantity` : "track_quantity", false)
-                                            }}
-                                            selected={!values.track_quantity}
+                                    <styled.DualSelectionButton
+                                        style={{borderRadius: '0rem .5rem .5rem 0rem'}}
+                                        onClick={() => {
+                                            setFieldValue(fieldParent ? `${fieldParent}.track_quantity` : "track_quantity", false)
+                                        }}
+                                        selected={!values.track_quantity}
 
-                                        >
-                                            Fraction
-                            </styled.DualSelectionButton>
+                                    >
+                                        Fraction
+                                    </styled.DualSelectionButton>
 
-                                    </styled.RowContainer>
-                                </>
+                                </styled.RowContainer>
+                            </>
+                            }
                         </>
                     }
 
