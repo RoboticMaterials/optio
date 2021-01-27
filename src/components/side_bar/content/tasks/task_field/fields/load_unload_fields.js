@@ -13,7 +13,7 @@ import Textbox from '../../../../../basic/textbox/textbox.js'
 
 // Import actions
 import { setSelectedTask, setTaskAttributes } from '../../../../../../redux/actions/tasks_actions'
-import {isHumanTask, isMiRTask, isOnlyHumanTask} from "../../../../../../methods/utils/route_utils";
+import {isHumanTask, isMiRandHumanTask, isMiRTask, isOnlyHumanTask} from "../../../../../../methods/utils/route_utils";
 import {DEVICE_CONSTANTS} from "../../../../../../constants/device_constants";
 import SwitchField from "../../../../../basic/form/switch_field/switch_field";
 import TimePickerField from "../../../../../basic/form/time_picker_field/time_picker_field";
@@ -52,6 +52,13 @@ const LoadUnloadFields = (props) => {
             })
         }
 
+
+    }
+    else if(!isMiRandHumanTask(selectedTask)) {
+        dispatchSetSelectedTask({
+            ...selectedTask,
+            device_types: [DEVICE_CONSTANTS.HUMAN, DEVICE_CONSTANTS.MIR_100],
+        })
     }
 
     return (
@@ -168,7 +175,7 @@ const LoadUnloadFields = (props) => {
             {/* If its a human task, then the task can also be defined as a handoff.
                     A handoff does not require unload confirmation.
                 */}
-            {isHumanTask(selectedTask) &&
+            {!isMiRTask(selectedTask) &&
                 <styled.ContentContainer style={{ paddingBottom: '0rem' }}>
                     <styled.RowContainer>
                         <styled.Label style={{ marginBottom: '0rem' }}>Confirm Unload?</styled.Label>
