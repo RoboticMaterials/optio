@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 // Import Actions
 import { setTaskAttributes } from '../../../redux/actions/tasks_actions'
+import {getLoadPositionId} from "../../../methods/utils/route_utils";
 
 export default function TaskPaths(props) {
 
@@ -53,10 +54,12 @@ export default function TaskPaths(props) {
         }
     })
 
+    const loadPositionId = getLoadPositionId(selectedTask)
+
     // Set the start and end position if they exist
     useEffect(() => {
         if (selectedTask !== null) {
-            if (selectedTask.load.position !== null) {
+            if (loadPositionId !== null) {
                 // Check to see if its a station or position
                 const startPos = !!positions[selectedTask.load.position] ? positions[selectedTask.load.position] : stations[selectedTask.load.position]
                 setX1(startPos.x)

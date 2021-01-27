@@ -1,6 +1,7 @@
 import * as Yup from 'yup';
 
 import { notBrokenRegex, notTaskDeletedRegex } from "./regex_utils";
+import {isObject} from "./object_utils";
 
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
@@ -261,22 +262,28 @@ const routeStationSchema = lazy(obj => {
 
     let positionSchema
     let stationSchema
-    if(!obj.position && !obj.station) {
-        positionSchema = Yup.string().nullable()
-        stationSchema = Yup.string().nullable().required('Please select a location.')
-    }
-    else if(obj.station && !obj.position) {
-        positionSchema = Yup.string().nullable()
-        stationSchema = Yup.string().nullable().required('Please select a location.')
-    }
-    else if(obj.position && !obj.station) {
+    if(isObject(obj)) {
+        if(!obj.position && !obj.station) {
+            positionSchema = Yup.string().nullable()
+            stationSchema = Yup.string().nullable().required('Please select a location.')
+        }
+        else if(obj.station && !obj.position) {
+            positionSchema = Yup.string().nullable()
+            stationSchema = Yup.string().nullable().required('Please select a location.')
+        }
+        else if(obj.position && !obj.station) {
+            positionSchema = Yup.string().nullable().required('Please select a location.')
+            stationSchema = Yup.string().nullable()
+        }
+        else {
+            positionSchema = Yup.string().nullable().required('Please select a location.')
+            stationSchema = Yup.string().nullable().required('Please select a location.')
+        }
+    } else {
         positionSchema = Yup.string().nullable().required('Please select a location.')
-        stationSchema = Yup.string().nullable()
-    }
-    else {
-        positionSchema = Yup.string().nullable().required('Please select a location.')
         stationSchema = Yup.string().nullable().required('Please select a location.')
     }
+
 
 
     return Yup.object().shape({

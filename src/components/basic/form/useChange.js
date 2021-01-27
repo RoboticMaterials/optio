@@ -14,7 +14,7 @@ const useChange = (fieldName) => {
 
 	const {
 		changed: changedSet
-	} = value
+	} = value || {}
 
 	const [changed, setChanged] = useState(false);
 	const [initialValue, setInitialValue] = useState(value);

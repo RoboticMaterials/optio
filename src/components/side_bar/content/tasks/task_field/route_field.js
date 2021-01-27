@@ -72,10 +72,10 @@ const TaskField = (props) => {
     const fieldMeta = getFieldMeta(fieldParent)
 
     const {
-        value: values,
+        value: values = {},
         error: errors = {},
         touched,
-    } = fieldMeta
+    } = fieldMeta || {}
 
     // sets values.changed to true when a change occurs
     useChange(fieldParent)
@@ -86,7 +86,7 @@ const TaskField = (props) => {
         track_quantity,
         _id: routeId,
         changed
-    } = values
+    } = values || {}
 
     const routeProcesses = getRouteProcesses(routeId) || []
     const isProcessRoute = routeProcesses.length > 0 || fieldParent
@@ -119,8 +119,9 @@ const TaskField = (props) => {
     const [needsValidate, setNeedsValidate] = useState(false);
     // const [, setConfirmDeleteModal] = useState(false);
 
-    const previousLoadStationId = usePrevious(values.load.station)
-    const previousUnloadStationId = usePrevious(values.unload.station)
+
+    const previousLoadStationId = usePrevious(getLoadStationId(values))
+    const previousUnloadStationId = usePrevious(getUnloadStationId(values))
 
     useEffect(() => {
         const loadStationId = getLoadStationId(selectedTask)
