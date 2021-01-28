@@ -57,8 +57,6 @@ const ProcessesContent = () => {
         Object.values(processes).map((process) => {
             const processRoutes = process.routes.map((currRoute) => tasks[currRoute]) || {}
 
-            console.log("process",process)
-            console.log("tasks",tasks)
             // If it was previously broken, but not anymore, then correct that ish
             if (!!process.broken && !isBrokenProcess(processRoutes, tasks)) {
                 process.broken = null

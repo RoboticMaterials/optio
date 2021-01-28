@@ -41,9 +41,6 @@ const ListItemField = (props) => {
 	const hasError = error
 	const errorMessage = getMessageFromError(error)
 
-	console.log("ListItemField hasError",hasError)
-	console.log("ListItemField errorMessage",errorMessage)
-
 	const edited = changed
 
 	const disabled = hasError || isNew || edited || unsaved

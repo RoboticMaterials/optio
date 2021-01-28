@@ -45,10 +45,6 @@ const TimePickerField = (props) => {
 	const hasError = touched && error;
 	const errorMessage = getMessageFromError(error);
 
-	console.log("TimePickerField fieldValue", fieldValue)
-	console.log("TimePickerField mapInput(fieldValue)", mapInput(fieldValue))
-	console.log("TimePickerField defaultValue", defaultValue)
-
 	return (
 			// <Container
 			// 	style={containerStyle}
@@ -62,11 +58,6 @@ const TimePickerField = (props) => {
 					// showSecond={false}
 					value={mapInput(fieldValue)}
 					onChange={(val) => {
-
-						console.log("TimePickerField onChange val", val)
-						console.log("TimePickerField onChange mapOutput(val)", mapOutput(val))
-
-
 
 						if(!touched) setFieldTouched(fieldName, true)
 						setFieldValue(fieldName, mapOutput(val))
