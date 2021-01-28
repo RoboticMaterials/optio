@@ -355,6 +355,7 @@ const EditLocation = () => {
                     validationSchema={locationSchema}
 
                     onSubmit={async (values, { setSubmitting }) => {
+                        console.log('QQQQ Could be submitting')
                         setSubmitting(true)
 
                         await onSave(deepCopy(values.locationName))
@@ -367,7 +368,13 @@ const EditLocation = () => {
                             submitForm
                         } = formikProps
                         return (
-                            <Form>
+                            <Form
+                                onKeyDown={(e) => {
+                                    if ((e.charCode || e.keyCode) === 13) {
+                                        submitForm()
+                                    }
+                                }}
+                            >
 
                                 <div style={{ marginBottom: '1rem' }}>
 
