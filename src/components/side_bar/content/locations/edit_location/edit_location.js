@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import uuid from 'uuid'
 
 import * as styled from './edit_location.style'
-import { Formik, Form, withFormik } from 'formik'
+import { Formik, Form } from 'formik'
 
 // Import Components
 import LocationButton from './location_button/location_button'
@@ -321,10 +321,6 @@ const EditLocation = () => {
             )
         })
     }
-
-    const withFormikForm = withFormik({
-
-    })
 
     return (
         <>
