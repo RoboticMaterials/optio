@@ -90,109 +90,118 @@ function Position(props) {
     // This filters out positions when fixing a process
     // If the process is broken, then you can only start the task at the route before break's unload location
     else if (!!selectedTask && !!selectedProcess && !!fixingProcess) {
-
-        // setting load (or both are set, in which case logic is the same, as click another position would be setting the load
-        if( (!routeStart) || (routeStart && routeEnd)) {
-            // disable all positions except those at unload station of the route before the break
-            const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
-            disabled = !isPositionAtUnloadStation(routeBeforeBreak, positionId)
+        if (!position.parent) {
+            disabled = true
         }
+        else {
+            // setting load (or both are set, in which case logic is the same, as click another position would be setting the load
+            if( (!routeStart) || (routeStart && routeEnd)) {
+                // disable all positions except those at unload station of the route before the break
+                const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
+                disabled = !isPositionAtUnloadStation(routeBeforeBreak, positionId)
+            }
 
-        // setting unload
-        else if(!routeEnd) {
+            // setting unload
+            else if(!routeEnd) {
 
-            // don't allow selecting positions at stations already in process
-            disabled = isPositionInRoutes(selectedProcess.routes, positionId)
+                // don't allow selecting positions at stations already in process
+                disabled = isPositionInRoutes(selectedProcess.routes, positionId)
 
-            // if position is at station load station after the break, it should be enabled
-            const routeAfterBreak = selectedProcess.routes[selectedProcess.broken]
-            if(isPositionAtLoadStation(routeAfterBreak, positionId)) disabled = false
+                // if position is at station load station after the break, it should be enabled
+                const routeAfterBreak = selectedProcess.routes[selectedProcess.broken]
+                if(isPositionAtLoadStation(routeAfterBreak, positionId)) disabled = false
+            }
         }
     }
     // This filters positions when making a process
     // If the process has routes, and you're adding a new route, you should only be able to add a route starting at the last station
     // This eliminates process with gaps between stations
     else if (!!selectedProcess && !!selectedTask) {
-        // extract insertIndex for adding new routes to beginning of a process
-        const {
-            temp
-        } = selectedTask || {}
-        const {
-            insertIndex
-        } = temp || {}
-
-        // not first route
-        if(selectedProcess.routes.length > 0) {
-            const routeIndex = getRouteIndexInRoutes(selectedProcess.routes.map((currProcess) => currProcess._id), selectedTask?._id)
-
-            // setting load (or both have been set)
-            if( !routeStart || (routeStart && routeEnd)) {
-
-                // adding to beginning of process
-                if(insertIndex === 0) {
-                    // disable all positions already in the process
-                    disabled = isPositionInRoutes(selectedProcess.routes, positionId)
-                }
-
-                else if(routeIndex === 0) {
-                    if(isPositionInRoutes(selectedProcess.routes, positionId)) disabled = true
-                    if(isPositionAtLoadStation(selectedTask, positionId)) disabled = false
-                }
-
-                else {
-                    // must start at position at unload station of previous route
-                    const previousRoute = getPreviousRoute(selectedProcess.routes, selectedTask._id)
-                    disabled = !isPositionAtUnloadStation(previousRoute, positionId)
-                }
-            }
-
-            // setting unload
-            else if(!routeEnd) {
-
-                // adding new to beginning of process
-                if(insertIndex === 0) {
-                    // disable positions already used
-                    disabled = isPositionInRoutes(selectedProcess.routes, positionId)
-
-                    // enable positions at first route since inserting at beginning
-                    const firstRoute = selectedProcess.routes[0]
-                    if(isPositionAtLoadStation(firstRoute, positionId)) disabled = false
-
-                    // disable positions at load station of current route, as unload and load shouldn't be at same route
-                    if(isPositionAtLoadStation(selectedTask, positionId)) disabled = true
-                }
-
-                else if(routeIndex === 0) {
-                    if(isPositionInRoutes(selectedProcess.routes, positionId)) disabled = true
-
-                    const nextRoute = selectedProcess.routes[1]
-                    if(isPositionAtLoadStation(nextRoute, positionId)) disabled = false
-                }
-
-                else {
-                    // disable positions already used
-                    if(isPositionInRoutes(selectedProcess.routes, positionId)) disabled = true
-
-                    // disable positions at load station of current route, as unload and load shouldn't be at same route
-                    if(isPositionAtLoadStation(selectedTask, positionId)) disabled = true
-
-                    const nextRoute = selectedProcess.routes[routeIndex + 1]
-                    if(isPositionAtLoadStation(nextRoute, positionId)) disabled = false
-                }
-            }
+        if (!position.parent) {
+            disabled = true
         }
-
-        // first route
         else {
-            // setting load
-            if(!routeStart || (routeStart && routeEnd)) {
-                // all positions are available for load position of first route
+            // extract insertIndex for adding new routes to beginning of a process
+            const {
+                temp
+            } = selectedTask || {}
+            const {
+                insertIndex
+            } = temp || {}
+
+            // not first route
+            if(selectedProcess.routes.length > 0) {
+                const routeIndex = getRouteIndexInRoutes(selectedProcess.routes.map((currProcess) => currProcess._id), selectedTask?._id)
+
+                // setting load (or both have been set)
+                if( !routeStart || (routeStart && routeEnd)) {
+
+                    // adding to beginning of process
+                    if(insertIndex === 0) {
+                        // disable all positions already in the process
+                        disabled = isPositionInRoutes(selectedProcess.routes, positionId)
+                    }
+
+                    else if(routeIndex === 0) {
+                        if(isPositionInRoutes(selectedProcess.routes, positionId)) disabled = true
+                        if(isPositionAtLoadStation(selectedTask, positionId)) disabled = false
+                    }
+
+                    else {
+                        // must start at position at unload station of previous route
+                        const previousRoute = getPreviousRoute(selectedProcess.routes, selectedTask._id)
+                        disabled = !isPositionAtUnloadStation(previousRoute, positionId)
+                    }
+                }
+
+                // setting unload
+                else if(!routeEnd) {
+
+                    // adding new to beginning of process
+                    if(insertIndex === 0) {
+                        // disable positions already used
+                        disabled = isPositionInRoutes(selectedProcess.routes, positionId)
+
+                        // enable positions at first route since inserting at beginning
+                        const firstRoute = selectedProcess.routes[0]
+                        if(isPositionAtLoadStation(firstRoute, positionId)) disabled = false
+
+                        // disable positions at load station of current route, as unload and load shouldn't be at same route
+                        if(isPositionAtLoadStation(selectedTask, positionId)) disabled = true
+                    }
+
+                    else if(routeIndex === 0) {
+                        if(isPositionInRoutes(selectedProcess.routes, positionId)) disabled = true
+
+                        const nextRoute = selectedProcess.routes[1]
+                        if(isPositionAtLoadStation(nextRoute, positionId)) disabled = false
+                    }
+
+                    else {
+                        // disable positions already used
+                        if(isPositionInRoutes(selectedProcess.routes, positionId)) disabled = true
+
+                        // disable positions at load station of current route, as unload and load shouldn't be at same route
+                        if(isPositionAtLoadStation(selectedTask, positionId)) disabled = true
+
+                        const nextRoute = selectedProcess.routes[routeIndex + 1]
+                        if(isPositionAtLoadStation(nextRoute, positionId)) disabled = false
+                    }
+                }
             }
 
-            // setting unload
-            else if(!routeEnd) {
-                // disable positions at load station of current route, as unload and load shouldn't be at same route
-                if(isPositionAtLoadStation(selectedTask, positionId)) disabled = true
+            // first route
+            else {
+                // setting load
+                if(!routeStart || (routeStart && routeEnd)) {
+                    // all positions are available for load position of first route
+                }
+
+                // setting unload
+                else if(!routeEnd) {
+                    // disable positions at load station of current route, as unload and load shouldn't be at same route
+                    if(isPositionAtLoadStation(selectedTask, positionId)) disabled = true
+                }
             }
         }
     }
