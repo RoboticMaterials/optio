@@ -477,6 +477,7 @@ const HILModals = (props) => {
     }
 
     const renderSelectedLot = () => {
+
         return (
             <>
                 {taskHasProcess && //If the task isn't part of a process don't render the choose lot stuff on the HIL
