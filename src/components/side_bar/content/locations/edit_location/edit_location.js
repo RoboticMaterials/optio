@@ -352,9 +352,10 @@ const EditLocation = () => {
                     validateOnBlur={true}
                     // Chooses what schema to use based on whether it's a sign in or sign up
                     // TODO: The schemas are not 100% working as of 9/14/2020. Need to figure out regex for passwords
-                    validationSchema={locationSchema(stations)}
+                    validationSchema={locationSchema(stations, selectedLocation)}
 
                     onSubmit={async (values, { setSubmitting }) => {
+                        console.log('QQQQ Hur')
                         setSubmitting(true)
 
                         await onSave(deepCopy(values.locationName))
@@ -363,10 +364,15 @@ const EditLocation = () => {
                     }}
                 >
                     {formikProps => {
+                        const{
+                            submitForm,
+                            errors,
+                        } = formikProps
                         return (
                             <Form
                                 onKeyDown={(e) => {
-                                    if ((e.charCode || e.keyCode) === 13) {
+                                    if (((e.charCode || e.keyCode) && Object.keys(errors).length === 0  ) === 13) {
+                                        console.log('QQQQ formik props', deepCopy(formikProps))
                                         submitForm()
                                     }
                                 }}
