@@ -49,7 +49,6 @@ const LoadUnloadFields = (props) => {
             dispatchSetSelectedTask({
                 ...selectedTask,
                 device_types: [DEVICE_CONSTANTS.HUMAN],
-                handoff: false
             })
         }
     }
