@@ -5,7 +5,7 @@ import {useParams} from 'react-router-dom'
 
 // Import Components
 import ContentList from '../content_list/content_list'
-
+import TaskAddedAlert from '../../../widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert'
 
 // Import actions
 import * as taskActions from '../../../../redux/actions/tasks_actions'
