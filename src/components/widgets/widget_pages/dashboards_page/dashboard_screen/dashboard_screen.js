@@ -218,6 +218,45 @@ const DashboardScreen = (props) => {
         return buttons
     }
 
+    const handleRouteClick = async (Id, name, custom) => {
+
+        // If a custom task then add custom task key to task q
+        if (Id === 'custom_task') {
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+                label: "Task Added to Queue",
+                message: name
+            })
+
+            // clear alert after timeout
+            return setTimeout(() => setAddTaskAlert(null), 1800)
+        }
+
+        // Else if its a hil success, execute the HIL success function
+        else if (Id === 'hil_success') {
+            return handleHilSuccess(custom)
+        }
+
+        let inQueue = false
+        Object.values(taskQueue).map((item) => {
+            // If its in the Q and not a handoff, then alert the user saying its already there
+            if (item.task_id === Id && !tasks[item.task_id].handoff) inQueue = true
+        })
+
+        // add alert to notify task has been added
+        if (inQueue) {
+            // display alert notifying user that task is already in queue
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
+                label: "Alert! Task Already in Queue",
+                message: `'${name}' not added`,
+            })
+
+            // clear alert after timeout
+            return setTimeout(() => setAddTaskAlert(null), 1800)
+        }
+    }
+
     /**
      * Handles event of task click
      *
@@ -245,6 +284,7 @@ const DashboardScreen = (props) => {
         switch (type.toUpperCase()) {
             case TYPES.ROUTES.key:
                 onHandlePostTaskQueue({dashboardID, tasks, deviceType, taskQueue, Id, name, custom})
+                handleRouteClick(Id, name, custom)
                 //handleRouteClick(Id, name, custom)
                 break
             case TYPES.OPERATIONS.key:
