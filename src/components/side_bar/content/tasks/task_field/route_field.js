@@ -85,8 +85,13 @@ const TaskField = (props) => {
         obj,
         track_quantity,
         _id: routeId,
-        changed
+        changed,
+        temp
     } = values || {}
+
+    const {
+        insertIndex
+    } = temp || {}
 
     const routeProcesses = getRouteProcesses(routeId) || []
     const isProcessRoute = routeProcesses.length > 0 || fieldParent
@@ -428,12 +433,15 @@ const TaskField = (props) => {
                                             // If the selected process has routes, then filter out tasks that have load stations that arent the last route's unload station
                                             // This eliminates 'broken' processes with tasks that are between non-connected stations
                                             else if (selectedProcess.routes.length > 0) {
-
-                                                // Gets the previous route
-                                                const previousRoute = getPreviousRoute(selectedProcess.routes, values._id)
-
-                                                return isNextRouteViable(previousRoute, task)
-
+                                                if(insertIndex === 0) {
+                                                    const firstTask = selectedProcess.routes[0]
+                                                    return isNextRouteViable(task, firstTask)
+                                                }
+                                                else {
+                                                    // Gets the previous route
+                                                    const previousRoute = getPreviousRoute(selectedProcess.routes, values._id)
+                                                    return isNextRouteViable(previousRoute, task)
+                                                }
                                             }
 
                                             else {

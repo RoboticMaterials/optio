@@ -91,7 +91,7 @@ export const getLoadStationId = (route) => {
 }
 
 export const getLoadPositionId = (route) => {
-    return route?.load?.station
+    return route?.load?.position
 }
 
 export const getRouteStart = (route) => {
