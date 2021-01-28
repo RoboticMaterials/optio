@@ -161,9 +161,13 @@ const ProcessForm = (props) => {
 		if(selectedProcess && selectedProcess.routes && Array.isArray(selectedProcess.routes)) {
 			let prevObj = null
 
-			return selectedProcess.routes.map((currRouteItem) => {
+			return selectedProcess.routes
+				.filter((currRouteItem) => {
+					return isObject(isObject(currRouteItem) ? currRouteItem : tasks[currRouteItem])
+				})
+				.map((currRouteItem) => {
 
-				const route = isObject(currRouteItem) ? currRouteItem : (tasks[currRouteItem] || {})
+				const route = isObject(currRouteItem) ? currRouteItem : tasks[currRouteItem]
 
 				const obj = handleDefaultObj(route.obj, prevObj)
 				prevObj = obj
