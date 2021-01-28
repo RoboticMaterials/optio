@@ -89,6 +89,7 @@ export const ListItemTitle = styled.h1`
     font-size: 1rem;
     font-weight: 500;
     color: ${props => props.theme.bg.octonary};
+    user-select: none;
 
     white-space: nowrap;
     overflow: hidden;
