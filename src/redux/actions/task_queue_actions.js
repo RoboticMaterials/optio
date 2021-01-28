@@ -225,48 +225,51 @@ export const handlePostTaskQueue = (props) => {
             ))
         }
 
-        let inQueue = false
+        else {
 
-        if (!!taskQueue) {
-            Object.values(taskQueue).map((item) => {
-                // If its in the Q and not a handoff, then alert the user saying its already there
-                if (item.task_id === Id && !tasks[item.task_id].handoff) inQueue = true
-            })
-        }
+            let inQueue = false
 
-        // add alert to notify task has been added
-        if (!inQueue) {
-            // If the task is a human task, its handled a little differently compared to a normal task
-            // Set hil_response to null because the backend does not dictate the load hil message
-            // Since the task is put into the q but automatically assigned to the person that clicks the button
-            if (deviceType === 'human') {
-
-                const postTask = {
-                    _id: uuid.v4(),
-                    "device_type": deviceType,
-                    "task_id": Id,
-                    dashboard: dashboardID,
-                    hil_response: null,
-                }
-                await dispatch({ type: 'LOCAL_HUMAN_TASK', payload: postTask._id })
-                const postToQueue = dispatch(postTaskQueue(postTask))
-
-                if (fromSideBar) {
-                    postToQueue.then(item => {
-                        const id = item?._id
-                        dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
-                    })
-                }
+            if (!!taskQueue) {
+                Object.values(taskQueue).map((item) => {
+                    // If its in the Q and not a handoff, then alert the user saying its already there
+                    if (item.task_id === Id && !tasks[item.task_id].handoff) inQueue = true
+                })
             }
 
-            else {
-                await dispatch(postTaskQueue(
-                    {
+            // add alert to notify task has been added
+            if (!inQueue) {
+                // If the task is a human task, its handled a little differently compared to a normal task
+                // Set hil_response to null because the backend does not dictate the load hil message
+                // Since the task is put into the q but automatically assigned to the person that clicks the button
+                if (deviceType === 'human') {
+
+                    const postTask = {
                         _id: uuid.v4(),
                         "device_type": deviceType,
                         "task_id": Id,
-                    })
-                )
+                        dashboard: dashboardID,
+                        hil_response: null,
+                    }
+                    await dispatch({ type: 'LOCAL_HUMAN_TASK', payload: postTask._id })
+                    const postToQueue = dispatch(postTaskQueue(postTask))
+
+                    if (fromSideBar) {
+                        postToQueue.then(item => {
+                            const id = item?._id
+                            dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
+                        })
+                    }
+                }
+
+                else {
+                    await dispatch(postTaskQueue(
+                        {
+                            _id: uuid.v4(),
+                            "device_type": deviceType,
+                            "task_id": Id,
+                        })
+                    )
+                }
             }
         }
     };
