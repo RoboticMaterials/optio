@@ -355,7 +355,6 @@ const EditLocation = () => {
                     validationSchema={locationSchema}
 
                     onSubmit={async (values, { setSubmitting }) => {
-                        console.log('QQQQ Could be submitting')
                         setSubmitting(true)
 
                         await onSave(deepCopy(values.locationName))
