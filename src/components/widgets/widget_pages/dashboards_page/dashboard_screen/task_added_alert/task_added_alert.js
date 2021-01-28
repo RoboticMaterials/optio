@@ -13,7 +13,8 @@ const TaskAddedAlert = (props) => {
         type,
         visible,
         label,
-        message
+        message,
+        containerStyle
     } = props
 
 
@@ -47,7 +48,7 @@ const TaskAddedAlert = (props) => {
     }
 
     if (visible) {
-        return <style.AddTaskAlertContainer>
+        return <style.AddTaskAlertContainer style={containerStyle}>
             <style.AddTaskAlertLabel color={alertColor}>{label}</style.AddTaskAlertLabel>
             <style.AddTaskAlertMessage color={alertColor}>{message}</style.AddTaskAlertMessage>
         </style.AddTaskAlertContainer>
