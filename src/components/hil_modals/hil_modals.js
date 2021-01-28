@@ -28,7 +28,7 @@ import { getCards } from "../../redux/actions/card_actions";
 import {sortBy} from "../../methods/utils/card_utils";
 import {SORT_MODES} from "../../constants/common_contants";
 import Card from "../side_bar/content/cards/card/card";
-import {getRouteProcesses} from "../../methods/utils/route_utils";
+import {getRouteProcesses, getLoadStationId} from "../../methods/utils/route_utils";
 
 
 /**
@@ -144,7 +144,6 @@ const HILModals = (props) => {
     // handles initial display of lot selector
     useEffect(() => {
 
-
         const currentTask = tasks[item.task_id]
         const routeProcesses = getRouteProcesses(currentTask?._id).map((currProcess) => currProcess._id) || []
 
@@ -176,6 +175,7 @@ const HILModals = (props) => {
     *
     * */
     useEffect(() => {
+
         const taskProcesses = getRouteProcesses(selectedTask?._id).map((currProcess) => currProcess._id)
 
         if ((taskProcesses && Array.isArray(taskProcesses) && (taskProcesses.length > 0))) {
@@ -306,6 +306,7 @@ const HILModals = (props) => {
 
     // Use Effect for when page loads, handles wether the HIL is a load or unload
     useEffect(() => {
+
         dispatchGetCards()
 
         const currentTask = tasks[item.task_id]
@@ -335,6 +336,7 @@ const HILModals = (props) => {
     }, [])
 
     useEffect(() => {
+
         if (!!item.quantity) {
             setQuantity(item.quantity)
         } else{
@@ -347,7 +349,6 @@ const HILModals = (props) => {
     }, [selectedLot], [tasks])
 
     useEffect(() => {
-
         const currentTask = tasks[item.task_id]
         const routeProcesses = getRouteProcesses(currentTask?._id).map((currProcess) => currProcess._id) || []
 
@@ -358,8 +359,9 @@ const HILModals = (props) => {
         if(!!routeProcesses[0]){
             Object.values(cards).map((card) => {
 
-                if(!!card.bins[currentTask.load.position]){
+                if(!!card.bins[getLoadStationId(currentTask)]){
                     setLotsAtStation(true)
+
                 }
             })
         }
