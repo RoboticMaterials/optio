@@ -6,7 +6,6 @@ export const ContentContainer = styled(stylel.ContentContainer)`
 `
 
 export const Label = styled(stylel.Label)`
-
 `
 
 export const DefaultTypesContainer = styled.div`
@@ -33,4 +32,22 @@ export const LocationTypeContainer = styled.div`
 export const LocationButtonConatiner = styled.div`
     display: flex;
     flex-direction: row;
+`
+
+export const LocationButtonSubtitleContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width:8rem;
+    margin-right: 5rem;
+`
+
+export const Subtitle = styled.h1`
+    font-family: ${props => props.theme.font.primary};
+    flex-grow: 1;
+    font-size: 1rem;
+    font-weight: 500;
+    color: white;
+    margin-right: 1rem;
+    justify-content: center;
 `

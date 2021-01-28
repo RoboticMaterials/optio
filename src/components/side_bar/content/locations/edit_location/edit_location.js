@@ -141,7 +141,7 @@ const EditLocation = () => {
      */
     const onDelete = async () => {
 
-        // Station 
+        // Station
         if (selectedLocation.schema === 'station') {
             await dispatchDeleteStation(selectedStation._id)
         }
@@ -430,14 +430,25 @@ const EditLocation = () => {
                                 <styled.LocationButtonConatiner>
                                     {renderStationButtons()}
                                 </styled.LocationButtonConatiner>
+
+                                <styled.LocationButtonSubtitleContainer>
+                                  <styled.Subtitle schema={'locations'}>Workstation</styled.Subtitle>
+                                  <styled.Subtitle schema={'locations'}>Warehouse</styled.Subtitle>
+                                </styled.LocationButtonSubtitleContainer>
+
                             </styled.LocationTypeContainer>
 
                             {MiRMapEnabled &&
                                 <styled.LocationTypeContainer>
-                                    <styled.Label schema={'locations'}>Positions</styled.Label>
+                                    <styled.Label schema={'locations'} style = {{marginTop: '1rem'}}>Positions</styled.Label>
                                     <styled.LocationButtonConatiner>
                                         {renderPositionButtons()}
                                     </styled.LocationButtonConatiner>
+
+                                    <styled.LocationButtonSubtitleContainer style = {{marginRight: '1.1rem'}}>
+                                      <styled.Subtitle schema={'locations'} style = {{marginRight: '4.5rem'}}>Cart</styled.Subtitle>
+                                      <styled.Subtitle schema={'locations'}>Shelf</styled.Subtitle>
+                                    </styled.LocationButtonSubtitleContainer>
 
                                 </styled.LocationTypeContainer>
                             }
