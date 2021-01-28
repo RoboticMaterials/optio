@@ -12,7 +12,6 @@ import {getLoadStationId, getUnloadStationId} from "./route_utils";
  * @param {object} routes All routes
  */
 export const isBrokenProcess = (routes) => {
-    console.log("isBrokenProcess routes",routes)
 
     // can't be broken if there is only 1 route
     if(routes.length > 1) {

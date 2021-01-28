@@ -128,8 +128,6 @@ function Station(props) {
             if(!routeStart || (routeStart && routeEnd)) {
 
                 // adding to beginning
-                console.log("routeIndex",routeIndex)
-
                 if(insertIndex === 0 ) {
                     // disable is station is already in process
                     if(isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
@@ -261,8 +259,6 @@ function Station(props) {
      * For a warehouse, the thing to remember is that you push to a warehouse and pull from a warehouse
      */
     const onSetStationTask = () => {
-
-        console.log("onSetStationTask")
 
         // Make sure there is a selected task and that its a station type you can assign a task too
         if (selectedTask !== null && (station.type === 'human' || station.type === 'warehouse')) {

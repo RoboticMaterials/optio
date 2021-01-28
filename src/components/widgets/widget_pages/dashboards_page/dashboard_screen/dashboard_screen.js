@@ -317,7 +317,6 @@ const DashboardScreen = (props) => {
 
     // Posts HIL Success to API
     const handleHilSuccess = async (item) => {
-        console.log("handleHilSuccess item",item)
 
         let newItem = {
             ...item,

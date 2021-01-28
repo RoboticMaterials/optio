@@ -12,9 +12,6 @@ const ProcessPaths = (props) => {
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const tasks = useSelector(state => state.tasksReducer.tasks)
 
-    console.log("ProcessPaths", selectedProcess)
-
-
     // Maps through all the associated routes with the process and displays them
     const handleTaskPaths = () => {
         // return Object.keys(selectedProcess.routes).map((station, ind) => {
