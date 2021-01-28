@@ -332,7 +332,12 @@ export const locationSchema = (stations, selectedLocation) => {
 
     let stationNames = []
     Object.values(stations).forEach(station => {
-        if(!!selectedLocation && station._id !== selectedLocation._id) stationNames.push(station.name)
+        if(!!selectedLocation && station._id === selectedLocation._id) {
+            
+        }
+        else {
+            stationNames.push(station.name)
+        }
     })
 
     return (
