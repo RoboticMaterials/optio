@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 
 import { notBrokenRegex, notTaskDeletedRegex } from "./regex_utils";
-import {isObject} from "./object_utils";
+import { isObject } from "./object_utils";
 
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
@@ -201,10 +201,10 @@ export const signInSchema = Yup.object().shape({
 const binsSchema = lazy(obj => object(
     mapValues(obj, (value, key) => {
         return Yup.object().shape({
-                    count: Yup.number()
-                        .min(1, "Quantity must be at least 1.")
-                        .required('Quantity required.'),
-                })
+            count: Yup.number()
+                .min(1, "Quantity must be at least 1.")
+                .required('Quantity required.'),
+        })
     })
 ));
 
@@ -246,7 +246,7 @@ export const getMoveLotSchema = (maxCount) => Yup.object().shape({
 })
 
 export const getCardSchema = (mode, availableBinItems) => {
-    switch(mode) {
+    switch (mode) {
         case CARD_SCHEMA_MODES.EDIT_LOT:
             return editLotSchema
         case CARD_SCHEMA_MODES.MOVE_LOT:
@@ -262,16 +262,16 @@ const routeStationSchema = lazy(obj => {
 
     let positionSchema
     let stationSchema
-    if(isObject(obj)) {
-        if(!obj.position && !obj.station) {
+    if (isObject(obj)) {
+        if (!obj.position && !obj.station) {
             positionSchema = Yup.string().nullable()
             stationSchema = Yup.string().nullable().required('Please select a location.')
         }
-        else if(obj.station && !obj.position) {
+        else if (obj.station && !obj.position) {
             positionSchema = Yup.string().nullable()
             stationSchema = Yup.string().nullable().required('Please select a location.')
         }
-        else if(obj.position && !obj.station) {
+        else if (obj.position && !obj.station) {
             positionSchema = Yup.string().nullable().required('Please select a location.')
             stationSchema = Yup.string().nullable()
         }
@@ -296,9 +296,9 @@ const routeStationSchema = lazy(obj => {
 
 export const routeSchema = Yup.object().shape({
     name: Yup.string()
-            .min(1, '1 character minimum.')
-            .max(50, '50 character maximum.')
-            .required('Please enter a name.'),
+        .min(1, '1 character minimum.')
+        .max(50, '50 character maximum.')
+        .required('Please enter a name.'),
     obj: Yup.object().shape({
         name: Yup.string()
             .required('Please enter a name.'),
@@ -311,8 +311,8 @@ export const routeSchema = Yup.object().shape({
 
 
 export const routesSchema = Yup.array().of(
-            routeSchema
-        )
+    routeSchema
+)
 
 export const processSchema = Yup.object().shape({
     name: Yup.string()
@@ -328,7 +328,18 @@ export const getProcessSchema = () => {
     return
 }
 
-export const locationSchema = Yup.object().shape({
-    locationName: Yup.string()
-        .required('Please enter a name'),
-})
+export const locationSchema = (stations) => {
+
+    let stationNames = []
+    Object.values(stations).forEach(station => {
+        stationNames.push(station.name)
+    })
+
+    return (
+        Yup.object().shape({
+            locationName: Yup.string()
+                .required('Please enter a name')
+                .notOneOf(stationNames, 'Name already in use')
+        })
+    )
+}

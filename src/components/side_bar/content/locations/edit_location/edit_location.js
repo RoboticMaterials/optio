@@ -352,7 +352,7 @@ const EditLocation = () => {
                     validateOnBlur={true}
                     // Chooses what schema to use based on whether it's a sign in or sign up
                     // TODO: The schemas are not 100% working as of 9/14/2020. Need to figure out regex for passwords
-                    validationSchema={locationSchema}
+                    validationSchema={locationSchema(stations)}
 
                     onSubmit={async (values, { setSubmitting }) => {
                         setSubmitting(true)
@@ -363,11 +363,14 @@ const EditLocation = () => {
                     }}
                 >
                     {formikProps => {
-                        const {
-                            submitForm
-                        } = formikProps
                         return (
-                            <Form>
+                            <Form
+                                onKeyDown={(e) => {
+                                    if ((e.charCode || e.keyCode) === 13) {
+                                        submitForm()
+                                    }
+                                }}
+                            >
 
                                 <div style={{ marginBottom: '1rem' }}>
 
