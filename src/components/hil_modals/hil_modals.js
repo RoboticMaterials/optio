@@ -931,7 +931,7 @@ const HILModals = (props) => {
                             onChange={(e) => {
                                 setLotFilterValue(e.target.value)
                             }}
-                            style={{flex: 1 }}
+                            textboxContainerStyle={{flex: 1 }}
                         />
                     </div>
                 </styled.Header>
