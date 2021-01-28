@@ -11,6 +11,7 @@ const TaskForm = (props) => {
 	const {
 		initialValues,
 		toggleEditing,
+		isNew,
 		...remainingProps
 	} = props
 
@@ -93,6 +94,7 @@ const TaskForm = (props) => {
 					<TaskField
 						{...formikProps}
 						onDelete={handleDelete}
+						isNew={isNew}
 						isTransportTask={true}
 						toggleEditing={toggleEditing}
 						isProcessTask={null}

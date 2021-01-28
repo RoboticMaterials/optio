@@ -196,9 +196,21 @@ export const ProcessField = (props) => {
 
     // clear selectedTask and add new route to values.routes
     const updateExistingRoute = () => {
-        // if not new route, only thing to check is if any changes broke the process
+        const fieldMeta = getFieldMeta(editingTask)
+        const {
+            value: currRouteValue,
+        } = fieldMeta
+
+        const {
+            needsSubmit,
+            ...remainingValues
+        } = currRouteValue || {}
+
+
         setFieldValue("broken", isBrokenProcess(values.routes, tasks))
+        setFieldValue(editingTask, {...remainingValues})
         setEditingTask(false)
+        dispatchSetSelectedTask(null)
     }
 
     const cloneRoute = async () => {
@@ -238,6 +250,7 @@ export const ProcessField = (props) => {
         // if not new route, only thing to check is if any changes broke the process
         setFieldValue("broken", isBrokenProcess(values.routes, tasks))
         setEditingTask(false)
+        dispatchSetSelectedTask(null)
     }
 
     /**
@@ -544,6 +557,7 @@ export const ProcessField = (props) => {
                 <styled.TaskContainer schema={'processes'}>
                     <TaskField
                         {...formikProps}
+                        isNew={editingTask === "newRoute"}
                         onRemove={handleRemoveRoute}
                         onDelete={handleDeleteRoute}
                         onBackClick={handleTaskBack}

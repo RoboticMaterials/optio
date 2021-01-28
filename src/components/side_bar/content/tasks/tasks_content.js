@@ -62,6 +62,7 @@ export default function TaskContent(props) {
     //const [editing, toggleEditing] = useState(false)    // Is a task being edited? Otherwise, list view
     const [selectedTaskCopy, setSelectedTaskCopy] = useState(null)  // Current task
     const [shift, setShift] = useState(false) // Is shift key pressed ?
+    const [isNew, setIsNew] = useState(false) // Is shift key pressed ?
 
     // To be able to remove the listeners, the function needs to be stored in state
 
@@ -108,6 +109,7 @@ export default function TaskContent(props) {
     if (editing && selectedTask !== null) { // Editing Mode
         return (
             <TaskForm
+                isNew={isNew}
                 initialValues={{
                     ...selectedTask,
                     obj: handleDefaultObj(selectedTask.obj)
@@ -136,6 +138,7 @@ export default function TaskContent(props) {
                 }}
                 onMouseLeave={(task) => dispatchSetSelectedTask(null)}
                 onClick={(task) => {
+                    setIsNew(false)
                     // If task button is clicked, start editing it
                     dispatchSetSelectedTask(task)
                     onEditing(true)
@@ -154,6 +157,7 @@ export default function TaskContent(props) {
 
                 onPlus={() => {
                     const newTask = generateDefaultRoute()
+                    setIsNew(true)
                     dispatchAddTask(newTask)
                     dispatchSetSelectedTask(newTask)
                     onEditing(true)
