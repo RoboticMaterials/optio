@@ -114,7 +114,7 @@ export const putTaskQueue = (item, ID) => {
     return async dispatch => {
 
         function onStart() {
-            dispatch({ type: PUT_ + TASK_QUEUE + _STARTED });
+            dispatch({ type: PUT_ + TASK_QUEUE + _STARTED, payload: {item, ID} });
         }
         function onSuccess(item, ID) {
             const payload = { item, ID };

@@ -283,9 +283,10 @@ const DashboardScreen = (props) => {
     const handleTaskClick = async (type, Id, name, custom, deviceType) => {
         switch (type.toUpperCase()) {
             case TYPES.ROUTES.key:
-                onHandlePostTaskQueue({dashboardID, tasks, deviceType, taskQueue, Id, name, custom})
+                if(!(Id === 'hil_success')) {
+                    onHandlePostTaskQueue({dashboardID, tasks, deviceType, taskQueue, Id, name, custom})
+                }
                 handleRouteClick(Id, name, custom)
-                //handleRouteClick(Id, name, custom)
                 break
             case TYPES.OPERATIONS.key:
                 handleOperationClick()
@@ -316,6 +317,7 @@ const DashboardScreen = (props) => {
 
     // Posts HIL Success to API
     const handleHilSuccess = async (item) => {
+        console.log("handleHilSuccess item",item)
 
         let newItem = {
             ...item,
