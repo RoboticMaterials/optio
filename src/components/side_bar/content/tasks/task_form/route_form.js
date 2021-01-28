@@ -1,6 +1,6 @@
 import {Formik} from "formik";
 import {routeSchema} from "../../../../../methods/utils/form_schemas";
-import React from "react";
+import React, {useEffect} from "react";
 import TaskField from "../task_field/route_field";
 import {deleteRouteClean, saveFormRoute, setSelectedTask} from "../../../../../redux/actions/tasks_actions";
 import {useDispatch, useSelector} from "react-redux";
@@ -22,6 +22,13 @@ const TaskForm = (props) => {
 	const onEditing = async (props) => await dispatch(taskActions.editingTask(props))
 
 	const tasks = useSelector(state => state.tasksReducer.tasks)
+
+	useEffect(() => {
+		return () => {
+			dispatchSetSelectedTask(null)
+		}
+
+	}, []);
 
 	const handleSubmit = async (values) => {
 

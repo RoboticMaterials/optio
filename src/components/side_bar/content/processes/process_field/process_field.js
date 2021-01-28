@@ -158,14 +158,6 @@ export const ProcessField = (props) => {
             // add route to values at broken index
             updatedRoutes.splice(insertIndex, 0, newRoute)
 
-            // if not a new process, go ahead and save new route
-            if(!values.new) {
-                await onSave({
-                    ...values,
-                    routes:  updatedRoutes
-                }, false)
-            }
-
             // update values
             setFieldValue("routes", updatedRoutes)
             setFieldValue("broken", isBrokenProcess(updatedRoutes))
@@ -204,20 +196,6 @@ export const ProcessField = (props) => {
 
     // clear selectedTask and add new route to values.routes
     const updateExistingRoute = () => {
-        // if this is an existing process, go ahead and save the changes
-        if(!values.new) {
-
-            const fieldMeta = getFieldMeta(editingTask)
-            const {
-                initialValue,
-                value: currRouteValue,
-            } = fieldMeta
-
-            // dispatchPutRouteClean(currRouteValue, currRouteValue._id)
-
-            onSave(values, false)
-        }
-
         // if not new route, only thing to check is if any changes broke the process
         setFieldValue("broken", isBrokenProcess(values.routes, tasks))
         setEditingTask(false)
@@ -245,19 +223,11 @@ export const ProcessField = (props) => {
         // Not a new process, so save changes now
         if(!values.new) {
 
-            // await dispatchPostRouteClean(routeClone)
-
             const index = editingTask.match(/\d+/)[0] // "3"
             const updatedRoutes = [...values.routes]
             updatedRoutes.splice(index, 1, routeClone) // replace existing route with new clone
 
             setFieldValue("routes", updatedRoutes)
-
-            // save
-            onSave({
-                ...values,
-                routes: updatedRoutes     // overwrite routes with the updated routes
-            }, false)
         }
 
         else {
@@ -308,9 +278,7 @@ export const ProcessField = (props) => {
         dispatchSetSelectedTask(null)
 
         const willBreak = willRouteDeleteBreakProcess(values.routes, routeId)
-        if (!!willBreak) {
-            setFieldValue("broken", willBreak)
-        }
+        setFieldValue("broken", willBreak)
 
         await dispatchDeleteRouteClean(routeId)
 
