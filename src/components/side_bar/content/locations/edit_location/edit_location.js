@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import uuid from 'uuid'
 
 import * as styled from './edit_location.style'
-import { Formik, Form } from 'formik'
+import { Formik, Form, withFormik } from 'formik'
 
 // Import Components
 import LocationButton from './location_button/location_button'
@@ -322,6 +322,10 @@ const EditLocation = () => {
         })
     }
 
+    const withFormikForm = withFormik({
+
+    })
+
     return (
         <>
             <styled.ContentContainer
@@ -352,7 +356,7 @@ const EditLocation = () => {
                     validateOnBlur={true}
                     // Chooses what schema to use based on whether it's a sign in or sign up
                     // TODO: The schemas are not 100% working as of 9/14/2020. Need to figure out regex for passwords
-                    validationSchema={locationSchema}
+                    validationSchema={locationSchema(stations)}
 
                     onSubmit={async (values, { setSubmitting }) => {
                         setSubmitting(true)
@@ -363,9 +367,6 @@ const EditLocation = () => {
                     }}
                 >
                     {formikProps => {
-                        const {
-                            submitForm
-                        } = formikProps
                         return (
                             <Form>
 
