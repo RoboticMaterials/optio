@@ -55,9 +55,6 @@ const TextboxSearchField = ({
 
 	const errorMessage = getMessageFromError(meta.error);
 
-	console.log("TextboxSearchField fieldValue",fieldValue)
-	console.log("TextboxSearchField mapInput(fieldValue)",mapInput(fieldValue))
-
 	return (
 		<Container
 			style={containerStyle}
@@ -84,7 +81,6 @@ const TextboxSearchField = ({
 				{...field}
 				{...props}
 				onChange={values => {
-					console.log("TextboxSearchField onChange values",values)
 					if(!touched) {
 						setFieldTouched(fieldName, "true")
 					}

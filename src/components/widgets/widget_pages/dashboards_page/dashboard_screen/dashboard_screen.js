@@ -218,7 +218,7 @@ const DashboardScreen = (props) => {
         return buttons
     }
 
-    const handleRouteClick = async (Id, name, custom) => {
+    const handleRouteClick = async (Id, name, custom, deviceType) => {
 
         // If a custom task then add custom task key to task q
         if (Id === 'custom_task') {
@@ -255,6 +255,18 @@ const DashboardScreen = (props) => {
             // clear alert after timeout
             return setTimeout(() => setAddTaskAlert(null), 1800)
         }
+        else {
+            if (deviceType !== 'human') {
+                setAddTaskAlert({
+                    type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+                    label: "Task Added to Queue",
+                    message: name
+                })
+
+                // clear alert after timeout
+                return setTimeout(() => setAddTaskAlert(null), 1800)
+            }
+        }
     }
 
     /**
@@ -286,7 +298,7 @@ const DashboardScreen = (props) => {
                 if(!(Id === 'hil_success')) {
                     onHandlePostTaskQueue({dashboardID, tasks, deviceType, taskQueue, Id, name, custom})
                 }
-                handleRouteClick(Id, name, custom)
+                handleRouteClick(Id, name, custom, deviceType)
                 break
             case TYPES.OPERATIONS.key:
                 handleOperationClick()
@@ -317,7 +329,6 @@ const DashboardScreen = (props) => {
 
     // Posts HIL Success to API
     const handleHilSuccess = async (item) => {
-        console.log("handleHilSuccess item",item)
 
         let newItem = {
             ...item,

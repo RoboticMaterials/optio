@@ -227,8 +227,6 @@ export const deleteRouteClean = (routeId) => {
 // ******************************
 export const putRouteClean = (route, routeId) => {
     return async (dispatch, getState) => {
-        console.log("putRouteClean route",route)
-        console.log("putRouteClean routeId",routeId)
 
         // put task
         await dispatch(putTask(route, routeId));
@@ -246,7 +244,6 @@ export const putRouteClean = (route, routeId) => {
 // ******************************
 export const postRouteClean = (route) => {
     return async (dispatch, getState) => {
-        console.log("postRouteClean route",route)
 
         // post route
         await dispatch(postTask(route));
