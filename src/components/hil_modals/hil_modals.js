@@ -27,7 +27,7 @@ import { getCards } from "../../redux/actions/card_actions";
 import {sortBy} from "../../methods/utils/card_utils";
 import {SORT_MODES} from "../../constants/common_contants";
 import Card from "../side_bar/content/cards/card/card";
-import {getRouteProcesses} from "../../methods/utils/route_utils";
+import {getLoadStationId, getRouteProcesses} from "../../methods/utils/route_utils";
 
 
 /**
@@ -355,7 +355,7 @@ const HILModals = (props) => {
         if(!!routeProcesses[0]){
             Object.values(cards).map((card) => {
 
-                if(!!card.bins[currentTask.load.position]){
+                if(!!card.bins[getLoadStationId(currentTask)]){
                     setLotsAtStation(true)
                 }
             })

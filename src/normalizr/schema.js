@@ -162,9 +162,7 @@ export const stationSchema = new schema.Entity(
     // key
     'stations',
     // definition
-    {
-        //condition: conditionSchema
-    },
+    {},
     // options
     {
         idAttribute: (value, parent, key) => {
