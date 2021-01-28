@@ -46,7 +46,9 @@ const TaskQueueListItem = (props) => {
      * This is probably being used to display HILs
      */
     const handleTaskItemClicked = () => {
-        dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
+        if(item.task_id !== 'custom_task'){
+            dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
+        }
     }
 
     const handleMouseEnter = async () => {
