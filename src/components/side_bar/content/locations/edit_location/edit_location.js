@@ -367,7 +367,7 @@ const EditLocation = () => {
                             <Form
                                 onKeyDown={(e) => {
                                     if ((e.charCode || e.keyCode) === 13) {
-                                        submitForm()
+                                        formikProps.submitForm()
                                     }
                                 }}
                             >

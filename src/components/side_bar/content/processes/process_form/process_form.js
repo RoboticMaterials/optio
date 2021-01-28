@@ -1,7 +1,7 @@
 import {useDispatch, useSelector} from "react-redux";
 import {Formik} from "formik";
 import {processSchema} from "../../../../../methods/utils/form_schemas";
-import React from "react";
+import React, {useEffect} from "react";
 import {ProcessField} from "../process_field/process_field";
 import uuid from 'uuid'
 import {
@@ -46,6 +46,13 @@ const ProcessForm = (props) => {
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
 	const objects = useSelector(state => state.objectsReducer.objects)
+
+	useEffect(() => {
+		return () => {
+			dispatchSetSelectedTask(null)
+			dispatchSetSelectedProcess(null)
+		}
+	}, []);
 
 	const handleSave = async (values, close) => {
 
@@ -161,9 +168,13 @@ const ProcessForm = (props) => {
 		if(selectedProcess && selectedProcess.routes && Array.isArray(selectedProcess.routes)) {
 			let prevObj = null
 
-			return selectedProcess.routes.map((currRouteItem) => {
+			return selectedProcess.routes
+				.filter((currRouteItem) => {
+					return isObject(isObject(currRouteItem) ? currRouteItem : tasks[currRouteItem])
+				})
+				.map((currRouteItem) => {
 
-				const route = isObject(currRouteItem) ? currRouteItem : (tasks[currRouteItem] || {})
+				const route = isObject(currRouteItem) ? currRouteItem : tasks[currRouteItem]
 
 				const obj = handleDefaultObj(route.obj, prevObj)
 				prevObj = obj

@@ -12,6 +12,7 @@ import {getLoadStationId, getUnloadStationId} from "./route_utils";
  * @param {object} routes All routes
  */
 export const isBrokenProcess = (routes) => {
+    console.log("isBrokenProcess routes",routes)
 
     // can't be broken if there is only 1 route
     if(routes.length > 1) {
@@ -19,7 +20,12 @@ export const isBrokenProcess = (routes) => {
         for (let i = 0; i < routes.length - 1; i++) {
             const currentRoute = routes[i]
             const nextRoute = routes[i + 1]
-            if (currentRoute.unload.station !== nextRoute.load.station) {
+
+            const unloadStationId = getUnloadStationId(currentRoute)
+            const loadStationId = getLoadStationId(nextRoute)
+
+
+            if (unloadStationId !== loadStationId) {
                 // Have to return the current route index plus 1 because if the route that is before the broken route is the first route in s process, then the index is 0, which is considered falsy
                 return i + 1
             }

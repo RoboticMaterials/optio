@@ -51,8 +51,6 @@ const LoadUnloadFields = (props) => {
                 device_types: [DEVICE_CONSTANTS.HUMAN],
             })
         }
-
-
     }
     else if(!isMiRandHumanTask(selectedTask)) {
         dispatchSetSelectedTask({
