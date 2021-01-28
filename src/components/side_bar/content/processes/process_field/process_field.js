@@ -308,9 +308,7 @@ export const ProcessField = (props) => {
         dispatchSetSelectedTask(null)
 
         const willBreak = willRouteDeleteBreakProcess(values.routes, routeId)
-        if (!!willBreak) {
-            setFieldValue("broken", willBreak)
-        }
+        setFieldValue("broken", willBreak)
 
         await dispatchDeleteRouteClean(routeId)
 
