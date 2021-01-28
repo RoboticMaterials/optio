@@ -66,7 +66,8 @@ const TaskField = (props) => {
         onBackClick,
         onRemove,
         validateForm,
-        onDelete
+        onDelete,
+        isNew
     } = props
 
     const fieldMeta = getFieldMeta(fieldParent)
@@ -151,8 +152,9 @@ const TaskField = (props) => {
         if(isMiRTask(selectedTask)) {
             if(values.handoff) setFieldValue(fieldParent ? `${fieldParent}.handoff` : "handoff", false)
         }
+
         else if(isOnlyHumanTask(selectedTask)) {
-            if(!values.handoff && !didSetHandoff) {
+            if(!values.handoff && !didSetHandoff && isNew) {
                 setDidSetHandoff(true)
                 setFieldValue(fieldParent ? `${fieldParent}.handoff` : "handoff", true)
             }
