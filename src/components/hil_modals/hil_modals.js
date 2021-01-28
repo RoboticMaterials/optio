@@ -684,12 +684,15 @@ const HILModals = (props) => {
                                                   }
                                                   else {
                                                       // quantity cannot be negative
-                                                      if (quantity-10 > 0) setQuantity(quantity - 10)
+                                                      if (quantity-10 >= 0) setQuantity(quantity - 10)
+                                                      else{setQuantity(0)}
                                                   }
                                               }
                                               else {
                                                   // quantity cannot be negative
-                                                  if (quantity-10 > 0) setQuantity(quantity - 10)
+                                                  if (quantity-10 >= 0) setQuantity(quantity - 10)
+                                                  else{setQuantity(0)}
+
                                               }
 
                                           }}
@@ -931,7 +934,7 @@ const HILModals = (props) => {
                             onChange={(e) => {
                                 setLotFilterValue(e.target.value)
                             }}
-                            textboxContainerStyle={{flex: 1 }}
+                            style={{flex: 1 }}
                         />
                     </div>
                 </styled.Header>
