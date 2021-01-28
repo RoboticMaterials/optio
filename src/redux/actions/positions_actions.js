@@ -67,7 +67,7 @@ export const getPositions = () => {
             onStart();
             const positions = await api.getPositions();
 
-            const normalizedPositions = normalize(positions, positionsSchema).entities.positions
+            const normalizedPositions = !!normalize(positions, positionsSchema).entities.positions ? normalize(positions, positionsSchema).entities.positions : {}
 
             return onSuccess(normalizedPositions);
         } catch (error) {
