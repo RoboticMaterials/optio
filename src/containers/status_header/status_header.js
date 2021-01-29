@@ -46,6 +46,7 @@ const StatusHeader = (props) => {
     const taskQueueOpen = useSelector(state => state.taskQueueReducer.taskQueueOpen)
 
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
+    const devicesEnabled = useSelector(state => state.localReducer.devicesEnabled)
     const [initialRender, setInitialRender] = useState (null)
     const [statusBarPath, setStatusBarPath] = useState(``)
     const [rightCurvePoint, setRightCurvePoint] = useState(``)
@@ -231,7 +232,7 @@ const StatusHeader = (props) => {
             <styled.RightContentContainer>
 
                 {/* Hide play pause button if it's not MirMapEnabled */}
-                {MiRMapEnabled &&
+                {devicesEnabled &&
                     <styled.PlayButton
                         play={pause_status}
                         windowWidth={windowWidth}
