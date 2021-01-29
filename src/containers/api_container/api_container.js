@@ -274,7 +274,7 @@ const ApiContainer = (props) => {
                     setPageDataInterval(setInterval(() => loadCardsData(), 10000))
                 }
                 else {
-                    setPageDataInterval(setInterval(() => loadTasksData(), 10000))
+                    setPageDataInterval(setInterval(() => loadTasksData(), 5000))
                 }
 
                 break
@@ -383,6 +383,7 @@ const ApiContainer = (props) => {
     const loadTasksData = async () => {
         const tasks = await onGetTasks()
         const processes = await onGetProcesses()
+        const objects = await onGetObjects()
     }
 
     /*
