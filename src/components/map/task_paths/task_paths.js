@@ -66,14 +66,18 @@ export default function TaskPaths(props) {
             if (loadPositionId !== null) {
                 // Check to see if its a station or position
                 const startPos = !!positions[loadPositionId] ? positions[loadPositionId] : stations[loadPositionId]
-                setX1(startPos.x)
-                setY1(startPos.y)
+                if(startPos) {
+                    setX1(startPos.x)
+                    setY1(startPos.y)
+                }
             }
             if (unloadPositionId !== null) {
                 // Check to see if its a station or position
                 const endPos = !!positions[unloadPositionId] ? positions[unloadPositionId] : stations[unloadPositionId]
-                setX2(endPos.x)
-                setY2(endPos.y)
+                if(endPos) {
+                    setX2(endPos.x)
+                    setY2(endPos.y)
+                }
             }
         }
     })

@@ -1,5 +1,3 @@
-import { useSelector } from 'react-redux'
-
 export const convertD3ToReal = ([x, y], d3) => {
 
     const pos_x = d3.mapResolution * (x - d3.translate[0]) / d3.scale

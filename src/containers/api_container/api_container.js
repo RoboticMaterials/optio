@@ -12,6 +12,7 @@ import { getDashboards, deleteDashboard, postDashboard } from '../../redux/actio
 import { getSounds } from '../../redux/actions/sounds_actions'
 import { getProcesses, putProcesses } from '../../redux/actions/processes_actions'
 import { getTasksAnalysis } from '../../redux/actions/task_analysis_actions'
+import { getDataStream } from '../../redux/actions/data_stream_actions'
 
 import { getSchedules } from '../../redux/actions/schedule_actions';
 import { getDevices, putDevices } from '../../redux/actions/devices_actions'
@@ -61,6 +62,7 @@ const ApiContainer = (props) => {
     const onGetSounds = (api) => dispatch(getSounds(api))
     const onGetTaskQueue = () => dispatch(getTaskQueue())
     const onGetTasksAnalysis = () => dispatch(getTasksAnalysis())
+    const dispatchGetDataStream = () => dispatch(getDataStream())
 
     const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
     // const dispatchGetLots = () => dispatch(getLots())
@@ -132,12 +134,12 @@ const ApiContainer = (props) => {
     }, [])
 
     useEffect(() => {
-      if(stopAPICalls === true){
-        clearInterval(criticalDataInterval);
-        clearInterval(pageDataInterval);
-        clearInterval(mapDataInterval);
-        //dispatchStopAPICalls(false)
-      }
+        if (stopAPICalls === true) {
+            clearInterval(criticalDataInterval);
+            clearInterval(pageDataInterval);
+            clearInterval(mapDataInterval);
+            //dispatchStopAPICalls(false)
+        }
     }, [stopAPICalls])
 
 
@@ -169,9 +171,9 @@ const ApiContainer = (props) => {
 
     useEffect(() => {
 
-      if(stopAPICalls !==true){
-        updateCurrentPage();
-      }
+        if (stopAPICalls !== true) {
+            updateCurrentPage();
+        }
 
     })
 
@@ -249,7 +251,7 @@ const ApiContainer = (props) => {
                 break;
 
             case 'tasks':
-                setPageDataInterval(setInterval(() => loadTasksData(), 10000))
+                setPageDataInterval(setInterval(() => loadTasksData(), 4000))
                 break;
 
             case 'settings':
@@ -274,7 +276,7 @@ const ApiContainer = (props) => {
                     setPageDataInterval(setInterval(() => loadCardsData(), 10000))
                 }
                 else {
-                    setPageDataInterval(setInterval(() => loadTasksData(), 10000))
+                    setPageDataInterval(setInterval(() => loadTasksData(), 5000))
                 }
 
                 break
@@ -355,10 +357,8 @@ const ApiContainer = (props) => {
     */
 
     const loadCriticalData = async () => {
-        const status = await onGetStatus();
-        const taskQueue = await onGetTaskQueue()
-        const devices = await onGetDevices()
-      }
+        const dataStream = dispatchGetDataStream()
+    }
 
 
 
@@ -383,6 +383,7 @@ const ApiContainer = (props) => {
     const loadTasksData = async () => {
         const tasks = await onGetTasks()
         const processes = await onGetProcesses()
+        const objects = await onGetObjects()
     }
 
     /*
@@ -852,10 +853,10 @@ const ApiContainer = (props) => {
     //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     return (
-          <SplashScreen
-              isApiLoaded={props.isApiLoaded}
-              apiError={apiError}
-          />
+        <SplashScreen
+            isApiLoaded={props.isApiLoaded}
+            apiError={apiError}
+        />
     )
 }
 
