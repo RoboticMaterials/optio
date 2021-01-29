@@ -97,7 +97,6 @@ const ProcessesContent = () => {
                 handleCardView={(element) => onCardView(element)}
                 onClick={(process) => {
                     // If task button is clicked, start editing it
-                    console.log('QQQQ Editing Process', process)
                     dispatchSetSelectedProcess(process)
                     dispatchEditing(true)
                 }}
