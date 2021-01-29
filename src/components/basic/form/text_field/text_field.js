@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useField, useFormikContext } from "formik";
 
 import ErrorTooltip from '../error_tooltip/error_tooltip';
+import useChange from '../../../basic/form/useChange'
 import * as styled from './text_field.style'
 
 const TextField = ({
@@ -30,9 +31,8 @@ const TextField = ({
 	const { touched, error } = meta
 
 	const hasError = touched && error
-
+	useChange(setFieldValue)
 	const inputStyle = inputStyleFunc(hasError);
-
 	return (
 		<>
 			{fieldLabel &&

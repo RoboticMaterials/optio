@@ -121,8 +121,8 @@ const Settings = () => {
         if (!localChange) {
             await onPostLocalSettings(localSettingsState)
             if(localSettingsState.mapViewEnabled){
-              const hamburger = document.querySelector('.hamburger')
-              hamburger.classList.toggle('is-active')
+              //const hamburger = document.querySelector('.hamburger')
+              //hamburger.classList.toggle('is-active')
             }
 
         }

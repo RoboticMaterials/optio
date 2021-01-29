@@ -342,8 +342,10 @@ const EditLocation = () => {
                 />
 
                 <Formik
+
                     initialValues={{
                         locationName: !!selectedLocation ? selectedLocation.name : null,
+
                     }}
                     initialTouched={{
                         locationName: false,
@@ -354,7 +356,6 @@ const EditLocation = () => {
                     // Chooses what schema to use based on whether it's a sign in or sign up
                     // TODO: The schemas are not 100% working as of 9/14/2020. Need to figure out regex for passwords
                     validationSchema={locationSchema(stations, selectedLocation)}
-
                     onSubmit={async (values, { setSubmitting }) => {
                         setSubmitting(true)
 
@@ -368,6 +369,7 @@ const EditLocation = () => {
                             submitForm,
                             errors,
                         } = formikProps
+
                         return (
                             <Form
                                 onKeyDown={(e) => {

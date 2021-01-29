@@ -139,6 +139,8 @@ const SideBar = (props) => {
         if(!!showSideBar){
             dispatchSetSelectedStation(null)
             dispatchSetSelectedPosition(null)
+            dispatchEditingTask(false)
+            dispatchEditingProcess(false)
         }
 
         if (!widgetPageLoaded || widgetPageLoaded && !sideBarOpen) {
@@ -249,7 +251,6 @@ const SideBar = (props) => {
 
     return (
         <>
-
             <ConfirmDeleteModal
                 isOpen={!!confirmDeleteModal}
                 title={"Are you sure you want to leave this page? Any changes will not be saved"}
