@@ -329,6 +329,7 @@ const HILModals = (props) => {
         setDataLoaded(true)
         // On unmount, set the task q item to none
         return () => {
+            console.log('QQQQ hil modal closing')
             dispatchTaskQueueItemClicked('')
             dispatchLocalHumanTask(null)
         }
