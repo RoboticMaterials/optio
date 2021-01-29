@@ -366,7 +366,7 @@ const HILModals = (props) => {
             })
         }
 
-    }, [tasks])
+    }, [])
 
     // Posts HIL Success to API
     const onHilSuccess = async (fraction) => {
@@ -479,6 +479,45 @@ const HILModals = (props) => {
     const renderSelectedLot = () => {
 
         return (
+          <>
+          {windowWidth<700 ?
+            <>
+                {taskHasProcess && //If the task isn't part of a process don't render the choose lot stuff on the HIL
+                <styled.SelectedLotContainer style = {{flexDirection: 'column', paddingBottom: '1rem'}}>
+
+                    {selectedLot ?
+                        <styled.LotTitleDescription style = {{fontSize: '1.5rem'}}>Selected Lot:</styled.LotTitleDescription>
+                        :
+                        <styled.FooterButton
+                            onClick={() => {
+                                setShowLotSelector(true)
+                                setNoLotsSelected(false)
+                            }}
+                        >
+
+                            <styled.LotTitleDescription>Select Lot</styled.LotTitleDescription>
+                        </styled.FooterButton>
+                    }
+
+                    {(selectedLot) &&
+                    <styled.SelectedLotName>
+                        {selectedLotName &&
+                        <styled.LotTitleName>{selectedLotName}</styled.LotTitleName>
+                        }
+                        {!showLotSelector &&
+                        <styled.EditLotIcon
+                            className="fas fa-edit"
+                            onClick={() => {
+                                setShowLotSelector(true)
+                            }}
+                        />
+                        }
+                    </styled.SelectedLotName>
+                    }
+                </styled.SelectedLotContainer>
+                }
+            </>
+            :
             <>
                 {taskHasProcess && //If the task isn't part of a process don't render the choose lot stuff on the HIL
                 <styled.SelectedLotContainer>
@@ -514,7 +553,8 @@ const HILModals = (props) => {
                     }
                 </styled.SelectedLotContainer>
                 }
-            </>
+            </>          }
+          </>
         )
     }
 
@@ -1096,7 +1136,7 @@ const HILModals = (props) => {
                         trackQuantity !== true && lotsAtStation === true && noLotsSelected!==true ?
                             renderFractionOptions()
                             :
-                            renderQuantityOptions()
+                            renderFractionOptions()
 
                         :
                         renderUnloadOptions()
