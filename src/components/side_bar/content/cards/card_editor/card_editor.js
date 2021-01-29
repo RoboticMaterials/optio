@@ -106,7 +106,6 @@ const FormComponent = (props) => {
 
 	// component state
 	const [showLotInfo, setShowLotInfo] = useState(true)
-	const [pressedKey, setPressedKey] = useState(null)
 
 	// derived state
 	const selectedBinName = stations[binId] ?
@@ -159,16 +158,12 @@ const FormComponent = (props) => {
 	useEffect(() => {
 		// keydown event listener
 		const listener = event => {
-			setPressedKey(event.code)
-			console.log("event",event)
 
 			// check if event code corresponds to enter
-			if (event.code === "Enter" || event.code === "NumpadEnter" || event.code === "13") {
+			if (event.code === "Enter" || event.code === "NumpadEnter" || event.code === 13 || event.key === "Enter") {
 				// prevent default actions
 				event.preventDefault()
 				event.stopPropagation()
-
-
 
 
 				if(formMode === FORM_MODES.UPDATE) {
@@ -513,7 +508,11 @@ const FormComponent = (props) => {
 				}
 
 				<styled.Title>
-					{pressedKey}
+					{formMode === FORM_MODES.CREATE ?
+						"Create Lot"
+						:
+						"Edit Lot"
+					}
 				</styled.Title>
 
 				<Button
