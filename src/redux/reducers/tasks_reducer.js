@@ -74,7 +74,7 @@ export default function tasksReducer(state = defaultState, action) {
             tasksCopy = deepCopy(action.payload)
             return {
                 ...state,
-                tasks: {...state.tasks, ...action.payload},
+                tasks: action.payload,
                 pending: false
             }
 
