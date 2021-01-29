@@ -174,3 +174,28 @@ export const stationSchema = new schema.Entity(
 );
 
 export const stationsSchema = [stationSchema]
+
+// status schema
+export const statusSchema = new schema.Entity(
+    // key
+    'status',
+    // definition
+    {
+        //condition: conditionSchema
+    },
+    // options
+    {
+        idAttribute: (value, parent, key) => {
+            return value._id.$oid
+        },
+
+        // processStrategy
+        processStrategy: (value, parent, key) => {
+            return value
+        }
+    },
+
+);
+
+// schema for list of status
+export const statusesSchema = [statusSchema]

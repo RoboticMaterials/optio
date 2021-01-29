@@ -1,61 +1,100 @@
 import { normalize, schema } from 'normalizr';
 
 import {
-    GET_PROCESSES,
-    GET_PROCESSES_STARTED,
-    GET_PROCESSES_SUCCESS,
-    GET_PROCESSES_FAILURE,
+    GET_DEVICES_SUCCESS,
+    GET_DEVICES_FAILURE
+} from '../types/devices_types'
 
-    POST_PROCESSES,
-    POST_PROCESSES_STARTED,
-    POST_PROCESSES_SUCCESS,
-    POST_PROCESSES_FAILURE,
+import {
+    GET_STATUS_SUCCESS,
+    GET_STATUS_FAILURE
+} from '../types/status_types';
 
-    PUT_PROCESSES,
-    PUT_PROCESSES_STARTED,
-    PUT_PROCESSES_SUCCESS,
-    PUT_PROCESSES_FAILURE,
-
-    DELETE_PROCESSES,
-    DELETE_PROCESSES_STARTED,
-    DELETE_PROCESSES_SUCCESS,
-    DELETE_PROCESSES_FAILURE,
-    EDITING_PROCESS,
-} from '../types/processes_types'
+import {
+    GET_TASK_QUEUE_SUCCESS,
+    GET_TASK_QUEUE_FAILURE,
+    INCREMENT_GET_DATA_FAILURE_COUNT
+} from '../types/task_queue_types';
 
 import * as api from '../../api/data_stream_api'
-import { processesSchema } from '../../normalizr/schema';
+import { devicesSchema } from '../../normalizr/schema';
+import { statusesSchema } from '../../normalizr/status_schema'
+import { taskQueueSchema } from '../../normalizr/task_queue_schema'
 
 
-export const getProcesses = () => {
+export const getDataStream = () => {
     return async dispatch => {
-        function onStart() {
-            dispatch({ type: GET_PROCESSES_STARTED });
-        }
-        function onSuccess(response) {
-            dispatch({ type: GET_PROCESSES_SUCCESS, payload: response });
+
+        function handleDevicesSuccess(response) {
+            dispatch({ type: GET_DEVICES_SUCCESS, payload: response });
             return response;
         }
-        function onError(error) {
-            dispatch({ type: GET_PROCESSES_FAILURE, payload: error });
+        function handleDevicesError(error) {
+            dispatch({ type: GET_DEVICES_FAILURE, payload: error });
+            return error;
+        }
+
+        function handleStatusSuccess(response) {
+            dispatch({ type: GET_STATUS_SUCCESS, payload: response });
+            return response;
+        }
+        function handleStatusError(error) {
+            dispatch({ type: GET_STATUS_FAILURE, payload: error });
+            return error;
+        }
+
+        function handleTaskQueueSuccess(response) {
+            dispatch({ type: GET_TASK_QUEUE_SUCCESS, payload: response });
+            return response;
+        }
+        function handleTaskQueueError(error) {
+            dispatch({ type: GET_TASK_QUEUE_FAILURE, payload: error });
+            dispatch({ type: INCREMENT_GET_DATA_FAILURE_COUNT, payload: null })
             return error;
         }
 
         try {
-            onStart();
-            const dataStream = await api.getDataStream();
-            // Uncomment when you want to make processes an object
-            // const normalizedProcesses = normalize(processes, processesSchema);
 
-            return console.log('QQQQ data stream', dataStream)
-            if (normalizedProcesses.entities.processes === undefined) {
-                return onSuccess(normalizedProcesses.entities)
+            const dataStream = await api.getDataStream();
+
+            // Devices
+            try {
+                let devices = dataStream.devices
+                devices.forEach((device, ind) => {
+                    if (!(device.position === undefined)) {
+                        devices[ind].position.pos_x = device.position.x
+                        devices[ind].position.pos_y = device.position.y
+                    }
+                })
+
+                const normalizedDevices = normalize(devices, devicesSchema);
+                handleDevicesSuccess(normalizedDevices.entities.devices)
+            } catch (error) {
+                handleDevicesError(error)
             }
-            else {
-                return onSuccess(normalizedProcesses.entities.processes)
+
+
+            // Status
+            try {
+                let status = dataStream.status
+                handleStatusSuccess(status);
+            } catch (error) {
+                handleStatusError(error)
             }
+
+
+            // Task Queue
+            try {
+                const taskQueue = dataStream.task_queue
+                const normalizedTaskQueue = normalize(taskQueue, taskQueueSchema);
+                return handleTaskQueueSuccess(normalizedTaskQueue.entities.taskQueue);
+            } catch (error) {
+                return handleTaskQueueError(error)
+            }
+
+
+
         } catch (error) {
-            return onError(error)
         }
     }
 }
