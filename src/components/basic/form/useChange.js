@@ -5,12 +5,15 @@ import {useField, useFormikContext} from "formik";
 // Updates fields in parent form
 const useChange = (fieldName) => {
 	const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext();
-	const [field, meta] = useField(fieldName);
+	const [field, meta] = useField(fieldName ? fieldName : "null");
 
-	const {
-		// initialValue,
-		value
-	} = meta
+	let value
+	if(fieldName) {
+		value = meta?.value || {}
+	}
+	else {
+		value = context.values || {}
+	}
 
 	const {
 		changed: changedSet
