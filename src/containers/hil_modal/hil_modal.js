@@ -136,7 +136,7 @@ const HILModal = () => {
             // The reason this happens is that it's a human task and the person hit a dashboard button (see dashboard_screen).
             // The HIL modal needs to immediatly show because the backend will be too slow to respond to show that dashboard after button click
             else if (!!item.dashboard && item.dashboard === dashboardID && localHumanTask === item._id) {
-                console.log('QQQQ HUR')
+                console.log('QQQQ HUR', item)
 
                 let hilMessage = item.hil_message
                 if (!hilMessage) {
