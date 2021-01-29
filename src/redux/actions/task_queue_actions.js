@@ -211,8 +211,6 @@ export const handlePostTaskQueue = (props) => {
         deviceType
     } = props
 
-    console.log('QQQQ Handling post task q', props)
-
     return async dispatch => {
         // If a custom task then add custom task key to task q
         if (Id === 'custom_task') {

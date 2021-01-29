@@ -86,7 +86,6 @@ export default function taskQueueReducer(state = defaultState, action) {
 
         // Used for when a human task is clicked, should only show dashboard on the clicked tablet
         case 'LOCAL_HUMAN_TASK':
-            console.log('QQQQ Local human task reducer', action.payload)
             return {
                 ...state,
                 localHumanTask: action.payload,

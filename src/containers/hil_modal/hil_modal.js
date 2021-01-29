@@ -38,11 +38,9 @@ const HILModal = () => {
      * useMemo for performance reasons, should only rerender if taskQueue changes and dashbaordID params
      */
     const handleHilsInTaskQueue = useMemo(() => {
-        console.log('QQQQ Local human task', localHumanTask, taskQueue)
 
         // Handles if a task queue item was clicked and displays that item
         if (!!taskQueueItemClicked && taskQueue[taskQueueItemClicked] && !!taskQueue[taskQueueItemClicked].hil_station_id) {
-            console.log('QQQQ HUR')
 
             const item = taskQueue[taskQueueItemClicked]
             const hilType = tasks[item.task_id].type
@@ -52,8 +50,6 @@ const HILModal = () => {
 
         else {
             if (!!taskQueueItemClicked && !!taskQueue[taskQueueItemClicked]) {
-                console.log('QQQQ HUR')
-
 
                 const item = taskQueue[taskQueueItemClicked]
                 const type = item.device_type
@@ -68,7 +64,6 @@ const HILModal = () => {
                 }
 
                 if (type === 'human') {
-                    console.log('QQQQ HUR')
 
                     return <HILModals hilMessage={hilMessage} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item} />
                 }
@@ -77,14 +72,13 @@ const HILModal = () => {
 
         // Used to hide the HIL if success was clicked. (See HIL_Modals)
         if (hilResponse === 'load') {
-            console.log('QQQQ HERE')
             return <HILSuccess />
         }
-        if (hilResponse === 'unload') return console.log('QQQQ Hur')
+        if (hilResponse === 'unload') return 
 
-        return Object.keys(taskQueue).map((id, ind) => {
+        return Object.values(taskQueue).map((item) => {
 
-            const item = taskQueue[id]
+            const id = item._id
 
             // If the task queue item has a HIL and it's corresponding dashboard id is not in the activeHILDasbaords list then display HIL.
             // Dashboards can only have 1 HIL at a time, if the task queue has 2 HILS for the same dashboards, then only read the
@@ -92,10 +86,9 @@ const HILModal = () => {
             //
             // Do not display HIL if the tasks device type is human, if it's a human, and unload button will appear on the dashboard
             if (!!item.hil_station_id && !!tasks[item.task_id] && item.device_type !== 'human') {
-                console.log('QQQQ HUR')
 
                 // Loops through all ascociated dashboards at that location
-                stations[item.hil_station_id].dashboards.map((dashboard, ind) => {
+                stations[item.hil_station_id].dashboards.forEach((dashboard) => {
 
                     // if the list of active hil dashboards does not include the dashboard then add
                     if (!Object.keys(activeHilDashboards).includes(dashboard)) {
@@ -111,8 +104,6 @@ const HILModal = () => {
                 // If active hils matches the dashboard selected (found in params) then display hil
                 // if (dashboardID === item.hil_station_id && !dashboards[dashboardID].unsubcribedHILS.includes(item.hil.taskID)) {
                 if (Object.keys(activeHilDashboards).includes(dashboardID)) {
-                    console.log('QQQQ HUR')
-
                     const hilType = tasks[item.task_id].type
 
                     return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={id} item={item} key={id} />
@@ -120,14 +111,10 @@ const HILModal = () => {
 
                 // If a device dashboard, then show all associated HILs
                 else if (deviceDashboard) {
-                    console.log('QQQQ HUR')
-
                     const hilType = tasks[item.task_id].type
                     return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={id} item={item} />
                 }
                 else {
-                    console.log('QQQQ HUR')
-
                     return null
                 }
             }
@@ -136,13 +123,11 @@ const HILModal = () => {
             // The reason this happens is that it's a human task and the person hit a dashboard button (see dashboard_screen).
             // The HIL modal needs to immediatly show because the backend will be too slow to respond to show that dashboard after button click
             else if (!!item.dashboard && item.dashboard === dashboardID && localHumanTask === item._id) {
-                console.log('QQQQ HUR', item)
 
                 let hilMessage = item.hil_message
                 if (!hilMessage) {
                     hilMessage = tasks[item.task_id].load.instructions
                 }
-
                 if (item.hil_response !== false) {
                     return <HILModals hilMessage={hilMessage} hilType={'push'} taskQuantity={item.quantity} taskQueueID={id} item={item} />
                 }
@@ -152,7 +137,7 @@ const HILModal = () => {
 
         })
 
-    }, [taskQueue, dashboardID, taskQueueItemClicked, hilResponse])
+    }, [taskQueue, dashboardID, taskQueueItemClicked, hilResponse, localHumanTask])
 
 
     /**
