@@ -78,6 +78,7 @@ export const HilInputIconText = styled.h1`
   font-size: 2.5rem;
   font-weight: 500;
   padding-right:.3rem;
+  user-select: none;
 
   text-shadow: 0.05rem 0.05rem 0.15rem #303030;
   transition: text-shadow 0.1s ease, filter 0.1s ease;
