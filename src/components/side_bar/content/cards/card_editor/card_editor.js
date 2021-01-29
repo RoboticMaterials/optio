@@ -34,9 +34,6 @@ import log from '../../../../../logger'
 import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
 import ScrollingButtonField from "../../../../basic/form/scrolling_buttons_field/scrolling_buttons_field";
 import NumberField from "../../../../basic/form/number_field/number_field";
-import SummaryZone from "../summary_zone/summary_zone";
-import CardZone from "../card_zone/card_zone";
-import {divide} from "ramda";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
