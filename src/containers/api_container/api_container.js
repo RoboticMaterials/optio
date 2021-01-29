@@ -249,7 +249,7 @@ const ApiContainer = (props) => {
                 break;
 
             case 'tasks':
-                setPageDataInterval(setInterval(() => loadTasksData(), 10000))
+                setPageDataInterval(setInterval(() => loadTasksData(), 4000))
                 break;
 
             case 'settings':
