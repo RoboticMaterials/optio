@@ -160,12 +160,14 @@ const FormComponent = (props) => {
 		// keydown event listener
 		const listener = event => {
 			setPressedKey(event.code)
+			console.log("event",event)
 
 			// check if event code corresponds to enter
 			if (event.code === "Enter" || event.code === "NumpadEnter" || event.code === "13") {
 				// prevent default actions
 				event.preventDefault()
 				event.stopPropagation()
+
 
 
 
