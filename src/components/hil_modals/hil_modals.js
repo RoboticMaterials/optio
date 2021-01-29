@@ -82,7 +82,7 @@ const HILModals = (props) => {
     const [lotFilterValue, setLotFilterValue] = useState('')
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState('')
     const [changeQtyMouseHold, setChangeQtyMouseHold] = useState('')
-    const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
+    const [sortMode, setSortMode] = useState(SORT_MODES.END_ASCENDING)
     const [lotsAtStation, setLotsAtStation] = useState(false)
     const [taskHasProcess, setTaskHasProcess] = useState(false)
     const [noLotsSelected, setNoLotsSelected] = useState(false)
