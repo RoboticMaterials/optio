@@ -43,7 +43,6 @@ const defaultState = {
 }
 
 export default function stationsReducer(state = defaultState, action) {
-    // console.log('QQQQ d3', state.d3)
     let stationsCopy
     /**
      * Updates the state of stations to include the incoming payload station.
