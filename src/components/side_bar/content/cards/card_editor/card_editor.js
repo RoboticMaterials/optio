@@ -160,7 +160,7 @@ const FormComponent = (props) => {
 		const listener = event => {
 
 			// check if event code corresponds to enter
-			if (event.code === "Enter" || event.code === "NumpadEnter") {
+			if (event.code === "Enter" || event.code === "NumpadEnter" || event.code === 13 || event.key === "Enter") {
 				// prevent default actions
 				event.preventDefault()
 				event.stopPropagation()
