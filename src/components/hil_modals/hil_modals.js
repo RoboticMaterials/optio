@@ -82,7 +82,7 @@ const HILModals = (props) => {
     const [lotFilterValue, setLotFilterValue] = useState('')
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState('')
     const [changeQtyMouseHold, setChangeQtyMouseHold] = useState('')
-    const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
+    const [sortMode, setSortMode] = useState(SORT_MODES.END_ASCENDING)
     const [lotsAtStation, setLotsAtStation] = useState(false)
     const [taskHasProcess, setTaskHasProcess] = useState(false)
     const [noLotsSelected, setNoLotsSelected] = useState(false)
@@ -382,8 +382,8 @@ const HILModals = (props) => {
 
         // If its a load, then add a quantity to the response
         if (hilLoadUnload === 'load') {
-            // If track quantity then add quantity
-            if (!!selectedTask.track_quantity) {
+            // If track quantity then add quantity, or if noLotSelected then use quantity
+            if (!!selectedTask.track_quantity || !!noLotsSelected) {
                 newItem.quantity = quantity
             }
 
@@ -974,7 +974,7 @@ const HILModals = (props) => {
                             onChange={(e) => {
                                 setLotFilterValue(e.target.value)
                             }}
-                            style={{flex: 1 }}
+                            textboxContainerStyle={{flex: 1 }}
                         />
                     </div>
                 </styled.Header>
@@ -1076,7 +1076,7 @@ const HILModals = (props) => {
                             <styled.HilIcon
                                 className='fas fa-times'
                                 color={'#ff1818'}
-                                style = {{marginRight: '0.8rem'}}
+                                style={{ marginRight: '0.8rem' }}
                             />
                             <styled.HilButtonText
                                 style={{ margin: 0, padding: 0 }}
