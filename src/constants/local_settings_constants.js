@@ -6,5 +6,4 @@ export const defaultLocalSettings = {
 	mapViewEnabled: isBrowser,
 	toggleDevOptions:false,
 	currentMapId: null,
-	MiRMapEnabled: false
 }

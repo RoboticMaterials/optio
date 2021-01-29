@@ -15,7 +15,7 @@ import TimezonePicker, { timezones } from 'react-timezone';
 
 // Import Actions
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
-import { postLocalSettings } from '../../../../redux/actions/local_actions'
+import { postLocalSettings, devicesEnabled } from '../../../../redux/actions/local_actions'
 import { getStatus } from '../../../../redux/actions/status_actions'
 import { postStatus } from '../../../../api/status_api'
 import { setCurrentMap } from '../../../../redux/actions/map_actions'
@@ -33,6 +33,7 @@ const Settings = () => {
     const onPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const onSetCurrentMap = (map) => dispatch(setCurrentMap(map))
     const onGetStatus = () => dispatch(getStatus())
+    const onDevicesEnabled = (bool) => dispatch(devicesEnabled(bool))
 
     const mapReducer = useSelector(state => state.mapReducer)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
@@ -40,7 +41,7 @@ const Settings = () => {
     const status = useSelector(state => state.statusReducer.status)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const devices = useSelector(state =>state.devicesReducer.devices)
-
+    const deviceEnabledSetting = useSelector(state => state.localReducer.devicesEnabled)
     const {
         currentMap,
         maps
@@ -50,6 +51,7 @@ const Settings = () => {
     const [localSettingsState, setLocalSettingsState] = useState({})
     const [mapSettingsState, setMapSettingsState] = useState(currentMap)
     const [mirUpdated, setMirUpdated] = useState(false)
+    const [deviceEnabled, setDeviceEnabled] = useState(!!deviceEnabledSetting)
     /**
      *  Sets current settings to state so that changes can be discarded or saved
      * */
@@ -114,6 +116,7 @@ const Settings = () => {
         const localChange = isEquivalent(localSettingsState, localSettings)
         const serverChange = isEquivalent(serverSettingsState, serverSettings)
         const mapChange = !isEquivalent(mapSettingsState, currentMap)
+        const deviceChange = isEquivalent(deviceEnabled, deviceEnabledSetting)
 
         if (!localChange) {
             await onPostLocalSettings(localSettingsState)
@@ -132,6 +135,10 @@ const Settings = () => {
         if (mapChange) {
             // await onPostLocalSettings(localSettingsState)
             await onSetCurrentMap(mapSettingsState)
+        }
+
+        if(!deviceChange) {
+          await onDevicesEnabled(deviceEnabled)
         }
 
         await onGetSettings()
@@ -246,7 +253,7 @@ const Settings = () => {
                 {localSettingsState.toggleDevOptions ?
                     <>
 
-                        <styled.Header>Non Local API IP Address</styled.Header>
+                        <styled.Header style = {{fontSize: '1.2rem'}}>Non Local API IP Address</styled.Header>
 
                         <styled.RowContainer>
                             <Switch
@@ -266,6 +273,21 @@ const Settings = () => {
                                 style={{ width: '100%' }}
                             // type = 'number'
                             />
+                        </styled.RowContainer>
+
+                        <styled.Header style = {{fontSize: '1.2rem', paddingTop: '2rem'}}>Devices Enabled</styled.Header>
+
+                        <styled.RowContainer>
+                            <styled.Header style = {{fontSize: '.8rem', paddingTop: '1rem', paddingRight: '1rem'}}>Disabled</styled.Header>
+                            <Switch
+                                checked={deviceEnabled}
+                                onChange={() => {
+                                    setDeviceEnabled(!deviceEnabled)
+                                }}
+                                onColor='red'
+                                style={{ marginRight: '1rem' }}
+                            />
+                            <styled.Header style = {{fontSize: '.8rem', paddingTop: '1rem'}}>Enabled</styled.Header>
                         </styled.RowContainer>
                     </>
                     :

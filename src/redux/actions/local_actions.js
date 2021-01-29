@@ -22,6 +22,7 @@ import {
   POST_LOCAL_SETTINGS_FAILURE,
 
   STOP_API_CALLS,
+  DEVICES_ENABLED,
 
 } from '../types/local_types';
 
@@ -137,4 +138,8 @@ export const postLocalSettings =  (settings) => {
 
 export const stopAPICalls = (bool) => {
     return { type: STOP_API_CALLS, payload: bool }
+}
+
+export const devicesEnabled = (bool) => {
+    return { type: DEVICES_ENABLED, payload: bool }
 }

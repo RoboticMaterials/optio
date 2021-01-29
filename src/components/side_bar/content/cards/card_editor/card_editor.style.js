@@ -38,10 +38,8 @@ export const Header = styled.div`
 	align-items: center;
 	padding: 0;
 	margin: 0;
-	//height: 3rem;
 	background: ${props => props.theme.bg.quinary};
-  margin-bottom: 1rem;
-	
+  	border-bottom: 1px solid black;
 `
 
 export const NameContainer = styled.div`
@@ -97,7 +95,16 @@ export const SectionContainer = styled.div`
   //background: green;
   display: flex;
   flex-direction: column;
+  
 `
+
+export const TheBody = styled.div`
+	//background: blue;
+  padding-top: 1rem;
+  overflow: auto;
+
+`
+
 
 export const ProcessFieldContainer = styled.div`
   margin-bottom: 1rem;
@@ -242,6 +249,7 @@ export const BodyContainer = styled.div`
   min-height: ${props => props.minHeight};
 	
 	background: ${props => props.theme.bg.quaternary};
+  background: transparent;
 `
 
 export const WidgetContainer = styled.div`
@@ -307,10 +315,16 @@ export const InputContainer = styled.div`
 
 export const ButtonContainer = styled.div`
 	display: flex;
-	flex-direction: row;
+	//flex-direction: row;
 	align-items: center;
-	padding: 0;
+  width: 100%;
+  justify-content: center;
+  align-self: center;
+	padding: 1rem;
 	margin: 0;
+  	margin: 0 .5rem;
+  background: ${props => props.theme.bg.quinary};
+  border-top: 1px solid black;
 `
 
 export const DatesContainer = styled.span`

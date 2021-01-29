@@ -64,6 +64,7 @@ const EditLocation = () => {
     const devices = useSelector(state => state.devicesReducer.devices)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
+    const devicesEnabled = useSelector(state => state.localReducer.devicesEnabled)
     const processes = useSelector(state => state.processesReducer.processes)
 
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
@@ -438,7 +439,7 @@ const EditLocation = () => {
 
                             </styled.LocationTypeContainer>
 
-                            {MiRMapEnabled &&
+                            {devicesEnabled &&
                                 <styled.LocationTypeContainer>
                                     <styled.Label schema={'locations'} style = {{marginTop: '1rem'}}>Positions</styled.Label>
                                     <styled.LocationButtonConatiner>
