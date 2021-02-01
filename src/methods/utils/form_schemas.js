@@ -220,7 +220,7 @@ export const editLotSchema = Yup.object().shape({
         .required('Please enter a name.'),
     description: Yup.string()
         .min(1, '1 character minimum.')
-        .max(50, '250 character maximum.'),
+        .max(250, '250 character maximum.'),
     bins: binsSchema,
     processId: Yup.string()
         .min(1, '1 character minimum.')
