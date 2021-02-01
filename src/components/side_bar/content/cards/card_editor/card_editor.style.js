@@ -245,7 +245,6 @@ export const BodyContainer = styled.div`
 	padding: 1rem;
 	flex: 1;
 	justify-content: space-between;
-	overflow: auto;
   min-height: ${props => props.minHeight};
 	
 	background: ${props => props.theme.bg.quaternary};
@@ -402,6 +401,12 @@ export const RowContainer = styled.div`
 	display: flex;
 	margin-bottom: 1rem;
 `
+
+export const FadeLoaderCSS = css`
+  display: block;
+  margin: 0 auto;
+  border-color: red;
+`;
 
 
 
