@@ -4,6 +4,7 @@ import React, {useState, useEffect} from "react";
 import PropTypes from "prop-types";
 import {Formik} from "formik";
 import {useDispatch, useSelector} from "react-redux";
+import FadeLoader from "react-spinners/FadeLoader"
 
 // internal components
 import CalendarField from "../../../../basic/form/calendar_field/calendar_field";
@@ -88,7 +89,8 @@ const FormComponent = (props) => {
 		processOptions,
 		showProcessSelector,
 		content,
-		setContent
+		setContent,
+		loaded
 
 	} = props
 
@@ -488,261 +490,274 @@ const FormComponent = (props) => {
 		)
 	}
 
-	return(
-		<styled.StyledForm>
-			<SubmitErrorHandler
-				submitCount={submitCount}
-				isValid={formikProps.isValid}
-				onSubmitError={() => {}}
-				formik={formikProps}
-			/>
-			<styled.Header>
-				{((content === CONTENT.CALENDAR_START) || (content === CONTENT.CALENDAR_END) || (content === CONTENT.HISTORY) || (content === CONTENT.MOVE))  &&
-				<Button
-					onClick={()=>setContent(null)}
-					schema={'error'}
-					// secondary
-				>
-					<styled.Icon className="fas fa-arrow-left"></styled.Icon>
-				</Button>
-				}
-
-				<styled.Title>
-					{formMode === FORM_MODES.CREATE ?
-						"Create Lot"
-						:
-						"Edit Lot"
+	if(loaded) {
+		return(
+			<styled.StyledForm>
+				<SubmitErrorHandler
+					submitCount={submitCount}
+					isValid={formikProps.isValid}
+					onSubmitError={() => {}}
+					formik={formikProps}
+				/>
+				<styled.Header>
+					{((content === CONTENT.CALENDAR_START) || (content === CONTENT.CALENDAR_END) || (content === CONTENT.HISTORY) || (content === CONTENT.MOVE))  &&
+					<Button
+						onClick={()=>setContent(null)}
+						schema={'error'}
+						// secondary
+					>
+						<styled.Icon className="fas fa-arrow-left"></styled.Icon>
+					</Button>
 					}
-				</styled.Title>
 
-				<Button
-					secondary
-					onClick={close}
-					schema={'error'}
-				>
-					<i className="fa fa-times" aria-hidden="true"/>
-				</Button>
-			</styled.Header>
+					<styled.Title>
+						{formMode === FORM_MODES.CREATE ?
+							"Create Lot"
+							:
+							"Edit Lot"
+						}
+					</styled.Title>
 
-			<styled.TheBody>
+					<Button
+						secondary
+						onClick={close}
+						schema={'error'}
+					>
+						<i className="fa fa-times" aria-hidden="true"/>
+					</Button>
+				</styled.Header>
 
-				<styled.SectionContainer>
+				<styled.TheBody>
+
+					<styled.SectionContainer>
 
 
-					{showProcessSelector && renderProcessSelector()}
+						{showProcessSelector && renderProcessSelector()}
 
-					<styled.ContentHeader>
-						<styled.ContentTitle>Lot Name</styled.ContentTitle>
-					</styled.ContentHeader>
-					<styled.NameContainer>
-						<TextField
-							name="name"
-							type="text"
-							placeholder="Enter name..."
-							InputComponent={Textbox}
-						/>
-					</styled.NameContainer>
+						<styled.ContentHeader>
+							<styled.ContentTitle>Lot Name</styled.ContentTitle>
+						</styled.ContentHeader>
+						<styled.NameContainer>
+							<TextField
+								name="name"
+								type="text"
+								placeholder="Enter name..."
+								InputComponent={Textbox}
+							/>
+						</styled.NameContainer>
 
-					{((content === null)) &&
-					<>
-						{showLotInfo &&
+						{((content === null)) &&
 						<>
-							<styled.NameContainer>
-								<styled.ContentHeader>
-									<styled.ContentTitle>Lot Description</styled.ContentTitle>
-								</styled.ContentHeader>
-								<TextField
-									name="description"
-									type="text"
-									placeholder="Description..."
-									InputComponent={Textbox}
-									lines={5}
-								/>
-							</styled.NameContainer>
+							{showLotInfo &&
+							<>
+								<styled.NameContainer>
+									<styled.ContentHeader>
+										<styled.ContentTitle>Lot Description</styled.ContentTitle>
+									</styled.ContentHeader>
+									<TextField
+										name="description"
+										type="text"
+										placeholder="Description..."
+										InputComponent={Textbox}
+										lines={5}
+									/>
+								</styled.NameContainer>
 
-							<styled.DatesContainer>
-								<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_START)}>
-									<styled.DateText>{startDateText}</styled.DateText>
-								</styled.DateItem>
+								<styled.DatesContainer>
+									<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_START)}>
+										<styled.DateText>{startDateText}</styled.DateText>
+									</styled.DateItem>
 
-								<styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
+									<styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
 
-								<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_START)}>
-									<styled.DateText>{endDateText}</styled.DateText>
-								</styled.DateItem>
-							</styled.DatesContainer>
+									<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_START)}>
+										<styled.DateText>{endDateText}</styled.DateText>
+									</styled.DateItem>
+								</styled.DatesContainer>
+							</>
+							}
+
+
+							{formMode === FORM_MODES.UPDATE &&
+							<Button
+								// secondary
+								style={{margin: "0 0 1rem 0", width: "fit-content"}}
+								type={"button"}
+								onClick={()=>setShowLotInfo(!showLotInfo)}
+								schema={"lots"}
+							>
+								{showLotInfo ? "Hide Lot Details" : "Show Lot Details"}
+							</Button>
+							}
+
 						</>
+
 						}
 
 
-						{formMode === FORM_MODES.UPDATE &&
-						<Button
-							// secondary
-							style={{margin: "0 0 1rem 0", width: "fit-content"}}
-							type={"button"}
-							onClick={()=>setShowLotInfo(!showLotInfo)}
-							schema={"lots"}
-						>
-							{showLotInfo ? "Hide Lot Details" : "Show Lot Details"}
-						</Button>
-						}
+					</styled.SectionContainer>
 
-					</>
-
+					{(content === null) &&
+					renderMainContent()
+					}
+					{(((content === CONTENT.CALENDAR_END) || (content === CONTENT.CALENDAR_START))) &&
+					renderCalendarContent()
+					}
+					{(content === CONTENT.HISTORY) &&
+					renderHistory()
+					}
+					{(content === CONTENT.MOVE) &&
+					renderMoveContent()
 					}
 
+				</styled.TheBody>
 
-				</styled.SectionContainer>
-
-				{(content === null) &&
-				renderMainContent()
-				}
-				{(((content === CONTENT.CALENDAR_END) || (content === CONTENT.CALENDAR_START))) &&
-				renderCalendarContent()
-				}
-				{(content === CONTENT.HISTORY) &&
-				renderHistory()
-				}
-				{(content === CONTENT.MOVE) &&
-				renderMoveContent()
-				}
-
-			</styled.TheBody>
-
-			{/* render buttons for appropriate content */}
-			{
+				{/* render buttons for appropriate content */}
 				{
-					"CALENDAR_START":
-						<styled.ButtonContainer style={{width: "100%"}}>
-							<Button
-								style={{...buttonStyle, width: "8rem"}}
-								onClick={()=>setContent(null)}
-								schema={"ok"}
-								secondary
-							>
-								Ok
-							</Button>
-							<Button
-								style={buttonStyle}
-								onClick={()=>setContent(null)}
-								schema={"error"}
-							>
-								Cancel
-							</Button>
-						</styled.ButtonContainer>,
-					"HISTORY":
-						<styled.ButtonContainer>
-							<Button
-								style={{...buttonStyle}}
-								onClick={()=>setContent(null)}
-								schema={"error"}
-								// secondary
-							>
-								Go Back
-							</Button>
-						</styled.ButtonContainer>,
-					"MOVE":
-						<styled.ButtonContainer>
-							<Button
-								disabled={submitDisabled}
-								style={{...buttonStyle, width: "8rem"}}
-								type={"button"}
-								onClick={()=> {
-									setFieldValue("buttonType", FORM_BUTTON_TYPES.MOVE_OK)
-									submitForm()
-								}}
-								schema={"ok"}
-								secondary
-							>
-								Ok
-							</Button>
-							<Button
-								type={"button"}
-								style={buttonStyle}
-								onClick={()=>setContent(null)}
-								schema={"error"}
-								// secondary
-							>
-								Cancel
-							</Button>
-						</styled.ButtonContainer>
-				}[content] ||
-				<styled.ButtonContainer>
-					{formMode === FORM_MODES.CREATE ?
-						<>
-							<Button
-								schema={'lots'}
-								type={"button"}
-								disabled={submitDisabled}
-								style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-								secondary
-								onClick={async () => {
-									setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD)
-									submitForm()
+					{
+						"CALENDAR_START":
+							<styled.ButtonContainer style={{width: "100%"}}>
+								<Button
+									style={{...buttonStyle, width: "8rem"}}
+									onClick={()=>setContent(null)}
+									schema={"ok"}
+									secondary
+								>
+									Ok
+								</Button>
+								<Button
+									style={buttonStyle}
+									onClick={()=>setContent(null)}
+									schema={"error"}
+								>
+									Cancel
+								</Button>
+							</styled.ButtonContainer>,
+						"HISTORY":
+							<styled.ButtonContainer>
+								<Button
+									style={{...buttonStyle}}
+									onClick={()=>setContent(null)}
+									schema={"error"}
+									// secondary
+								>
+									Go Back
+								</Button>
+							</styled.ButtonContainer>,
+						"MOVE":
+							<styled.ButtonContainer>
+								<Button
+									disabled={submitDisabled}
+									style={{...buttonStyle, width: "8rem"}}
+									type={"button"}
+									onClick={()=> {
+										setFieldValue("buttonType", FORM_BUTTON_TYPES.MOVE_OK)
+										submitForm()
+									}}
+									schema={"ok"}
+									secondary
+								>
+									Ok
+								</Button>
+								<Button
+									type={"button"}
+									style={buttonStyle}
+									onClick={()=>setContent(null)}
+									schema={"error"}
+									// secondary
+								>
+									Cancel
+								</Button>
+							</styled.ButtonContainer>
+					}[content] ||
+					<styled.ButtonContainer>
+						{formMode === FORM_MODES.CREATE ?
+							<>
+								<Button
+									schema={'lots'}
+									type={"button"}
+									disabled={submitDisabled}
+									style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
+									secondary
+									onClick={async () => {
+										setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD)
+										submitForm()
 
-								}}
-							>
-								Add
-							</Button>
+									}}
+								>
+									Add
+								</Button>
 
-							<Button
-								schema={'lots'}
-								type={"button"}
-								disabled={submitDisabled}
-								style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-								secondary
-								onClick={async () => {
-									setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD_AND_NEXT)
-									submitForm()
-								}}
-							>
-								Add & Next
-							</Button>
-						</>
-						:
-						<>
-							<Button
-								schema={'lots'}
-								type={"button"}
-								disabled={submitDisabled}
-								style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-								secondary
-								onClick={async () => {
-									setFieldValue("buttonType", FORM_BUTTON_TYPES.SAVE)
-									submitForm()
-								}}
-							>
-								Save
-							</Button>
+								<Button
+									schema={'lots'}
+									type={"button"}
+									disabled={submitDisabled}
+									style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
+									secondary
+									onClick={async () => {
+										setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD_AND_NEXT)
+										submitForm()
+									}}
+								>
+									Add & Next
+								</Button>
+							</>
+							:
+							<>
+								<Button
+									schema={'lots'}
+									type={"button"}
+									disabled={submitDisabled}
+									style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
+									secondary
+									onClick={async () => {
+										setFieldValue("buttonType", FORM_BUTTON_TYPES.SAVE)
+										submitForm()
+									}}
+								>
+									Save
+								</Button>
 
-							<Button
-								schema={'lots'}
-								style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-								secondary
-								type={"button"}
-								onClick={() => onDeleteClick(binId)}
-							>
-								<i style={{marginRight: ".5rem"}} className="fa fa-trash" aria-hidden="true"/>
+								<Button
+									schema={'lots'}
+									style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
+									secondary
+									type={"button"}
+									onClick={() => onDeleteClick(binId)}
+								>
+									<i style={{marginRight: ".5rem"}} className="fa fa-trash" aria-hidden="true"/>
 
-								Delete
-							</Button>
-							<Button
-								schema={'lots'}
-								type={"button"}
-								style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-								secondary
-								onClick={async () => {
-									setContent(CONTENT.MOVE)
-								}}
-							>
-								Move
-							</Button>
-						</>
-					}
-				</styled.ButtonContainer>
-			}
-				</styled.StyledForm>
-				)
+									Delete
+								</Button>
+								<Button
+									schema={'lots'}
+									type={"button"}
+									style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
+									secondary
+									onClick={async () => {
+										setContent(CONTENT.MOVE)
+									}}
+								>
+									Move
+								</Button>
+							</>
+						}
+					</styled.ButtonContainer>
+				}
+			</styled.StyledForm>
+		)
+	}
+	else {
+		return(
+			<FadeLoader
+				css={styled.FadeLoaderCSS}
+				height={5}
+				width={3}
+				loading={true}
+			/>
+		)
+	}
+
 			}
 
 // overwrite default button text color since it's hard to see on the lots background color
@@ -771,13 +786,15 @@ const CardEditor = (props) => {
 
 	// component state
 	const [cardDataInterval, setCardDataInterval] = useState(null)
-	const [formMode, setFormMode] = useState(FORM_MODES.CREATE)
+
 	const [cardId, setCardId] = useState(props.cardId) //cardId and binId are stored as internal state but initialized from props (if provided)
 	const [binId, setBinId] = useState(props.binId)
 	const [content, setContent] = useState(null)
+	const [loaded, setLoaded] = useState(false)
+	const [formMode, setFormMode] = useState(props.cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
 
 	// get card object from redux by cardId
-	const card = cards[cardId]
+	const card = cards[cardId] || null
 
 	// extract card attributes
 	const {
@@ -817,12 +834,9 @@ const CardEditor = (props) => {
 	const handleGetCard = async (cardId) => {
 		if(cardId) {
 			const result = await onGetCard(cardId)
-			if(result) {
-				setFormMode(FORM_MODES.UPDATE)
-			}
-			else {
-
-			}
+		}
+		if(!loaded) {
+			setLoaded(true)
 		}
 	}
 
@@ -838,6 +852,16 @@ const CardEditor = (props) => {
 		}
 
 	}, [cardId])
+
+	/*
+	* if card exists, set form mode to update
+	* */
+	useEffect( () => {
+		if(card && !loaded) {
+			setLoaded(true) // if card already exists, set loaded to true
+		}
+
+	}, [card])
 
 	/*
 	*
@@ -1076,6 +1100,7 @@ const CardEditor = (props) => {
 
 					return (
 						<FormComponent
+							loaded={loaded}
 							processId={processId}
 							close={close}
 							formMode={formMode}

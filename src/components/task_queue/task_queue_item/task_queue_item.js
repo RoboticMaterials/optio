@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 
 import BasicListItem from "../../basic/basic_list_item/basic_list_item";
 import BounceButton from "../../basic/bounce_button/bounce_button";
@@ -35,7 +35,27 @@ const TaskQueueListItem = (props) => {
     const themeContext = useContext(ThemeContext);
 
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
+    const editingTask = useSelector(state => state.tasksReducer.editingTask)
+    const selectedTask = useSelector(state => state.tasksReducer.selectedTask) || {}
+    const {
+        _id: selectedTaskId
+    } = selectedTask
 
+    const {
+        _id: taskId
+    } = task || {}
+
+    const [isSelected, setIsSelected] = useState(false)
+
+    // update isSelected based on if current items task id matches the selectedTask's id
+    useEffect(() => {
+        if(!isSelected && (selectedTaskId === taskId)) {
+            setIsSelected(true)
+        }
+        else if(selectedTask && (selectedTaskId !== taskId)) {
+            setIsSelected(false)
+        }
+    }, [id, selectedTaskId])
 
     const handleClick = async () => {
         await dispatch(deleteTaskQueueItem(id))
@@ -52,18 +72,23 @@ const TaskQueueListItem = (props) => {
     }
 
     const handleMouseEnter = async () => {
-        if (!!tasks[item.task_id]) {
+        if (!editingTask && !!tasks[item.task_id]) {
             await dispatch(taskActions.selectTask(item.task_id))
         }
     }
 
     const handleMouseLeave = async () => {
-        await dispatch(taskActions.deselectTask())
+        // only deselect if not currently editing
+        if(!editingTask) {
+            await dispatch(taskActions.deselectTask())
+        }
     }
 
     return (
         <style.ItemDiv>
             <BasicListItem
+                selectable={editingTask}
+                isSelected={isSelected}
                 {...rest}
                 onClick={handleTaskItemClicked}
                 onMouseEnter={handleMouseEnter}
