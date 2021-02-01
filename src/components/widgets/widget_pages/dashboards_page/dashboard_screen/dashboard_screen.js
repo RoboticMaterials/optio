@@ -22,7 +22,7 @@ import useWindowSize from '../../../../../hooks/useWindowSize'
 import { postStatus } from '../../../../../api/status_api'
 
 // Import Actions
-import { handlePostTaskQueue,postTaskQueue, putTaskQueue } from '../../../../../redux/actions/task_queue_actions'
+import { handlePostTaskQueue, postTaskQueue, putTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import { dashboardOpen, setDashboardKickOffProcesses } from '../../../../../redux/actions/dashboards_actions'
 
 import * as localActions from '../../../../../redux/actions/local_actions'
@@ -40,7 +40,7 @@ import ReportModal from "./report_modal/report_modal";
 import KickOffModal from "./kick_off_modal/kick_off_modal";
 import FinishModal from "./finish_modal/finish_modal";
 import { getProcesses } from "../../../../../redux/actions/processes_actions";
-import {isEmpty} from "../../../../../methods/utils/object_utils";
+import { isEmpty } from "../../../../../methods/utils/object_utils";
 
 
 
@@ -142,7 +142,7 @@ const DashboardScreen = (props) => {
                 type
             } = currButton
 
-            if(task_id && !(tasks[task_id])) {
+            if (task_id && !(tasks[task_id])) {
                 // console.error('Task does not exist! Hiding button from dashboard')
                 return false
             }
@@ -166,6 +166,7 @@ const DashboardScreen = (props) => {
                             'position': device.idle_location,
                             'device_type': 'MiR_100',
                         },
+                        'deviceType': 'MiR_100',
                         'id': 'custom_task_idle'
                     }
                 ]
@@ -185,6 +186,7 @@ const DashboardScreen = (props) => {
                                 'position': position._id,
                                 'device_type': 'MiR_100',
                             },
+                            'deviceType': 'MiR_100',
                             'id': `custom_task_charge_${ind}`
                         }
                     ]
@@ -295,8 +297,8 @@ const DashboardScreen = (props) => {
     const handleTaskClick = async (type, Id, name, custom, deviceType) => {
         switch (type.toUpperCase()) {
             case TYPES.ROUTES.key:
-                if(!(Id === 'hil_success')) {
-                    onHandlePostTaskQueue({dashboardID, tasks, deviceType, taskQueue, Id, name, custom})
+                if (!(Id === 'hil_success')) {
+                    onHandlePostTaskQueue({ dashboardID, tasks, deviceType, taskQueue, Id, name, custom })
                 }
                 handleRouteClick(Id, name, custom, deviceType)
                 break

@@ -68,7 +68,7 @@ const DashboardButtonList = ((props) => {
             error = !taskExists ? "This buttons task has been deleted." : null
             onClick = (associatedTaskIdArg, deviceType) => {
                 if (taskID === 'custom_task' || taskID === 'hil_success') {
-                    onTaskClick(TYPES.ROUTES.key, associatedTaskIdArg, name, currentButton.custom_task, deviceType)
+                    onTaskClick(TYPES.ROUTES.key, associatedTaskIdArg, name, currentButton.custom_task, !!deviceType ? deviceType : currentButton.deviceType)
                 } else {
                     onTaskClick(TYPES.ROUTES.key, associatedTaskIdArg, name, null, deviceType)
                 }
