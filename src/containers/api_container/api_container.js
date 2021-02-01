@@ -104,11 +104,8 @@ const ApiContainer = (props) => {
     const localReducer = useSelector(state => state.localReducer)
     const MiRMapEnabled = localReducer?.localSettings?.MiRMapEnabled
     const apiPage = useSelector(state => state.apiReducer.page)
-<<<<<<< HEAD
     const stopAPICalls = useSelector(state => state.localReducer.stopAPICalls)
-=======
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
->>>>>>> master
 
     // States
     const [currentPage, setCurrentPage] = useState('')
