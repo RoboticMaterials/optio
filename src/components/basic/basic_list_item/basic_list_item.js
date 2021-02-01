@@ -29,11 +29,15 @@ function BasicListItem(props) {
 		onMouseEnter,
 		onMouseLeave,
 		Status,
-		status
+		status,
+		isSelected,
+		selectable
 	} = props
 
 	return (
 		<Container
+			isSelected={isSelected}
+			selectable={selectable}
 			{...containerProps}
             css={containerCss}
 		>
@@ -77,6 +81,8 @@ BasicListItem.propTypes = {
 	rightContentContainerCss: PropTypes.object,
 	titleCss: PropTypes.object,
 	contentContainerCss: PropTypes.object,
+	isSelected: PropTypes.bool,
+	selectable: PropTypes.bool,
 }
 
 BasicListItem.defaultProps = {
@@ -92,6 +98,8 @@ BasicListItem.defaultProps = {
 	leftContentContainerCss: {},
 	rightContentContainerCss: {},
 	contentContainerCss: {},
+	isSelected: false,
+	selectable: false,
 }
 
 export default BasicListItem
