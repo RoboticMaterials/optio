@@ -54,6 +54,7 @@ const TextField = ({
 							// update touched if necessary
 							if(!touched) {
 								setFieldTouched(field.name, true)
+								console.log('heyyyy')
 							}
 
 							setFieldValue(field.name, mapOutput(event.target.value)) // update field value

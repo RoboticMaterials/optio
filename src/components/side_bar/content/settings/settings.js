@@ -15,7 +15,8 @@ import TimezonePicker, { timezones } from 'react-timezone';
 
 // Import Actions
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
-import { postLocalSettings, devicesEnabled } from '../../../../redux/actions/local_actions'
+import { postLocalSettings } from '../../../../redux/actions/local_actions'
+import { deviceEnabled } from '../../../../redux/actions/settings_actions'
 import { getStatus } from '../../../../redux/actions/status_actions'
 import { postStatus } from '../../../../api/status_api'
 import { setCurrentMap } from '../../../../redux/actions/map_actions'
@@ -33,7 +34,7 @@ const Settings = () => {
     const onPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const onSetCurrentMap = (map) => dispatch(setCurrentMap(map))
     const onGetStatus = () => dispatch(getStatus())
-    const onDevicesEnabled = (bool) => dispatch(devicesEnabled(bool))
+    const onDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
 
     const mapReducer = useSelector(state => state.mapReducer)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
@@ -41,17 +42,20 @@ const Settings = () => {
     const status = useSelector(state => state.statusReducer.status)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const devices = useSelector(state =>state.devicesReducer.devices)
-    const deviceEnabledSetting = useSelector(state => state.localReducer.devicesEnabled)
+    const deviceeee = serverSettings.deviceEnabled
+    const deviceEnabledSetting = serverSettings.deviceEnabled
     const {
         currentMap,
         maps
     } = mapReducer
 
     const [serverSettingsState, setServerSettingsState] = useState({})
+    const [deviceEnabledState, setDevicesEnabledState] = useState({})
     const [localSettingsState, setLocalSettingsState] = useState({})
     const [mapSettingsState, setMapSettingsState] = useState(currentMap)
     const [mirUpdated, setMirUpdated] = useState(false)
-    const [deviceEnabled, setDeviceEnabled] = useState(!!deviceEnabledSetting)
+    const [devicesEnabled, setDevicesEnabled] = useState(!!deviceEnabledSetting)
+
     /**
      *  Sets current settings to state so that changes can be discarded or saved
      * */
@@ -138,7 +142,8 @@ const Settings = () => {
         }
 
         if(!deviceChange) {
-          await onDevicesEnabled(deviceEnabled)
+          await onDeviceEnabled(devicesEnabled)
+          await onPostSettings(serverSettingsState)
         }
 
         await onGetSettings()
@@ -280,9 +285,13 @@ const Settings = () => {
                         <styled.RowContainer>
                             <styled.Header style = {{fontSize: '.8rem', paddingTop: '1rem', paddingRight: '1rem'}}>Disabled</styled.Header>
                             <Switch
-                                checked={deviceEnabled}
+                                checked={serverSettingsState.deviceEnabled}
                                 onChange={() => {
-                                    setDeviceEnabled(!deviceEnabled)
+                                    setDevicesEnabled(!devicesEnabled)
+                                    setServerSettingsState({
+                                        ...serverSettingsState,
+                                        deviceEnabled: !devicesEnabled
+                                    })
                                 }}
                                 onColor='red'
                                 style={{ marginRight: '1rem' }}
