@@ -249,7 +249,6 @@ export const setEditingStation = (bool) => {
 const onRemoveStation = (id) => {
     const stationsState = store.getState().stationsReducer
     let station = !!stationsState.selectedStation ? stationsState.selectedStation : stationsState.stations[id]
-    console.log('QQQQ Station', station)
 
     return async dispatch => {
 
