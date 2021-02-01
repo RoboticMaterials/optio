@@ -67,7 +67,14 @@ export const getPositions = () => {
             onStart();
             const positions = await api.getPositions();
 
-            const normalizedPositions = !!normalize(positions, positionsSchema).entities.positions ? normalize(positions, positionsSchema).entities.positions : {}
+            let normalizedPositions = !!normalize(positions, positionsSchema).entities.positions ? normalize(positions, positionsSchema).entities.positions : {}
+
+            // Filter out entry positions
+            Object.values(normalizedPositions).map((pos) => {
+                if (pos.type === 'shelf_entry_position' || pos.type === "charger_entry_position") {
+                    delete normalizedPositions[pos._id]
+                }
+            })
 
             return onSuccess(normalizedPositions);
         } catch (error) {
