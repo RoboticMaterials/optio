@@ -277,7 +277,6 @@ const onDeleteStation = (id) => {
         const tasksState = store.getState().tasksReducer
 
         let station = !!stationsState.selectedStation ? stationsState.selectedStation : stationsState.stations[id]
-        console.log('QQQQ Station', station)
 
         // If the station has children, delete them
         if (!!station.children) {
