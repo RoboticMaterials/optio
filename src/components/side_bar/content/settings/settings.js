@@ -42,7 +42,6 @@ const Settings = () => {
     const status = useSelector(state => state.statusReducer.status)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const devices = useSelector(state =>state.devicesReducer.devices)
-    const deviceeee = serverSettings.deviceEnabled
     const deviceEnabledSetting = serverSettings.deviceEnabled
     const {
         currentMap,
@@ -50,7 +49,6 @@ const Settings = () => {
     } = mapReducer
 
     const [serverSettingsState, setServerSettingsState] = useState({})
-    const [deviceEnabledState, setDevicesEnabledState] = useState({})
     const [localSettingsState, setLocalSettingsState] = useState({})
     const [mapSettingsState, setMapSettingsState] = useState(currentMap)
     const [mirUpdated, setMirUpdated] = useState(false)
