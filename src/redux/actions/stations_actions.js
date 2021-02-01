@@ -249,6 +249,7 @@ export const setEditingStation = (bool) => {
 const onRemoveStation = (id) => {
     const stationsState = store.getState().stationsReducer
     let station = !!stationsState.selectedStation ? stationsState.selectedStation : stationsState.stations[id]
+    console.log('QQQQ Station', station)
 
     return async dispatch => {
 
@@ -276,6 +277,7 @@ const onDeleteStation = (id) => {
         const tasksState = store.getState().tasksReducer
 
         let station = !!stationsState.selectedStation ? stationsState.selectedStation : stationsState.stations[id]
+        console.log('QQQQ Station', station)
 
         // If the station has children, delete them
         if (!!station.children) {
