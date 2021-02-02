@@ -102,6 +102,7 @@ export const TheBody = styled.div`
 	//background: blue;
   padding-top: 1rem;
   overflow: auto;
+  flex: 1;
 
 `
 

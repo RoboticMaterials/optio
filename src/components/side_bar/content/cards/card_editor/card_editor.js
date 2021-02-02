@@ -35,6 +35,7 @@ import log from '../../../../../logger'
 import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
 import ScrollingButtonField from "../../../../basic/form/scrolling_buttons_field/scrolling_buttons_field";
 import NumberField from "../../../../basic/form/number_field/number_field";
+import LotEditorSidebar from "./editor_sidebar/editor_sidebar";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
@@ -108,6 +109,7 @@ const FormComponent = (props) => {
 
 	// component state
 	const [showLotInfo, setShowLotInfo] = useState(true)
+	const [editingFields, setEditingFields] = useState(false)
 
 	// derived state
 	const selectedBinName = stations[binId] ?
@@ -527,90 +529,94 @@ const FormComponent = (props) => {
 					</Button>
 				</styled.Header>
 
-				<styled.TheBody>
+				<styled.RowContainer style={{flex: 1}}>
+					<LotEditorSidebar/>
+					<styled.TheBody>
 
-					<styled.SectionContainer>
+						<styled.SectionContainer>
 
 
-						{showProcessSelector && renderProcessSelector()}
+							{showProcessSelector && renderProcessSelector()}
 
-						<styled.ContentHeader>
-							<styled.ContentTitle>Lot Name</styled.ContentTitle>
-						</styled.ContentHeader>
-						<styled.NameContainer>
-							<TextField
-								name="name"
-								type="text"
-								placeholder="Enter name..."
-								InputComponent={Textbox}
-							/>
-						</styled.NameContainer>
+							<styled.ContentHeader>
+								<styled.ContentTitle>Lot Name</styled.ContentTitle>
+							</styled.ContentHeader>
+							<styled.NameContainer>
+								<TextField
+									name="name"
+									type="text"
+									placeholder="Enter name..."
+									InputComponent={Textbox}
+								/>
+							</styled.NameContainer>
 
-						{((content === null)) &&
-						<>
-							{showLotInfo &&
+							{((content === null)) &&
 							<>
-								<styled.NameContainer>
-									<styled.ContentHeader>
-										<styled.ContentTitle>Lot Description</styled.ContentTitle>
-									</styled.ContentHeader>
-									<TextField
-										name="description"
-										type="text"
-										placeholder="Description..."
-										InputComponent={Textbox}
-										lines={5}
-									/>
-								</styled.NameContainer>
+								{showLotInfo &&
+								<>
+									<styled.NameContainer>
+										<styled.ContentHeader>
+											<styled.ContentTitle>Lot Description</styled.ContentTitle>
+										</styled.ContentHeader>
+										<TextField
+											name="description"
+											type="text"
+											placeholder="Description..."
+											InputComponent={Textbox}
+											lines={5}
+										/>
+									</styled.NameContainer>
 
-								<styled.DatesContainer>
-									<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_START)}>
-										<styled.DateText>{startDateText}</styled.DateText>
-									</styled.DateItem>
+									<styled.DatesContainer>
+										<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_START)}>
+											<styled.DateText>{startDateText}</styled.DateText>
+										</styled.DateItem>
 
-									<styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
+										<styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
 
-									<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_START)}>
-										<styled.DateText>{endDateText}</styled.DateText>
-									</styled.DateItem>
-								</styled.DatesContainer>
+										<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_START)}>
+											<styled.DateText>{endDateText}</styled.DateText>
+										</styled.DateItem>
+									</styled.DatesContainer>
+								</>
+								}
+
+
+								{formMode === FORM_MODES.UPDATE &&
+								<Button
+									// secondary
+									style={{margin: "0 0 1rem 0", width: "fit-content"}}
+									type={"button"}
+									onClick={()=>setShowLotInfo(!showLotInfo)}
+									schema={"lots"}
+								>
+									{showLotInfo ? "Hide Lot Details" : "Show Lot Details"}
+								</Button>
+								}
+
 							</>
+
 							}
 
 
-							{formMode === FORM_MODES.UPDATE &&
-							<Button
-								// secondary
-								style={{margin: "0 0 1rem 0", width: "fit-content"}}
-								type={"button"}
-								onClick={()=>setShowLotInfo(!showLotInfo)}
-								schema={"lots"}
-							>
-								{showLotInfo ? "Hide Lot Details" : "Show Lot Details"}
-							</Button>
-							}
+						</styled.SectionContainer>
 
-						</>
-
+						{(content === null) &&
+						renderMainContent()
+						}
+						{(((content === CONTENT.CALENDAR_END) || (content === CONTENT.CALENDAR_START))) &&
+						renderCalendarContent()
+						}
+						{(content === CONTENT.HISTORY) &&
+						renderHistory()
+						}
+						{(content === CONTENT.MOVE) &&
+						renderMoveContent()
 						}
 
+					</styled.TheBody>
+				</styled.RowContainer>
 
-					</styled.SectionContainer>
-
-					{(content === null) &&
-					renderMainContent()
-					}
-					{(((content === CONTENT.CALENDAR_END) || (content === CONTENT.CALENDAR_START))) &&
-					renderCalendarContent()
-					}
-					{(content === CONTENT.HISTORY) &&
-					renderHistory()
-					}
-					{(content === CONTENT.MOVE) &&
-					renderMoveContent()
-					}
-
-				</styled.TheBody>
 
 				{/* render buttons for appropriate content */}
 				{
@@ -739,6 +745,17 @@ const FormComponent = (props) => {
 									}}
 								>
 									Move
+								</Button>
+								<Button
+									schema={'lots'}
+									type={"button"}
+									style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
+									secondary
+									onClick={() => {
+										setEditingFields(true)
+									}}
+								>
+									Edit Fields
 								</Button>
 							</>
 						}
