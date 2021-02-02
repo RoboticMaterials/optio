@@ -135,7 +135,7 @@ const devicesReducer = (state = defaultState, action) => {
             return {
                 ...state,
                 devices: devicesClone,
-                pending: false
+                pending: false,
             }
 
 
@@ -209,6 +209,8 @@ const devicesReducer = (state = defaultState, action) => {
             return Object.assign({}, state, {
                 pending: true
             });
+
+
         // ~~~~~~~~~~~~~~~
 
         // ======================================== //
@@ -233,6 +235,8 @@ const devicesReducer = (state = defaultState, action) => {
 
         default:
             return state
+
+
 
 
     }

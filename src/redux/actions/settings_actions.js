@@ -8,7 +8,7 @@ import {
     POST_SETTINGS_STARTED,
     POST_SETTINGS_SUCCESS,
     POST_SETTINGS_FAILURE,
-
+    DEVICE_ENABLED,
 } from '../types/setting_types'
 
 import * as api from '../../api/settings_api'
@@ -65,4 +65,8 @@ export const postSettings = (settings) => {
             return onError(error)
         }
     }
+}
+
+export const deviceEnabled = (state) => {
+    return { type: DEVICE_ENABLED, payload: state}
 }

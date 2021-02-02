@@ -18,7 +18,7 @@ import { getSchedules } from '../../redux/actions/schedule_actions';
 import { getDevices, putDevices } from '../../redux/actions/devices_actions'
 import { getStatus } from '../../redux/actions/status_actions'
 
-import { getSettings } from '../../redux/actions/settings_actions'
+import { getSettings, postSettings } from '../../redux/actions/settings_actions'
 import { getLocalSettings } from '../../redux/actions/local_actions'
 import { getLoggers } from '../../redux/actions/local_actions';
 import { getRefreshToken } from '../../redux/actions/authentication_actions'
@@ -297,7 +297,7 @@ const ApiContainer = (props) => {
         // Local Settings must stay on top of initial data so that the correct API address is seleceted
         const localSettings = await onGetLocalSettings()
         const settings = await onGetSettings();
-
+        await postSettings(settings)
         // const refreshToken = await onGetRefreshToken()
         const devices = await onGetDevices()
         const maps = await onGetMaps()
