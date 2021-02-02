@@ -68,6 +68,7 @@ const defaultState = {
     },
 
     localSettings: defaultLocalSettings,
+    devicesEnabled: false,
 
     disableAll: false,
     enableAll: false,
