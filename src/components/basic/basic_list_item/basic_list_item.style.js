@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components'
 import { getDebugStyle } from "../../../methods/utils/style_utils";
+import * as commonCss from "../../../common_css/common_css";
 
 
 // shared styles
@@ -33,6 +34,21 @@ export const Container = styled.div`
     /* // uncomment to show debug styles */
     /* // ${getDebugStyle()}; */
 
+    ${props => props.selectable && (props.isSelected ? selectedCss : notSelectedCss)};
+    
+    
+
+`
+
+const selectedCss = css`
+
+`
+
+const notSelectedCss = css`
+  filter: contrast(70%);
+    &:hover {
+        filter: contrast(100%);
+    }
 `
 
 

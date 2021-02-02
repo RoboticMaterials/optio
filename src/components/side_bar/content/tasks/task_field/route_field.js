@@ -51,6 +51,7 @@ import useChange from "../../../../basic/form/useChange";
 import { removeTask } from "../../../../../redux/actions/tasks_actions";
 import { isArray } from "../../../../../methods/utils/array_utils";
 import usePrevious from "../../../../../hooks/usePrevious";
+import * as taskActions from "../../../../../redux/actions/tasks_actions";
 
 const TaskField = (props) => {
 
@@ -108,6 +109,7 @@ const TaskField = (props) => {
     const dispatchSetFixingProcess = (bool) => dispatch(setFixingProcess(bool))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
+    const dispatchSetEditing = async (props) => await dispatch(taskActions.editingTask(props))
 
     let routes = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -202,12 +204,15 @@ const TaskField = (props) => {
 
     useEffect(() => {
 
+        dispatchSetEditing(true) // set editing to true
+
         return () => {
             // When unmounting edit task, always set fixing process to false
             // This will take care of when it's set to true in edit process
             dispatchSetFixingProcess(false)
             dispatchSetSelectedPosition(null)
             dispatchSetSelectedStation(null)
+            dispatchSetEditing(false)
 
         }
     }, [])

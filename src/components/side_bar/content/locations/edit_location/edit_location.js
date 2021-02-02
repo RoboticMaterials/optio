@@ -153,7 +153,9 @@ const EditLocation = () => {
             await dispatchDeletePosition(selectedPosition._id)
         }
 
-        onBack()
+        // Adding true to save even though you arent saving
+        // Since deleting location, there is no need to remove location in onBack (see use of save in onBack function)
+        onBack(true)
     }
 
     /**
