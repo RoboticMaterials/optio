@@ -24,6 +24,8 @@ const DropDownSearchField = ({
 								 Container,
 								 style,
 								 containerSyle,
+	mapInput,
+	mapOutput,
 								 ...props
 							 }) => {
 
@@ -93,12 +95,12 @@ const DropDownSearchField = ({
 						// call any additional function that was passed as prop
 						onDropdownClose && onDropdownClose();
 					}}
-					values={field.value ? field.value: []}
+					values={field.value ? mapInput(field.value): []}
 					{...field}
 					{...props}
 					onChange={values => {
 						// update field value and set updating to true for use in the hook
-						setFieldValue(field.name, values);
+						setFieldValue(field.name, mapOutput(values));
 						setUpdatingValue(true)
 						onChange && onChange(values)
 					}}
@@ -140,6 +142,8 @@ DropDownSearchField.propTypes = {
 	FieldDropdownContainer: PropTypes.elementType,
 	FieldContentContainer: PropTypes.elementType,
 	style: PropTypes.object,
+	mapInput: PropTypes.func,
+	mapOutput: PropTypes.func,
 };
 
 // Specifies the default values for props:
@@ -149,6 +153,8 @@ DropDownSearchField.defaultProps = {
 	FieldContentContainer: styled.DefaultFieldContentContainer,
 	Container: styled.DefaultContainer,
 	onChange: null,
+	mapInput: (val) => val,
+	mapOutput: (val) => val,
 	style: {}
 };
 

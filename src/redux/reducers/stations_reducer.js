@@ -47,7 +47,7 @@ export default function stationsReducer(state = defaultState, action) {
     /**
      * Updates the state of stations to include the incoming payload station.
      * If the payload is the current selected Station, then update that as well
-     * @param {object} station 
+     * @param {object} station
      */
     const onUpdateStation = (station) => {
         return {
@@ -192,6 +192,7 @@ export default function stationsReducer(state = defaultState, action) {
                 stations: stationsCopy,
                 selectedStation: null,
                 pending: false,
+                hello: true,
             }
 
         case DELETE_STATION_FAILURE:

@@ -18,7 +18,7 @@ import { getSchedules } from '../../redux/actions/schedule_actions';
 import { getDevices, putDevices } from '../../redux/actions/devices_actions'
 import { getStatus } from '../../redux/actions/status_actions'
 
-import { getSettings } from '../../redux/actions/settings_actions'
+import { getSettings, postSettings } from '../../redux/actions/settings_actions'
 import { getLocalSettings } from '../../redux/actions/local_actions'
 import { getLoggers } from '../../redux/actions/local_actions';
 import { getRefreshToken } from '../../redux/actions/authentication_actions'
@@ -105,6 +105,7 @@ const ApiContainer = (props) => {
     const MiRMapEnabled = localReducer?.localSettings?.MiRMapEnabled
     const apiPage = useSelector(state => state.apiReducer.page)
     const stopAPICalls = useSelector(state => state.localReducer.stopAPICalls)
+    const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
 
     // States
     const [currentPage, setCurrentPage] = useState('')
@@ -296,7 +297,7 @@ const ApiContainer = (props) => {
         // Local Settings must stay on top of initial data so that the correct API address is seleceted
         const localSettings = await onGetLocalSettings()
         const settings = await onGetSettings();
-
+        await postSettings(settings)
         // const refreshToken = await onGetRefreshToken()
         const devices = await onGetDevices()
         const maps = await onGetMaps()
@@ -328,15 +329,18 @@ const ApiContainer = (props) => {
         // const dataUpdate = await onUpdateTaskData(tasks)
 
         // Cleaner Functions
-        const funtion = await handleDeviceWithoutADashboard(devices, dashboards)
-        // const funtion1 = await handleTasksWithBrokenPositions(tasks, stations, positions)
-        // const funtion2 = await handlePositionsWithBrokenParents(stations, positions)
-        // const funtion3 = await handleDevicesWithBrokenStations(devices, stations)
-        // const funtion4 = await handleStationsWithBrokenDevices(devices, stations)
-        // const funtion5 = await handleDashboardsWithBrokenStations(dashboards, stations)
-        // const funtion6 = await handleStationsWithBrokenChildren(stations, positions)
-        // const funtion7 = await handleTasksWithBrokenProcess(processes, tasks)
-        // const funtion8 = await handleProcessesWithBrokenRoutes(processes, tasks)
+        if (!!mapViewEnabled) {
+
+            const funtion = await handleDeviceWithoutADashboard(devices, dashboards)
+            // const funtion1 = await handleTasksWithBrokenPositions(tasks, stations, positions)
+            // const funtion2 = await handlePositionsWithBrokenParents(stations, positions)
+            // const funtion3 = await handleDevicesWithBrokenStations(devices, stations)
+            // const funtion4 = await handleStationsWithBrokenDevices(devices, stations)
+            // const funtion5 = await handleDashboardsWithBrokenStations(dashboards, stations)
+            // const funtion6 = await handleStationsWithBrokenChildren(stations, positions)
+            // const funtion7 = await handleTasksWithBrokenProcess(processes, tasks)
+            // const funtion8 = await handleProcessesWithBrokenRoutes(processes, tasks)
+        }
 
         // Commented out for now. Was causing an issue when sending a cart to a location using simple move. Since its just a one off task, the task is never added to the backend so if the page was refreshed, the task q item would be deleted
         // const funtion9 = await handleTaskQueueWithBrokenTasks(taskQueue, tasks)
@@ -737,6 +741,7 @@ const ApiContainer = (props) => {
      * @param {*} tasks
      */
     const handleProcessesWithBrokenRoutes = async (processes, tasks) => {
+        if (processes === undefined || tasks === undefined) return
 
         Object.values(processes).map((process) => {
 
@@ -787,6 +792,7 @@ const ApiContainer = (props) => {
      * @param {*} tasks
      */
     const handleTasksWithBrokenProcess = async (processes, tasks) => {
+        if (processes === undefined || tasks === undefined) return
 
         Object.values(tasks).map(async (task) => {
 
