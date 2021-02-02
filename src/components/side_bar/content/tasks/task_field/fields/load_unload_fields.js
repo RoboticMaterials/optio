@@ -19,6 +19,9 @@ import SwitchField from "../../../../../basic/form/switch_field/switch_field";
 import TimePickerField from "../../../../../basic/form/time_picker_field/time_picker_field";
 import TextField from "../../../../../basic/form/text_field/text_field";
 import DropDownSearchField from "../../../../../basic/form/drop_down_search_field/drop_down_search_field";
+import {isArray} from "../../../../../../methods/utils/array_utils";
+import {isString} from "../../../../../../methods/utils/string_utils";
+import {isObject} from "../../../../../../methods/utils/object_utils";
 
 
 const LoadUnloadFields = (props) => {
@@ -155,18 +158,21 @@ const LoadUnloadFields = (props) => {
                         labelField="name"
                         valueField="name"
                         options={Object.values(sounds)}
+                        mapInput={(val)=>{
+                            if(isString(val) && isObject(sounds[val])) return [sounds[val]]
+                            return []
+                        }}
+                        mapOutput={(val) => {
+                            let output = null
+                            if(isArray(val) && val.length > 0) {
+                                output = val[0]?._id?.$oid || null
+                            }
+                            return output
+                        }}
                         // values={!!selectedTask.load.sound ? [sounds[selectedTask.load.sound]] : []}
                         dropdownGap={5}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
-                        onChange={values => {
-                            dispatchSetTaskAttributes(selectedTask._id,{
-                                load: {
-                                    ...selectedTask.load,
-                                    sound: values[0]._id,
-                                }
-                            })
-                        }}
                         className="w-100"
                         schema="tasks" />
                 </div>
@@ -219,13 +225,16 @@ const LoadUnloadFields = (props) => {
                                 dropdownGap={5}
                                 noDataLabel="No matches found"
                                 closeOnSelect="true"
-                                onChange={values => {
-                                    dispatchSetTaskAttributes(selectedTask._id,{
-                                        unload: {
-                                            ...selectedTask.unload,
-                                            sound: values[0]._id,
-                                        }
-                                    })
+                                mapInput={(val)=>{
+                                    if(isString(val) && isObject(sounds[val])) return [sounds[val]]
+                                    return []
+                                }}
+                                mapOutput={(val) => {
+                                    let output = null
+                                    if(isArray(val) && val.length > 0) {
+                                        output = val[0]?._id?.$oid || null
+                                    }
+                                    return output
                                 }}
                                 className="w-100"
                                 schema="tasks"
