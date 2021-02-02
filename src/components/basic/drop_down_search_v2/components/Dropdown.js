@@ -24,11 +24,12 @@ const dropdownPosition = (props, methods) => {
     return 'bottom';
 };
 
-const Dropdown = ({ ItemComponent, props, DropDownComponent, state, methods, TextComponent }) => {
+const Dropdown = ({ ItemComponent, props, dropdownRef, DropDownComponent, state, methods, TextComponent }) => {
     // console.log('Dropdown props', props)
     // console.log('Dropdown ItemComponent', ItemComponent)
     return (
         <DropDownComponent
+            ref={dropdownRef}
             tabIndex="-1"
             aria-expanded="true"
             role="list"

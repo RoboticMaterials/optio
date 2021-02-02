@@ -258,6 +258,7 @@ const FormComponent = (props) => {
 							labelField={'name'}
 							options={destinationOptions}
 							valueField={"_id"}
+							fixedHeight={false}
 						/>
 					</div>
 				</div>
