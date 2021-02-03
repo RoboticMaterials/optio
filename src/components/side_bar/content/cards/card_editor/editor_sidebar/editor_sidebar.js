@@ -88,17 +88,16 @@ const LotEditorSidebar = (props) => {
             break
     }
 
-    function handleDrag(e, ui) {
-        console.log("handleDrag e",e)
-        console.log("handleDrag ui",ui)
-        setWidth(Math.max(minWidth, width + ui.deltaX))
+    const handleDrag = (e, ui) => {
+        setWidth(width + ui.deltaX)
         setSmall(testSize(Math.max(minWidth, width + ui.deltaX)))  // check if width is less than styling breakpoint and update isSmall
+
     }
 
     return (
             <style.SidebarContent
                 key="sidebar-content"
-                style={{ width: width }}
+                style={{ width: width, minWidth: minWidth }}
             >
                 <style.Container>
                     <style.ListContainer>
