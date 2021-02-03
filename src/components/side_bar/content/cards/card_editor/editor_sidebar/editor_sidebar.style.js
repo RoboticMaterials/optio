@@ -50,7 +50,7 @@ export const CloseButton = styled(CloseOutlinedIcon)`
 export const ButtonRow = styled.div`
     margin-bottom: 1rem;
     position: relative;
-    background: red;
+    //background: red;
 `
 
 export const ListContainer = styled.div`

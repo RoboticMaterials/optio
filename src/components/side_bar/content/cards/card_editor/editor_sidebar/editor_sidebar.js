@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DraggableCore } from "react-draggable";
 import { Container } from 'react-smooth-dnd'
+import { Draggable } from 'react-smooth-dnd';
 
 import * as style from "./editor_sidebar.style"
 import { ThemeContext } from "styled-components";
@@ -16,6 +17,7 @@ import TextField from "../../../../../basic/form/text_field/text_field";
 import Textbox from "../../../../../basic/textbox/textbox";
 import ColorField from "../../../../../basic/form/color_field/color_field";
 import NumberField from "../../../../../basic/form/number_field/number_field";
+import NumberInput from "../../../../../basic/number_input/number_input";
 
 const logger = log.getLogger("LotEditorSidebar")
 
@@ -53,10 +55,13 @@ const LotEditorSidebar = (props) => {
 
     const getFieldTemplates = () => {
         return <>
+            <Draggable key={1}>
             <style.ButtonRow>
                 <Textbox
                 />
             </style.ButtonRow>
+            </Draggable>
+
 
             {/*<style.ButtonRow style={{background: "blue"}}>*/}
             {/*<ColorField*/}
@@ -64,11 +69,14 @@ const LotEditorSidebar = (props) => {
             {/*/>*/}
             {/*</style.ButtonRow>*/}
 
-            {/*<style.ButtonRow>*/}
-            {/*    <NumberField*/}
-            {/*        name={"b"}*/}
-            {/*    />*/}
-            {/*</style.ButtonRow>*/}
+            <Draggable key={2}>
+            <style.ButtonRow>
+                <NumberInput
+                    // plusDisabled={true}
+                    // minusDisabled={true}
+                />
+            </style.ButtonRow>
+            </Draggable>
 
             {/*<style.ButtonRow>*/}
             {/*    <div>as</div>*/}
@@ -103,10 +111,10 @@ const LotEditorSidebar = (props) => {
                     <style.ListContainer>
                         <Container
                             groupName="dashboard-buttons"
-                            getChildPayload={index =>
-                                index
-                                // availableButtons[index]
-                            }
+                            getChildPayload={index => {
+                                console.log("getChildPayload index", index)
+                                return index
+                            }}
                         >
                             {renderButtons()}
                         </Container>

@@ -128,14 +128,14 @@ const CardEditor = (props) => {
 		let unloadStationId = matchingRoute?.unload?.station
 
 		loadStationId && dropdownOptions.push({
-			name: "Route: " + matchingRoute.name + " - Station: " + stations[loadStationId]?.name,
+			name: "Route: " + matchingRoute.name + " - Draggable: " + stations[loadStationId]?.name,
 			route_id: matchingRoute._id,
 			station_id: loadStationId,
 			_id: currRouteId + "+" + loadStationId
 		})
 
 		unloadStationId && dropdownOptions.push({
-			name: "Route: " + matchingRoute.name + " - Station: " + stations[unloadStationId]?.name,
+			name: "Route: " + matchingRoute.name + " - Draggable: " + stations[unloadStationId]?.name,
 			route_id: matchingRoute._id,
 			station_id: unloadStationId,
 			_id: currRouteId + "+" + unloadStationId
@@ -477,7 +477,7 @@ const CardEditor = (props) => {
 												labelField={'name'}
 												options={Object.values(objects)}
 												valueField={"_id"}
-												// label={'Choose Station'}
+												// label={'Choose Draggable'}
 												onDropdownOpen={() => {
 												}}
 											/>
@@ -519,7 +519,7 @@ const CardEditor = (props) => {
 								{/*	labelField={'name'}*/}
 								{/*	options={dropdownOptions}*/}
 								{/*	valueField={"_id"}*/}
-								{/*	label={'Choose Station'}*/}
+								{/*	label={'Choose Draggable'}*/}
 								{/*	onDropdownOpen={() => {*/}
 								{/*	}}*/}
 								{/*/>*/}

@@ -36,6 +36,7 @@ import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
 import ScrollingButtonField from "../../../../basic/form/scrolling_buttons_field/scrolling_buttons_field";
 import NumberField from "../../../../basic/form/number_field/number_field";
 import LotEditorSidebar from "./editor_sidebar/editor_sidebar";
+import DraggableSurface from "./draggable_surface/draggable_surface";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
@@ -491,6 +492,10 @@ const FormComponent = (props) => {
 			</styled.ProcessFieldContainer>
 		)
 	}
+
+	return (
+		<DraggableSurface/>
+	)
 
 	if(loaded) {
 		return(
