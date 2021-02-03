@@ -487,6 +487,7 @@ export const ProcessField = (props) => {
     }
     return(
         <>
+          {selectedProcess.routes.length !==0 ?
             <ConfirmDeleteModal
                 isOpen={!!confirmDeleteModal}
                 title={"Are you sure you want to delete this process?"}
@@ -502,6 +503,25 @@ export const ProcessField = (props) => {
                     setConfirmDeleteModal(null)
                 }}
             />
+            :
+            <ConfirmDeleteModal
+                isOpen={!!confirmDeleteModal}
+                title={"Are you sure you want to delete this process?"}
+                button_1_text={"Yes"}
+                button_2_text={"No"}
+                handleClose={() => setConfirmDeleteModal(null)}
+                handleOnClick1={() => {
+                  onDelete(true)
+                  setConfirmDeleteModal(null)
+                }}
+                handleOnClick2={() => {
+                  setConfirmDeleteModal(null)
+
+                }}
+            />
+
+          }
+
 
             {showExistingTaskWarning &&
             <ConfirmDeleteModal

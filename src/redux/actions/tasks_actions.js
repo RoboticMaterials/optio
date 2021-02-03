@@ -33,7 +33,8 @@ import {
     SELECT_TASK,
     SET_SELECTED_TASK,
     DESELECT_TASK,
-    EDITING_TASK, REMOVE_TASKS,
+    EDITING_TASK,
+    REMOVE_TASKS,
 } from '../types/tasks_types'
 
 import { deepCopy } from '../../methods/utils/utils';

@@ -8,6 +8,7 @@ import {
     POST_SETTINGS_STARTED,
     POST_SETTINGS_SUCCESS,
     POST_SETTINGS_FAILURE,
+    DEVICE_ENABLED,
 
   } from '../types/setting_types'
 
@@ -25,13 +26,11 @@ const defaultState = {
         }
     },
 
-
     error: {},
     pending: false,
-
     enableLogger: '',
-
     muteReducer: false,
+    deviceEnabled: false,
     apiSim: false,
 }
 
@@ -50,6 +49,12 @@ const settingsReducer = (state = defaultState, action) => {
                 apiSim: action.payload
             }
 
+        case DEVICE_ENABLED:
+            return {
+                ...state,
+                deviceEnabled: action.payload,
+            };
+
     // ======================================== //
     //                                          //
     //              Get SETTINGS                //
@@ -64,9 +69,9 @@ const settingsReducer = (state = defaultState, action) => {
                 settings: {
                   ...state.settings,
                   ...action.payload,
-                  loggers: {...state.settings.loggers, ...action.payload.loggers}
+                  loggers: {...state.settings.loggers, ...action.payload.loggers},
                 },
-                pending: false
+                pending: false,
             }
 
         case GET_SETTINGS_FAILURE:
@@ -92,7 +97,8 @@ const settingsReducer = (state = defaultState, action) => {
             return{
                 ...state,
                 settings: {...state.settings, ...action.payload},
-                pending: false
+                pending: false,
+
             }
 
         case POST_SETTINGS_FAILURE:

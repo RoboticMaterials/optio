@@ -22,7 +22,6 @@ import {
   POST_LOCAL_SETTINGS_FAILURE,
 
   STOP_API_CALLS,
-  DEVICES_ENABLED,
 
 } from '../types/local_types';
 import {defaultLocalSettings} from "../../constants/local_settings_constants";
@@ -195,11 +194,7 @@ const localReducer = (state = defaultState, action) => {
                 stopAPICalls: action.payload,
             }
 
-            case DEVICES_ENABLED:
-                return {
-                    ...state,
-                    devicesEnabled: action.payload,
-                }
+
         // ~~~~~~~~~~~~~~~
     }
 
