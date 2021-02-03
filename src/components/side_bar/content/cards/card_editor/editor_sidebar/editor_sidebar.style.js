@@ -11,7 +11,7 @@ export const FooterContainer = styled.div`
 	overflow-y: hidden;
 	padding: 1rem;
 	border-top: 1px solid ${props => props.theme.bg.quaternary};
-	background: ${props => props.theme.bg.tertiary + "B1"};
+	background: ${props => props.theme.bg.secondary};
 `
 
 // export const
@@ -29,18 +29,15 @@ export const Header = styled(pageStyle.Header)`
 `
 
 export const Container = styled.div`
-    width: 100%;
-    min-width: ${props => props.width};
-    display: flex;
+
     
+    display: flex;
     flex-direction: column;
-    // justify-content: flex-start;
     align-items: center;
     z-index: 1;
-
+    overflow: hidden;
     flex: 1;
     background: ${props => LightenDarkenColor(props.theme.bg.quaternary, 20)};
-    background: red;
     
 `
 
@@ -50,26 +47,29 @@ export const CloseButton = styled(CloseOutlinedIcon)`
 	z-index: 5;
 `
 
+export const ButtonRow = styled.div`
+    margin-bottom: 1rem;
+    position: relative;
+    background: red;
+`
+
 export const ListContainer = styled.div`
-    width: 100%;
 
     padding-top: 3rem;
-
     padding-left: 2rem;
     padding-right: 2rem;
     
-    
     display: flex;
     flex-direction: column;
+    align-self: stretch;
+    flex: 1;
 
-    
     overflow-y: auto;
     overflow-x: hidden;
     z-index: 1;
     
-    background: ${props => LightenDarkenColor(props.theme.bg.quaternary, 20)};
-    
-    
+    background: ${props => props.theme.bg.senary};
+   
     // hide scroll bar
     ::-webkit-scrollbar {
         width: 0px;  /* Remove scrollbar space */
@@ -104,9 +104,7 @@ export const HandleIcon = styled.div`
 
 // NEW SIDEBAR STUFF
 export const SidebarWrapper = styled.div`
-    height: 100%;
     position: relative;
-
     display: flex;
     align-items: stretch;
     flex-flow: row nowrap;
@@ -114,32 +112,29 @@ export const SidebarWrapper = styled.div`
     width: ${props => props.width};
     flex-grow: 0;
     z-index: 1;
-    height: 100%;
-
+    align-self: stretch;
     background: blue;
     overflow: hidden;
-
     // box-shadow: 2px 0px 6px 2px rgba(0,0,0,0.4);
 `
 
 export const SidebarContent = styled.div`
     display: flex;
     align-self: stretch;
-    flex-grow: 1;
-    height: 100%;
 
     // background: ${props => props.theme.bg.primary};
     z-index: 1;
 
-    border-right: 8px solid ${props => LightenDarkenColor(props.theme.bg.quinary,20)};
-    
+    // border-right: 8px solid ${props => LightenDarkenColor(props.theme.bg.quinary,20)};
+    overflow: hidden;
 `
 
 export const ResizeBar = styled.div`
     cursor: ew-resize;
     width: 8px;
-    margin-right: -8px;
+    // margin-right: -8px;
     background: transparent;
+    background: ${props => LightenDarkenColor(props.theme.bg.quinary,20)};
     display: flex;
     z-index: 20;
     align-items: center ;
@@ -152,6 +147,7 @@ export const ResizeHandle = styled.div`
     width: 4px;
     height: 30px;
     background: ${props => props.theme.bg.octonary};
+    background: blue;
     border-radius: 8px;
     text-align: center;
     z-index: 2;

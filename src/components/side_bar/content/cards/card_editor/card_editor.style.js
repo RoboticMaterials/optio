@@ -400,7 +400,7 @@ export const CalendarContainer = styled.div`
 
 export const RowContainer = styled.div`
 	display: flex;
-	margin-bottom: 1rem;
+	// margin-bottom: 1rem;
 `
 
 export const FadeLoaderCSS = css`

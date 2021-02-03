@@ -12,6 +12,10 @@ import log from '../../../../../../logger'
 import WidgetButton from "../../../../../basic/widget_button/widget_button";
 import DashboardsSidebar
     from "../../../../../widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
+import TextField from "../../../../../basic/form/text_field/text_field";
+import Textbox from "../../../../../basic/textbox/textbox";
+import ColorField from "../../../../../basic/form/color_field/color_field";
+import NumberField from "../../../../../basic/form/number_field/number_field";
 
 const logger = log.getLogger("LotEditorSidebar")
 
@@ -48,9 +52,29 @@ const LotEditorSidebar = (props) => {
     const [type, setType] = useState(Object.keys(EDITOR_SIDEBAR_TYPES)[0]); // used for tracking sidebar dimensions
 
     const getFieldTemplates = () => {
-        return <div style={{flex: 1}}>
-            <span>hi</span>
-        </div>
+        return <>
+            <style.ButtonRow>
+                <Textbox
+                />
+            </style.ButtonRow>
+
+            {/*<style.ButtonRow style={{background: "blue"}}>*/}
+            {/*<ColorField*/}
+            {/*    mode={"twitter"}*/}
+            {/*/>*/}
+            {/*</style.ButtonRow>*/}
+
+            {/*<style.ButtonRow>*/}
+            {/*    <NumberField*/}
+            {/*        name={"b"}*/}
+            {/*    />*/}
+            {/*</style.ButtonRow>*/}
+
+            {/*<style.ButtonRow>*/}
+            {/*    <div>as</div>*/}
+            {/*</style.ButtonRow>*/}
+
+        </>
     }
 
     let renderButtons = () => {}
@@ -65,12 +89,13 @@ const LotEditorSidebar = (props) => {
     }
 
     function handleDrag(e, ui) {
+        console.log("handleDrag e",e)
+        console.log("handleDrag ui",ui)
         setWidth(Math.max(minWidth, width + ui.deltaX))
         setSmall(testSize(Math.max(minWidth, width + ui.deltaX)))  // check if width is less than styling breakpoint and update isSmall
     }
 
     return (
-        <style.SidebarWrapper width={width}>
             <style.SidebarContent
                 key="sidebar-content"
                 style={{ width: width }}
@@ -99,7 +124,6 @@ const LotEditorSidebar = (props) => {
                     </style.ResizeBar>
                 </DraggableCore>
             </style.SidebarContent>
-        </style.SidebarWrapper>
     )
 }
 
