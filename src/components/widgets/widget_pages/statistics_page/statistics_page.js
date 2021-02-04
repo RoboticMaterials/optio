@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux'
+import { useParams, useHistory } from 'react-router-dom'
 
 import * as styled from './statistics_page.style'
 
@@ -11,62 +13,71 @@ import moduleName from '../../../../redux/actions/'
 
 const StatisticsPage = () => {
 
+    const params = useParams()
+    const stationID = params.stationID
+
+    const stations = useSelector(state => state.stationsReducer.stations)
+
+    const [showOverview, setShowOverview] = useState(true)
+
     useEffect(() => {
-        
+
         return () => {
-            
+
         }
     }, [])
 
     return (
         <styled.StatisticsContainer>
+            <styled.Header>
+                <styled.StationName>{stations[stationID].name}</styled.StationName>
 
+                <styled.StatisticsSectionsContainer>
+                    <styled.StatisticsSectionsButton
+                        style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                        onClick={() => {
+                            setShowOverview(true)
+                        }}
+                        selected={showOverview}
+                    >
+                        Overview
+                </styled.StatisticsSectionsButton>
+
+                    <styled.StatisticsSectionsButton
+                        style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                        onClick={() => {
+                            setShowOverview(false)
+                        }}
+                        selected={!showOverview}
+
+                    >
+                        Charts
+                </styled.StatisticsSectionsButton>
+
+                </styled.StatisticsSectionsContainer>
+            </styled.Header>
             {/* <styled.StatisticsDownloadButton>
                 Download CSV
             </styled.StatisticsDownloadButton> */}
 
-            {/* <styled.StatisticsSectionsContainer>
-                <styled.StatisticsSectionsButton 
-                    style={{borderRadius:'.5rem 0rem 0rem .5rem'}} 
-                    onClick={() => {
-                        setShowCharts(false)
-                        setShowOverview(true)
-                    }}
-                    selected={showOverview}
-                >
-                    Overview
-                </styled.StatisticsSectionsButton>
-                
-                <styled.StatisticsSectionsButton 
-                    style={{borderRadius:'0rem .5rem .5rem 0rem'}}
-                    onClick={() => {
-                        setShowCharts(true)
-                        setShowOverview(false)
-                    }}
-                    selected={showCharts}
 
-                >
-                    Charts
-                </styled.StatisticsSectionsButton>
 
-            </styled.StatisticsSectionsContainer> */}
+            {/* <StatisticsOverview/> */}
 
-            <StatisticsOverview/>
-            
-            {/* 
+
 
             {showOverview &&
-                <div style={{display:'flex', width:'100%', justifyContent:'center', alignItems:'center', marginTop:'5rem', flexDirection:'column'}}>
-                    <StatisticsOverview/>
+                <div style={{ display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', marginTop: '5rem', flexDirection: 'column' }}>
+                    <StatisticsOverview />
                 </div>
             }
 
 
-            {showCharts &&
-                <div style={{display:'flex', width:'100%', justifyContent:'center', alignItems:'center', marginTop:'5rem', flexDirection:'column'}}>
-                    <StatisticsCharts/>
+            {!showOverview &&
+                <div style={{ display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', marginTop: '5rem', flexDirection: 'column' }}>
+                    <StatisticsCharts />
                 </div>
-            } */}
+            }
 
         </styled.StatisticsContainer>
     )
