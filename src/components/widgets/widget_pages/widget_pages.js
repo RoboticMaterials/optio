@@ -17,6 +17,7 @@ import LotsPage from './lots_page/lots_page'
 
 import log from "../../../logger"
 import {widgetPageLoaded} from '../../../redux/actions/widget_actions'
+import {taskQueueOpen} from '../../../redux/actions/task_queue_actions'
 
 const logger = log.getLogger("WidgetPages")
 
@@ -32,7 +33,9 @@ const WidgetPages = (props) => {
     const mobileMode = windowWidth < widthBreakPoint;
 
     const dashboardOpen = useSelector(state => state.dashboardsReducer.dashboardOpen)
-    const taskQueueOpen = useSelector(state => state.taskQueueReducer.taskQueueOpen)
+    const taskQueueOpened = useSelector(state => state.taskQueueReducer.taskQueueOpen)
+
+    const onTaskQueueOpen = (props) => dispatch(taskQueueOpen(props))
 
     const { locationID, widgetPage } = props.match.params
     const showWidgetPage = widgetPage
@@ -42,6 +45,7 @@ const WidgetPages = (props) => {
 
 
     useEffect(() => {
+
         // On intitial widget page load, set a delay to tell redux that the widget pages have loaded
         // This happens because the statistic page on load needs to load charts which can be cumbersome on widget animation.
         // So the chart loads after the widget animation, but if widget page is already open and then a statistic page is selected,
@@ -53,13 +57,18 @@ const WidgetPages = (props) => {
         // On Unmount tell the reducer the widget pages aren't loaded anymore
         return () => {
             onWidgetPageLoaded(false)
-
         }
     }, [])
 
+    useEffect(() => {
+      if(windowWidth<1030){
+        onTaskQueueOpen(false)
+      }
+    },[windowWidth])
+
 
     return (
-        <styled.Container taskQueueOpen = {taskQueueOpen} showWidgetPage={showWidgetPage} dashboardOpen={dashboardOpen} mobileMode={mobileMode} id={'widgetPage'}>
+        <styled.Container taskQueueOpen = {taskQueueOpened} showWidgetPage={showWidgetPage} dashboardOpen={dashboardOpen} mobileMode={mobileMode} id={'widgetPage'}>
 
             <styled.WidgetPageContainer
                 showWidgetPage={showWidgetPage}
