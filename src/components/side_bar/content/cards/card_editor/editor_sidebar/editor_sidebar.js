@@ -19,6 +19,7 @@ import ColorField from "../../../../../basic/form/color_field/color_field";
 import NumberField from "../../../../../basic/form/number_field/number_field";
 import NumberInput from "../../../../../basic/number_input/number_input";
 import DraggableSurface from "../draggable_surface/draggable_surface";
+import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
 
 const logger = log.getLogger("LotEditorSidebar")
 
@@ -31,7 +32,10 @@ export const EDITOR_SIDEBAR_TYPES = {
 
 const OPTIONS = {
     TEXTBOX: {
-        component: <Textbox/>
+        component: <Textbox style={{width: "30rem"}} />
+    },
+    NUMBER_INPUT: {
+        component: <NumberInput/>
     }
 }
 const LotEditorSidebar = (props) => {

@@ -1,6 +1,7 @@
 import {Container} from "react-smooth-dnd";
 import React from "react";
 import * as styled from "./drop_container.style"
+import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
 
 const DropContainer = (props) => {
 	const {
@@ -51,26 +52,30 @@ const DropContainer = (props) => {
 					<div style={{background: "red", flex: 1, alignSelf: "stretch"}}></div>
 				</Container>
 
-				<Container
-					onDrop={(dropResult)=>onCenterDrop(id, dropResult)}
-					shouldAcceptDrop={()=>{return true}}
-					// getGhostParent={()=>document.body}
-					groupName="lot_field_buttons"
-					getChildPayload={index =>
-						index
-					}
-					style={{flex: 3, alignSelf: "stretch", display: "flex"}}
-					// style={{overflow: "auto",height: "100%", padding: "1rem 1rem 2rem 1rem" }}
-				>
+				{/*<Container*/}
+				{/*	onDrop={(dropResult)=>onCenterDrop(id, dropResult)}*/}
+				{/*	shouldAcceptDrop={()=>{return true}}*/}
+				{/*	// getGhostParent={()=>document.body}*/}
+				{/*	groupName="lot_field_buttons"*/}
+				{/*	getChildPayload={index =>*/}
+				{/*		index*/}
+				{/*	}*/}
+				{/*	style={{alignSelf: "stretch", display: "flex"}}*/}
+				{/*	// style={{overflow: "auto",height: "100%", padding: "1rem 1rem 2rem 1rem" }}*/}
+				{/*>*/}
 					<div style={{background: "blue", flex: 5, alignSelf: "stretch"}}>
 
 						{content.map((Component) => {
 							return(
-								Component
+								<styled.ComponentContainer>
+									<FieldWrapper>
+									{Component}
+									</FieldWrapper>
+								</styled.ComponentContainer>
 							)
 						})}
 					</div>
-				</Container>
+				{/*</Container>*/}
 
 				{/* Insert Into New Row Below*/}
 				<Container

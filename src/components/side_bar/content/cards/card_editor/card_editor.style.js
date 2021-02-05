@@ -405,6 +405,7 @@ export const RowContainer = styled.div`
 	display: flex;
   	flex: 1;
   	align-self: stretch;
+  
 	// margin-bottom: 1rem;
 `
 
@@ -413,6 +414,7 @@ export const ColumnContainer = styled.div`
   flex-direction: column;
   flex: 1;
   align-self: stretch;
+  
 	// margin-bottom: 1rem;
 `
 
