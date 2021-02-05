@@ -100,9 +100,12 @@ export const SectionContainer = styled.div`
 
 export const TheBody = styled.div`
 	//background: blue;
-  padding-top: 1rem;
+  //padding-top: 1rem;
   overflow: auto;
   flex: 1;
+  display: flex;
+  padding: 1rem;
+  min-height: 30rem;
 
 `
 
@@ -400,6 +403,16 @@ export const CalendarContainer = styled.div`
 
 export const RowContainer = styled.div`
 	display: flex;
+  	flex: 1;
+  	align-self: stretch;
+	// margin-bottom: 1rem;
+`
+
+export const ColumnContainer = styled.div`
+	display: flex;
+  flex-direction: column;
+  flex: 1;
+  align-self: stretch;
 	// margin-bottom: 1rem;
 `
 

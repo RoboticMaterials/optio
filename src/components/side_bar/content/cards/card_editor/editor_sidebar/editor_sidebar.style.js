@@ -37,7 +37,7 @@ export const Container = styled.div`
     z-index: 1;
     overflow: hidden;
     flex: 1;
-    background: ${props => LightenDarkenColor(props.theme.bg.quaternary, 20)};
+    background: ${props => LightenDarkenColor(props.theme.bg.quaternary, 80)};
     
 `
 
@@ -50,23 +50,25 @@ export const CloseButton = styled(CloseOutlinedIcon)`
 export const ButtonRow = styled.div`
     margin-bottom: 1rem;
     position: relative;
+  z-index: 500;
     //background: red;
 `
 
 export const ListContainer = styled.div`
 
-    padding-top: 3rem;
-    padding-left: 2rem;
-    padding-right: 2rem;
+    //padding-top: 3rem;
+    //padding-left: 2rem;
+    //padding-right: 2rem;
+  position: relative;
     
-    display: flex;
-    flex-direction: column;
-    align-self: stretch;
-    flex: 1;
+    //display: flex;
+    //flex-direction: column;
+    //align-self: stretch;
+    //flex: 1;
 
     overflow-y: auto;
     overflow-x: hidden;
-    z-index: 1;
+    //z-index: 1;
     
     background: ${props => props.theme.bg.senary};
    

@@ -37,6 +37,10 @@ import ScrollingButtonField from "../../../../basic/form/scrolling_buttons_field
 import NumberField from "../../../../basic/form/number_field/number_field";
 import LotEditorSidebar from "./editor_sidebar/editor_sidebar";
 import DraggableSurface from "./draggable_surface/draggable_surface";
+import {Container} from "react-smooth-dnd";
+import DropContainer from "./drop_container/drop_container";
+import {isArray} from "../../../../../methods/utils/array_utils";
+import {uuidv4} from "../../../../../methods/utils/utils";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
@@ -107,10 +111,12 @@ const FormComponent = (props) => {
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
 	const stations = useSelector(state => { return state.stationsReducer.stations })
 	const processes = useSelector(state => { return state.processesReducer.processes }) || {}
+	const surface = useSelector(state => { return state.mapReducer.currentMap }) || {}
 
 	// component state
 	const [showLotInfo, setShowLotInfo] = useState(true)
 	const [editingFields, setEditingFields] = useState(false)
+	const [dropContainers, setDropContainers] = useState([{_id: "1", content: [<Textbox/>]}])
 
 	// derived state
 	const selectedBinName = stations[binId] ?
@@ -149,6 +155,242 @@ const FormComponent = (props) => {
 		}
 
 		return [buttonGroupNames, buttonGroupIds]
+	}
+
+	const mapContainers = (items, mode) => {
+		let Container
+		if(mode) {
+			Container = styled.RowContainer
+
+		}
+		else {
+				Container = styled.ColumnContainer
+		}
+
+		return (
+			<Container>
+				{items.map((currItem) => {
+
+					if (isArray(currItem)) {
+						return mapContainers(currItem, !mode)
+					} else {
+						console.log("currItem",currItem)
+						const {
+							_id: dropContainerId,
+							content
+						} = currItem || {}
+						return (
+							<DropContainer
+								content={content}
+								id={dropContainerId}
+								onTopDrop={handleTopDrop}
+								onBottomDrop={handleBottomDrop}
+								onLeftDrop={handleLeftDrop}
+								onRightDrop={handleRightDrop}
+								onCenterDrop={handleCenterDrop}
+							/>
+						)
+					}
+
+				})}
+			</Container>
+		)
+	}
+
+	const findArrLocation = (id, arr, prev) => {
+		let indices = [...prev]
+		let found = false
+
+		arr.forEach((currItem, currIndex) => {
+
+			if (isArray(currItem)) {
+				let [newIndices, newFound] = findArrLocation(id, currItem, [currIndex])
+				if(newFound) {
+					found = true
+					if(newIndices.length > 0) indices = [...indices, ...newIndices]
+				}
+
+
+
+			} else {
+				if(currItem._id === id) {
+					found = true
+					indices = [...indices, currIndex]
+				}
+			}
+		})
+
+		return [indices, found]
+	}
+
+	const handleTopDrop = (id, dropResult) => {
+		const {
+			removedIndex,
+			addedIndex,
+			payload
+		} = dropResult
+
+		if(addedIndex !== null) {
+
+
+			let [indexPattern, found] = findArrLocation(id, dropContainers, [])
+			const finalIndex = indexPattern.pop()
+
+			console.log("indexPattern", indexPattern)
+			console.log("finalIndex", finalIndex)
+
+
+			let selected = [...dropContainers]
+			let isRow = (indexPattern.length % 2 === 0)
+			if (isArray(indexPattern)) {
+
+
+				indexPattern.forEach((currIndex) => {
+
+					selected = selected[currIndex]
+				})
+			}
+
+			selected.splice(finalIndex, isRow ? 1 : 0, isRow ? [{_id: uuidv4(), content: [uuidv4()]}, selected[finalIndex]] : {_id: uuidv4(), content: [uuidv4()]})
+			if(indexPattern.length === 0) setDropContainers(selected)
+		}
+
+
+	}
+
+	const handleBottomDrop = (id, dropResult) => {
+		const {
+			removedIndex,
+			addedIndex,
+			payload
+		} = dropResult
+
+		if(addedIndex !== null) {
+
+
+			let [indexPattern, found] = findArrLocation(id, dropContainers, [])
+			const finalIndex = indexPattern.pop()
+
+			console.log("indexPattern", indexPattern)
+			console.log("finalIndex", finalIndex)
+
+
+			let selected = [...dropContainers]
+			let isRow = (indexPattern.length % 2 === 0)
+			if (isArray(indexPattern)) {
+
+
+				indexPattern.forEach((currIndex) => {
+
+					selected = selected[currIndex]
+				})
+			}
+
+			selected.splice(finalIndex, isRow ? 1 : 0, isRow ? [selected[finalIndex], {_id: uuidv4(), content: [uuidv4()]} ] : {_id: uuidv4(), content: [uuidv4()]})
+			if(indexPattern.length === 0) setDropContainers(selected)
+		}
+	}
+	const handleLeftDrop = (id, dropResult) => {
+		const {
+			removedIndex,
+			addedIndex,
+			payload
+		} = dropResult
+
+		if(addedIndex !== null) {
+
+
+			let [indexPattern, found] = findArrLocation(id, dropContainers, [])
+			const finalIndex = indexPattern.pop()
+
+			console.log("indexPattern", indexPattern)
+			console.log("finalIndex", finalIndex)
+
+
+			let selected = [...dropContainers]
+			let isRow = (indexPattern.length % 2 === 1)
+			if (isArray(indexPattern)) {
+
+
+				indexPattern.forEach((currIndex) => {
+
+					selected = selected[currIndex]
+				})
+			}
+
+			selected.splice(finalIndex, isRow ? 1 : 0, isRow ? [{_id: uuidv4(), content: [uuidv4()]}, selected[finalIndex]] : {_id: uuidv4(), content: [uuidv4()]})
+			if(indexPattern.length === 0) setDropContainers(selected)
+		}
+	}
+	const handleRightDrop = (id, dropResult) => {
+		const {
+			removedIndex,
+			addedIndex,
+			payload
+		} = dropResult
+
+		if(addedIndex !== null) {
+
+
+			let [indexPattern, found] = findArrLocation(id, dropContainers, [])
+			const finalIndex = indexPattern.pop()
+
+			console.log("indexPattern", indexPattern)
+			console.log("finalIndex", finalIndex)
+
+
+			let selected = [...dropContainers]
+			let isRow = (indexPattern.length % 2 === 1)
+			if (isArray(indexPattern)) {
+
+
+				indexPattern.forEach((currIndex) => {
+
+					selected = selected[currIndex]
+				})
+			}
+
+			selected.splice(isRow ? finalIndex : finalIndex + 1, isRow ? 1 : 0, isRow ? [selected[finalIndex], {_id: uuidv4(), content: [uuidv4()]} ] : {_id: uuidv4(), content: [uuidv4()]})
+			if(indexPattern.length === 0) setDropContainers(selected)
+		}
+	}
+	const handleCenterDrop = (id, dropResult) => {
+		const {
+			removedIndex,
+			addedIndex,
+			payload
+		} = dropResult
+
+		const {
+			key,
+			component
+		} = dropResult
+
+		if(addedIndex !== null) {
+
+			let [indexPattern, found] = findArrLocation(id, dropContainers, [])
+			const finalIndex = indexPattern.pop()
+
+			let selected = [...dropContainers]
+			let isRow = (indexPattern.length % 2 === 1)
+			if (isArray(indexPattern)) {
+
+
+				indexPattern.forEach((currIndex) => {
+
+					selected = selected[currIndex]
+				})
+			}
+
+			selected.splice(finalIndex, 1,{
+				...selected[finalIndex],
+				content: [
+					...selected[finalIndex].content,
+					component
+				]
+			})
+			if(indexPattern.length === 0) setDropContainers(selected)
+		}
 	}
 
 	const [buttonGroupNames, buttonGroupIds] = getButtonGroupOptions()
@@ -493,9 +735,6 @@ const FormComponent = (props) => {
 		)
 	}
 
-	return (
-		<DraggableSurface/>
-	)
 
 	if(loaded) {
 		return(
@@ -537,87 +776,13 @@ const FormComponent = (props) => {
 				<styled.RowContainer style={{flex: 1, alignItems: "stretch"}}>
 					<LotEditorSidebar/>
 					<styled.TheBody>
-
-						<styled.SectionContainer>
-
-
-							{showProcessSelector && renderProcessSelector()}
-
-							<styled.ContentHeader>
-								<styled.ContentTitle>Lot Name</styled.ContentTitle>
-							</styled.ContentHeader>
-							<styled.NameContainer>
-								<TextField
-									name="name"
-									type="text"
-									placeholder="Enter name..."
-									InputComponent={Textbox}
-								/>
-							</styled.NameContainer>
-
-							{((content === null)) &&
-							<>
-								{showLotInfo &&
-								<>
-									<styled.NameContainer>
-										<styled.ContentHeader>
-											<styled.ContentTitle>Lot Description</styled.ContentTitle>
-										</styled.ContentHeader>
-										<TextField
-											name="description"
-											type="text"
-											placeholder="Description..."
-											InputComponent={Textbox}
-											lines={5}
-										/>
-									</styled.NameContainer>
-
-									<styled.DatesContainer>
-										<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_START)}>
-											<styled.DateText>{startDateText}</styled.DateText>
-										</styled.DateItem>
-
-										<styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
-
-										<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_START)}>
-											<styled.DateText>{endDateText}</styled.DateText>
-										</styled.DateItem>
-									</styled.DatesContainer>
-								</>
-								}
+						{mapContainers(dropContainers, true)}
 
 
-								{formMode === FORM_MODES.UPDATE &&
-								<Button
-									// secondary
-									style={{margin: "0 0 1rem 0", width: "fit-content"}}
-									type={"button"}
-									onClick={()=>setShowLotInfo(!showLotInfo)}
-									schema={"lots"}
-								>
-									{showLotInfo ? "Hide Lot Details" : "Show Lot Details"}
-								</Button>
-								}
-
-							</>
-
-							}
-
-
-						</styled.SectionContainer>
-
-						{(content === null) &&
-						renderMainContent()
-						}
-						{(((content === CONTENT.CALENDAR_END) || (content === CONTENT.CALENDAR_START))) &&
-						renderCalendarContent()
-						}
-						{(content === CONTENT.HISTORY) &&
-						renderHistory()
-						}
-						{(content === CONTENT.MOVE) &&
-						renderMoveContent()
-						}
+						{/*<DraggableSurface*/}
+						{/*	surface={surface}*/}
+						{/*	draggables={Object.values(stations)}*/}
+						{/*/>*/}
 
 					</styled.TheBody>
 				</styled.RowContainer>

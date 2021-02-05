@@ -6,41 +6,27 @@ import { withRouter } from "react-router-dom";
 
 import * as styled from './draggable_surface.style'
 
-import uuid from 'uuid';
 import * as d3 from 'd3'
 
 // Import Utils
-import { convertD3ToReal, convertRealToD3, getRelativeOffset } from '../../methods/utils/map_utils'
-import { isEquivalent, } from '../../methods/utils/utils.js'
+import { convertD3ToReal, convertRealToD3, getRelativeOffset } from '../../../../../../methods/utils/map_utils'
+import { isEquivalent, } from '../../../../../../methods/utils/utils.js'
 
 // Import Actions
-import { getMap } from '../../redux/actions/map_actions'
-import { updateStations, setStationAttributes, setSelectedStation } from '../../redux/actions/stations_actions'
-import { updatePositions, postPosition, setPositionAttributes, setSelectedPosition } from '../../redux/actions/positions_actions'
-import * as deviceActions from '../../redux/actions/devices_actions'
 
-import { widgetLoaded, hoverStationInfo } from '../../redux/actions/widget_actions'
 
 // Import Components
-import MiR100 from '../../components/map/amrs/mir100/mir100.js'
-import RightClickMenu from '../../components/map/right_click_menu/right_click_menu'
+import RightClickMenu from '../../../../../map/right_click_menu/right_click_menu'
 
 // logging
-import log from "../../logger"
-import { setCurrentMap } from "../../redux/actions/map_actions";
-import { getPreviousRoute } from "../../methods/utils/processes_utils";
-import { isObject } from "../../methods/utils/object_utils";
-import {EDITOR_SIDEBAR_TYPES} from "../editor_sidebar/editor_sidebar";
+import log from "../../../../../../logger"
 import Draggable from "../draggable/draggable";
 
 const logger = log.getLogger("MapView")
 
-const rd3tSvgClassName = `__SVG`     // Gives uniqe className to map components to reference for d3 events
-const rd3tMapClassName = `__MAP`
-const rd3tLocClassName = '__LOC'
-const rd3tStationClassName = `__STATION`
+const rd3tSvgClassName = `__SVG_123`     // Gives uniqe className to map components to reference for d3 events
+const rd3tMapClassName = `__MAP_123`
 const rd3tLotFieldClassName = `__LOT_FIELD`
-const rd3tPosClassName = '__POS'
 
 const DraggableSurface = (props) => {
     const {
@@ -68,12 +54,14 @@ const DraggableSurface = (props) => {
     const [widgetDraggable, setWidgetDraggable] = useState(true)
     const [mouseDown, setMouseDown] = useState(false)
     const [resolution, setResolution] = useState(null)
+    const [theItems, setTheItems] = useState(draggables)
+
 
     const [naturalImageDimensions, setNaturalImageDimensions] = useState({
         width: 100,
-        heigh: 100
+        height: 100
     })
-    const [d3, setD3] = useState({
+    const [d3State, setD3State] = useState({
         translate: [0, 0],
         scale: 1,
         naturalScale: 1,
@@ -121,32 +109,32 @@ const DraggableSurface = (props) => {
         if (!mouseDown) return
 
         // Handle Stations
-        if (!!this.props.selectedStation && this.props.selectedStation.temp === true) {
-            this.props.dispatchSetStationAttributes(this.props.selectedStation._id, {
-                x: e.clientX,
-                y: e.clientY
-            })
-        }
-
-        // Handle Positions
-        else if (!!this.props.selectedPosition && this.props.selectedPosition.temp === true && this.props.selectedPosition.schema !== "temporary_position") {
-            this.props.dispatchSetPositionAttributes(this.props.selectedPosition._id, {
-                x: e.clientX,
-                y: e.clientY
-            })
-        }
-
-        // Else it's a stations child position
-        else if (!!this.props.selectedStationChildrenCopy) {
-            const draggingChild = Object.values(this.props.selectedStationChildrenCopy).find(position => position.temp === true)
-            if (!!draggingChild && !this.props.selectedPosition) {
-                this.props.dispatchSetPositionAttributes(draggingChild._id, {
-                    x: e.clientX,
-                    y: e.clientY
-                })
-            }
-
-        }
+        // if (!!this.props.selectedStation && this.props.selectedStation.temp === true) {
+        //     this.props.dispatchSetStationAttributes(this.props.selectedStation._id, {
+        //         x: e.clientX,
+        //         y: e.clientY
+        //     })
+        // }
+        //
+        // // Handle Positions
+        // else if (!!this.props.selectedPosition && this.props.selectedPosition.temp === true && this.props.selectedPosition.schema !== "temporary_position") {
+        //     this.props.dispatchSetPositionAttributes(this.props.selectedPosition._id, {
+        //         x: e.clientX,
+        //         y: e.clientY
+        //     })
+        // }
+        //
+        // // Else it's a stations child position
+        // else if (!!this.props.selectedStationChildrenCopy) {
+        //     const draggingChild = Object.values(this.props.selectedStationChildrenCopy).find(position => position.temp === true)
+        //     if (!!draggingChild && !this.props.selectedPosition) {
+        //         this.props.dispatchSetPositionAttributes(draggingChild._id, {
+        //             x: e.clientX,
+        //             y: e.clientY
+        //         })
+        //     }
+        //
+        // }
 
     }
 
@@ -179,7 +167,7 @@ const DraggableSurface = (props) => {
         const {
             translate,
             scale
-        } = d3
+        } = d3State
 
         const svg = d3.select(`.${rd3tSvgClassName}`)
         const map = d3.selectAll(`.${rd3tMapClassName}`)
@@ -203,7 +191,6 @@ const DraggableSurface = (props) => {
      * (basically dont listen to drag/zoom events)
      */
     const unbindZoomListener = () => {
-        const { rd3tSvgClassName } = this
         const svg = d3.select(`.${rd3tSvgClassName}`);
         svg.call(d3.behavior.zoom().on('zoom', null))
     }
@@ -244,9 +231,8 @@ const DraggableSurface = (props) => {
      * @return {object} {translate: {x: number, y: number}, zoom: number}
      */
     const calculateD3Geometry = () => {
-        let { locations } = this.props
-        let { resolution } = surface
-
+        // let { resolution } = surface
+        //
         let scale
         if (zoom > scaleExtent.max) {
             scale = scaleExtent.max;
@@ -255,32 +241,41 @@ const DraggableSurface = (props) => {
         } else {
             scale = zoom;
         }
+        //
+        // let translate
+        if (!!surfaceRef.current && !!imageRef.current) {
+        //     console.log("surfaceRef.current",surfaceRef.current.getBoundingClientRect())
+        //     console.log("imageRef.current",imageRef.current)
+        //
+            const cHeight = surfaceRef.current.getBoundingClientRect().height
+            const cWidth = surfaceRef.current.getBoundingClientRect().width
 
-        let translate
-        if (!!surfaceRef && !!imageRef) {
-
-            const cHeight = surfaceRef.getBoundingClientRect().height
-            const cWidth = surfaceRef.getBoundingClientRect().width
-
-            const iHeight = imageRef.getBoundingClientRect().height
-            const iWidth = imageRef.getBoundingClientRect().width
+            const iHeight = imageRef.current.getBoundingClientRect().height
+            const iWidth = imageRef.current.getBoundingClientRect().width
 
             const iNatHeight = naturalImageDimensions.height
             const iNatWidth = naturalImageDimensions.width
-
-
-
-            // Apply translations to map.
-            // The map is translated by half the container dims, and then back by
-            // half the image dims. This leaves it in the middle of the screen
-            translate = {
-                x: props.translate.x + cWidth / 2 - iWidth / 2,
-                y: props.translate.y + cHeight / 2 - iHeight / 2,
-            }
-
-            // Save necessary variables
-            setD3({
-                translate: [translate.x, translate.y],
+        //
+        //     console.log("cHeight",cHeight)
+        //     console.log("cWidth",cWidth)
+        //     console.log("iHeight",iHeight)
+        //     console.log("iWidth",iWidth)
+        //     console.log("iNatHeight",iNatHeight)
+        //     console.log("iNatWidth",iNatWidth)
+        //
+        //
+        //
+        //     // Apply translations to map.
+        //     // The map is translated by half the container dims, and then back by
+        //     // half the image dims. This leaves it in the middle of the screen
+        //     translate = {
+        //         x: props.translate.x + cWidth / 4,
+        //         y: props.translate.y + cHeight / 4,
+        //     }
+        //
+        //     // Save necessary variables
+            const newD3State = {
+                translate: [0,0],
                 scale: scale,
                 mapResolution: resolution,
                 // imgResolution: iNatWidth / iWidth,
@@ -293,30 +288,32 @@ const DraggableSurface = (props) => {
                     height: iNatHeight,
                     width: iNatWidth
                 },
-            })
+            }
+            setD3State(newD3State) // update state
 
-            let x, y
+            // let x, y
             //// Apply the event translation to each station
-            const morphedDraggables = Object.values(draggables).map(currDraggable => {
+            const morphedDraggables = theItems.map((currDraggable, currIndex) => {
+                // console.log("morphedDraggables currDraggable",currDraggable)
 
-                [x, y] = convertRealToD3([currDraggable.pos_x, currDraggable.pos_y], d3)
+                // [x, y] = convertRealToD3([currDraggable.pos_x, currDraggable.pos_y], newD3State)
 
                 return {
                     ...currDraggable,
-                    x: x,
-                    y: y,
+                    x: (currIndex + 1) * 50,
+                    y: (currIndex + 1) * 10,
                 }
             })
 
-            updateFunc(morphedDraggables) // Bulk Update
+            setTheItems(morphedDraggables) // Bulk Update
 
         } else {
-            translate = props.translate
+            // translate = props.translate
         }
-
-        // Set the initial map translation
-        const map = d3.selectAll(`.${rd3tMapClassName}`)
-        map.attr('transform', `translate(${translate.x},${translate.y}) scale(${scale})`)
+        //
+        // // Set the initial map translation
+        // const map = d3.selectAll(`.${rd3tMapClassName}`)
+        // map.attr('transform', `translate(${translate.x},${translate.y}) scale(${scale})`)
 
     }
 
@@ -333,22 +330,22 @@ const DraggableSurface = (props) => {
     if (surface == null) { return (<></>) }
 
     return (
-        <div style={{ width: '100%', height: '100%' }} onMouseMove={dragNewEntity} onMouseUp={validateNewLocation} >
-            <styled.MapContainer ref={mc => (surfaceRef = mc)} style={{ pointerEvents: widgetDraggable ? 'default' : 'none' }}>
+        <div style={{ flex: 1, alignSelf:"stretch", background: "red", display: "flex" }} onMouseMove={dragNewEntity} onMouseUp={()=>{}} >
+            <styled.MapContainer ref={surfaceRef} style={{ pointerEvents: widgetDraggable ? 'default' : 'none' }}>
 
                 {/* Commented out for now */}
                 {/* <Zones/> */}
 
                 {/* Right menu */}
-                {Object.keys(this.state.showRightClickMenu).length > 0 &&
-                    <RightClickMenu coords={this.state.showRightClickMenu} buttonClicked={() => { setShowRightClickMenu({}) }} d3={d3} />
+                {Object.keys(showRightClickMenu).length > 0 &&
+                    <RightClickMenu coords={showRightClickMenu} buttonClicked={() => { setShowRightClickMenu({}) }} d3={d3State} />
                 }
 
                 {/* SVG element is the container for the whole view. This allows the view to be moved as one */}
                 <svg
                     className={rd3tSvgClassName}
-                    width="100%"
-                    height="100%"
+                    width={surfaceRef.current ? surfaceRef.current.getBoundingClientRect().width : "100%"}
+                    height={surfaceRef.current ? surfaceRef.current.getBoundingClientRect().height : "100%"}
 
                     // onClick only registers on left click so this works as a way to hide the menu
                     onClick={() => { setShowRightClickMenu({}) }}
@@ -356,51 +353,49 @@ const DraggableSurface = (props) => {
 
                     // These 2 mouse events are used to remove the issue when moving the mouse too fast over a location causing a widget to load, but not fast enough for the onmouselave to execute
                     onMouseEnter={() => {
-                        if (!!widgetLoaded) {
-                            // If there is a selected location and its not the right click menu location then hide
-                            // should always show widget if its the right click menu
-                            if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.schema !== 'temporary_position')) && (!this.props.editingStation || !this.props.editingPosition)) {
-                                this.props.dispatchHoverStationInfo(null)
-                                this.props.dispatchSetSelectedStation(null)
-                                this.props.dispatchSetSelectedPosition(null)
-                            }
-                        }
+                        // if (!!widgetLoaded) {
+                        //     // If there is a selected location and its not the right click menu location then hide
+                        //     // should always show widget if its the right click menu
+                        //     if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.schema !== 'temporary_position')) && (!this.props.editingStation || !this.props.editingPosition)) {
+                        //         this.props.dispatchHoverStationInfo(null)
+                        //         this.props.dispatchSetSelectedStation(null)
+                        //         this.props.dispatchSetSelectedPosition(null)
+                        //     }
+                        // }
                     }}
                     onMouseOver={() => {
-                        if (!!this.props.widgetLoaded) {
-                            // If there is a selected location and its not the right click menu location then hide
-                            // should always show widget if its the right click menu
-                            if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.schema !== 'temporary_position'))) {
-                                this.props.dispatchHoverStationInfo(null)
-
-                                if (!this.props.editingStation || !this.props.editingPosition) {
-                                    this.props.dispatchSetSelectedStation(null)
-                                    this.props.dispatchSetSelectedPosition(null)
-                                }
-                            }
-                        }
+                        // if (!!widgetLoaded) {
+                        //     // If there is a selected location and its not the right click menu location then hide
+                        //     // should always show widget if its the right click menu
+                        //     if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.schema !== 'temporary_position'))) {
+                        //         this.props.dispatchHoverStationInfo(null)
+                        //
+                        //         if (!this.props.editingStation || !this.props.editingPosition) {
+                        //             this.props.dispatchSetSelectedStation(null)
+                        //             this.props.dispatchSetSelectedPosition(null)
+                        //         }
+                        //     }
+                        // }
                     }}
 
                 > {/* Clears any unfinished drag events (ex: moving location) */}
                     <styled.MapGroup
-                        className={this.rd3tMapClassName}
+                        className={rd3tMapClassName}
 
                     >
                         {/* Foreign object allows an image to be put in the SVG container */}
                         <foreignObject width='200%' height='200%' >
-                            {!!this.props.currentMap &&
+                            {!!surface &&
                                 <styled.MapImage ref={imageRef}
-                                    tall={!!surfaceRef && // Fixes the map sizing - cutoff issue
-                                        surfaceRef.getBoundingClientRect().height / naturalImageDimensions.height
-                                        >
-                                        surfaceRef.getBoundingClientRect().width / naturalImageDimensions.width}
+                                    tall={!!surfaceRef.current && // Fixes the map sizing - cutoff issue
+                                        surfaceRef.current.getBoundingClientRect().height / naturalImageDimensions.height  > surfaceRef.current.getBoundingClientRect().width / naturalImageDimensions.width}
 
                                     src={'data:image/png;base64, ' + surface.map}
                                     onLoad={() => {
 
                                         setNaturalImageDimensions({
-                                            height: imageRef.naturalHeight,
-                                            width: imageRef.naturalWidth
+                                            height: imageRef.current.naturalHeight,
+                                            width: imageRef.current.naturalWidth
                                         })
 
                                         // Geometry changes once the image finishes loading, so the geometry needs to be reclaculated
@@ -425,20 +420,48 @@ const DraggableSurface = (props) => {
                         </filter>
                     </defs>
 
-                    {!!resolution && !!imageRef &&
+                    {!!resolution && !!imageRef.current &&
                         <>
                             <>{
                                 //// Render draggables
-                                Object.values(draggables)
-                                    .map((currDraggable, currIndex) =>
-                                        <Draggable
-                                            key={`draggable-${currIndex}`}
-                                            rd3tClassName={`${rd3tLotFieldClassName}_${currIndex}`}
-                                            d3={d3}
-                                            handleEnableDrag={onEnableDrag}
-                                            handleDisableDrag={onDisableDrag}
-                                        />
-                                    )
+                                theItems.map((currDraggable, currIndex) =>{
+                                    // console.log("theItems currDraggable",currDraggable)
+                                    const {
+                                        x,
+                                        y,
+                                        rotation,
+                                        _id: currId
+                                    } = currDraggable || {}
+
+                                    // console.log("theItems x",x)
+                                    // console.log("theItems y",y)
+                                    // console.log("theItems rotation",rotation)
+
+                                    return <Draggable
+                                        updateItem={(properties)=>{
+                                            console.log("updateItem properties",properties)
+                                            let clone = [...theItems]
+                                            clone.splice(currIndex, 1, {
+                                                ...theItems[currIndex],
+                                                ...properties
+                                            })
+                                            setTheItems(
+                                                clone
+                                            )
+                                        }}
+
+                                        id={currId}
+                                        key={`draggable-${currIndex}`}
+                                        rd3tClassName={`${rd3tLotFieldClassName}_${currIndex}`}
+                                        d3={d3State}
+                                        handleEnableDrag={onEnableDrag}
+                                        handleDisableDrag={onDisableDrag}
+                                        x={x}
+                                        y={y}
+                                        rotation={rotation}
+                                    />
+
+                                })
                             }</>
                         </>
                     }
@@ -453,6 +476,13 @@ DraggableSurface.defaultProps = {
     zoomable: true,
     zoom: 1,
     translate: { x: 0, y: 0 },
+    draggables: [],
+    mobileMode: false,
+    onClick: () => {},
+    surface: {},
+    onZoom: () => {},
+    onZoomEnd: () => {},
+    updateFunc: () => {},
 
 }
 

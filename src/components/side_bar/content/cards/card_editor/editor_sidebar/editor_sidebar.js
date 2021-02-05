@@ -18,6 +18,7 @@ import Textbox from "../../../../../basic/textbox/textbox";
 import ColorField from "../../../../../basic/form/color_field/color_field";
 import NumberField from "../../../../../basic/form/number_field/number_field";
 import NumberInput from "../../../../../basic/number_input/number_input";
+import DraggableSurface from "../draggable_surface/draggable_surface";
 
 const logger = log.getLogger("LotEditorSidebar")
 
@@ -25,6 +26,12 @@ export const EDITOR_SIDEBAR_TYPES = {
     FIELDS: {
         name: "Fields",
         iconName: "fas fa-route",
+    }
+}
+
+const OPTIONS = {
+    TEXTBOX: {
+        component: <Textbox/>
     }
 }
 const LotEditorSidebar = (props) => {
@@ -53,36 +60,39 @@ const LotEditorSidebar = (props) => {
     const [isSmall, setSmall] = useState(testSize(width)); // used for tracking sidebar dimensions
     const [type, setType] = useState(Object.keys(EDITOR_SIDEBAR_TYPES)[0]); // used for tracking sidebar dimensions
 
+
     const getFieldTemplates = () => {
-        return <>
-            <Draggable key={1}>
-            <style.ButtonRow>
-                <Textbox
-                />
-            </style.ButtonRow>
-            </Draggable>
-
-
-            {/*<style.ButtonRow style={{background: "blue"}}>*/}
-            {/*<ColorField*/}
-            {/*    mode={"twitter"}*/}
-            {/*/>*/}
-            {/*</style.ButtonRow>*/}
-
-            <Draggable key={2}>
-            <style.ButtonRow>
-                <NumberInput
-                    // plusDisabled={true}
-                    // minusDisabled={true}
-                />
-            </style.ButtonRow>
-            </Draggable>
-
-            {/*<style.ButtonRow>*/}
-            {/*    <div>as</div>*/}
-            {/*</style.ButtonRow>*/}
-
-        </>
+        return (
+            <style.ListContainer>
+                <Container
+                    groupName="lot_field_buttons"
+                    getChildPayload={index => {
+                        const payload = Object.entries(OPTIONS)[index]
+                        console.log("payload",payload)
+                        return {
+                            key: payload[0],
+                            ...payload[1]
+                        }
+                    }}
+                    getGhostParent={()=>{
+                        return document.body
+                    }}
+                >
+                {
+                    Object.entries(OPTIONS).map((currOption, currIndex) => {
+                        const key = currOption[0]
+                        const value = currOption[1]
+                        return <Draggable key={currIndex}>
+                            <style.ButtonRow
+                            >
+                                {value.component}
+                            </style.ButtonRow>
+                        </Draggable>
+                    })
+                }
+                </Container>
+            </style.ListContainer>
+        )
     }
 
     let renderButtons = () => {}
@@ -108,21 +118,16 @@ const LotEditorSidebar = (props) => {
                 style={{ width: width, minWidth: minWidth }}
             >
                 <style.Container>
-                    <style.ListContainer>
-                        <Container
-                            groupName="dashboard-buttons"
-                            getChildPayload={index => {
-                                console.log("getChildPayload index", index)
-                                return index
-                            }}
-                        >
-                            {renderButtons()}
-                        </Container>
-                    </style.ListContainer>
 
+                    {renderButtons()}
+                    {/*<DraggableSurface*/}
+                    {/*    draggables={renderButtons()}*/}
+                    {/*/>*/}
+                    {/*</Container>*/}
                     <style.FooterContainer>
                         {/*{renderTypeButtons()}*/}
                     </style.FooterContainer>
+
                 </style.Container>
 
                 <DraggableCore key="handle" onDrag={handleDrag} >

@@ -1,15 +1,12 @@
 import React from 'react'
 
 import * as styled from './lot_field_svg_svg.style'
-
-// Import Constants
-import { StationTypes } from '../../../../constants/station_constants'
-import { PositionTypes } from '../../../../constants/position_constants'
+import {StationTypes} from "../../../../../../constants/station_constants";
+import {PositionTypes} from "../../../../../../constants/position_constants";
 
 const LotFieldSvg = (props) => {
 
     const {
-        location,
         rd3tClassName,
         color,
         d3,
@@ -21,22 +18,20 @@ const LotFieldSvg = (props) => {
         id,
         x,
         y,
-
         handleMouseEnter,
         handleMouseLeave,
         handleMouseDown,
         handleTranslating,
         handleRotating,
         rotation,
-
-
     } = props
 
-    // const schema = location.schema
-    // const locationTypes = {
-    //     ...StationTypes,
-    //     ...PositionTypes
-    // }
+    const locationTypes = {
+        ...StationTypes,
+        ...PositionTypes
+    }
+    const schema="human"
+
 
     return (
         <styled.WorkstationGroup
@@ -54,6 +49,7 @@ const LotFieldSvg = (props) => {
             }}
             transform={`translate(${x},${y}) rotate(${rotation}) scale(${d3.scale / d3.imgResolution})`}
         >
+            <div>hi</div>
             <defs>
 
                 {/* a transparent glow that takes on the colour of the object it's applied to */}
@@ -109,11 +105,11 @@ const LotFieldSvg = (props) => {
                 onMouseDown={() => handleTranslating(true)}
                 onMouseUp={() => handleTranslating(false)}
 
-                transform={location.type === 'device' && 'scale(.07) translate(-180,-140)'}
+                transform={null}
             >
-
-                <svg id={`lot_svg_${rd3tClassName}-${id}`} x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400" style={{ filter: shouldGlow ? 'url(#glow2)' : 'none' }}>
-                    <div>HELLOOOOO</div>
+                <svg id={`${rd3tClassName}-${"station"}`} x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400" style={{ filter: shouldGlow ? 'url(#glow2)' : 'none' }}>
+                    {locationTypes["human"].svgPath}
+                    <div>ayo</div>
                 </svg>
 
 

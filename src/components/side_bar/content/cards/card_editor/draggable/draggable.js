@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
-import * as styled from './draggable.style'
+// import * as styled from './draggable.style'
 
 // Import Utils
-import { convertD3ToReal } from '../../../../methods/utils/map_utils'
+// import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 
 // Import Components
 import DragEntityProto from '../../../../../map/locations/drag_entity_proto'
@@ -16,6 +16,7 @@ function Draggable(props) {
 
     const {
         rd3tClassName,
+        updateItem,
         id,
         d3,
         handleEnableDrag,
@@ -27,6 +28,8 @@ function Draggable(props) {
         y,
         rotation
     } = props
+
+    // console.log("Draggable props",props)
 
 
     const [hovering, setHovering] = useState(false)
@@ -77,7 +80,7 @@ function Draggable(props) {
             <LotFieldSvg
                 id={id}
                 rd3tClassName={rd3tClassName}
-                color={"blue"}
+                color={"#dddddd"}
                 d3={d3}
                 isSelected={false}
                 hovering={hovering}
@@ -96,20 +99,19 @@ function Draggable(props) {
 
             <DragEntityProto
                 isSelected={false}
-                location={{
-                    x: x,
-                    y:y,
-                    rotation: rotation
-                }}
+                location={{ x, y, rotation }}
                 rd3tClassName={rd3tClassName}
+                isSelected={true}
                 d3={() => d3()}
 
-                // handleRotate={(rotation) => { dispatchSetStationAttributes(station._id, { rotation }) }}
-                // handleTranslate={({ x, y }) => dispatchSetStationAttributes(station._id, { x, y })}
-                // handleTranslateEnd={({ x, y }) => {
-                //     const pos = convertD3ToReal([x, y], props.d3)
-                //     dispatchSetStationAttributes(station._id, { pos_x: pos[0], pos_y: pos[1] })
-                // }}
+                handleRotate={(rotation) => {
+                    // dispatchSetStationAttributes(station._id, { rotation })
+                }}
+                handleTranslate={({ x, y }) => updateItem({ x, y })}
+                handleTranslateEnd={({ x, y }) => {
+                    // const pos = convertD3ToReal([x, y], props.d3)
+                    // dispatchSetStationAttributes(station._id, { pos_x: pos[0], pos_y: pos[1] })
+                }}
 
                 handleEnableDrag={() => {
                     handleEnableDrag()
