@@ -205,7 +205,7 @@ const EditLocation = () => {
         // TODO: Stick this into Constants
         const defaultAttributes = deepCopy(LocationDefaultAttributes)
 
-        defaultAttributes['neame'] = newName
+        defaultAttributes['name'] = newName
         defaultAttributes['map_id'] = currentMap._id
         defaultAttributes['_id'] = uuid.v4()
 
