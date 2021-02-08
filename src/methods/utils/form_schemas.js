@@ -2,7 +2,8 @@ import * as Yup from 'yup';
 
 import { notBrokenRegex, notTaskDeletedRegex } from "./regex_utils";
 import { isObject } from "./object_utils";
-
+import { get } from "lodash"
+import {isArray} from "./array_utils";
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
 
@@ -170,6 +171,60 @@ export const dashboardSchema = Yup.object().shape({
 
 });
 
+Yup.addMethod(Yup.object, 'uniqueProperty', function (propertyName, message) {
+    return this.test('unique', message, function (value) {
+        if (!value || !value[propertyName]) {
+            return true;
+        }
+
+        if (
+            this.parent
+                .filter(v => v !== value)
+                .some(v => v[propertyName] === value[propertyName])
+        ) {
+            throw this.createError({
+                path: `${this.path}.${propertyName}`,
+            });
+        }
+
+        return true;
+    });
+});
+
+Yup.addMethod(Yup.array, "unique", function(message, path) {
+    console.log("unique message",message)
+    console.log("unique path",path)
+    const mapper = x => get(x, path);
+    return this.test("unique", message, function(list) {
+
+        let set
+        let totalList = []
+        list.forEach((currList, currListIndex) => {
+            totalList = totalList.concat()
+        })
+
+        set = [...new Set(totalList.map(mapper))];
+        const isUnique = totalList.length === set.length;
+        console.log("isUnique",isUnique)
+        if (isUnique) {
+            return true;
+        }
+
+        let idx
+        for(const sublist of list) {
+            for(const item of sublist) {
+
+            }
+        }
+        list((l, i) => mapper(l) !== set[i]);
+
+        console.log("addMethod idx",idx)
+        const err = this.createError({ path: `[${idx}].${path}`, message });
+        console.log("addMethod err",err)
+        return err
+    });
+});
+
 export const signUpSchema = Yup.object().shape({
     email: Yup.string()
         .email()
@@ -244,6 +299,28 @@ export const getMoveLotSchema = (maxCount) => Yup.object().shape({
         .required('Please select a destination.')
         .nullable(),
 })
+
+export const LotFormSchema = Yup.object().shape({
+    fields: Yup.array().of(
+        Yup.array().of(
+            Yup.object().shape({
+                _id: Yup.string()
+                    .min(1, '1 character minimum.')
+                    .max(50, '50 character maximum.')
+                    .required('Please enter a name.'),
+                fieldName: Yup.string()
+                    .min(1, '1 character minimum.')
+                    .max(50, '50 character maximum.')
+                    .required('Please enter a name.'),
+                style: Yup.object()
+            })
+            //.uniqueProperty('fieldName', "a => a.fieldName") // propertyName, message
+        )
+
+
+    ).unique('duplicate phone', "fieldName") //message, path
+})
+
 
 export const getCardSchema = (mode, availableBinItems) => {
     switch (mode) {

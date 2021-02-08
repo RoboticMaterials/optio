@@ -20,6 +20,7 @@ import {ThemeContext} from "styled-components";
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
 import ZoneHeader from "./zone_header/zone_header";
 import {SORT_MODES} from "../../../../constants/common_contants";
+import LotCreatorForm from "./card_editor/form_editor";
 
 const Cards = (props) => {
 
@@ -47,6 +48,7 @@ const Cards = (props) => {
     const [title, setTitle] = useState(null)
     const [currentProcess, setCurrentProcess] = useState(null)
     const [isProcessView, setIsProcessView] = useState(false)
+    const [showCardFormEditor, setShowCardFormEditor] = useState(false)
     const [showMenu, setShowMenu] = useState(false)
     const [zoneSize, setZoneSize] = useState({
         width: undefined,
@@ -157,6 +159,19 @@ const Cards = (props) => {
     return(
         <styled.Container>
             {showCardEditor &&
+            <LotCreatorForm
+                isOpen={showCardEditor}
+                onAfterOpen={null}
+                cardId={selectedCard ? selectedCard.cardId : null}
+                processId={selectedCard ? selectedCard.processId : null}
+                binId={selectedCard ? selectedCard.binId : null}
+                close={()=>{
+                    onShowCardEditor(false)
+                    setSelectedCard(null)
+                }}
+            />
+            }
+            {showCardFormEditor &&
             <CardEditor
                 isOpen={showCardEditor}
                 onAfterOpen={null}

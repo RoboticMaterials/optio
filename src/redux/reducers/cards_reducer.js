@@ -16,7 +16,7 @@ import {
   CARDS,
   CARD_HISTORY,
   PROCESS_CARDS,
-  SHOW_EDITOR
+  SHOW_EDITOR, SHOW_FORM_EDITOR
 } from '../types/data_types'
 
 import {uuidv4} from "../../methods/utils/utils";
@@ -29,7 +29,8 @@ const defaultState = {
   cardHistories: {},
   error: {},
   pending: false,
-  showEditor:false
+  showEditor:false,
+  showFormEditor:false
 
 };
 
@@ -134,6 +135,12 @@ export default function cardsReducer(state = defaultState, action) {
               ...state,
               showEditor: action.payload,
           }
+
+    case SHOW_FORM_EDITOR:
+      return {
+        ...state,
+        showFormEditor: action.payload,
+      }
 
     default:
       return state

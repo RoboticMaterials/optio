@@ -14,17 +14,39 @@ import {FIELD_COMPONENT_NAMES, LOT_EDITOR_SIDEBAR_OPTIONS} from "../editor_sideb
 const LotFormCreator = (props) => {
 
 	const {
-		preview
+		preview,
+		formMode,
+		errors,
+		values,
+		touched,
+		isSubmitting,
+		submitCount,
+		setFieldValue,
+		submitForm,
+		loaded,
+		fieldName,
+		fieldParent,
 	} = props
 
-	const [dropContainers, setDropContainers] = useState([[{_id: "1", content: [
-			FIELD_COMPONENT_NAMES.TEXT_BOX
-		]}]])
+	const {
+		fields: items = []
+	} = values || {}
+
+	// const [items, setFieldValue] = useState([])
 
 	useEffect( () => {
-		console.log("LotFormCreator dropContainers",dropContainers)
+		console.log("LotFormCreator values",values)
 
-	}, [dropContainers])
+	}, [items])
+	useEffect( () => {
+		console.log("LotFormCreator values",values)
+
+	}, [values])
+	useEffect( () => {
+		console.log("LotFormCreator errors",errors)
+
+	}, [errors])
+	console.log("LotFormCreator errors",errors)
 
 	const findArrLocation = (id, arr, prev) => {
 		let indices = [...prev]
@@ -69,7 +91,7 @@ const LotFormCreator = (props) => {
 
 			const newItem = {
 				_id: uuidv4(),
-				content: [component]
+				component
 			}
 
 			let selected_IMMUTABLE
@@ -80,8 +102,8 @@ const LotFormCreator = (props) => {
 				selected_IMMUTABLE = immutableInsert(selected, newItem, finalIndex)
 			}
 
-			const updatedData = getUpdate(dropContainers, indexPattern, selected_IMMUTABLE)
-			setDropContainers(updatedData)
+			const updatedData = getUpdate(items, indexPattern, selected_IMMUTABLE)
+			setFieldValue("fields", updatedData, true)
 		}
 
 	}
@@ -103,7 +125,7 @@ const LotFormCreator = (props) => {
 
 			const newItem = {
 				_id: uuidv4(),
-				content: [component]
+				component
 			}
 
 			let selected_IMMUTABLE //= fromJS(selected)
@@ -117,8 +139,8 @@ const LotFormCreator = (props) => {
 				selected_IMMUTABLE = immutableInsert(selected, newItem, finalIndex)
 			}
 
-			const updatedData = getUpdate(dropContainers, indexPattern, selected_IMMUTABLE)
-			setDropContainers(updatedData)
+			const updatedData = getUpdate(items, indexPattern, selected_IMMUTABLE)
+			setFieldValue("fields", updatedData, true)
 
 			// selected.splice(finalIndex, isRow ? 1 : 0, isRow ? [selected[finalIndex], newItem ] : newItem)
 		}
@@ -141,12 +163,12 @@ const LotFormCreator = (props) => {
 
 			const newItem = {
 				_id: uuidv4(),
-				content: [component]
+				component
 			}
 
 			const selected_IMMUTABLE = immutableInsert(selected, newItem, finalIndex)
-			const updatedData = getUpdate(dropContainers, indexPattern, selected_IMMUTABLE)
-			setDropContainers(updatedData)
+			const updatedData = getUpdate(items, indexPattern, selected_IMMUTABLE)
+			setFieldValue("fields", updatedData, true)
 		}
 
 	}
@@ -179,22 +201,22 @@ const LotFormCreator = (props) => {
 
 			const newItem = {
 				_id: uuidv4(),
-				content: [component]
+				component
 			}
 
 			const selected_IMMUTABLE = immutableInsert(selected, newItem, finalIndex + 1)
 
-			const updatedData = getUpdate(dropContainers, indexPattern, selected_IMMUTABLE)
-			setDropContainers(updatedData)
+			const updatedData = getUpdate(items, indexPattern, selected_IMMUTABLE)
+			setFieldValue("fields", updatedData, true)
 		}
 	}
 
 	const getSelected = (id) => {
 
-		let [indexPattern, found] = findArrLocation(id, dropContainers, [])
+		let [indexPattern, found] = findArrLocation(id, items, [])
 		const finalIndex = indexPattern.pop()
 
-		let selected = [...dropContainers]
+		let selected = [...items]
 		let isRow = (indexPattern.length % 2 === 0)
 
 		if (isArray(indexPattern)) {
@@ -271,13 +293,13 @@ const LotFormCreator = (props) => {
 
 		let updatedData
 		if(selected_IMMUTABLE.length > 0) {
-			updatedData = getUpdate(dropContainers, indexPattern, selected_IMMUTABLE)
+			updatedData = getUpdate(items, indexPattern, selected_IMMUTABLE)
 		}
 		else {
-			updatedData = immutableDelete(dropContainers, indexPattern.pop())
+			updatedData = immutableDelete(items, indexPattern.pop())
 		}
 
-		setDropContainers(updatedData)
+		setFieldValue("fields", updatedData, true)
 
 
 	}
@@ -332,11 +354,11 @@ const LotFormCreator = (props) => {
 							console.log("prevItems",prevItems)
 							const newItem = {
 								_id: uuidv4(),
-								content: [component]
+								component
 							}
 
-							const withInsert = immutableInsert(dropContainers, [newItem],0)
-							setDropContainers(withInsert)
+							const withInsert = immutableInsert(items, [newItem],0)
+							setFieldValue("fields", withInsert)
 						}
 
 					}}
@@ -363,7 +385,7 @@ const LotFormCreator = (props) => {
 						{currRow.map((currItem, currItemIndex) => {
 							const {
 								_id: dropContainerId,
-								content
+								component
 							} = currItem || {}
 
 
@@ -371,8 +393,9 @@ const LotFormCreator = (props) => {
 
 							return <DropContainer
 								key={dropContainerId}
+								indexPattern={[currRowIndex, currItemIndex]}
 								onDeleteClick={handleDeleteClick}
-								content={content}
+								component={component}
 								id={dropContainerId}
 								onTopDrop={handleTopDrop}
 								onBottomDrop={handleBottomDrop}
@@ -411,10 +434,10 @@ const LotFormCreator = (props) => {
 							if(addedIndex !== null) {
 								const newItem = {
 									_id: uuidv4(),
-									content: [component]
+									component
 								}
-								const withInsert = immutableInsert(dropContainers, [newItem],currRowIndex+1)
-								setDropContainers(withInsert)
+								const withInsert = immutableInsert(items, [newItem],currRowIndex+1)
+								setFieldValue("fields", withInsert)
 							}
 						}}
 						shouldAcceptDrop={()=>{return true}}
@@ -436,7 +459,7 @@ const LotFormCreator = (props) => {
 
 	return (
 		<>
-			{mapContainers(dropContainers, true, dropContainers)}
+			{mapContainers(items, true, items)}
 		</>
 	)
 

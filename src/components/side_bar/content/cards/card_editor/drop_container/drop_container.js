@@ -14,7 +14,7 @@ const DropContainer = (props) => {
 		onLeftDrop,
 		onRightDrop,
 		onCenterDrop,
-		content,
+		component,
 		onDragTopEnter,
 		onDragTopLeave,
 		onDragBottomEnter,
@@ -24,7 +24,8 @@ const DropContainer = (props) => {
 		bottom,
 		left,
 		right,
-		preview
+		preview,
+		indexPattern
 
 	} = props
 
@@ -98,25 +99,20 @@ const DropContainer = (props) => {
 						<Draggable key={id}>
 
 
-						{content.map((component) => {
-							if(preview) {
-								return(
-									<FieldComponentMapper
-										component={component}
-									/>
-								)
-							}
-							return(
-								<FieldWrapper
-									name={id}
-									onDeleteClick={() => setDeleted(true)}
-								>
-									<FieldComponentMapper
-										component={component}
-									/>
-								</FieldWrapper>
-							)
-						})}
+						{preview ?
+							<FieldComponentMapper
+								component={component}
+							/>
+							:
+							<FieldWrapper
+								name={`fields[${indexPattern[0]}][${indexPattern[1]}.fieldName]`}
+								onDeleteClick={() => setDeleted(true)}
+							>
+								<FieldComponentMapper
+									component={component}
+								/>
+							</FieldWrapper>
+						}
 						</Draggable>
 					{/*</div>*/}
 

@@ -86,12 +86,13 @@ const LotEditorSidebar = (props) => {
                 <Container
                     groupName="lot_field_buttons"
                     getChildPayload={index => {
-                        const payload = Object.entries(LOT_EDITOR_SIDEBAR_OPTIONS)[index]
-                        console.log("payload",payload)
-                        return {
-                            key: payload[0],
-                            ...payload[1]
+                        const selected = Object.entries(LOT_EDITOR_SIDEBAR_OPTIONS)[index]
+                        const payload = {
+                            key: selected[0],
+                            ...selected[1]
                         }
+                        console.log("payload",payload)
+                        return payload
                     }}
                     getGhostParent={()=>{
                         return document.body

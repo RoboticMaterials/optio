@@ -3,6 +3,7 @@ export const SCHEDULE = 'SCHEDULE';
 export const CARD = 'CARD';
 export const CARDS = 'CARDS';
 export const SHOW_EDITOR = 'CARDS';
+export const SHOW_FORM_EDITOR = 'SHOW__FORM_EDITOR';
 export const LOT = 'LOT';
 export const LOTS = 'LOTS';
 export const PROCESS_CARDS = 'PROCESS_CARDS';
