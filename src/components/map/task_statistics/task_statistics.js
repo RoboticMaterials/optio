@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 // Import Styles
 import * as styled from './task_statistics.style'
 import taskAnalysisReducer from "../../../redux/reducers/task_analysis_reducer";
+import {getTasksAnalysis} from "../../../redux/actions/task_analysis_actions";
 
 const TaskStatistics = (props) => {
 
@@ -13,18 +14,18 @@ const TaskStatistics = (props) => {
         d3,
     } = props
 
+    const dispatch = useDispatch()
+    const onGetTasksAnalysis = () => dispatch(getTasksAnalysis())
+
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const positions = useSelector(state => state.positionsReducer.positions)
     const tasksAnalysis = useSelector(state => state.taskAnalysisReducer.tasksAnalysis) || {}
 
-
-
     useEffect(() => {
+        onGetTasksAnalysis()
     }, [])
-
-
 
     const handleSingleTask = (task) => {
         if (task === undefined) return null

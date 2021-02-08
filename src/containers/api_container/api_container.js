@@ -61,7 +61,7 @@ const ApiContainer = (props) => {
     const onGetTasks = () => dispatch(getTasks())
     const onGetSounds = (api) => dispatch(getSounds(api))
     const onGetTaskQueue = () => dispatch(getTaskQueue())
-    const onGetTasksAnalysis = () => dispatch(getTasksAnalysis())
+
     const dispatchGetDataStream = () => dispatch(getDataStream())
 
     const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
@@ -318,8 +318,6 @@ const ApiContainer = (props) => {
         const processes = await onGetProcesses()
         const cards = onGetCards()
 
-        const tasksAnalysis = await onGetTasksAnalysis()
-
         const status = await onGetStatus()
         const getSchedules = await onGetSchedules()
 
@@ -426,7 +424,6 @@ const ApiContainer = (props) => {
     const loadMapData = async () => {
         const stations = await onGetStations();
         const positions = await onGetPositions();
-        const tasksAnalysis = await onGetTasksAnalysis()
     }
 
     /*
