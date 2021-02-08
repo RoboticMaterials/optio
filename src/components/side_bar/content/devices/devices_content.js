@@ -25,6 +25,7 @@ import DeviceItem from './device_item/device_item'
 // Import Actions
 import { putDevices, postDevices, getDevices, deleteDevices, setSelectedDevice } from '../../../../redux/actions/devices_actions'
 import { setSelectedStation, putStation, postStation } from '../../../../redux/actions/stations_actions'
+import { putDashboard } from '../../../../redux/actions/dashboards_actions'
 import { postPosition, putPosition, setSelectedStationChildrenCopy } from '../../../../redux/actions/positions_actions'
 import { postDashboard } from '../../../../redux/actions/dashboards_actions'
 import * as stationActions from '../../../../redux/actions/stations_actions'
@@ -48,6 +49,7 @@ const DevicesContent = () => {
     const dispatchPutDevice = (device, ID) => dispatch(putDevices(device, ID))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchSetSelectedDevice = (selectedDevice) => dispatch(setSelectedDevice(selectedDevice))
+    const dispatchPutDashboards = (dashboard, id) => dispatch(putDashboard(dashboard, id))
 
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
@@ -115,10 +117,21 @@ const DevicesContent = () => {
     const onSaveDevice = async () => {
 
         // Button Structure
+        // 'name': 'Send to Idle Location',
+        // 'color': '#FF4B4B',
+        // 'task_id': 'custom_task',
+        // 'custom_task': {
+        //     'type': 'position_move',
+        //     'position': device.idle_location,
+        //     'device_type': 'MiR_100',
+        // },
+        // 'deviceType': 'MiR_100',
+        // 'id': 'custom_task_idle'
 
         // If a AMR, then just put device, no need to save locaiton since it does not need one
         if (selectedDevice.device_model === 'MiR100') {
 
+            // Handle Idle Location changes
             // If the idle location of selected device and the unedited version of selected device is different, then change the dashboard button
             if (selectedDevice.idle_location !== devices[selectedDevice._id].idle_location) {
 
@@ -131,13 +144,17 @@ const DevicesContent = () => {
                     dashboard.buttons.map((button, ind) => {
                         // If the button uses the old idle location, then delete the button
                         if (!!button.custom_task && button.custom_task.position === devices[selectedDevice._id].idle_location) {
-                            // Delete button and put dashboard
+
+                            // Delete button
+                            dashboard.buttons.splice(ind, 1)
                         }
                     })
                 }
 
                 // Add/edit the dashboard button
                 else {
+
+                    // Used to see if an idleButton alread exists
                     let idleButtonExists = false
 
                     dashboard.buttons.map((button, ind) => {
@@ -147,14 +164,38 @@ const DevicesContent = () => {
                             idleButtonExists = true
 
                             // Edit the existing button to use the new idle location
+                            button = {
+                                ...button,
+                                custom_task: {
+                                    ...button.custom_task,
+                                    position: selectedDevice.idle_location
+                                }
+                            }
+                            // Splice in the new button
+                            dashboard.buttons.splice(ind, 1, button)
                         }
                     })
 
                     // If the button doesnt exist then add the button to the dashbaord
-                    if(!idleButtonExists) {
-
+                    if (!idleButtonExists) {
+                        const newButton = {
+                            'name': 'Send to Idle Location',
+                            'color': '#FF4B4B',
+                            'task_id': 'custom_task',
+                            'custom_task': {
+                                'type': 'position_move',
+                                'position': selectedDevice.idle_location,
+                                'device_type': 'MiR_100',
+                            },
+                            'deviceType': 'MiR_100',
+                            'id': 'custom_task_idle'
+                        }
+                        dashboard.buttons.push(newButton)
                     }
                 }
+
+                // Put the dashboard
+                await dispatchPutDashboards(dashboard, dashboard._id.$oid)
             }
 
 
