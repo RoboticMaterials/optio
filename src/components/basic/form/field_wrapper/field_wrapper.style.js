@@ -28,11 +28,15 @@ export const FieldComponentContainer = styled.div`
   padding: 1rem;
   padding-bottom: 1.75rem;
   padding-left: .5rem;
+  padding-right: 2.5rem;
   border-radius: 1rem;
   z-index: 5;
   transition: all ease 0.5s;
   align-items: center;
   position: relative;
+  min-width: 14rem;
+  align-items: center;
+  justify-content: center;
   
   background: ${props => props.updateColor ? "linear-gradient(90deg, rgb(152, 152, 152) 0%, rgb(227, 227, 227) 100%)" : "transparent"};
 
@@ -50,6 +54,8 @@ export const DeleteIcon = styled.i`
   ${commonIcon};
   //color: #ec0000;
   margin-left: 1rem;
+  position: absolute;
+  right: 1rem;
 `
 
 export const AlignIcon = styled.i`

@@ -1,8 +1,8 @@
 import styled, {css} from 'styled-components'
 
 export const ColumnContainer = styled.div`
-	//display: flex;
-  //	flex-direction: column;
+	display: flex;
+  	flex-direction: column;
   flex: ${props => props.deleted ? 0 : 1};
   transition: opacity 0.4s ease;
   transition: flex 0.4s ease;
@@ -13,14 +13,16 @@ export const ColumnContainer = styled.div`
   min-width: ${props => props.deleted ? 0 : "fit-content"};
   //height: ${props => props.deleted ? 0 : "fit-content"};
   overflow: hidden;
-  //background: red;
-  //alignSelf: stretch;
+  background: red;
+  align-self: stretch;
   //transition: all 3s ease;
 `
 
 export const RowContainer = styled.div`
 	display: flex;
-  flex: 5;
+	flex: 1;
+  background: blue;
+  align-items: center;
   
 `
 

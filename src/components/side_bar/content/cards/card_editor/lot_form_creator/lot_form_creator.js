@@ -385,13 +385,15 @@ const LotFormCreator = (props) => {
 						{currRow.map((currItem, currItemIndex) => {
 							const {
 								_id: dropContainerId,
-								component
+								component,
+								fieldName
 							} = currItem || {}
 
 
 							const isLastItem = currItemIndex === currRow.length - 1
 
 							return <DropContainer
+								fieldName={fieldName}
 								key={dropContainerId}
 								indexPattern={[currRowIndex, currItemIndex]}
 								onDeleteClick={handleDeleteClick}

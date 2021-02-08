@@ -7,29 +7,40 @@ import CalendarPlaceholder from "../../../../../basic/calendar_placeholder/calen
 
 const FieldComponentMapper = (props) => {
 	const {
-		component
+		component,
+		fieldName
 	} = props
 
 
 	switch(component) {
 		case FIELD_COMPONENT_NAMES.TEXT_BOX: {
 			return(
-				<Textbox style={{width: "15rem"}}/>
+				<styled.Container>
+					{fieldName &&
+					<styled.Label>{fieldName}:</styled.Label>
+					}
+					<Textbox style={{width: "15rem"}}/>
+				</styled.Container>
 			)
 		}
 		case FIELD_COMPONENT_NAMES.NUMBER_INPUT: {
 			return(
+				<styled.Container>
+					{fieldName &&
+					<styled.Label>{fieldName}:</styled.Label>
+					}
 				<NumberInput/>
+				</styled.Container>
 			)
 		}
 		case FIELD_COMPONENT_NAMES.CALENDAR_SINGLE: {
 			return(
-				<CalendarPlaceholder text="Start Date"/>
+				<CalendarPlaceholder text={fieldName ? fieldName : "Start Date"}/>
 			)
 		}
 		case FIELD_COMPONENT_NAMES.CALENDAR_START_END: {
 			return(
-				<CalendarPlaceholder selectRange={true} startText="Start Date" endText={"End Date"}/>
+				<CalendarPlaceholder selectRange={true} startText="Start" endText={"End"}/>
 			)
 		}
 		default:

@@ -144,8 +144,7 @@ export const ResizeHandle = styled.div`
     cursor: ew-resize;
     width: 4px;
     height: 30px;
-    background: ${props => props.theme.bg.octonary};
-    background: blue;
+    background: ${props => props.theme.bg.tertiary};
     border-radius: 8px;
     text-align: center;
     z-index: 2;

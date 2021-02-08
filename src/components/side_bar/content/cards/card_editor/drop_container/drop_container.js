@@ -25,7 +25,8 @@ const DropContainer = (props) => {
 		left,
 		right,
 		preview,
-		indexPattern
+		indexPattern,
+		fieldName
 
 	} = props
 
@@ -93,15 +94,32 @@ const DropContainer = (props) => {
 						index
 					}
 					isRow={false}
-					style={{display: "flex", flex: 1}}
+					style={{display: "flex", flex: 1, alignSelf: "stretch"}}
 				/>
 					{/*<div style={{}}>*/}
-						<Draggable key={id}>
+						<Draggable key={id} >
+							<div style={{position: "relative"}}>
+								<div style={{position: "absolute", display: "flex", alignItems: "stretch", left: 0, bottom: 0, top: 0, right: "40%", background: "green"}}>
+									<ContainerWrapper
+										onDrop={(dropResult)=>onLeftDrop(id, dropResult)}
+										shouldAcceptDrop={()=>{return true}}
+										getGhostParent={()=>document.body}
+										groupName="lot_field_buttons"
+										getChildPayload={index =>
+											index
+										}
+										isRow={false}
+										style={{background: "red", flex: 1, alignSelf: "stretch", zIndex: 50}}
+
+									/>
+								</div>
+
 
 
 						{preview ?
 							<FieldComponentMapper
 								component={component}
+								fieldName={fieldName}
 							/>
 							:
 							<FieldWrapper
@@ -109,10 +127,12 @@ const DropContainer = (props) => {
 								onDeleteClick={() => setDeleted(true)}
 							>
 								<FieldComponentMapper
+									fieldName={fieldName}
 									component={component}
 								/>
 							</FieldWrapper>
 						}
+							</div>
 						</Draggable>
 					{/*</div>*/}
 
@@ -128,7 +148,7 @@ const DropContainer = (props) => {
 					getChildPayload={index =>
 						index
 					}
-					style={{display: "flex", flex: 1}}
+					style={{display: "flex", flex: 1, alignSelf: "stretch"}}
 				/>
 				}
 			</styled.RowContainer>
