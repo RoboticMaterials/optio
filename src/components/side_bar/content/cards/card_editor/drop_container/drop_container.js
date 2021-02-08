@@ -1,7 +1,9 @@
-import {Container} from "react-smooth-dnd";
-import React from "react";
+import {Container, Draggable} from "react-smooth-dnd";
+import React, {useEffect, useState} from "react";
 import * as styled from "./drop_container.style"
 import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
+import Textbox from "../../../../../basic/textbox/textbox";
+import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
 
 const DropContainer = (props) => {
 	const {
@@ -12,16 +14,54 @@ const DropContainer = (props) => {
 		onRightDrop,
 		onCenterDrop,
 		content,
+		onDragTopEnter,
+		onDragTopLeave,
+		onDragBottomEnter,
+		onDragBottomLeave,
+		onDeleteClick,
+		top,
+		bottom,
+		left,
+		right
+
 	} = props
+
+	// const [hoveringLeft, setHoveringLeft] = useState(false)
+	// const [hoveringRight, setHoveringRight] = useState(false)
+	// const [hoveringTop, setHoveringTop] = useState(false)
+	// const [hoveringBottom, setHoveringBottom] = useState(false)
+	const [deleted, setDeleted] = useState(false)
+
+	useEffect( () => {
+		let timeout
+
+		if(deleted) {
+			timeout = setTimeout(() => {
+				onDeleteClick(id)
+			}, 500)
+		}
+
+		return () => {
+			clearTimeout(timeout)
+		}
+	}, [deleted]);
+
+	useEffect( () => {
+		setDeleted(false)
+
+		return () => {
+		}
+	}, [id]);
 
 	const shouldAcceptDrop = (sourceContainerOptions, payload) => {
 		return true
 	}
 
 	return (
-		<styled.ColumnContainer>
+		<styled.ColumnContainer deleted={deleted}>
 			{/* Insert a New Row Above */}
-			<Container
+			{top &&
+			<ContainerWrapper
 				onDrop={(dropResult)=>onTopDrop(id, dropResult)}
 				shouldAcceptDrop={shouldAcceptDrop}
 				// getGhostParent={()=>document.body}
@@ -29,74 +69,67 @@ const DropContainer = (props) => {
 				getChildPayload={index =>
 					index
 				}
-				style={{ alignSelf: "stretch", display: "flex", height: ".5rem"}}
+				style={{ alignSelf: "stretch", display: "flex"}}
 				// style={{overflow: "auto",height: "100%", padding: "1rem 1rem 2rem 1rem" }}
 			>
-				<div style={{background: "orange", flex: 1, alignSelf: "stretch"}}></div>
-			</Container>
+				<styled.TopContainer
+					// hovering={hoveringTop}
+				/>
+			</ContainerWrapper>
+			}
+
 
 			{/* Insert Into Current Row*/}
 			<styled.RowContainer>
-				<Container
-					orientation={"horizontal"}
+				<ContainerWrapper
 					onDrop={(dropResult)=>onLeftDrop(id, dropResult)}
 					shouldAcceptDrop={()=>{return true}}
-					// getGhostParent={()=>document.body}
+					getGhostParent={()=>document.body}
 					groupName="lot_field_buttons"
 					getChildPayload={index =>
 						index
 					}
-					style={{width: ".5rem", alignSelf: "stretch", display: "flex"}}
-					// style={{overflow: "auto",height: "100%", padding: "1rem 1rem 2rem 1rem" }}
-				>
-					<div style={{background: "red", flex: 1, alignSelf: "stretch"}}></div>
-				</Container>
+					isRow={false}
+					style={{display: "flex", flex: 1}}
+				/>
+					{/*<div style={{}}>*/}
+						<Draggable key={id}>
 
-				{/*<Container*/}
-				{/*	onDrop={(dropResult)=>onCenterDrop(id, dropResult)}*/}
-				{/*	shouldAcceptDrop={()=>{return true}}*/}
-				{/*	// getGhostParent={()=>document.body}*/}
-				{/*	groupName="lot_field_buttons"*/}
-				{/*	getChildPayload={index =>*/}
-				{/*		index*/}
-				{/*	}*/}
-				{/*	style={{alignSelf: "stretch", display: "flex"}}*/}
-				{/*	// style={{overflow: "auto",height: "100%", padding: "1rem 1rem 2rem 1rem" }}*/}
-				{/*>*/}
-					<div style={{background: "blue", flex: 5, alignSelf: "stretch"}}>
 
 						{content.map((Component) => {
 							return(
 								<styled.ComponentContainer>
-									<FieldWrapper>
+									<FieldWrapper
+										name={id}
+										onDeleteClick={() => setDeleted(true)}
+									>
 									{Component}
 									</FieldWrapper>
 								</styled.ComponentContainer>
 							)
 						})}
-					</div>
-				{/*</Container>*/}
+						</Draggable>
+					{/*</div>*/}
 
 				{/* Insert Into New Row Below*/}
-				<Container
+				{right &&
+				<ContainerWrapper
 					// orientation={"horizontal"}
 					onDrop={(dropResult)=>onRightDrop(id, dropResult)}
 					shouldAcceptDrop={()=>{return true}}
-					// getGhostParent={()=>document.body}
+					getGhostParent={()=>document.body}
 					groupName="lot_field_buttons"
+					isRow={false}
 					getChildPayload={index =>
 						index
 					}
-					style={{width: ".5rem", alignSelf: "stretch", display: "flex"}}
-					// style={{overflow: "auto",height: "100%", padding: "1rem 1rem 2rem 1rem" }}
-				>
-					<div style={{background: "green", flex: 1, alignSelf: "stretch"}}></div>
-				</Container>
-
-
+					style={{display: "flex", flex: 1}}
+				/>
+				}
 			</styled.RowContainer>
 
-			<Container
+			{bottom &&
+			<ContainerWrapper
 				onDrop={(dropResult)=>onBottomDrop(id, dropResult)}
 				shouldAcceptDrop={()=>{return true}}
 				// getGhostParent={()=>document.body}
@@ -104,14 +137,32 @@ const DropContainer = (props) => {
 				getChildPayload={index =>
 					index
 				}
-				style={{height: ".5rem", alignSelf: "stretch", display: "flex"}}
+				style={{alignSelf: "stretch", display: "flex"}}
 				// style={{overflow: "auto",height: "100%", padding: "1rem 1rem 2rem 1rem" }}
 			>
-				<div style={{background: "purple", flex: 1, alignSelf: "stretch"}}></div>
-			</Container>
+				<styled.BottomContainer
+					// hovering={hoveringBottom}
+				/>
+			</ContainerWrapper>
+			}
 		</styled.ColumnContainer>
 
 	)
 }
+
+// Specifies propTypes
+DropContainer.propTypes = {
+};
+
+// Specifies the default values for props:
+DropContainer.defaultProps = {
+	top: true,
+	bottom: true,
+	left: true,
+	right: true,
+};
+
+
+
 
 export default DropContainer

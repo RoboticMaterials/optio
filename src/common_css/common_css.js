@@ -16,3 +16,28 @@ export const newGlow = css`
 export const goodGlow = css`
   ${props => glow(props.theme.good)};
 `;
+
+export const commonIcon = css`
+  //border: none;
+  font-size: 2rem;
+  transition: all 0.25s ease;
+  color: ${props => props.color};
+
+
+  filter: brightness(${props => props.filter});
+
+  &:focus{
+    outline: 0 !important
+  }
+  
+  &:hover {
+    cursor: pointer;
+    filter: brightness(110%);
+  }
+
+  &:active{
+    box-shadow: none;
+    filter: brightness(85%);
+  }
+
+`

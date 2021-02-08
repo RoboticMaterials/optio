@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 import {css} from 'styled-components'
+import {borderGlowCss} from "../../../widgets/widget_pages/dashboards_page/dashboard_buttons/dashboard_buttons.style";
+import {commonIcon, newGlow} from "../../../../common_css/common_css";
 
 
 export const IconContainerComponent = styled.div`
@@ -14,32 +16,53 @@ export const IconContainerComponent = styled.div`
 `;
 
 export const DefaultContainerComponent = styled.div`
-	//background: white;
-  	//padding: 1rem;
-  	
   display: flex;
   align-items: center;
+  position: relative;
+  
 `
 
 export const FieldComponentContainer = styled.div`
-  background: white;
-  padding: 2rem;
+  //background: white;
+  display: flex;
+  padding: 1rem;
   padding-left: .5rem;
   border-radius: 1rem;
+  z-index: 5;
+  transition: all ease 0.5s;
+  align-items: center;
+  
+  background: ${props => props.updateColor ? "linear-gradient(90deg, rgb(152, 152, 152) 0%, rgb(227, 227, 227) 100%)" : "transparent"};
+
+
+`
+
+export const DeleteContainer = styled.div`
+  background: ${props => props.updateColor ? "linear-gradient(90deg, rgb(227, 227, 227) 0%, rgb(152, 152, 152) 100%)" : "transparent"};
+  padding: .5rem 1rem;
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+`
+
+export const DeleteIcon = styled.i`
+  ${commonIcon};
+  //color: #ec0000;
+  margin-left: 1rem;
 `
 
 export const LabelContainer = styled.div`
-  background: white;
   left: .2rem;
-  padding: 1rem;
+  padding: .45rem;
   padding-right: .5rem;
   border-top-left-radius: 1rem;
   border-bottom-left-radius: 1rem;
   position: relative;
+  transition: all 1s ease;
+  background: ${props => props.updateColor ? "linear-gradient(90deg, rgb(215, 215, 215) 0%, rgb(152, 152, 152) 100%)" : "transparent"};
 `
 
 export const GapFiller = styled.div`
-	background: white;
+	//background: white;
   position: absolute;
   left: 0;
   top: 0;

@@ -20,6 +20,7 @@ import NumberField from "../../../../../basic/form/number_field/number_field";
 import NumberInput from "../../../../../basic/number_input/number_input";
 import DraggableSurface from "../draggable_surface/draggable_surface";
 import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
+import FieldComponentMapper from "../field_component_mapper/field_component_mapper";
 
 const logger = log.getLogger("LotEditorSidebar")
 
@@ -30,13 +31,26 @@ export const EDITOR_SIDEBAR_TYPES = {
     }
 }
 
+export const FIELD_COMPONENT_NAMES = {
+    TEXT_BOX: "TEXT_BOX",
+    NUMBER_INPUT: "NUMBER_INPUT",
+    CALENDAR_SINGLE: "CALENDAR_SINGLE",
+    CALENDAR_START_END: "CALENDAR_START_END",
+}
 const OPTIONS = {
     TEXTBOX: {
-        component: <Textbox style={{width: "30rem"}} />
+        component: FIELD_COMPONENT_NAMES.TEXT_BOX
     },
     NUMBER_INPUT: {
-        component: <NumberInput/>
-    }
+        component: FIELD_COMPONENT_NAMES.NUMBER_INPUT
+    },
+    CALENDAR_SINGLE: {
+        component: FIELD_COMPONENT_NAMES.CALENDAR_SINGLE
+    },
+    CALENDAR_START_END: {
+        component: FIELD_COMPONENT_NAMES.CALENDAR_START_END
+    },
+
 }
 const LotEditorSidebar = (props) => {
 
@@ -60,7 +74,7 @@ const LotEditorSidebar = (props) => {
     // theme
     const themeContext = useContext(ThemeContext);
 
-    const [width, setWidth] = useState(window.innerWidth < 2000 ? 400 : 700); // used for tracking sidebar dimensions
+    const [width, setWidth] = useState(window.innerWidth < 2000 ? 450 : 450); // used for tracking sidebar dimensions
     const [isSmall, setSmall] = useState(testSize(width)); // used for tracking sidebar dimensions
     const [type, setType] = useState(Object.keys(EDITOR_SIDEBAR_TYPES)[0]); // used for tracking sidebar dimensions
 
@@ -89,7 +103,9 @@ const LotEditorSidebar = (props) => {
                         return <Draggable key={currIndex}>
                             <style.ButtonRow
                             >
-                                {value.component}
+                                <FieldComponentMapper
+                                    component={value.component}
+                                />
                             </style.ButtonRow>
                         </Draggable>
                     })

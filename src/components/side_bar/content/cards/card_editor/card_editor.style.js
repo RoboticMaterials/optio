@@ -16,7 +16,7 @@ export const Container = styled(Modal)`
   bottom: auto;
 
   position: absolute;
-
+	overflow: hidden;
   z-index: 50;
   
   min-width: 95%;
@@ -105,7 +105,8 @@ export const TheBody = styled.div`
   flex: 1;
   display: flex;
   padding: 1rem;
-  min-height: 30rem;
+  min-height: 40rem;
+  //background: lime;
 
 `
 
@@ -217,6 +218,8 @@ export const StyledForm = styled(Form)`
     flex: 1;
     width: 100%;
     max-width: 100%;
+  overflow: hidden;
+  max-height: 100%;
     // max-height: 100%;
     // overflow-x: hidden;
     border-radius: .5rem;

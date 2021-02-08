@@ -59,12 +59,14 @@ export const ListContainer = styled.div`
     //padding-top: 3rem;
     //padding-left: 2rem;
     //padding-right: 2rem;
+  padding: 1rem 0;
   position: relative;
     
-    //display: flex;
-    //flex-direction: column;
-    //align-self: stretch;
-    //flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    flex: 1;
+  align-items: center;
 
     overflow-y: auto;
     overflow-x: hidden;

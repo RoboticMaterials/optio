@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useRef, useState} from "react";
 import PropTypes from 'prop-types';
 import { useField, useFormikContext } from "formik";
 
@@ -14,11 +14,15 @@ const FieldWrapper = (props) => {
 	const {
 		ContainerComponent,
 		// FieldComponent,
-		children
+		children,
+		onDeleteClick
 	} = props
+
 
 	const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext();
 	const [field, meta] = useField(props);
+	const [updateColor, setUpdateColor] = useState(false)
+
 
 	// extract field data
 	const {
@@ -32,21 +36,50 @@ const FieldWrapper = (props) => {
 	// does the field contain an error?
 	const hasError = touched && error
 
+	useEffect( () => {
+		const timeout = setTimeout(() => {
+			setUpdateColor(true)
+		}, 200)
+
+		return () => {
+			clearTimeout(timeout)
+		}
+	}, []);
+
+
+
+
+
 	return (
 		<ContainerComponent>
-			<styled.LabelContainer>
+			<styled.LabelContainer updateColor={updateColor}>
 				{/*<styled.GapFiller/>*/}
-				<div style={{zIndex: 5}}>
+				{/*<div style={{zIndex: 5}}>*/}
 				<Textbox
 					style={{width: "8rem"}}
 					textboxContainerStyle={{marginRight: "1rem", zIndex: 5}}
 				/>
-				</div>
+				{/*</div>*/}
 			</styled.LabelContainer>
 
-			<styled.FieldComponentContainer>
+			<styled.FieldComponentContainer updateColor={updateColor}>
 				{children}
+
+				<styled.DeleteIcon
+					onClick={() => {
+						onDeleteClick()
+					}}
+					color={"#EC0000"}
+					className={"fas fa-trash"}
+				/>
 			</styled.FieldComponentContainer>
+
+			{/*<styled.DeleteContainer updateColor={updateColor}>*/}
+
+			{/*</styled.DeleteContainer>*/}
+			{/*<i className=""></i>*/}
+
+
 		</ContainerComponent>
 	);
 };

@@ -539,7 +539,7 @@ const FormComponent = (props) => {
 					</Button>
 				</styled.Header>
 
-				<styled.RowContainer style={{flex: 1, alignItems: "stretch"}}>
+				<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
 					<LotEditorSidebar/>
 					<styled.TheBody>
 						<LotFormCreator/>
