@@ -36,8 +36,9 @@ export const FIELD_COMPONENT_NAMES = {
     NUMBER_INPUT: "NUMBER_INPUT",
     CALENDAR_SINGLE: "CALENDAR_SINGLE",
     CALENDAR_START_END: "CALENDAR_START_END",
+    T: "CALENDAR_START_END",
 }
-const OPTIONS = {
+export const LOT_EDITOR_SIDEBAR_OPTIONS = {
     TEXTBOX: {
         component: FIELD_COMPONENT_NAMES.TEXT_BOX
     },
@@ -61,7 +62,7 @@ const LotEditorSidebar = (props) => {
         stationID,
     } = props
 
-    const minWidth = 300
+    const minWidth = 450
 
     /*
     * Tests sidebar width to  determine if styling should be for small or large width
@@ -85,7 +86,7 @@ const LotEditorSidebar = (props) => {
                 <Container
                     groupName="lot_field_buttons"
                     getChildPayload={index => {
-                        const payload = Object.entries(OPTIONS)[index]
+                        const payload = Object.entries(LOT_EDITOR_SIDEBAR_OPTIONS)[index]
                         console.log("payload",payload)
                         return {
                             key: payload[0],
@@ -95,18 +96,27 @@ const LotEditorSidebar = (props) => {
                     getGhostParent={()=>{
                         return document.body
                     }}
+                    style={{
+                        position: "relative",
+
+                        display: "flex",
+                        flexDirection: "column",
+                        alignSelf: "stretch",
+                        flex: 1,
+                        alignItems: "center",
+                        overflowY: "auto",
+                        overflowX: "hidden",
+
+                    }}
                 >
                 {
-                    Object.entries(OPTIONS).map((currOption, currIndex) => {
+                    Object.entries(LOT_EDITOR_SIDEBAR_OPTIONS).map((currOption, currIndex) => {
                         const key = currOption[0]
                         const value = currOption[1]
-                        return <Draggable key={currIndex}>
-                            <style.ButtonRow
-                            >
+                        return <Draggable key={currIndex} style={{marginBottom: "1.5rem"}}>
                                 <FieldComponentMapper
                                     component={value.component}
                                 />
-                            </style.ButtonRow>
                         </Draggable>
                     })
                 }

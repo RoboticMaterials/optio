@@ -9,17 +9,16 @@ import {Container} from "react-smooth-dnd";
 import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
 import { fromJS } from "immutable";
 import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
+import {FIELD_COMPONENT_NAMES, LOT_EDITOR_SIDEBAR_OPTIONS} from "../editor_sidebar/editor_sidebar";
 
 const LotFormCreator = (props) => {
 
 	const {
-
+		preview
 	} = props
 
 	const [dropContainers, setDropContainers] = useState([[{_id: "1", content: [
-			<Textbox
-				style={{width: "20rem"}}
-			/>
+			FIELD_COMPONENT_NAMES.TEXT_BOX
 		]}]])
 
 	useEffect( () => {
@@ -384,6 +383,7 @@ const LotFormCreator = (props) => {
 								bottom={false}
 								right={true}
 								left={true}
+								preview={preview}
 								// hoveringLeft={}
 								// hoveringRight={}
 								// onDragTopEnter={}

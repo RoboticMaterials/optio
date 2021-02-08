@@ -104,7 +104,6 @@ export const TheBody = styled.div`
   overflow: auto;
   flex: 1;
   display: flex;
-  padding: 1rem;
   min-height: 40rem;
   //background: lime;
 

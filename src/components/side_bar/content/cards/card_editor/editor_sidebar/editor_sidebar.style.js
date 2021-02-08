@@ -47,13 +47,6 @@ export const CloseButton = styled(CloseOutlinedIcon)`
 	z-index: 5;
 `
 
-export const ButtonRow = styled.div`
-    margin-bottom: 1rem;
-    position: relative;
-  z-index: 500;
-    //background: red;
-`
-
 export const ListContainer = styled.div`
 
     //padding-top: 3rem;
@@ -67,12 +60,13 @@ export const ListContainer = styled.div`
     align-self: stretch;
     flex: 1;
   align-items: center;
+  
 
     overflow-y: auto;
     overflow-x: hidden;
     //z-index: 1;
     
-    background: ${props => props.theme.bg.senary};
+    background: ${props => props.theme.bg.tertiary};
    
     // hide scroll bar
     ::-webkit-scrollbar {

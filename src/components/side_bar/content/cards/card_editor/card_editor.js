@@ -52,7 +52,8 @@ const CONTENT = {
 	CALENDAR_START: "CALENDAR_START",
 	CALENDAR_END: "CALENDAR_END",
 	CALENDAR_RANGE: "CALENDAR_RANGE",
-	MOVE: "MOVE"
+	MOVE: "MOVE",
+	EDIT_FORM: "EDIT_FORM",
 }
 
 const FORM_BUTTON_TYPES = {
@@ -118,6 +119,9 @@ const FormComponent = (props) => {
 	// component state
 	const [showLotInfo, setShowLotInfo] = useState(true)
 	const [editingFields, setEditingFields] = useState(false)
+	const [preview, setPreview] = useState(false)
+
+	console.log("Card editor values",values)
 
 
 	// derived state
@@ -542,7 +546,9 @@ const FormComponent = (props) => {
 				<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
 					<LotEditorSidebar/>
 					<styled.TheBody>
-						<LotFormCreator/>
+						<LotFormCreator
+							preview={preview}
+						/>
 
 
 						{/*<DraggableSurface*/}
@@ -573,6 +579,24 @@ const FormComponent = (props) => {
 									schema={"error"}
 								>
 									Cancel
+								</Button>
+							</styled.ButtonContainer>,
+						"EDIT_FORM":
+							<styled.ButtonContainer style={{width: "100%"}}>
+								<Button
+									style={{...buttonStyle, width: "8rem"}}
+									// onClick={()=>setContent(null)}
+									schema={"ok"}
+									secondary
+								>
+									Ok
+								</Button>
+								<Button
+									style={buttonStyle}
+									onClick={()=>setPreview(!preview)}
+									schema={"error"}
+								>
+									Preview
 								</Button>
 							</styled.ButtonContainer>,
 						"HISTORY":
@@ -742,7 +766,7 @@ const CardEditor = (props) => {
 
 	const [cardId, setCardId] = useState(props.cardId) //cardId and binId are stored as internal state but initialized from props (if provided)
 	const [binId, setBinId] = useState(props.binId)
-	const [content, setContent] = useState(null)
+	const [content, setContent] = useState(CONTENT.EDIT_FORM)
 	const [loaded, setLoaded] = useState(false)
 	const [formMode, setFormMode] = useState(props.cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
 

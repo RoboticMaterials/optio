@@ -3,6 +3,7 @@ import * as styled from "./field_component_mapper.style"
 import {FIELD_COMPONENT_NAMES} from "../editor_sidebar/editor_sidebar";
 import Textbox from "../../../../../basic/textbox/textbox";
 import NumberInput from "../../../../../basic/number_input/number_input";
+import CalendarPlaceholder from "../../../../../basic/calendar_placeholder/calendar_placeholder";
 
 const FieldComponentMapper = (props) => {
 	const {
@@ -23,12 +24,12 @@ const FieldComponentMapper = (props) => {
 		}
 		case FIELD_COMPONENT_NAMES.CALENDAR_SINGLE: {
 			return(
-				<div>CALENDAR_SINGLE</div>
+				<CalendarPlaceholder text="Start Date"/>
 			)
 		}
 		case FIELD_COMPONENT_NAMES.CALENDAR_START_END: {
 			return(
-				<div>CALENDAR_START_END</div>
+				<CalendarPlaceholder selectRange={true} startText="Start Date" endText={"End Date"}/>
 			)
 		}
 		default:

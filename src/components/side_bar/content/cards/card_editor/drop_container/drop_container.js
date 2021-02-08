@@ -4,6 +4,7 @@ import * as styled from "./drop_container.style"
 import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
 import Textbox from "../../../../../basic/textbox/textbox";
 import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
+import FieldComponentMapper from "../field_component_mapper/field_component_mapper";
 
 const DropContainer = (props) => {
 	const {
@@ -22,7 +23,8 @@ const DropContainer = (props) => {
 		top,
 		bottom,
 		left,
-		right
+		right,
+		preview
 
 	} = props
 
@@ -96,16 +98,23 @@ const DropContainer = (props) => {
 						<Draggable key={id}>
 
 
-						{content.map((Component) => {
+						{content.map((component) => {
+							if(preview) {
+								return(
+									<FieldComponentMapper
+										component={component}
+									/>
+								)
+							}
 							return(
-								<styled.ComponentContainer>
-									<FieldWrapper
-										name={id}
-										onDeleteClick={() => setDeleted(true)}
-									>
-									{Component}
-									</FieldWrapper>
-								</styled.ComponentContainer>
+								<FieldWrapper
+									name={id}
+									onDeleteClick={() => setDeleted(true)}
+								>
+									<FieldComponentMapper
+										component={component}
+									/>
+								</FieldWrapper>
 							)
 						})}
 						</Draggable>

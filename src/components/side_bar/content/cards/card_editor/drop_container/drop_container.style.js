@@ -24,10 +24,6 @@ export const RowContainer = styled.div`
   
 `
 
-export const ComponentContainer = styled.div`
-	//background: pink;
-`
-
 const hoverCss = css`
   background: black;
   padding: 1rem;

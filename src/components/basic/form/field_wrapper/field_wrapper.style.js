@@ -26,11 +26,13 @@ export const FieldComponentContainer = styled.div`
   //background: white;
   display: flex;
   padding: 1rem;
+  padding-bottom: 1.75rem;
   padding-left: .5rem;
   border-radius: 1rem;
   z-index: 5;
   transition: all ease 0.5s;
   align-items: center;
+  position: relative;
   
   background: ${props => props.updateColor ? "linear-gradient(90deg, rgb(152, 152, 152) 0%, rgb(227, 227, 227) 100%)" : "transparent"};
 
@@ -48,6 +50,20 @@ export const DeleteIcon = styled.i`
   ${commonIcon};
   //color: #ec0000;
   margin-left: 1rem;
+`
+
+export const AlignIcon = styled.i`
+  ${commonIcon};
+  //color: #ec0000;
+  margin: 0 .5rem;
+`
+
+export const StyleContainer = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  
 `
 
 export const LabelContainer = styled.div`

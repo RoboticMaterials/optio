@@ -19,7 +19,7 @@ export const goodGlow = css`
 
 export const commonIcon = css`
   //border: none;
-  font-size: 2rem;
+  //font-size: 2rem;
   transition: all 0.25s ease;
   color: ${props => props.color};
 
@@ -27,7 +27,7 @@ export const commonIcon = css`
   filter: brightness(${props => props.filter});
 
   &:focus{
-    outline: 0 !important
+    //outline: 0 !important
   }
   
   &:hover {
@@ -36,7 +36,7 @@ export const commonIcon = css`
   }
 
   &:active{
-    box-shadow: none;
+    //box-shadow: none;
     filter: brightness(85%);
   }
 

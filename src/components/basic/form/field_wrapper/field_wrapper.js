@@ -15,26 +15,27 @@ const FieldWrapper = (props) => {
 		ContainerComponent,
 		// FieldComponent,
 		children,
-		onDeleteClick
+		onDeleteClick,
+		name
 	} = props
 
 
-	const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext();
-	const [field, meta] = useField(props);
+	// const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext();
+	// const [field, meta] = useField(props);
 	const [updateColor, setUpdateColor] = useState(false)
 
 
 	// extract field data
-	const {
-		value: fieldValue,
-		name: fieldName
-	} = field
+	// const {
+	// 	value: fieldValue,
+	// 	name: fieldName
+	// } = field
 
 	// extract meta data
-	const { touched, error } = meta
+	// const { touched, error } = meta
 
 	// does the field contain an error?
-	const hasError = touched && error
+	// const hasError = touched && error
 
 	useEffect( () => {
 		const timeout = setTimeout(() => {
@@ -55,7 +56,9 @@ const FieldWrapper = (props) => {
 			<styled.LabelContainer updateColor={updateColor}>
 				{/*<styled.GapFiller/>*/}
 				{/*<div style={{zIndex: 5}}>*/}
-				<Textbox
+				<TextField
+					InputComponent={Textbox}
+					name={name}
 					style={{width: "8rem"}}
 					textboxContainerStyle={{marginRight: "1rem", zIndex: 5}}
 				/>
@@ -63,6 +66,7 @@ const FieldWrapper = (props) => {
 			</styled.LabelContainer>
 
 			<styled.FieldComponentContainer updateColor={updateColor}>
+
 				{children}
 
 				<styled.DeleteIcon
@@ -72,7 +76,17 @@ const FieldWrapper = (props) => {
 					color={"#EC0000"}
 					className={"fas fa-trash"}
 				/>
+
+				<styled.StyleContainer>
+					<styled.AlignIcon color={"black"} className="fas fa-align-left"></styled.AlignIcon>
+					<styled.AlignIcon color={"black"} className="fas fa-align-justify"></styled.AlignIcon>
+					<styled.AlignIcon color={"black"} className="fas fa-align-right"></styled.AlignIcon>
+				</styled.StyleContainer>
+
+
 			</styled.FieldComponentContainer>
+
+
 
 			{/*<styled.DeleteContainer updateColor={updateColor}>*/}
 
