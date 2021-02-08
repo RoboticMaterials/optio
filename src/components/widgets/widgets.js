@@ -86,14 +86,14 @@ const Widgets = (props) => {
      * @param {*} edit
      */
     const onWidgetClose = (edit) => {
-        
+
         dispatchHoverStationInfo(null)
         dispatchWidgetLoaded(false)
 
     }
 
     // If widgetPage exists in URL params, then the widget pages are open
-    const HandleWidgetPageOpen = () => {
+    const onWidgetPageOpen = () => {
         if (!!widgetPage && (!!editingStation || !!editingPosition)) {
             dispatchHoverStationInfo(hoveringInfo)
             dispatchSetSelectedStation(null)
@@ -136,11 +136,44 @@ const Widgets = (props) => {
 
 
     // Renders the buttons under the location. useMemo is passed a blank array because the buttons only need to be rendered once
-    const handleWidgetButtons = useMemo(() => {
+    const renderWidgetButtons = useMemo(() => {
         const location = !!stations[hoveringInfo.id] ? stations[hoveringInfo.id] : positions[hoveringInfo.id]
+        const device = devices[hoveringInfo.id]
+
+        if (!!device) {
+            return (
+                <>
+                    {/* <WidgetButton
+                        id={stationID}
+                        type={'statistics'}
+                        label={'Statistics'}
+                        currentPage={widgetPage}
+
+                    /> */}
+
+                    <WidgetButton
+                        id={stationID}
+                        type={'dashboards'}
+                        label={'Dashboards'}
+                        currentPage={widgetPage}
+
+                    />
+
+                    {/* <WidgetButton
+                        id={stationID}
+                        type={'lots'}
+                        label={'Lots'}
+                        currentPage={widgetPage}
+
+                    /> */}
+
+                </>
+
+            )
+        }
 
         // If the schema is a station then show these buttons, else it's a position
-        if (location.schema === 'station') {
+        else if (location.schema === 'station') {
             // If location has a device, then see what type of widget buttons need to be displayed, else just show statistics and dashboards
             if (!!location.device_id) {
                 const device = devices[location.device_id]
@@ -316,7 +349,7 @@ const Widgets = (props) => {
     // Left outside of function so that otherplaces can access it
     const element = document.getElementById(hoveringInfo.id)
 
-    const handleWidgetPosition = (coord) => {
+    const onWidgetPosition = (coord) => {
 
         // When first hovering over, the widget has not mounted so the element is null, but once its mounted, you can use the bounding box
         if (element === null) {
@@ -369,7 +402,7 @@ const Widgets = (props) => {
                 id={hoveringInfo.id}
                 onMouseEnter={() => {
                     dispatchHoverStationInfo(hoveringInfo)
-                    handleWidgetPosition()
+                    onWidgetPosition()
                 }}
 
                 onMouseLeave={() => {
@@ -381,8 +414,8 @@ const Widgets = (props) => {
                 }}
 
                 // xPosition={hoveringInfo.xPosition + 'px'}
-                xPosition={handleWidgetPosition('x')}
-                yPosition={handleWidgetPosition('y')}
+                xPosition={onWidgetPosition('x')}
+                yPosition={onWidgetPosition('y')}
                 scale={hoveringInfo.scale}
                 widgetPage={widgetPage}
 
@@ -427,7 +460,7 @@ const Widgets = (props) => {
 
 
                     <styled.WidgetButtonContainer widgetPage={widgetPage}>
-                        {handleWidgetButtons}
+                        {renderWidgetButtons}
                     </styled.WidgetButtonContainer>
 
 
@@ -436,7 +469,7 @@ const Widgets = (props) => {
                         statistics
                     } */}
 
-                    {HandleWidgetPageOpen()}
+                    {onWidgetPageOpen()}
                 </styled.WidgetContainer>
 
 

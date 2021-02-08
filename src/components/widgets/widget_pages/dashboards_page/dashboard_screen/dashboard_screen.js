@@ -106,6 +106,7 @@ const DashboardScreen = (props) => {
     useEffect(() => {
         onDashboardOpen(true)
         dispatchGetProcesses()
+        console.log('QQQQ Selected dashboard', currentDashboard)
         return () => {
             onDashboardOpen(false)
         }

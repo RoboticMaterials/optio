@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-
-import uuid from 'uuid'
+import { useHistory, useParams } from 'react-router-dom'
 
 // Import Style
 import * as styled from './device_edit.style'
@@ -14,8 +13,8 @@ import Button from '../../../../basic/button/button'
 
 // Import actions
 import { addStation, setSelectedStation } from '../../../../../redux/actions/stations_actions'
-import * as deviceActions from '../../../../../redux/actions/devices_actions'
-import * as positionActions from '../../../../../redux/actions/positions_actions'
+import { setSelectedDevice } from '../../../../../redux/actions/devices_actions'
+import { widgetLoaded, hoverStationInfo } from '../../../../../redux/actions/widget_actions'
 
 // Import templates
 import * as templates from '../devices_templates/device_templates'
@@ -37,19 +36,20 @@ const DeviceEdit = (props) => {
         deviceLocationDelete
     } = props
 
+    const history = useHistory()
+
     const [connectionText, setConnectionText] = useState('Not Connected')
     const [connectionIcon, setConnectionIcon] = useState('fas fa-question')
     const [deviceType, setDeviceType] = useState('')
 
     const dispatch = useDispatch()
-    const dispatchAddStation = (selectedStation) => dispatch(addStation(selectedStation))
-    const dispatchSetSelectedStation = (selectedStation) => dispatch(setSelectedStation(selectedStation))
-    const onSetSelectedDevice = (selectedDevice) => dispatch(deviceActions.setSelectedDevice(selectedDevice))
-    const onAddPosition = (updatedPosition) => dispatch(positionActions.addPosition(updatedPosition))
+    const dispatchSetSelectedDevice = (selectedDevice) => dispatch(setSelectedDevice(selectedDevice))
+    const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
 
     const selectedDevice = useSelector(state => state.devicesReducer.selectedDevice)
     const devices = useSelector(state => state.devicesReducer.devices)
     const positions = useSelector(state => state.positionsReducer.positions)
+    const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
 
     // On page load, see if the device is a new device or existing device
     // TODO: This is going to fundementally change with how devices 'connect' to the cloud.
@@ -58,10 +58,13 @@ const DeviceEdit = (props) => {
         // Sets the type of device, unknown devic defaults to an RM logo while known devices use their own custom SVGs
         if (selectedDevice.device_model === 'MiR100') setDeviceType('cart')
 
+        console.log('QQQQ Editing device', selectedDevice)
+        console.log('QQQQ Device dashboard', dashboards[selectedDevice.dashboards[0]])
+
     }, [])
 
     // TODO: Not sure this is needed with IOT Implementation
-    const handleDeviceConnection = () => {
+    const onDeviceConnection = () => {
 
         // Need to see how the device is connecting
 
@@ -83,23 +86,12 @@ const DeviceEdit = (props) => {
 
     }
 
-    /**
-     * This will appear if a new device has been found with the inputed IP address
-     */
-    const handleDeviceAdd = () => {
-
-        return (
-            <>
-                <p>Connected!</p>
-            </>
-        )
-    }
 
     /**
      * This is used to place the device onto the map
      * Mir cart or AGV do not need to show this because they will already be on the map
      */
-    const handleDeviceMapLocation = () => {
+    const renderDeviceMapLocation = () => {
 
         let template = templates.defaultAttriutes
 
@@ -132,7 +124,7 @@ const DeviceEdit = (props) => {
      * This is used to set the idle location of the AMR when not in use.
      * This should only show up if th
      */
-    const handleAMRIdleLocation = () => {
+    const renderAMRIdleLocation = () => {
 
         return (
             <styled.SectionsContainer>
@@ -150,8 +142,10 @@ const DeviceEdit = (props) => {
                     closeOnSelect="true"
                     onChange={values => {
 
+
+
                         const idleLocation = values[0]._id
-                        onSetSelectedDevice({
+                        dispatchSetSelectedDevice({
                             ...selectedDevice,
                             idle_location: idleLocation,
                         })
@@ -163,29 +157,20 @@ const DeviceEdit = (props) => {
         )
     }
 
-    const handleSetChildPositionToCartCoords = (position) => {
-        Object.values(devices).map(async (device, ind) => {
-            if (device.device_model === 'MiR100') {
-
-                const devicePosition = device.position
-
-                const updatedPosition = {
-                    ...position,
-                    pos_x: devicePosition.pos_x,
-                    pos_y: devicePosition.pos_y,
-                    x: devicePosition.x,
-                    y: devicePosition.y,
-                    rotation: devicePosition.orientation,
-                }
-
-                onAddPosition(updatedPosition)
-
-            }
-        })
+    // This sets both the device name and station name to the same name
+    const onSetDeviceName = (event) => {
     }
 
-    // This sets both the device name and station name to the same name
-    const handleSetDeviceName = (event) => {
+    // Opens up the device dashboard
+    const onEditDeviceDashboard = () => {
+        const dashboardId = selectedDevice.dashboards[0]
+        const deviceId = selectedDevice._id
+
+        const url = `${deviceId}/dashboards/${dashboardId}/editing`
+
+        history.push('/locations/' + url)
+        dispatchHoverStationInfo({ id: deviceId })
+
     }
 
     return (
@@ -197,7 +182,7 @@ const DeviceEdit = (props) => {
                 <styled.RowContainer style={{ justifyContent: 'space-between' }}>
                     <styled.SettingsLabel schema={'devices'} >Device IP</styled.SettingsLabel>
 
-                    <styled.ConnectionButton onClick={() => handleDeviceConnection()} disabled={(connectionText === 'Connected' || connectionText === 'Connecting')}>
+                    <styled.ConnectionButton onClick={() => onDeviceConnection()} disabled={(connectionText === 'Connected' || connectionText === 'Connecting')}>
                         {connectionText}
                         <styled.ConnectionIcon className={connectionIcon} />
                     </styled.ConnectionButton>
@@ -225,7 +210,7 @@ const DeviceEdit = (props) => {
                     defaultValue={selectedDevice.device_name}
                     onChange={(event) => {
                         // Sets the IP address of the device to the event target vcalue
-                        handleSetDeviceName(event)
+                        onSetDeviceName(event)
                     }}
                     style={{ fontWeight: '600', fontSize: '1.5rem' }}
                     labelStyle={{ color: 'black' }}
@@ -235,10 +220,18 @@ const DeviceEdit = (props) => {
 
 
             {selectedDevice.device_model !== 'MiR100' ?
-                handleDeviceMapLocation()
+                renderDeviceMapLocation()
                 :
-                handleAMRIdleLocation()
+                renderAMRIdleLocation()
             }
+
+            <Button schema={'devices'} style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: '2rem' }}
+                onClick={() => {
+                    onEditDeviceDashboard()
+                }}
+            >
+                Edit Device Dashboard
+            </Button>
 
 
             <Button schema={'devices'} secondary style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: '2rem' }}
