@@ -15,21 +15,17 @@ const LineChart = (props) => {
 
     return (
         <ResponsiveLine
-            data={[{
-                'id': 'qqwr',
-                "color": "hsl(182, 70%, 50%)",
-                'data': data
-            }]}
+            data={data}
             // keys={['y']}
             // indexBy='x'
 
             // curve='monotoneX'
-            animate={false}
+            animate={true}
             // xScale={{ type: 'time', format: '%Y-%m-%d %H:%M:%S', useUTC: false, precision: 'second', }}
             // xFormat={'time:' + format}
             yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
             // axisBottom={null}
-            xScale={{ type: 'point' }}
+            xScale={{ type: 'point', min: 'auto', max: 'auto' }}
             margin={{ top: 22, left: 70, right: 70, bottom: 30 }}
             axisTop={null}
             axisRight={null}
@@ -44,36 +40,39 @@ const LineChart = (props) => {
                 tickOffset: 10,
                 tickValues: 4
             }}
-            enableGridX={false}
-            enableGridY={false}
+            // enableGridX={true}
+            // enableGridY={false}
             // colors={d => d.color}
             enablePoints={true}
-            pointSize={4}
+            pointSize={5}
             // pointColor={colors[selector]}
             pointBorderWidth={1}
             pointBorderColor={{ from: 'white' }}
-            // pointLabel="y"
-            // pointLabelYOffset={-12}
-
+            pointLabel="y"
+            pointLabelYOffset={-12}
+            useMesh={true}
             // crosshairType="x"
             // enableSlices={'x'}
             // sliceTooltip={ToolTipCallback}
             theme={{
+                textColor: '#ffffff',
                 axis: {
                     ticks: {
                         line: {
                             stroke: "fff",
                         },
-                        text: {
-                            fill: "fff",
-                            // fontFamily: 'Montserrat',
-                            fontSize: "0.8rem"
-                        },
+                        // text: {
+                        //     fill: "fff",
+                        //     textColor: '#ffffff',
+                        //     // fontFamily: 'Montserrat',
+                        //     fontSize: "0.8rem"
+                        // },
                     }
                 },
                 grid: {
                     line: {
-                        stroke: "",
+                        stroke: '#55575e',
+                        strokeWidth: 1,
                     }
                 },
                 crosshair: {

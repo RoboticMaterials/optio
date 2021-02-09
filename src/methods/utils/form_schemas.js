@@ -352,7 +352,9 @@ export const locationSchema = (stations, selectedLocation) => {
 export const throughputSchema = () => {
     return (
         Yup.object().shape({
-            start_time: Yup.string()
+            startOfShift: Yup.string()
+                .required('Required'),
+            endOfShift: Yup.string()
                 .required('Required'),
         })
     )
