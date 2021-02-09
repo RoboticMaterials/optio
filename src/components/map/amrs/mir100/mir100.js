@@ -1,6 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { useParams } from 'react-router-dom'
 
 import { DeviceTypes } from '../../../../constants/device_constants'
+
+// Import Actions
+import { hoverStationInfo } from '../../../../redux/actions/widget_actions'
 
 const MiR100 = (props) => {
 
@@ -8,6 +13,17 @@ const MiR100 = (props) => {
         device,
         d3
     } = props
+
+    const params = useParams()
+    const dispatch = useDispatch()
+    const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
+
+    useEffect(() => {
+        if (params.stationID !== undefined && params.stationID === props.device._id && !!params.widgetPage) {
+            dispatchHoverStationInfo({ id: device._id })
+
+        }
+    }, [])
 
     const shouldGlow = false
 

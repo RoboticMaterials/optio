@@ -160,13 +160,13 @@ const DeviceEdit = (props) => {
 
     // Opens up the device dashboard
     const onEditDeviceDashboard = () => {
-        const dashboardId = selectedDevice.dashboards[0]
-        const deviceId = selectedDevice._id
+        const dashboardID = selectedDevice.dashboards[0]
+        const deviceID = selectedDevice._id
 
-        const url = `${deviceId}/dashboards/${dashboardId}/editing`
+        // const url = `${deviceID}/dashboards/${dashboardID}/editing`
 
-        history.push('/locations/' + url)
-        dispatchHoverStationInfo({ id: deviceId })
+        history.push(`/locations/${deviceID}/dashboards/${dashboardID}/editing`)
+        dispatchHoverStationInfo({ id: deviceID })
 
     }
 

@@ -23,7 +23,6 @@ import * as style from './dashboards_page.style'
 
 // logging
 import log from "../../../../logger";
-
 const logger = log.getLogger("DashboardsPage");
 
 const DashboardsPage = (props) => {
