@@ -47,11 +47,12 @@ export const CloseButton = styled(CloseOutlinedIcon)`
 	z-index: 5;
 `
 
+export const LotTemplateButton = styled.div`
+
+`
+
 export const ListContainer = styled.div`
 
-    //padding-top: 3rem;
-    //padding-left: 2rem;
-    //padding-right: 2rem;
   padding: 1rem 0;
   position: relative;
     

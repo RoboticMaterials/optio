@@ -1,9 +1,10 @@
 import { SET } from "../types/prefixes"
-import {CARD_DRAGGING, COLUMN_HOVERING, SET_SIZE} from "../types/ui_types"
+import {CARD_DRAGGING, COLUMN_HOVERING, FIELD_DRAGGING, SET_SIZE} from "../types/ui_types"
 
 
 const defaultState = {
 	isCardDragging: false,
+	isFieldDragging: false,
 	isHoveringOverColumn: false,
 	sizes: {},
 	draggedLotInfo: {}
@@ -17,6 +18,12 @@ const cardPageReducer = (state = defaultState, action) => {
 			return {
 				...state,
 				draggedLotInfo: action.payload
+			}
+
+		case SET + FIELD_DRAGGING:
+			return {
+				...state,
+				isFieldDragging: action.payload
 			}
 
 		case SET_SIZE:

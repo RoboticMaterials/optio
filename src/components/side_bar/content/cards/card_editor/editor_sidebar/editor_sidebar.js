@@ -10,17 +10,11 @@ import { ThemeContext } from "styled-components";
 
 
 import log from '../../../../../../logger'
-import WidgetButton from "../../../../../basic/widget_button/widget_button";
-import DashboardsSidebar
-    from "../../../../../widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
-import TextField from "../../../../../basic/form/text_field/text_field";
-import Textbox from "../../../../../basic/textbox/textbox";
-import ColorField from "../../../../../basic/form/color_field/color_field";
-import NumberField from "../../../../../basic/form/number_field/number_field";
-import NumberInput from "../../../../../basic/number_input/number_input";
-import DraggableSurface from "../draggable_surface/draggable_surface";
-import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
+
 import FieldComponentMapper from "../field_component_mapper/field_component_mapper";
+import {setFieldDragging} from "../../../../../../redux/actions/card_page_actions";
+import WidgetButton from "../../../../../basic/widget_button/widget_button";
+import {TYPES} from "../../../../../widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
 
 const logger = log.getLogger("LotEditorSidebar")
 
@@ -53,6 +47,18 @@ export const LOT_EDITOR_SIDEBAR_OPTIONS = {
     },
 
 }
+
+const SIDE_BAR_MODES = {
+    FIELDS: {
+        name: "FIELDS",
+        iconName: "fas fa-edit"
+    },
+    TEMPLATES: {
+        name: "TEMPLATES",
+        iconName: "fas fa-edit"
+    }
+}
+
 const LotEditorSidebar = (props) => {
 
     const {
@@ -75,6 +81,13 @@ const LotEditorSidebar = (props) => {
     // theme
     const themeContext = useContext(ThemeContext);
 
+    // actions
+    const dispatch = useDispatch()
+    const dispatchSetFieldDragging = (bool) => dispatch(setFieldDragging(bool))
+
+    const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
+
+
     const [width, setWidth] = useState(window.innerWidth < 2000 ? 450 : 450); // used for tracking sidebar dimensions
     const [isSmall, setSmall] = useState(testSize(width)); // used for tracking sidebar dimensions
     const [type, setType] = useState(Object.keys(EDITOR_SIDEBAR_TYPES)[0]); // used for tracking sidebar dimensions
@@ -85,6 +98,15 @@ const LotEditorSidebar = (props) => {
             <style.ListContainer>
                 <Container
                     groupName="lot_field_buttons"
+                    onDragStart={(dragStartParams, b, c)=>{
+                        dispatchSetFieldDragging(true)
+                    }}
+                    onDragEnd={(dragEndParams)=>{
+                        dispatchSetFieldDragging(true)
+                    }}
+                    onDrop={() => {
+                        dispatchSetFieldDragging(false)
+                    }}
                     getChildPayload={index => {
                         const selected = Object.entries(LOT_EDITOR_SIDEBAR_OPTIONS)[index]
                         const payload = {
@@ -126,12 +148,37 @@ const LotEditorSidebar = (props) => {
         )
     }
 
+    const getTemplateButtons = () => {
+        return (
+            <style.ListContainer>
+                {
+                    Object.values(lotTemplates).map((currTemplate, currIndex) => {
+                        const {
+                            fields,
+                            name
+                        } = currTemplate
+
+                        return <style.LotTemplateButton>
+                            {name}
+                        </style.LotTemplateButton>
+                    })
+                }
+            </style.ListContainer>
+        )
+    }
+
     let renderButtons = () => {}
 
     switch(type) {
-        case Object.keys(EDITOR_SIDEBAR_TYPES)[0]:
+        case Object.keys(EDITOR_SIDEBAR_TYPES)[0]: {
             renderButtons = getFieldTemplates
             break
+        }
+
+        case Object.keys(EDITOR_SIDEBAR_TYPES)[1]: {
+            renderButtons = getTemplateButtons
+            break
+        }
 
         default:
             break
@@ -143,22 +190,37 @@ const LotEditorSidebar = (props) => {
 
     }
 
+    const renderNavButtons = () => {
+        return(
+            Object.entries(SIDE_BAR_MODES).map((currEntry, index) => {
+                const [currKey, currValue] = currEntry
+
+                return (
+                    <WidgetButton
+                        containerStyle={{marginRight: "1rem"}}
+                        label={currValue.name}
+                        color={"#dd12D2"}
+                        iconClassName={currValue.iconName}
+                        selected={type === currKey}
+                        onClick={()=>setType(currKey)}
+                        labelSize={"0.5rem"}
+                    />
+                )
+            })
+        )
+    }
+
     return (
             <style.SidebarContent
                 key="sidebar-content"
                 style={{ width: width, minWidth: minWidth }}
             >
                 <style.Container>
-
                     {renderButtons()}
-                    {/*<DraggableSurface*/}
-                    {/*    draggables={renderButtons()}*/}
-                    {/*/>*/}
-                    {/*</Container>*/}
-                    <style.FooterContainer>
-                        {/*{renderTypeButtons()}*/}
-                    </style.FooterContainer>
 
+                    <style.FooterContainer>
+                        {renderNavButtons()}
+                    </style.FooterContainer>
                 </style.Container>
 
                 <DraggableCore key="handle" onDrag={handleDrag} >

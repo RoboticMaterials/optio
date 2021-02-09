@@ -13,7 +13,6 @@ export const ColumnContainer = styled.div`
   min-width: ${props => props.deleted ? 0 : "fit-content"};
   //height: ${props => props.deleted ? 0 : "fit-content"};
   overflow: hidden;
-  background: red;
   align-self: stretch;
   //transition: all 3s ease;
 `
@@ -21,8 +20,7 @@ export const ColumnContainer = styled.div`
 export const RowContainer = styled.div`
 	display: flex;
 	flex: 1;
-  background: blue;
-  align-items: center;
+	align-items: center;
   
 `
 

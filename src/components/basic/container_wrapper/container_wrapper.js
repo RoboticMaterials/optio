@@ -9,6 +9,7 @@ const ContainerWrapper = (props) => {
 		style,
 		isRow,
 		onDrop,
+		color,
 		...rest
 	} = props
 
@@ -34,7 +35,7 @@ const ContainerWrapper = (props) => {
 				// border: "1px solid black",
 				transition: "all 0.5s ease",
 				padding: hovering ? (isRow ? "2.5rem 0" : "0 2.5rem") : 0,
-				background: hovering && "rgb(50,50,50)"// : "transparent",
+				background: hovering ? "rgb(50,50,50)" : (color ? color : "transparent"),
 			}}
 			{...rest}
 		>

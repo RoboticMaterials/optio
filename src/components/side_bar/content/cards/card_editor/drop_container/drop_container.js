@@ -5,6 +5,7 @@ import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper"
 import Textbox from "../../../../../basic/textbox/textbox";
 import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
 import FieldComponentMapper from "../field_component_mapper/field_component_mapper";
+import {useSelector} from "react-redux";
 
 const DropContainer = (props) => {
 	const {
@@ -35,6 +36,9 @@ const DropContainer = (props) => {
 	// const [hoveringTop, setHoveringTop] = useState(false)
 	// const [hoveringBottom, setHoveringBottom] = useState(false)
 	const [deleted, setDeleted] = useState(false)
+
+	const isFieldDragging = useSelector(state=> {return state.cardPageReducer.isFieldDragging})
+	console.log("isFieldDragging",isFieldDragging)
 
 	useEffect( () => {
 		let timeout
@@ -98,8 +102,9 @@ const DropContainer = (props) => {
 				/>
 					{/*<div style={{}}>*/}
 						<Draggable key={id} >
-							<div style={{position: "relative"}}>
-								<div style={{position: "absolute", display: "flex", alignItems: "stretch", left: 0, bottom: 0, top: 0, right: "40%", background: "green"}}>
+							<div style={{position: "relative", }}>
+								{isFieldDragging &&
+								<div style={{position: "absolute", display: "flex", flexDirection: "column", alignItems: "stretch", left: 0, bottom: 0, top: 0, right: 0}}>
 									<ContainerWrapper
 										onDrop={(dropResult)=>onLeftDrop(id, dropResult)}
 										shouldAcceptDrop={()=>{return true}}
@@ -109,13 +114,47 @@ const DropContainer = (props) => {
 											index
 										}
 										isRow={false}
-										style={{background: "red", flex: 1, alignSelf: "stretch", zIndex: 50}}
+										style={{flex: 0.1, zIndex: 10}}
+									/>
+									<div style={{display: "flex", flex: 5}}>
+										<ContainerWrapper
+											onDrop={(dropResult)=>onTopDrop(id, dropResult)}
+											shouldAcceptDrop={()=>{return true}}
+											getGhostParent={()=>document.body}
+											groupName="lot_field_buttons"
+											getChildPayload={index =>
+												index
+											}
+											isRow={false}
+											style={{flex: 1, alignSelf: "stretch", zIndex: 50}}
+										/>
+										<ContainerWrapper
+											onDrop={(dropResult)=>onBottomDrop(id, dropResult)}
+											shouldAcceptDrop={()=>{return true}}
+											getGhostParent={()=>document.body}
+											groupName="lot_field_buttons"
+											getChildPayload={index =>
+												index
+											}
+											isRow={false}
+											style={{flex: 1, alignSelf: "stretch", zIndex: 50}}
 
+										/>
+									</div>
+
+									<ContainerWrapper
+										onDrop={(dropResult)=>onRightDrop(id, dropResult)}
+										shouldAcceptDrop={()=>{return true}}
+										getGhostParent={()=>document.body}
+										groupName="lot_field_buttons"
+										getChildPayload={index =>
+											index
+										}
+										isRow={false}
+										style={{flex: 0.15, zIndex: 10}}
 									/>
 								</div>
-
-
-
+								}
 						{preview ?
 							<FieldComponentMapper
 								component={component}
