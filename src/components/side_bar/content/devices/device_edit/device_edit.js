@@ -12,8 +12,7 @@ import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_sear
 import Button from '../../../../basic/button/button'
 
 // Import actions
-import { addStation, setSelectedStation } from '../../../../../redux/actions/stations_actions'
-import { setSelectedDevice } from '../../../../../redux/actions/devices_actions'
+import { setSelectedDevice, putDevices } from '../../../../../redux/actions/devices_actions'
 import { widgetLoaded, hoverStationInfo } from '../../../../../redux/actions/widget_actions'
 
 // Import templates
@@ -41,15 +40,18 @@ const DeviceEdit = (props) => {
     const [connectionText, setConnectionText] = useState('Not Connected')
     const [connectionIcon, setConnectionIcon] = useState('fas fa-question')
     const [deviceType, setDeviceType] = useState('')
+    const [mirUpdated, setMirUpdated] = useState(false)
 
     const dispatch = useDispatch()
     const dispatchSetSelectedDevice = (selectedDevice) => dispatch(setSelectedDevice(selectedDevice))
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
+    const dispatchPutDevice = (device) => dispatch(putDevices(device, device._id))
 
     const selectedDevice = useSelector(state => state.devicesReducer.selectedDevice)
     const devices = useSelector(state => state.devicesReducer.devices)
     const positions = useSelector(state => state.positionsReducer.positions)
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
+    const status = useSelector(state => state.statusReducer.status)
 
     // On page load, see if the device is a new device or existing device
     // TODO: This is going to fundementally change with how devices 'connect' to the cloud.
@@ -81,6 +83,82 @@ const DeviceEdit = (props) => {
         //     setConnectionText('Not Connected')
         // }
 
+    }
+
+    // Submits the Mir Connection to the backend
+    const onMirConnection = async () => {
+        dispatchPutDevice({
+            ...selectedDevice,
+            connection: 'connecting',
+        })
+        setMirUpdated(false)
+
+    }
+
+    const renderMIRIP = () => {
+        // Handles the MIR IP connectiong
+        let connectionIcon = ''
+        let connectionText = ''
+
+        // Have to use the naked device state since that is the one that is being update by the backend
+        const device = devices[selectedDevice._id]
+
+
+        // Sets the connection variables according to the state of
+        if (mirUpdated) {
+            connectionIcon = 'fas fa-question'
+            connectionText = 'Not Connected'
+        }
+        else if (!device.connection) {
+            connectionIcon = 'fas fa-question'
+            connectionText = 'Not Connected'
+        }
+        else if (device.connection === 'connected') {
+            connectionIcon = 'fas fa-check'
+            connectionText = 'Connected'
+        }
+        else if (device.connection === 'connecting') {
+            connectionIcon = 'fas fa-circle-notch fa-spin'
+            connectionText = 'Connecting'
+        }
+        else if (device.connection === 'failed') {
+            connectionIcon = 'fas fa-times'
+            connectionText = 'Failed'
+        }
+        else {
+            connectionIcon = 'fas fa-question'
+            connectionText = 'Not Connected'
+
+        }
+
+        return (
+            <styled.SectionsContainer style={{ marginTop: '1rem' }}>
+
+                <styled.RowContainer style={{ position: 'relative', justifyContent: 'space-between' }}>
+                    <styled.Label schema={'devices'}>MIR IP</styled.Label>
+                    <styled.ConnectionButton onClick={() => onMirConnection()} disabled={(connectionText === 'Connected' || connectionText === 'Connecting')}>
+                        {connectionText}
+                        <styled.ConnectionIcon className={connectionIcon} />
+                    </styled.ConnectionButton>
+
+                </styled.RowContainer>
+
+                <Textbox
+                    placeholder="MiR IP Address"
+                    value={selectedDevice.mir_ip}
+                    onChange={(event) => {
+                        setMirUpdated(true)
+                        dispatchSetSelectedDevice({
+                            ...selectedDevice,
+                            ip_address: event.target.value
+                        })
+                    }}
+                    style={{ width: '100%' }}
+
+                />
+
+            </styled.SectionsContainer>
+        )
     }
 
 
@@ -201,6 +279,8 @@ const DeviceEdit = (props) => {
 
             <styled.SectionsContainer>
 
+                {renderMIRIP()}
+
                 <styled.Label schema={'devices'} >Device Name</styled.Label>
 
                 <Textbox
@@ -222,22 +302,22 @@ const DeviceEdit = (props) => {
                 renderAMRIdleLocation()
             }
 
-            <Button schema={'devices'} style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: '2rem' }}
+            <Button schema={'devices'} style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: '2rem', boxSizing: 'border-box' }}
                 onClick={() => {
                     onEditDeviceDashboard()
                 }}
             >
-                Edit Device Dashboard
+                Edit Dashboard
             </Button>
 
 
-            <Button schema={'devices'} secondary style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: '2rem' }}
+            {/* <Button schema={'devices'} secondary style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: '2rem' }}
                 onClick={() => {
                     deviceLocationDelete()
                 }}
             >
                 Delete
-                </Button>
+                </Button> */}
 
         </styled.Container>
     )
