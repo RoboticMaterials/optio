@@ -277,7 +277,6 @@ const Widgets = (props) => {
     }, [widgetPage])
 
     const statistics = useMemo(() => {
-        // TODO: Write code that grabs the statistics for the current location
 
         return (
             <styled.WidgetStatisticsContainer>

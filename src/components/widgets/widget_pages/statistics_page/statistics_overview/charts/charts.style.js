@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import * as buttonCss from '../../../../../../common_css/button_css'
+import * as commonCss from '../../../../../../common_css/common_css'
 
 export const PlotHeader = styled.div`
 	//height: 30rem;
@@ -86,3 +87,40 @@ export const ChartButton = styled.button`
     ${buttonCss.button};
 
 `
+
+export const RowContainer = styled.div`
+    ${commonCss.rowContainer};
+    justify-content: space-around;
+    
+`
+
+export const columnContainer = styled.div`
+    ${commonCss.columnContainer}
+`
+
+export const Label = styled.label`
+  font-size: ${props => props.theme.fontSize.sz3};
+  font-family: ${props => props.theme.font.primary};
+  color: white;
+`
+
+export const DatePickerLabel = styled.label`
+  font-size: ${props => props.theme.fontSize.sz3};
+  font-family: ${props => props.theme.font.primary};
+  /* color: ${props => props.theme.bg.septenary}; */
+  color: white;
+
+  // flex-grow: 1;
+  // flex-basis: 12rem;
+
+  line-height: 2.5rem;
+  width: 7rem;
+  margin-right: 1rem;
+`;
+
+export const TimePickerErrorComponent = styled.span`
+  color: ${props => props.theme.bad};
+  font-size: ${props => props.theme.fontSize.sz4};
+  font-weight: 600;
+  margin-top: .25rem;
+`;

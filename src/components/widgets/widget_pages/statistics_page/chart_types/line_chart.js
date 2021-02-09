@@ -1,7 +1,6 @@
 import React from 'react';
 import { ResponsiveLine, Line } from '@nivo/line'
 
-
 const LineChart = (props) => {
 
     const {
@@ -13,29 +12,29 @@ const LineChart = (props) => {
         theme,
         ToolTipCallback
     } = props
+
     return (
         <ResponsiveLine
             data={[{
-                id: 'none',
-                color: colors[selector],
-                data: data[selector]
+                'id': 'qqwr',
+                "color": "hsl(182, 70%, 50%)",
+                'data': data
             }]}
-            curve='monotoneX'
+            // keys={['y']}
+            // indexBy='x'
+
+            // curve='monotoneX'
             animate={false}
-            xScale={{ type: 'time', format: '%Y-%m-%d %H:%M:%S', useUTC: false, precision: 'second', }}
-            xFormat={'time:' + format}
+            // xScale={{ type: 'time', format: '%Y-%m-%d %H:%M:%S', useUTC: false, precision: 'second', }}
+            // xFormat={'time:' + format}
             yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
-            axisBottom={null}
+            // axisBottom={null}
+            xScale={{ type: 'point' }}
             margin={{ top: 22, left: 70, right: 70, bottom: 30 }}
-            axisTop={{
-                tickSize: 5,
-                tickPadding: 5,
-                tickValues: [!!slice && slice.x],
-                format: format,
-            }}
+            axisTop={null}
             axisRight={null}
             axisBottom={{
-                format: format,
+                // format: format,
                 tickValues: 6
             }}
             axisLeft={{
@@ -47,18 +46,18 @@ const LineChart = (props) => {
             }}
             enableGridX={false}
             enableGridY={false}
-            colors={d => d.color}
+            // colors={d => d.color}
             enablePoints={true}
             pointSize={4}
-            pointColor={colors[selector]}
+            // pointColor={colors[selector]}
             pointBorderWidth={1}
             pointBorderColor={{ from: 'white' }}
-            pointLabel="y"
-            pointLabelYOffset={-12}
+            // pointLabel="y"
+            // pointLabelYOffset={-12}
 
-            crosshairType="x"
-            enableSlices={'x'}
-            sliceTooltip={ToolTipCallback}
+            // crosshairType="x"
+            // enableSlices={'x'}
+            // sliceTooltip={ToolTipCallback}
             theme={{
                 axis: {
                     ticks: {
@@ -67,7 +66,7 @@ const LineChart = (props) => {
                         },
                         text: {
                             fill: "fff",
-                            fontFamily: theme.font.primary,
+                            // fontFamily: 'Montserrat',
                             fontSize: "0.8rem"
                         },
                     }
@@ -89,3 +88,7 @@ const LineChart = (props) => {
 }
 
 export default LineChart
+
+// LineChart.defaultProps = {
+
+// }

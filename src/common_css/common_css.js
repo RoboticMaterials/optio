@@ -16,3 +16,13 @@ export const newGlow = css`
 export const goodGlow = css`
   ${props => glow(props.theme.good)};
 `;
+
+export const rowContainer = css`
+    display: flex;
+    flex-direction: row;
+`
+
+export const columnContainer = css`
+    display: flex;
+    flex-direction: column;
+`

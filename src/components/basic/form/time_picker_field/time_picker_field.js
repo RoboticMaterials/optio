@@ -92,8 +92,8 @@ TimePickerField.defaultProps = {
 	containerStyle: {},
 	style: {},
 	onChange: () => {},
-	mapOutput: () => {},
-	mapInput: () => {},
+	mapOutput: val => val,
+	mapInput: val => val,
 };
 
 export default TimePickerField;

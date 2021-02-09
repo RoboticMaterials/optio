@@ -332,8 +332,8 @@ export const locationSchema = (stations, selectedLocation) => {
 
     let stationNames = []
     Object.values(stations).forEach(station => {
-        if(!!selectedLocation && station._id === selectedLocation._id) {
-            
+        if (!!selectedLocation && station._id === selectedLocation._id) {
+
         }
         else {
             stationNames.push(station.name)
@@ -345,6 +345,15 @@ export const locationSchema = (stations, selectedLocation) => {
             locationName: Yup.string()
                 .required('Please enter a name')
                 .notOneOf(stationNames, 'Name already in use')
+        })
+    )
+}
+
+export const throughputSchema = () => {
+    return (
+        Yup.object().shape({
+            start_time: Yup.string()
+                .required('Required'),
         })
     )
 }
