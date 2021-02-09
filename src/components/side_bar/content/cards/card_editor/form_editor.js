@@ -217,6 +217,12 @@ const FormComponent = (props) => {
 				<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
 					<LotEditorSidebar/>
 					<styled.TheBody>
+						<styled.NameContainer>
+							<styled.NameLabel>Name</styled.NameLabel>
+							<TextField  name={"name"} InputComponent={Textbox}/>
+						</styled.NameContainer>
+
+
 						<LotFormCreator
 							{...formikProps}
 							preview={preview}
@@ -418,7 +424,8 @@ const LotCreatorForm = (props) => {
 						_id: "1",
 						component: FIELD_COMPONENT_NAMES.TEXT_BOX,
 						fieldName: "Order Name"
-						}]]
+						}]],
+					name: ""
 				}}
 
 				// validation control

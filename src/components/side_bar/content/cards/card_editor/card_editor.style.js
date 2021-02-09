@@ -44,9 +44,12 @@ export const Header = styled.div`
 
 export const NameContainer = styled.div`
 	background: ${props => props.theme.bg.quaternary};
-	width: 100%;
-	//padding: 0rem 1rem;
+
   	margin-bottom: 1rem;
+`
+
+export const NameLabel = styled.span`
+
 `
 
 export const CloseButton = styled.button`
@@ -105,9 +108,12 @@ export const TheBody = styled.div`
   flex: 1;
   display: flex;
   min-height: 40rem;
+  flex-direction: column;
   //background: lime;
 
 `
+
+
 
 
 export const ProcessFieldContainer = styled.div`

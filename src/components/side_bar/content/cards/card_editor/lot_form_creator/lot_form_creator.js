@@ -10,6 +10,7 @@ import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper"
 import { fromJS } from "immutable";
 import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
 import {FIELD_COMPONENT_NAMES, LOT_EDITOR_SIDEBAR_OPTIONS} from "../editor_sidebar/editor_sidebar";
+import TextField from "../../../../../basic/form/text_field/text_field";
 
 const LotFormCreator = (props) => {
 
@@ -461,6 +462,7 @@ const LotFormCreator = (props) => {
 
 	return (
 		<>
+
 			{mapContainers(items, true, items)}
 		</>
 	)
