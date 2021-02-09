@@ -106,7 +106,6 @@ const DashboardScreen = (props) => {
     useEffect(() => {
         onDashboardOpen(true)
         dispatchGetProcesses()
-        console.log('QQQQ Selected dashboard', currentDashboard)
         return () => {
             onDashboardOpen(false)
         }
@@ -144,7 +143,7 @@ const DashboardScreen = (props) => {
             } = currButton
 
             // If the button is a custom task, then the task wont exist, so dont remove button
-            if(!!currButton.custom_task) return true
+            if (!!currButton.custom_task) return true
 
             else if (task_id && !(tasks[task_id])) {
                 console.error('Task does not exist! Hiding button from dashboard')
@@ -154,34 +153,8 @@ const DashboardScreen = (props) => {
             return true
         })
 
-        // If this dashboard belongs to a device and the device is a cart, add some unique buttons
-        if (!!devices[stationID] && devices[stationID].device_model === 'MiR100') {
-            const device = devices[stationID]
-
-            // Map through positions and add a button if it's a charge position
-            Object.values(positions).map((position, ind) => {
-                if (position.type === 'charger_position') {
-                    buttons = [
-                        ...buttons,
-                        {
-                            'name': position.name,
-                            'color': '#FFFF4B',
-                            'task_id': 'custom_task',
-                            'custom_task': {
-                                'type': 'position_move',
-                                'position': position._id,
-                                'device_type': 'MiR_100',
-                            },
-                            'deviceType': 'MiR_100',
-                            'id': `custom_task_charge_${ind}`
-                        }
-                    ]
-                }
-            })
-
-        }
         // Else if the task q contains a human task that is unloading, show an unload button
-        else if (Object.values(taskQueue).length > 0) {
+        if (Object.values(taskQueue).length > 0) {
 
             // Map through each item and see if it's showing a station, station Id is matching the current station and a human task
             Object.values(taskQueue).forEach((item, ind) => {

@@ -58,9 +58,6 @@ const DeviceEdit = (props) => {
         // Sets the type of device, unknown devic defaults to an RM logo while known devices use their own custom SVGs
         if (selectedDevice.device_model === 'MiR100') setDeviceType('cart')
 
-        console.log('QQQQ Editing device', selectedDevice)
-        console.log('QQQQ Device dashboard', dashboards[selectedDevice.dashboards[0]])
-
     }, [])
 
     // TODO: Not sure this is needed with IOT Implementation

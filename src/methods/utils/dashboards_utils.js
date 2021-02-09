@@ -20,55 +20,58 @@ export const findDashboardByID = (availableDashboards, ID) => {
 
 export const handleAvailableTasks = (tasks, station) => {
     let availableTasks = []
-    console.log('QQQQ HURR', station)
-    // If the device has an idle location, add a button for it
-    // if (!!device.idle_location) {
-    //     buttons = [
-    //         ...buttons,
-    //         {
-    //             'name': 'Send to Idle Location',
-    //             'color': '#FF4B4B',
-    //             'task_id': 'custom_task',
-    //             'custom_task': {
-    //                 'type': 'position_move',
-    //                 'position': device.idle_location,
-    //                 'device_type': 'MiR_100',
-    //             },
-    //             'deviceType': 'MiR_100',
-    //             'id': 'custom_task_idle'
-    //         }
-    //     ]
-    // }
 
-    // Map through positions and add a button if it's a charge position
-    // Object.values(positions).map((position, ind) => {
-    //     if (position.type === 'charger_position') {
-    //         buttons = [
-    //             ...buttons,
-    //             {
-    //                 'name': position.name,
-    //                 'color': '#FFFF4B',
-    //                 'task_id': 'custom_task',
-    //                 'custom_task': {
-    //                     'type': 'position_move',
-    //                     'position': position._id,
-    //                     'device_type': 'MiR_100',
-    //                 },
-    //                 'deviceType': 'MiR_100',
-    //                 'id': `custom_task_charge_${ind}`
-    //             }
-    //         ]
-    //     }
-    // })
+    // If the dashbaord is a device then have some differnt buttons available
+    if (station.device_model) {
+        // If the device has an idle location, add a button for it
+        if (!!station.idle_location) {
+            const idleButton = {
+                'name': 'Send to Idle Location',
+                'color': '#FF4B4B',
+                'task_id': 'custom_task',
+                'custom_task': {
+                    'type': 'position_move',
+                    'position': station.idle_location,
+                    'device_type': 'MiR_100',
+                },
+                'deviceType': 'MiR_100',
+                'id': 'custom_task_idle'
+            }
 
-
-    Object.values(tasks).forEach(task => {
-        if ((task.type == 'push' || task.type == 'both') && task.load.station == station._id) {
-            availableTasks.push(task)
-        } else if ((task.type == 'pull' || task.type == 'both') && task.unload.station == station._id) {
-            availableTasks.push(task)
+            availableTasks.push(idleButton)
         }
-    })
+        const positions = store.getState().positionsReducer.positions
+        // Map through positions and add a button if it's a charge position
+        Object.values(positions).map((position, ind) => {
+            if (position.type === 'charger_position') {
+                const chargeButton = {
+                    'name': position.name,
+                    'color': '#FFFF4B',
+                    'task_id': 'custom_task',
+                    'custom_task': {
+                        'type': 'position_move',
+                        'position': position._id,
+                        'device_type': 'MiR_100',
+                    },
+                    'deviceType': 'MiR_100',
+                    'id': `custom_task_charge_${ind}`
+                }
+                availableTasks.push(chargeButton)
+            }
+        })
+    }
+    else {
+        Object.values(tasks).forEach(task => {
+            if ((task.type == 'push' || task.type == 'both') && task.load.station == station._id) {
+                availableTasks.push(task)
+            } else if ((task.type == 'pull' || task.type == 'both') && task.unload.station == station._id) {
+                availableTasks.push(task)
+            }
+        })
+    }
+
+
+
     return availableTasks
 }
 

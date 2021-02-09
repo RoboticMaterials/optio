@@ -110,23 +110,10 @@ const DevicesContent = () => {
     }
 
     /**
-     * This function is called when the save button is pressed. The location is POSTED or PUT to the backend.
-     * If the location is new and is a station, this function also handles posting the default dashboard and
-     * tieing it to this location. Each child position for a station is also either POSTED or PUT.
+     * This function is called when the save button is pressed. 
+     * 
      */
     const onSaveDevice = async () => {
-
-        // Button Structure
-        // 'name': 'Send to Idle Location',
-        // 'color': '#FF4B4B',
-        // 'task_id': 'custom_task',
-        // 'custom_task': {
-        //     'type': 'position_move',
-        //     'position': device.idle_location,
-        //     'device_type': 'MiR_100',
-        // },
-        // 'deviceType': 'MiR_100',
-        // 'id': 'custom_task_idle'
 
         // If a AMR, then just put device, no need to save locaiton since it does not need one
         if (selectedDevice.device_model === 'MiR100') {

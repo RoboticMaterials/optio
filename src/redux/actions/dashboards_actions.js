@@ -126,8 +126,6 @@ export const putDashboard = (dashboard, ID) => {
 
         try {
             onStart();
-            console.log('QQQQ Putting dashboard', dashboard)
-            console.log('QQQQ Putting dashboard ID', ID)
             delete dashboard._id
             const updateDashboard = await api.putDashboards(dashboard, ID);
             return onSuccess(updateDashboard)

@@ -16,8 +16,8 @@ import ViewerPage from './viewer_page/viewer_page'
 import LotsPage from './lots_page/lots_page'
 
 import log from "../../../logger"
-import {widgetPageLoaded} from '../../../redux/actions/widget_actions'
-import {taskQueueOpen} from '../../../redux/actions/task_queue_actions'
+import { widgetPageLoaded } from '../../../redux/actions/widget_actions'
+import { taskQueueOpen } from '../../../redux/actions/task_queue_actions'
 
 const logger = log.getLogger("WidgetPages")
 
@@ -61,20 +61,24 @@ const WidgetPages = (props) => {
     }, [])
 
     useEffect(() => {
-      if(windowWidth<1030){
-        onTaskQueueOpen(false)
-      }
-    },[windowWidth])
+        if (windowWidth < 1030) {
+            onTaskQueueOpen(false)
+        }
+    }, [windowWidth])
 
 
     return (
-        <styled.Container taskQueueOpen = {taskQueueOpened} showWidgetPage={showWidgetPage} dashboardOpen={dashboardOpen} mobileMode={mobileMode} id={'widgetPage'}>
+        <styled.Container taskQueueOpen={taskQueueOpened} showWidgetPage={showWidgetPage} dashboardOpen={dashboardOpen} mobileMode={mobileMode} id={'widgetPage'}>
 
             <styled.WidgetPageContainer
                 showWidgetPage={showWidgetPage}
             >
                 <Route
                     path="/locations/:stationID/dashboards/:dashboardID?/:editing?"
+                    component={DashboardsPage}
+                />
+                <Route
+                    path="/locations/:deviceId/dashboards/:dashboardID?/:editing?"
                     component={DashboardsPage}
                 />
                 <Route

@@ -174,21 +174,32 @@ const DashboardsSidebar = (props) => {
         logger.log("availableTasks e", e)
     }
 
-    const getDeviceButtons = () => {
-
-
-    }
-
     const getRouteButtons = () => {
         return availableTasks
             .map((task, index) => {
-                return {
-                    name: task.name,
-                    color: DASHBOARD_BUTTON_COLORS[index % DASHBOARD_BUTTON_COLORS.length].hex,
-                    type: TYPES.ROUTES.key,
-                    task_id: task._id,
-                    id: task._id,
+                // If custom task, it has some different fields that need to be passed along
+                if (!!task.custom_task) {
+                    return {
+                        name: task.name,
+                        color: task.color,
+                        type: TYPES.ROUTES.key,
+                        task_id: task.task_id,
+                        id: task.id,
+                        custom_task: task.custom_task,
+                        deviceType: task.deviceType,
+
+                    }
                 }
+                else {
+                    return {
+                        name: task.name,
+                        color: DASHBOARD_BUTTON_COLORS[index % DASHBOARD_BUTTON_COLORS.length].hex,
+                        type: TYPES.ROUTES.key,
+                        task_id: task._id,
+                        id: task._id,
+                    }
+                }
+
             })
     }
 
