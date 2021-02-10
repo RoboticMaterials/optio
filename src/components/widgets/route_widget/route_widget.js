@@ -109,7 +109,7 @@ const RouteWidgets = (props) => {
 
 
 
-        let widgetPosition = {}
+      /*  let widgetPosition = {}
 
         // Handles the x, use location x if right click menu so it can also move
         if (!!selectedPosition && selectedPosition.schema === 'temporary_position') {
@@ -134,7 +134,7 @@ const RouteWidgets = (props) => {
 
             return widgetPosition.y
         }
-  //  }
+  //  }*/
 
     /**
      * This handles the x and y position of the widget.

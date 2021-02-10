@@ -255,7 +255,7 @@ function Station(props) {
     /**
      * This handles when a station is selected for a task
      * Can only add a station to a task if the station is a warehouse or a human
-     * 
+     *
      * For a warehouse, the thing to remember is that you push to a warehouse and pull from a warehouse
      */
     const onSetStationTask = () => {

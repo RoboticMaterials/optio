@@ -86,7 +86,7 @@ const Widgets = (props) => {
      * @param {*} edit
      */
     const onWidgetClose = (edit) => {
-        
+
         dispatchHoverStationInfo(null)
         dispatchWidgetLoaded(false)
 
@@ -318,6 +318,7 @@ const Widgets = (props) => {
 
     const handleWidgetPosition = (coord) => {
 
+
         // When first hovering over, the widget has not mounted so the element is null, but once its mounted, you can use the bounding box
         if (element === null) {
             if (coord === 'x') {
@@ -354,9 +355,9 @@ const Widgets = (props) => {
             return widgetPosition.x
 
         } else {
+
             return widgetPosition.y
         }
-
     }
 
     return (
@@ -382,6 +383,7 @@ const Widgets = (props) => {
 
                 // xPosition={hoveringInfo.xPosition + 'px'}
                 xPosition={handleWidgetPosition('x')}
+
                 yPosition={handleWidgetPosition('y')}
                 scale={hoveringInfo.scale}
                 widgetPage={widgetPage}

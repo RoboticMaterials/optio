@@ -3,6 +3,7 @@ import {
   WIDGET_XY_COORDINATES,
   WIDGET_LOADED,
   HOVER_STATION_INFO,
+  HOVER_ROUTE_INFO,
 
 } from '../types/widget_types'
 
@@ -20,4 +21,8 @@ export const widgetLoaded = (state) => {
 
 export const hoverStationInfo = (info) => {
     return { type: HOVER_STATION_INFO, payload: { info } }
+}
+
+export const hoverRouteInfo = (info) => {
+    return { type: HOVER_ROUTE_INFO, payload: { info } }
 }

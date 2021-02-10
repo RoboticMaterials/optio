@@ -14,6 +14,7 @@ import * as objectActions from '../../../../redux/actions/objects_actions'
 import * as taskQueueActions from '../../../../redux/actions/task_queue_actions'
 
 import { postTaskQueue } from '../../../../redux/actions/task_queue_actions'
+import { hoverRouteInfo} from '../../../../redux/actions/widget_actions'
 
 // Import Utils
 import { deepCopy } from '../../../../methods/utils/utils'
@@ -44,6 +45,7 @@ export default function TaskContent(props) {
     const onEditing = async (props) => await dispatch(taskActions.editingTask(props))
     const dispatchSetSelectedTask = async (task) => await dispatch(taskActions.setSelectedTask(task))
     const dispatchAddTask = async (task) => await dispatch(taskActions.addTask(task))
+    const dispatchHoverRouteInfo = (props) => dispatch(hoverRouteInfo(props))
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
@@ -54,6 +56,9 @@ export default function TaskContent(props) {
     const stations = useSelector(state => state.stationsReducer.stations)
     const editing = useSelector(state => state.tasksReducer.editingTask) //Moved to redux so the variable can be accesed in the sideBar files for confirmation modal
     const objects = useSelector(state => state.objectsReducer.objects)
+    const hoveringInfo = useSelector(state => state.widgetReducer.hoverRouteInfo)
+    const processes = useSelector(state => state.processesReducer.processes)
+
 
     /**
     * @param {*} Id
@@ -105,6 +110,15 @@ export default function TaskContent(props) {
             return null
         }
     }
+
+
+    const handleHoveringInfo = () => {
+        hoveringInfo.id = selectedTask? selectedTask.id : {}
+        hoveringInfo.xPosition = '10rem'
+        hoveringInfo.yPosition = '10rem'
+        hoveringInfo.scale = '1'
+    }
+
 
     const onExecuteTask = () => {
 
@@ -196,8 +210,13 @@ export default function TaskContent(props) {
                     }
                     onMouseEnter={(task) => {
                         dispatchSetSelectedTask(task)
+                        dispatchHoverRouteInfo(true)
                     }}
-                    onMouseLeave={(task) => dispatchSetSelectedTask(null)}
+                    onMouseLeave={() => {
+                      dispatchSetSelectedTask(null)
+                      dispatchHoverRouteInfo(null)
+
+                    }}
                     onClick={(task) => {
                         setIsNew(false)
                         // If task button is clicked, start editing it
