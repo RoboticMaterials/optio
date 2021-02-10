@@ -99,10 +99,19 @@ const ThroughputChart = (props) => {
 
     const isData = (filteredData && Array.isArray(filteredData) && filteredData.length > 0)
 
+    /**
+     * This converts the incoming data for a line graph
+     * IT does a few things
+     * 1)
+     * 2)
+     * 3)
+     * 
+     */
     const lineDataConver = () => {
         let convertedData = []
 
         let dataCopy = deepCopy(testData)
+
         // Modify X values based on start and end
         const startOfShift12h = convert24hto12h(compareExpectedOutput.startOfShift)
         let startOfShiftHour = startOfShift12h.split(':')[0]
