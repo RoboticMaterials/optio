@@ -38,6 +38,7 @@ const Cards = (props) => {
     //redux state
     const processes = useSelector(state => { return state.processesReducer.processes })
     const showCardEditor = useSelector(state=> {return state.cardsReducer.showEditor})
+    const selectedLotTemplatesId = useSelector(state => {return state.lotTemplatesReducer.selectedLotTemplatesId})
 
     // actions
     const dispatch = useDispatch()
@@ -162,9 +163,9 @@ const Cards = (props) => {
             <LotCreatorForm
                 isOpen={showCardEditor}
                 onAfterOpen={null}
-                lotTemplateId={selectedCard ? selectedCard.cardId : null}
-                processId={selectedCard ? selectedCard.processId : null}
-                binId={selectedCard ? selectedCard.binId : null}
+                lotTemplateId={selectedLotTemplatesId}
+                // processId={selectedCard ? selectedCard.processId : null}
+                // binId={selectedCard ? selectedCard.binId : null}
                 close={()=>{
                     onShowCardEditor(false)
                     setSelectedCard(null)
@@ -172,17 +173,18 @@ const Cards = (props) => {
             />
             }
             {showCardFormEditor &&
-            <CardEditor
-                isOpen={showCardEditor}
-                onAfterOpen={null}
-                cardId={selectedCard ? selectedCard.cardId : null}
-                processId={selectedCard ? selectedCard.processId : null}
-                binId={selectedCard ? selectedCard.binId : null}
-                close={()=>{
-                    onShowCardEditor(false)
-                    setSelectedCard(null)
-                }}
-            />
+                <div>a</div>
+            // <CardEditor
+            //     isOpen={showCardEditor}
+            //     onAfterOpen={null}
+            //     cardId={selectedCard ? selectedCard.cardId : null}
+            //     processId={selectedCard ? selectedCard.processId : null}
+            //     binId={selectedCard ? selectedCard.binId : null}
+            //     close={()=>{
+            //         onShowCardEditor(false)
+            //         setSelectedCard(null)
+            //     }}
+            // />
             }
             <styled.Header>
                 {isProcessView ?

@@ -15,6 +15,8 @@ import FieldComponentMapper from "../field_component_mapper/field_component_mapp
 import {setFieldDragging} from "../../../../../../redux/actions/card_page_actions";
 import WidgetButton from "../../../../../basic/widget_button/widget_button";
 import {TYPES} from "../../../../../widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
+import {setSelectedLotTemplate} from "../../../../../../redux/actions/lot_template_actions";
+import {uuidv4} from "../../../../../../methods/utils/utils";
 
 const logger = log.getLogger("LotEditorSidebar")
 
@@ -50,12 +52,14 @@ export const LOT_EDITOR_SIDEBAR_OPTIONS = {
 
 const SIDE_BAR_MODES = {
     FIELDS: {
-        name: "FIELDS",
-        iconName: "fas fa-edit"
+        name: "Fields",
+        iconName: "fas fa-edit",
+        color: "red"
     },
     TEMPLATES: {
-        name: "TEMPLATES",
-        iconName: "fas fa-edit"
+        name: "Templates",
+        iconName: "fas fa-file-invoice",
+        color: "cyan"
     }
 }
 
@@ -84,9 +88,11 @@ const LotEditorSidebar = (props) => {
     // actions
     const dispatch = useDispatch()
     const dispatchSetFieldDragging = (bool) => dispatch(setFieldDragging(bool))
+    const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
+
 
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
-
+    const selectedLotTemplatesId = useSelector(state => {return state.lotTemplatesReducer.selectedLotTemplatesId})
 
     const [width, setWidth] = useState(window.innerWidth < 2000 ? 450 : 450); // used for tracking sidebar dimensions
     const [isSmall, setSmall] = useState(testSize(width)); // used for tracking sidebar dimensions
@@ -98,22 +104,61 @@ const LotEditorSidebar = (props) => {
             <style.ListContainer>
                 <Container
                     groupName="lot_field_buttons"
-                    onDragStart={(dragStartParams, b, c)=>{
-                        dispatchSetFieldDragging(true)
+                    onDragStart={(dragStartParams)=>{
+                        const {
+                            isSource,
+                            payload,
+                            willAcceptDrop
+                        } = dragStartParams
+
+                        const {
+                            component,
+                            key,
+                            _id
+                        } = payload
+
+                        if(isSource) {
+                            dispatchSetFieldDragging(_id)
+                        }
+
                     }}
                     onDragEnd={(dragEndParams)=>{
-                        dispatchSetFieldDragging(true)
+                        const {
+                            isSource,
+                            payload,
+                            willAcceptDrop
+                        } = dragEndParams
+
+                        const {
+                            component,
+                            key,
+                            _id
+                        } = payload
+
+                        if(isSource) {
+                            dispatchSetFieldDragging(null)
+                        }
+
+
+
                     }}
-                    onDrop={() => {
-                        dispatchSetFieldDragging(false)
+                    onDrop={(dropResult,b) => {
+                        const {
+                            addedIndex,
+                            payload,
+                            removedIndex
+                        } = dropResult
+
+                        dispatchSetFieldDragging(null)
                     }}
                     getChildPayload={index => {
                         const selected = Object.entries(LOT_EDITOR_SIDEBAR_OPTIONS)[index]
                         const payload = {
                             key: selected[0],
-                            ...selected[1]
+                            ...selected[1],
+                            _id: uuidv4(),
+                            fieldName: ""
                         }
-                        console.log("payload",payload)
                         return payload
                     }}
                     getGhostParent={()=>{
@@ -121,25 +166,30 @@ const LotEditorSidebar = (props) => {
                     }}
                     style={{
                         position: "relative",
-
-                        display: "flex",
-                        flexDirection: "column",
+                        padding: "1rem 0",
                         alignSelf: "stretch",
                         flex: 1,
-                        alignItems: "center",
                         overflowY: "auto",
                         overflowX: "hidden",
-
                     }}
                 >
                 {
                     Object.entries(LOT_EDITOR_SIDEBAR_OPTIONS).map((currOption, currIndex) => {
                         const key = currOption[0]
                         const value = currOption[1]
-                        return <Draggable key={currIndex} style={{marginBottom: "1.5rem"}}>
+                        return <Draggable
+                            key={currIndex}
+                            style={{
+                                marginBottom: "1.5rem",
+                                display: "flex",
+                                justifyContent: "center",
+                            }}
+                        >
+                            {/*<div style={{margin: "auto auto"}}/>*/}
                                 <FieldComponentMapper
                                     component={value.component}
                                 />
+                            {/*<div style={{margin: "auto auto"}}/>*/}
                         </Draggable>
                     })
                 }
@@ -150,16 +200,37 @@ const LotEditorSidebar = (props) => {
 
     const getTemplateButtons = () => {
         return (
-            <style.ListContainer>
+            <style.ListContainer style={{padding: "1rem 0"}}>
+                <style.LotTemplateButton
+                    onClick={() => dispatchSetSelectedLotTemplate(null)}
+                >
+                    <style.TemplateIcon
+                        isSelected={!selectedLotTemplatesId}
+                        className={SIDE_BAR_MODES.TEMPLATES.iconName}
+                    />
+
+                    <style.TemplateName>Empty</style.TemplateName>
+                </style.LotTemplateButton>
                 {
                     Object.values(lotTemplates).map((currTemplate, currIndex) => {
                         const {
                             fields,
-                            name
+                            name,
+                            _id: currTemplateId
                         } = currTemplate
+                        //
 
-                        return <style.LotTemplateButton>
-                            {name}
+                        const isSelected = selectedLotTemplatesId === currTemplateId
+
+                        return <style.LotTemplateButton
+                            onClick={() => dispatchSetSelectedLotTemplate(currTemplateId)}
+                        >
+                            <style.TemplateIcon
+                                isSelected={isSelected}
+                                className={SIDE_BAR_MODES.TEMPLATES.iconName}
+                            />
+
+                           <style.TemplateName>{name}</style.TemplateName>
                         </style.LotTemplateButton>
                     })
                 }
@@ -170,12 +241,12 @@ const LotEditorSidebar = (props) => {
     let renderButtons = () => {}
 
     switch(type) {
-        case Object.keys(EDITOR_SIDEBAR_TYPES)[0]: {
+        case Object.keys(SIDE_BAR_MODES)[0]: {
             renderButtons = getFieldTemplates
             break
         }
 
-        case Object.keys(EDITOR_SIDEBAR_TYPES)[1]: {
+        case Object.keys(SIDE_BAR_MODES)[1]: {
             renderButtons = getTemplateButtons
             break
         }
@@ -199,7 +270,7 @@ const LotEditorSidebar = (props) => {
                     <WidgetButton
                         containerStyle={{marginRight: "1rem"}}
                         label={currValue.name}
-                        color={"#dd12D2"}
+                        color={currValue.color}
                         iconClassName={currValue.iconName}
                         selected={type === currKey}
                         onClick={()=>setType(currKey)}

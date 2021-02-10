@@ -192,35 +192,39 @@ Yup.addMethod(Yup.object, 'uniqueProperty', function (propertyName, message) {
 });
 
 Yup.addMethod(Yup.array, "unique", function(message, path) {
-    console.log("unique message",message)
-    console.log("unique path",path)
     const mapper = x => get(x, path);
     return this.test("unique", message, function(list) {
-
         let set
         let totalList = []
         list.forEach((currList, currListIndex) => {
-            totalList = totalList.concat()
+            totalList = totalList.concat(currList)
         })
 
         set = [...new Set(totalList.map(mapper))];
         const isUnique = totalList.length === set.length;
-        console.log("isUnique",isUnique)
         if (isUnique) {
             return true;
         }
 
-        let idx
+        let idx = 0
+        let rowIdx = 0
+        let i = 0
+        let err
+
         for(const sublist of list) {
+            idx = 0
+
             for(const item of sublist) {
+                if(!err && mapper(item) !== set[i]) {
+                    err = this.createError({ path: `fields[${rowIdx}][${idx}].${path}`, message })
+                }
 
+                idx = idx + 1
+                i = i + 1
             }
+            rowIdx = rowIdx + 1
         }
-        list((l, i) => mapper(l) !== set[i]);
 
-        console.log("addMethod idx",idx)
-        const err = this.createError({ path: `[${idx}].${path}`, message });
-        console.log("addMethod err",err)
         return err
     });
 });
@@ -305,20 +309,19 @@ export const LotFormSchema = Yup.object().shape({
         Yup.array().of(
             Yup.object().shape({
                 _id: Yup.string()
-                    .min(1, '1 character minimum.')
-                    .max(50, '50 character maximum.')
-                    .required('Please enter a name.'),
+                    .required('Field missing ID.'),
                 fieldName: Yup.string()
                     .min(1, '1 character minimum.')
                     .max(50, '50 character maximum.')
-                    .required('Please enter a name.'),
+                    .required('Please enter a name for this field.'),
                 style: Yup.object()
             })
-            //.uniqueProperty('fieldName', "a => a.fieldName") // propertyName, message
         )
-
-
-    ).unique('duplicate phone', "fieldName") //message, path
+    ).unique('Field names must be unique.', "fieldName"), //message, path
+    name: Yup.string()
+        .min(1, '1 character minimum.')
+        .max(50, '50 character maximum.')
+        .required('Please enter a name.'),
 })
 
 

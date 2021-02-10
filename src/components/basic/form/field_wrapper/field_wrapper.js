@@ -60,7 +60,7 @@ const FieldWrapper = (props) => {
 					InputComponent={Textbox}
 					name={name}
 					style={{width: "8rem"}}
-					textboxContainerStyle={{marginRight: "1rem", zIndex: 5}}
+					textboxContainerStyle={{zIndex: 5}}
 				/>
 				{/*</div>*/}
 			</styled.LabelContainer>

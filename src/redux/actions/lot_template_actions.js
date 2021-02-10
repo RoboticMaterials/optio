@@ -5,7 +5,7 @@ import {
     GET,
     POST,
     DELETE,
-    PUT
+    PUT, SET
 } from '../types/prefixes';
 
 import {
@@ -21,6 +21,7 @@ import { scheduleSchema, schedulesSchema } from '../../normalizr/schedules_schem
 
 import log from "../../logger"
 import {convertArrayToObject} from "../../methods/utils/utils";
+import {SELECTED} from "../types/suffixes";
 
 const logger = log.getLogger("Cards", "Redux")
 logger.setLevel("debug")
@@ -149,4 +150,11 @@ export const putLotTemplate = (lotTemplate, id) => async dispatch => {
     const actionName = PUT + LOT_TEMPLATE;
     const payload = await api_action(actionName, callback, dispatch, {lotTemplate, id});
     return payload;
+};
+
+// selected
+// ******************************
+export const setSelectedLotTemplate = (lotTemplateId) => async dispatch => {
+    console.log("setSelectedLotTemplate lotTemplateId",lotTemplateId)
+     dispatch({ type: SET + LOT_TEMPLATE + SELECTED, payload: lotTemplateId })
 };

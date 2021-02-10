@@ -47,7 +47,7 @@ import {
 	deleteLotTemplate,
 	getLotTemplate, getLotTemplates,
 	postLotTemplate,
-	putLotTemplate
+	putLotTemplate, setSelectedLotTemplate
 } from "../../../../../redux/actions/lot_template_actions";
 import lotTemplatesReducer from "../../../../../redux/reducers/lot_templates_reducer";
 
@@ -88,10 +88,12 @@ const FormComponent = (props) => {
 		errors,
 		values,
 		touched,
+		setFieldTouched,
 		isSubmitting,
 		submitCount,
 		setFieldValue,
 		submitForm,
+		setTouched,
 		formikProps,
 		processOptions,
 		showProcessSelector,
@@ -177,7 +179,6 @@ const FormComponent = (props) => {
 		}
 	}, [isOpen])
 
-	if(loaded) {
 		return(
 			<styled.StyledForm>
 				<SubmitErrorHandler
@@ -187,21 +188,11 @@ const FormComponent = (props) => {
 					formik={formikProps}
 				/>
 				<styled.Header>
-					{((content === CONTENT.CALENDAR_START) || (content === CONTENT.CALENDAR_END) || (content === CONTENT.HISTORY) || (content === CONTENT.MOVE))  &&
-					<Button
-						onClick={()=>setContent(null)}
-						schema={'error'}
-						// secondary
-					>
-						<styled.Icon className="fas fa-arrow-left"></styled.Icon>
-					</Button>
-					}
-
 					<styled.Title>
 						{formMode === FORM_MODES.CREATE ?
-							"Create Lot"
+							"Create Template"
 							:
-							"Edit Lot"
+							"Edit Template"
 						}
 					</styled.Title>
 
@@ -221,18 +212,20 @@ const FormComponent = (props) => {
 							<styled.NameLabel>Name</styled.NameLabel>
 							<TextField  name={"name"} InputComponent={Textbox}/>
 						</styled.NameContainer>
+						{loaded ?
+							<LotFormCreator
+								{...formikProps}
+								preview={preview}
+							/>
+							:
+							<FadeLoader
+								css={styled.FadeLoaderCSS}
+								height={5}
+								width={3}
+								loading={true}
+							/>
+						}
 
-
-						<LotFormCreator
-							{...formikProps}
-							preview={preview}
-						/>
-
-
-						{/*<DraggableSurface*/}
-						{/*	surface={surface}*/}
-						{/*	draggables={Object.values(stations)}*/}
-						{/*/>*/}
 
 					</styled.TheBody>
 				</styled.RowContainer>
@@ -247,6 +240,16 @@ const FormComponent = (props) => {
 									style={{...buttonStyle, width: "8rem"}}
 									onClick={async () => {
 										setFieldValue("buttonType", FORM_BUTTON_TYPES.SAVE)
+
+										// set touched to true for all fields to show errors
+										values.fields.forEach((currRow, currRowIndex) => {
+											currRow.forEach((currField, currFieldIndex) => {
+												setFieldTouched(`fields[${currRowIndex}][${currFieldIndex}].fieldName`, true)
+											})
+										})
+										setFieldTouched("name", true)
+
+
 										submitForm()
 									}}
 									schema={"ok"}
@@ -255,30 +258,30 @@ const FormComponent = (props) => {
 								>
 									Ok
 								</Button>
+
 								<Button
 									style={buttonStyle}
 									onClick={()=>setPreview(!preview)}
 									schema={"error"}
 								>
-									Preview
+									{preview ? "Show Editor" : "Show Preview"}
 								</Button>
+								{formMode === FORM_MODES.UPDATE &&
+								<Button
+									style={buttonStyle}
+									onClick={()=>onDeleteClick()}
+									schema={"error"}
+								>
+									Delete Template
+								</Button>
+								}
+
 							</styled.ButtonContainer>,
 					}[content] ||
 					null
 				}
 			</styled.StyledForm>
 		)
-	}
-	else {
-		return(
-			<FadeLoader
-				css={styled.FadeLoaderCSS}
-				height={5}
-				width={3}
-				loading={true}
-			/>
-		)
-	}
 
 			}
 
@@ -293,7 +296,8 @@ const LotCreatorForm = (props) => {
 		close,
 		processId,
 		processOptions,
-		showProcessSelector
+		showProcessSelector,
+		lotTemplateId
 	} = props
 
 	// actions
@@ -303,10 +307,10 @@ const LotCreatorForm = (props) => {
 	const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
 	const dispatchPutLotTemplate = async (lotTemplate, id) => await dispatch(putLotTemplate(lotTemplate, id))
 	const dispatchDeleteLotTemplate = async (id) => await dispatch(deleteLotTemplate(id))
+	const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
 
 	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
 
-	const [lotTemplateId, setLotTemplateId] = useState(props.lotTemplateId) //cardId and binId are stored as internal state but initialized from props (if provided)
 
 	const [content, setContent] = useState(CONTENT.EDIT_FORM)
 	const [loaded, setLoaded] = useState(false)
@@ -315,15 +319,17 @@ const LotCreatorForm = (props) => {
 	// get card object from redux by cardId
 	const lotTemplate = lotTemplates[lotTemplateId] || null
 	console.log("FormEditor lotTemplates",lotTemplates)
+	console.log("FormEditor aa lotTemplate",lotTemplate)
+	console.log("FormEditor aa formMode",formMode)
 
 	/*
 	*
 	* */
-	const handleDeleteClick = async (id) => {
+	const handleDeleteClick = async () => {
 
-		dispatchDeleteLotTemplate(id)
+		dispatchDeleteLotTemplate(lotTemplateId)
 
-		close()
+		// close()
 	}
 
 	/*
@@ -345,6 +351,13 @@ const LotCreatorForm = (props) => {
 		handleGetLotTemplate(lotTemplateId)
 		var timer = setInterval(()=>handleGetLotTemplate(lotTemplateId),5000)
 
+		if(lotTemplateId && (formMode !== FORM_MODES.UPDATE)) {
+			setFormMode(FORM_MODES.UPDATE)
+		}
+		else if(!lotTemplate && (formMode !== FORM_MODES.CREATE)) {
+			setFormMode(FORM_MODES.CREATE)
+		}
+
 		return () => {
 			clearInterval(timer)
 		}
@@ -363,7 +376,6 @@ const LotCreatorForm = (props) => {
 
 	useEffect( () => {
 		dispatchGetLotTemplates()
-
 	}, [])
 
 
@@ -374,26 +386,30 @@ const LotCreatorForm = (props) => {
 	const handleSubmit = async (values, formMode) => {
 
 		const {
-			fields
+			fields,
+			name
 		} = values
-
-		const valueEntries = Object.entries(values)
-		console.log("handleSubmit fields",fields)
-		console.log("handleSubmit formMode",formMode)
 
 
 		// update (PUT)
 		if(formMode === FORM_MODES.UPDATE) {
-
-			// onPutCard(submitItem, cardId)
+			dispatchPutLotTemplate({fields, name}, lotTemplateId)
 		}
 
 		// // create (POST)
 		else {
-			const response = await dispatchPostLotTemplate({fields})
+			const response = await dispatchPostLotTemplate({fields, name})
 			//
 			if(!(response instanceof Error)) {
+				const {
+					lotTemplate: createdLotTemplate
+				} = response || {}
 
+				const {
+					_id: createdLotTemplateId,
+				} = createdLotTemplate || {}
+
+				dispatchSetSelectedLotTemplate(createdLotTemplateId)
 			}
 			else {
 				console.error("postResult",response)
@@ -403,6 +419,7 @@ const LotCreatorForm = (props) => {
 
 	return(
 		<styled.Container
+			formEditor={true}
 			isOpen={isOpen}
 			onRequestClose={()=> {
 				close()
@@ -415,17 +432,21 @@ const LotCreatorForm = (props) => {
 				},
 				content: {
 
-				}
+				},
 			}}
 		>
 			<Formik
 				initialValues={{
-					fields: [[{
+					fields: lotTemplate ?
+						lotTemplate.fields
+						:
+						[[{
 						_id: "1",
 						component: FIELD_COMPONENT_NAMES.TEXT_BOX,
 						fieldName: "Order Name"
 						}]],
-					name: ""
+
+					name: lotTemplate ? lotTemplate.name : ""
 				}}
 
 				// validation control
@@ -434,13 +455,15 @@ const LotCreatorForm = (props) => {
 				validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
 				validateOnBlur={true}
 
-				// enableReinitialize={true} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
+				enableReinitialize={true} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
 				onSubmit={async (values, { setSubmitting, setTouched, resetForm }) => {
 					// set submitting to true, handle submit, then set submitting to false
 					// the submitting property is useful for eg. displaying a loading indicator
 					const {
 						buttonType
 					} = values
+
+					console.log("onSubmit")
 
 					setSubmitting(true)
 					await handleSubmit(values, formMode)

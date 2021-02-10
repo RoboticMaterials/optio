@@ -38,6 +38,7 @@ export const Container = styled.div`
     overflow: hidden;
     flex: 1;
     background: ${props => LightenDarkenColor(props.theme.bg.quaternary, 80)};
+  padding: 0;
     
 `
 
@@ -48,13 +49,37 @@ export const CloseButton = styled(CloseOutlinedIcon)`
 `
 
 export const LotTemplateButton = styled.div`
+  position: relative;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 1.5rem;
+`
+export const TemplateIcon = styled.i`
+	font-size: 6rem;
+  
+  	color: ${props => props.isSelected && "cyan"};
+  
+`
+
+export const TemplateName = styled.span`
+	font-size: 1.5rem;
+	//color: black;
+  //position: absolute;
+  //top: 50%;
+  //left: 50%;
+  //transform: translate(-50%, -50%);
 `
 
 export const ListContainer = styled.div`
 
-  padding: 1rem 0;
   position: relative;
+  vertical-align:middle;
+  display: inline-block;
     
     display: flex;
     flex-direction: column;

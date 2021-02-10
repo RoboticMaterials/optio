@@ -5,7 +5,9 @@ import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper"
 import Textbox from "../../../../../basic/textbox/textbox";
 import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
 import FieldComponentMapper from "../field_component_mapper/field_component_mapper";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {LOT_EDITOR_SIDEBAR_OPTIONS} from "../editor_sidebar/editor_sidebar";
+import {setFieldDragging} from "../../../../../../redux/actions/card_page_actions";
 
 const DropContainer = (props) => {
 	const {
@@ -27,18 +29,23 @@ const DropContainer = (props) => {
 		right,
 		preview,
 		indexPattern,
-		fieldName
+		fieldName,
+		payload,
+		setDraggingRow,
+		clearDraggingRow
 
 	} = props
 
-	// const [hoveringLeft, setHoveringLeft] = useState(false)
-	// const [hoveringRight, setHoveringRight] = useState(false)
-	// const [hoveringTop, setHoveringTop] = useState(false)
-	// const [hoveringBottom, setHoveringBottom] = useState(false)
-	const [deleted, setDeleted] = useState(false)
+	console.log("dropcontainr payload",payload)
 
-	const isFieldDragging = useSelector(state=> {return state.cardPageReducer.isFieldDragging})
-	console.log("isFieldDragging",isFieldDragging)
+	const dispatch = useDispatch()
+	const dispatchSetFieldDragging = (bool) => dispatch(setFieldDragging(bool))
+
+	const draggingFieldId = useSelector(state=> {return state.cardPageReducer.isFieldDragging})
+
+
+	const [deleted, setDeleted] = useState(false)
+	const [isThisFieldDragging, setIsThisFieldDragging] = useState(false)
 
 	useEffect( () => {
 		let timeout
@@ -55,6 +62,19 @@ const DropContainer = (props) => {
 	}, [deleted]);
 
 	useEffect( () => {
+		if(draggingFieldId && (draggingFieldId === id)) {
+			if(!isThisFieldDragging) setIsThisFieldDragging(true)
+		}
+		else if(isThisFieldDragging) {
+			 setIsThisFieldDragging(false)
+		}
+
+	}, [draggingFieldId]);
+
+	console.log("draggingFieldId",draggingFieldId)
+	console.log("isThisFieldDragging",isThisFieldDragging)
+
+	useEffect( () => {
 		setDeleted(false)
 
 		return () => {
@@ -66,11 +86,11 @@ const DropContainer = (props) => {
 	}
 
 	return (
-		<styled.ColumnContainer deleted={deleted}>
+		<styled.ColumnContainer isThisFieldDragging={isThisFieldDragging} deleted={deleted || isThisFieldDragging }>
 			{/* Insert a New Row Above */}
 			{top &&
 			<ContainerWrapper
-				onDrop={(dropResult)=>onTopDrop(id, dropResult)}
+				onDrop={(dropResult)=>onTopDrop(dropResult)}
 				shouldAcceptDrop={shouldAcceptDrop}
 				// getGhostParent={()=>document.body}
 				groupName="lot_field_buttons"
@@ -89,6 +109,7 @@ const DropContainer = (props) => {
 
 			{/* Insert Into Current Row*/}
 			<styled.RowContainer>
+				{!isThisFieldDragging &&
 				<ContainerWrapper
 					onDrop={(dropResult)=>onLeftDrop(id, dropResult)}
 					shouldAcceptDrop={()=>{return true}}
@@ -100,13 +121,69 @@ const DropContainer = (props) => {
 					isRow={false}
 					style={{display: "flex", flex: 1, alignSelf: "stretch"}}
 				/>
+				}
+
+				<Container
+					groupName="lot_field_buttons"
+					onDragStart={(dragStartParams, b, c)=>{
+						console.log("onDragStart")
+						const {
+							isSource,
+							payload,
+							willAcceptDrop
+						} = dragStartParams
+
+						if(isSource) {
+							dispatchSetFieldDragging(id)
+							setDraggingRow()
+						}
+
+					}}
+					onDragEnd={(dragEndParams)=>{
+						console.log("onDragEnd")
+						const {
+							isSource,
+							payload,
+							willAcceptDrop
+						} = dragEndParams
+
+						if(isSource) {
+							dispatchSetFieldDragging(null)
+							clearDraggingRow()
+						}
+
+					}}
+					onDrop={(dropR) => {
+						console.log("dropR aaaa",dropR)
+						dispatchSetFieldDragging(null)
+						clearDraggingRow()
+					}}
+					getChildPayload={index => {
+						return payload
+					}}
+					getGhostParent={()=>{
+						return document.body
+					}}
+					style={{
+						// position: "relative",
+						//
+						// display: "flex",
+						// flexDirection: "column",
+						// alignSelf: "stretch",
+						// flex: 1,
+						// alignItems: "center",
+						// overflowY: "auto",
+						// overflowX: "hidden",
+
+					}}
+				>
 					{/*<div style={{}}>*/}
 						<Draggable key={id} >
 							<div style={{position: "relative", }}>
-								{isFieldDragging &&
+								{draggingFieldId &&
 								<div style={{position: "absolute", display: "flex", flexDirection: "column", alignItems: "stretch", left: 0, bottom: 0, top: 0, right: 0}}>
 									<ContainerWrapper
-										onDrop={(dropResult)=>onLeftDrop(id, dropResult)}
+										onDrop={(dropResult)=>onTopDrop(dropResult)}
 										shouldAcceptDrop={()=>{return true}}
 										getGhostParent={()=>document.body}
 										groupName="lot_field_buttons"
@@ -118,7 +195,7 @@ const DropContainer = (props) => {
 									/>
 									<div style={{display: "flex", flex: 5}}>
 										<ContainerWrapper
-											onDrop={(dropResult)=>onTopDrop(id, dropResult)}
+											onDrop={(dropResult)=>onLeftDrop(id, dropResult)}
 											shouldAcceptDrop={()=>{return true}}
 											getGhostParent={()=>document.body}
 											groupName="lot_field_buttons"
@@ -129,7 +206,7 @@ const DropContainer = (props) => {
 											style={{flex: 1, alignSelf: "stretch", zIndex: 50}}
 										/>
 										<ContainerWrapper
-											onDrop={(dropResult)=>onBottomDrop(id, dropResult)}
+											onDrop={(dropResult)=>onRightDrop(id, dropResult)}
 											shouldAcceptDrop={()=>{return true}}
 											getGhostParent={()=>document.body}
 											groupName="lot_field_buttons"
@@ -143,7 +220,7 @@ const DropContainer = (props) => {
 									</div>
 
 									<ContainerWrapper
-										onDrop={(dropResult)=>onRightDrop(id, dropResult)}
+										onDrop={(dropResult)=>onBottomDrop(dropResult)}
 										shouldAcceptDrop={()=>{return true}}
 										getGhostParent={()=>document.body}
 										groupName="lot_field_buttons"
@@ -166,7 +243,7 @@ const DropContainer = (props) => {
 								onDeleteClick={() => setDeleted(true)}
 							>
 								<FieldComponentMapper
-									fieldName={fieldName}
+									// fieldName={fieldName}
 									component={component}
 								/>
 							</FieldWrapper>
@@ -174,9 +251,10 @@ const DropContainer = (props) => {
 							</div>
 						</Draggable>
 					{/*</div>*/}
+				</Container>
 
 				{/* Insert Into New Row Below*/}
-				{right &&
+				{(right && !isThisFieldDragging) &&
 				<ContainerWrapper
 					// orientation={"horizontal"}
 					onDrop={(dropResult)=>onRightDrop(id, dropResult)}
@@ -194,7 +272,7 @@ const DropContainer = (props) => {
 
 			{bottom &&
 			<ContainerWrapper
-				onDrop={(dropResult)=>onBottomDrop(id, dropResult)}
+				onDrop={(dropResult)=>onBottomDrop(dropResult)}
 				shouldAcceptDrop={()=>{return true}}
 				// getGhostParent={()=>document.body}
 				groupName="lot_field_buttons"

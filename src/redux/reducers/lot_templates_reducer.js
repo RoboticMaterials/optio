@@ -2,13 +2,13 @@ import {
   GET,
   POST,
   DELETE,
-  PUT
+  PUT, SET
 } from '../types/prefixes';
 
 import {
   STARTED,
   SUCCESS,
-  FAILURE
+  FAILURE, SELECTED
 } from '../types/suffixes'
 
 import {
@@ -20,6 +20,7 @@ import {
 
 const defaultState = {
   lotTemplates: {},
+  selectedLotTemplatesId: ""
 };
 
 export default function lotTemplatesReducer(state = defaultState, action) {
@@ -54,6 +55,13 @@ export default function lotTemplatesReducer(state = defaultState, action) {
         ...state,
         lotTemplates: {...rest},
         pending: false,
+      }
+
+      case SET + LOT_TEMPLATE + SELECTED: {
+        return {
+          ...state,
+          selectedLotTemplatesId: action.payload
+        }
       }
 
     default:

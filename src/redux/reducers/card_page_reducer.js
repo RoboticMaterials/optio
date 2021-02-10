@@ -4,7 +4,7 @@ import {CARD_DRAGGING, COLUMN_HOVERING, FIELD_DRAGGING, SET_SIZE} from "../types
 
 const defaultState = {
 	isCardDragging: false,
-	isFieldDragging: false,
+	isFieldDragging: null,
 	isHoveringOverColumn: false,
 	sizes: {},
 	draggedLotInfo: {}

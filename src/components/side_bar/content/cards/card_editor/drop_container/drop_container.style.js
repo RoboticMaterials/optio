@@ -6,15 +6,15 @@ export const ColumnContainer = styled.div`
   flex: ${props => props.deleted ? 0 : 1};
   transition: opacity 0.4s ease;
   transition: flex 0.4s ease;
-  //transition: height 1s ease;
+  transition: height 0.4s ease;
+  transition: all 0.4s ease;
 
   opacity: ${props => props.deleted && 0};
   width: ${props => props.deleted ? 0 : "fit-content"};
   min-width: ${props => props.deleted ? 0 : "fit-content"};
-  //height: ${props => props.deleted ? 0 : "fit-content"};
+  max-height: ${props => props.deleted ? 0 : "fit-content"};
   overflow: hidden;
   align-self: stretch;
-  //transition: all 3s ease;
 `
 
 export const RowContainer = styled.div`

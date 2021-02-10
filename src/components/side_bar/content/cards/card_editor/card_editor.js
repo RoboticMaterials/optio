@@ -35,14 +35,6 @@ import log from '../../../../../logger'
 import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
 import ScrollingButtonField from "../../../../basic/form/scrolling_buttons_field/scrolling_buttons_field";
 import NumberField from "../../../../basic/form/number_field/number_field";
-import LotEditorSidebar from "./editor_sidebar/editor_sidebar";
-import DraggableSurface from "./draggable_surface/draggable_surface";
-import {Container} from "react-smooth-dnd";
-import DropContainer from "./drop_container/drop_container";
-import {isArray} from "../../../../../methods/utils/array_utils";
-import {uuidv4} from "../../../../../methods/utils/utils";
-import {cloneWithRef} from "react-dnd/lib/utils/cloneWithRef";
-import LotFormCreator from "./lot_form_creator/lot_form_creator";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
@@ -52,8 +44,7 @@ const CONTENT = {
 	CALENDAR_START: "CALENDAR_START",
 	CALENDAR_END: "CALENDAR_END",
 	CALENDAR_RANGE: "CALENDAR_RANGE",
-	MOVE: "MOVE",
-	EDIT_FORM: "EDIT_FORM",
+	MOVE: "MOVE"
 }
 
 const FORM_BUTTON_TYPES = {
@@ -114,15 +105,9 @@ const FormComponent = (props) => {
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
 	const stations = useSelector(state => { return state.stationsReducer.stations })
 	const processes = useSelector(state => { return state.processesReducer.processes }) || {}
-	const surface = useSelector(state => { return state.mapReducer.currentMap }) || {}
 
 	// component state
 	const [showLotInfo, setShowLotInfo] = useState(true)
-	const [editingFields, setEditingFields] = useState(false)
-	const [preview, setPreview] = useState(false)
-
-	console.log("Card editor values",values)
-
 
 	// derived state
 	const selectedBinName = stations[binId] ?
@@ -505,7 +490,6 @@ const FormComponent = (props) => {
 		)
 	}
 
-
 	if(loaded) {
 		return(
 			<styled.StyledForm>
@@ -543,22 +527,90 @@ const FormComponent = (props) => {
 					</Button>
 				</styled.Header>
 
-				<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
-					<LotEditorSidebar/>
-					<styled.TheBody>
-						<LotFormCreator
-							preview={preview}
-						/>
+				<styled.TheBody>
+
+					<styled.SectionContainer>
 
 
-						{/*<DraggableSurface*/}
-						{/*	surface={surface}*/}
-						{/*	draggables={Object.values(stations)}*/}
-						{/*/>*/}
+						{showProcessSelector && renderProcessSelector()}
 
-					</styled.TheBody>
-				</styled.RowContainer>
+						<styled.ContentHeader>
+							<styled.ContentTitle>Lot Name</styled.ContentTitle>
+						</styled.ContentHeader>
+						<styled.NameContainer>
+							<TextField
+								name="name"
+								type="text"
+								placeholder="Enter name..."
+								InputComponent={Textbox}
+							/>
+						</styled.NameContainer>
 
+						{((content === null)) &&
+						<>
+							{showLotInfo &&
+							<>
+								<styled.NameContainer>
+									<styled.ContentHeader>
+										<styled.ContentTitle>Lot Description</styled.ContentTitle>
+									</styled.ContentHeader>
+									<TextField
+										name="description"
+										type="text"
+										placeholder="Description..."
+										InputComponent={Textbox}
+										lines={5}
+									/>
+								</styled.NameContainer>
+
+								<styled.DatesContainer>
+									<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_START)}>
+										<styled.DateText>{startDateText}</styled.DateText>
+									</styled.DateItem>
+
+									<styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
+
+									<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_START)}>
+										<styled.DateText>{endDateText}</styled.DateText>
+									</styled.DateItem>
+								</styled.DatesContainer>
+							</>
+							}
+
+
+							{formMode === FORM_MODES.UPDATE &&
+							<Button
+								// secondary
+								style={{margin: "0 0 1rem 0", width: "fit-content"}}
+								type={"button"}
+								onClick={()=>setShowLotInfo(!showLotInfo)}
+								schema={"lots"}
+							>
+								{showLotInfo ? "Hide Lot Details" : "Show Lot Details"}
+							</Button>
+							}
+
+						</>
+
+						}
+
+
+					</styled.SectionContainer>
+
+					{(content === null) &&
+					renderMainContent()
+					}
+					{(((content === CONTENT.CALENDAR_END) || (content === CONTENT.CALENDAR_START))) &&
+					renderCalendarContent()
+					}
+					{(content === CONTENT.HISTORY) &&
+					renderHistory()
+					}
+					{(content === CONTENT.MOVE) &&
+					renderMoveContent()
+					}
+
+				</styled.TheBody>
 
 				{/* render buttons for appropriate content */}
 				{
@@ -579,24 +631,6 @@ const FormComponent = (props) => {
 									schema={"error"}
 								>
 									Cancel
-								</Button>
-							</styled.ButtonContainer>,
-						"EDIT_FORM":
-							<styled.ButtonContainer style={{width: "100%"}}>
-								<Button
-									style={{...buttonStyle, width: "8rem"}}
-									// onClick={()=>setContent(null)}
-									schema={"ok"}
-									secondary
-								>
-									Ok
-								</Button>
-								<Button
-									style={buttonStyle}
-									onClick={()=>setPreview(!preview)}
-									schema={"error"}
-								>
-									Preview
 								</Button>
 							</styled.ButtonContainer>,
 						"HISTORY":
@@ -706,17 +740,6 @@ const FormComponent = (props) => {
 								>
 									Move
 								</Button>
-								<Button
-									schema={'lots'}
-									type={"button"}
-									style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-									secondary
-									onClick={() => {
-										setEditingFields(true)
-									}}
-								>
-									Edit Fields
-								</Button>
 							</>
 						}
 					</styled.ButtonContainer>
@@ -766,7 +789,7 @@ const CardEditor = (props) => {
 
 	const [cardId, setCardId] = useState(props.cardId) //cardId and binId are stored as internal state but initialized from props (if provided)
 	const [binId, setBinId] = useState(props.binId)
-	const [content, setContent] = useState(CONTENT.EDIT_FORM)
+	const [content, setContent] = useState(null)
 	const [loaded, setLoaded] = useState(false)
 	const [formMode, setFormMode] = useState(props.cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
 

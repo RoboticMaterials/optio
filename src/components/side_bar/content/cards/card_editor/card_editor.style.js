@@ -22,7 +22,8 @@ export const Container = styled(Modal)`
   min-width: 95%;
   max-width: 95%;
   max-height: 95%;
-  // height: 95%;
+  
+   height: ${props => props.formEditor && "95%"};
   
   color: ${props => props.theme.bg.octonary};
   
@@ -46,10 +47,15 @@ export const NameContainer = styled.div`
 	background: ${props => props.theme.bg.quaternary};
 
   	margin-bottom: 1rem;
+  align-self: center;
+  width: 80%;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
 `
 
 export const NameLabel = styled.span`
-
+	margin-right: 1rem;
 `
 
 export const CloseButton = styled.button`
@@ -104,6 +110,7 @@ export const SectionContainer = styled.div`
 export const TheBody = styled.div`
 	//background: blue;
   //padding-top: 1rem;
+  position: relative;
   overflow: auto;
   flex: 1;
   display: flex;
@@ -225,6 +232,7 @@ export const StyledForm = styled(Form)`
     max-width: 100%;
   overflow: hidden;
   max-height: 100%;
+  height: 100%;
     // max-height: 100%;
     // overflow-x: hidden;
     border-radius: .5rem;
@@ -430,6 +438,10 @@ export const FadeLoaderCSS = css`
   display: block;
   margin: 0 auto;
   border-color: red;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 
