@@ -14,6 +14,7 @@ import Button from '../../../../basic/button/button'
 // Import actions
 import { setSelectedDevice, putDevices } from '../../../../../redux/actions/devices_actions'
 import { widgetLoaded, hoverStationInfo } from '../../../../../redux/actions/widget_actions'
+import { postStatus } from '../../../../../redux/actions/status_actions'
 
 // Import templates
 import * as templates from '../devices_templates/device_templates'
@@ -46,6 +47,7 @@ const DeviceEdit = (props) => {
     const dispatchSetSelectedDevice = (selectedDevice) => dispatch(setSelectedDevice(selectedDevice))
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchPutDevice = (device) => dispatch(putDevices(device, device._id))
+    const dispatchPostStatus = (status) => dispatch(postStatus(status))
 
     const selectedDevice = useSelector(state => state.devicesReducer.selectedDevice)
     const devices = useSelector(state => state.devicesReducer.devices)
@@ -87,10 +89,10 @@ const DeviceEdit = (props) => {
 
     // Submits the Mir Connection to the backend
     const onMirConnection = async () => {
-        dispatchPutDevice({
-            ...selectedDevice,
-            connection: 'connecting',
-        })
+        const mir = { mir_connection: 'connecting' }
+
+        await dispatchPostStatus(mir)
+
         setMirUpdated(false)
 
     }
@@ -109,19 +111,15 @@ const DeviceEdit = (props) => {
             connectionIcon = 'fas fa-question'
             connectionText = 'Not Connected'
         }
-        else if (!device.connection) {
-            connectionIcon = 'fas fa-question'
-            connectionText = 'Not Connected'
-        }
-        else if (device.connection === 'connected') {
+        else if (status.mir_connection === 'connected') {
             connectionIcon = 'fas fa-check'
             connectionText = 'Connected'
         }
-        else if (device.connection === 'connecting') {
+        else if (status.mir_connection === 'connecting') {
             connectionIcon = 'fas fa-circle-notch fa-spin'
             connectionText = 'Connecting'
         }
-        else if (device.connection === 'failed') {
+        else if (status.mir_connection === 'failed') {
             connectionIcon = 'fas fa-times'
             connectionText = 'Failed'
         }
@@ -152,6 +150,7 @@ const DeviceEdit = (props) => {
                             ...selectedDevice,
                             ip_address: event.target.value
                         })
+
                     }}
                     style={{ width: '100%' }}
 
@@ -160,7 +159,6 @@ const DeviceEdit = (props) => {
             </styled.SectionsContainer>
         )
     }
-
 
     /**
      * This is used to place the device onto the map

@@ -18,7 +18,6 @@ import { postSettings, getSettings } from '../../../../redux/actions/settings_ac
 import { postLocalSettings } from '../../../../redux/actions/local_actions'
 import { deviceEnabled } from '../../../../redux/actions/settings_actions'
 import { getStatus } from '../../../../redux/actions/status_actions'
-import { postStatus } from '../../../../api/status_api'
 import { setCurrentMap } from '../../../../redux/actions/map_actions'
 
 // Import Utils
