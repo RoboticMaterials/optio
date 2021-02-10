@@ -34,7 +34,7 @@ const testData = [
     },
     {
         "x": "11 am",
-        "y": 166
+        "y": 0
     },
     {
         "x": "12 am",
@@ -46,7 +46,7 @@ const testData = [
     },
     {
         "x": "2 pm ",
-        "y": 0
+        "y": 75
     },
     {
         "x": "3 pm ",
@@ -84,10 +84,14 @@ const ThroughputChart = (props) => {
         expectedOutput: 1100,
         breaks: {
             break1: {
-                startOfBreak: '12:00',
-                endOfBreak: '14:00',
+                startOfBreak: '10:00',
+                endOfBreak: '11:00',
             },
             break2: {
+                startOfBreak: '12:00',
+                endOfBreak: '13:00',
+            },
+            break3: {
                 startOfBreak: '16:00',
                 endOfBreak: '17:00',
             },
@@ -110,9 +114,9 @@ const ThroughputChart = (props) => {
     /**
      * This converts the incoming data for a line graph
      * IT does a few things
-     * 1)
-     * 2)
-     * 3)
+     * 1) Modifys the x axis based on start and end dates by converting input data to match the same format as incoming
+     * 2) If there is an expected output, it adds that 
+     * 3) If breaks, adds 'stagnate' (flat) sections to the graph when no parts are being processes
      * 
      */
     const lineDataConver = () => {
@@ -128,7 +132,7 @@ const ThroughputChart = (props) => {
         const startOfShiftModifier = startOfShift12h.split(' ')[1]
         const startOfShift = `${startOfShiftHour} ${startOfShiftModifier}`
         let startIndex
-        // Find Start of Shift
+        // Find Start of Shift in the test data based on selected inpt
         for (let i = 0; i < dataCopy.length; i++) {
             if (dataCopy[i].x === startOfShift) startIndex = i
         }
@@ -169,14 +173,13 @@ const ThroughputChart = (props) => {
                 expectedOutput.push({ x: dataCopy[i].x, y: null })
             }
 
-
             /**
              * This handles breaks
              * It takes the start and end time of each break and then creates an array of all indexes of expected output that fall within that range
-             * It sets the stagnant value to the value at the start of the break
+             * It also deletes values from slopeValues, slope values is used for points on the graph that have a slope
+             * It then sets the stagnant value to the value at the start of the break
              * This creates flat spots in the expected output graph
              */
-            // To handle breaks, I need to see the range of time they are between and subtract that from dataCopy length
             // TODO: this will probably change depending on how we bin data together
             let breakObj = {}
             const breaks = Object.values(compareExpectedOutput.breaks)
@@ -214,21 +217,10 @@ const ThroughputChart = (props) => {
                     [ind]: arrayIndexList
                 }
 
-
-                // console.log('QQQQ expected Out', expectedOutput)
-                // // Set the times in that array to a stagnet value
-                // const stagnantValue = expectedOutput[startIndex].y
-                // arrayIndexList.forEach((index) => {
-                //     expectedOutput[index].y = stagnantValue
-                // })
-
-
             })
 
-            console.log('QQQQ slope', slopeValues)
-            console.log('QQQQ break', breakObj)
 
-            // Add slope x points
+            // Add slope y points
             slopeValues.forEach((val, ind) => {
                 expectedOutput[val].y = (ind / (slopeValues.length - 1)) * compareExpectedOutput.expectedOutput
             })
@@ -240,16 +232,6 @@ const ThroughputChart = (props) => {
                     expectedOutput[index].y = stagnantValue
                 })
             })
-
-
-
-
-            // for (let i = 0; i < dataCopy.length; i++) {
-            //     // Y value is a function of where the data point is in the array of the data
-            //     const yValue = (i / (dataCopy.length - 1)) * compareExpectedOutput.expectedOutput
-            //     expectedOutput.push({ x: dataCopy[i].x, y: yValue })
-            // }
-
 
         }
 
@@ -273,92 +255,278 @@ const ThroughputChart = (props) => {
     const renderBreaks = () => {
         return (
             <styled.RowContainer>
-                <styled.columnContainer>
-                    <styled.Label>
-                        Start of Break
+                <styled.BreakContainer>
+                    <styled.ColumnContainer>
+                        <styled.Label>
+                            Start of Break
                     </styled.Label>
-                    <TimePickerField
-                        mapInput={
-                            (value) => {
-                                if (value) {
-                                    const time24hr = convert12hto24h(value)
-                                    const splitVal = time24hr.split(':')
-                                    return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
-                                }
-                            }
-                        }
-                        mapOutput={(value) => {
-                            return value.format("hh:mm a")
-                        }}
-                        name={'startOfBreak1'}
-                        style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                        showHour={true}
-                        showSecond={false}
-                        className="xxx"
-                        use12Hours
-                        format={'hh:mm a'}
-                        autocomplete={"off"}
-                        allowEmpty={false}
-                        defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                        defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                        onChange={(time) => {
-                            const string = convert12hto24h(time.format("hh:mm a"))
-                            setCompareExpectedOutput({
-                                ...compareExpectedOutput,
-                                breaks: {
-                                    ...compareExpectedOutput.breaks,
-                                    break1: {
-                                        ...compareExpectedOutput.breaks.break1,
-                                        startOfBreak: string
+                        <TimePickerField
+                            mapInput={
+                                (value) => {
+                                    if (value) {
+                                        const time24hr = convert12hto24h(value)
+                                        const splitVal = time24hr.split(':')
+                                        return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
                                     }
                                 }
-                            })
-                        }}
-                    />
-                </styled.columnContainer>
-                <styled.columnContainer>
-                    <styled.Label>
-                        End of Break
-                    </styled.Label>
-                    <TimePickerField
-                        mapInput={
-                            (value) => {
-                                if (value) {
-                                    const time24hr = convert12hto24h(value)
-                                    const splitVal = time24hr.split(':')
-                                    return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
-                                }
                             }
-                        }
-                        mapOutput={(value) => {
-                            return value.format("hh:mm a")
-                        }}
-                        name={'endOfBreak1'}
-                        style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                        showHour={true}
-                        showSecond={false}
-                        className="xxx"
-                        use12Hours
-                        format={'hh:mm a'}
-                        autocomplete={"off"}
-                        allowEmpty={false}
-                        defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                        defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                        onChange={(time) => {
-                            const string = convert12hto24h(time.format("hh:mm a"))
-                            setCompareExpectedOutput({
-                                ...compareExpectedOutput,
-                                breaks: {
-                                    ...compareExpectedOutput.breaks,
-                                    break1: {
-                                        ...compareExpectedOutput.breaks.break1,
-                                        endOfBreak: string
+                            mapOutput={(value) => {
+                                return value.format("hh:mm a")
+                            }}
+                            name={'startOfBreak1'}
+                            style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                            showHour={true}
+                            showMinute={false}
+                            showSecond={false}
+                            className="xxx"
+                            use12Hours
+                            format={'hh:mm a'}
+                            autocomplete={"off"}
+                            allowEmpty={false}
+                            defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                            defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                            onChange={(time) => {
+                                const string = convert12hto24h(time.format("hh:mm a"))
+                                setCompareExpectedOutput({
+                                    ...compareExpectedOutput,
+                                    breaks: {
+                                        ...compareExpectedOutput.breaks,
+                                        break1: {
+                                            ...compareExpectedOutput.breaks.break1,
+                                            startOfBreak: string
+                                        }
+                                    }
+                                })
+                            }}
+                        />
+                    </styled.ColumnContainer>
+                    <styled.ColumnContainer>
+                        <styled.Label>
+                            End of Break
+                    </styled.Label>
+                        <TimePickerField
+                            mapInput={
+                                (value) => {
+                                    if (value) {
+                                        const time24hr = convert12hto24h(value)
+                                        const splitVal = time24hr.split(':')
+                                        return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
                                     }
                                 }
-                            })
-                        }}
-                    />
-                </styled.columnContainer>
+                            }
+                            mapOutput={(value) => {
+                                return value.format("hh:mm a")
+                            }}
+                            name={'endOfBreak1'}
+                            style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                            showHour={true}
+                            showMinute={false}
+                            showSecond={false}
+                            className="xxx"
+                            use12Hours
+                            format={'hh:mm a'}
+                            autocomplete={"off"}
+                            allowEmpty={false}
+                            defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                            defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                            onChange={(time) => {
+                                const string = convert12hto24h(time.format("hh:mm a"))
+                                setCompareExpectedOutput({
+                                    ...compareExpectedOutput,
+                                    breaks: {
+                                        ...compareExpectedOutput.breaks,
+                                        break1: {
+                                            ...compareExpectedOutput.breaks.break1,
+                                            endOfBreak: string
+                                        }
+                                    }
+                                })
+                            }}
+                        />
+                    </styled.ColumnContainer>
+                </styled.BreakContainer>
+
+                <styled.BreakContainer>
+                    <styled.ColumnContainer>
+                        <styled.Label>
+                            Start of Break
+                    </styled.Label>
+                        <TimePickerField
+                            mapInput={
+                                (value) => {
+                                    if (value) {
+                                        const time24hr = convert12hto24h(value)
+                                        const splitVal = time24hr.split(':')
+                                        return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                    }
+                                }
+                            }
+                            mapOutput={(value) => {
+                                return value.format("hh:mm a")
+                            }}
+                            name={'startOfBreak2'}
+                            style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                            showHour={true}
+                            showMinute={false}
+                            showSecond={false}
+                            className="xxx"
+                            use12Hours
+                            format={'hh:mm a'}
+                            autocomplete={"off"}
+                            allowEmpty={false}
+                            defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                            defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                            onChange={(time) => {
+                                const string = convert12hto24h(time.format("hh:mm a"))
+                                setCompareExpectedOutput({
+                                    ...compareExpectedOutput,
+                                    breaks: {
+                                        ...compareExpectedOutput.breaks,
+                                        break2: {
+                                            ...compareExpectedOutput.breaks.break2,
+                                            startOfBreak: string
+                                        }
+                                    }
+                                })
+                            }}
+                        />
+                    </styled.ColumnContainer>
+                    <styled.ColumnContainer>
+                        <styled.Label>
+                            End of Break
+                    </styled.Label>
+                        <TimePickerField
+                            mapInput={
+                                (value) => {
+                                    if (value) {
+                                        const time24hr = convert12hto24h(value)
+                                        const splitVal = time24hr.split(':')
+                                        return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                    }
+                                }
+                            }
+                            mapOutput={(value) => {
+                                return value.format("hh:mm a")
+                            }}
+                            name={'endOfBreak2'}
+                            style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                            showHour={true}
+                            showMinute={false}
+                            showSecond={false}
+                            className="xxx"
+                            use12Hours
+                            format={'hh:mm a'}
+                            autocomplete={"off"}
+                            allowEmpty={false}
+                            defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                            defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                            onChange={(time) => {
+                                const string = convert12hto24h(time.format("hh:mm a"))
+                                setCompareExpectedOutput({
+                                    ...compareExpectedOutput,
+                                    breaks: {
+                                        ...compareExpectedOutput.breaks,
+                                        break2: {
+                                            ...compareExpectedOutput.breaks.break2,
+                                            endOfBreak: string
+                                        }
+                                    }
+                                })
+                            }}
+                        />
+                    </styled.ColumnContainer>
+                </styled.BreakContainer>
+
+                <styled.BreakContainer>
+                    <styled.ColumnContainer>
+                        <styled.Label>
+                            Start of Break
+                    </styled.Label>
+                        <TimePickerField
+                            mapInput={
+                                (value) => {
+                                    if (value) {
+                                        const time24hr = convert12hto24h(value)
+                                        const splitVal = time24hr.split(':')
+                                        return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                    }
+                                }
+                            }
+                            mapOutput={(value) => {
+                                return value.format("hh:mm a")
+                            }}
+                            name={'startOfBreak3'}
+                            style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                            showHour={true}
+                            showMinute={false}
+                            showSecond={false}
+                            className="xxx"
+                            use12Hours
+                            format={'hh:mm a'}
+                            autocomplete={"off"}
+                            allowEmpty={false}
+                            defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                            defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                            onChange={(time) => {
+                                const string = convert12hto24h(time.format("hh:mm a"))
+                                setCompareExpectedOutput({
+                                    ...compareExpectedOutput,
+                                    breaks: {
+                                        ...compareExpectedOutput.breaks,
+                                        break3: {
+                                            ...compareExpectedOutput.breaks.break3,
+                                            startOfBreak: string
+                                        }
+                                    }
+                                })
+                            }}
+                        />
+                    </styled.ColumnContainer>
+                    <styled.ColumnContainer>
+                        <styled.Label>
+                            End of Break
+                    </styled.Label>
+                        <TimePickerField
+                            mapInput={
+                                (value) => {
+                                    if (value) {
+                                        const time24hr = convert12hto24h(value)
+                                        const splitVal = time24hr.split(':')
+                                        return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                    }
+                                }
+                            }
+                            mapOutput={(value) => {
+                                return value.format("hh:mm a")
+                            }}
+                            name={'endOfBreak3'}
+                            style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                            showHour={true}
+                            showMinute={false}
+                            showSecond={false}
+                            className="xxx"
+                            use12Hours
+                            format={'hh:mm a'}
+                            autocomplete={"off"}
+                            allowEmpty={false}
+                            defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                            defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                            onChange={(time) => {
+                                const string = convert12hto24h(time.format("hh:mm a"))
+                                setCompareExpectedOutput({
+                                    ...compareExpectedOutput,
+                                    breaks: {
+                                        ...compareExpectedOutput.breaks,
+                                        break3: {
+                                            ...compareExpectedOutput.breaks.break3,
+                                            endOfBreak: string
+                                        }
+                                    }
+                                })
+                            }}
+                        />
+                    </styled.ColumnContainer>
+                </styled.BreakContainer>
             </styled.RowContainer>
         )
     }
@@ -377,6 +545,10 @@ const ThroughputChart = (props) => {
                             endOfShift: compareExpectedOutput.endOfShift,
                             startOfBreak1: compareExpectedOutput.breaks.break1.startOfBreak,
                             endOfBreak1: compareExpectedOutput.breaks.break1.endOfBreak,
+                            startOfBreak2: compareExpectedOutput.breaks.break2.startOfBreak,
+                            endOfBreak2: compareExpectedOutput.breaks.break2.endOfBreak,
+                            startOfBreak3: compareExpectedOutput.breaks.break3.startOfBreak,
+                            endOfBreak3: compareExpectedOutput.breaks.break3.endOfBreak,
                         }}
 
                         // validation control
@@ -394,7 +566,7 @@ const ThroughputChart = (props) => {
                                 <Form>
                                     <styled.RowContainer>
 
-                                        <styled.columnContainer>
+                                        <styled.ColumnContainer>
                                             <styled.Label>
                                                 Start of Shift
                                             </styled.Label>
@@ -430,8 +602,8 @@ const ThroughputChart = (props) => {
                                                     })
                                                 }}
                                             />
-                                        </styled.columnContainer>
-                                        <styled.columnContainer>
+                                        </styled.ColumnContainer>
+                                        <styled.ColumnContainer>
                                             <styled.Label>
                                                 End of Shift
                                             </styled.Label>
@@ -467,7 +639,7 @@ const ThroughputChart = (props) => {
                                                     })
                                                 }}
                                             />
-                                        </styled.columnContainer>
+                                        </styled.ColumnContainer>
 
                                         <Textbox
                                             value={!!compareExpectedOutput && !!compareExpectedOutput.expectedOutput ? compareExpectedOutput.expectedOutput : ''}

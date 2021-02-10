@@ -94,7 +94,7 @@ export const RowContainer = styled.div`
     
 `
 
-export const columnContainer = styled.div`
+export const ColumnContainer = styled.div`
     ${commonCss.columnContainer}
 `
 
@@ -124,3 +124,9 @@ export const TimePickerErrorComponent = styled.span`
   font-weight: 600;
   margin-top: .25rem;
 `;
+
+export const BreakContainer = styled.div`
+    display: flex;
+    background-color: slateblue;
+    border-radius: 1rem;
+`
