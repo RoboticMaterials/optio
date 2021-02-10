@@ -16,10 +16,14 @@ import LineChart from '../../chart_types/line_chart'
 
 // Import utils
 import { throughputSchema } from '../../../../../../methods/utils/form_schemas'
-import { convert12hto24h, convert24hto12h } from '../../../../../../methods/utils/time_utils'
+import { convert12hto24h, convert24hto12h, convertTimeStringto24h } from '../../../../../../methods/utils/time_utils'
 import { deepCopy } from '../../../../../../methods/utils/utils';
 
 const testData = [
+    {
+        "x": "8 am",
+        "y": 0
+    },
     {
         "x": "9 am",
         "y": 251
@@ -34,15 +38,15 @@ const testData = [
     },
     {
         "x": "12 am",
-        "y": 211
+        "y": 85
     },
     {
         "x": "1 pm",
-        "y": 58
+        "y": 0
     },
     {
         "x": "2 pm ",
-        "y": 117
+        "y": 0
     },
     {
         "x": "3 pm ",
@@ -50,11 +54,11 @@ const testData = [
     },
     {
         "x": "4 pm ",
-        "y": 231
+        "y": 75
     },
     {
         "x": "5 pm",
-        "y": 75
+        "y": 0
     },
     {
         "x": "6 pm",
@@ -75,13 +79,17 @@ const ThroughputChart = (props) => {
     const themeContext = useContext(ThemeContext);
 
     const [compareExpectedOutput, setCompareExpectedOutput] = useState({
-        endOfShift: '18:00',
-        startOfShift: '10:00',
-        expectedOutput: 1000,
+        startOfShift: '08:00',
+        endOfShift: '20:00',
+        expectedOutput: 1100,
         breaks: {
             break1: {
                 startOfBreak: '12:00',
                 endOfBreak: '14:00',
+            },
+            break2: {
+                startOfBreak: '16:00',
+                endOfBreak: '17:00',
             },
         },
     })
@@ -146,15 +154,103 @@ const ThroughputChart = (props) => {
             stack += point.y
         }
 
+        // This is the array of data that is passed to the line chart
         let expectedOutput = []
+
+        // This array is used to find indexes in the expected output where a slope should be applied to
+        // IE, where the expected output is not stagnant (part of a break)
+        let slopeValues = []
+
         // Add Expected output
         if (!!compareExpectedOutput.expectedOutput) {
+
             for (let i = 0; i < dataCopy.length; i++) {
-                console.log('QQQQ length', i, dataCopy.length)
-                // Y value is a function of where the data point is in the array of the data
-                const yValue = (i / (dataCopy.length - 1)) * compareExpectedOutput.expectedOutput
-                expectedOutput.push({ x: dataCopy[i].x, y: yValue })
+                slopeValues.push(i)
+                expectedOutput.push({ x: dataCopy[i].x, y: null })
             }
+
+
+            /**
+             * This handles breaks
+             * It takes the start and end time of each break and then creates an array of all indexes of expected output that fall within that range
+             * It sets the stagnant value to the value at the start of the break
+             * This creates flat spots in the expected output graph
+             */
+            // To handle breaks, I need to see the range of time they are between and subtract that from dataCopy length
+            // TODO: this will probably change depending on how we bin data together
+            let breakObj = {}
+            const breaks = Object.values(compareExpectedOutput.breaks)
+            breaks.forEach((b, ind) => {
+
+                const start = b.startOfBreak
+                const end = b.endOfBreak
+
+                // Convert expected output to times
+                let convertedOutput = []
+                expectedOutput.forEach((output) => {
+                    const convert = convertTimeStringto24h(output.x)
+                    convertedOutput.push(convert)
+                })
+
+
+                // Find the start index in the array 
+                // TODO: Probably pass through a function that finds the closest time
+                const matchedStartBreak = (el) => start === el
+                const startIndex = convertedOutput.findIndex(matchedStartBreak)
+                // Find the end index in the array
+                const matchEndBreak = (el) => end === el
+                const endIndex = convertedOutput.findIndex(matchEndBreak)
+
+                // Create an array the contains the indexes between the start and end index
+                let arrayIndexList = []
+                for (let i = startIndex + 1; i <= endIndex; i++) {
+                    slopeValues.splice(slopeValues.indexOf(i), 1)
+                    arrayIndexList.push(i)
+                }
+
+                // Add the created array to obj to use for creating the output data
+                breakObj = {
+                    ...breakObj,
+                    [ind]: arrayIndexList
+                }
+
+
+                // console.log('QQQQ expected Out', expectedOutput)
+                // // Set the times in that array to a stagnet value
+                // const stagnantValue = expectedOutput[startIndex].y
+                // arrayIndexList.forEach((index) => {
+                //     expectedOutput[index].y = stagnantValue
+                // })
+
+
+            })
+
+            console.log('QQQQ slope', slopeValues)
+            console.log('QQQQ break', breakObj)
+
+            // Add slope x points
+            slopeValues.forEach((val, ind) => {
+                expectedOutput[val].y = (ind / (slopeValues.length - 1)) * compareExpectedOutput.expectedOutput
+            })
+
+            // Add stagnent y points
+            Object.values(breakObj).forEach(b => {
+                const stagnantValue = expectedOutput[b[0] - 1].y
+                b.forEach(index => {
+                    expectedOutput[index].y = stagnantValue
+                })
+            })
+
+
+
+
+            // for (let i = 0; i < dataCopy.length; i++) {
+            //     // Y value is a function of where the data point is in the array of the data
+            //     const yValue = (i / (dataCopy.length - 1)) * compareExpectedOutput.expectedOutput
+            //     expectedOutput.push({ x: dataCopy[i].x, y: yValue })
+            // }
+
+
         }
 
         const lineData = [{
@@ -170,7 +266,6 @@ const ThroughputChart = (props) => {
 
         },
         ]
-        console.log('QQQQ Data', lineData)
 
         return lineData
     }
