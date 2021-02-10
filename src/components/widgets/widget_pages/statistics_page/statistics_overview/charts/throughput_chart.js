@@ -98,7 +98,7 @@ const ThroughputChart = (props) => {
         },
     })
     // const [compareExpectedOutput, setCompareExpectedOutput] = useState(null)
-
+    
     const {
         throughputData,
         isThroughputLoading,
@@ -552,7 +552,7 @@ const ThroughputChart = (props) => {
                         }}
 
                         // validation control
-                        validationSchema={throughputSchema}
+                        validationSchema={throughputSchema(compareExpectedOutput)}
                         validateOnChange={true}
                         validateOnMount={true}
                         validateOnBlur={true}

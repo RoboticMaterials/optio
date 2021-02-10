@@ -349,12 +349,48 @@ export const locationSchema = (stations, selectedLocation) => {
     )
 }
 
-export const throughputSchema = () => {
+export const throughputSchema = (compareExpectedOutput) => {
+
+    startOfBreak1 = compareExpectedOutput.breaks.break1.startOfBreak
+    endOfBreak1 = compareExpectedOutput.breaks.break1.endOfBreak
+    startOfBreak2 = compareExpectedOutput.breaks.break2.startOfBreak
+    endOfBreak2 = compareExpectedOutput.breaks.break2.endOfBreak
+    startOfBreak3 = compareExpectedOutput.breaks.break3startOfBreak3.startOfBreak
+    endOfBreak3 = compareExpectedOutput.breaks.break3startOfBreak3.endOfBreak
+
+
+    Yup.addMethod(Yup.string, 'greaterThan', (input1, input2) => {
+        return this.test('greaterThan', input1, () => {
+
+            // Take the Hour and minute 
+            const [beg1, end1] = input1.split(':')
+            const [beg2, end2] = input2.split(':')
+
+            input1Int = parseInt(`${beg1}${end1}`)
+            input2Int = parseInt(`${beg2}${end2}`)
+
+        })
+    })
+
+
     return (
         Yup.object().shape({
             startOfShift: Yup.string()
-                .required('Required'),
+                .required('Required')
+                .greaterThan('Over', 'Here'),
             endOfShift: Yup.string()
+                .required('Required'),
+            startOfBreak1: Yup.string()
+                .required('Required'),
+            endOfBreak1: Yup.string()
+                .required('Required'),
+            startOfBreak2: Yup.string()
+                .required('Required'),
+            endOfBreak2: Yup.string()
+                .required('Required'),
+            startOfBreak3: Yup.string()
+                .required('Required'),
+            endOfBreak3: Yup.string()
                 .required('Required'),
         })
     )
