@@ -89,7 +89,7 @@ const HILModals = (props) => {
     const [lotsAtStation, setLotsAtStation] = useState(false)
     const [taskHasProcess, setTaskHasProcess] = useState(false)
     const [noLotsSelected, setNoLotsSelected] = useState(false)
-
+    const [modalClosed, setModalClosed] = useState(false)
     const size = useWindowSize()
     const windowWidth = size.width
 
@@ -582,6 +582,7 @@ const HILModals = (props) => {
                             onClick={() => {
                                 onHilSuccess()
                                 dispatchSetShowModalId(null)
+                                setModalClosed(true)
 
                             }}
                         >
@@ -665,6 +666,7 @@ const HILModals = (props) => {
                                   onClick={()=> {
                                     onHilFailure()
                                     dispatchSetShowModalId(null)
+                                    setModalClosed(true)
                                   }}>
                                 <styled.HilIcon
                                     style={{ marginBottom: 0, marginRight: "1rem", fontSize: "2.5rem" }}
@@ -952,6 +954,7 @@ const HILModals = (props) => {
                                 onClick={()=> {
                                         onHilFailure()
                                         dispatchSetShowModalId(null)
+                                        setModalClosed(true)
                                       }}>
                                     <styled.HilIcon
                                         className='fas fa-times'
@@ -1088,6 +1091,7 @@ const HILModals = (props) => {
                             onClick={()=> {
                               onHilFailure()
                               dispatchSetShowModalId(null)
+                              setModalClosed(true)
                             }}
                         >
                             <styled.HilIcon
@@ -1140,7 +1144,7 @@ const HILModals = (props) => {
      * HIL Check will only show on a pull request
      */
 
-    if (dataLoaded) {
+    if (dataLoaded && modalClosed!==true) {
         return (
             <styled.HilContainer >
 
