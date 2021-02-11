@@ -597,6 +597,7 @@ const ThroughputChart = (props) => {
                                                 name={'startOfShift'}
                                                 style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
                                                 showHour={true}
+                                                formikProps
                                                 showSecond={false}
                                                 className="xxx"
                                                 use12Hours

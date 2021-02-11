@@ -31,7 +31,6 @@ const TimePickerField = (props) => {
 
 	const { setFieldValue, setFieldTouched } = useFormikContext();
 	const [field, meta] = useField(props);
-    console.log('QQQQ props', props)
 
 	const {
 		value: fieldValue,
@@ -43,7 +42,7 @@ const TimePickerField = (props) => {
 		error
 	} = meta
 
-    // console.log('QQQQ error', field)
+    if(fieldName === 'startOfBreak1') console.log('QQQQ fields', field, meta)
 
 	const hasError = touched && error;
 	const errorMessage = getMessageFromError(error);
