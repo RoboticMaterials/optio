@@ -90,7 +90,7 @@ const DeviceEdit = (props) => {
     // Submits the Mir Connection to the backend
     const onMirConnection = async () => {
         const mir = { mir_connection: 'connecting' }
-
+        await dispatchPutDevice(selectedDevice)
         await dispatchPostStatus(mir)
 
         setMirUpdated(false)
