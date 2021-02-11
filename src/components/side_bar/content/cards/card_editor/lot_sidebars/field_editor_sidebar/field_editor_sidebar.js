@@ -132,7 +132,6 @@ const LotEditorSidebar = (props) => {
                     }}
                     style={{
                         position: "relative",
-                        padding: "1rem 0",
                         alignSelf: "stretch",
                         flex: 1,
                         overflowY: "auto",
@@ -168,7 +167,7 @@ const LotEditorSidebar = (props) => {
     const getTemplateButtons = () => {
         return (
 
-            <style.ListContainer style={{padding: "1rem 0"}}>
+            <style.ListContainer>
                 <style.LotTemplateButton
                     isSelected={!selectedLotTemplatesId}
                     onClick={() => dispatchSetSelectedLotTemplate(null)}

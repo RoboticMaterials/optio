@@ -56,8 +56,8 @@ export const LotTemplateButton = styled.div`
   flex-direction: column;
   align-items: center;
 
-  margin-left: auto;
-  margin-right: auto;
+  //margin-left: auto;
+  //margin-right: auto;
   margin-bottom: 1.5rem;
   padding: 1rem 2rem;
   
@@ -114,6 +114,7 @@ export const TemplateName = styled.span`
 export const ListContainer = styled.div`
 
   position: relative;
+    padding: 1rem;
   vertical-align:middle;
   display: inline-block;
     
@@ -121,7 +122,7 @@ export const ListContainer = styled.div`
     flex-direction: column;
     align-self: stretch;
     flex: 1;
-  align-items: center;
+  align-items: stretch;
   
 
     overflow-y: auto;

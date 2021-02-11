@@ -260,6 +260,7 @@ const LotFormCreator = (props) => {
 					getChildPayload={index =>
 						index
 					}
+					showHighlight={false}
 					isRow={true}
 					style={{ background: "coral", width: !mode && "1rem", height: mode && "1rem", alignSelf: "stretch", flex: items.length === 0 && 1}}
 					// style={{overflow: "auto",height: "100%", padding: "1rem 1rem 2rem 1rem" }}
@@ -321,6 +322,7 @@ const LotFormCreator = (props) => {
 							getChildPayload={index =>
 								index
 							}
+							showHighlight={false}
 							isRow={true}
 							style={{minHeight: isLastRow && "10rem",flex: isLastRow ? 1 : 0, background: "coral", width: !mode && "1rem", height: mode && "1rem"}}
 						/>

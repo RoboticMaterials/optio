@@ -4,6 +4,7 @@ import { notBrokenRegex, notTaskDeletedRegex } from "./regex_utils";
 import { isObject } from "./object_utils";
 import { get } from "lodash"
 import {isArray} from "./array_utils";
+import {LOT_TEMPLATES_RESERVED_FIELD_NAMES} from "../../constants/form_constants";
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
 
@@ -171,26 +172,7 @@ export const dashboardSchema = Yup.object().shape({
 
 });
 
-Yup.addMethod(Yup.object, 'uniqueProperty', function (propertyName, message) {
-    return this.test('unique', message, function (value) {
-        if (!value || !value[propertyName]) {
-            return true;
-        }
-
-        if (
-            this.parent
-                .filter(v => v !== value)
-                .some(v => v[propertyName] === value[propertyName])
-        ) {
-            throw this.createError({
-                path: `${this.path}.${propertyName}`,
-            });
-        }
-
-        return true;
-    });
-});
-
+// returns error if any item in nested array is duplicate
 Yup.addMethod(Yup.array, "unique", function(message, path) {
     const mapper = x => get(x, path);
     return this.test("unique", message, function(list) {
@@ -226,6 +208,15 @@ Yup.addMethod(Yup.array, "unique", function(message, path) {
         }
 
         return err
+    });
+});
+
+// returns error if value is in arr
+Yup.addMethod(Yup.string, "notIn", function(message, arr) {
+    return this.test("unique", message, function(value) {
+        const { path, createError } = this;
+        if(arr.includes(value)) return createError({ path, message })
+        return true
     });
 });
 
@@ -313,6 +304,7 @@ export const LotFormSchema = Yup.object().shape({
                 fieldName: Yup.string()
                     .min(1, '1 character minimum.')
                     .max(50, '50 character maximum.')
+                    .notIn("This field name is reserved.", Object.values(LOT_TEMPLATES_RESERVED_FIELD_NAMES))
                     .required('Please enter a name for this field.'),
                 style: Yup.object()
             })

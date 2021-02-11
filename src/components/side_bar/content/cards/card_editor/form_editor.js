@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useContext} from "react";
 
 // external functions
 import PropTypes from "prop-types";
@@ -53,6 +53,7 @@ import lotTemplatesReducer from "../../../../../redux/reducers/lot_templates_red
 import NumberInput from "../../../../basic/number_input/number_input";
 import useChange from "../../../../basic/form/useChange";
 import {EMPTY_DEFAULT_FIELDS} from "../../../../../constants/lot_contants";
+import {ThemeContext} from "styled-components";
 
 
 const disabledStyle = {
@@ -113,7 +114,8 @@ const FormComponent = (props) => {
 
 	// actions
 	const dispatch = useDispatch()
-	const onGetCardHistory = async (cardId) => await dispatch(getCardHistory(cardId))
+
+	const themeContext = useContext(ThemeContext)
 
 	useChange()
 
@@ -204,17 +206,24 @@ const FormComponent = (props) => {
 			/>
 			<styled.Header>
 				{/*<styled.Title>*/}
+				<div style={{marginRight: "auto"}}/>
 
-				<styled.NameContainer>
-					<styled.NameLabel>Template Name</styled.NameLabel>
-					<TextField  name={"name"} InputComponent={Textbox}/>
-				</styled.NameContainer>
+				<styled.TemplateNameContainer>
+					<styled.TemplateLabel>Template Name</styled.TemplateLabel>
+					<TextField
+						name={"name"}
+						placeholder={"Enter template name..."}
+						InputComponent={Textbox}
+						style={{background: themeContext.bg.quaternary, minWidth: "25rem", fontSize: themeContext.fontSize.sz2}}
+					/>
+				</styled.TemplateNameContainer>
 				{/*</styled.Title>*/}
 
 				<Button
 					secondary
 					onClick={close}
 					schema={'error'}
+					style={{marginLeft: "auto"}}
 				>
 					<i className="fa fa-times" aria-hidden="true"/>
 				</Button>

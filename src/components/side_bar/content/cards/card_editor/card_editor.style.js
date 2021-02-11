@@ -44,12 +44,14 @@ export const Header = styled.div`
 `
 
 export const NameContainer = styled.div`
-	background: ${props => props.theme.bg.quaternary};
-	flex: 1;
-  align-self: center;
+  align-self: stretch;
   padding: 1rem;
+	background: ${props => props.theme.bg.quaternary};
+  flex-direction: column;
+	flex: 1;
+  //align-self: center;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 `
 
 export const NameLabel = styled.span`
@@ -133,9 +135,11 @@ export const SuperContainer = styled.div`
 
 
 export const ProcessFieldContainer = styled.div`
-  margin-bottom: 1rem;
+  //margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
+  padding: 1rem;
+  padding-bottom: 0;
   //width: auto;
 `
 
@@ -266,6 +270,14 @@ export const ContentContainer = styled.div`
 	overflow: hidden;
 	flex: 1;
 	justify-content: space-between;
+`
+
+export const FieldContainer = styled.div`
+  margin: 1rem;
+  flex: 1;
+  align-self: center;
+  justify-content: center;
+  display: flex;
 `
 
 export const BodyContainer = styled.div`
@@ -416,6 +428,8 @@ export const ContentHeader = styled.div`
 export const FieldsHeader = styled.div`
   align-self: stretch;
 	display: flex;
+  //padding: 1rem;
+  flex-direction: column;
 	//justify-content: space-between;
 	width: 100%;
   	//margin-bottom: 1rem;
@@ -432,6 +446,7 @@ export const LotName = styled.span`
 	font-weight: ${props => props.theme.fontWeight.bold};
   white-space: nowrap ;
   margin-right: 2rem;
+  margin-bottom: .5rem;
 `
 
 
@@ -598,6 +613,21 @@ export const buttonCss = css`
 		cursor: default;
 	}
 	
+`
+
+export const TemplateNameContainer = styled.div`
+  margin: 0 auto;
+  padding: 1rem 0;
+  align-self: center;
+  display: flex;
+  align-items: center;
+`
+
+export const TemplateLabel = styled.span`
+	margin-right: 1rem;
+  white-space: nowrap ;
+  width: fit-content;
+  font-size: ${props => props.theme.fontSize.sz2};
 `
 
 

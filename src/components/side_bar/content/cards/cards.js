@@ -53,7 +53,6 @@ const Cards = (props) => {
     const [title, setTitle] = useState(null)
     const [currentProcess, setCurrentProcess] = useState(null)
     const [isProcessView, setIsProcessView] = useState(false)
-    const [showCardFormEditor, setShowCardFormEditor] = useState(false)
     const [showMenu, setShowMenu] = useState(false)
     const [zoneSize, setZoneSize] = useState({
         width: undefined,
@@ -168,23 +167,8 @@ const Cards = (props) => {
 
     return(
         <styled.Container>
-            {showCardFormEditor &&
-            <LotCreatorForm
-                isOpen={true}
-                onAfterOpen={null}
-                lotTemplateId={selectedLotTemplatesId}
-                // processId={selectedCard ? selectedCard.processId : null}
-                // binId={selectedCard ? selectedCard.binId : null}
-                close={()=>{
-                    // onShowCardEditor(false)
-                    setShowCardFormEditor(false)
-                    // setSelectedCard(null)
-                }}
-            />
-            }
             {showCardEditor &&
             <CardEditor
-                setShowCardFormEditor={setShowCardFormEditor}
                 isOpen={showCardEditor}
                 onAfterOpen={null}
                 cardId={selectedCard ? selectedCard.cardId : null}

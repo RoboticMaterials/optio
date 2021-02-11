@@ -64,7 +64,7 @@ const TemplateSelectorSidebar = (props) => {
     const getTemplateButtons = () => {
         return (
 
-            <style.ListContainer style={{padding: "1rem 0"}}>
+            <style.ListContainer>
                 <style.LotTemplateButton
                     isSelected={!selectedLotTemplatesId}
                     onClick={() => {
@@ -72,13 +72,6 @@ const TemplateSelectorSidebar = (props) => {
                         onTemplateEditClick(null)
                     }}
                 >
-                        {/*<style.TemplateIcon*/}
-
-                        {/*    isSelected={!selectedLotTemplatesId}*/}
-                        {/*    className={SIDE_BAR_MODES.TEMPLATES.iconName}*/}
-                        {/*>*/}
-
-                        {/*</style.TemplateIcon>*/}
                     <style.TemplateName
                         isSelected={!selectedLotTemplatesId}
                         style={{margin: 0}}>New</style.TemplateName>
