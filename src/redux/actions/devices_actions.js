@@ -24,7 +24,6 @@ import {
 
 import * as api from '../../api/devices_api'
 import { devicesSchema } from '../../normalizr/schema';
-import { deepCopy } from '../../methods/utils/utils'
 
 
 export const getDevices = () => {

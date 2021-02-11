@@ -37,7 +37,6 @@ const DashboardAddTask = (props) => {
     const handleAvailableTasks = () => {
 
         let availableTasks = handleAvailableTasks(this.props.availTasks)
-        console.log('QQQQ Hur', availableTasks)
 
         return (
             <DropDownSearch

@@ -140,16 +140,10 @@ const Widgets = (props) => {
         const location = !!stations[hoveringInfo.id] ? stations[hoveringInfo.id] : positions[hoveringInfo.id]
         const device = devices[hoveringInfo.id]
 
+        // If device only show dashboards
         if (!!device) {
             return (
                 <>
-                    {/* <WidgetButton
-                        id={stationID}
-                        type={'statistics'}
-                        label={'Statistics'}
-                        currentPage={widgetPage}
-
-                    /> */}
 
                     <WidgetButton
                         id={stationID}
@@ -158,14 +152,6 @@ const Widgets = (props) => {
                         currentPage={widgetPage}
 
                     />
-
-                    {/* <WidgetButton
-                        id={stationID}
-                        type={'lots'}
-                        label={'Lots'}
-                        currentPage={widgetPage}
-
-                    /> */}
 
                 </>
 

@@ -111,7 +111,7 @@ const DevicesContent = () => {
 
     /**
      * This function is called when the save button is pressed. 
-     * 
+     * If its a Mir100 and the idle location has changed, then handle the associated device dashboard
      */
     const onSaveDevice = async () => {
 

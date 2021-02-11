@@ -153,7 +153,7 @@ const DashboardScreen = (props) => {
             return true
         })
 
-        // Else if the task q contains a human task that is unloading, show an unload button
+        // if the task q contains a human task that is unloading, show an unload button
         if (Object.values(taskQueue).length > 0) {
 
             // Map through each item and see if it's showing a station, station Id is matching the current station and a human task

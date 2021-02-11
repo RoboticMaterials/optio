@@ -64,29 +64,6 @@ const DeviceEdit = (props) => {
 
     }, [])
 
-    // TODO: Not sure this is needed with IOT Implementation
-    const onDeviceConnection = () => {
-
-        // Need to see how the device is connecting
-
-        // if (device.status.connection === 'connected') {
-        //     setConnectionIcon('fas fa-check')
-        //     setConnectionText('Connected')
-        // } else if (device.status.connection === 'connecting') {
-        //     setConnectionIcon('fas fa-circle-notch fa-spin')
-        //     setConnectionText = 'Connecting'
-        // }
-        // else if (device.status.connection === 'failed') {
-        //     setConnectionIcon('fas fa-times')
-        //     setConnectionText('Failed')
-        // }
-        // else {
-        //     setConnectionIcon('fas fa-question')
-        //     setConnectionText('Not Connected')
-        // }
-
-    }
-
     // Submits the Mir Connection to the backend
     const onMirConnection = async () => {
         const mir = { mir_connection: 'connecting' }
@@ -230,16 +207,18 @@ const DeviceEdit = (props) => {
         )
     }
 
-    // This sets both the device name and station name to the same name
-    const onSetDeviceName = (event) => {
+    // This set the device name
+    const onSetDeviceName = (name) => {
+        dispatchSetSelectedDevice({
+            ...selectedDevice,
+            device_name: name,
+        })
     }
 
     // Opens up the device dashboard
     const onEditDeviceDashboard = () => {
         const dashboardID = selectedDevice.dashboards[0]
         const deviceID = selectedDevice._id
-
-        // const url = `${deviceID}/dashboards/${dashboardID}/editing`
 
         history.push(`/locations/${deviceID}/dashboards/${dashboardID}/editing`)
         dispatchHoverStationInfo({ id: deviceID })
@@ -284,8 +263,7 @@ const DeviceEdit = (props) => {
                 <Textbox
                     defaultValue={selectedDevice.device_name}
                     onChange={(event) => {
-                        // Sets the IP address of the device to the event target vcalue
-                        onSetDeviceName(event)
+                        onSetDeviceName(event.target.value)
                     }}
                     style={{ fontWeight: '600', fontSize: '1.5rem' }}
                     labelStyle={{ color: 'black' }}
@@ -308,7 +286,7 @@ const DeviceEdit = (props) => {
                 Edit Dashboard
             </Button>
 
-
+            {/* Disabling delete for now */}
             {/* <Button schema={'devices'} secondary style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: '2rem' }}
                 onClick={() => {
                     deviceLocationDelete()
