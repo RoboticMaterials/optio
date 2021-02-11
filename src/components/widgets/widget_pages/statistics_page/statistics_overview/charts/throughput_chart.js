@@ -98,7 +98,7 @@ const ThroughputChart = (props) => {
         },
     })
     // const [compareExpectedOutput, setCompareExpectedOutput] = useState(null)
-    
+
     const {
         throughputData,
         isThroughputLoading,
@@ -558,12 +558,23 @@ const ThroughputChart = (props) => {
                         validateOnBlur={true}
 
                         onSubmit={async (values, { setSubmitting, setTouched }) => {
+                            setSubmitting(true)
+                            console.log('QQQQ Values', values)
+                            setSubmitting(false)
                         }}
                     >
                         {formikProps => {
-
+                            const {
+                                submitForm,
+                                errors,
+                            } = formikProps
                             return (
-                                <Form>
+                                <Form
+                                    onMouseDown={() => {
+                                        console.log('QQQQ Submitting form', errors)
+                                        submitForm()
+                                    }}
+                                >
                                     <styled.RowContainer>
 
                                         <styled.ColumnContainer>
@@ -655,6 +666,10 @@ const ThroughputChart = (props) => {
                                         />
                                     </styled.RowContainer>
                                     {renderBreaks()}
+
+                                    {/* <styled.RowContainer>
+
+                                    </styled.RowContainer> */}
 
                                 </Form>
                             )

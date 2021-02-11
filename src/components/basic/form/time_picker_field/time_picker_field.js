@@ -31,6 +31,7 @@ const TimePickerField = (props) => {
 
 	const { setFieldValue, setFieldTouched } = useFormikContext();
 	const [field, meta] = useField(props);
+    console.log('QQQQ props', props)
 
 	const {
 		value: fieldValue,

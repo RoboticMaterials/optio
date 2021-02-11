@@ -360,7 +360,7 @@ Yup.addMethod(Yup.string, 'greaterThan', function(input1, input2, message) {
         const input1Int = parseInt(`${beg1}${end1}`)
         const input2Int = parseInt(`${beg2}${end2}`)
 
-        console.log('QQQQ Testing', input1Int, input2Int, message)
+        // console.log('QQQQ Testing', input1Int, input2Int, message)
 
 
         if(input1Int>input2Int) return true
@@ -387,7 +387,8 @@ export const throughputSchema = (compareExpectedOutput) => {
     return (
         Yup.object().shape({
             startOfShift: Yup.string()
-                .required('Required'),
+                .required('Required')
+                .email('Email'),
             endOfShift: Yup.string()
                 .required('Required'),
             startOfBreak1: Yup.string()
