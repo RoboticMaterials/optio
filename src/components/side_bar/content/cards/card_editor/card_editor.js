@@ -1239,7 +1239,7 @@ const CardEditor = (props) => {
 					<LotCreatorForm
 						isOpen={true}
 						onAfterOpen={null}
-						lotTemplateId={lotTemplateId}
+						lotTemplateId={selectedLotTemplatesId}
 						close={()=>{
 							setShowLotTemplateEditor(false)
 						}}

@@ -213,7 +213,7 @@ Yup.addMethod(Yup.array, "unique", function(message, path) {
 
 // returns error if value is in arr
 Yup.addMethod(Yup.string, "notIn", function(message, arr) {
-    return this.test("unique", message, function(value) {
+    return this.test("notIn", message, function(value) {
         const { path, createError } = this;
         if(arr.includes(value)) return createError({ path, message })
         return true
