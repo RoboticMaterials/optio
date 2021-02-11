@@ -581,6 +581,8 @@ const HILModals = (props) => {
                         <styled.HilButton color={'#90eaa8'}
                             onClick={() => {
                                 onHilSuccess()
+                                dispatchSetShowModalId(null)
+
                             }}
                         >
                             <styled.HilIcon
@@ -925,21 +927,22 @@ const HILModals = (props) => {
                             </styled.HilButton>
 
                             {((hilType === 'pull' && hilLoadUnload === 'load') || hilType === 'check') &&
-                                <styled.HilButton color={'#f7cd89'} onClick={onHilPostpone}>
-                                    <styled.HilIcon
-                                        style={{}}
+                                  <></>
+                                //<styled.HilButton color={'#f7cd89'} onClick={onHilPostpone}>
+                                //    <styled.HilIcon
+                                //        style={{}}
                                         // onClick={onHilPostpone}
-                                        className='icon-postpone'
-                                        color={'#ff7700'}
-                                        styled={{ marginTop: '.5rem' }}
-                                    />
-                                    <styled.HilButtonText
-                                        color={'#ff7700'}
-                                        style={{ margin: 0, padding: 0 }}
-                                    >
-                                        Postpone
-                                </styled.HilButtonText>
-                                </styled.HilButton>
+                                //        className='icon-postpone'
+                                  //      color={'#ff7700'}
+                                  //      styled={{ marginTop: '.5rem' }}
+                                  //  />
+                                  //  <styled.HilButtonText
+                                  //      color={'#ff7700'}
+                                  //      style={{ margin: 0, padding: 0 }}
+                                  //  >
+                                  //      Postpone
+                              //  </styled.HilButtonText>
+                              //  </styled.HilButton>
                             }
 
                             {(hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
