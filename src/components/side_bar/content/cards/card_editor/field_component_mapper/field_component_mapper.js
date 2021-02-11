@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 import * as styled from "./field_component_mapper.style"
-import {FIELD_COMPONENT_NAMES} from "../lot_sidebars/field_editor_sidebar/field_editor_sidebar";
 import Textbox from "../../../../../basic/textbox/textbox";
 import NumberInput from "../../../../../basic/number_input/number_input";
 import CalendarPlaceholder from "../../../../../basic/calendar_placeholder/calendar_placeholder";
@@ -9,6 +8,7 @@ import TextField from "../../../../../basic/form/text_field/text_field";
 import NumberField from "../../../../../basic/form/number_field/number_field";
 import {isArray} from "../../../../../../methods/utils/array_utils";
 import {jsDateToObjDate} from "../../../../../../methods/utils/card_utils";
+import {FIELD_COMPONENT_NAMES} from "../../../../../../constants/lot_contants";
 
 const FieldComponentMapper = (props) => {
 	const {

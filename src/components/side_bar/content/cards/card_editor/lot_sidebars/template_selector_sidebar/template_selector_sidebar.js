@@ -19,12 +19,7 @@ import {setSelectedLotTemplate} from "../../../../../../../redux/actions/lot_tem
 import {uuidv4} from "../../../../../../../methods/utils/utils";
 import * as styled from "../../../../../../basic/form/calendar_field/calendar_field.style";
 import CalendarField from "../../../../../../basic/form/calendar_field/calendar_field";
-import {
-    BASIC_LOT_TEMPLATE_ID,
-    EDITOR_SIDEBAR_TYPES,
-    LOT_EDITOR_SIDEBAR_OPTIONS,
-    SIDE_BAR_MODES
-} from "../field_editor_sidebar/field_editor_sidebar";
+import {BASIC_LOT_TEMPLATE_ID, SIDE_BAR_MODES} from "../../../../../../../constants/lot_contants";
 
 const logger = log.getLogger("TemplateSelectorSidebar")
 

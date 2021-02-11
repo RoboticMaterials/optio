@@ -36,7 +36,6 @@ import log from '../../../../../logger'
 import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
 import ScrollingButtonField from "../../../../basic/form/scrolling_buttons_field/scrolling_buttons_field";
 import NumberField from "../../../../basic/form/number_field/number_field";
-import LotEditorSidebar, {BASIC_LOT_TEMPLATE_ID, FIELD_COMPONENT_NAMES} from "./lot_sidebars/field_editor_sidebar/field_editor_sidebar";
 import ContainerWrapper from "../../../../basic/container_wrapper/container_wrapper";
 import DropContainer from "./drop_container/drop_container";
 import FieldComponentMapper from "./field_component_mapper/field_component_mapper";
@@ -44,40 +43,20 @@ import {isArray} from "../../../../../methods/utils/array_utils";
 import {getLotTemplates, setSelectedLotTemplate} from "../../../../../redux/actions/lot_template_actions";
 import {arraysEqual} from "../../../../../methods/utils/utils";
 import TemplateSelectorSidebar from "./lot_sidebars/template_selector_sidebar/template_selector_sidebar";
+import {
+	BASIC_LOT_TEMPLATE,
+	BASIC_LOT_TEMPLATE_ID,
+	CONTENT, FIELD_COMPONENT_NAMES,
+	FORM_BUTTON_TYPES
+} from "../../../../../constants/lot_contants";
+import {BASIC_FIELD_DEFAULTS} from "../../../../../constants/form_constants";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
 
-export const RESERVED_FIELD_NAMES = {
-	CHANGED: "changed",
-	NEW: "new",
-	NEEDS_RESET: "needsReset",
-	RESET_VALUES: "resetValues"
-}
 
-const CONTENT = {
-	HISTORY: "HISTORY",
-	CALENDAR_START: "CALENDAR_START",
-	CALENDAR_END: "CALENDAR_END",
-	CALENDAR_RANGE: "CALENDAR_RANGE",
-	MOVE: "MOVE"
-}
 
-const FORM_BUTTON_TYPES = {
-	SAVE: "SAVE",
-	ADD: "ADD",
-	ADD_AND_NEXT: "ADD_AND_NEXT",
-	MOVE_OK: "MOVE_OK"
-}
 
-export const BASIC_LOT_TEMPLATE = {
-	fields: [
-		[{_id: 0, component: FIELD_COMPONENT_NAMES.TEXT_BOX_BIG, fieldName: "description", key: 0}],
-		[{_id: 1, component: FIELD_COMPONENT_NAMES.CALENDAR_START_END, fieldName: "dates", key: 1}]
-	],
-	name: BASIC_LOT_TEMPLATE_ID,
-	_id: BASIC_LOT_TEMPLATE_ID
-}
 
 const SubmitErrorHandler = ({ submitCount, isValid, onSubmitError }) => {
 	const [lastHandled, setLastHandled] = useState(0);
@@ -164,7 +143,7 @@ const FormComponent = (props) => {
 			[lotTemplateId]: templateValues
 		} = values || {}
 
-		if(!templateValues) setFieldValue(lotTemplateId, getInitialValues(lotTemplateId))
+		if(!templateValues) setFieldValue(lotTemplateId, getInitialValues(lotTemplate))
 
 	}, [lotTemplateId])
 
@@ -173,7 +152,7 @@ const FormComponent = (props) => {
 			[lotTemplateId]: templateValues
 		} = values || {}
 
-		if(!templateValues) setFieldValue(lotTemplateId, getInitialValues(lotTemplateId))
+		if(!templateValues) setFieldValue(lotTemplateId, getInitialValues(lotTemplate))
 
 	}, [fieldNameArr])
 
@@ -1220,13 +1199,25 @@ const CardEditor = (props) => {
 
 	}
 
-	const getInitialValues = (lotTemplateId) => {
-		const lotTemplate = lotTemplates[lotTemplateId]
-		let initialValues = {}
+	/*
+	* extracts initial values from the current lot and maps them to the template parameter
+	* */
+	const getInitialValues = (lotTemplate) => {
 
-		if(isObject(lotTemplate)) {
+		let initialValues = {} // initialize to empty object
+
+		// make sure lotTemplate is object to avoid errors
+		// make sure lotTemplate.fields is array
+		if(isObject(lotTemplate) && isArray(lotTemplate.fields)) {
+
+
+			// loop through rows in column
 			lotTemplate.fields.forEach((currRow, currRowIndex) => {
+
+				// loop through items in row
 				currRow.forEach((currItem, currItemIndex) => {
+
+					// extract properties of currItem
 					const {
 						fieldName,
 						_id: fieldId,
@@ -1234,24 +1225,28 @@ const CardEditor = (props) => {
 						key
 					} = currItem || {}
 
+					// set initialValue for current item
+					// name of value is given by fieldName
+					// if card already has a value, use it. Otherwise, use appropriate default value for field type
 					switch(component) {
 						case FIELD_COMPONENT_NAMES.TEXT_BOX: {
-							initialValues[fieldName] = isObject(card) ? (card[fieldName] || "") : ""
-							// card[fieldName] = card[fieldName] ? card[fieldName] : ""
+							initialValues[fieldName] = isObject(card) ? (card[fieldName] || BASIC_FIELD_DEFAULTS.TEXT_FIELD) : BASIC_FIELD_DEFAULTS.TEXT_FIELD
 							break;
 						}
+
 						case FIELD_COMPONENT_NAMES.TEXT_BOX_BIG: {
-							initialValues[fieldName] = isObject(card) ? (card[fieldName] || "") : ""
-							// card[fieldName] = card[fieldName] ? card[fieldName] : ""
+							initialValues[fieldName] = isObject(card) ? (card[fieldName] || BASIC_FIELD_DEFAULTS.TEXT_FIELD) : BASIC_FIELD_DEFAULTS.TEXT_FIELD
 							break;
 						}
+
 						case FIELD_COMPONENT_NAMES.CALENDAR_SINGLE: {
-							initialValues[fieldName] = isObject(card) ? (card[fieldName] || null) : null
-							// card[fieldName] = card[fieldName] ? card[fieldName] : null
+							initialValues[fieldName] = isObject(card) ? (card[fieldName] || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD) : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD
 							break;
 						}
+
 						case FIELD_COMPONENT_NAMES.CALENDAR_START_END: {
-							let updatedValues = null
+							let updatedValues = BASIC_FIELD_DEFAULTS.CALENDAR_FIELD
+
 							if(isObject(card) && isArray(card[fieldName])) {
 								const val = card[fieldName]
 								if(val.length > 0) {
@@ -1262,16 +1257,14 @@ const CardEditor = (props) => {
 								}
 							}
 							initialValues[fieldName] = updatedValues
-							// card[fieldName] = card[fieldName] ? card[fieldName] : null
 							break;
 						}
+
 						case FIELD_COMPONENT_NAMES.NUMBER_INPUT: {
-							initialValues[fieldName] = isObject(card) ? (card[fieldName] || 0) : 0
-							// card[fieldName] = card[fieldName] ? card[fieldName] : 0
+							initialValues[fieldName] = isObject(card) ? (card[fieldName] || BASIC_FIELD_DEFAULTS.NUMBER_FIELD : BASIC_FIELD_DEFAULTS.NUMBER_FIELD
 							break;
 						}
 					}
-
 				})
 			})
 		}
@@ -1282,6 +1275,7 @@ const CardEditor = (props) => {
 		return initialValues
 	}
 
+	// only return form if required data has loaded
 	if(loaded) {
 		return(
 			<styled.Container
@@ -1315,7 +1309,7 @@ const CardEditor = (props) => {
 								},
 							},
 						[lotTemplateId]: {
-							...getInitialValues(lotTemplateId)
+							...getInitialValues(lotTemplate)
 						}
 
 					}}
@@ -1410,6 +1404,8 @@ const CardEditor = (props) => {
 			</styled.Container>
 		)
 	}
+
+	// if not done loading data, show loader icon
 	else {
 		return (
 			<FadeLoader
