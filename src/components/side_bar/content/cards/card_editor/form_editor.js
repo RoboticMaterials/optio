@@ -35,7 +35,6 @@ import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
 import ScrollingButtonField from "../../../../basic/form/scrolling_buttons_field/scrolling_buttons_field";
 import NumberField from "../../../../basic/form/number_field/number_field";
 import LotEditorSidebar from "./lot_sidebars/field_editor_sidebar/field_editor_sidebar";
-import DraggableSurface from "./draggable_surface/draggable_surface";
 import {Container} from "react-smooth-dnd";
 import DropContainer from "./drop_container/drop_container";
 import {isArray} from "../../../../../methods/utils/array_utils";

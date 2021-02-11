@@ -107,7 +107,7 @@ const TemplateSelectorSidebar = (props) => {
                             }}
                         >
                             <style.TemplateIcon
-                                style={{marginRight: "5rem"}}
+                                // style={{marginRight: "5rem"}}
                                 isSelected={isSelected}
                                 className={SIDE_BAR_MODES.TEMPLATES.iconName}
                             />
