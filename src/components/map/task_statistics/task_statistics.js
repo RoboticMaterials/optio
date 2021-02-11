@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { useLocation } from "react-router-dom";
 
 // Import Styles
 import * as styled from './task_statistics.style'
@@ -26,15 +27,15 @@ const TaskStatistics = (props) => {
     const taskEditing = useSelector(state => state.tasksReducer.editingTask)
     const processEditing = useSelector(state => state.processesReducer.editingProcess)
 
+    const location = useLocation()
 
     useEffect(() => {
     }, [])
 
 
-
     const handleSingleTask = (task) => {
 
-      if(!!task){
+      if(!!task && location.pathname !== '/processes'){
         if (task === undefined || selectedTask === undefined) return null
         if (editingStation === true || editingPosition === true || taskEditing=== true || processEditing === true) return null
 
@@ -174,6 +175,7 @@ const TaskStatistics = (props) => {
             handleProcessTasks()
             :
             handleSingleTask(selectedTask)
+
 
 
     )

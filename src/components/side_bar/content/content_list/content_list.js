@@ -112,7 +112,7 @@ export default function ContentList(props) {
                                     {props.schema === 'tasks' &&
 
                                         <styled.ListItemIcon
-                                            style = {{color: inQueue === true ? 'grey' : 'green' }}
+                                            style = {{color: inQueue === true ? 'grey' : 'lightGreen' }}
                                             className='fas fa-play'
                                             onClick={() => {
                                                 executeTask()
