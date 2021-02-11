@@ -42,6 +42,8 @@ const TimePickerField = (props) => {
 		error
 	} = meta
 
+    // console.log('QQQQ error', field)
+
 	const hasError = touched && error;
 	const errorMessage = getMessageFromError(error);
 

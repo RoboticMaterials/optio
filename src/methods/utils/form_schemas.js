@@ -349,39 +349,51 @@ export const locationSchema = (stations, selectedLocation) => {
     )
 }
 
+
+Yup.addMethod(Yup.string, 'greaterThan', function(input1, input2, message) {
+    return this.test('greaterThan', input1, function() {
+
+        // Take the Hour and minute 
+        const [beg1, end1] = input1.split(':')
+        const [beg2, end2] = input2.split(':')
+
+        const input1Int = parseInt(`${beg1}${end1}`)
+        const input2Int = parseInt(`${beg2}${end2}`)
+
+        console.log('QQQQ Testing', input1Int, input2Int, message)
+
+
+        if(input1Int>input2Int) return true
+        else {
+            console.log('QQQQ theres an errrr', this.path)
+            return this.createError({
+                path: this.path,
+                message: message,
+            })
+        }
+
+    })
+})
+
 export const throughputSchema = (compareExpectedOutput) => {
 
-    startOfBreak1 = compareExpectedOutput.breaks.break1.startOfBreak
-    endOfBreak1 = compareExpectedOutput.breaks.break1.endOfBreak
-    startOfBreak2 = compareExpectedOutput.breaks.break2.startOfBreak
-    endOfBreak2 = compareExpectedOutput.breaks.break2.endOfBreak
-    startOfBreak3 = compareExpectedOutput.breaks.break3startOfBreak3.startOfBreak
-    endOfBreak3 = compareExpectedOutput.breaks.break3startOfBreak3.endOfBreak
-
-
-    Yup.addMethod(Yup.string, 'greaterThan', (input1, input2) => {
-        return this.test('greaterThan', input1, () => {
-
-            // Take the Hour and minute 
-            const [beg1, end1] = input1.split(':')
-            const [beg2, end2] = input2.split(':')
-
-            input1Int = parseInt(`${beg1}${end1}`)
-            input2Int = parseInt(`${beg2}${end2}`)
-
-        })
-    })
-
+    const startOfBreak1 = compareExpectedOutput.breaks.break1.startOfBreak
+    const endOfBreak1 = compareExpectedOutput.breaks.break1.endOfBreak
+    const startOfBreak2 = compareExpectedOutput.breaks.break2.startOfBreak
+    const endOfBreak2 = compareExpectedOutput.breaks.break2.endOfBreak
+    const startOfBreak3 = compareExpectedOutput.breaks.break3.startOfBreak.startOfBreak
+    const endOfBreak3 = compareExpectedOutput.breaks.break3.endOfBreak.endOfBreak
 
     return (
         Yup.object().shape({
             startOfShift: Yup.string()
-                .required('Required')
-                .greaterThan('Over', 'Here'),
+                .required('Required'),
             endOfShift: Yup.string()
                 .required('Required'),
             startOfBreak1: Yup.string()
-                .required('Required'),
+                .required('Required')
+                .email('Email')
+                .greaterThan(startOfBreak1, startOfBreak2, 'Hello?'),
             endOfBreak1: Yup.string()
                 .required('Required'),
             startOfBreak2: Yup.string()
