@@ -205,7 +205,7 @@ const EditLocation = () => {
         // TODO: Stick this into Constants
         const defaultAttributes = deepCopy(LocationDefaultAttributes)
 
-        defaultAttributes['neame'] = newName
+        defaultAttributes['name'] = newName
         defaultAttributes['map_id'] = currentMap._id
         defaultAttributes['_id'] = uuid.v4()
 
@@ -475,16 +475,21 @@ const EditLocation = () => {
 
                     <AssociatedPositions handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
                     :
-                    <Button
-                        schema={'locations'}
-                        secondary
-                        onClick={() => {
-                            handleSetPositionToCartCoords()
-                        }}
-                        style={{ marginBottom: '1rem' }}
-                    >
-                        Use Cart Location
-                    </Button>
+                    <>
+                      {!!deviceEnabled &&
+                        <Button
+                            schema={'locations'}
+                            secondary
+                            onClick={() => {
+                                handleSetPositionToCartCoords()
+                            }}
+                            style={{ marginBottom: '1rem' }}
+                        >
+                            Use Cart Location
+                        </Button>
+                      }
+                    </>
+
                 }
                 <div style={{ height: "100%" }}></div>
 

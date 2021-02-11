@@ -46,6 +46,8 @@ export default function Positions(props) {
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
+    const serverSettings = useSelector(state => state.settingsReducer.settings)
+    const deviceEnabled = serverSettings.deviceEnabled
 
     const [editingIndex, setEditingIndex] = useState(null)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
@@ -117,7 +119,7 @@ export default function Positions(props) {
 
         // const newPositionName = selectedStation.name + ' ' + (selectedStation.children.filter((position) => positions[position].type === type).length + 1)
         const newPositionName = `${type === 'cart_position' ? 'Cart Position' : 'Shelf Position'}` + ' ' + (selectedStation.children.filter((position) => positions[position].type === type).length + 1)
-        
+
         const newPositionType = type
 
         const newPosition = newPositionTemplate(newPositionName, newPositionType, selectedStation._id, currentMap._id)
@@ -200,7 +202,7 @@ export default function Positions(props) {
 
             {/* Cards for dragging a new position onto the map */}
 
-            {!!MiRMapEnabled &&
+            {!!deviceEnabled &&
                 <>
                     <styled.CardContainer>
                         {renderPositionCards()}

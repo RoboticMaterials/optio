@@ -38,7 +38,6 @@ import log from "../../logger"
 import { setCurrentMap } from "../../redux/actions/map_actions";
 import { getPreviousRoute } from "../../methods/utils/processes_utils";
 import { isObject } from "../../methods/utils/object_utils";
-
 const logger = log.getLogger("MapView")
 
 export class MapView extends Component {
@@ -565,7 +564,7 @@ export class MapView extends Component {
 
 
     render() {
-        let { stations, positions, devices, selectedStation, selectedPosition, selectedStationChildrenCopy } = this.props
+        let { stations, positions, devices, selectedStation, selectedPosition, selectedStationChildrenCopy, deviceEnabled } = this.props
         if (this.props.currentMap == null) { return (<></>) }
         const { translate, scale } = this.d3;
 
@@ -723,7 +722,7 @@ export class MapView extends Component {
 
                                 <>{
                                     //// Render mobile devices
-                                    devices === undefined ?
+                                    (devices === undefined || deviceEnabled) ?
                                         <></>
                                         :
                                         Object.values(devices).filter(device => device.device_model == 'MiR100').map((device, ind) =>
@@ -768,6 +767,7 @@ const mapStateToProps = function (state) {
         maps: state.mapReducer.maps,
         currentMapId: state.localReducer.localSettings.currentMapId,
         currentMap: state.mapReducer.currentMap,
+        deviceEnabled: state.settingsReducer.deviceEnabled,
 
         devices: state.devicesReducer.devices,
         positions: state.positionsReducer.positions,

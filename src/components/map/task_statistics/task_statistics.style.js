@@ -12,8 +12,8 @@ export const TaskStatisticsContainer = styled.div`
     left: ${props => props.xPosition};
 
     max-height: 6.5rem;
-    width: 10rem;
-    padding: .5rem;
+    width: 14rem;
+    padding: .1rem;
 
     background: red;
     border-radius: 1rem;
@@ -48,8 +48,6 @@ export const TaskNameContainer = styled.div`
     text-overflow: ellipsis;
 
     max-height: 4rem;
-
-
 `
 
 export const TaskText = styled.p`
