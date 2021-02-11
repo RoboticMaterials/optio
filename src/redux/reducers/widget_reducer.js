@@ -3,7 +3,6 @@ import {
   WIDGET_XY_COORDINATES,
   WIDGET_LOADED,
   HOVER_STATION_INFO,
-  HOVER_ROUTE_INFO,
 
 } from '../types/widget_types'
 
@@ -13,7 +12,6 @@ import {
     widgetXYCoordinates: {x: '', y: ''},
     widgetLoaded: false,
     hoverStationInfo: null,
-    hoverRouteInfo: null,
 
 };
 
@@ -45,11 +43,6 @@ const widgetReducer = (state = defaultState, action) => {
                   hoverStationInfo: action.payload.info,
               }
 
-          case HOVER_ROUTE_INFO:
-              return {
-                  ...state,
-                  hoverRouteInfo: action.payload.info,
-              }
 
         default:
             return state

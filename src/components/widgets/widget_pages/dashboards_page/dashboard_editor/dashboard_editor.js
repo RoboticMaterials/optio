@@ -201,7 +201,6 @@ const DashboardEditor = (props) => {
                 // adds a button to buttons key in Formik values
                 const handleDrop = (dropResult) => {
                     const { removedIndex, addedIndex, payload, element } = dropResult;
-                    console.log(removedIndex, addedIndex, payload, element)
                     const buttonsCopy = (values.buttons)
 
                     if (payload === null) { //  No new button, only reorder

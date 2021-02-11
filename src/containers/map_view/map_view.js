@@ -29,7 +29,6 @@ import Zones from '../../components/map/zones/zones'
 import RightClickMenu from '../../components/map/right_click_menu/right_click_menu'
 import TaskStatistics from '../../components/map/task_statistics/task_statistics'
 import Widgets from '../../components/widgets/widgets'
-import RouteWidgets from '../../components/widgets/route_widget/route_widget'
 
 import Station from '../../components/map/locations/station/station'
 import Position from '../../components/map/locations/position/position'
@@ -565,7 +564,7 @@ export class MapView extends Component {
 
 
     render() {
-        let { stations, positions, devices, selectedStation, selectedPosition, selectedStationChildrenCopy } = this.props
+        let { stations, positions, devices, selectedStation, selectedPosition, selectedStationChildrenCopy, deviceEnabled } = this.props
         if (this.props.currentMap == null) { return (<></>) }
         const { translate, scale } = this.d3;
 
@@ -723,7 +722,7 @@ export class MapView extends Component {
 
                                 <>{
                                     //// Render mobile devices
-                                    devices === undefined ?
+                                    (devices === undefined || deviceEnabled) ?
                                         <></>
                                         :
                                         Object.values(devices).filter(device => device.device_model == 'MiR100').map((device, ind) =>
@@ -745,9 +744,6 @@ export class MapView extends Component {
                     The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons). */}
                     {this.props.hoveringInfo !== null && !this.mobileMode &&
                         <Widgets />
-                    }
-                    {this.props.routeHoveringInfo==true && !this.mobileMode &&
-                      <TaskStatistics d3 = {this.d3}/>
                     }
 
 
@@ -771,6 +767,7 @@ const mapStateToProps = function (state) {
         maps: state.mapReducer.maps,
         currentMapId: state.localReducer.localSettings.currentMapId,
         currentMap: state.mapReducer.currentMap,
+        deviceEnabled: state.settingsReducer.deviceEnabled,
 
         devices: state.devicesReducer.devices,
         positions: state.positionsReducer.positions,
@@ -788,7 +785,6 @@ const mapStateToProps = function (state) {
         fixingProcess: state.processesReducer.fixingProcess,
 
         hoveringInfo: state.widgetReducer.hoverStationInfo,
-        routeHoveringInfo: state.widgetReducer.hoverRouteInfo,
         widgetLoaded: state.widgetReducer.widgetLoaded,
 
     };
