@@ -47,11 +47,14 @@ export const Input = styled.input`
   ${props => props.inputCss && props.inputCss};
 `
 
-export const Button = styled.i`
+export const Button = styled.button`
   font-size: 5rem;
   text-shadow: 0.05rem 0.05rem 0.2rem #303030;
   transition: text-shadow 0.1s ease, filter 0.1s ease;
   color: ${props => props.color};
+  background: transparent;
+  border: none;
+  outline: none !important;
   
   ${props => props.disabled && disabledCss};
   

@@ -21,6 +21,7 @@ import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search"
 import ZoneHeader from "./zone_header/zone_header";
 import {SORT_MODES} from "../../../../constants/common_contants";
 import LotCreatorForm from "./card_editor/form_editor";
+import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
 
 const Cards = (props) => {
 
@@ -35,10 +36,13 @@ const Cards = (props) => {
     // theme
     const themeContext = useContext(ThemeContext)
 
+    const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
+
     //redux state
     const processes = useSelector(state => { return state.processesReducer.processes })
     const showCardEditor = useSelector(state=> {return state.cardsReducer.showEditor})
     const selectedLotTemplatesId = useSelector(state => {return state.lotTemplatesReducer.selectedLotTemplatesId})
+    const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
 
     // actions
     const dispatch = useDispatch()
@@ -64,6 +68,11 @@ const Cards = (props) => {
 
     // refs
     const zoneRef = useRef(null);
+
+    useEffect( () => {
+        dispatchGetLotTemplates()
+
+    }, [])
 
     /*
     * This effect monitors the div referenced by zoneRef and the window height
@@ -159,32 +168,33 @@ const Cards = (props) => {
 
     return(
         <styled.Container>
-            {showCardEditor &&
+            {showCardFormEditor &&
             <LotCreatorForm
-                isOpen={showCardEditor}
+                isOpen={true}
                 onAfterOpen={null}
                 lotTemplateId={selectedLotTemplatesId}
                 // processId={selectedCard ? selectedCard.processId : null}
                 // binId={selectedCard ? selectedCard.binId : null}
                 close={()=>{
+                    // onShowCardEditor(false)
+                    setShowCardFormEditor(false)
+                    // setSelectedCard(null)
+                }}
+            />
+            }
+            {showCardEditor &&
+            <CardEditor
+                setShowCardFormEditor={setShowCardFormEditor}
+                isOpen={showCardEditor}
+                onAfterOpen={null}
+                cardId={selectedCard ? selectedCard.cardId : null}
+                processId={selectedCard ? selectedCard.processId : null}
+                binId={selectedCard ? selectedCard.binId : null}
+                close={()=>{
                     onShowCardEditor(false)
                     setSelectedCard(null)
                 }}
             />
-            }
-            {showCardFormEditor &&
-                <div>a</div>
-            // <CardEditor
-            //     isOpen={showCardEditor}
-            //     onAfterOpen={null}
-            //     cardId={selectedCard ? selectedCard.cardId : null}
-            //     processId={selectedCard ? selectedCard.processId : null}
-            //     binId={selectedCard ? selectedCard.binId : null}
-            //     close={()=>{
-            //         onShowCardEditor(false)
-            //         setSelectedCard(null)
-            //     }}
-            // />
             }
             <styled.Header>
                 {isProcessView ?

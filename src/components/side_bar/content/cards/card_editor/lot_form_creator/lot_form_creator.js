@@ -128,12 +128,13 @@ const LotFormCreator = (props) => {
 				}
 			}
 
+			const movingDown = (currRowIndex > oldIndexPattern[0]) && removedLastItemInRow
 			if(!(removedLastItemInRow && (currRowIndex === (oldIndexPattern[0] + 1)))) {
 				const newItem = {
 					...payload
 				}
 
-				const withInsert = immutableInsert(updatedData ? updatedData : items, [newItem], currRowIndex)
+				const withInsert = immutableInsert(updatedData ? updatedData : items, [newItem], movingDown ? currRowIndex - 1 : currRowIndex)
 				setFieldValue("fields", withInsert)
 			}
 		}
@@ -277,20 +278,6 @@ const LotFormCreator = (props) => {
 	console.log("draggingRow", draggingRow)
 
 	const mapContainers = (items, mode, prevItems, indexPattern, thisIndex) => {
-		// if(indexPattern === null) indexPattern = 0
-
-
-		let Containerz
-		if(mode) {
-			// Containerz = styled.RowContainer
-			Containerz = styled.ColumnContainer
-
-		}
-		else {
-			Containerz = styled.ColumnContainer
-		}
-
-
 
 		return (
 			<styled.ColumnContainer>

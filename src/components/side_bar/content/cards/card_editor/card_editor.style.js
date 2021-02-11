@@ -45,10 +45,8 @@ export const Header = styled.div`
 
 export const NameContainer = styled.div`
 	background: ${props => props.theme.bg.quaternary};
-
-  	margin-bottom: 1rem;
+	flex: 1;
   align-self: center;
-  width: 80%;
   padding: 1rem;
   display: flex;
   align-items: center;
@@ -56,6 +54,8 @@ export const NameContainer = styled.div`
 
 export const NameLabel = styled.span`
 	margin-right: 1rem;
+  white-space: nowrap ;
+  width: fit-content;
 `
 
 export const CloseButton = styled.button`
@@ -98,25 +98,34 @@ export const InfoText = styled.span`
 
 export const SectionContainer = styled.div`
 	border-bottom: 1px solid ${props => props.theme.bg.quinary};
-  padding: 0 1rem;
-  //display: flex;
-  
-  //background: green;
+  //padding: 0 1rem;
+  flex: 1;
   display: flex;
   flex-direction: column;
+  
   
 `
 
 export const TheBody = styled.div`
-	//background: blue;
-  //padding-top: 1rem;
   position: relative;
   overflow: auto;
   flex: 1;
   display: flex;
-  min-height: 40rem;
+  //min-height: 40rem;
   flex-direction: column;
-  //background: lime;
+  //width: 100%;
+  
+
+`
+
+export const SuperContainer = styled.div`
+  position: relative;
+  overflow: auto;
+  flex: 1;
+  display: flex;
+  //min-height: 40rem;
+  flex-direction: column;
+  
 
 `
 
@@ -262,13 +271,17 @@ export const ContentContainer = styled.div`
 export const BodyContainer = styled.div`
 	display: flex;
 	flex-direction: column;
+  width: 100%;
+  min-width: 100%;
+  background: ${props => props.theme.bg.quaternary};
 	padding: 1rem;
-	flex: 1;
+  align-self: stretch;
+  
+	//flex: 1;
 	justify-content: space-between;
   min-height: ${props => props.minHeight};
+
 	
-	background: ${props => props.theme.bg.quaternary};
-  background: transparent;
 `
 
 export const WidgetContainer = styled.div`
@@ -288,18 +301,11 @@ export const Icon = styled.i`
 export const ObjectInfoContainer = styled.div`
 	display: flex;
 	//width: 100%;
-	//flex-direction: column;
+	flex-direction: column;
 	align-items: center;
-	//background: red;
-	margin-bottom: 1rem;
 `
 
 
-export const ObjectTitleContainer = styled.div`
-	display: flex;
-	margin-right: 1rem;
-  flex: 1;
-`
 
 export const CountInput = styled.input`
 	width: fit-content;
@@ -310,6 +316,7 @@ export const ObjectLabel = styled.span`
 	margin-right: 1rem;
 	font-weight: bold;
   align-items: center;
+  text-align: center;
 `
 
 export const QuantityErrorContainerComponent = styled.div`
@@ -406,10 +413,28 @@ export const ContentHeader = styled.div`
 	//padding: 1rem;
 `
 
+export const FieldsHeader = styled.div`
+  align-self: stretch;
+	display: flex;
+	//justify-content: space-between;
+	width: 100%;
+  	//margin-bottom: 1rem;
+  border-bottom: 1px solid ${props => props.theme.bg.tertiary};
+	//padding: 1rem;
+`
+
 export const ContentTitle = styled.span`
 	font-size: ${props => props.theme.fontSize.sz3};
 	font-weight: ${props => props.theme.fontWeight.bold};
 `
+export const LotName = styled.span`
+	font-size: ${props => props.theme.fontSize.sz3};
+	font-weight: ${props => props.theme.fontWeight.bold};
+  white-space: nowrap ;
+  margin-right: 2rem;
+`
+
+
 
 export const CalendarContainer = styled.div`
 	overflow: auto;
@@ -419,10 +444,7 @@ export const CalendarContainer = styled.div`
 
 export const RowContainer = styled.div`
 	display: flex;
-  	flex: 1;
-  	align-self: stretch;
-  
-	// margin-bottom: 1rem;
+  align-items: center;
 `
 
 export const ColumnContainer = styled.div`
@@ -432,6 +454,7 @@ export const ColumnContainer = styled.div`
   align-self: stretch;
   
 	// margin-bottom: 1rem;
+  
 `
 
 export const FadeLoaderCSS = css`
@@ -553,7 +576,7 @@ export const buttonGroupContainerCss = css`
 	flex-direction: row;
 	align-self: center;
 	padding: 0;
-	margin: 0 0 1rem 0;
+	//margin: 0 0 1rem 0;
   width: fit-content;
   
 	

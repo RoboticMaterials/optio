@@ -10,6 +10,7 @@ export const RowContainer = styled.div`
   align-items: center;
   
   
+  
   //padding: .5rem;
   
   
@@ -20,7 +21,7 @@ export const ColumnContainer = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  overflow: auto;
+  //overflow: auto;
   //min-height: 100%;
   //align-self: stretch;
   //padding: .5rem;

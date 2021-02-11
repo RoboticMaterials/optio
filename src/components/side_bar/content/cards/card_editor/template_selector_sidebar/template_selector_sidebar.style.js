@@ -2,7 +2,6 @@ import styled from 'styled-components'
 import CloseOutlinedIcon from '@material-ui/icons/CloseOutlined';
 import {RGB_Linear_Shade, hexToRGBA, LightenDarkenColor} from "../../../../../../methods/utils/color_utils";
 import * as pageStyle from "../../../../../widgets/widget_pages/dashboards_page/dashboards_header/dashboards_header.style"
-import {glow, goodGlow} from "../../../../../../common_css/common_css";
 
 
 export const FooterContainer = styled.div`
@@ -65,15 +64,6 @@ export const LotTemplateButton = styled.div`
   border-radius: 1rem;
   
   border: 1px solid white;
-
-  &:hover {
-    ${glow("white")};
-	cursor: pointer;
-      filter: brightness(1.75);
-    ${props => props.isSelected && glow("cyan")};
-  }
-  
-  ${props => props.isSelected && glow("cyan")};
 `
 export const TemplateIcon = styled.div`
 	font-size: 6rem;
@@ -102,7 +92,6 @@ export const TemplateName = styled.span`
 	font-size: 1.5rem;
   align-self: center;
   margin-top: .5rem;
-  color: ${props => props.isSelected && "cyan"};
   
 	//color: black;
   //position: absolute;

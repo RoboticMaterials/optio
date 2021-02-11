@@ -124,7 +124,7 @@ const NumberField = ({
 
 				}}
 				value={fieldValue}
-				plusDisabled={!(fieldValue < maxValue)}
+				plusDisabled={(maxValue) && !(fieldValue < maxValue)}
 				onPlusClick={() => {
 
 					if(!touched) {

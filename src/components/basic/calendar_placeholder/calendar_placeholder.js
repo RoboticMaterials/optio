@@ -9,10 +9,11 @@ const CalendarPlaceholder = (props) => {
 		selectRange,
 		endText,
 		startText,
+		containerStyle
 	} = props
 
 	if(selectRange) return (
-		<styled.DatesContainer>
+		<styled.DatesContainer style={containerStyle}>
 			<styled.DateItem onClick={onClick}>
 				<styled.DateText>{startText}</styled.DateText>
 			</styled.DateItem>
@@ -26,7 +27,7 @@ const CalendarPlaceholder = (props) => {
 	)
 
 	return (
-		<styled.DateItem onClick={onClick}>
+		<styled.DateItem style={containerStyle} onClick={onClick}>
 			<styled.DateText>{text}</styled.DateText>
 		</styled.DateItem>
 	)

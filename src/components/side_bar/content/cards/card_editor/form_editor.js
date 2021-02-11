@@ -34,7 +34,7 @@ import log from '../../../../../logger'
 import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
 import ScrollingButtonField from "../../../../basic/form/scrolling_buttons_field/scrolling_buttons_field";
 import NumberField from "../../../../basic/form/number_field/number_field";
-import LotEditorSidebar, {FIELD_COMPONENT_NAMES} from "./editor_sidebar/editor_sidebar";
+import LotEditorSidebar, {EMPTY_DEFAULT_FIELDS, FIELD_COMPONENT_NAMES} from "./editor_sidebar/editor_sidebar";
 import DraggableSurface from "./draggable_surface/draggable_surface";
 import {Container} from "react-smooth-dnd";
 import DropContainer from "./drop_container/drop_container";
@@ -50,8 +50,13 @@ import {
 	putLotTemplate, setSelectedLotTemplate
 } from "../../../../../redux/actions/lot_template_actions";
 import lotTemplatesReducer from "../../../../../redux/reducers/lot_templates_reducer";
+import NumberInput from "../../../../basic/number_input/number_input";
+import useChange from "../../../../basic/form/useChange";
 
 
+const disabledStyle = {
+	filter: "contrast(50%)"
+}
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
 
@@ -77,6 +82,7 @@ const FormComponent = (props) => {
 
 	const {
 		formMode,
+		lotTemplateId,
 		bins,
 		binId,
 		setBinId,
@@ -108,6 +114,8 @@ const FormComponent = (props) => {
 	const dispatch = useDispatch()
 	const onGetCardHistory = async (cardId) => await dispatch(getCardHistory(cardId))
 
+	useChange()
+
 	// redux state
 
 	// component state
@@ -117,7 +125,7 @@ const FormComponent = (props) => {
 
 	const errorCount = Object.keys(errors).length > 0 // get number of field errors
 	const touchedCount = Object.values(touched).length // number of touched fields
-	const submitDisabled = ((errorCount > 0) || (touchedCount === 0) || isSubmitting) && (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
+	const submitDisabled = ((((errorCount > 0)) || (touchedCount === 0) || isSubmitting) && ((submitCount > 0)) ) || !values.changed // disable if there are errors or no touched field, and form has been submitted at least once
 
 	/*
 	* handles when enter key is pressed
@@ -179,44 +187,76 @@ const FormComponent = (props) => {
 		}
 	}, [isOpen])
 
-		return(
-			<styled.StyledForm>
-				<SubmitErrorHandler
-					submitCount={submitCount}
-					isValid={formikProps.isValid}
-					onSubmitError={() => {}}
-					formik={formikProps}
-				/>
-				<styled.Header>
-					<styled.Title>
-						{formMode === FORM_MODES.CREATE ?
-							"Create Template"
-							:
-							"Edit Template"
-						}
-					</styled.Title>
+	useEffect(() => {
 
-					<Button
-						secondary
-						onClick={close}
-						schema={'error'}
+		//
+		// setFieldValue("changed", false)
+		formikProps.resetForm()
+
+	}, [lotTemplateId])
+
+	return(
+		<styled.StyledForm>
+			<SubmitErrorHandler
+				submitCount={submitCount}
+				isValid={formikProps.isValid}
+				onSubmitError={() => {}}
+				formik={formikProps}
+			/>
+			<styled.Header>
+				{/*<styled.Title>*/}
+
+				<styled.NameContainer>
+					<styled.NameLabel>Template Name</styled.NameLabel>
+					<TextField  name={"name"} InputComponent={Textbox}/>
+				</styled.NameContainer>
+				{/*</styled.Title>*/}
+
+				<Button
+					secondary
+					onClick={close}
+					schema={'error'}
+				>
+					<i className="fa fa-times" aria-hidden="true"/>
+				</Button>
+			</styled.Header>
+
+			<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
+				<LotEditorSidebar/>
+
+				<styled.SuperContainer>
+				<styled.SectionContainer>
+					<styled.FieldsHeader
+						style={disabledStyle}
 					>
-						<i className="fa fa-times" aria-hidden="true"/>
-					</Button>
-				</styled.Header>
-
-				<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
-					<LotEditorSidebar/>
-					<styled.TheBody>
 						<styled.NameContainer>
-							<styled.NameLabel>Name</styled.NameLabel>
-							<TextField  name={"name"} InputComponent={Textbox}/>
+							<styled.LotName>Lot Name</styled.LotName>
+							<div
+								style={{
+									flexDirection: "row",
+									alignItems: "center",
+									width: "100%",
+									position: "relative",
+									display: "flex",
+								}}
+							>
+								<Textbox
+									textboxContainerStyle={{flex: 1}}
+									disabled={true}
+									type="text"
+									placeholder="Enter name..."
+									InputComponent={Textbox}
+								/>
+							</div>
 						</styled.NameContainer>
+					</styled.FieldsHeader>
+					<styled.TheBody>
 						{loaded ?
 							<LotFormCreator
 								{...formikProps}
 								preview={preview}
 							/>
+
 							:
 							<FadeLoader
 								css={styled.FadeLoaderCSS}
@@ -228,62 +268,84 @@ const FormComponent = (props) => {
 
 
 					</styled.TheBody>
-				</styled.RowContainer>
+				</styled.SectionContainer>
+
+				<styled.BodyContainer style={disabledStyle}>
+					<div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+						<styled.ObjectInfoContainer>
+							<styled.ObjectLabel>Quantity</styled.ObjectLabel>
+							<NumberInput
+								inputDisabled={true}
+								minusDisabled={true}
+								plusDisabled={true}
+							/>
+						</styled.ObjectInfoContainer>
+					</div>
+				</styled.BodyContainer>
+				</styled.SuperContainer>
+			</styled.RowContainer>
 
 
-				{/* render buttons for appropriate content */}
+			{/* render buttons for appropriate content */}
+			{
 				{
-					{
-						"EDIT_FORM":
-							<styled.ButtonContainer style={{width: "100%"}}>
-								<Button
-									style={{...buttonStyle, width: "8rem"}}
-									onClick={async () => {
-										setFieldValue("buttonType", FORM_BUTTON_TYPES.SAVE)
+					"EDIT_FORM":
+						<styled.ButtonContainer style={{width: "100%"}}>
+							<Button
+								style={{...buttonStyle, width: "8rem"}}
+								onClick={async () => {
+									setFieldValue("buttonType", FORM_BUTTON_TYPES.SAVE)
 
-										// set touched to true for all fields to show errors
-										values.fields.forEach((currRow, currRowIndex) => {
-											currRow.forEach((currField, currFieldIndex) => {
-												setFieldTouched(`fields[${currRowIndex}][${currFieldIndex}].fieldName`, true)
-											})
+									// set touched to true for all fields to show errors
+									values.fields.forEach((currRow, currRowIndex) => {
+										currRow.forEach((currField, currFieldIndex) => {
+											setFieldTouched(`fields[${currRowIndex}][${currFieldIndex}].fieldName`, true)
 										})
-										setFieldTouched("name", true)
+									})
+									setFieldTouched("name", true)
 
 
-										submitForm()
-									}}
-									schema={"ok"}
-									disabled={submitDisabled}
-									secondary
-								>
-									Ok
-								</Button>
+									submitForm()
+								}}
+								schema={"ok"}
+								disabled={submitDisabled}
+								secondary
+							>
+								{formMode === FORM_MODES.UPDATE ? "Save" : "Create"}
+							</Button>
+							<Button
+								style={buttonStyle}
+								onClick={()=>close()}
+								// schema={"error"}
+							>
+								Close
+							</Button>
 
-								<Button
-									style={buttonStyle}
-									onClick={()=>setPreview(!preview)}
-									schema={"error"}
-								>
-									{preview ? "Show Editor" : "Show Preview"}
-								</Button>
-								{formMode === FORM_MODES.UPDATE &&
-								<Button
-									style={buttonStyle}
-									onClick={()=>onDeleteClick()}
-									schema={"error"}
-								>
-									Delete Template
-								</Button>
-								}
+							<Button
+								style={buttonStyle}
+								onClick={()=>setPreview(!preview)}
+								schema={"error"}
+							>
+								{preview ? "Show Editor" : "Show Preview"}
+							</Button>
+							{formMode === FORM_MODES.UPDATE &&
+							<Button
+								style={buttonStyle}
+								onClick={()=>onDeleteClick()}
+								schema={"error"}
+							>
+								Delete Template
+							</Button>
+							}
 
-							</styled.ButtonContainer>,
-					}[content] ||
-					null
-				}
-			</styled.StyledForm>
-		)
-
+						</styled.ButtonContainer>,
+				}[content] ||
+				null
 			}
+		</styled.StyledForm>
+	)
+
+}
 
 // overwrite default button text color since it's hard to see on the lots background color
 // const buttonStyle = {color: "black"}
@@ -328,6 +390,7 @@ const LotCreatorForm = (props) => {
 	const handleDeleteClick = async () => {
 
 		dispatchDeleteLotTemplate(lotTemplateId)
+		dispatchSetSelectedLotTemplate(null)
 
 		// close()
 	}
@@ -440,13 +503,10 @@ const LotCreatorForm = (props) => {
 					fields: lotTemplate ?
 						lotTemplate.fields
 						:
-						[[{
-						_id: "1",
-						component: FIELD_COMPONENT_NAMES.TEXT_BOX,
-						fieldName: "Order Name"
-						}]],
+						EMPTY_DEFAULT_FIELDS,
 
-					name: lotTemplate ? lotTemplate.name : ""
+					name: lotTemplate ? lotTemplate.name : "",
+					changed: false
 				}}
 
 				// validation control
@@ -518,6 +578,7 @@ const LotCreatorForm = (props) => {
 							showProcessSelector={showProcessSelector}
 							content={content}
 							setContent={setContent}
+							lotTemplateId={lotTemplateId}
 						/>
 					)
 				}}
@@ -529,13 +590,13 @@ const LotCreatorForm = (props) => {
 // Specifies propTypes
 LotCreatorForm.propTypes = {
 	binId: PropTypes.string,
-		showProcessSelector: PropTypes.bool,
+	showProcessSelector: PropTypes.bool,
 };
 
 // Specifies the default values for props:
 LotCreatorForm.defaultProps = {
 	binId: "QUEUE",
-		showProcessSelector: false
+	showProcessSelector: false
 };
 
 export default LotCreatorForm

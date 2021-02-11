@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { DraggableCore } from "react-draggable";
 import { Container } from 'react-smooth-dnd'
@@ -17,8 +17,12 @@ import WidgetButton from "../../../../../basic/widget_button/widget_button";
 import {TYPES} from "../../../../../widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
 import {setSelectedLotTemplate} from "../../../../../../redux/actions/lot_template_actions";
 import {uuidv4} from "../../../../../../methods/utils/utils";
+import * as styled from "../../../../../basic/form/calendar_field/calendar_field.style";
+import CalendarField from "../../../../../basic/form/calendar_field/calendar_field";
 
 const logger = log.getLogger("LotEditorSidebar")
+
+
 
 export const EDITOR_SIDEBAR_TYPES = {
     FIELDS: {
@@ -29,14 +33,18 @@ export const EDITOR_SIDEBAR_TYPES = {
 
 export const FIELD_COMPONENT_NAMES = {
     TEXT_BOX: "TEXT_BOX",
+    TEXT_BOX_BIG: "TEXT_BOX_BIG",
     NUMBER_INPUT: "NUMBER_INPUT",
     CALENDAR_SINGLE: "CALENDAR_SINGLE",
     CALENDAR_START_END: "CALENDAR_START_END",
-    T: "CALENDAR_START_END",
 }
+
 export const LOT_EDITOR_SIDEBAR_OPTIONS = {
-    TEXTBOX: {
+    TEXT_BOX: {
         component: FIELD_COMPONENT_NAMES.TEXT_BOX
+    },
+    TEXT_BOX_BIG: {
+        component: FIELD_COMPONENT_NAMES.TEXT_BOX_BIG
     },
     NUMBER_INPUT: {
         component: FIELD_COMPONENT_NAMES.NUMBER_INPUT
@@ -47,10 +55,14 @@ export const LOT_EDITOR_SIDEBAR_OPTIONS = {
     CALENDAR_START_END: {
         component: FIELD_COMPONENT_NAMES.CALENDAR_START_END
     },
-
 }
 
-const SIDE_BAR_MODES = {
+export const EMPTY_DEFAULT_FIELDS =  [
+    [{_id: 0, component: FIELD_COMPONENT_NAMES.TEXT_BOX_BIG, fieldName: "description", key: 0}],
+    [{_id: 1, component: FIELD_COMPONENT_NAMES.CALENDAR_START_END, fieldName: "dates", key: 1}]
+]
+
+export const SIDE_BAR_MODES = {
     FIELDS: {
         name: "Fields",
         iconName: "fas fa-edit",
@@ -63,13 +75,14 @@ const SIDE_BAR_MODES = {
     }
 }
 
+export const BASIC_LOT_TEMPLATE = "BASIC_LOT_TEMPLATE"
+
 const LotEditorSidebar = (props) => {
 
     const {
-        // width,
-        // setWidth,
-
-        stationID,
+        showFields,
+        showTemplates,
+        showNew,
     } = props
 
     const minWidth = 450
@@ -96,7 +109,8 @@ const LotEditorSidebar = (props) => {
 
     const [width, setWidth] = useState(window.innerWidth < 2000 ? 450 : 450); // used for tracking sidebar dimensions
     const [isSmall, setSmall] = useState(testSize(width)); // used for tracking sidebar dimensions
-    const [type, setType] = useState(Object.keys(EDITOR_SIDEBAR_TYPES)[0]); // used for tracking sidebar dimensions
+
+    const [type, setType] = useState(showFields ? SIDE_BAR_MODES.FIELDS.name : SIDE_BAR_MODES.TEMPLATES.name); // used for tracking sidebar dimensions
 
 
     const getFieldTemplates = () => {
@@ -183,13 +197,14 @@ const LotEditorSidebar = (props) => {
                                 marginBottom: "1.5rem",
                                 display: "flex",
                                 justifyContent: "center",
+                                alignItems: "center",
                             }}
                         >
-                            {/*<div style={{margin: "auto auto"}}/>*/}
+                            <div style={{width: "fit-content"}}>
                                 <FieldComponentMapper
                                     component={value.component}
                                 />
-                            {/*<div style={{margin: "auto auto"}}/>*/}
+                            </div>
                         </Draggable>
                     })
                 }
@@ -200,16 +215,16 @@ const LotEditorSidebar = (props) => {
 
     const getTemplateButtons = () => {
         return (
+
             <style.ListContainer style={{padding: "1rem 0"}}>
                 <style.LotTemplateButton
+                    isSelected={!selectedLotTemplatesId}
                     onClick={() => dispatchSetSelectedLotTemplate(null)}
                 >
-                    <style.TemplateIcon
-                        isSelected={!selectedLotTemplatesId}
-                        className={SIDE_BAR_MODES.TEMPLATES.iconName}
-                    />
 
-                    <style.TemplateName>Empty</style.TemplateName>
+                    <style.TemplateName
+                        isSelected={!selectedLotTemplatesId}
+                    >New</style.TemplateName>
                 </style.LotTemplateButton>
                 {
                     Object.values(lotTemplates).map((currTemplate, currIndex) => {
@@ -223,14 +238,16 @@ const LotEditorSidebar = (props) => {
                         const isSelected = selectedLotTemplatesId === currTemplateId
 
                         return <style.LotTemplateButton
+                            isSelected={isSelected}
                             onClick={() => dispatchSetSelectedLotTemplate(currTemplateId)}
                         >
                             <style.TemplateIcon
                                 isSelected={isSelected}
                                 className={SIDE_BAR_MODES.TEMPLATES.iconName}
                             />
-
-                           <style.TemplateName>{name}</style.TemplateName>
+                           <style.TemplateName
+                               isSelected={isSelected}
+                           >{name}</style.TemplateName>
                         </style.LotTemplateButton>
                     })
                 }
@@ -241,12 +258,12 @@ const LotEditorSidebar = (props) => {
     let renderButtons = () => {}
 
     switch(type) {
-        case Object.keys(SIDE_BAR_MODES)[0]: {
+        case SIDE_BAR_MODES.FIELDS.name: {
             renderButtons = getFieldTemplates
             break
         }
 
-        case Object.keys(SIDE_BAR_MODES)[1]: {
+        case SIDE_BAR_MODES.TEMPLATES.name: {
             renderButtons = getTemplateButtons
             break
         }
@@ -263,7 +280,20 @@ const LotEditorSidebar = (props) => {
 
     const renderNavButtons = () => {
         return(
-            Object.entries(SIDE_BAR_MODES).map((currEntry, index) => {
+            Object.entries(SIDE_BAR_MODES)
+                .filter((currEntry, index) => {
+                    const [currKey, currValue] = currEntry
+
+                    if(currValue.name === SIDE_BAR_MODES.FIELDS.name && !showFields) {
+                        return false
+                    }
+                    if(currValue.name === SIDE_BAR_MODES.TEMPLATES.name && !showTemplates) {
+                        return false
+                    }
+                    return true
+
+                })
+                .map((currEntry, index) => {
                 const [currKey, currValue] = currEntry
 
                 return (
@@ -272,8 +302,8 @@ const LotEditorSidebar = (props) => {
                         label={currValue.name}
                         color={currValue.color}
                         iconClassName={currValue.iconName}
-                        selected={type === currKey}
-                        onClick={()=>setType(currKey)}
+                        selected={type === currValue.name}
+                        onClick={()=>setType(currValue.name)}
                         labelSize={"0.5rem"}
                     />
                 )
@@ -302,5 +332,20 @@ const LotEditorSidebar = (props) => {
             </style.SidebarContent>
     )
 }
+
+// Specifies propTypes
+LotEditorSidebar.propTypes = {
+    showFields: PropTypes.bool,
+    showTemplates: PropTypes.bool,
+    showNew: PropTypes.bool,
+};
+
+// Specifies the default values for props:
+LotEditorSidebar.defaultProps = {
+    showFields: true,
+    showTemplates: true,
+    showNew: true,
+
+};
 
 export default LotEditorSidebar

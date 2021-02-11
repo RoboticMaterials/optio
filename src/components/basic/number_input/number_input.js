@@ -11,6 +11,7 @@ const NumberInput = ({
 	minusDisabled,
 	hasError,
 	onInputChange,
+	inputDisabled,
 	value,
 	plusDisabled,
 						 inputCss,
@@ -23,11 +24,16 @@ const NumberInput = ({
 			<styled.Button
 				color={'#ff1818'}
 				className='fas fa-minus-circle'
-				onClick={onMinusClick}
+				onClick={(e) => {
+					e.stopPropagation()
+					e.preventDefault()
+					onMinusClick()
+				}}
 				disabled={minusDisabled}
 			/>
 			<div style={{position: "relative"}}>
 				<styled.Input
+					disabled={inputDisabled}
 					inputCss={inputCss}
 					type="number"
 					onChange={onInputChange}
@@ -40,7 +46,11 @@ const NumberInput = ({
 				className='fas fa-plus-circle'
 				color={'#1c933c'}
 				disabled={plusDisabled}
-				onClick={onPlusClick}
+				onClick={(e) => {
+					e.stopPropagation()
+					e.preventDefault()
+					onPlusClick()
+				}}
 			/>
 		</styled.Container>
 	);
@@ -49,12 +59,16 @@ const NumberInput = ({
 // Specifies propTypes
 NumberInput.propTypes = {
 	plusDisabled: PropTypes.bool,
+	inputDisabled: PropTypes.bool,
 
 };
 
 // Specifies the default values for props:
 NumberInput.defaultProps = {
 	plusDisabled: false,
+	inputDisabled: false,
+	onMinusClick: () => {},
+	onPlusClick: () => {}
 };
 
 export default NumberInput;

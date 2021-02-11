@@ -25,19 +25,35 @@ import {FORM_MODES} from "../../../../../constants/scheduler_constants";
 import {parseMessageFromEvent} from "../../../../../methods/utils/card_utils";
 import {CARD_SCHEMA_MODES, cardSchema, getCardSchema} from "../../../../../methods/utils/form_schemas";
 import {getProcessStations} from "../../../../../methods/utils/processes_utils";
-import {isEmpty} from "../../../../../methods/utils/object_utils";
+import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
 
 // import styles
 import * as styled from "./card_editor.style"
+import * as FormStyle from "./lot_form_creator/lot_form_creator.style"
 
 // logger
 import log from '../../../../../logger'
 import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
 import ScrollingButtonField from "../../../../basic/form/scrolling_buttons_field/scrolling_buttons_field";
 import NumberField from "../../../../basic/form/number_field/number_field";
+import LotEditorSidebar, {BASIC_LOT_TEMPLATE, FIELD_COMPONENT_NAMES} from "./editor_sidebar/editor_sidebar";
+import ContainerWrapper from "../../../../basic/container_wrapper/container_wrapper";
+import DropContainer from "./drop_container/drop_container";
+import FieldComponentMapper from "./field_component_mapper/field_component_mapper";
+import {isArray} from "../../../../../methods/utils/array_utils";
+import {getLotTemplates, setSelectedLotTemplate} from "../../../../../redux/actions/lot_template_actions";
+import {arraysEqual} from "../../../../../methods/utils/utils";
+import TemplateSelectorSidebar from "./template_selector_sidebar/template_selector_sidebar";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
+
+export const RESERVED_FIELD_NAMES = {
+	CHANGED: "changed",
+	NEW: "new",
+	NEEDS_RESET: "needsReset",
+	RESET_VALUES: "resetValues"
+}
 
 const CONTENT = {
 	HISTORY: "HISTORY",
@@ -70,6 +86,10 @@ const FormComponent = (props) => {
 
 	const {
 		formMode,
+		getInitialValues,
+		lotTemplate,
+		lotTemplateId,
+		setShowCardFormEditor,
 		bins,
 		binId,
 		setBinId,
@@ -90,6 +110,7 @@ const FormComponent = (props) => {
 		showProcessSelector,
 		content,
 		setContent,
+		setValues,
 		loaded
 
 	} = props
@@ -105,9 +126,13 @@ const FormComponent = (props) => {
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
 	const stations = useSelector(state => { return state.stationsReducer.stations })
 	const processes = useSelector(state => { return state.processesReducer.processes }) || {}
+	const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
 
 	// component state
 	const [showLotInfo, setShowLotInfo] = useState(true)
+	const [calendarFieldName, setCalendarFieldName] = useState(null)
+	const [showTemplateSelector, setShowTemplateSelector] = useState(formMode === FORM_MODES.CREATE)
+	const [fieldNameArr, setFieldNameArr] = useState([]) // if cardId was passed, update existing. Otherwise create new
 
 	// derived state
 	const selectedBinName = stations[binId] ?
@@ -124,6 +149,64 @@ const FormComponent = (props) => {
 	const touchedCount = Object.values(touched).length // number of touched fields
 	const submitDisabled = ((errorCount > 0) || (touchedCount === 0) || isSubmitting) && (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
 
+	useEffect( () => {
+		// formikProps.resetForm()
+		const {
+			[lotTemplateId]: templateValues
+		} = values || {}
+
+		if(!templateValues) setFieldValue(lotTemplateId, getInitialValues(lotTemplateId))
+
+	}, [lotTemplateId])
+
+	useEffect( () => {
+		console.log("running fieldNameArr effect")
+		// formikProps.resetForm()
+		// formikProps.setValues(getInitialValues())
+		const {
+			[lotTemplateId]: templateValues
+		} = values || {}
+
+		if(!templateValues) setFieldValue(lotTemplateId, getInitialValues(lotTemplateId))
+
+	}, [fieldNameArr])
+
+	useEffect( () => {
+		console.log("running mount effect")
+	}, [])
+
+	console.log("formikProps", formikProps)
+
+
+
+
+	useEffect(() => {
+		const {
+			fields
+		} = lotTemplate || {}
+
+		if(isArray(fields)) {
+
+			let newFieldNameArr = []
+			fields.forEach((currRow) => {
+				currRow.forEach((currItem) => {
+					const {
+						fieldName,
+						component
+					} = currItem || {}
+
+					newFieldNameArr.push(fieldName)
+				})
+			})
+
+			if(!arraysEqual(fieldNameArr, newFieldNameArr)) {
+				setFieldNameArr(newFieldNameArr)
+			}
+		}
+	}, [lotTemplate])
+
+	console.log("card editor valuzzzz",values)
+	console.log("card editor errorz",errors)
 	/*
 	*
 	* */
@@ -275,7 +358,7 @@ const FormComponent = (props) => {
 
 				<styled.CalendarContainer>
 					<CalendarField
-						name={"dates"}
+						name={calendarFieldName}
 					/>
 				</styled.CalendarContainer>
 			</styled.BodyContainer>
@@ -284,39 +367,48 @@ const FormComponent = (props) => {
 
 	const renderMainContent = () => {
 		return(
+			<>
+				<styled.SectionContainer>
+			<styled.TheBody>
+				{mapContainers(isArray(lotTemplate?.fields) ? lotTemplate.fields : [], true)}
+			</styled.TheBody>
+				</styled.SectionContainer>
 			<styled.BodyContainer>
-				<styled.FieldTitle>Station</styled.FieldTitle>
-
-				<ButtonGroup
-					buttonViewCss={styled.buttonViewCss}
-					buttons={buttonGroupNames}
-					selectedIndex={buttonGroupIds.findIndex((ele) => ele === binId)}
-					onPress={(selectedIndex)=>{
-						setBinId(buttonGroupIds[selectedIndex])
-						// setFieldValue("selectedBin", buttonGroupIds[selectedIndex])
-						// setSelectedBin(availableBins[selectedIndex])
+				{formMode === FORM_MODES.UPDATE &&
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						marginBottom: "2rem",
 					}}
-					containerCss={styled.buttonGroupContainerCss}
-					buttonViewSelectedCss={styled.buttonViewSelectedCss}
-					buttonCss={styled.buttonCss}
-				/>
+				>
+					<styled.FieldTitle>Station</styled.FieldTitle>
 
-				<styled.RowContainer>
+					<ButtonGroup
+						buttonViewCss={styled.buttonViewCss}
+						buttons={buttonGroupNames}
+						selectedIndex={buttonGroupIds.findIndex((ele) => ele === binId)}
+						onPress={(selectedIndex)=>{
+							setBinId(buttonGroupIds[selectedIndex])
+							// setFieldValue("selectedBin", buttonGroupIds[selectedIndex])
+							// setSelectedBin(availableBins[selectedIndex])
+						}}
+						containerCss={styled.buttonGroupContainerCss}
+						buttonViewSelectedCss={styled.buttonViewSelectedCss}
+						buttonCss={styled.buttonCss}
+					/>
+				</div>
+				}
+
+				<div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
 					<styled.ObjectInfoContainer>
-						<styled.ObjectTitleContainer>
 							<styled.ObjectLabel>Quantity</styled.ObjectLabel>
-
-							<TextField
+							<NumberField
+								minValue={0}
 								name={`bins.${binId}.count`}
-								type="number"
-								mapOutput={(val)=>parseInt(val)}
-								mapInput={(val)=>parseInt(val)}
-								InputComponent={styled.CountInput}
-								IconContainerComponent={styled.QuantityErrorContainerComponent}
 							/>
-						</styled.ObjectTitleContainer>
 					</styled.ObjectInfoContainer>
-				</styled.RowContainer>
+				</div>
 
 				{formMode === FORM_MODES.UPDATE &&
 				<styled.WidgetContainer>
@@ -336,6 +428,7 @@ const FormComponent = (props) => {
 				</styled.WidgetContainer>
 				}
 			</styled.BodyContainer>
+			</>
 		)
 	}
 
@@ -458,6 +551,85 @@ const FormComponent = (props) => {
 		)
 	}
 
+	const mapContainers = (items, mode) => {
+
+		return (
+			<FormStyle.ColumnContainer>
+
+				{items.map((currRow, currRowIndex) => {
+
+					const isLastRow = currRowIndex === items.length - 1
+					return <div
+						style={{flex: isLastRow && 1, display: isLastRow && "flex", flexDirection: "column"}}
+						key={currRowIndex}
+					>
+
+						<FormStyle.RowContainer>
+
+							{currRow.map((currItem, currItemIndex) => {
+								const {
+									_id: dropContainerId,
+									component,
+									fieldName
+								} = currItem || {}
+
+
+
+								const isLastItem = currItemIndex === currRow.length - 1
+								const indexPattern = [currRowIndex, currItemIndex]
+								const isOnlyItem = currRow.length === 1
+
+								const templateFieldName = `${lotTemplateId}.${fieldName}`
+
+								const {
+									[lotTemplateId]: templateValues
+								} = values || {}
+
+								const {
+									[fieldName]: fieldValue
+								} = templateValues || {}
+
+								console.log("value fieldValue",fieldValue)
+								console.log("value values",values)
+								console.log("value templateFieldName",templateFieldName)
+								console.log("value lotTemplateId",lotTemplateId)
+								console.log("value fieldName",fieldName)
+
+								return <div style={{
+									margin: "1rem",
+									flex: 1,
+									alignSelf: "center",
+									justifyContent: "center",
+									display: "flex"
+								}}
+								>
+									<FieldComponentMapper
+										value={fieldValue}
+										onCalendarClick={() => {
+											setContent(CONTENT.CALENDAR_START)
+											setCalendarFieldName(templateFieldName)
+										}}
+										containerStyle={{
+
+
+
+											// alignItems: "center"
+										}}
+										displayName={fieldName}
+										preview={false}
+										component={component}
+										fieldName={templateFieldName}
+									/>
+								</div>
+							})}
+
+						</FormStyle.RowContainer>
+					</div>
+				})}
+			</FormStyle.ColumnContainer>
+		)
+	}
+
 	const renderProcessSelector = () => {
 
 		return(
@@ -527,75 +699,40 @@ const FormComponent = (props) => {
 					</Button>
 				</styled.Header>
 
-				<styled.TheBody>
+				<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
+					{(showTemplateSelector) &&
+					<TemplateSelectorSidebar
+						showFields={false}
+						onTemplateEditClick={() => {
+							setShowCardFormEditor(true)
+						}}
+						selectedLotTemplatesId={lotTemplateId}
 
-					<styled.SectionContainer>
+					/>
+					}
+
+				<styled.SuperContainer>
+
+					{/*<styled.SectionContainer>*/}
 
 
 						{showProcessSelector && renderProcessSelector()}
 
-						<styled.ContentHeader>
-							<styled.ContentTitle>Lot Name</styled.ContentTitle>
-						</styled.ContentHeader>
-						<styled.NameContainer>
-							<TextField
-								name="name"
-								type="text"
-								placeholder="Enter name..."
-								InputComponent={Textbox}
-							/>
-						</styled.NameContainer>
+						<styled.FieldsHeader>
+							<styled.NameContainer>
 
-						{((content === null)) &&
-						<>
-							{showLotInfo &&
-							<>
-								<styled.NameContainer>
-									<styled.ContentHeader>
-										<styled.ContentTitle>Lot Description</styled.ContentTitle>
-									</styled.ContentHeader>
-									<TextField
-										name="description"
-										type="text"
-										placeholder="Description..."
-										InputComponent={Textbox}
-										lines={5}
-									/>
-								</styled.NameContainer>
-
-								<styled.DatesContainer>
-									<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_START)}>
-										<styled.DateText>{startDateText}</styled.DateText>
-									</styled.DateItem>
-
-									<styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
-
-									<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_START)}>
-										<styled.DateText>{endDateText}</styled.DateText>
-									</styled.DateItem>
-								</styled.DatesContainer>
-							</>
-							}
+								<styled.LotName>Lot Name</styled.LotName>
+								<TextField
+									name="name"
+									type="text"
+									placeholder="Enter name..."
+									InputComponent={Textbox}
+								/>
+							</styled.NameContainer>
+						</styled.FieldsHeader>
 
 
-							{formMode === FORM_MODES.UPDATE &&
-							<Button
-								// secondary
-								style={{margin: "0 0 1rem 0", width: "fit-content"}}
-								type={"button"}
-								onClick={()=>setShowLotInfo(!showLotInfo)}
-								schema={"lots"}
-							>
-								{showLotInfo ? "Hide Lot Details" : "Show Lot Details"}
-							</Button>
-							}
-
-						</>
-
-						}
-
-
-					</styled.SectionContainer>
+					{/*</styled.SectionContainer>*/}
 
 					{(content === null) &&
 					renderMainContent()
@@ -610,7 +747,8 @@ const FormComponent = (props) => {
 					renderMoveContent()
 					}
 
-				</styled.TheBody>
+				</styled.SuperContainer>
+				</styled.RowContainer>
 
 				{/* render buttons for appropriate content */}
 				{
@@ -671,6 +809,35 @@ const FormComponent = (props) => {
 							</styled.ButtonContainer>
 					}[content] ||
 					<styled.ButtonContainer>
+
+						{/*<Button*/}
+						{/*	schema={'lots'}*/}
+						{/*	type={"button"}*/}
+						{/*	style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}*/}
+						{/*	secondary*/}
+						{/*	onClick={async () => {*/}
+						{/*		setShowCardFormEditor(true)*/}
+						{/*		dispatchSetSelectedLotTemplate(lotTemplateId)*/}
+						
+						{/*		// close()*/}
+						{/*	}}*/}
+						{/*>*/}
+						{/*	Edit Template*/}
+						{/*</Button>*/}
+						<Button
+							schema={'lots'}
+							type={"button"}
+							style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
+							secondary
+							onClick={async () => {
+								setShowTemplateSelector(!showTemplateSelector)
+								dispatchSetSelectedLotTemplate(lotTemplateId)
+
+								// close()
+							}}
+						>
+							Change Template
+						</Button>
 						{formMode === FORM_MODES.CREATE ?
 							<>
 								<Button
@@ -760,6 +927,8 @@ const FormComponent = (props) => {
 
 			}
 
+
+
 // overwrite default button text color since it's hard to see on the lots background color
 // const buttonStyle = {color: "black"}
 const buttonStyle = {marginBottom: '0rem', marginTop: 0}
@@ -771,11 +940,14 @@ const CardEditor = (props) => {
 		close,
 		processId,
 		processOptions,
-		showProcessSelector
+		showProcessSelector,
+		setShowCardFormEditor,
 	} = props
 
 	// redux state
 	const cards = useSelector(state => { return state.cardsReducer.cards })
+	const selectedLotTemplatesId = useSelector(state => {return state.lotTemplatesReducer.selectedLotTemplatesId})
+	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
 
 	// actions
 	const dispatch = useDispatch()
@@ -783,6 +955,11 @@ const CardEditor = (props) => {
 	const onGetCard = async (cardId) => await dispatch(getCard(cardId))
 	const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 	const onDeleteCard = async (cardId, processId) => await dispatch(deleteCard(cardId, processId))
+	const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
+	const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
+
+
+
 
 	// component state
 	const [cardDataInterval, setCardDataInterval] = useState(null)
@@ -793,8 +970,40 @@ const CardEditor = (props) => {
 	const [loaded, setLoaded] = useState(false)
 	const [formMode, setFormMode] = useState(props.cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
 
+
 	// get card object from redux by cardId
 	const card = cards[cardId] || null
+	let lotTemplateId = selectedLotTemplatesId
+	if(!lotTemplateId && isObject(card) && card?.lotTemplateId) {
+		lotTemplateId = card?.lotTemplateId
+	}
+	// if(!lotTemplateId) lotTemplateId = BASIC_LOT_TEMPLATE
+
+	const lotTemplate = lotTemplates[lotTemplateId] || (lotTemplateId === BASIC_LOT_TEMPLATE ?
+		{
+			fields: [
+				[{_id: 0, component: FIELD_COMPONENT_NAMES.TEXT_BOX_BIG, fieldName: "description", key: 0}],
+				[{_id: 1, component: FIELD_COMPONENT_NAMES.CALENDAR_START_END, fieldName: "dates", key: 1}]
+			],
+			name: BASIC_LOT_TEMPLATE,
+			_id: BASIC_LOT_TEMPLATE
+		}
+		:
+		!lotTemplateId ?
+			{
+				fields: [
+					[{_id: 0, component: FIELD_COMPONENT_NAMES.TEXT_BOX_BIG, fieldName: "description", key: 0}],
+					[{_id: 1, component: FIELD_COMPONENT_NAMES.CALENDAR_START_END, fieldName: "dates", key: 1}]
+				],
+				name: null,
+				_id: null
+			}
+	:
+	null)
+
+	console.log("card editor lotTemplate",lotTemplate)
+	console.log("card editor lotTemplateId",lotTemplateId)
+
 
 	// extract card attributes
 	const {
@@ -835,9 +1044,9 @@ const CardEditor = (props) => {
 		if(cardId) {
 			const result = await onGetCard(cardId)
 		}
-		if(!loaded) {
-			setLoaded(true)
-		}
+		// if(!loaded) {
+		// 	setLoaded(true)
+		// }
 	}
 
 	/*
@@ -845,7 +1054,10 @@ const CardEditor = (props) => {
 	* */
 	useEffect( () => {
 		handleGetCard(cardId)
-		var timer = setInterval(()=>handleGetCard(cardId),5000)
+		var timer = setInterval(()=> {
+			handleGetCard(cardId)
+			dispatchGetLotTemplates()
+		},5000)
 
 		return () => {
 			clearInterval(timer)
@@ -857,11 +1069,61 @@ const CardEditor = (props) => {
 	* if card exists, set form mode to update
 	* */
 	useEffect( () => {
-		if(card && !loaded) {
-			setLoaded(true) // if card already exists, set loaded to true
+		const {
+			_id: realLotTemplateId
+		} = lotTemplate || {}
+
+		// editing existing card
+		if(cardId) {
+			if(card) {
+
+				// if card has template, template and card must be loaded
+				if(card?.lotTemplateId) {
+					if(lotTemplate && realLotTemplateId === card.lotTemplateId && !loaded) {
+						console.log("realLotTemplateId",realLotTemplateId)
+						console.log("lotTemplate",lotTemplate)
+						console.log("set laoded 1")
+						setLoaded(true)
+					}
+				}
+
+				// No template, only need card to set loaded
+				else if(!loaded) {
+					console.log("set laoded 2")
+					setLoaded(true) // if card already exists, set loaded to true
+				}
+			}
+
 		}
 
-	}, [card])
+		// creating new, set loaded to true
+		else {
+			console.log("set laoded 3")
+			if(!loaded) setLoaded(true)
+		}
+
+	}, [card, lotTemplate, lotTemplateId])
+
+	useEffect( () => {
+		dispatchGetLotTemplates()
+		dispatchSetSelectedLotTemplate(null)
+
+		return () => {
+			close()
+		}
+
+	}, [])
+
+
+
+
+
+	console.log("card editor loaded", loaded)
+	console.log("card editor selectedLotTemplatesId", selectedLotTemplatesId)
+	console.log("card editor cardId", cardId)
+	console.log("card editor card", card)
+
+
 
 	/*
 	*
@@ -870,14 +1132,14 @@ const CardEditor = (props) => {
 
 		const {
 			name,
+			changed,
+			new: isNew,
 			bins,
-			description,
 			moveCount,
 			moveLocation,
-			buttonType,
-			processId: selectedProcessId
-		} = values
-
+			processId: selectedProcessId,
+			[lotTemplateId]: templateValues,
+		} = values || {}
 
 		const start = values?.dates?.start || null
 		const end = values?.dates?.end || null
@@ -889,10 +1151,11 @@ const CardEditor = (props) => {
 				var submitItem = {
 					name,
 					bins,
-					description,
 					process_id: card.process_id,
 					start_date: start,
 					end_date: end,
+					lotTemplateId,
+					...templateValues
 				}
 
 				/*
@@ -969,10 +1232,11 @@ const CardEditor = (props) => {
 				var submitItem = {
 					name,
 					bins,
-					description,
 					process_id: card.process_id,
 					start_date: start,
 					end_date: end,
+					lotTemplateId,
+					...templateValues
 				}
 
 				onPutCard(submitItem, cardId)
@@ -984,10 +1248,11 @@ const CardEditor = (props) => {
 				const submitItem = {
 					name,
 					bins,
-					description,
 					process_id: processId ? processId : selectedProcessId,
 					start_date: start,
 					end_date: end,
+					lotTemplateId,
+					...templateValues
 				}
 
 				const postResult = await onPostCard(submitItem)
@@ -1005,131 +1270,216 @@ const CardEditor = (props) => {
 
 	}
 
-	return(
-		<styled.Container
-			isOpen={isOpen}
-			onRequestClose={()=> {
-				close()
+	const getInitialValues = (lotTemplateId) => {
+		const lotTemplate = lotTemplates[lotTemplateId]
+		console.log(("getInitialValues"),lotTemplate)
+		console.log(("getInitialValues loaded"),loaded)
+		let initialValues = {}
 
-			}}
-			contentLabel="Lot Editor Form"
-			style={{
-				overlay: {
-					zIndex: 500
-				},
-				content: {
-
-				}
-			}}
-		>
-			<Formik
-				initialValues={{
-					processId: processId,
-					moveCount: 0,
-					moveLocation: [],
-					name: card ? card.name : "",
-					description: card ? card.description : "",
-					bins: card && card.bins ?
-						card.bins
-						:
-						{
-							"QUEUE": {
-								count: 0
-							},
-						},
-					dates: card ? {
-						start: card.start_date,
-						end: card.end_date,
-					} : null,
-					count: card ? card.count : 0,
-					// object: (card && card.object_id) ?  [objects[card.object_id]] : []
-				}}
-
-				// validation control
-				validationSchema={getCardSchema((content === CONTENT.MOVE) ? CARD_SCHEMA_MODES.MOVE_LOT : CARD_SCHEMA_MODES.EDIT_LOT, bins[binId]?.count ? bins[binId].count : 0)}
-				validateOnChange={true}
-				validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
-				validateOnBlur={true}
-
-				// enableReinitialize={true} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
-				onSubmit={async (values, { setSubmitting, setTouched, resetForm }) => {
-					// set submitting to true, handle submit, then set submitting to false
-					// the submitting property is useful for eg. displaying a loading indicator
+		if(isObject(lotTemplate)) {
+			lotTemplate.fields.forEach((currRow, currRowIndex) => {
+				currRow.forEach((currItem, currItemIndex) => {
 					const {
-						buttonType
-					} = values
+						fieldName,
+						_id: fieldId,
+						component,
+						key
+					} = currItem || {}
 
-					setSubmitting(true)
-					await handleSubmit(values, formMode)
-					setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
-					setSubmitting(false)
-
-					switch(buttonType) {
-						case FORM_BUTTON_TYPES.ADD:
-							resetForm()
-							close()
-							break
-						case FORM_BUTTON_TYPES.MOVE_OK:
-							resetForm()
-							close()
-							break
-						case FORM_BUTTON_TYPES.ADD_AND_NEXT:
-							resetForm()
-							break
-						case FORM_BUTTON_TYPES.SAVE:
-							close()
-							break
-						default:
-							break
+					switch(component) {
+						case FIELD_COMPONENT_NAMES.TEXT_BOX: {
+							initialValues[fieldName] = isObject(card) ? (card[fieldName] || "") : ""
+							// card[fieldName] = card[fieldName] ? card[fieldName] : ""
+							break;
+						}
+						case FIELD_COMPONENT_NAMES.TEXT_BOX_BIG: {
+							initialValues[fieldName] = isObject(card) ? (card[fieldName] || "") : ""
+							// card[fieldName] = card[fieldName] ? card[fieldName] : ""
+							break;
+						}
+						case FIELD_COMPONENT_NAMES.CALENDAR_SINGLE: {
+							initialValues[fieldName] = isObject(card) ? (card[fieldName] || null) : null
+							// card[fieldName] = card[fieldName] ? card[fieldName] : null
+							break;
+						}
+						case FIELD_COMPONENT_NAMES.CALENDAR_START_END: {
+							let updatedValues = null
+							if(isObject(card) && isArray(card[fieldName])) {
+								const val = card[fieldName]
+								if(val.length > 0) {
+									updatedValues = [new Date(val[0])]
+								}
+								if(val.length > 1) {
+									updatedValues.push(new Date(val[1]))
+								}
+							}
+							console.log("updatedValues",updatedValues)
+							initialValues[fieldName] = updatedValues
+							// card[fieldName] = card[fieldName] ? card[fieldName] : null
+							break;
+						}
+						case FIELD_COMPONENT_NAMES.NUMBER_INPUT: {
+							initialValues[fieldName] = isObject(card) ? (card[fieldName] || 0) : 0
+							// card[fieldName] = card[fieldName] ? card[fieldName] : 0
+							break;
+						}
 					}
 
+				})
+			})
+		}
+		else {
+
+		}
+
+		console.log("getintiial values after initialValues",initialValues)
+
+
+		return initialValues
+	}
+
+	console.log("card editor lotTemplate", lotTemplate)
+	console.log("card editor lotTemplateId", lotTemplateId)
+	if(loaded) {
+		return(
+			<styled.Container
+				isOpen={isOpen}
+				onRequestClose={()=> {
+					close()
+
+				}}
+				contentLabel="Lot Editor Form"
+				style={{
+					overlay: {
+						zIndex: 500
+					},
+					content: {
+
+					}
 				}}
 			>
-				{formikProps => {
+				<Formik
+					initialValues={{
+						processId: processId,
+						moveCount: 0,
+						moveLocation: [],
+						name: card ? card.name : "",
+						bins: card && card.bins ?
+							card.bins
+							:
+							{
+								"QUEUE": {
+									count: 0
+								},
+							},
+						[lotTemplateId]: {
+							...getInitialValues(lotTemplateId)
+						}
 
-					// extract formik props
-					const {
-						errors,
-						values,
-						touched,
-						isSubmitting,
-						submitCount,
-						setFieldValue,
-						submitForm
-					} = formikProps
+					}}
 
-					return (
-						<FormComponent
-							loaded={loaded}
-							processId={processId}
-							close={close}
-							formMode={formMode}
-							formikProps={formikProps}
-							card={card}
-							bins={bins}
-							binId={binId}
-							setBinId={setBinId}
-							cardId={cardId}
-							isOpen={isOpen}
-							onDeleteClick={handleDeleteClick}
-							errors={errors}
-							values={values}
-							touched={touched}
-							isSubmitting={isSubmitting}
-							submitCount={submitCount}
-							setFieldValue={setFieldValue}
-							submitForm={submitForm}
-							formikProps={formikProps}
-							processOptions={processOptions}
-							showProcessSelector={showProcessSelector}
-							content={content}
-							setContent={setContent}
-						/>
-					)
-				}}
-			</Formik>
-		</styled.Container>
-	)
+					// validation control
+					validationSchema={getCardSchema((content === CONTENT.MOVE) ? CARD_SCHEMA_MODES.MOVE_LOT : CARD_SCHEMA_MODES.EDIT_LOT, bins[binId]?.count ? bins[binId].count : 0)}
+					validateOnChange={true}
+					validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
+					validateOnBlur={true}
+
+					// enableReinitialize={true} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
+					onSubmit={async (values, { setSubmitting, setTouched, resetForm }) => {
+						// set submitting to true, handle submit, then set submitting to false
+						// the submitting property is useful for eg. displaying a loading indicator
+						const {
+							buttonType
+						} = values
+
+						setSubmitting(true)
+						await handleSubmit(values, formMode)
+						setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
+						setSubmitting(false)
+
+						switch(buttonType) {
+							case FORM_BUTTON_TYPES.ADD:
+								resetForm()
+								close()
+								break
+							case FORM_BUTTON_TYPES.MOVE_OK:
+								resetForm()
+								close()
+								break
+							case FORM_BUTTON_TYPES.ADD_AND_NEXT:
+								resetForm()
+								break
+							case FORM_BUTTON_TYPES.SAVE:
+								close()
+								break
+							default:
+								break
+						}
+
+					}}
+				>
+					{formikProps => {
+
+						// extract formik props
+						const {
+							errors,
+							values,
+							touched,
+							isSubmitting,
+							submitCount,
+							setFieldValue,
+							submitForm
+						} = formikProps
+
+						return (
+							<FormComponent
+								getInitialValues={getInitialValues}
+								lotTemplate={lotTemplate}
+								lotTemplateId={lotTemplateId}
+								setShowCardFormEditor={setShowCardFormEditor}
+								loaded={loaded}
+								processId={processId}
+								close={close}
+								formMode={formMode}
+								formikProps={formikProps}
+								card={card}
+								bins={bins}
+								binId={binId}
+								setBinId={setBinId}
+								cardId={cardId}
+								isOpen={isOpen}
+								onDeleteClick={handleDeleteClick}
+								errors={errors}
+								values={values}
+								touched={touched}
+								isSubmitting={isSubmitting}
+								submitCount={submitCount}
+								setFieldValue={setFieldValue}
+								submitForm={submitForm}
+								formikProps={formikProps}
+								processOptions={processOptions}
+								showProcessSelector={showProcessSelector}
+								content={content}
+								setContent={setContent}
+							/>
+						)
+					}}
+				</Formik>
+			</styled.Container>
+		)
+	}
+	else {
+		return (
+			<FadeLoader
+				css={styled.FadeLoaderCSS}
+				height={5}
+				width={3}
+				loading={true}
+			/>
+		)
+	}
+
+
 }
 
 // Specifies propTypes
