@@ -903,6 +903,7 @@ const buttonStyle = {marginBottom: '0rem', marginTop: 0}
 
 
 const CardEditor = (props) => {
+
 	const {
 		isOpen,
 		close,
@@ -931,21 +932,26 @@ const CardEditor = (props) => {
 
 
 	// component state
-	const [cardDataInterval, setCardDataInterval] = useState(null)
-
 	const [cardId, setCardId] = useState(props.cardId) //cardId and binId are stored as internal state but initialized from props (if provided)
 	const [binId, setBinId] = useState(props.binId)
 	const [content, setContent] = useState(null)
 	const [loaded, setLoaded] = useState(false)
 	const [formMode, setFormMode] = useState(props.cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
+	// const [lotTemplateId, setLotTemplateId] = useState()
 
 
 	// get card object from redux by cardId
 	const card = cards[cardId] || null
-	let lotTemplateId = selectedLotTemplatesId
+	let lotTemplateId = selectedLotTemplatesId  // set template id to selected template from redux - set by sidebar when you pick a template
+
+	// if a template isn't provided by redux, check if card has template id
 	if(!lotTemplateId && isObject(card) && card?.lotTemplateId) {
 		lotTemplateId = card?.lotTemplateId
 	}
+
+
+
+
 	if(!lotTemplateId) lotTemplateId = BASIC_LOT_TEMPLATE_ID
 	let lotTemplate = lotTemplates[lotTemplateId]  || BASIC_LOT_TEMPLATE
 	if(!lotTemplates[lotTemplateId]) {
