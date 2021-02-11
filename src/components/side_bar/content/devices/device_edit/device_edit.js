@@ -134,7 +134,7 @@ const DeviceEdit = (props) => {
 
                 <styled.RowContainer style={{ position: 'relative', justifyContent: 'space-between' }}>
                     <styled.Label schema={'devices'}>MIR IP</styled.Label>
-                    <styled.ConnectionButton onClick={() => onMirConnection()} disabled={(connectionText === 'Connected' || connectionText === 'Connecting')}>
+                    <styled.ConnectionButton onClick={() => onMirConnection()} disabled={(connectionText === 'Connecting')}>
                         {connectionText}
                         <styled.ConnectionIcon className={connectionIcon} />
                     </styled.ConnectionButton>
@@ -143,7 +143,7 @@ const DeviceEdit = (props) => {
 
                 <Textbox
                     placeholder="MiR IP Address"
-                    value={selectedDevice.mir_ip}
+                    value={selectedDevice.ip_address}
                     onChange={(event) => {
                         setMirUpdated(true)
                         dispatchSetSelectedDevice({
