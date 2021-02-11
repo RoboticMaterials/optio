@@ -80,7 +80,7 @@ const DashboardsPage = (props) => {
                 const loadStationId = currRoute?.load?.station
 
                 // if the loadStationId matches the current dashboard's stationId, add the process's id to the list
-                if(loadStationId === stationID) firstStationProcesses.push(currProcess._id)
+                if(loadStationId === stationID && stationID !== undefined) firstStationProcesses.push(currProcess._id)
 
                 // now check if station is last route of any process
                 // get last routes id
@@ -93,7 +93,7 @@ const DashboardsPage = (props) => {
                 const unloadStationId = lastRoute?.unload?.station
 
                 // if the unloadStationId matches the current dashboard's stationId, add the process's id to the list of last stations
-                if(unloadStationId === stationID) lastStationProcesses.push(currProcess._id)
+                if(unloadStationId === stationID && stationID !== undefined) lastStationProcesses.push(currProcess._id)
 
 
             }
