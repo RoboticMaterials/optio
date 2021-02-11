@@ -261,6 +261,7 @@ const LotFormCreator = (props) => {
 					getChildPayload={index =>
 						index
 					}
+					hovering={hoveringRow === -1}
 					showHighlight={false}
 					isRow={true}
 					style={{ background: "coral", width: !mode && "1rem", height: mode && "1rem", alignSelf: "stretch", flex: items.length === 0 && 1}}
