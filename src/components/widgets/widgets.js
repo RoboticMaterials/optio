@@ -337,6 +337,7 @@ const Widgets = (props) => {
 
     const onWidgetPosition = (coord) => {
 
+
         // When first hovering over, the widget has not mounted so the element is null, but once its mounted, you can use the bounding box
         if (element === null) {
             if (coord === 'x') {

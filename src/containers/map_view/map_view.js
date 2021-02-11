@@ -38,7 +38,6 @@ import log from "../../logger"
 import { setCurrentMap } from "../../redux/actions/map_actions";
 import { getPreviousRoute } from "../../methods/utils/processes_utils";
 import { isObject } from "../../methods/utils/object_utils";
-
 const logger = log.getLogger("MapView")
 
 export class MapView extends Component {

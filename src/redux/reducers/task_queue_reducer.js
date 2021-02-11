@@ -28,7 +28,8 @@ import {
     DELETE_TASK_QUEUE_FAILURE,
 
     TASK_QUEUE_OPEN,
-    INCREMENT_GET_DATA_FAILURE_COUNT
+    INCREMENT_GET_DATA_FAILURE_COUNT,
+    SET_SHOW_MODAL_ID,
 } from '../types/task_queue_types';
 
 import {
@@ -54,7 +55,8 @@ const defaultState = {
     activeHilDashboards: {},
     localHumanTask: null,
     taskQueueOpen: false,
-    getFailureCount: 1
+    getFailureCount: 1,
+    showModalID: null
 };
 
 export default function taskQueueReducer(state = defaultState, action) {
@@ -239,6 +241,13 @@ export default function taskQueueReducer(state = defaultState, action) {
                 ...state,
                 getFailureCount: state.getFailureCount + 1,
             }
+
+        case SET_SHOW_MODAL_ID:
+            return {
+              ...state,
+              showModalID: action.payload,
+            }
+
         // ~~~~~~~~~~~~~~~
 
         default:

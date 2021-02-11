@@ -43,6 +43,7 @@ const widgetReducer = (state = defaultState, action) => {
                   hoverStationInfo: action.payload.info,
               }
 
+
         default:
             return state
     }
