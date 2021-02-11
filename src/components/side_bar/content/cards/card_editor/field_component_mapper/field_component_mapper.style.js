@@ -5,6 +5,18 @@ export const Container = styled.div`
 	align-items: flex-start;
   flex-direction: column;
   justify-content: center;
+
+  
+`
+
+export const TextContainer = styled.div`
+  flex-direction: row;
+  align-items: center;
+  align-self: stretch;
+  flex: 1;
+  //width: 100%;
+  position: relative;
+  display: flex;
 `
 
 export const Label = styled.span`

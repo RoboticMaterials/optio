@@ -1,5 +1,5 @@
 import {Container} from "react-smooth-dnd";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 
 const ContainerWrapper = (props) => {
 	const {
@@ -11,10 +11,19 @@ const ContainerWrapper = (props) => {
 		onDrop,
 		color,
 		showHighlight,
+		onHoverChange,
 		...rest
 	} = props
 
 	const [hovering, setHovering] = useState(false)
+
+	useEffect(() => {
+		onHoverChange && onHoverChange(hovering)
+	}, [hovering])
+
+	// useEffect(() => {
+	// 	if(props.hovering && !hovering) setHovering(true)
+	// }, [props.hovering])
 
 
 	return (
@@ -35,8 +44,8 @@ const ContainerWrapper = (props) => {
 				...style,
 				// border: "1px solid black",
 				transition: "all 0.5s ease",
-				padding: hovering ? (isRow ? "2.5rem 0" : "0 2.5rem") : 0,
-				background: hovering ? (showHighlight ? "rgb(50,50,50)" : "transparent") : (color ? color : "transparent"),
+				padding: (hovering || props.hovering) ? (isRow ? "2.5rem 0" : "0 2.5rem") : 0,
+				background: (hovering || props.hovering) ? (showHighlight ? "rgb(50,50,50)" : "transparent") : (color ? color : "transparent"),
 			}}
 			{...rest}
 		>
@@ -55,6 +64,8 @@ ContainerWrapper.defaultProps = {
 	onDragLeave: null,
 	onDrop: null,
 	showHighlight: true,
+	onHoverChange: null,
+	hovering: false
 };
 
 export default ContainerWrapper

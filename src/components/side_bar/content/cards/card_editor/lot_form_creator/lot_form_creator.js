@@ -32,6 +32,7 @@ const LotFormCreator = (props) => {
 
 	const draggingFieldId = useSelector(state=> {return state.cardPageReducer.isFieldDragging})
 	const [draggingRow, setDraggingRow] = useState(null)
+	const [hoveringRow, setHoveringRow] = useState(null)
 
 	const {
 		fields: items = []
@@ -287,8 +288,12 @@ const LotFormCreator = (props) => {
 							const isOnlyItem = currRow.length === 1
 
 							return <DropContainer
+								currRowIndex={currRowIndex}
 								setDraggingRow={() => setDraggingRow(currRowIndex)}
 								clearDraggingRow={() => setDraggingRow(null)}
+								hoveringRow={hoveringRow}
+								setHoveringRow={(val) => setHoveringRow(val)}
+								clearHoveringRow={() => setHoveringRow(null)}
 								fieldName={fieldName}
 								payload={items[currRowIndex][currItemIndex]}
 								key={dropContainerId}
@@ -316,6 +321,7 @@ const LotFormCreator = (props) => {
 							onDrop={(dropResult)=>{
 								handleVerticalDrop(dropResult, currRowIndex + 1)
 							}}
+							hovering={hoveringRow === currRowIndex}
 							shouldAcceptDrop={()=>{return true}}
 							getGhostParent={()=>document.body}
 							groupName="lot_field_buttons"

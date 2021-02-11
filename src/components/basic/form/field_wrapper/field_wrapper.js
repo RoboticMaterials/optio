@@ -47,10 +47,6 @@ const FieldWrapper = (props) => {
 		}
 	}, []);
 
-
-
-
-
 	return (
 		<ContainerComponent>
 			<styled.LabelContainer updateColor={updateColor}>

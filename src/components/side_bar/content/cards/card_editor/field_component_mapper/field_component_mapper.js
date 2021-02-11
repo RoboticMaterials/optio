@@ -37,10 +37,13 @@ const FieldComponentMapper = (props) => {
 						fieldName && <styled.Label>{fieldName}:</styled.Label>
 					}
 					{preview ?
+						<styled.TextContainer>
 						<Textbox
 							// style={{width: "15rem"}}
 							placeholder="Enter text..."
+							textboxContainerStyle={{display: "flex", flex: 1}}
 						/>
+						</styled.TextContainer>
 						:
 						<TextField
 							name={fieldName}
@@ -67,13 +70,16 @@ const FieldComponentMapper = (props) => {
 						fieldName && <styled.Label>{fieldName}:</styled.Label>
 					}
 					{preview ?
+						<styled.TextContainer>
 						<Textbox
 							type="text"
 							placeholder="Enter text..."
 							InputComponent={Textbox}
 							lines={5}
-							// style={{width: "15rem"}}
+							// style={{display: "flex", flex: 1}}
+							textboxContainerStyle={{display: "flex", flex: 1}}
 						/>
+						</styled.TextContainer>
 						:
 						<TextField
 							name={fieldName}
@@ -158,7 +164,11 @@ const FieldComponentMapper = (props) => {
 
 			return(
 				<styled.Container
-					style={containerStyle}
+					style={{
+						...containerStyle,
+						justifyContent: "center",
+						alignItems: "center"
+					}}
 				>
 					{displayName ?
 						<styled.Label>{displayName}:</styled.Label>

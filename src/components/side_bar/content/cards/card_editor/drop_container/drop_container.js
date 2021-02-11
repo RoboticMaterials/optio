@@ -32,7 +32,11 @@ const DropContainer = (props) => {
 		fieldName,
 		payload,
 		setDraggingRow,
-		clearDraggingRow
+		clearDraggingRow,
+		setHoveringRow,
+		currRowIndex,
+		clearHoveringRow,
+		hoveringRow,
 
 	} = props
 
@@ -41,9 +45,34 @@ const DropContainer = (props) => {
 
 	const draggingFieldId = useSelector(state=> {return state.cardPageReducer.isFieldDragging})
 
-
 	const [deleted, setDeleted] = useState(false)
 	const [isThisFieldDragging, setIsThisFieldDragging] = useState(false)
+	const [hoveringTop, setHoveringTop] = useState(false)
+	const [hoveringBottom, setHoveringBottom] = useState(false)
+	const [hoveringLeft, setHoveringLeft] = useState(false)
+	const [hoveringRight, setHoveringRight] = useState(false)
+
+	useEffect(() => {
+		const topRowIndex = currRowIndex-1
+		const bottomRowIndex = currRowIndex
+
+		if(hoveringTop && hoveringRow !== topRowIndex) {
+			setHoveringRow(topRowIndex)
+		}
+		else if(hoveringBottom && hoveringRow !== bottomRowIndex) {
+			setHoveringRow(bottomRowIndex)
+		}
+
+		else if(!hoveringTop && hoveringRow === topRowIndex) {
+			clearHoveringRow()
+		}
+
+		else if(!hoveringBottom && hoveringRow === bottomRowIndex) {
+			clearHoveringRow()
+		}
+
+
+	}, [hoveringTop, hoveringBottom])
 
 	useEffect( () => {
 		let timeout
@@ -115,8 +144,9 @@ const DropContainer = (props) => {
 					getChildPayload={index =>
 						index
 					}
+					hovering={hoveringLeft}
 					isRow={false}
-					style={{display: "flex", flex: 1, alignSelf: "stretch"}}
+					style={{alignSelf: "stretch"}}
 				/>
 				}
 
@@ -158,13 +188,14 @@ const DropContainer = (props) => {
 					getGhostParent={()=>{
 						return document.body
 					}}
-					style={{}}
+					style={{flex: 1, display: "flex"}}
 				>
-						<Draggable key={id} >
-							<div style={{position: "relative", }}>
+						<Draggable key={id} style={{flex: 1}}>
+							<div style={{position: "relative", display: "flex", justifyContent: "center" }}>
 								{draggingFieldId &&
 								<div style={{position: "absolute", display: "flex", flexDirection: "column", alignItems: "stretch", left: 0, bottom: 0, top: 0, right: 0}}>
 									<ContainerWrapper
+										onHoverChange={(hoverState) => setHoveringTop(hoverState)}
 										showHighlight={false}
 										onDrop={(dropResult)=>onTopDrop(dropResult)}
 										shouldAcceptDrop={()=>{return true}}
@@ -179,6 +210,7 @@ const DropContainer = (props) => {
 									<div style={{display: "flex", flex: 5}}>
 										<ContainerWrapper
 											showHighlight={false}
+											onHoverChange={(hoverState) => setHoveringLeft(hoverState)}
 											onDrop={(dropResult)=>onLeftDrop(id, dropResult)}
 											shouldAcceptDrop={()=>{return true}}
 											getGhostParent={()=>document.body}
@@ -191,6 +223,7 @@ const DropContainer = (props) => {
 										/>
 										<ContainerWrapper
 											showHighlight={false}
+											onHoverChange={(hoverState) => setHoveringRight(hoverState)}
 											onDrop={(dropResult)=>onRightDrop(id, dropResult)}
 											shouldAcceptDrop={()=>{return true}}
 											getGhostParent={()=>document.body}
@@ -206,6 +239,7 @@ const DropContainer = (props) => {
 
 									<ContainerWrapper
 										showHighlight={false}
+										onHoverChange={(hoverState) => setHoveringBottom(hoverState)}
 										onDrop={(dropResult)=>onBottomDrop(dropResult)}
 										shouldAcceptDrop={()=>{return true}}
 										getGhostParent={()=>document.body}
@@ -222,6 +256,7 @@ const DropContainer = (props) => {
 							<FieldComponentMapper
 								component={component}
 								fieldName={fieldName}
+								containerStyle={{width: "100%",}}
 							/>
 							:
 							<FieldWrapper
@@ -242,6 +277,7 @@ const DropContainer = (props) => {
 				{(right && !isThisFieldDragging) &&
 				<ContainerWrapper
 					onDrop={(dropResult)=>onRightDrop(id, dropResult)}
+					hovering={hoveringRight}
 					shouldAcceptDrop={()=>{return true}}
 					getGhostParent={()=>document.body}
 					groupName="lot_field_buttons"
@@ -250,7 +286,7 @@ const DropContainer = (props) => {
 						index
 					}
 					showHighlight={false}
-					style={{display: "flex", flex: 1, alignSelf: "stretch"}}
+					style={{alignSelf: "stretch"}}
 				/>
 				}
 			</styled.RowContainer>
