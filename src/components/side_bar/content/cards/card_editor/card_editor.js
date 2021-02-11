@@ -1261,7 +1261,7 @@ const CardEditor = (props) => {
 						}
 
 						case FIELD_COMPONENT_NAMES.NUMBER_INPUT: {
-							initialValues[fieldName] = isObject(card) ? (card[fieldName] || BASIC_FIELD_DEFAULTS.NUMBER_FIELD : BASIC_FIELD_DEFAULTS.NUMBER_FIELD
+							initialValues[fieldName] = isObject(card) ? (card[fieldName] || BASIC_FIELD_DEFAULTS.NUMBER_FIELD) : BASIC_FIELD_DEFAULTS.NUMBER_FIELD
 							break;
 						}
 					}
