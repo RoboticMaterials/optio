@@ -5,26 +5,26 @@ import { DraggableCore } from "react-draggable";
 import { Container } from 'react-smooth-dnd'
 import { Draggable } from 'react-smooth-dnd';
 
-import * as style from "../editor_sidebar/editor_sidebar.style"
+import * as style from "../lot_sidebars.style"
 import { ThemeContext } from "styled-components";
 
 
-import log from '../../../../../../logger'
+import log from '../../../../../../../logger'
 
-import FieldComponentMapper from "../field_component_mapper/field_component_mapper";
-import {setFieldDragging} from "../../../../../../redux/actions/card_page_actions";
-import WidgetButton from "../../../../../basic/widget_button/widget_button";
-import {TYPES} from "../../../../../widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
-import {setSelectedLotTemplate} from "../../../../../../redux/actions/lot_template_actions";
-import {uuidv4} from "../../../../../../methods/utils/utils";
-import * as styled from "../../../../../basic/form/calendar_field/calendar_field.style";
-import CalendarField from "../../../../../basic/form/calendar_field/calendar_field";
+import FieldComponentMapper from "../../field_component_mapper/field_component_mapper";
+import {setFieldDragging} from "../../../../../../../redux/actions/card_page_actions";
+import WidgetButton from "../../../../../../basic/widget_button/widget_button";
+import {TYPES} from "../../../../../../widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
+import {setSelectedLotTemplate} from "../../../../../../../redux/actions/lot_template_actions";
+import {uuidv4} from "../../../../../../../methods/utils/utils";
+import * as styled from "../../../../../../basic/form/calendar_field/calendar_field.style";
+import CalendarField from "../../../../../../basic/form/calendar_field/calendar_field";
 import {
-    BASIC_LOT_TEMPLATE,
+    BASIC_LOT_TEMPLATE_ID,
     EDITOR_SIDEBAR_TYPES,
     LOT_EDITOR_SIDEBAR_OPTIONS,
     SIDE_BAR_MODES
-} from "../editor_sidebar/editor_sidebar";
+} from "../field_editor_sidebar/field_editor_sidebar";
 
 const logger = log.getLogger("TemplateSelectorSidebar")
 
@@ -89,16 +89,16 @@ const TemplateSelectorSidebar = (props) => {
                         style={{margin: 0}}>New</style.TemplateName>
                 </style.LotTemplateButton>
                 <style.LotTemplateButton
-                    isSelected={selectedLotTemplatesId === BASIC_LOT_TEMPLATE}
-                    onClick={() => dispatchSetSelectedLotTemplate(BASIC_LOT_TEMPLATE)}
+                    isSelected={selectedLotTemplatesId === BASIC_LOT_TEMPLATE_ID}
+                    onClick={() => dispatchSetSelectedLotTemplate(BASIC_LOT_TEMPLATE_ID)}
                 >
                     <style.TemplateIcon
-                        isSelected={selectedLotTemplatesId === BASIC_LOT_TEMPLATE}
+                        isSelected={selectedLotTemplatesId === BASIC_LOT_TEMPLATE_ID}
                         className={SIDE_BAR_MODES.TEMPLATES.iconName}
                     />
 
                     <style.TemplateName
-                        isSelected={selectedLotTemplatesId === BASIC_LOT_TEMPLATE}
+                        isSelected={selectedLotTemplatesId === BASIC_LOT_TEMPLATE_ID}
                     >Basic</style.TemplateName>
                 </style.LotTemplateButton>
                 {
@@ -124,6 +124,7 @@ const TemplateSelectorSidebar = (props) => {
                                 className={SIDE_BAR_MODES.TEMPLATES.iconName}
                             />
                             <style.EditTemplateIcon
+                                isSelected={isSelected}
                                 onClick={()=>{
                                     dispatchSetSelectedLotTemplate(currTemplateId)
                                     onTemplateEditClick(null)

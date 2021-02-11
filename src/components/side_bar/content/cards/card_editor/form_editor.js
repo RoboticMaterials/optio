@@ -34,7 +34,7 @@ import log from '../../../../../logger'
 import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
 import ScrollingButtonField from "../../../../basic/form/scrolling_buttons_field/scrolling_buttons_field";
 import NumberField from "../../../../basic/form/number_field/number_field";
-import LotEditorSidebar, {EMPTY_DEFAULT_FIELDS, FIELD_COMPONENT_NAMES} from "./editor_sidebar/editor_sidebar";
+import LotEditorSidebar, {EMPTY_DEFAULT_FIELDS, FIELD_COMPONENT_NAMES} from "./lot_sidebars/field_editor_sidebar/field_editor_sidebar";
 import DraggableSurface from "./draggable_surface/draggable_surface";
 import {Container} from "react-smooth-dnd";
 import DropContainer from "./drop_container/drop_container";
@@ -120,8 +120,6 @@ const FormComponent = (props) => {
 
 	// component state
 	const [preview, setPreview] = useState(false)
-
-	console.log("Card editor values",values)
 
 	const errorCount = Object.keys(errors).length > 0 // get number of field errors
 	const touchedCount = Object.values(touched).length // number of touched fields
@@ -380,9 +378,6 @@ const LotCreatorForm = (props) => {
 
 	// get card object from redux by cardId
 	const lotTemplate = lotTemplates[lotTemplateId] || null
-	console.log("FormEditor lotTemplates",lotTemplates)
-	console.log("FormEditor aa lotTemplate",lotTemplate)
-	console.log("FormEditor aa formMode",formMode)
 
 	/*
 	*
@@ -522,8 +517,6 @@ const LotCreatorForm = (props) => {
 					const {
 						buttonType
 					} = values
-
-					console.log("onSubmit")
 
 					setSubmitting(true)
 					await handleSubmit(values, formMode)

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 import * as styled from "./field_component_mapper.style"
-import {FIELD_COMPONENT_NAMES} from "../editor_sidebar/editor_sidebar";
+import {FIELD_COMPONENT_NAMES} from "../lot_sidebars/field_editor_sidebar/field_editor_sidebar";
 import Textbox from "../../../../../basic/textbox/textbox";
 import NumberInput from "../../../../../basic/number_input/number_input";
 import CalendarPlaceholder from "../../../../../basic/calendar_placeholder/calendar_placeholder";
@@ -136,7 +136,6 @@ const FieldComponentMapper = (props) => {
 		}
 		case FIELD_COMPONENT_NAMES.CALENDAR_START_END: {
 			let startDate, endDate
-			console.log("cal vaue", value)
 			if(isArray(value) && value.length > 0) {
 				startDate = jsDateToObjDate(value[0])
 

@@ -72,8 +72,8 @@ export const LotTemplateButton = styled.div`
       filter: brightness(1.75);
     ${props => props.isSelected && glow("cyan")};
   }
-  
-  ${props => props.isSelected && glow("cyan")};
+
+    border-color: ${props => props.isSelected && "cyan"};
 `
 export const TemplateIcon = styled.div`
 	font-size: 6rem;
@@ -82,10 +82,10 @@ export const TemplateIcon = styled.div`
   
 `
 export const EditTemplateIcon = styled.button`
+    color: ${props => props.isSelected ? "cyan" : "white"};
 	background: none;
 	outline: none !important;
 	font-size: 2rem;
-  color: white;
   margin-left: 1rem;
 	position: absolute;
 	top: 50%;

@@ -36,14 +36,14 @@ import log from '../../../../../logger'
 import ErrorTooltip from "../../../../basic/form/error_tooltip/error_tooltip";
 import ScrollingButtonField from "../../../../basic/form/scrolling_buttons_field/scrolling_buttons_field";
 import NumberField from "../../../../basic/form/number_field/number_field";
-import LotEditorSidebar, {BASIC_LOT_TEMPLATE, FIELD_COMPONENT_NAMES} from "./editor_sidebar/editor_sidebar";
+import LotEditorSidebar, {BASIC_LOT_TEMPLATE_ID, FIELD_COMPONENT_NAMES} from "./lot_sidebars/field_editor_sidebar/field_editor_sidebar";
 import ContainerWrapper from "../../../../basic/container_wrapper/container_wrapper";
 import DropContainer from "./drop_container/drop_container";
 import FieldComponentMapper from "./field_component_mapper/field_component_mapper";
 import {isArray} from "../../../../../methods/utils/array_utils";
 import {getLotTemplates, setSelectedLotTemplate} from "../../../../../redux/actions/lot_template_actions";
 import {arraysEqual} from "../../../../../methods/utils/utils";
-import TemplateSelectorSidebar from "./template_selector_sidebar/template_selector_sidebar";
+import TemplateSelectorSidebar from "./lot_sidebars/template_selector_sidebar/template_selector_sidebar";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
@@ -68,6 +68,15 @@ const FORM_BUTTON_TYPES = {
 	ADD: "ADD",
 	ADD_AND_NEXT: "ADD_AND_NEXT",
 	MOVE_OK: "MOVE_OK"
+}
+
+export const BASIC_LOT_TEMPLATE = {
+	fields: [
+		[{_id: 0, component: FIELD_COMPONENT_NAMES.TEXT_BOX_BIG, fieldName: "description", key: 0}],
+		[{_id: 1, component: FIELD_COMPONENT_NAMES.CALENDAR_START_END, fieldName: "dates", key: 1}]
+	],
+	name: BASIC_LOT_TEMPLATE_ID,
+	_id: BASIC_LOT_TEMPLATE_ID
 }
 
 const SubmitErrorHandler = ({ submitCount, isValid, onSubmitError }) => {
@@ -160,9 +169,6 @@ const FormComponent = (props) => {
 	}, [lotTemplateId])
 
 	useEffect( () => {
-		console.log("running fieldNameArr effect")
-		// formikProps.resetForm()
-		// formikProps.setValues(getInitialValues())
 		const {
 			[lotTemplateId]: templateValues
 		} = values || {}
@@ -170,15 +176,6 @@ const FormComponent = (props) => {
 		if(!templateValues) setFieldValue(lotTemplateId, getInitialValues(lotTemplateId))
 
 	}, [fieldNameArr])
-
-	useEffect( () => {
-		console.log("running mount effect")
-	}, [])
-
-	console.log("formikProps", formikProps)
-
-
-
 
 	useEffect(() => {
 		const {
@@ -205,8 +202,6 @@ const FormComponent = (props) => {
 		}
 	}, [lotTemplate])
 
-	console.log("card editor valuzzzz",values)
-	console.log("card editor errorz",errors)
 	/*
 	*
 	* */
@@ -589,12 +584,6 @@ const FormComponent = (props) => {
 									[fieldName]: fieldValue
 								} = templateValues || {}
 
-								console.log("value fieldValue",fieldValue)
-								console.log("value values",values)
-								console.log("value templateFieldName",templateFieldName)
-								console.log("value lotTemplateId",lotTemplateId)
-								console.log("value fieldName",fieldName)
-
 								return <div style={{
 									margin: "1rem",
 									flex: 1,
@@ -836,7 +825,7 @@ const FormComponent = (props) => {
 								// close()
 							}}
 						>
-							Change Template
+							{showTemplateSelector ? "Hide Templates" : "Show Templates"}
 						</Button>
 						{formMode === FORM_MODES.CREATE ?
 							<>
@@ -947,7 +936,8 @@ const CardEditor = (props) => {
 	// redux state
 	const cards = useSelector(state => { return state.cardsReducer.cards })
 	const selectedLotTemplatesId = useSelector(state => {return state.lotTemplatesReducer.selectedLotTemplatesId})
-	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
+	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
+
 
 	// actions
 	const dispatch = useDispatch()
@@ -977,33 +967,12 @@ const CardEditor = (props) => {
 	if(!lotTemplateId && isObject(card) && card?.lotTemplateId) {
 		lotTemplateId = card?.lotTemplateId
 	}
-	// if(!lotTemplateId) lotTemplateId = BASIC_LOT_TEMPLATE
-
-	const lotTemplate = lotTemplates[lotTemplateId] || (lotTemplateId === BASIC_LOT_TEMPLATE ?
-		{
-			fields: [
-				[{_id: 0, component: FIELD_COMPONENT_NAMES.TEXT_BOX_BIG, fieldName: "description", key: 0}],
-				[{_id: 1, component: FIELD_COMPONENT_NAMES.CALENDAR_START_END, fieldName: "dates", key: 1}]
-			],
-			name: BASIC_LOT_TEMPLATE,
-			_id: BASIC_LOT_TEMPLATE
-		}
-		:
-		!lotTemplateId ?
-			{
-				fields: [
-					[{_id: 0, component: FIELD_COMPONENT_NAMES.TEXT_BOX_BIG, fieldName: "description", key: 0}],
-					[{_id: 1, component: FIELD_COMPONENT_NAMES.CALENDAR_START_END, fieldName: "dates", key: 1}]
-				],
-				name: null,
-				_id: null
-			}
-	:
-	null)
-
-	console.log("card editor lotTemplate",lotTemplate)
-	console.log("card editor lotTemplateId",lotTemplateId)
-
+	if(!lotTemplateId) lotTemplateId = BASIC_LOT_TEMPLATE_ID
+	let lotTemplate = lotTemplates[lotTemplateId]  || BASIC_LOT_TEMPLATE
+	if(!lotTemplates[lotTemplateId]) {
+		lotTemplateId = BASIC_LOT_TEMPLATE_ID
+		lotTemplate = BASIC_LOT_TEMPLATE
+	}
 
 	// extract card attributes
 	const {
@@ -1069,9 +1038,6 @@ const CardEditor = (props) => {
 	* if card exists, set form mode to update
 	* */
 	useEffect( () => {
-		const {
-			_id: realLotTemplateId
-		} = lotTemplate || {}
 
 		// editing existing card
 		if(cardId) {
@@ -1079,17 +1045,13 @@ const CardEditor = (props) => {
 
 				// if card has template, template and card must be loaded
 				if(card?.lotTemplateId) {
-					if(lotTemplate && realLotTemplateId === card.lotTemplateId && !loaded) {
-						console.log("realLotTemplateId",realLotTemplateId)
-						console.log("lotTemplate",lotTemplate)
-						console.log("set laoded 1")
+					if(lotTemplate && !loaded) {
 						setLoaded(true)
 					}
 				}
 
 				// No template, only need card to set loaded
 				else if(!loaded) {
-					console.log("set laoded 2")
 					setLoaded(true) // if card already exists, set loaded to true
 				}
 			}
@@ -1098,7 +1060,6 @@ const CardEditor = (props) => {
 
 		// creating new, set loaded to true
 		else {
-			console.log("set laoded 3")
 			if(!loaded) setLoaded(true)
 		}
 
@@ -1113,17 +1074,6 @@ const CardEditor = (props) => {
 		}
 
 	}, [])
-
-
-
-
-
-	console.log("card editor loaded", loaded)
-	console.log("card editor selectedLotTemplatesId", selectedLotTemplatesId)
-	console.log("card editor cardId", cardId)
-	console.log("card editor card", card)
-
-
 
 	/*
 	*
@@ -1261,7 +1211,7 @@ const CardEditor = (props) => {
 
 				}
 				else {
-					console.log("postResult",postResult)
+					console.error("postResult",postResult)
 				}
 
 			}
@@ -1272,8 +1222,6 @@ const CardEditor = (props) => {
 
 	const getInitialValues = (lotTemplateId) => {
 		const lotTemplate = lotTemplates[lotTemplateId]
-		console.log(("getInitialValues"),lotTemplate)
-		console.log(("getInitialValues loaded"),loaded)
 		let initialValues = {}
 
 		if(isObject(lotTemplate)) {
@@ -1313,7 +1261,6 @@ const CardEditor = (props) => {
 									updatedValues.push(new Date(val[1]))
 								}
 							}
-							console.log("updatedValues",updatedValues)
 							initialValues[fieldName] = updatedValues
 							// card[fieldName] = card[fieldName] ? card[fieldName] : null
 							break;
@@ -1332,14 +1279,9 @@ const CardEditor = (props) => {
 
 		}
 
-		console.log("getintiial values after initialValues",initialValues)
-
-
 		return initialValues
 	}
 
-	console.log("card editor lotTemplate", lotTemplate)
-	console.log("card editor lotTemplateId", lotTemplateId)
 	if(loaded) {
 		return(
 			<styled.Container

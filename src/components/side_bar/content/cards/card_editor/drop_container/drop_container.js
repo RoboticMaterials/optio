@@ -6,7 +6,7 @@ import Textbox from "../../../../../basic/textbox/textbox";
 import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
 import FieldComponentMapper from "../field_component_mapper/field_component_mapper";
 import {useDispatch, useSelector} from "react-redux";
-import {LOT_EDITOR_SIDEBAR_OPTIONS} from "../editor_sidebar/editor_sidebar";
+import {LOT_EDITOR_SIDEBAR_OPTIONS} from "../lot_sidebars/field_editor_sidebar/field_editor_sidebar";
 import {setFieldDragging} from "../../../../../../redux/actions/card_page_actions";
 
 const DropContainer = (props) => {
@@ -35,8 +35,6 @@ const DropContainer = (props) => {
 		clearDraggingRow
 
 	} = props
-
-	console.log("dropcontainr payload",payload)
 
 	const dispatch = useDispatch()
 	const dispatchSetFieldDragging = (bool) => dispatch(setFieldDragging(bool))
@@ -71,8 +69,6 @@ const DropContainer = (props) => {
 
 	}, [draggingFieldId]);
 
-	console.log("draggingFieldId",draggingFieldId)
-	console.log("isThisFieldDragging",isThisFieldDragging)
 
 	useEffect( () => {
 		setDeleted(false)
@@ -113,6 +109,7 @@ const DropContainer = (props) => {
 				<ContainerWrapper
 					onDrop={(dropResult)=>onLeftDrop(id, dropResult)}
 					shouldAcceptDrop={()=>{return true}}
+					showHighlight={false}
 					getGhostParent={()=>document.body}
 					groupName="lot_field_buttons"
 					getChildPayload={index =>
@@ -126,7 +123,6 @@ const DropContainer = (props) => {
 				<Container
 					groupName="lot_field_buttons"
 					onDragStart={(dragStartParams, b, c)=>{
-						console.log("onDragStart")
 						const {
 							isSource,
 							payload,
@@ -140,7 +136,6 @@ const DropContainer = (props) => {
 
 					}}
 					onDragEnd={(dragEndParams)=>{
-						console.log("onDragEnd")
 						const {
 							isSource,
 							payload,
@@ -154,7 +149,6 @@ const DropContainer = (props) => {
 
 					}}
 					onDrop={(dropR) => {
-						console.log("dropR aaaa",dropR)
 						dispatchSetFieldDragging(null)
 						clearDraggingRow()
 					}}
@@ -164,25 +158,14 @@ const DropContainer = (props) => {
 					getGhostParent={()=>{
 						return document.body
 					}}
-					style={{
-						// position: "relative",
-						//
-						// display: "flex",
-						// flexDirection: "column",
-						// alignSelf: "stretch",
-						// flex: 1,
-						// alignItems: "center",
-						// overflowY: "auto",
-						// overflowX: "hidden",
-
-					}}
+					style={{}}
 				>
-					{/*<div style={{}}>*/}
 						<Draggable key={id} >
 							<div style={{position: "relative", }}>
 								{draggingFieldId &&
 								<div style={{position: "absolute", display: "flex", flexDirection: "column", alignItems: "stretch", left: 0, bottom: 0, top: 0, right: 0}}>
 									<ContainerWrapper
+										showHighlight={false}
 										onDrop={(dropResult)=>onTopDrop(dropResult)}
 										shouldAcceptDrop={()=>{return true}}
 										getGhostParent={()=>document.body}
@@ -195,6 +178,7 @@ const DropContainer = (props) => {
 									/>
 									<div style={{display: "flex", flex: 5}}>
 										<ContainerWrapper
+											showHighlight={false}
 											onDrop={(dropResult)=>onLeftDrop(id, dropResult)}
 											shouldAcceptDrop={()=>{return true}}
 											getGhostParent={()=>document.body}
@@ -206,6 +190,7 @@ const DropContainer = (props) => {
 											style={{flex: 1, alignSelf: "stretch", zIndex: 50}}
 										/>
 										<ContainerWrapper
+											showHighlight={false}
 											onDrop={(dropResult)=>onRightDrop(id, dropResult)}
 											shouldAcceptDrop={()=>{return true}}
 											getGhostParent={()=>document.body}
@@ -220,6 +205,7 @@ const DropContainer = (props) => {
 									</div>
 
 									<ContainerWrapper
+										showHighlight={false}
 										onDrop={(dropResult)=>onBottomDrop(dropResult)}
 										shouldAcceptDrop={()=>{return true}}
 										getGhostParent={()=>document.body}
@@ -250,13 +236,11 @@ const DropContainer = (props) => {
 						}
 							</div>
 						</Draggable>
-					{/*</div>*/}
 				</Container>
 
 				{/* Insert Into New Row Below*/}
 				{(right && !isThisFieldDragging) &&
 				<ContainerWrapper
-					// orientation={"horizontal"}
 					onDrop={(dropResult)=>onRightDrop(id, dropResult)}
 					shouldAcceptDrop={()=>{return true}}
 					getGhostParent={()=>document.body}
@@ -265,6 +249,7 @@ const DropContainer = (props) => {
 					getChildPayload={index =>
 						index
 					}
+					showHighlight={false}
 					style={{display: "flex", flex: 1, alignSelf: "stretch"}}
 				/>
 				}
@@ -280,10 +265,8 @@ const DropContainer = (props) => {
 					index
 				}
 				style={{alignSelf: "stretch", display: "flex"}}
-				// style={{overflow: "auto",height: "100%", padding: "1rem 1rem 2rem 1rem" }}
 			>
 				<styled.BottomContainer
-					// hovering={hoveringBottom}
 				/>
 			</ContainerWrapper>
 			}

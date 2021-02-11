@@ -5,20 +5,20 @@ import { DraggableCore } from "react-draggable";
 import { Container } from 'react-smooth-dnd'
 import { Draggable } from 'react-smooth-dnd';
 
-import * as style from "./editor_sidebar.style"
+import * as style from "../lot_sidebars.style"
 import { ThemeContext } from "styled-components";
 
 
-import log from '../../../../../../logger'
+import log from '../../../../../../../logger'
 
-import FieldComponentMapper from "../field_component_mapper/field_component_mapper";
-import {setFieldDragging} from "../../../../../../redux/actions/card_page_actions";
-import WidgetButton from "../../../../../basic/widget_button/widget_button";
-import {TYPES} from "../../../../../widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
-import {setSelectedLotTemplate} from "../../../../../../redux/actions/lot_template_actions";
-import {uuidv4} from "../../../../../../methods/utils/utils";
-import * as styled from "../../../../../basic/form/calendar_field/calendar_field.style";
-import CalendarField from "../../../../../basic/form/calendar_field/calendar_field";
+import FieldComponentMapper from "../../field_component_mapper/field_component_mapper";
+import {setFieldDragging} from "../../../../../../../redux/actions/card_page_actions";
+import WidgetButton from "../../../../../../basic/widget_button/widget_button";
+import {TYPES} from "../../../../../../widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
+import {setSelectedLotTemplate} from "../../../../../../../redux/actions/lot_template_actions";
+import {uuidv4} from "../../../../../../../methods/utils/utils";
+import * as styled from "../../../../../../basic/form/calendar_field/calendar_field.style";
+import CalendarField from "../../../../../../basic/form/calendar_field/calendar_field";
 
 const logger = log.getLogger("LotEditorSidebar")
 
@@ -75,7 +75,7 @@ export const SIDE_BAR_MODES = {
     }
 }
 
-export const BASIC_LOT_TEMPLATE = "BASIC_LOT_TEMPLATE"
+export const BASIC_LOT_TEMPLATE_ID = "BASIC_LOT_TEMPLATE"
 
 const LotEditorSidebar = (props) => {
 

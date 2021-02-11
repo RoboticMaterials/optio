@@ -10,6 +10,7 @@ const ContainerWrapper = (props) => {
 		isRow,
 		onDrop,
 		color,
+		showHighlight,
 		...rest
 	} = props
 
@@ -35,7 +36,7 @@ const ContainerWrapper = (props) => {
 				// border: "1px solid black",
 				transition: "all 0.5s ease",
 				padding: hovering ? (isRow ? "2.5rem 0" : "0 2.5rem") : 0,
-				background: hovering ? "rgb(50,50,50)" : (color ? color : "transparent"),
+				background: hovering ? (showHighlight ? "rgb(50,50,50)" : "transparent") : (color ? color : "transparent"),
 			}}
 			{...rest}
 		>
@@ -53,6 +54,7 @@ ContainerWrapper.defaultProps = {
 	onDragEnter: null,
 	onDragLeave: null,
 	onDrop: null,
+	showHighlight: true,
 };
 
 export default ContainerWrapper

@@ -9,7 +9,7 @@ import {Container} from "react-smooth-dnd";
 import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
 import { fromJS } from "immutable";
 import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
-import {FIELD_COMPONENT_NAMES, LOT_EDITOR_SIDEBAR_OPTIONS} from "../editor_sidebar/editor_sidebar";
+import {FIELD_COMPONENT_NAMES, LOT_EDITOR_SIDEBAR_OPTIONS} from "../lot_sidebars/field_editor_sidebar/field_editor_sidebar";
 import TextField from "../../../../../basic/form/text_field/text_field";
 import {useSelector} from "react-redux";
 
@@ -33,26 +33,10 @@ const LotFormCreator = (props) => {
 	const draggingFieldId = useSelector(state=> {return state.cardPageReducer.isFieldDragging})
 	const [draggingRow, setDraggingRow] = useState(null)
 
-	console.log("")
 	const {
 		fields: items = []
 	} = values || {}
 
-	// const [items, setFieldValue] = useState([])
-
-	useEffect( () => {
-		console.log("LotFormCreator values",values)
-
-	}, [items])
-	useEffect( () => {
-		console.log("LotFormCreator values",values)
-
-	}, [values])
-	useEffect( () => {
-		console.log("LotFormCreator errors",errors)
-
-	}, [errors])
-	console.log("LotFormCreator errors",errors)
 
 	const findArrLocation = (id, arr, prev) => {
 		let indices = [...prev]
@@ -110,15 +94,12 @@ const LotFormCreator = (props) => {
 
 		if(addedIndex !== null) {
 			const [oldSelected, oldIndexPattern, oldFinalIndex, ] = getSelected(payloadId)
-			console.log("handleVerticalDrop currRowIndex",currRowIndex)
-			console.log("handleVerticalDrop oldIndexPattern",oldIndexPattern)
 
 			let updatedData
 			let removedImmutable
 			let removedLastItemInRow
 			if(isArray(oldIndexPattern) && oldIndexPattern.length > 0) {
 				removedImmutable = immutableDelete(oldSelected, oldFinalIndex)
-				console.log("removedImmutable",removedImmutable)
 				if(removedImmutable.length === 0) {
 					removedLastItemInRow = true
 					updatedData = immutableDelete(items, oldIndexPattern[0])
@@ -180,25 +161,15 @@ const LotFormCreator = (props) => {
 					}
 				}
 
-				console.log("updatedData",updatedData)
-
-
 				const newItem = {
 					...payload
 				}
 
-				console.log("newItem",newItem)
-
 				const didThing = removedLastItemInRow && indexPattern[0] > oldIndexPattern[0]
 				const selected_IMMUTABLE = immutableInsert(patternsAreEqual ? removedImmutable : selected, newItem,(isRight && !patternsAreEqual) ? finalIndex + 1 : finalIndex)
-				console.log("selected_IMMUTABLE",selected_IMMUTABLE)
-				console.log("indexPattern",indexPattern)
 				updatedData = getUpdate(updatedData ? updatedData : items, didThing ? oldIndexPattern : indexPattern, selected_IMMUTABLE)
 				setFieldValue("fields", updatedData, true)
-
 			}
-
-
 		}
 	}
 
@@ -274,8 +245,6 @@ const LotFormCreator = (props) => {
 
 
 	}
-
-	console.log("draggingRow", draggingRow)
 
 	const mapContainers = (items, mode, prevItems, indexPattern, thisIndex) => {
 
