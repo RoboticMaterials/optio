@@ -109,8 +109,12 @@ const TaskStatistics = (props) => {
 
               <styled.RowContainer style = {{paddingTop: '.2rem'}}>
 
-                <styled.TaskText style = {{paddingRight: '.7rem'}}>Used in {task.processes.length} processes </styled.TaskText>
+                {task.processes.length === 1 ?
 
+                  <styled.TaskText style = {{paddingRight: '.7rem'}}>Used in 1 process </styled.TaskText>
+                  :
+                  <styled.TaskText style = {{paddingRight: '.7rem'}}>Used in {task.processes.length} processes </styled.TaskText>
+                }
 
                   <IconButton color={task.processes.length>0 ?'green': 'red'}>
                   {task.processes.length>0 ?
