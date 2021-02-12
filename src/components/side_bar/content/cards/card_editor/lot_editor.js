@@ -45,12 +45,13 @@ import {arraysEqual} from "../../../../../methods/utils/utils";
 import {isArray} from "../../../../../methods/utils/array_utils";
 
 // import styles
-import * as styled from "./card_editor.style"
+import * as styled from "./lot_editor.style"
 import * as FormStyle from "./lot_form_creator/lot_form_creator.style"
 
 // logger
 import log from '../../../../../logger'
 import LotCreatorForm from "./form_editor";
+import PasteMapper from "../../../../basic/paste_mapper/paste_mapper";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
@@ -107,6 +108,7 @@ const FormComponent = (props) => {
 	const [calendarFieldName, setCalendarFieldName] = useState(null)
 	const [showTemplateSelector, setShowTemplateSelector] = useState(formMode === FORM_MODES.CREATE)
 	const [fieldNameArr, setFieldNameArr] = useState([]) // if cardId was passed, update existing. Otherwise create new
+	const [pasteTable, setPasteTable] = useState([])
 
 	// derived state
 	const selectedBinName = stations[binId] ?
@@ -209,6 +211,49 @@ const FormComponent = (props) => {
 	}
 
 	const [buttonGroupNames, buttonGroupIds] = getButtonGroupOptions()
+
+	/*
+	* listen for paste event to migrate excel data
+	* */
+	useEffect(() => {
+		// paste event listener
+		const listener = e => {
+
+			const plainText = e.clipboardData.getData('text/plain')
+
+			var rows = plainText.split("\n");
+			let table = []
+
+			for(var y in rows) {
+				// let row = []
+
+				var cells = rows[y].split("\t")
+
+				for(const x in cells) {
+
+					if(table[x]) {
+						table[x].push(cells[x])
+					}
+					else {
+						table.push([cells[x]])
+					}
+				}
+
+				// table.push(row)
+			}
+
+			setPasteTable(table)
+			// console.log("rows",rows)
+		};
+
+		// add event listener to 'paste'
+		document.addEventListener("paste", listener);
+
+		// on dismount remove the event listener
+		return () => {
+			document.removeEventListener("paste", listener);
+		};
+	}, [])
 
 	/*
 	* handles when enter key is pressed
@@ -592,6 +637,11 @@ const FormComponent = (props) => {
 	if(loaded) {
 		return(
 			<styled.StyledForm>
+				{pasteTable &&
+					<PasteMapper
+						table={pasteTable}
+					/>
+				}
 				<SubmitErrorHandler
 					submitCount={submitCount}
 					isValid={formikProps.isValid}
@@ -730,21 +780,6 @@ const FormComponent = (props) => {
 							</styled.ButtonContainer>
 					}[content] ||
 					<styled.ButtonContainer>
-
-						{/*<Button*/}
-						{/*	schema={'lots'}*/}
-						{/*	type={"button"}*/}
-						{/*	style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}*/}
-						{/*	secondary*/}
-						{/*	onClick={async () => {*/}
-						{/*		setShowCardFormEditor(true)*/}
-						{/*		dispatchSetSelectedLotTemplate(lotTemplateId)*/}
-						
-						{/*		// close()*/}
-						{/*	}}*/}
-						{/*>*/}
-						{/*	Edit Template*/}
-						{/*</Button>*/}
 						<Button
 							schema={'lots'}
 							type={"button"}
@@ -753,8 +788,6 @@ const FormComponent = (props) => {
 							onClick={async () => {
 								setShowTemplateSelector(!showTemplateSelector)
 								dispatchSetSelectedLotTemplate(lotTemplateId)
-
-								// close()
 							}}
 						>
 							{showTemplateSelector ? "Hide Templates" : "Show Templates"}
@@ -855,7 +888,7 @@ const FormComponent = (props) => {
 const buttonStyle = {marginBottom: '0rem', marginTop: 0}
 
 
-const CardEditor = (props) => {
+const LotEditor = (props) => {
 
 	const {
 		isOpen,
@@ -880,9 +913,6 @@ const CardEditor = (props) => {
 	const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
 	const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
 
-
-
-
 	// component state
 	const [cardId, setCardId] = useState(props.cardId) //cardId and binId are stored as internal state but initialized from props (if provided)
 	const [binId, setBinId] = useState(props.binId)
@@ -890,7 +920,6 @@ const CardEditor = (props) => {
 	const [loaded, setLoaded] = useState(false)
 	const [formMode, setFormMode] = useState(props.cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
 	const [showLotTemplateEditor, setShowLotTemplateEditor] = useState(false)
-
 
 	// get card object from redux by cardId
 	const card = cards[cardId] || null
@@ -900,9 +929,6 @@ const CardEditor = (props) => {
 	if(!lotTemplateId && isObject(card) && card?.lotTemplateId) {
 		lotTemplateId = card?.lotTemplateId
 	}
-
-
-
 
 	if(!lotTemplateId) lotTemplateId = BASIC_LOT_TEMPLATE_ID
 	let lotTemplate = lotTemplates[lotTemplateId]  || BASIC_LOT_TEMPLATE
@@ -1391,15 +1417,15 @@ const CardEditor = (props) => {
 }
 
 // Specifies propTypes
-CardEditor.propTypes = {
+LotEditor.propTypes = {
 	binId: PropTypes.string,
 		showProcessSelector: PropTypes.bool,
 };
 
 // Specifies the default values for props:
-CardEditor.defaultProps = {
+LotEditor.defaultProps = {
 	binId: "QUEUE",
 		showProcessSelector: false
 };
 
-export default CardEditor
+export default LotEditor

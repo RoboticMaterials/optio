@@ -16,7 +16,7 @@ import * as styled from './kick_off_modal.style'
 import {useTheme} from "styled-components";
 import {getProcesses} from "../../../../../../redux/actions/processes_actions";
 import FadeLoader from "react-spinners/FadeLoader";
-import CardEditor from "../../../../../side_bar/content/cards/card_editor/card_editor";
+import LotEditor from "../../../../../side_bar/content/cards/card_editor/lot_editor";
 import Textbox from "../../../../../basic/textbox/textbox";
 import {SORT_MODES} from "../../../../../../constants/common_contants";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
@@ -267,7 +267,7 @@ const KickOffModal = (props) => {
             }}
         >
             {showLotEditor &&
-            <CardEditor
+            <LotEditor
                 isOpen={true}
                 onAfterOpen={null}
                 processOptions={kickOffEnabledInfo}

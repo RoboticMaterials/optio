@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom'
 import {useDispatch, useSelector} from "react-redux";
 
 // internal components
-import CardEditor from "./card_editor/card_editor";
+import LotEditor from "./card_editor/lot_editor";
 import CardMenu from "./card_menu/card_menu";
 import CardZone from "./card_zone/card_zone";
 import SummaryZone from "./summary_zone/summary_zone";
@@ -168,7 +168,7 @@ const Cards = (props) => {
     return(
         <styled.Container>
             {showCardEditor &&
-            <CardEditor
+            <LotEditor
                 isOpen={showCardEditor}
                 onAfterOpen={null}
                 cardId={selectedCard ? selectedCard.cardId : null}

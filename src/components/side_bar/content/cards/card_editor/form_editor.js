@@ -27,7 +27,7 @@ import {getProcessStations} from "../../../../../methods/utils/processes_utils";
 import {isEmpty} from "../../../../../methods/utils/object_utils";
 
 // import styles
-import * as styled from "./card_editor.style"
+import * as styled from "./lot_editor.style"
 
 // logger
 import log from '../../../../../logger'
