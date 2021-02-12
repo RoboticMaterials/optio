@@ -14,9 +14,7 @@ body {
 }
 
 .dragging-field {
-  /*background: red;*/
-  /*flex: 0;*/
-  width: 10rem;
+  opacity: .5;
 }
 
 /* width */
