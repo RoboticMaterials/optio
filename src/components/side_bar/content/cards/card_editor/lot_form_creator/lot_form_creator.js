@@ -168,7 +168,7 @@ const LotFormCreator = (props) => {
 
 				const didThing = removedLastItemInRow && indexPattern[0] > oldIndexPattern[0]
 				const selected_IMMUTABLE = immutableInsert(patternsAreEqual ? removedImmutable : selected, newItem,(isRight && !patternsAreEqual) ? finalIndex + 1 : finalIndex)
-				updatedData = getUpdate(updatedData ? updatedData : items, didThing ? oldIndexPattern : indexPattern, selected_IMMUTABLE)
+				updatedData = getUpdate(updatedData ? updatedData : items, didThing ? [indexPattern[0] - 1] : indexPattern, selected_IMMUTABLE)
 				setFieldValue("fields", updatedData, true)
 			}
 		}
