@@ -8,6 +8,7 @@ import FieldComponentMapper from "../field_component_mapper/field_component_mapp
 import {useDispatch, useSelector} from "react-redux";
 import {LOT_EDITOR_SIDEBAR_OPTIONS} from "../lot_sidebars/field_editor_sidebar/field_editor_sidebar";
 import {setFieldDragging} from "../../../../../../redux/actions/card_page_actions";
+import {FIELD_COMPONENT_NAMES} from "../../../../../../constants/lot_contants";
 
 const DropContainer = (props) => {
 	const {
@@ -188,11 +189,15 @@ const DropContainer = (props) => {
 					getGhostParent={()=>{
 						return document.body
 					}}
+					dragClass={"dragging-field"}
 					style={{flex: 1, display: "flex"}}
 				>
-						<Draggable key={id} style={{flex: 1}}>
+						<Draggable
+							key={id}
+							style={{flex: 1}}
+						>
 							<div style={{position: "relative", display: "flex", justifyContent: "center" }}>
-								{draggingFieldId &&
+								{(draggingFieldId !== null) &&
 								<div style={{position: "absolute", display: "flex", flexDirection: "column", alignItems: "stretch", left: 0, bottom: 0, top: 0, right: 0}}>
 									<ContainerWrapper
 										onHoverChange={(hoverState) => setHoveringTop(hoverState)}
@@ -260,6 +265,7 @@ const DropContainer = (props) => {
 							/>
 							:
 							<FieldWrapper
+								containerStyle={{flex: (component === FIELD_COMPONENT_NAMES.TEXT_BOX || component === FIELD_COMPONENT_NAMES.TEXT_BOX_BIG) && 1}}
 								name={`fields[${indexPattern[0]}][${indexPattern[1]}.fieldName]`}
 								onDeleteClick={() => setDeleted(true)}
 							>

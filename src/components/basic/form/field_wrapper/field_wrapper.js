@@ -16,6 +16,7 @@ const FieldWrapper = (props) => {
 		// FieldComponent,
 		children,
 		onDeleteClick,
+		containerStyle,
 		name
 	} = props
 
@@ -48,11 +49,14 @@ const FieldWrapper = (props) => {
 	}, []);
 
 	return (
-		<ContainerComponent>
+		<ContainerComponent
+			style={containerStyle}
+		>
 			<styled.LabelContainer updateColor={updateColor}>
 				{/*<styled.GapFiller/>*/}
 				{/*<div style={{zIndex: 5}}>*/}
 				<TextField
+					placeholder={"Field name..."}
 					InputComponent={Textbox}
 					name={name}
 					style={{width: "8rem"}}
@@ -73,11 +77,11 @@ const FieldWrapper = (props) => {
 					className={"fas fa-trash"}
 				/>
 
-				<styled.StyleContainer>
-					<styled.AlignIcon color={"black"} className="fas fa-align-left"></styled.AlignIcon>
-					<styled.AlignIcon color={"black"} className="fas fa-align-justify"></styled.AlignIcon>
-					<styled.AlignIcon color={"black"} className="fas fa-align-right"></styled.AlignIcon>
-				</styled.StyleContainer>
+				{/*<styled.StyleContainer>*/}
+				{/*	<styled.AlignIcon color={"black"} className="fas fa-align-left"></styled.AlignIcon>*/}
+				{/*	<styled.AlignIcon color={"black"} className="fas fa-align-justify"></styled.AlignIcon>*/}
+				{/*	<styled.AlignIcon color={"black"} className="fas fa-align-right"></styled.AlignIcon>*/}
+				{/*</styled.StyleContainer>*/}
 
 
 			</styled.FieldComponentContainer>

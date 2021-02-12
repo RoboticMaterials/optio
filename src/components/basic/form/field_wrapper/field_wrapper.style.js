@@ -17,19 +17,29 @@ export const IconContainerComponent = styled.div`
 
 export const DefaultContainerComponent = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   position: relative;
+  flex-direction: column;
+  //background: pink;
+  //flex: 1;
+  //align-items
   
 `
+
 
 export const FieldComponentContainer = styled.div`
   //background: white;
   display: flex;
-  padding: 1rem;
-  padding-bottom: 1.75rem;
+  align-self: stretch;
+  //padding: 1rem;
+  //padding-bottom: 1.75rem;
+  //padding-left: .5rem;
   padding-left: .5rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   padding-right: 2.5rem;
-  border-radius: 1rem;
+  
+  border-radius: 0rem 1rem 1rem 1rem;
   z-index: 5;
   transition: all ease 0.5s;
   align-items: center;
@@ -38,13 +48,13 @@ export const FieldComponentContainer = styled.div`
   align-items: center;
   justify-content: center;
   
-  background: ${props => props.updateColor ? "linear-gradient(90deg, rgb(152, 152, 152) 0%, rgb(227, 227, 227) 100%)" : "transparent"};
+  background: ${props => props.updateColor ? "linear-gradient(0deg, rgb(152, 152, 152) 0%, rgb(227, 227, 227) 100%)" : "transparent"};
 
 
 `
 
 export const DeleteContainer = styled.div`
-  background: ${props => props.updateColor ? "linear-gradient(90deg, rgb(227, 227, 227) 0%, rgb(152, 152, 152) 100%)" : "transparent"};
+  background: ${props => props.updateColor ? "linear-gradient(0deg, rgb(227, 227, 227) 0%, rgb(152, 152, 152) 100%)" : "transparent"};
   padding: .5rem 1rem;
   border-top-right-radius: 1rem;
   border-bottom-right-radius: 1rem;
@@ -73,14 +83,15 @@ export const StyleContainer = styled.div`
 `
 
 export const LabelContainer = styled.div`
-  left: .2rem;
-  padding: .45rem;
-  padding-right: .5rem;
+  //left: .2rem;
+  padding: .5rem;
+  //padding: .45rem;
+  //padding-right: .5rem;
   border-top-left-radius: 1rem;
-  border-bottom-left-radius: 1rem;
+  border-top-right-radius: 1rem;
   position: relative;
   transition: all 1s ease;
-  background: ${props => props.updateColor ? "linear-gradient(90deg, rgb(215, 215, 215) 0%, rgb(152, 152, 152) 100%)" : "transparent"};
+  background: ${props => props.updateColor ? "linear-gradient(0deg, rgb(215, 215, 215) 0%, rgb(152, 152, 152) 100%)" : "transparent"};
 `
 
 export const GapFiller = styled.div`
