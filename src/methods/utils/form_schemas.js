@@ -363,6 +363,7 @@ Yup.addMethod(Yup.string, 'greaterThan', function (input2, message) {
 
         if (input1Int < input2Int) return true
         else {
+            console.log('QQQQ Error greater', input1, input2)
             return this.createError({
                 path: this.path,
                 message: message,
@@ -385,6 +386,8 @@ Yup.addMethod(Yup.string, 'lessThan', function (input2, message) {
 
         if (input1Int > input2Int) return true
         else {
+            console.log('QQQQ Error lesser', input1, input2)
+
             return this.createError({
                 path: this.path,
                 message: message,
@@ -395,7 +398,7 @@ Yup.addMethod(Yup.string, 'lessThan', function (input2, message) {
 })
 
 export const throughputSchema = (ref) => {
-    if(ref === null) return
+    if (ref === null) return
     const {
         startOfShift,
         endOfShift,

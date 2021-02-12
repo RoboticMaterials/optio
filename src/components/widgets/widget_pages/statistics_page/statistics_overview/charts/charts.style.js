@@ -127,6 +127,9 @@ export const TimePickerErrorComponent = styled.span`
 
 export const BreakContainer = styled.div`
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: fit-content;
     background-color: ${props => props.theme.bg.quaternary};
     border-radius: .5rem;
 `

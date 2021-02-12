@@ -215,7 +215,8 @@ const App = (props) => {
                                                       <Route
                                                           path={["/locations/:stationID?/:widgetPage?", '/']}
                                                           component={MapView}
-                                                      />)
+                                                      />
+                                                      )
 
                                                   :
 

@@ -10,6 +10,8 @@ import { ThemeContext } from 'styled-components';
 import TextField from '../../../../../basic/form/text_field/text_field.js'
 import Textbox from '../../../../../basic/textbox/textbox'
 import TimePickerField from '../../../../../basic/form/time_picker_field/time_picker_field'
+import Switch from 'react-ios-switch'
+
 
 // Import Charts
 import BarChart from '../../chart_types/bar_chart'
@@ -86,14 +88,17 @@ const ThroughputChart = (props) => {
         expectedOutput: 1100,
         breaks: {
             break1: {
+                enabled: false,
                 startOfBreak: '10:00',
                 endOfBreak: '11:00',
             },
             break2: {
+                enabled: false,
                 startOfBreak: '12:00',
                 endOfBreak: '13:00',
             },
             break3: {
+                enabled: false,
                 startOfBreak: '16:00',
                 endOfBreak: '17:00',
             },
@@ -112,6 +117,13 @@ const ThroughputChart = (props) => {
     const minHeight = 0
 
     const isData = (filteredData && Array.isArray(filteredData) && filteredData.length > 0)
+
+    useEffect(() => {
+        console.log('QQQQ REf', ref.current.values)
+        return () => {
+
+        }
+    }, [ref])
 
     /**
      * This converts the incoming data for a line graph
@@ -186,7 +198,7 @@ const ThroughputChart = (props) => {
             let breakObj = {}
             const breaks = Object.values(compareExpectedOutput.breaks)
             breaks.forEach((b, ind) => {
-
+                if(!b.enabled) return 
                 const start = b.startOfBreak
                 const end = b.endOfBreak
 
@@ -258,199 +270,275 @@ const ThroughputChart = (props) => {
         return (
             <styled.RowContainer>
                 <styled.BreakContainer>
-                    <styled.ColumnContainer style={{ margin: '.25rem' }}>
-                        <styled.Label>
-                            Start of Break
+                    <styled.RowContainer style={{ width: '100%', marginTop: '.25rem' }}>
+                        <styled.Label>Break 1</styled.Label>
+                        <Switch
+                            onColor='red'
+                            checked={compareExpectedOutput.breaks.break1.enabled}
+                            onChange={() => {
+                                setCompareExpectedOutput({
+                                    ...compareExpectedOutput,
+                                    breaks: {
+                                        ...compareExpectedOutput.breaks,
+                                        break1: {
+                                            ...compareExpectedOutput.breaks.break1,
+                                            enabled: !compareExpectedOutput.breaks.break1.enabled,
+                                        }
+                                    }
+                                })
+                            }}
+                        />
+                    </styled.RowContainer>
+                    <styled.RowContainer>
+                        <styled.ColumnContainer style={{ margin: '.25rem' }}>
+                            <styled.Label>
+                                Start of Break
                         </styled.Label>
-                        <TimePickerField
-                            mapInput={
-                                (value) => {
-                                    if (value) {
-                                        const time24hr = convert12hto24h(value)
-                                        const splitVal = time24hr.split(':')
-                                        return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                            <TimePickerField
+                                disabled={!compareExpectedOutput.breaks.break1.enabled}
+                                mapInput={
+                                    (value) => {
+                                        if (value) {
+                                            const time24hr = convert12hto24h(value)
+                                            const splitVal = time24hr.split(':')
+                                            return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                        }
                                     }
                                 }
-                            }
-                            mapOutput={(value) => {
-                                return convert12hto24h(value.format('hh:mm a'))
-                            }}
-                            name={'startOfBreak1'}
-                            style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                            showHour={true}
-                            showMinute={false}
-                            showSecond={false}
-                            className="xxx"
-                            use12Hours
-                            format={'hh:mm a'}
-                            autocomplete={"off"}
-                            allowEmpty={false}
-                            defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                            defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                        />
-                    </styled.ColumnContainer>
-                    <styled.ColumnContainer style={{ margin: '.25rem' }}>
-                        <styled.Label>
-                            End of Break
-                    </styled.Label>
-                        <TimePickerField
-                            mapInput={
-                                (value) => {
-                                    if (value) {
-                                        const time24hr = convert12hto24h(value)
-                                        const splitVal = time24hr.split(':')
-                                        return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                mapOutput={(value) => {
+                                    return convert12hto24h(value.format('hh:mm a'))
+                                }}
+                                name={'startOfBreak1'}
+                                style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                                showHour={true}
+                                showMinute={false}
+                                showSecond={false}
+                                className="xxx"
+                                use12Hours
+                                format={'hh:mm a'}
+                                autocomplete={"off"}
+                                allowEmpty={false}
+                                defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                                defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                            />
+                        </styled.ColumnContainer>
+                        <styled.ColumnContainer style={{ margin: '.25rem' }}>
+                            <styled.Label>
+                                End of Break
+                        </styled.Label>
+                            <TimePickerField
+                                disabled={!compareExpectedOutput.breaks.break1.enabled}
+
+                                mapInput={
+                                    (value) => {
+                                        if (value) {
+                                            const time24hr = convert12hto24h(value)
+                                            const splitVal = time24hr.split(':')
+                                            return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                        }
                                     }
                                 }
-                            }
-                            mapOutput={(value) => {
-                                return convert12hto24h(value.format('hh:mm a'))
-                            }}
-                            name={'endOfBreak1'}
-                            style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                            showHour={true}
-                            showMinute={false}
-                            showSecond={false}
-                            className="xxx"
-                            use12Hours
-                            format={'hh:mm a'}
-                            autocomplete={"off"}
-                            allowEmpty={false}
-                            defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                            defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                        />
-                    </styled.ColumnContainer>
+                                mapOutput={(value) => {
+                                    return convert12hto24h(value.format('hh:mm a'))
+                                }}
+                                name={'endOfBreak1'}
+                                style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                                showHour={true}
+                                showMinute={false}
+                                showSecond={false}
+                                className="xxx"
+                                use12Hours
+                                format={'hh:mm a'}
+                                autocomplete={"off"}
+                                allowEmpty={false}
+                                defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                                defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                            />
+                        </styled.ColumnContainer>
+                    </styled.RowContainer>
                 </styled.BreakContainer>
 
                 <styled.BreakContainer>
-                    <styled.ColumnContainer style={{ margin: '.25rem' }}>
-                        <styled.Label>
-                            Start of Break
-                    </styled.Label>
-                        <TimePickerField
-                            mapInput={
-                                (value) => {
-                                    if (value) {
-                                        const time24hr = convert12hto24h(value)
-                                        const splitVal = time24hr.split(':')
-                                        return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                    <styled.RowContainer style={{ width: '100%', marginTop: '.25rem' }}>
+                        <styled.Label>Break 2</styled.Label>
+                        <Switch
+                            onColor='red'
+                            checked={compareExpectedOutput.breaks.break2.enabled}
+                            onChange={() => {
+                                setCompareExpectedOutput({
+                                    ...compareExpectedOutput,
+                                    breaks: {
+                                        ...compareExpectedOutput.breaks,
+                                        break2: {
+                                            ...compareExpectedOutput.breaks.break2,
+                                            enabled: !compareExpectedOutput.breaks.break2.enabled,
+                                        }
+                                    }
+                                })
+                            }}
+                        />
+                    </styled.RowContainer>
+                    <styled.RowContainer>
+                        <styled.ColumnContainer style={{ margin: '.25rem' }}>
+                            <styled.Label>
+                                Start of Break
+                        </styled.Label>
+                            <TimePickerField
+                                disabled={!compareExpectedOutput.breaks.break2.enabled}
+                                mapInput={
+                                    (value) => {
+                                        if (value) {
+                                            const time24hr = convert12hto24h(value)
+                                            const splitVal = time24hr.split(':')
+                                            return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                        }
                                     }
                                 }
-                            }
-                            mapOutput={(value) => {
-                                return convert12hto24h(value.format('hh:mm a'))
-                            }}
-                            name={'startOfBreak2'}
-                            style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                            showHour={true}
-                            showMinute={false}
-                            showSecond={false}
-                            className="xxx"
-                            use12Hours
-                            format={'hh:mm a'}
-                            autocomplete={"off"}
-                            allowEmpty={false}
-                            defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                            defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                        />
-                    </styled.ColumnContainer>
-                    <styled.ColumnContainer style={{ margin: '.25rem' }}>
-                        <styled.Label>
-                            End of Break
-                    </styled.Label>
-                        <TimePickerField
-                            mapInput={
-                                (value) => {
-                                    if (value) {
-                                        const time24hr = convert12hto24h(value)
-                                        const splitVal = time24hr.split(':')
-                                        return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                mapOutput={(value) => {
+                                    return convert12hto24h(value.format('hh:mm a'))
+                                }}
+                                name={'startOfBreak2'}
+                                style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                                showHour={true}
+                                showMinute={false}
+                                showSecond={false}
+                                className="xxx"
+                                use12Hours
+                                format={'hh:mm a'}
+                                autocomplete={"off"}
+                                allowEmpty={false}
+                                defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                                defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                            />
+                        </styled.ColumnContainer>
+                        <styled.ColumnContainer style={{ margin: '.25rem' }}>
+                            <styled.Label>
+                                End of Break
+                        </styled.Label>
+                            <TimePickerField
+                                disabled={!compareExpectedOutput.breaks.break2.enabled}
+
+                                mapInput={
+                                    (value) => {
+                                        if (value) {
+                                            const time24hr = convert12hto24h(value)
+                                            const splitVal = time24hr.split(':')
+                                            return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                        }
                                     }
                                 }
-                            }
-                            mapOutput={(value) => {
-                                return convert12hto24h(value.format('hh:mm a'))
-                            }}
-                            name={'endOfBreak2'}
-                            style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                            showHour={true}
-                            showMinute={false}
-                            showSecond={false}
-                            className="xxx"
-                            use12Hours
-                            format={'hh:mm a'}
-                            autocomplete={"off"}
-                            allowEmpty={false}
-                            defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                            defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                        />
-                    </styled.ColumnContainer>
+                                mapOutput={(value) => {
+                                    return convert12hto24h(value.format('hh:mm a'))
+                                }}
+                                name={'endOfBreak2'}
+                                style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                                showHour={true}
+                                showMinute={false}
+                                showSecond={false}
+                                className="xxx"
+                                use12Hours
+                                format={'hh:mm a'}
+                                autocomplete={"off"}
+                                allowEmpty={false}
+                                defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                                defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                            />
+                        </styled.ColumnContainer>
+                    </styled.RowContainer>
                 </styled.BreakContainer>
 
                 <styled.BreakContainer>
-                    <styled.ColumnContainer style={{ margin: '.25rem' }}>
-                        <styled.Label>
-                            Start of Break
-                    </styled.Label>
-                        <TimePickerField
-                            mapInput={
-                                (value) => {
-                                    if (value) {
-                                        const time24hr = convert12hto24h(value)
-                                        const splitVal = time24hr.split(':')
-                                        return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                    <styled.RowContainer style={{ width: '100%', marginTop: '.25rem' }}>
+                        <styled.Label>Break 3</styled.Label>
+                        <Switch
+                            onColor='red'
+                            checked={compareExpectedOutput.breaks.break3.enabled}
+                            onChange={() => {
+                                setCompareExpectedOutput({
+                                    ...compareExpectedOutput,
+                                    breaks: {
+                                        ...compareExpectedOutput.breaks,
+                                        break3: {
+                                            ...compareExpectedOutput.breaks.break3,
+                                            enabled: !compareExpectedOutput.breaks.break3.enabled,
+                                        }
+                                    }
+                                })
+                            }}
+                        />
+                    </styled.RowContainer>
+                    <styled.RowContainer>
+                        <styled.ColumnContainer style={{ margin: '.25rem' }}>
+                            <styled.Label>
+                                Start of Break
+                        </styled.Label>
+                            <TimePickerField
+                                disabled={!compareExpectedOutput.breaks.break3.enabled}
+                                mapInput={
+                                    (value) => {
+                                        if (value) {
+                                            const time24hr = convert12hto24h(value)
+                                            const splitVal = time24hr.split(':')
+                                            return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                        }
                                     }
                                 }
-                            }
-                            mapOutput={(value) => {
-                                return convert12hto24h(value.format('hh:mm a'))
-                            }}
-                            name={'startOfBreak3'}
-                            style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                            showHour={true}
-                            showMinute={false}
-                            showSecond={false}
-                            className="xxx"
-                            use12Hours
-                            format={'hh:mm a'}
-                            autocomplete={"off"}
-                            allowEmpty={false}
-                            defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                            defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                        />
-                    </styled.ColumnContainer>
-                    <styled.ColumnContainer style={{ margin: '.25rem' }}>
-                        <styled.Label>
-                            End of Break
-                    </styled.Label>
-                        <TimePickerField
-                            mapInput={
-                                (value) => {
-                                    if (value) {
-                                        const time24hr = convert12hto24h(value)
-                                        const splitVal = time24hr.split(':')
-                                        return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                mapOutput={(value) => {
+                                    return convert12hto24h(value.format('hh:mm a'))
+                                }}
+                                name={'startOfBreak3'}
+                                style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                                showHour={true}
+                                showMinute={false}
+                                showSecond={false}
+                                className="xxx"
+                                use12Hours
+                                format={'hh:mm a'}
+                                autocomplete={"off"}
+                                allowEmpty={false}
+                                defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                                defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                            />
+                        </styled.ColumnContainer>
+                        <styled.ColumnContainer style={{ margin: '.25rem' }}>
+                            <styled.Label>
+                                End of Break
+                        </styled.Label>
+                            <TimePickerField
+                                disabled={!compareExpectedOutput.breaks.break3.enabled}
+
+                                mapInput={
+                                    (value) => {
+                                        if (value) {
+                                            const time24hr = convert12hto24h(value)
+                                            const splitVal = time24hr.split(':')
+                                            return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                        }
                                     }
                                 }
-                            }
-                            mapOutput={(value) => {
-                                return convert12hto24h(value.format('hh:mm a'))
-                            }}
-                            name={'endOfBreak3'}
-                            style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                            showHour={true}
-                            showMinute={false}
-                            showSecond={false}
-                            className="xxx"
-                            use12Hours
-                            format={'hh:mm a'}
-                            autocomplete={"off"}
-                            allowEmpty={false}
-                            defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                            defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                        />
-                    </styled.ColumnContainer>
+                                mapOutput={(value) => {
+                                    return convert12hto24h(value.format('hh:mm a'))
+                                }}
+                                name={'endOfBreak3'}
+                                style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                                showHour={true}
+                                showMinute={false}
+                                showSecond={false}
+                                className="xxx"
+                                use12Hours
+                                format={'hh:mm a'}
+                                autocomplete={"off"}
+                                allowEmpty={false}
+                                defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                                defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                            />
+                        </styled.ColumnContainer>
+                    </styled.RowContainer>
                 </styled.BreakContainer>
+
+
+
+
             </styled.RowContainer>
         )
     }
@@ -519,10 +607,9 @@ const ThroughputChart = (props) => {
 
                         // validation control
                         validationSchema={throughputSchema(!!ref.current ? ref.current.values : null)}
-                        validateOnChange={true}
-                        validateOnMount={true}
-                        validateOnMount={true}
-                        validateOnBlur={true}
+                        validateOnChange={false}
+                        // validateOnMount={true}
+                        validateOnBlur={false}
 
                         onSubmit={async (values, { setSubmitting, setTouched, }) => {
                             setSubmitting(true)
@@ -544,10 +631,10 @@ const ThroughputChart = (props) => {
                             return (
                                 <Form
                                     onMouseDown={() => {
-                                        console.log('QQQQ Submitting form', errors)
-                                        if (Object.keys(errors).length === 0) {
-                                            submitForm(errors)
-                                        }
+                                        // console.log('QQQQ Submitting form', errors)
+                                        // if (Object.keys(errors).length === 0) {
+                                        //     submitForm(errors)
+                                        // }
                                     }}
                                 >
                                     <styled.RowContainer>
@@ -637,6 +724,8 @@ const ThroughputChart = (props) => {
                                     {/* <styled.RowContainer>
 
                                     </styled.RowContainer> */}
+                                    <styled.ChartButton type='submit' >Calculate</styled.ChartButton>
+
 
                                 </Form>
                             )
