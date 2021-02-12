@@ -350,8 +350,9 @@ export const locationSchema = (stations, selectedLocation) => {
 }
 
 
-Yup.addMethod(Yup.string, 'greaterThan', function(input1, input2, message) {
-    return this.test('greaterThan', input1, function() {
+// Sees if input1 is greater than input2. If so then through error
+Yup.addMethod(Yup.string, 'greaterThan', function (input2, message) {
+    return this.test('greaterThan', message, function (input1) {
 
         // Take the Hour and minute 
         const [beg1, end1] = input1.split(':')
@@ -360,12 +361,8 @@ Yup.addMethod(Yup.string, 'greaterThan', function(input1, input2, message) {
         const input1Int = parseInt(`${beg1}${end1}`)
         const input2Int = parseInt(`${beg2}${end2}`)
 
-        // console.log('QQQQ Testing', input1Int, input2Int, message)
-
-
-        if(input1Int>input2Int) return true
+        if (input1Int < input2Int) return true
         else {
-            console.log('QQQQ theres an errrr', this.path)
             return this.createError({
                 path: this.path,
                 message: message,
@@ -375,36 +372,76 @@ Yup.addMethod(Yup.string, 'greaterThan', function(input1, input2, message) {
     })
 })
 
-export const throughputSchema = (compareExpectedOutput) => {
+// Sees if input1 is less than input2. If so then through error
+Yup.addMethod(Yup.string, 'lessThan', function (input2, message) {
+    return this.test('lessThan', message, function (input1) {
 
-    const startOfBreak1 = compareExpectedOutput.breaks.break1.startOfBreak
-    const endOfBreak1 = compareExpectedOutput.breaks.break1.endOfBreak
-    const startOfBreak2 = compareExpectedOutput.breaks.break2.startOfBreak
-    const endOfBreak2 = compareExpectedOutput.breaks.break2.endOfBreak
-    const startOfBreak3 = compareExpectedOutput.breaks.break3.startOfBreak.startOfBreak
-    const endOfBreak3 = compareExpectedOutput.breaks.break3.endOfBreak.endOfBreak
+        // Take the Hour and minute 
+        const [beg1, end1] = input1.split(':')
+        const [beg2, end2] = input2.split(':')
+
+        const input1Int = parseInt(`${beg1}${end1}`)
+        const input2Int = parseInt(`${beg2}${end2}`)
+
+        if (input1Int > input2Int) return true
+        else {
+            return this.createError({
+                path: this.path,
+                message: message,
+            })
+        }
+
+    })
+})
+
+export const throughputSchema = (ref) => {
+    if(ref === null) return
+    const {
+        startOfShift,
+        endOfShift,
+        startOfBreak1,
+        endOfBreak1,
+        startOfBreak2,
+        endOfBreak2,
+        startOfBreak3,
+        endOfBreak3
+    } = ref
+    console.log('QQQQ ref', ref)
 
     return (
         Yup.object().shape({
+            expectedOutput: Yup.number()
+                .required('Required'),
             startOfShift: Yup.string()
-                .required('Required')
-                .email('Email'),
+                .required('Required'),
             endOfShift: Yup.string()
                 .required('Required'),
             startOfBreak1: Yup.string()
                 .required('Required')
-                .email('Email')
-                .greaterThan(startOfBreak1, startOfBreak2, 'Hello?'),
+                // Make sure it starts after the start of shift
+                .lessThan(startOfShift, 'The first break cannot be before the start of the shift')
+                // Make sure it starts before the end of the break
+                .greaterThan(endOfBreak1, 'The start of the break must be before the end of the break'),
             endOfBreak1: Yup.string()
-                .required('Required'),
+                .required('Required')
+                .lessThan(startOfBreak1, 'The end of break cannot be before the start of the break')
+                .greaterThan(startOfBreak2, 'The end of the break must be before the start of the next break break'),
             startOfBreak2: Yup.string()
-                .required('Required'),
+                .required('Required')
+                .lessThan(endOfBreak1, 'The start of break cannot be before the end of the previous break')
+                .greaterThan(endOfBreak2, 'The start of the break must be before the end of the break'),
             endOfBreak2: Yup.string()
-                .required('Required'),
+                .required('Required')
+                .lessThan(startOfBreak2, 'The end of break cannot be before the start of the break')
+                .greaterThan(startOfBreak3, 'The end of the break must be before the start of the next break break'),
             startOfBreak3: Yup.string()
-                .required('Required'),
+                .required('Required')
+                .lessThan(endOfBreak2, 'The start of break cannot be before the end of the previous break')
+                .greaterThan(endOfBreak3, 'The start of the break must be before the end of the break'),
             endOfBreak3: Yup.string()
-                .required('Required'),
+                .required('Required')
+                .lessThan(startOfBreak3, 'The end of break cannot be before the start of the break')
+                .greaterThan(endOfShift, 'The end of the last break must be before the end of the shift'),
         })
     )
 }

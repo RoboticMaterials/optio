@@ -42,15 +42,13 @@ const TimePickerField = (props) => {
 		error
 	} = meta
 
-    if(fieldName === 'startOfBreak1') console.log('QQQQ fields', field, meta)
-
 	const hasError = touched && error;
 	const errorMessage = getMessageFromError(error);
 
 	return (
-			// <Container
-			// 	style={containerStyle}
-			// >
+			<Container
+				style={containerStyle}
+			>
 				<styled.TimePickerComponent
 					{...style}
 					{...field}
@@ -67,12 +65,12 @@ const TimePickerField = (props) => {
 						onChange && onChange(val)
 					}}
 				/>
-			// 	<ErrorTooltip
-			// 		visible={hasError}
-			// 		text={errorMessage}
-			// 		ContainerComponent={ErrorContainerComponent}
-			// 	/>
-			// </Container>
+				<ErrorTooltip
+					visible={hasError}
+					text={errorMessage}
+					ContainerComponent={ErrorContainerComponent}
+				/>
+			</Container>
 	)
 }
 

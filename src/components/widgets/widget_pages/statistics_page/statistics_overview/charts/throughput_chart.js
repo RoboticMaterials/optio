@@ -7,6 +7,7 @@ import * as styled from './charts.style'
 import { ThemeContext } from 'styled-components';
 
 // Import components
+import TextField from '../../../../../basic/form/text_field/text_field.js'
 import Textbox from '../../../../../basic/textbox/textbox'
 import TimePickerField from '../../../../../basic/form/time_picker_field/time_picker_field'
 
@@ -77,6 +78,7 @@ const testData = [
 const ThroughputChart = (props) => {
 
     const themeContext = useContext(ThemeContext);
+    const ref = useRef(null)
 
     const [compareExpectedOutput, setCompareExpectedOutput] = useState({
         startOfShift: '08:00',
@@ -256,10 +258,10 @@ const ThroughputChart = (props) => {
         return (
             <styled.RowContainer>
                 <styled.BreakContainer>
-                    <styled.ColumnContainer>
+                    <styled.ColumnContainer style={{ margin: '.25rem' }}>
                         <styled.Label>
                             Start of Break
-                    </styled.Label>
+                        </styled.Label>
                         <TimePickerField
                             mapInput={
                                 (value) => {
@@ -271,7 +273,7 @@ const ThroughputChart = (props) => {
                                 }
                             }
                             mapOutput={(value) => {
-                                return value.format("hh:mm a")
+                                return convert12hto24h(value.format('hh:mm a'))
                             }}
                             name={'startOfBreak1'}
                             style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
@@ -285,22 +287,9 @@ const ThroughputChart = (props) => {
                             allowEmpty={false}
                             defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
                             defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                            onChange={(time) => {
-                                const string = convert12hto24h(time.format("hh:mm a"))
-                                setCompareExpectedOutput({
-                                    ...compareExpectedOutput,
-                                    breaks: {
-                                        ...compareExpectedOutput.breaks,
-                                        break1: {
-                                            ...compareExpectedOutput.breaks.break1,
-                                            startOfBreak: string
-                                        }
-                                    }
-                                })
-                            }}
                         />
                     </styled.ColumnContainer>
-                    <styled.ColumnContainer>
+                    <styled.ColumnContainer style={{ margin: '.25rem' }}>
                         <styled.Label>
                             End of Break
                     </styled.Label>
@@ -315,7 +304,7 @@ const ThroughputChart = (props) => {
                                 }
                             }
                             mapOutput={(value) => {
-                                return value.format("hh:mm a")
+                                return convert12hto24h(value.format('hh:mm a'))
                             }}
                             name={'endOfBreak1'}
                             style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
@@ -329,25 +318,12 @@ const ThroughputChart = (props) => {
                             allowEmpty={false}
                             defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
                             defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                            onChange={(time) => {
-                                const string = convert12hto24h(time.format("hh:mm a"))
-                                setCompareExpectedOutput({
-                                    ...compareExpectedOutput,
-                                    breaks: {
-                                        ...compareExpectedOutput.breaks,
-                                        break1: {
-                                            ...compareExpectedOutput.breaks.break1,
-                                            endOfBreak: string
-                                        }
-                                    }
-                                })
-                            }}
                         />
                     </styled.ColumnContainer>
                 </styled.BreakContainer>
 
                 <styled.BreakContainer>
-                    <styled.ColumnContainer>
+                    <styled.ColumnContainer style={{ margin: '.25rem' }}>
                         <styled.Label>
                             Start of Break
                     </styled.Label>
@@ -362,7 +338,7 @@ const ThroughputChart = (props) => {
                                 }
                             }
                             mapOutput={(value) => {
-                                return value.format("hh:mm a")
+                                return convert12hto24h(value.format('hh:mm a'))
                             }}
                             name={'startOfBreak2'}
                             style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
@@ -376,22 +352,9 @@ const ThroughputChart = (props) => {
                             allowEmpty={false}
                             defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
                             defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                            onChange={(time) => {
-                                const string = convert12hto24h(time.format("hh:mm a"))
-                                setCompareExpectedOutput({
-                                    ...compareExpectedOutput,
-                                    breaks: {
-                                        ...compareExpectedOutput.breaks,
-                                        break2: {
-                                            ...compareExpectedOutput.breaks.break2,
-                                            startOfBreak: string
-                                        }
-                                    }
-                                })
-                            }}
                         />
                     </styled.ColumnContainer>
-                    <styled.ColumnContainer>
+                    <styled.ColumnContainer style={{ margin: '.25rem' }}>
                         <styled.Label>
                             End of Break
                     </styled.Label>
@@ -406,7 +369,7 @@ const ThroughputChart = (props) => {
                                 }
                             }
                             mapOutput={(value) => {
-                                return value.format("hh:mm a")
+                                return convert12hto24h(value.format('hh:mm a'))
                             }}
                             name={'endOfBreak2'}
                             style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
@@ -420,25 +383,12 @@ const ThroughputChart = (props) => {
                             allowEmpty={false}
                             defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
                             defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                            onChange={(time) => {
-                                const string = convert12hto24h(time.format("hh:mm a"))
-                                setCompareExpectedOutput({
-                                    ...compareExpectedOutput,
-                                    breaks: {
-                                        ...compareExpectedOutput.breaks,
-                                        break2: {
-                                            ...compareExpectedOutput.breaks.break2,
-                                            endOfBreak: string
-                                        }
-                                    }
-                                })
-                            }}
                         />
                     </styled.ColumnContainer>
                 </styled.BreakContainer>
 
                 <styled.BreakContainer>
-                    <styled.ColumnContainer>
+                    <styled.ColumnContainer style={{ margin: '.25rem' }}>
                         <styled.Label>
                             Start of Break
                     </styled.Label>
@@ -453,7 +403,7 @@ const ThroughputChart = (props) => {
                                 }
                             }
                             mapOutput={(value) => {
-                                return value.format("hh:mm a")
+                                return convert12hto24h(value.format('hh:mm a'))
                             }}
                             name={'startOfBreak3'}
                             style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
@@ -467,22 +417,9 @@ const ThroughputChart = (props) => {
                             allowEmpty={false}
                             defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
                             defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                            onChange={(time) => {
-                                const string = convert12hto24h(time.format("hh:mm a"))
-                                setCompareExpectedOutput({
-                                    ...compareExpectedOutput,
-                                    breaks: {
-                                        ...compareExpectedOutput.breaks,
-                                        break3: {
-                                            ...compareExpectedOutput.breaks.break3,
-                                            startOfBreak: string
-                                        }
-                                    }
-                                })
-                            }}
                         />
                     </styled.ColumnContainer>
-                    <styled.ColumnContainer>
+                    <styled.ColumnContainer style={{ margin: '.25rem' }}>
                         <styled.Label>
                             End of Break
                     </styled.Label>
@@ -497,7 +434,7 @@ const ThroughputChart = (props) => {
                                 }
                             }
                             mapOutput={(value) => {
-                                return value.format("hh:mm a")
+                                return convert12hto24h(value.format('hh:mm a'))
                             }}
                             name={'endOfBreak3'}
                             style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
@@ -511,19 +448,6 @@ const ThroughputChart = (props) => {
                             allowEmpty={false}
                             defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
                             defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                            onChange={(time) => {
-                                const string = convert12hto24h(time.format("hh:mm a"))
-                                setCompareExpectedOutput({
-                                    ...compareExpectedOutput,
-                                    breaks: {
-                                        ...compareExpectedOutput.breaks,
-                                        break3: {
-                                            ...compareExpectedOutput.breaks.break3,
-                                            endOfBreak: string
-                                        }
-                                    }
-                                })
-                            }}
                         />
                     </styled.ColumnContainer>
                 </styled.BreakContainer>
@@ -531,6 +455,46 @@ const ThroughputChart = (props) => {
         )
     }
 
+    const onSubmitShift = (values) => {
+        let {
+            startOfShift,
+            endOfShift,
+            expectedOutput,
+            startOfBreak1,
+            endOfBreak1,
+            startOfBreak2,
+            endOfBreak2,
+            startOfBreak3,
+            endOfBreak3
+        } = values
+
+        // const convertedValues = Object.keys(values).map((val) => {
+        //     let time = values[val]
+        //     if ((val === 'expectedOutput') || (!time.includes('am' || 'pm'))) return
+        //     console.log('QQQQ converting', val, values[val])
+        //     return { val: convert12hto24h(values[val]) }
+        // })
+
+        setCompareExpectedOutput({
+            startOfShift: startOfShift,
+            endOfShift: endOfShift,
+            expectedOutput: expectedOutput,
+            breaks: {
+                break1: {
+                    startOfBreak: startOfBreak1,
+                    endOfBreak: endOfBreak1,
+                },
+                break2: {
+                    startOfBreak: startOfBreak2,
+                    endOfBreak: endOfBreak2,
+                },
+                break3: {
+                    startOfBreak: startOfBreak3,
+                    endOfBreak: endOfBreak3,
+                },
+            },
+        })
+    }
     return (
         <styled.SinglePlotContainer
             minHeight={minHeight}
@@ -540,6 +504,7 @@ const ThroughputChart = (props) => {
                 <styled.ChartButton onClick={() => setCompareExpectedOutput(!compareExpectedOutput)} >Compare Expected output</styled.ChartButton>
                 {!!compareExpectedOutput &&
                     <Formik
+                        innerRef={ref}
                         initialValues={{
                             startOfShift: compareExpectedOutput.startOfShift,
                             endOfShift: compareExpectedOutput.endOfShift,
@@ -549,30 +514,40 @@ const ThroughputChart = (props) => {
                             endOfBreak2: compareExpectedOutput.breaks.break2.endOfBreak,
                             startOfBreak3: compareExpectedOutput.breaks.break3.startOfBreak,
                             endOfBreak3: compareExpectedOutput.breaks.break3.endOfBreak,
+                            expectedOutput: compareExpectedOutput.expectedOutput,
                         }}
 
                         // validation control
-                        validationSchema={throughputSchema(compareExpectedOutput)}
+                        validationSchema={throughputSchema(!!ref.current ? ref.current.values : null)}
                         validateOnChange={true}
+                        validateOnMount={true}
                         validateOnMount={true}
                         validateOnBlur={true}
 
-                        onSubmit={async (values, { setSubmitting, setTouched }) => {
+                        onSubmit={async (values, { setSubmitting, setTouched, }) => {
                             setSubmitting(true)
-                            console.log('QQQQ Values', values)
+                            console.log('QQQQ values', values)
+                            onSubmitShift(values)
                             setSubmitting(false)
                         }}
                     >
                         {formikProps => {
                             const {
                                 submitForm,
+                                setValidationSchema,
+                                value,
                                 errors,
                             } = formikProps
+
+
+
                             return (
                                 <Form
                                     onMouseDown={() => {
                                         console.log('QQQQ Submitting form', errors)
-                                        submitForm()
+                                        if (Object.keys(errors).length === 0) {
+                                            submitForm(errors)
+                                        }
                                     }}
                                 >
                                     <styled.RowContainer>
@@ -592,7 +567,7 @@ const ThroughputChart = (props) => {
                                                     }
                                                 }
                                                 mapOutput={(value) => {
-                                                    return value.format("hh:mm a")
+                                                    return convert12hto24h(value.format('hh:mm a'))
                                                 }}
                                                 name={'startOfShift'}
                                                 style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
@@ -606,13 +581,6 @@ const ThroughputChart = (props) => {
                                                 allowEmpty={false}
                                                 defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
                                                 defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                                                onChange={(time) => {
-                                                    const string = convert12hto24h(time.format("hh:mm a"))
-                                                    setCompareExpectedOutput({
-                                                        ...compareExpectedOutput,
-                                                        startOfShift: string
-                                                    })
-                                                }}
                                             />
                                         </styled.ColumnContainer>
                                         <styled.ColumnContainer>
@@ -630,7 +598,7 @@ const ThroughputChart = (props) => {
                                                     }
                                                 }
                                                 mapOutput={(value) => {
-                                                    return value.format("hh:mm a")
+                                                    return convert12hto24h(value.format('hh:mm a'))
                                                 }}
                                                 name={'endOfShift'}
                                                 style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
@@ -643,28 +611,26 @@ const ThroughputChart = (props) => {
                                                 allowEmpty={false}
                                                 defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
                                                 defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                                                onChange={(time) => {
-                                                    const string = convert12hto24h(time.format("hh:mm a"))
-                                                    setCompareExpectedOutput({
-                                                        ...compareExpectedOutput,
-                                                        endOfShift: string
-                                                    })
+                                            />
+                                        </styled.ColumnContainer>
+
+                                        <styled.ColumnContainer style={{ 'width': '11rem' }}>
+                                            <styled.Label>
+                                                Expected Output
+                                            </styled.Label>
+                                            <TextField
+                                                name={"expectedOutput"}
+                                                placeholder='Enter Expected Output'
+                                                InputComponent={Textbox}
+                                                style={{
+                                                    'fontSize': '1rem',
+                                                    'fontWeight': '600',
+                                                    'marginBottom': '.5rem',
+                                                    'marginTop': '0',
                                                 }}
                                             />
                                         </styled.ColumnContainer>
 
-                                        <Textbox
-                                            value={!!compareExpectedOutput && !!compareExpectedOutput.expectedOutput ? compareExpectedOutput.expectedOutput : ''}
-                                            onChange={(e) => {
-                                                setCompareExpectedOutput({
-                                                    ...compareExpectedOutput,
-                                                    expectedOutput: e.target.value
-                                                })
-                                            }}
-                                            label={'Expected Output'}
-                                            inline={true}
-                                            labelStyle={{ fontSize: '1rem' }}
-                                        />
                                     </styled.RowContainer>
                                     {renderBreaks()}
 
