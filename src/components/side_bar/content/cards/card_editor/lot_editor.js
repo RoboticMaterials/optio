@@ -109,6 +109,7 @@ const FormComponent = (props) => {
 	const [showTemplateSelector, setShowTemplateSelector] = useState(formMode === FORM_MODES.CREATE)
 	const [fieldNameArr, setFieldNameArr] = useState([]) // if cardId was passed, update existing. Otherwise create new
 	const [pasteTable, setPasteTable] = useState([])
+	const [showPasteMapper, setShowPasteMapper] = useState(false)
 
 	// derived state
 	const selectedBinName = stations[binId] ?
@@ -243,6 +244,8 @@ const FormComponent = (props) => {
 			}
 
 			setPasteTable(table)
+			setShowPasteMapper(true)
+
 			// console.log("rows",rows)
 		};
 
@@ -637,8 +640,9 @@ const FormComponent = (props) => {
 	if(loaded) {
 		return(
 			<styled.StyledForm>
-				{pasteTable &&
+				{showPasteMapper &&
 					<PasteMapper
+						onCancel={() => setShowPasteMapper(false)}
 						table={pasteTable}
 					/>
 				}

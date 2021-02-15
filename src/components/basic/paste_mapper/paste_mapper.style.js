@@ -1,10 +1,10 @@
 import styled, {css} from "styled-components"
+import {commonIcon, iconButtonCss, newGlow, trapezoidCss} from "../../../common_css/common_css";
 
 export const Container = styled.div`
 	display: flex;
   //background: red;
-  min-height: 20%;
-  min-width: 80%;
+  
   flex-direction: column;
   position: absolute;
   top:50%;
@@ -13,12 +13,18 @@ export const Container = styled.div`
   z-index: 5000;
   padding: 1rem;
   overflow: hidden;
-  max-height: 80%;
+  min-height: 100%;
+  min-width: 100%;
+  max-height: 100%;
   
-  background: ${props => props.theme.bg.quinary};
+  background: ${props => props.theme.bg.quaternary};
 `
 
 export const Header = styled.div`
+
+`
+
+export const Footer = styled.div`
 
 `
 
@@ -39,7 +45,8 @@ export const Column = styled.div`
   align-self:stretch;
   flex: 1;
 	display: flex;
-  border: 1px solid ${props => props.theme.bg.secondary};
+  // border: 1px solid ${props => props.theme.bg.quaternary};
+  background: ${props => props.theme.bg.quaternary};
   	//background: green;
 `
 
@@ -51,20 +58,90 @@ export const Row = styled.div`
   	//background: green;
 `
 
+export const cellCss = css`
+    
+`
+
+export const Trapezoid = styled.div`
+    ${trapezoidCss};
+    // background: ${props => props.theme.bg.tertiary};
+    // flex: 1;
+    // padding: .25rem;
+    // align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    // align-items: center;
+    width: 100%;
+    // border: 1px solid ${props => props.theme.bg.senary};
+    // border-bottom: none;
+    border: none;
+    
+    
+    // background: red;
+  //   height: 3rem;
+  // max-height: 3rem;
+  
+`
+
 export const ItemContainer = styled.div`
-	//background: blue;
   overflow: hidden;
-  border-top: 1px solid ${props => props.theme.bg.secondary};
-  border-bottom: 1px solid ${props => props.theme.bg.secondary};
-  border-radius: .5rem;
+  position: relative;
+  border-left: 1px solid ${props => props.theme.bg.quinary};
+  border-right: 1px solid ${props => props.theme.bg.quinary};
+  
+  
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: ${props => props.theme.bg.tertiary};
+  
   
   height: 2rem;
   max-height: 2rem;
-  background: ${props => props.theme.bg.quaternary};
+  
+   border-top: .5px solid ${props => props.theme.bg.senary};
+    border-bottom: .5px solid ${props => props.theme.bg.senary};
   
   //width: 10rem;
+  
+  background: ${props => props.selected && "blue"}
+  
 `
+
+export const Cell = styled.div`
+   
+    // border: 1px solid ${props => props.theme.bg.quinary};
+    border-radius: .5rem;
+    // background: ${props => props.theme.bg.quinary};
+    flex: 1;
+    align-self: stretch;
+    text-align: center;
+    padding: 0 .5rem;
+    // margin: .25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`
+
+
+
+export const SelectButton = styled.button`
+    ${iconButtonCss};
+    ${commonIcon};
+    font-size: 1.5rem;
+    color: ${props => props.theme.schema.lots.solid};
+    
+    &:hover {
+            
+    }
+    
+    &:active {
+    
+    }
+`
+
 
 
 
