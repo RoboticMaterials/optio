@@ -173,9 +173,41 @@ export const dashboardSchema = Yup.object().shape({
 });
 
 // returns error if any item in nested array is duplicate
-Yup.addMethod(Yup.array, "unique", function(message, path) {
+Yup.addMethod(Yup.string, "unique", function(message) {
+    return this.test("unique", message, function(item) {
+        const { path, createError, parent } = this
+        var index = path.match(/\[(.*?)\]/);
+
+        if (index) {
+            index = index[1];
+        }
+
+        // if (index) {
+        //     var submatch = index[1];
+        // }
+
+        console.log("this",this)
+        console.log("index",index)
+        let isUnique = true
+
+        parent.forEach((currString, currIndex) => {
+            if(currString === item && parseInt(currIndex) !== parseInt(index)) {
+                isUnique = false
+                return createError({ path, message })
+                // newPath
+            }
+        })
+
+        if (isUnique) {
+            return true;
+        }
+    });
+});
+
+// returns error if any item in nested array is duplicate
+Yup.addMethod(Yup.array, "nestedUnique", function(message, path) {
     const mapper = x => get(x, path);
-    return this.test("unique", message, function(list) {
+    return this.test("nestedUnique", message, function(list) {
         let set
         let totalList = []
         list.forEach((currList, currListIndex) => {
@@ -309,11 +341,21 @@ export const LotFormSchema = Yup.object().shape({
                 style: Yup.object()
             })
         )
-    ).unique('Field names must be unique.', "fieldName"), //message, path
+    ).nestedUnique('Field names must be unique.', "fieldName"), //message, path
     name: Yup.string()
         .min(1, '1 character minimum.')
         .max(50, '50 character maximum.')
         .required('Please enter a name.'),
+})
+
+export const templateMapperSchema = Yup.object().shape({
+    selectedFieldNames: Yup.array().of(
+        Yup.string()
+            .min(1, '1 character minimum.')
+            .max(255, '50 character maximum.')
+            .required('Please enter field name.')
+            .unique("Field names must be unique"),
+    )
 })
 
 

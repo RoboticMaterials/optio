@@ -6,20 +6,53 @@ import ButtonGroup from "../button_group/button_group";
 import {isArray} from "../../../methods/utils/array_utils";
 import Textbox from "../textbox/textbox";
 import {ThemeContext} from "styled-components";
+import {
+	CARD_SCHEMA_MODES,
+	getCardSchema,
+	getTemplateMapperSchema,
+	templateMapperSchema
+} from "../../../methods/utils/form_schemas";
+import {CONTENT, FORM_BUTTON_TYPES} from "../../../constants/lot_contants";
+import {Formik} from "formik";
+import TextField from "../form/text_field/text_field";
+import {Container, Draggable} from "react-smooth-dnd";
 
 const PasteMapper = (props) => {
 
 	const {
 		table,
 		schema,
-		onCancel
+		onCancel,
+		availableFieldNames,
+		values,
+		errors,
+		touched,
+		setFieldValue,
+		setSelectedFieldNames
 	} = props
+
+	const {
+		selectedFieldNames
+	} = values || {}
+	console.log("PasteMapper props",props)
+	console.log("PasteMapper fields",availableFieldNames)
+	console.log("PasteMapper values",values)
+	console.log("PasteMapper errors",errors)
+
+	useEffect(() => {
+		setSelectedFieldNames(selectedFieldNames)
+	}, [selectedFieldNames])
+
 
 	const [fieldLabelsIndex, setFieldLabelsIndex] = useState()
 	const [fieldDirection, setFieldDirection] = useState(0)
-	const [fieldNames, setFieldNames] = useState([])
+	// const [selectedFieldNames, setSelectedFieldNames] = useState([])
+	const [usedAvailableFieldNames, setUsedAvailableFieldNames] = useState(availableFieldNames.map((junk) => false))
+	const [isRow, setIsRow] = useState(fieldDirection === 0)
 
-	const isRow = fieldDirection === 0
+	useEffect(() => {
+		setIsRow(fieldDirection === 0)
+	}, [fieldDirection])
 
 	useEffect(() => {
 		let tempFieldLabels = []
@@ -35,10 +68,45 @@ const PasteMapper = (props) => {
 
 		}
 
-		setFieldNames(tempFieldLabels)
+		setFieldValue("selectedFieldNames", tempFieldLabels)
 
-		console.log("tempFieldLabels",tempFieldLabels)
+		// setSelectedFieldNames(tempFieldLabels)
 	}, [fieldLabelsIndex, fieldDirection])
+
+	useEffect(() => {
+		let tempUsedFieldNames = [...usedAvailableFieldNames]
+		availableFieldNames.forEach((currField, currIndex) => {
+			tempUsedFieldNames[currIndex] = selectedFieldNames.includes(currField)
+		})
+
+		setUsedAvailableFieldNames(tempUsedFieldNames)
+	}, [availableFieldNames, selectedFieldNames])
+
+	console.log("usedAvailableFieldNames", usedAvailableFieldNames)
+	console.log("selectedFieldNames", selectedFieldNames)
+	console.log("availableFieldNames", availableFieldNames)
+
+	const createPayload = () => {
+		let data = []
+
+		table.forEach((currCol, currColIndex) => {
+			currCol.forEach((currItem, currItemIndex) => {
+				const label = selectedFieldNames[currColIndex]
+
+				if(data[currItemIndex]) {
+					data[currItemIndex] =  {
+						...data[currItemIndex],
+						[label]: currItem
+					}
+				}
+				else {
+					data.push({[label]: currItem})
+				}
+			})
+		})
+
+		return data
+	}
 
 	// theme
 	const themeContext = useContext(ThemeContext);
@@ -80,12 +148,12 @@ const PasteMapper = (props) => {
 											<styled.ItemContainer style={{background: "transparent", border: "none", alignSelf: "flex-end"}}>
 												<styled.SelectButton
 													type={"button"}
-
 													onClick={(e) => {
 														e.preventDefault()
-														setFieldLabelsIndex(currIndex)
+														isSelected ? setFieldLabelsIndex(null) : setFieldLabelsIndex(currIndex)
 													}}
-													className={isSelected ? "" : "fas fa-arrow-circle-right"}
+													selected={isSelected}
+													className={isSelected ? "fas fa-times-circle" : "fas fa-arrow-circle-right"}
 												/>
 											</styled.ItemContainer>
 										</>
@@ -95,11 +163,12 @@ const PasteMapper = (props) => {
 									return(
 										<styled.ItemContainer style={{background: "transparent", border: "none", alignSelf: "flex-end"}}>
 											<styled.SelectButton
-												className="fas fa-arrow-circle-right"
+												className={isSelected ? "fas fa-times-circle" : "fas fa-arrow-circle-right"}
 												type={"button"}
+												selected={isSelected}
 												onClick={(e) => {
 													e.preventDefault()
-													setFieldLabelsIndex(currIndex)
+													isSelected ? setFieldLabelsIndex(null) : setFieldLabelsIndex(currIndex)
 												}}
 											/>
 										</styled.ItemContainer>
@@ -131,20 +200,67 @@ const PasteMapper = (props) => {
 											{/**/}
 											{(currItemIndex === 0 && fieldDirection === 0) &&
 											<styled.Trapezoid>
-												<Textbox
-													value={
-														isRow ? fieldNames[currRowIndex] : ""
-													}
+												<Container
+													groupName="field_names"
+													onDragStart={(dragStartParams, b, c)=>{
+														const {
+															isSource,
+															payload,
+															willAcceptDrop
+														} = dragStartParams
+
+														if(isSource) {
+														}
+													}}
+													onDragEnd={(dragEndParams)=>{
+														const {
+															isSource,
+															payload,
+															willAcceptDrop
+														} = dragEndParams
+
+														if(isSource) {
+														}
+													}}
+													onDrop={(dropResult) => {
+														const {
+															removedIndex,
+															addedIndex,
+															payload
+														} = dropResult
+
+														if(addedIndex !== null) {
+															const {
+																fieldName
+															} = payload || {}
+															console.log("dropResult",dropResult)
+
+															setFieldValue(`selectedFieldNames[${currRowIndex}]`, fieldName)
+														}
+													}}
+													getChildPayload={index => {
+														// return payload
+													}}
+													behaviour={"drop-zone"}
+													getGhostParent={()=>{
+														return document.body
+													}}
+												>
+												<TextField
+
+													name={`selectedFieldNames[${currRowIndex}]`}
 													placeholder={"Field name..."}
 													style={{
 														background: themeContext.bg.tertiary,
 														maxHeight: "2rem",
+														color: "white"
 													}}
 													textboxContainerStyle={{
 														maxHeight: "2rem"
 													}}
 
 												/>
+												</Container>
 
 											</styled.Trapezoid>
 											}
@@ -164,6 +280,7 @@ const PasteMapper = (props) => {
 	}
 
 	return (
+
 		<styled.Container>
 			<styled.Header>
 				<ButtonGroup
@@ -179,13 +296,79 @@ const PasteMapper = (props) => {
 				/>
 			</styled.Header>
 
+			<styled.Body>
+				<styled.FieldNamesContainer>
+					<Container
+						groupName="field_names"
+						onDragStart={(dragStartParams, b, c)=>{
+							const {
+								isSource,
+								payload,
+								willAcceptDrop
+							} = dragStartParams
 
-			{renderTable()}
+							if(isSource) {
+							}
+						}}
+						onDragEnd={(dragEndParams)=>{
+							const {
+								isSource,
+								payload,
+								willAcceptDrop
+							} = dragEndParams
+
+							if(isSource) {
+							}
+						}}
+						onDrop={(dropResult) => {
+							const {
+								removedIndex,
+								addedIndex,
+								payload
+							} = dropResult
+						}}
+						getChildPayload={index => {
+							return {
+								fieldName: availableFieldNames[index]
+							}
+						}}
+						getGhostParent={()=>{
+							return document.body
+						}}
+						behaviour={"drop-zone"}
+						style={{display: "flex"}}
+					>
+					{availableFieldNames.map((currFieldName, currIndex) => {
+						const isUsed = usedAvailableFieldNames[currIndex]
+
+						return(
+							isUsed ?
+								<styled.FieldName disabled={isUsed}>{currFieldName}</styled.FieldName>
+								:
+							<Draggable
+								disabled={isUsed}
+								key={currIndex}
+							>
+								<styled.FieldName disabled={isUsed}>{currFieldName}</styled.FieldName>
+							</Draggable>
+						)
+					})}
+					</Container>
+				</styled.FieldNamesContainer>
+
+				{renderTable()}
+			</styled.Body>
+
+
+
 			<styled.Footer>
 				<Button
 					type={"button"}
 					schema={schema}
 					label={"Create Lots"}
+					onClick={()=>{
+						createPayload()
+					}}
 				/>
 				<Button
 					type={"button"}
@@ -200,8 +383,52 @@ const PasteMapper = (props) => {
 				/>
 			</styled.Footer>
 		</styled.Container>
+
 	)
 
+}
+
+export const PasteForm = (props) => {
+	const {
+
+	} = props
+
+	const [selectedFieldNames, setSelectedFieldNames] = useState([])
+
+	return(
+		<Formik
+			initialValues={{
+				selectedFieldNames: []
+			}}
+
+			validationSchema={templateMapperSchema}
+			validateOnChange={true}
+			validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
+			validateOnBlur={true}
+
+			onSubmit={async (values, { setSubmitting, setTouched, resetForm }) => {
+			// set submitting to true, handle submit, then set submitting to false
+			// the submitting property is useful for eg. displaying a loading indicator
+				const {
+					buttonType
+				} = values
+
+				setSubmitting(true)
+				// await handleSubmit(values, formMode)
+				setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
+				setSubmitting(false)
+			}}
+		>
+			{formikProps =>
+				<PasteMapper
+					{...formikProps}
+					{...props}
+					setSelectedFieldNames={setSelectedFieldNames}
+				/>
+			}
+
+		</Formik>
+	)
 }
 
 // Specifies propTypes

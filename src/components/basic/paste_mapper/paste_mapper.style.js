@@ -1,5 +1,5 @@
 import styled, {css} from "styled-components"
-import {commonIcon, iconButtonCss, newGlow, trapezoidCss} from "../../../common_css/common_css";
+import {commonIcon, disabledButtonCss, iconButtonCss, newGlow, trapezoidCss} from "../../../common_css/common_css";
 
 export const Container = styled.div`
 	display: flex;
@@ -11,7 +11,7 @@ export const Container = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 5000;
-  padding: 1rem;
+  // padding: 1rem;
   overflow: hidden;
   min-height: 100%;
   min-width: 100%;
@@ -21,17 +21,27 @@ export const Container = styled.div`
 `
 
 export const Header = styled.div`
+    background: ${props => props.theme.bg.quinary};
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+`
 
+export const Body = styled.div`
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 `
 
 export const Footer = styled.div`
-
+    background: ${props => props.theme.bg.quinary};
 `
 
 
 
 
 export const Table = styled.div`
+padding: 1rem;
 	display: flex;
   flex: 1;
   overflow: auto;
@@ -125,13 +135,31 @@ export const Cell = styled.div`
     justify-content: center;
 `
 
+export const FieldNamesContainer = styled.div`
+    padding: 1rem;
+    width: fit-content;
+    display: flex;
+    
+`
+
+export const FieldName = styled.div`
+    margin: 0 1rem;
+    background: ${props => props.disabled ? "pink" : props.theme.bg.tertiary};
+    padding: 1rem;
+    border-radius: 1rem;
+    
+    ${props => props.disabled && disabledButtonCss};
+`
+
+
+
 
 
 export const SelectButton = styled.button`
     ${iconButtonCss};
     ${commonIcon};
     font-size: 1.5rem;
-    color: ${props => props.theme.schema.lots.solid};
+    color: ${props => props.selected ? props.theme.schema.error.solid : props.theme.schema.ok.solid};
     
     &:hover {
             

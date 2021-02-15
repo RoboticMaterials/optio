@@ -23,6 +23,11 @@ export const iconButtonCss = `
   outline: none !important;
 `
 
+export const disabledButtonCss = css`
+  cursor: not-allowed;
+  background: ${props => props.theme.disabled}
+`
+
 export const commonIcon = css`
 
   transition: all 0.25s ease;

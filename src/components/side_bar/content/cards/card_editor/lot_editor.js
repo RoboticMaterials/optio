@@ -51,7 +51,7 @@ import * as FormStyle from "./lot_form_creator/lot_form_creator.style"
 // logger
 import log from '../../../../../logger'
 import LotCreatorForm from "./form_editor";
-import PasteMapper from "../../../../basic/paste_mapper/paste_mapper";
+import PasteMapper, {PasteForm} from "../../../../basic/paste_mapper/paste_mapper";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
@@ -641,7 +641,8 @@ const FormComponent = (props) => {
 		return(
 			<styled.StyledForm>
 				{showPasteMapper &&
-					<PasteMapper
+					<PasteForm
+						availableFieldNames={[...fieldNameArr, "name", "quantity"]}
 						onCancel={() => setShowPasteMapper(false)}
 						table={pasteTable}
 					/>
