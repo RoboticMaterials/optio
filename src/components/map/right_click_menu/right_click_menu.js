@@ -65,8 +65,6 @@ const RightClickMenu = (props) => {
 
     const disbaleStation = !!selectedStation ? true : !!selectedPosition ? true : false
 
-    console.log('QQQQ Selected Station', disbaleStation)
-
     const onSendCartToPosition = async () => {
         const pos = convertD3ToReal([coords.x, coords.y], d3)
 
