@@ -80,6 +80,10 @@ const testData = [
 const ThroughputChart = (props) => {
 
     const themeContext = useContext(ThemeContext);
+
+    // This ref is used for formik values.
+    // The issue it solves is that the values the formik is comparing might have changed, and formik does not have the latest vlaues
+    // IE: Change the end of the first break to be after the start of the second break; causes error. Fix error by adjusting second break, but the second break updated time is not availabel in formik so it still throughs an error
     const ref = useRef(null)
 
     const [compareExpectedOutput, setCompareExpectedOutput] = useState({

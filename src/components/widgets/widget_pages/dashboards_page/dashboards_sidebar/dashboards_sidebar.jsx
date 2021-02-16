@@ -15,7 +15,7 @@ import TaskAddedAlert from "../dashboard_screen/task_added_alert/task_added_aler
 import { handleAvailableTasks } from "../../../../../methods/utils/dashboards_utils";
 
 // Import Utils
-import {ADD_TASK_ALERT_TYPE, DASHBOARD_BUTTON_COLORS} from "../../../../../constants/dashboard_contants";
+import { ADD_TASK_ALERT_TYPE, DASHBOARD_BUTTON_COLORS } from "../../../../../constants/dashboard_contants";
 import uuid from 'uuid'
 
 // Import Actions
@@ -108,6 +108,7 @@ const DashboardsSidebar = (props) => {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const stations = useSelector(state => state.stationsReducer.stations)
     const code409 = useSelector(state => { return state.taskQueueReducer.error })
+    const devices = useSelector(state => state.devicesReducer.devices)
 
     const kickOffEnabledInfo = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] })
     const kickOffEnabled = kickOffEnabledInfo && Array.isArray(kickOffEnabledInfo) && kickOffEnabledInfo.length > 0
@@ -129,7 +130,7 @@ const DashboardsSidebar = (props) => {
         })
 
         // dispatch action to add task to queue
-        const postPromise = dispatch(postTaskQueue({ _id: uuid.v4(),"task_id": Id }))
+        const postPromise = dispatch(postTaskQueue({ _id: uuid.v4(), "task_id": Id }))
         postPromise.then(() => {
             try {
                 // code409 is returned if task is already in the queue
@@ -162,7 +163,7 @@ const DashboardsSidebar = (props) => {
 
     }
 
-    const station = stations[stationID]
+    const station = !!stations[stationID] ? stations[stationID] : devices[stationID]
 
     var availableTasks = []
     try {
@@ -176,29 +177,45 @@ const DashboardsSidebar = (props) => {
     const getRouteButtons = () => {
         return availableTasks
             .map((task, index) => {
-            return {
-                name: task.name,
-                color: DASHBOARD_BUTTON_COLORS[index % DASHBOARD_BUTTON_COLORS.length].hex,
-                type: TYPES.ROUTES.key,
-                task_id: task._id,
-                id: task._id,
-            }
-        })
+                // If custom task, it has some different fields that need to be passed along
+                if (!!task.custom_task) {
+                    return {
+                        name: task.name,
+                        color: task.color,
+                        type: TYPES.ROUTES.key,
+                        task_id: task.task_id,
+                        id: task.id,
+                        custom_task: task.custom_task,
+                        deviceType: task.deviceType,
+
+                    }
+                }
+                else {
+                    return {
+                        name: task.name,
+                        color: DASHBOARD_BUTTON_COLORS[index % DASHBOARD_BUTTON_COLORS.length].hex,
+                        type: TYPES.ROUTES.key,
+                        task_id: task._id,
+                        id: task._id,
+                    }
+                }
+
+            })
     }
 
     const getReportButtons = () => {
         return Object.entries(OPERATION_TYPES).filter((currEntry, ind) => {
             const currKey = currEntry[0]
 
-            if(currKey === null) return true // allows old routes that were created without a type to still be rendered
+            if (currKey === null) return true // allows old routes that were created without a type to still be rendered
 
-            if(currKey === null) return true // allows old routes that were created without a type to still be rendered
+            if (currKey === null) return true // allows old routes that were created without a type to still be rendered
 
-            if(currKey === OPERATION_TYPES.REPORT.key) return true
+            if (currKey === OPERATION_TYPES.REPORT.key) return true
 
-            if((currKey === OPERATION_TYPES.KICK_OFF.key) && kickOffEnabled) return true
+            if ((currKey === OPERATION_TYPES.KICK_OFF.key) && kickOffEnabled) return true
 
-            if((currKey === OPERATION_TYPES.FINISH.key) && finsihedEnabled) return true
+            if ((currKey === OPERATION_TYPES.FINISH.key) && finsihedEnabled) return true
 
         }).map((currEntry, ind) => {
 
@@ -218,7 +235,7 @@ const DashboardsSidebar = (props) => {
     var availableButtons = []
     var availableReportButtons = []
 
-    switch(type) {
+    switch (type) {
         case TYPES.ROUTES.key:
             availableButtons = getRouteButtons()
             break
@@ -241,18 +258,18 @@ const DashboardsSidebar = (props) => {
     }
 
     const renderTypeButtons = () => {
-        return(
+        return (
             Object.entries(TYPES).map((currEntry, index) => {
                 const currKey = currEntry[0]
                 const currValue = currEntry[1]
                 return (
                     <WidgetButton
-                        containerStyle={{marginRight: "1rem"}}
+                        containerStyle={{ marginRight: "1rem" }}
                         label={currValue.name}
                         color={themeContext.schema[currKey.toLocaleLowerCase()].solid}
                         iconClassName={currValue.iconName}
                         selected={type === currKey}
-                        onClick={()=>setType(currKey)}
+                        onClick={() => setType(currKey)}
                         labelSize={"0.5rem"}
 
                     />
