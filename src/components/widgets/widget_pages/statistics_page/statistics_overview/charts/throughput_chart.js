@@ -85,7 +85,7 @@ const ThroughputChart = (props) => {
     const [compareExpectedOutput, setCompareExpectedOutput] = useState({
         startOfShift: '08:00',
         endOfShift: '20:00',
-        expectedOutput: 1100,
+        expectedOutput: null,
         breaks: {
             break1: {
                 enabled: false,
@@ -569,14 +569,17 @@ const ThroughputChart = (props) => {
             expectedOutput: expectedOutput,
             breaks: {
                 break1: {
+                    ...compareExpectedOutput.breaks.break1,
                     startOfBreak: startOfBreak1,
                     endOfBreak: endOfBreak1,
                 },
                 break2: {
+                    ...compareExpectedOutput.breaks.break2,
                     startOfBreak: startOfBreak2,
                     endOfBreak: endOfBreak2,
                 },
                 break3: {
+                    ...compareExpectedOutput.breaks.break3,
                     startOfBreak: startOfBreak3,
                     endOfBreak: endOfBreak3,
                 },

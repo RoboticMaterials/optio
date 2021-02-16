@@ -101,33 +101,33 @@ const App = (props) => {
     }
 
     return (
-          <>
-              <Logger />
+        <>
+            <Logger />
 
-              {/*<TestsContainer/>*/}
+            {/*<TestsContainer/>*/}
 
-              {/* <ThemeProvider theme={theme[this.state.theme]}> */}
-              <ThemeProvider theme={theme[stateTheme]}>
+            {/* <ThemeProvider theme={theme[this.state.theme]}> */}
+            <ThemeProvider theme={theme[stateTheme]}>
 
-                  <styled.Container>
+                <styled.Container>
                     <ConfirmDeleteModal
-                          isOpen={getFailureCount<10 || showStopAPIModal===false ? false: true}
-                          title={"Oops! It looks like the server is diconnected. Would you like to turn off updates from the backend?"}
-                          button_1_text={"Yes"}
-                          handleOnClick1={() => {
+                        isOpen={getFailureCount < 10 || showStopAPIModal === false ? false : true}
+                        title={"Oops! It looks like the server is diconnected. Would you like to turn off updates from the backend?"}
+                        button_1_text={"Yes"}
+                        handleOnClick1={() => {
                             dispatchStopAPICalls(true)
                             setShowStopAPIModal(false)
-                          }}
-                          button_2_text={"No"}
-                          handleOnClick2={() => {
+                        }}
+                        button_2_text={"No"}
+                        handleOnClick2={() => {
                             setShowStopAPIModal(false)
-                          }}
-                          handleClose={() => {
+                        }}
+                        handleClose={() => {
                             setShowStopAPIModal(false)
-                          }}
-                      />
-                      <BrowserRouter>
-                          {/* <Route
+                        }}
+                    />
+                    <BrowserRouter>
+                        {/* <Route
                               exact path="/clear_local"
                           >
                               {
@@ -136,124 +136,124 @@ const App = (props) => {
                           </Route> */}
 
 
-                          <Route
-                              path={["/locations/:stationID?/:widgetPage?", '/:sidebar?/:data1?/:data2?', '/',]}
-                          >
-                              <ApiContainer styleMode={null} apiMode={null} mode={null} logMode={"DEV"} onLoad={() => setLoaded(true)} apiLoaded={() => setApiLoaded(true)} isApiLoaded={apiLoaded} />
-                          </Route>
+                        <Route
+                            path={["/locations/:stationID?/:widgetPage?", '/:sidebar?/:data1?/:data2?', '/',]}
+                        >
+                            <ApiContainer styleMode={null} apiMode={null} mode={null} logMode={"DEV"} onLoad={() => setLoaded(true)} apiLoaded={() => setApiLoaded(true)} isApiLoaded={apiLoaded} />
+                        </Route>
 
-                          {/* If all the API's have been loaded, but the user has not been authenticate then show the Authentication Screen */}
-                          {loaded && !authenticated &&
-                              <Authentication authenticated={() => setAuthenticated(true)} />
-                          }
-
-
-                          {loaded && authenticated && apiLoaded &&
-                              <styled.ContentContainer>
-
-                                  <styled.HeaderContainer>
-                                      {mapViewEnabled ?
-                                          <Route
-                                              path={["/locations/:stationID?/:widgetPage?", '/']}
-                                              component={StatusHeader}
-                                          />
-                                          :
-                                          <> </>
-                                      }
-                                  </styled.HeaderContainer>
+                        {/* If all the API's have been loaded, but the user has not been authenticate then show the Authentication Screen */}
+                        {loaded && !authenticated &&
+                            <Authentication authenticated={() => setAuthenticated(true)} />
+                        }
 
 
+                        {loaded && authenticated && apiLoaded &&
+                            <styled.ContentContainer>
 
-                                  <styled.BodyContainer>
-                                      {/* Hides Side bar when in a dashboard in mobile mode */}
-                                      {mapViewEnabled ?
-                                          // mobileMode ?
-                                          // dashboardOpen ?
-                                          //     <></>
-                                          //     :
+                                <styled.HeaderContainer>
+                                    {mapViewEnabled ?
+                                        <Route
+                                            path={["/locations/:stationID?/:widgetPage?", '/']}
+                                            component={StatusHeader}
+                                        />
+                                        :
+                                        <> </>
+                                    }
+                                </styled.HeaderContainer>
 
-                                          <Route
-                                              path={["/:page?/:id?/:subpage?", '/']}
-                                          >
-                                              <SideBar
-                                                  showSideBar={sideBarOpen}
-                                                  setShowSideBar={setShowSideBar}
-                                              />
-                                          </Route>
-                                          // :
-                                          //     <Route
-                                          //         path={["/:page?/:id?/:subpage?", '/']}
-                                          //     >
-                                          //         <SideBar
-                                          //             showSideBar={sideBarOpen}
-                                          //             setShowSideBar={setShowSideBar}
-                                          //         />
-                                          //     </Route>
-                                          :
-                                          <></>
-                                      }
 
-                                      <Route
-                                          path={["/locations/:stationID/dashboards/:dashboardID?", '/']}
-                                          component={HILModal}
-                                      />
 
-                                      {/* If there are no maps, then dont render mapview (Could cause an issue when there is no MIR map)
+                                <styled.BodyContainer>
+                                    {/* Hides Side bar when in a dashboard in mobile mode */}
+                                    {mapViewEnabled ?
+                                        // mobileMode ?
+                                        // dashboardOpen ?
+                                        //     <></>
+                                        //     :
+
+                                        <Route
+                                            path={["/:page?/:id?/:subpage?", '/']}
+                                        >
+                                            <SideBar
+                                                showSideBar={sideBarOpen}
+                                                setShowSideBar={setShowSideBar}
+                                            />
+                                        </Route>
+                                        // :
+                                        //     <Route
+                                        //         path={["/:page?/:id?/:subpage?", '/']}
+                                        //     >
+                                        //         <SideBar
+                                        //             showSideBar={sideBarOpen}
+                                        //             setShowSideBar={setShowSideBar}
+                                        //         />
+                                        //     </Route>
+                                        :
+                                        <></>
+                                    }
+
+                                    <Route
+                                        path={["/locations/:stationID/dashboards/:dashboardID?", '/']}
+                                        component={HILModal}
+                                    />
+
+                                    {/* If there are no maps, then dont render mapview (Could cause an issue when there is no MIR map)
                                           And if the device is mobile, then unmount if widgets are open
                                       */}
-                                      {maps.length > 0 &&
-                                          <>
-                                              {mapViewEnabled ?
+                                    {maps.length > 0 &&
+                                        <>
+                                            {mapViewEnabled ?
 
-                                                  (mobileMode ?
-                                                      <Route
-                                                          path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                      >
-                                                          {handleMobileMapView()}
-                                                      </Route>
-                                                      :
-                                                      <Route
-                                                          path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                          component={MapView}
-                                                      />
-                                                      )
+                                                (mobileMode ?
+                                                    <Route
+                                                        path={["/locations/:stationID?/:widgetPage?", '/']}
+                                                    >
+                                                        {handleMobileMapView()}
+                                                    </Route>
+                                                    :
+                                                    <Route
+                                                        path={["/locations/:stationID?/:widgetPage?", '/']}
+                                                        component={MapView}
+                                                    />
+                                                )
 
-                                                  :
+                                                :
 
-                                                  <Route
-                                                      path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                      component={ListView}
-                                                  />
+                                                <Route
+                                                    path={["/locations/:stationID?/:widgetPage?", '/']}
+                                                    component={ListView}
+                                                />
 
 
-                                              }
-                                          </>
-                                      }
+                                            }
+                                        </>
+                                    }
 
-                                      {/* <Route
+                                    {/* <Route
                                           path="/locations/:locationID?/:widgetPage?"
                                           component={WidgetPages}
                                       /> */}
 
-                                      {/* Widgets are here in mobile mode. If not in mobile mode, then they are in map_view.
+                                    {/* Widgets are here in mobile mode. If not in mobile mode, then they are in map_view.
                                       The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons).
                                       So they need to be here. */}
-                                      {hoveringInfo !== null && mobileMode &&
-                                          <Route
-                                              path={["/locations/:stationID?/:widgetPage?", '/']}
-                                              component={Widgets}
-                                          />
-                                      }
+                                    {hoveringInfo !== null && mobileMode &&
+                                        <Route
+                                            path={["/locations/:stationID?/:widgetPage?", '/']}
+                                            component={Widgets}
+                                        />
+                                    }
 
-                                  </styled.BodyContainer>
+                                </styled.BodyContainer>
 
-                              </styled.ContentContainer>
-                          }
+                            </styled.ContentContainer>
+                        }
 
-                      </BrowserRouter>
-                  </styled.Container>
-              </ThemeProvider>
-              </>
+                    </BrowserRouter>
+                </styled.Container>
+            </ThemeProvider>
+        </>
     );
 
 }

@@ -421,28 +421,44 @@ export const throughputSchema = (ref) => {
                 .required('Required'),
             startOfBreak1: Yup.string()
                 .required('Required')
-                // Make sure it starts after the start of shift
+                // Make sure it starts after the start of shift and before the end of the shift
                 .lessThan(startOfShift, 'The first break cannot be before the start of the shift')
+                .greaterThan(endOfShift, 'The end of the last break must be before the end of the shift')
                 // Make sure it starts before the end of the break
                 .greaterThan(endOfBreak1, 'The start of the break must be before the end of the break'),
             endOfBreak1: Yup.string()
                 .required('Required')
+                // Make sure it starts after the start of shift and before the end of the shift
+                .lessThan(startOfShift, 'The first break cannot be before the start of the shift')
+                .greaterThan(endOfShift, 'The end of the last break must be before the end of the shift')
                 .lessThan(startOfBreak1, 'The end of break cannot be before the start of the break')
                 .greaterThan(startOfBreak2, 'The end of the break must be before the start of the next break break'),
             startOfBreak2: Yup.string()
                 .required('Required')
+                // Make sure it starts after the start of shift and before the end of the shift
+                .lessThan(startOfShift, 'The first break cannot be before the start of the shift')
+                .greaterThan(endOfShift, 'The end of the last break must be before the end of the shift')
                 .lessThan(endOfBreak1, 'The start of break cannot be before the end of the previous break')
                 .greaterThan(endOfBreak2, 'The start of the break must be before the end of the break'),
             endOfBreak2: Yup.string()
                 .required('Required')
+                // Make sure it starts after the start of shift and before the end of the shift
+                .lessThan(startOfShift, 'The first break cannot be before the start of the shift')
+                .greaterThan(endOfShift, 'The end of the last break must be before the end of the shift')
                 .lessThan(startOfBreak2, 'The end of break cannot be before the start of the break')
                 .greaterThan(startOfBreak3, 'The end of the break must be before the start of the next break break'),
             startOfBreak3: Yup.string()
                 .required('Required')
+                // Make sure it starts after the start of shift and before the end of the shift
+                .lessThan(startOfShift, 'The first break cannot be before the start of the shift')
+                .greaterThan(endOfShift, 'The end of the last break must be before the end of the shift')
                 .lessThan(endOfBreak2, 'The start of break cannot be before the end of the previous break')
                 .greaterThan(endOfBreak3, 'The start of the break must be before the end of the break'),
             endOfBreak3: Yup.string()
                 .required('Required')
+                // Make sure it starts after the start of shift and before the end of the shift
+                .lessThan(startOfShift, 'The first break cannot be before the start of the shift')
+                .greaterThan(endOfShift, 'The end of the last break must be before the end of the shift')
                 .lessThan(startOfBreak3, 'The end of break cannot be before the start of the break')
                 .greaterThan(endOfShift, 'The end of the last break must be before the end of the shift'),
         })
