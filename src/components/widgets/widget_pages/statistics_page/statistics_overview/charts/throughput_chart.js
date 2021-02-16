@@ -77,6 +77,29 @@ const testData = [
     }
 ]
 
+const testExpectedOutput = {
+    startOfShift: '08:00',
+    endOfShift: '20:00',
+    expectedOutput: null,
+    breaks: {
+        break1: {
+            enabled: false,
+            startOfBreak: '10:00',
+            endOfBreak: '11:00',
+        },
+        break2: {
+            enabled: false,
+            startOfBreak: '12:00',
+            endOfBreak: '13:00',
+        },
+        break3: {
+            enabled: false,
+            startOfBreak: '16:00',
+            endOfBreak: '17:00',
+        },
+    },
+}
+
 const ThroughputChart = (props) => {
 
     const themeContext = useContext(ThemeContext);
@@ -86,28 +109,7 @@ const ThroughputChart = (props) => {
     // IE: Change the end of the first break to be after the start of the second break; causes error. Fix error by adjusting second break, but the second break updated time is not availabel in formik so it still throughs an error
     const ref = useRef(null)
 
-    const [compareExpectedOutput, setCompareExpectedOutput] = useState({
-        startOfShift: '08:00',
-        endOfShift: '20:00',
-        expectedOutput: null,
-        breaks: {
-            break1: {
-                enabled: false,
-                startOfBreak: '10:00',
-                endOfBreak: '11:00',
-            },
-            break2: {
-                enabled: false,
-                startOfBreak: '12:00',
-                endOfBreak: '13:00',
-            },
-            break3: {
-                enabled: false,
-                startOfBreak: '16:00',
-                endOfBreak: '17:00',
-            },
-        },
-    })
+    const [compareExpectedOutput, setCompareExpectedOutput] = useState(testExpectedOutput)
     // const [compareExpectedOutput, setCompareExpectedOutput] = useState(null)
 
     const {
@@ -202,7 +204,7 @@ const ThroughputChart = (props) => {
             let breakObj = {}
             const breaks = Object.values(compareExpectedOutput.breaks)
             breaks.forEach((b, ind) => {
-                if(!b.enabled) return 
+                if (!b.enabled) return
                 const start = b.startOfBreak
                 const end = b.endOfBreak
 
@@ -596,7 +598,7 @@ const ThroughputChart = (props) => {
         >
             <styled.PlotHeader>
                 <styled.PlotTitle>Throughput</styled.PlotTitle>
-                <styled.ChartButton onClick={() => setCompareExpectedOutput(!compareExpectedOutput)} >Compare Expected output</styled.ChartButton>
+                <styled.ChartButton onClick={() => setCompareExpectedOutput(compareExpectedOutput === false ? testExpectedOutput : false )} >Compare Expected output</styled.ChartButton>
                 {!!compareExpectedOutput &&
                     <Formik
                         innerRef={ref}
