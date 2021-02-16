@@ -110,7 +110,6 @@ const ThroughputChart = (props) => {
     const ref = useRef(null)
 
     const [compareExpectedOutput, setCompareExpectedOutput] = useState(testExpectedOutput)
-    // const [compareExpectedOutput, setCompareExpectedOutput] = useState(null)
 
     const {
         throughputData,
