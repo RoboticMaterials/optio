@@ -464,7 +464,7 @@ const EditLocation = () => {
                         <LocationButton
                             type={selectedLocation['type']}
                             isSelected={(!!selectedLocation && selectedLocation.type !== null) ? selectedLocation.type : false}
-                            handleAddLocation={onAddLocation}
+                            handleAddLocation={() => null}
                         />
 
                     }
