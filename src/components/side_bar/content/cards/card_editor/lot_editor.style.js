@@ -238,6 +238,13 @@ export const ProcessOption = styled.div`
 	text-overflow: ellipsis;
 `
 
+export const SimpleModalText = styled.span`
+  font-size: ${props => props.theme.fontSize.sz3};
+`
+
+export const SimpleModalTextContainer = styled.div`
+`
+
 export const StyledForm = styled(Form)`
     display: flex;
     flex-direction: column;

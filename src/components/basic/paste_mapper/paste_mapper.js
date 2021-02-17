@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import * as styled from './paste_mapper.style'
 import Button from "../button/button";
 import ButtonGroup from "../button_group/button_group";
-import {isArray} from "../../../methods/utils/array_utils";
+import {immutableDelete, isArray} from "../../../methods/utils/array_utils";
 import Textbox from "../textbox/textbox";
 import {ThemeContext} from "styled-components";
 import {
@@ -22,7 +22,6 @@ import LotEditor from "../../side_bar/content/cards/card_editor/lot_editor";
 const PasteMapper = (props) => {
 
 	const {
-		table,
 		schema,
 		onCancel,
 		availableFieldNames,
@@ -31,20 +30,28 @@ const PasteMapper = (props) => {
 		touched,
 		setFieldValue,
 		setSelectedFieldNames,
-		onPreviewClick
+		onPreviewClick,
+		reset,
+		resetForm
 	} = props
+
+	const {
+		table
+	} = values || {}
 
 	const {
 		selectedFieldNames
 	} = values || {}
-	console.log("PasteMapper props",props)
-	console.log("PasteMapper availableFieldNames",availableFieldNames)
-	console.log("PasteMapper values",values)
-	console.log("PasteMapper errors",errors)
 
 	useEffect(() => {
 		setSelectedFieldNames(selectedFieldNames)
 	}, [selectedFieldNames])
+
+	useEffect(() => {
+		console.log("run effect")
+		if(reset) resetForm()
+	}, [reset])
+
 
 
 	const [fieldLabelsIndex, setFieldLabelsIndex] = useState()
@@ -166,15 +173,8 @@ const PasteMapper = (props) => {
 					[fieldName]: currentFieldData
 				} = existingData || {}
 
-
-				console.log("in hurr dateType",dataType)
-
-
 				if(dataType === FIELD_DATA_TYPES.DATE_RANGE) {
-					console.log("in hurr currentFieldData",currentFieldData)
-					console.log("got a date")
 					let parsedDate = new Date(currItem)
-					console.log("got a date parse",parsedDate)
 
 					if(isArray(currentFieldData)) {
 						finalValue = [...currentFieldData]
@@ -223,6 +223,21 @@ const PasteMapper = (props) => {
 	// theme
 	const themeContext = useContext(ThemeContext);
 
+	const onMinusClick = (removeIndex) => {
+		let updatedTable = []
+		table.forEach((currCol, currColIndex) => {
+			if(isArray(currCol) && currCol.length > removeIndex) {
+				const trimmedCol = immutableDelete(currCol, removeIndex)
+				updatedTable.push(trimmedCol)
+			}
+			else {
+				updatedTable.push(currCol)
+			}
+		})
+
+		setFieldValue("table", updatedTable)
+	}
+
 	const renderTable = () => {
 		return (
 			<styled.Table>
@@ -253,16 +268,26 @@ const PasteMapper = (props) => {
 								if(currIndex === 0) {
 									return(
 										<>
-											<styled.ItemContainer style={{background: "transparent", border: "none", height: "4rem"}}>
+											<styled.ItemContainer style={{background: "transparent", border: "none",maxHeight: "4rem", height: "4rem"}}>
 												{/*<div>Field Names</div>*/}
 											</styled.ItemContainer>
 											<styled.ItemContainer style={{background: "transparent", border: "none", alignSelf: "flex-end"}}>
+												<styled.SelectButton
+													className={"fas fa-minus-circle"}
+													type={"button"}
+													color={themeContext.schema.error.solid}
+													onClick={(e) => {
+														e.preventDefault()
+														onMinusClick(currIndex)
+													}}
+												/>
 												<styled.SelectButton
 													type={"button"}
 													onClick={(e) => {
 														e.preventDefault()
 														isSelected ? setFieldLabelsIndex(null) : setFieldLabelsIndex(currIndex)
 													}}
+													color={isSelected ? themeContext.schema.error.solid : themeContext.schema.ok.solid}
 													selected={isSelected}
 													className={isSelected ? "fas fa-times-circle" : "fas fa-arrow-circle-right"}
 												/>
@@ -274,9 +299,19 @@ const PasteMapper = (props) => {
 									return(
 										<styled.ItemContainer style={{background: "transparent", border: "none", alignSelf: "flex-end"}}>
 											<styled.SelectButton
+												className={"fas fa-minus-circle"}
+												color={themeContext.schema.error.solid}
+												type={"button"}
+												onClick={(e) => {
+													e.preventDefault()
+													onMinusClick(currIndex)
+												}}
+											/>
+											<styled.SelectButton
 												className={isSelected ? "fas fa-times-circle" : "fas fa-arrow-circle-right"}
 												type={"button"}
 												selected={isSelected}
+												color={isSelected ? themeContext.schema.error.solid : themeContext.schema.ok.solid}
 												onClick={(e) => {
 													e.preventDefault()
 													isSelected ? setFieldLabelsIndex(null) : setFieldLabelsIndex(currIndex)
@@ -341,13 +376,17 @@ const PasteMapper = (props) => {
 														payload
 													} = dropResult
 
-													console.log("drop in textfield dropResult",dropResult)
+													if(removedIndex !== null) {
+														setFieldValue(`selectedFieldNames[${currRowIndex}]`,  {
+															fieldName: "",
+															dataType: FIELD_DATA_TYPES.STRING
+														})
+													}
 
 													if(addedIndex !== null) {
 														const {
 
 														} = payload || {}
-														console.log("dropResult",dropResult)
 
 														setFieldValue(`selectedFieldNames[${currRowIndex}]`, payload)
 													}
@@ -355,12 +394,13 @@ const PasteMapper = (props) => {
 												getChildPayload={index => {
 													// const selectedField = availableFieldNames[index]
 													// return selectedField
-													return values.selectedFieldNames[currRowIndex]
+													return values.selectedFieldNames[currRowIndex] || {}
 												}}
 												behaviour={"drop-zone"}
 												getGhostParent={()=>{
 													return document.body
 												}}
+												style={{minHeight: "4rem"}}
 											>
 												<Draggable>
 													<styled.FieldNameTab>
@@ -395,9 +435,26 @@ const PasteMapper = (props) => {
 											</ContainerWrapper>
 											}
 											<styled.ItemContainer schema={schema} selected={isSelected}>
-												<styled.Cell cell={true}>
-													{currItem}
-												</styled.Cell>
+												<TextField
+													name={`table[${currRowIndex}][${currItemIndex}]`}
+													placeholder={"Enter data..."}
+													style={{
+														borderRadius: ".5rem",
+														flex: 1,
+														alignSelf: "stretch",
+														textAlign: "center",
+														padding: "0 .5rem",
+														display: "flex",
+														alignItems: "center",
+														justifyContent: "center",
+														background: "transparent",
+														color: "white"
+													}}
+
+												/>
+												{/*<styled.Cell cell={true}>*/}
+												{/*	{currItem}*/}
+												{/*</styled.Cell>*/}
 											</styled.ItemContainer>
 										</>
 									)
@@ -429,7 +486,7 @@ const PasteMapper = (props) => {
 
 			<styled.Body>
 				<styled.FieldNamesContainer>
-					<styled.SectionTitle>Template Fields</styled.SectionTitle>
+					<styled.SectionTitle>Available Fields</styled.SectionTitle>
 					<Container
 						groupName="field_names"
 						onDragStart={(dragStartParams, b, c)=>{
@@ -458,6 +515,7 @@ const PasteMapper = (props) => {
 								addedIndex,
 								payload
 							} = dropResult
+
 						}}
 						getChildPayload={index => {
 							const selectedField = availableFieldNames[index]
@@ -474,8 +532,6 @@ const PasteMapper = (props) => {
 						style={{display: "flex"}}
 					>
 					{availableFieldNames.map((currField, currIndex) => {
-
-						console.log("mapping availableFieldNames",availableFieldNames)
 
 						const {
 							fieldName: currFieldName = "",
@@ -525,7 +581,9 @@ const PasteMapper = (props) => {
 				</styled.FieldNamesContainer>
 
 				<styled.SectionBreak/>
+				<styled.TableContainer>
 				{renderTable()}
+				</styled.TableContainer>
 				<styled.SectionBreak/>
 			</styled.Body>
 
@@ -571,23 +629,22 @@ export const PasteForm = (props) => {
 
 
 	const handlePreviewClick = (payload) => {
-
-		console.log("handlePreviewClick payload",payload)
 		onPreviewClick && onPreviewClick(payload)
-		// setShowLotEditor(true)
 	}
 
 
 	return(
 		<Formik
 			initialValues={{
-				selectedFieldNames: []
+				selectedFieldNames: [],
+				table: props.table
 			}}
 
 			validationSchema={templateMapperSchema}
 			validateOnChange={true}
 			validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
 			validateOnBlur={true}
+			enableReinitialize={true}
 
 			onSubmit={async (values, { setSubmitting, setTouched, resetForm }) => {
 			// set submitting to true, handle submit, then set submitting to false

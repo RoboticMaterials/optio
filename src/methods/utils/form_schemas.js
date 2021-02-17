@@ -185,22 +185,15 @@ Yup.addMethod(Yup.object, "unique", function(message, fieldPath) {
             index = index[1];
         }
 
-        // if (index) {
-        //     var submatch = index[1];
-        // }
         let compareItem
         if(mapper) compareItem = mapper(item)
 
 
-        console.log("this",this)
-        console.log("compareItem",compareItem)
-        console.log("index",index)
         let isUnique = true
 
         let currIndex = 0
         for(const currString of parent) {
             const mapped = mapper(currString)
-            console.log("mapped",mapped)
             if(parseInt(currIndex) !== parseInt(index)) {
 
                 if(mapper){

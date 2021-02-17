@@ -105,8 +105,9 @@ const defaultInputStyleFunc = (hasError, showErrorStyle) => {
 	return {
 		// borderColor: hasError && 'red',
 		// border: hasError && '1px solid red',
-		transition: "all .5s ease-in-out",
-		boxShadow: (hasError && showErrorStyle) && `0 0 5px red !important`,
+		transition: "box-shadow .5s ease-in-out, border .5s ease-in-out",
+		// boxShadow:  && `0 0 1px red !important`,
+		boxShadow: (hasError && showErrorStyle) && `0 0 5px red`,
 
 		borderLeft: (hasError && showErrorStyle) ? '1px solid red' : "1px solid transparent",
 		borderTop: (hasError && showErrorStyle) ? '1px solid red' : "1px solid transparent",

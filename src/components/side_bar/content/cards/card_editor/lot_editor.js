@@ -53,6 +53,7 @@ import log from '../../../../../logger'
 import LotCreatorForm from "./form_editor";
 import PasteMapper, {PasteForm} from "../../../../basic/paste_mapper/paste_mapper";
 import usePrevious from "../../../../../hooks/usePrevious";
+import SimpleModal from "../../../../basic/modals/simple_modal/simple_modal";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
@@ -132,7 +133,10 @@ const FormComponent = (props) => {
 	const [showTemplateSelector, setShowTemplateSelector] = useState(formMode === FORM_MODES.CREATE)
 	const [fieldNameArr, setFieldNameArr] = useState([]) // if cardId was passed, update existing. Otherwise create new
 	const [pasteTable, setPasteTable] = useState([])
+	const [resetPasteTable, setResetPasteTable] = useState(false)
+	// const [tempPasteTable, setTempPasteTable] = useState([])
 	const [showPasteMapper, setShowPasteMapper] = useState(false)
+	const [showSimpleModal, setShowSimpleModal] = useState(false)
 	const [providedValues, setProvidedValues] = useState([])
 	const [providedIndex, setProvidedIndex] = useState(null)
 	const [finalProcessOptions, setFinalProcessOptions] = useState([])
@@ -162,7 +166,6 @@ const FormComponent = (props) => {
 	* If the key already exists, nothing is done. Otherwise it creates the key and sets the intialvalues using getInitialValues
 	* */
 	useEffect( () => {
-		console.log("running effect that depends on fieldNameArr")
 		// extract sub object for current lotTemplateId
 		const {
 			[lotTemplateId]: templateValues
@@ -202,13 +205,9 @@ const FormComponent = (props) => {
 	}, [values, providedIndex])
 
 	useEffect(() => {
-		console.log("set values effect providedIndex",providedIndex)
-		console.log("set values effect previousProvidedIndex",previousProvidedIndex)
 		if(isArray(providedValues) && providedValues.length > 0 && providedValues[providedIndex] && providedIndex !== previousProvidedIndex) {
 
 			const currentLot = providedValues[providedIndex]
-			console.log("currentLot currentLot",currentLot)
-			console.log("currentLot providedValues",providedValues)
 
 			const  {
 				name: payloadName,	// extract reserved fields
@@ -264,11 +263,6 @@ const FormComponent = (props) => {
 						component,
 						dataType
 					} = currItem || {}
-
-
-					console.log("mapping this stuff fieldName",fieldName)
-					console.log("mapping this stuff component",component)
-					console.log("mapping this stuff lotTemplate",lotTemplate)
 
 					if(component === FIELD_COMPONENT_NAMES.CALENDAR_START_END) {
 						newFieldNameArr.push({fieldName: `${fieldName}`, index: 0, dataType: dataType, displayName: fieldName})
@@ -346,14 +340,10 @@ const FormComponent = (props) => {
 						table.push([cells[x]])
 					}
 				}
-
-				// table.push(row)
 			}
 
 			setPasteTable(table)
-			setShowPasteMapper(true)
-
-			// console.log("rows",rows)
+			setShowSimpleModal(true)
 		};
 
 		// add event listener to 'paste'
@@ -747,8 +737,40 @@ const FormComponent = (props) => {
 	if(loaded) {
 		return(
 			<styled.StyledForm>
+				{showSimpleModal &&
+					<SimpleModal
+						isOpen={true}
+						title={"Paste Event Detected"}
+						onRequestClose={() => setShowSimpleModal(false)}
+						onCloseButtonClick={() => setShowSimpleModal(false)}
+						handleOnClick1={() => {
+							setShowPasteMapper(true)
+							setShowSimpleModal(false)
+
+
+							setResetPasteTable(true)
+							setTimeout(() => {
+								setResetPasteTable(false)
+							}, 250)
+
+							// setPasteTable([])
+							// setPasteTable([])
+							// setPasteTable(tempPasteTable)
+							// setTempPasteTable([])
+						}}
+						handleOnClick2={() => {
+							setShowSimpleModal(false)
+						}}
+						button_1_text={"Yes"}
+						button_2_text={"No"}
+
+					>
+						<styled.SimpleModalText>A paste event was detected. Would you like to use pasted data to create lots?</styled.SimpleModalText>
+					</SimpleModal>
+				}
 				{showPasteMapper &&
 				<PasteForm
+					reset={resetPasteTable}
 					availableFieldNames={[
 						...fieldNameArr,
 						{fieldName: "name", dateType: FIELD_DATA_TYPES.STRING, displayName: "Name"},
@@ -1387,10 +1409,7 @@ const LotEditor = (props) => {
 
 							} = formikProps
 
-
-							console.log("formikProps",formikProps)
 							const handleSubmit = async (buttonType) => {
-								console.log("handleSubmit values",values)
 								setSubmitting(true)
 								await submitForm()
 
@@ -1413,8 +1432,6 @@ const LotEditor = (props) => {
 									processId: selectedProcessId,
 									[lotTemplateId]: templateValues,
 								} = values || {}
-
-								console.log("submit values",values)
 
 								const start = values?.dates?.start || null
 								const end = values?.dates?.end || null
@@ -1550,8 +1567,6 @@ const LotEditor = (props) => {
 
 								setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
 								setSubmitting(false)
-
-								console.log("buttonType",buttonType)
 
 								switch(buttonType) {
 									case FORM_BUTTON_TYPES.ADD:
