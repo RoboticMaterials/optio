@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 
 import * as styled from "./lot_form_creator.style"
-import {isArray} from "../../../../../../methods/utils/array_utils";
+import {immutableDelete, immutableInsert, immutableReplace, isArray} from "../../../../../../methods/utils/array_utils";
 import {arraysEqual, uuidv4} from "../../../../../../methods/utils/utils";
 import DropContainer from "../drop_container/drop_container";
 import Textbox from "../../../../../basic/textbox/textbox";
@@ -67,17 +67,7 @@ const LotFormCreator = (props) => {
 
 
 
-	const immutableInsert = (arr, ele, index) => {
-		return [...arr.slice(0, index), ele, ...arr.slice(index, arr.length)]
-	}
 
-	const immutableDelete = (arr, index) => {
-		return [...arr.slice(0, index), ...arr.slice(index+1, arr.length)]
-	}
-
-	const immutableReplace = (arr, ele, index) => {
-		return [...arr.slice(0, index), ele, ...arr.slice(index+1, arr.length)]
-	}
 
 	const handleVerticalDrop = (dropResult, currRowIndex) => {
 		const {

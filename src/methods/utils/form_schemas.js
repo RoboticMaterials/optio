@@ -173,7 +173,10 @@ export const dashboardSchema = Yup.object().shape({
 });
 
 // returns error if any item in nested array is duplicate
-Yup.addMethod(Yup.string, "unique", function(message) {
+Yup.addMethod(Yup.object, "unique", function(message, fieldPath) {
+    let mapper
+    if(fieldPath) mapper = x => get(x, fieldPath)
+
     return this.test("unique", message, function(item) {
         const { path, createError, parent } = this
         var index = path.match(/\[(.*?)\]/);
@@ -185,18 +188,36 @@ Yup.addMethod(Yup.string, "unique", function(message) {
         // if (index) {
         //     var submatch = index[1];
         // }
+        let compareItem
+        if(mapper) compareItem = mapper(item)
+
 
         console.log("this",this)
+        console.log("compareItem",compareItem)
         console.log("index",index)
         let isUnique = true
 
-        parent.forEach((currString, currIndex) => {
-            if(currString === item && parseInt(currIndex) !== parseInt(index)) {
-                isUnique = false
-                return createError({ path, message })
-                // newPath
+        let currIndex = 0
+        for(const currString of parent) {
+            const mapped = mapper(currString)
+            console.log("mapped",mapped)
+            if(parseInt(currIndex) !== parseInt(index)) {
+
+                if(mapper){
+                    if(compareItem === mapper(currString)) {
+                        isUnique = false
+                        return createError({ path: `${path}.${fieldPath}`, message })
+                    }
+                }
+                else {
+                    if(item === currString) {
+                        isUnique = false
+                        return createError({ path: `${path}.${fieldPath}`, message })
+                    }
+                }
             }
-        })
+            currIndex = currIndex + 1
+        }
 
         if (isUnique) {
             return true;
@@ -350,11 +371,12 @@ export const LotFormSchema = Yup.object().shape({
 
 export const templateMapperSchema = Yup.object().shape({
     selectedFieldNames: Yup.array().of(
-        Yup.string()
-            .min(1, '1 character minimum.')
-            .max(255, '50 character maximum.')
-            .required('Please enter field name.')
-            .unique("Field names must be unique"),
+        Yup.object().shape({
+            fieldName: Yup.string()
+                .min(1, '1 character minimum.')
+                .max(255, '50 character maximum.')
+                .required('Please enter field name.'),
+        }).unique("Field names must be unique", "fieldName")
     )
 })
 

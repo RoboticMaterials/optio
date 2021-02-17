@@ -11,6 +11,7 @@ export const Container = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 5000;
+    
   // padding: 1rem;
   overflow: hidden;
   min-height: 100%;
@@ -57,6 +58,9 @@ export const Column = styled.div`
 	display: flex;
   // border: 1px solid ${props => props.theme.bg.quaternary};
   background: ${props => props.theme.bg.quaternary};
+    max-width: 10rem;
+    align-items: stretch;
+    
   	//background: green;
 `
 
@@ -81,8 +85,9 @@ export const Trapezoid = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-self: center;
     // align-items: center;
-    width: 100%;
+    width: 98%;
     // border: 1px solid ${props => props.theme.bg.senary};
     // border-bottom: none;
     border: none;
@@ -110,6 +115,7 @@ export const ItemContainer = styled.div`
   
   height: 2rem;
   max-height: 2rem;
+    
   
    border-top: .5px solid ${props => props.theme.bg.senary};
     border-bottom: .5px solid ${props => props.theme.bg.senary};

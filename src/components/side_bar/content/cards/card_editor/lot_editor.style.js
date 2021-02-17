@@ -1,6 +1,7 @@
 import styled, {css} from "styled-components";
 import Modal from "react-modal";
 import {Form} from "formik";
+import {commonIcon, iconButtonCss} from "../../../../../common_css/common_css";
 
 export const rowCss = css`
 	margin-bottom: 1rem;
@@ -350,6 +351,29 @@ export const ObjectName = styled.span`
 export const InputContainer = styled.div`
 	flex: 1;
 `
+export const PageSelector = styled.div`
+	display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: .5rem;
+`
+
+export const PageSelectorButton = styled.div`
+	${iconButtonCss};
+  ${commonIcon};
+  
+`
+export const PageSelectorText = styled.span`
+	margin: 0 1rem;
+  	font-size: ${props => props.theme.fontSize.sz3};
+  //background: pink;
+`
+
+export const Footer = styled.div`
+  background: ${props => props.theme.bg.quinary};
+  display: flex;
+  flex-direction: column;
+`
 
 export const ButtonContainer = styled.div`
 	display: flex;
@@ -361,7 +385,7 @@ export const ButtonContainer = styled.div`
 	padding: 1rem;
 	margin: 0;
   	margin: 0 .5rem;
-  background: ${props => props.theme.bg.quinary};
+  
   border-top: 1px solid black;
 `
 

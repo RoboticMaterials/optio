@@ -31,6 +31,8 @@ export const disabledButtonCss = css`
 export const commonIcon = css`
 
   transition: all 0.25s ease;
+  padding: 0;
+  margin: 0;
   color: ${props => props.color};
 
 

@@ -12,10 +12,12 @@ import {
 	getTemplateMapperSchema,
 	templateMapperSchema
 } from "../../../methods/utils/form_schemas";
-import {CONTENT, FORM_BUTTON_TYPES} from "../../../constants/lot_contants";
+import {CONTENT, FIELD_COMPONENT_NAMES, FIELD_DATA_TYPES, FORM_BUTTON_TYPES} from "../../../constants/lot_contants";
 import {Formik} from "formik";
 import TextField from "../form/text_field/text_field";
 import {Container, Draggable} from "react-smooth-dnd";
+import ContainerWrapper from "../container_wrapper/container_wrapper";
+import LotEditor from "../../side_bar/content/cards/card_editor/lot_editor";
 
 const PasteMapper = (props) => {
 
@@ -28,14 +30,15 @@ const PasteMapper = (props) => {
 		errors,
 		touched,
 		setFieldValue,
-		setSelectedFieldNames
+		setSelectedFieldNames,
+		onPreviewClick
 	} = props
 
 	const {
 		selectedFieldNames
 	} = values || {}
 	console.log("PasteMapper props",props)
-	console.log("PasteMapper fields",availableFieldNames)
+	console.log("PasteMapper availableFieldNames",availableFieldNames)
 	console.log("PasteMapper values",values)
 	console.log("PasteMapper errors",errors)
 
@@ -54,37 +57,67 @@ const PasteMapper = (props) => {
 		setIsRow(fieldDirection === 0)
 	}, [fieldDirection])
 
-	useEffect(() => {
-		let tempFieldLabels = []
-		// columns
-		if(isRow) {
-			table.forEach((currCol, currColIndex) => {
-				tempFieldLabels.push(currCol[fieldLabelsIndex])
-			})
-		}
-
-		// rows
-		else {
-
-		}
-
-		setFieldValue("selectedFieldNames", tempFieldLabels)
-
-		// setSelectedFieldNames(tempFieldLabels)
-	}, [fieldLabelsIndex, fieldDirection])
+	// useEffect(() => {
+	// 	let tempFieldLabels = []
+	// 	// columns
+	// 	if(isRow) {
+	// 		table.forEach((currCol, currColIndex) => {
+	// 			const currField = currCol[fieldLabelsIndex]
+	// 			// const {
+	// 			// 	fieldName,
+	// 			// 	dateType,
+	// 			// 	displayName
+	// 			// } = currField || {}
+	//
+	// 			tempFieldLabels.push({...currField})
+	// 		})
+	// 	}
+	//
+	// 	// rows
+	// 	else {
+	//
+	// 	}
+	//
+	// 	setFieldValue("selectedFieldNames", tempFieldLabels)
+	//
+	// 	// setSelectedFieldNames(tempFieldLabels)
+	// }, [fieldLabelsIndex, fieldDirection])
 
 	useEffect(() => {
 		let tempUsedFieldNames = [...usedAvailableFieldNames]
 		availableFieldNames.forEach((currField, currIndex) => {
-			tempUsedFieldNames[currIndex] = selectedFieldNames.includes(currField)
+			const {
+				fieldName: currAvailableFieldName = "",
+				dataType: currAvailableDataType = FIELD_DATA_TYPES.STRING,
+				index: currAvailableIndex
+			} = currField || {}
+
+			tempUsedFieldNames[currIndex] = false
+			for(const selectedField of selectedFieldNames) {
+				const {
+					fieldName: currSelectedFieldName = "",
+					dataType: currSelectedDataType = FIELD_DATA_TYPES.STRING,
+					index: currSelectedIndex
+				} = selectedField || {}
+
+				if(currAvailableDataType === FIELD_DATA_TYPES.DATE_RANGE) {
+					if(currAvailableIndex === currSelectedIndex && currSelectedFieldName === currAvailableFieldName) {
+						tempUsedFieldNames[currIndex] = true
+						break // no need to keep looping
+					}
+
+				}
+				else {
+					if(currSelectedFieldName === currAvailableFieldName) {
+						tempUsedFieldNames[currIndex] = true
+						break // no need to keep looping
+					}
+				}
+			}
 		})
 
 		setUsedAvailableFieldNames(tempUsedFieldNames)
 	}, [availableFieldNames, selectedFieldNames])
-
-	console.log("usedAvailableFieldNames", usedAvailableFieldNames)
-	console.log("selectedFieldNames", selectedFieldNames)
-	console.log("availableFieldNames", availableFieldNames)
 
 	const createPayload = () => {
 		let data = []
@@ -93,14 +126,49 @@ const PasteMapper = (props) => {
 			currCol.forEach((currItem, currItemIndex) => {
 				const label = selectedFieldNames[currColIndex]
 
-				if(data[currItemIndex]) {
+				let finalValue = currItem
+
+				const {
+					dataType = FIELD_DATA_TYPES.STRING,
+					fieldName = `undefined field ${currColIndex}`,
+					index
+				} = label || {}
+
+				const existingData = data[currItemIndex]
+				const {
+					[fieldName]: currentFieldData
+				} = existingData || {}
+
+
+				console.log("in hurr dateType",dataType)
+
+
+				if(dataType === FIELD_DATA_TYPES.DATE_RANGE) {
+					console.log("in hurr currentFieldData",currentFieldData)
+					console.log("got a date")
+					let parsedDate = new Date(currItem)
+					console.log("got a date parse",parsedDate)
+
+					if(isArray(currentFieldData)) {
+						finalValue = [...currentFieldData]
+						finalValue.splice(index, 0, parsedDate)
+					}
+					else {
+						finalValue = [parsedDate]
+					}
+				}
+
+				console.log("createPayload label",label)
+				console.log("finalValue",finalValue)
+
+				if(existingData) {
 					data[currItemIndex] =  {
-						...data[currItemIndex],
-						[label]: currItem
+						...existingData,
+						[fieldName]: finalValue
 					}
 				}
 				else {
-					data.push({[label]: currItem})
+					data.push({[fieldName]: finalValue})
 				}
 			})
 		})
@@ -110,7 +178,6 @@ const PasteMapper = (props) => {
 
 	// theme
 	const themeContext = useContext(ThemeContext);
-
 
 	const renderTable = () => {
 		return (
@@ -199,56 +266,63 @@ const PasteMapper = (props) => {
 										<>
 											{/**/}
 											{(currItemIndex === 0 && fieldDirection === 0) &&
+											<ContainerWrapper
+												shiftable={false}
+												groupName="field_names"
+												onDragStart={(dragStartParams, b, c)=>{
+													const {
+														isSource,
+														payload,
+														willAcceptDrop
+													} = dragStartParams
+
+													if(isSource) {
+													}
+												}}
+												onDragEnd={(dragEndParams)=>{
+													const {
+														isSource,
+														payload,
+														willAcceptDrop
+													} = dragEndParams
+
+													if(isSource) {
+													}
+												}}
+												onDrop={(dropResult) => {
+													const {
+														removedIndex,
+														addedIndex,
+														payload
+													} = dropResult
+
+													console.log("drop in textfield dropResult",dropResult)
+
+													if(addedIndex !== null) {
+														const {
+
+														} = payload || {}
+														console.log("dropResult",dropResult)
+
+														setFieldValue(`selectedFieldNames[${currRowIndex}]`, payload)
+													}
+												}}
+												getChildPayload={index => {
+													// const selectedField = availableFieldNames[index]
+													// return selectedField
+													return values.selectedFieldNames[currRowIndex]
+												}}
+												behaviour={"drop-zone"}
+												getGhostParent={()=>{
+													return document.body
+												}}
+											>
+												<Draggable>
 											<styled.Trapezoid>
-												<Container
-													groupName="field_names"
-													onDragStart={(dragStartParams, b, c)=>{
-														const {
-															isSource,
-															payload,
-															willAcceptDrop
-														} = dragStartParams
 
-														if(isSource) {
-														}
-													}}
-													onDragEnd={(dragEndParams)=>{
-														const {
-															isSource,
-															payload,
-															willAcceptDrop
-														} = dragEndParams
-
-														if(isSource) {
-														}
-													}}
-													onDrop={(dropResult) => {
-														const {
-															removedIndex,
-															addedIndex,
-															payload
-														} = dropResult
-
-														if(addedIndex !== null) {
-															const {
-																fieldName
-															} = payload || {}
-															console.log("dropResult",dropResult)
-
-															setFieldValue(`selectedFieldNames[${currRowIndex}]`, fieldName)
-														}
-													}}
-													getChildPayload={index => {
-														// return payload
-													}}
-													behaviour={"drop-zone"}
-													getGhostParent={()=>{
-														return document.body
-													}}
-												>
 												<TextField
 
-													name={`selectedFieldNames[${currRowIndex}]`}
+													name={`selectedFieldNames[${currRowIndex}].fieldName`}
 													placeholder={"Field name..."}
 													style={{
 														background: themeContext.bg.tertiary,
@@ -260,9 +334,9 @@ const PasteMapper = (props) => {
 													}}
 
 												/>
-												</Container>
-
 											</styled.Trapezoid>
+												</Draggable>
+											</ContainerWrapper>
 											}
 											<styled.ItemContainer schema={schema} selected={isSelected}>
 												<styled.Cell cell={true}>
@@ -328,9 +402,12 @@ const PasteMapper = (props) => {
 							} = dropResult
 						}}
 						getChildPayload={index => {
-							return {
-								fieldName: availableFieldNames[index]
-							}
+							const selectedField = availableFieldNames[index]
+							const {
+								fieldName = ""
+							} = selectedField || {}
+
+							return selectedField
 						}}
 						getGhostParent={()=>{
 							return document.body
@@ -338,20 +415,53 @@ const PasteMapper = (props) => {
 						behaviour={"drop-zone"}
 						style={{display: "flex"}}
 					>
-					{availableFieldNames.map((currFieldName, currIndex) => {
+					{availableFieldNames.map((currField, currIndex) => {
+
+						console.log("mapping availableFieldNames",availableFieldNames)
+
+						const {
+							fieldName: currFieldName = "",
+							type: currType = ""
+						} = currField || {}
+
 						const isUsed = usedAvailableFieldNames[currIndex]
 
-						return(
-							isUsed ?
-								<styled.FieldName disabled={isUsed}>{currFieldName}</styled.FieldName>
-								:
-							<Draggable
-								disabled={isUsed}
-								key={currIndex}
-							>
-								<styled.FieldName disabled={isUsed}>{currFieldName}</styled.FieldName>
-							</Draggable>
-						)
+						// if(currType === FIELD_COMPONENT_NAMES.CALENDAR_START_END) {
+						// 	return(
+						// 		isUsed ?
+						// 			<>
+						// 			<styled.FieldName disabled={isUsed}>{currFieldName}</styled.FieldName>
+						// 			</>
+						// 			:
+						// 			<>
+						// 			<Draggable
+						// 				disabled={isUsed}
+						// 				key={currIndex}
+						// 			>
+						// 				<styled.FieldName disabled={isUsed}>{currFieldName} Start</styled.FieldName>
+						// 			</Draggable>
+						// 				<Draggable
+						// 					disabled={isUsed}
+						// 					key={currIndex + "yo"}
+						// 				>
+						// 					<styled.FieldName disabled={isUsed}>{currFieldName} End</styled.FieldName>
+						// 				</Draggable>
+						// 			</>
+						// 	)
+						// }
+						// else {
+							return(
+								isUsed ?
+									<styled.FieldName disabled={isUsed}>{currFieldName}</styled.FieldName>
+									:
+									<Draggable
+										disabled={isUsed}
+										key={currIndex}
+									>
+										<styled.FieldName disabled={isUsed}>{currFieldName}</styled.FieldName>
+									</Draggable>
+							)
+						// }
 					})}
 					</Container>
 				</styled.FieldNamesContainer>
@@ -374,6 +484,10 @@ const PasteMapper = (props) => {
 					type={"button"}
 					schema={schema}
 					label={"Preview Lots"}
+					onClick={() => {
+						const payload = createPayload()
+						onPreviewClick(payload)
+					}}
 				/>
 				<Button
 					schema={schema}
@@ -390,10 +504,19 @@ const PasteMapper = (props) => {
 
 export const PasteForm = (props) => {
 	const {
-
+		onPreviewClick
 	} = props
 
 	const [selectedFieldNames, setSelectedFieldNames] = useState([])
+
+
+	const handlePreviewClick = (payload) => {
+
+		console.log("handlePreviewClick payload",payload)
+		onPreviewClick && onPreviewClick(payload)
+		// setShowLotEditor(true)
+	}
+
 
 	return(
 		<Formik
@@ -421,6 +544,7 @@ export const PasteForm = (props) => {
 		>
 			{formikProps =>
 				<PasteMapper
+					onPreviewClick={handlePreviewClick}
 					{...formikProps}
 					{...props}
 					setSelectedFieldNames={setSelectedFieldNames}
