@@ -135,7 +135,7 @@ export default function stationsReducer(state = defaultState, action) {
 
         case GET_STATIONS_SUCCESS:
             const parsedStations = compareExistingVsIncomingLocations(deepCopy(action.payload), deepCopy(state.stations), state.d3)
-
+            console.log('QQQQ parsed', parsedStations)
             return {
                 ...state,
                 stations: parsedStations,

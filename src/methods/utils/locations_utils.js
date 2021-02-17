@@ -61,7 +61,17 @@ export const compareExistingVsIncomingLocations = (incomingLocations, existingLo
 
         // If the location exists in the backend and frontend, take the new locations, but assign local x and y
         if (existingLocation._id in incomingLocations) {
-            Object.assign(incomingLocations[existingLocation._id], { x: existingLocation.x, y: existingLocation.y })
+
+            const incomingLocation = incomingLocations[existingLocation._id]
+            if ((incomingLocation.pos_x !== existingLocation.pos_x) || (incomingLocation.pos_y !== existingLocation.pos_y)) {
+                console.log('QQQQ Existing location and incoming dont match', existingLocation)
+                let [x, y] = convertRealToD3([incomingLocation.pos_x, incomingLocation.pos_y], d3)
+                Object.assign(incomingLocations[existingLocation._id], { x: x, y: y })
+
+            } else {
+                Object.assign(incomingLocations[existingLocation._id], { x: existingLocation.x, y: existingLocation.y })
+            }
+
         }
 
         // This was an attempt to fix incoming locations that had their position changed
