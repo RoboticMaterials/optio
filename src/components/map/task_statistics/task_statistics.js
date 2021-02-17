@@ -127,7 +127,7 @@ const TaskStatistics = (props) => {
 
               </styled.RowContainer>
 
-              {task.device_types[0] !== 'human'&&
+              {task.device_types[0] !== 'human' && !!selectedTaskAnalysis &&
                   <styled.RowContainer style={{ justifyContent: 'space-between', width: '82%', marginTop: '.25rem', borderTop: '1px solid black', paddingTop: '.3rem'}}>
                       <styled.RowContainer>
                           <styled.TaskIcon className='far fa-clock' />
