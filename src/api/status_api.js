@@ -2,6 +2,11 @@ import axios from 'axios';
 import * as log from 'loglevel';
 
 import { apiIPAddress } from '../settings/settings'
+
+
+import store from '../redux/store'
+const token = store.getState().cognotoUserSession
+
 const operator = 'status'
 
 export async function getStatus() {
@@ -9,6 +14,7 @@ export async function getStatus() {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator,
+            token: token.username
         });
         // Success 🎉
         //  log.debug('THE STATE OF PLAY IS!!! on get status',response);

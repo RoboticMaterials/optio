@@ -56,8 +56,7 @@ const App = (props) => {
     // Set to true for the time being, authentication is not 100% complete as of 09/14/2020
     // const [authenticated, setAuthenticated] = useState(false)
 
-    const getAuthenticated = state => state.authenticationReducer.authenticated
-    const authenticated = useSelector(getAuthenticated)
+    const authenticated = useSelector(state => state.localReducer.localSettings.authenticated)
 
     const [loaded, setLoaded] = useState(false)
     const [apiLoaded, setApiLoaded] = useState(false)
@@ -142,12 +141,12 @@ const App = (props) => {
                           <Route
                               path={["/locations/:stationID?/:widgetPage?", '/:sidebar?/:data1?/:data2?', '/',]}
                           >
-                              <ApiContainer styleMode={null} apiMode={null} mode={null} logMode={"DEV"} onLoad={() => setLoaded(true)} apiLoaded={() => setApiLoaded(true)} isApiLoaded={apiLoaded} />
+                              {authenticated && <ApiContainer styleMode={null} apiMode={null} mode={null} logMode={"DEV"} onLoad={() => setLoaded(true)} apiLoaded={() => setApiLoaded(true)} isApiLoaded={apiLoaded} />}
                           </Route>
 
                           {/* If all the API's have been loaded, but the user has not been authenticate then show the Authentication Screen */}
-                          {loaded && !authenticated &&
-                              <Authentication authenticated={authenticated} />
+                          {authenticated === null &&
+                              <Authentication authenticated={authenticated}/>
                           }
 
 

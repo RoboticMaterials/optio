@@ -46,8 +46,18 @@ export const deleteLocalSettings = async () => {
 
 export const getLocalSettings = async () => {
     let localSettings = localStorage.getItem("local-settings-config");
-    if (localSettings) {
+
+    if (localSettings !== undefined) {
         localSettings = JSON.parse(localSettings);
+
+        // if(localSettings.authentication !== undefined){
+        //     console.log(localSettings)
+        // }else{
+        //     const settings = await postLocalSettings(defaultLocalSettings)
+        //     return defaultLocalSettings
+        // }
+
+        console.log(localSettings)
         return localSettings;
     }
     // Posts settigns to the backend if there's nothing there

@@ -4,14 +4,21 @@ import axios from 'axios';
 import logger from '../logger'
 
 import { apiIPAddress } from '../settings/settings'
+
+
+import store from '../redux/store'
+const token = store.getState().cognotoUserSession
+
 const operator = 'devices'
 const log = logger.getLogger('Api')
+
 
 export async function getDevices() {
     try {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator,
+            token: token.username
         });
         // Success 🎉
         const data = response.data;

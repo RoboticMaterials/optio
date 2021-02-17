@@ -6,4 +6,5 @@ export const defaultLocalSettings = {
 	mapViewEnabled: isBrowser,
 	toggleDevOptions:false,
 	currentMapId: null,
+	authenticated: null
 }

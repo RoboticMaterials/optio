@@ -2,6 +2,10 @@ import axios from 'axios';
 import * as log from 'loglevel';
 
 import { apiIPAddress } from '../settings/settings'
+
+import store from '../redux/store'
+const token = store.getState().cognotoUserSession
+
 const operator = 'positions'
 
 const logger = log.getLogger('Positions_Api', "Position");
@@ -11,6 +15,7 @@ export async function getPositions() {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator,
+            token: token.username
         });
         // Success 🎉
         const data = response.data;

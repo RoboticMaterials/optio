@@ -3,6 +3,10 @@ import axios from 'axios';
 import logger from '../logger'
 
 import { apiIPAddress } from '../settings/settings'
+
+import store from '../redux/store'
+const token = store.getState().cognotoUserSession
+
 const operator = 'settings'
 
 const log = logger.getLogger('Api')
@@ -12,6 +16,7 @@ export async function getSettings() {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator,
+            token: token.username
         });
         // Success 🎉
         log.debug('getSettings response', response);

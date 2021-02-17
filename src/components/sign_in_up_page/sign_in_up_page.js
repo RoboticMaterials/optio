@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -7,7 +7,8 @@ import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cogn
 import * as styled from './sign_in_up_page.style'
 
 // Import actions
-import { postCognitoUserSession } from '../../redux/actions/authentication_actions'
+import { postLocalSettings } from '../../redux/actions/local_actions'
+import { getLocalSettings } from '../../redux/actions/local_actions'
 
 /**
  * This page handles both sign in and sign up for RMStudio
@@ -17,11 +18,33 @@ import { postCognitoUserSession } from '../../redux/actions/authentication_actio
 const SignInUpPage = (props) => {
 
     const dispatch = useDispatch()
+    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const localReducer = useSelector(state => state.localReducer.localSettings)
 
-    const onCognitoUserSession = (JWT) => dispatch(postCognitoUserSession(JWT))
+    const onGetLocalSettings = () => dispatch(getLocalSettings())
 
+    const [loggedIn, setLoggedIn] = useState(false)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+
+
+    useEffect( () => {
+        // async function checkLocalSettings() {
+        //     // Get local storage
+        //     const localSettings = await onGetLocalSettings()
+        //     console.log(localSettings)
+            
+        //     // See if authenticated is not null
+        //     if (localSettings.authenticated !== null){
+        //         // If so, assume logged in
+        //         setLoggedIn(true)
+        //     }
+        //     // Else, require login
+        //   }
+
+        //   checkLocalSettings()
+            
+    }, [])
 
     const signIn = () => {
 
@@ -51,8 +74,13 @@ const SignInUpPage = (props) => {
         cognitoUser.authenticateUser(authenticationDetails, {
 
             onSuccess: function (result) {
-                console.log('QQQQ Success', typeof(result), result.accessToken.payload)
-                onCognitoUserSession(result.accessToken.payload)
+                dispatchPostLocalSettings({
+                    ...localReducer,
+                    authenticated: result.accessToken.payload.username
+                })
+
+                console.log('QQQQ Success', typeof(result), result.accessToken.payload, localReducer)
+
             },
 
             onFailure: function (err) {
@@ -87,7 +115,7 @@ const SignInUpPage = (props) => {
 
                 <styled.Button onClick={signIn}> Login </styled.Button>
 
-        </styled.Container>
+            </styled.Container>
     )
 }
 

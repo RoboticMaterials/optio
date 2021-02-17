@@ -3,6 +3,10 @@ import axios from 'axios';
 import {apiIPAddress} from '../settings/settings';
 
 import log from '../logger';
+
+import store from '../redux/store'
+const token = store.getState().cognotoUserSession
+
 const logger = log.getLogger('Map_Api', "Map");
 
 const operator = 'site_maps';
@@ -12,6 +16,7 @@ export async function getMaps() {
     const response = await axios({
       method: 'GET',
       url: apiIPAddress() + operator,
+      token: token.username
     });
 
     // Success 🎉
