@@ -7,7 +7,7 @@ import * as styled from './statistics_overview.style'
 import { ThemeContext } from 'styled-components';
 
 // Import Charts
-import ThroughputChart from './charts/throughput_chart'
+import ThroughputChart from './charts/throughput_chart/throughput_chart'
 import ReportChart from './charts/report_chart'
 
 // Import Components

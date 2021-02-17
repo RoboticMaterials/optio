@@ -34,9 +34,10 @@ export const PlotsContainer = styled.div`
     //flex-direction: row;
     //flex: 1;
     width: 100%;
+    height: 100%;
     // background: red;
-    overflow: auto;
     padding: 1rem 1rem 0rem 1rem;
+    overflow: auto;
   
     
     // @media (max-width: ${props => props.theme.widthBreakpoint.laptopL}){

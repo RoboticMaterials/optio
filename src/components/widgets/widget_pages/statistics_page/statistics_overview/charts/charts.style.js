@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import * as buttonCss from '../../../../../../common_css/button_css'
 import * as commonCss from '../../../../../../common_css/common_css'
+import * as styles from '../../statistics_page.style'
 
 export const PlotHeader = styled.div`
 	//height: 30rem;
@@ -47,15 +48,16 @@ export const SinglePlotContainer = styled.div`
 export const PlotContainer = styled.div`
 	position: relative;
 	
-	max-height: ${props => (props.minHeight && props.minHeight > 25) ? props.minHeight.toString() + "rem" : "25rem"};
+	max-height: ${props => (props.minHeight && props.minHeight > 25) ? props.minHeight.toString() + "rem" : "35rem"};
 	min-height: ${props => (props.minHeight && props.minHeight > 25) ? props.minHeight.toString() + "rem" : "25rem"};
 	height: ${props => (props.minHeight && props.minHeight > 25) ? props.minHeight.toString() + "rem" : "25rem"};
+	/* height: 100%; */
   
   	//height: 100rem;
   	//min-height: 100rem;
   	//max-height: 100rem;
   
-	min-width: 60rem;
+	min-width: 30rem;
   
 	overflow: hidden;
 `
@@ -85,7 +87,10 @@ export const PlotTitle = styled.h2`
 
 export const ChartButton = styled.button`
     ${buttonCss.button};
-
+    background-color:${props => props.theme.bg.tertiary};
+    color: white;
+    margin-top: .25rem;
+    font-size: 1.25rem;
 `
 
 export const RowContainer = styled.div`
@@ -132,4 +137,15 @@ export const BreakContainer = styled.div`
     height: fit-content;
     background-color: ${props => props.theme.bg.quaternary};
     border-radius: .5rem;
+`
+
+export const ChartTypeButton = styled(styles.StatisticsSectionsButton)`
+    font-size: 1.25rem;
+    width: 5rem;
+`
+
+export const BreakLabel = styled.label`
+  font-size: ${props => props.theme.fontSize.sz4};
+  font-family: ${props => props.theme.font.primary};
+  color: white;
 `

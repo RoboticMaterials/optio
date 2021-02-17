@@ -7,7 +7,7 @@ export const StatisticsContainer = styled.div`
     background: ${props => props.theme.bg.quaternary};
 `
 
-export const StatisticsSectionsContainer = styled.div`
+export const StatisticsSectionsButtonContainer = styled.div`
     display: flex;
     /* position: absolute; */
     text-align: center;
@@ -31,7 +31,7 @@ export const StatisticsSectionsButton = styled.button`
     box-shadow: ${props => props.selected ? 'none' : '0 0.1rem 0.2rem 0rem #303030'};
 
     z-index: ${props => props.selected ? '0' : '1'};
-    background-color: ${props => props.selected ? props => props.theme.bg.septenary : props => props.theme.bg.senary};
+    background-color: ${props => !props.selected ? props => props.theme.bg.septenary : props => props.theme.bg.senary};
 
     transition: background-color 0.25s ease, box-shadow 0.1s ease;
 
@@ -94,4 +94,13 @@ export const StationName = styled.h1`
     text-align: center;
     color: ${props => props.theme.bg.septenary};
     font-family: ${props => props.theme.font.primary};
+`
+
+export const StatisticsSectionsContainer = styled.div`
+    display: flex;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    flex-direction:column;
 `

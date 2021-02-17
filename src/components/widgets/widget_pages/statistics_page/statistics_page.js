@@ -32,7 +32,7 @@ const StatisticsPage = () => {
             <styled.Header>
                 <styled.StationName>{stations[stationID].name}</styled.StationName>
 
-                <styled.StatisticsSectionsContainer>
+                {/* <styled.StatisticsSectionsButtonContainer>
                     <styled.StatisticsSectionsButton
                         style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
                         onClick={() => {
@@ -54,7 +54,7 @@ const StatisticsPage = () => {
                         Charts
                 </styled.StatisticsSectionsButton>
 
-                </styled.StatisticsSectionsContainer>
+                </styled.StatisticsSectionsButtonContainer> */}
             </styled.Header>
             {/* <styled.StatisticsDownloadButton>
                 Download CSV
@@ -67,9 +67,9 @@ const StatisticsPage = () => {
 
 
             {showOverview &&
-                <div style={{ display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', marginTop: '5rem', flexDirection: 'column' }}>
+                <styled.StatisticsSectionsContainer>
                     <StatisticsOverview />
-                </div>
+                </styled.StatisticsSectionsContainer>
             }
 
 
