@@ -89,7 +89,7 @@ const HILModals = (props) => {
     const [lotsAtStation, setLotsAtStation] = useState(false)
     const [taskHasProcess, setTaskHasProcess] = useState(false)
     const [noLotsSelected, setNoLotsSelected] = useState(false)
-
+    const [modalClosed, setModalClosed] = useState(false)
     const size = useWindowSize()
     const windowWidth = size.width
 
@@ -581,6 +581,9 @@ const HILModals = (props) => {
                         <styled.HilButton color={'#90eaa8'}
                             onClick={() => {
                                 onHilSuccess()
+                                dispatchSetShowModalId(null)
+                                setModalClosed(true)
+
                             }}
                         >
                             <styled.HilIcon
@@ -663,6 +666,7 @@ const HILModals = (props) => {
                                   onClick={()=> {
                                     onHilFailure()
                                     dispatchSetShowModalId(null)
+                                    setModalClosed(true)
                                   }}>
                                 <styled.HilIcon
                                     style={{ marginBottom: 0, marginRight: "1rem", fontSize: "2.5rem" }}
@@ -925,21 +929,22 @@ const HILModals = (props) => {
                             </styled.HilButton>
 
                             {((hilType === 'pull' && hilLoadUnload === 'load') || hilType === 'check') &&
-                                <styled.HilButton color={'#f7cd89'} onClick={onHilPostpone}>
-                                    <styled.HilIcon
-                                        style={{}}
+                                  <></>
+                                //<styled.HilButton color={'#f7cd89'} onClick={onHilPostpone}>
+                                //    <styled.HilIcon
+                                //        style={{}}
                                         // onClick={onHilPostpone}
-                                        className='icon-postpone'
-                                        color={'#ff7700'}
-                                        styled={{ marginTop: '.5rem' }}
-                                    />
-                                    <styled.HilButtonText
-                                        color={'#ff7700'}
-                                        style={{ margin: 0, padding: 0 }}
-                                    >
-                                        Postpone
-                                </styled.HilButtonText>
-                                </styled.HilButton>
+                                //        className='icon-postpone'
+                                  //      color={'#ff7700'}
+                                  //      styled={{ marginTop: '.5rem' }}
+                                  //  />
+                                  //  <styled.HilButtonText
+                                  //      color={'#ff7700'}
+                                  //      style={{ margin: 0, padding: 0 }}
+                                  //  >
+                                  //      Postpone
+                              //  </styled.HilButtonText>
+                              //  </styled.HilButton>
                             }
 
                             {(hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
@@ -949,6 +954,7 @@ const HILModals = (props) => {
                                 onClick={()=> {
                                         onHilFailure()
                                         dispatchSetShowModalId(null)
+                                        setModalClosed(true)
                                       }}>
                                     <styled.HilIcon
                                         className='fas fa-times'
@@ -1085,6 +1091,7 @@ const HILModals = (props) => {
                             onClick={()=> {
                               onHilFailure()
                               dispatchSetShowModalId(null)
+                              setModalClosed(true)
                             }}
                         >
                             <styled.HilIcon
@@ -1137,7 +1144,7 @@ const HILModals = (props) => {
      * HIL Check will only show on a pull request
      */
 
-    if (dataLoaded) {
+    if (dataLoaded && modalClosed!==true) {
         return (
             <styled.HilContainer >
 
