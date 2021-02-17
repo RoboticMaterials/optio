@@ -54,7 +54,7 @@ const App = (props) => {
     const dispatchStopAPICalls = (bool) => dispatch(stopAPICalls(bool))
 
     // Set to true for the time being, authentication is not 100% complete as of 09/14/2020
-    const [authenticated, setAuthenticated] = useState(true)
+    const [authenticated, setAuthenticated] = useState(false)
 
     const [loaded, setLoaded] = useState(false)
     const [apiLoaded, setApiLoaded] = useState(false)

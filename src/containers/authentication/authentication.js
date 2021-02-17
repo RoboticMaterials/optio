@@ -30,59 +30,62 @@ const Authentication = (props) => {
         authenticated
     } = props
 
-    const dispatch = useDispatch()
-    const onCognitoUserSession = (JWT) => dispatch(postCognitoUserSession(JWT))
+    // const dispatch = useDispatch()
+    // const onCognitoUserSession = (JWT) => dispatch(postCognitoUserSession(JWT))
 
-    const refreshToken = useSelector(state => state.authenticationReducer.refreshToken)
-    const cognitoUserSession = useSelector(state => state.authenticationReducer.cognitoUserSession)
+    // const refreshToken = useSelector(state => state.authenticationReducer.refreshToken)
+    // const cognitoUserSession = useSelector(state => state.authenticationReducer.cognitoUserSession)
 
     const [signIn, setSignIn] = useState(true)
 
     const handleInitialLoad = () => {
 
         // Information assembled for the request
-        const poolData = {
-            UserPoolId: 'us-east-2_YFnCIb6qJ',
-            ClientId: '4dghjc830130pdnr9aecshpc13',
-        }
-        const userPool = new CognitoUserPool(poolData)
-        const userData = {
-            Username: 'kalervo@roboticmaterials.com',
-            Pool: userPool,
-        }
-        const cognitoUser = new CognitoUser(userData);
+        // const poolData = {
+        //     UserPoolId: 'us-east-2_YFnCIb6qJ',
+        //     ClientId: '68uvkvj7iqegb042lu5vu8268q',
+        // }
+        // const userPool = new CognitoUserPool(poolData)
+        // const userData = {
+        //     Username: 'kalervo@roboticmaterials.com',
+        //     Pool: userPool,
+        // }
+        // const cognitoUser = new CognitoUser(userData);
 
 
 
         // Gets new tokens if access token is not valid
         // .refreshSession requies an instance of the CognitioRefreshToken class not just the refresh token sting
-        const token = new CognitoRefreshToken({ RefreshToken: refreshToken })
-        cognitoUser.refreshSession(token, (err, session) => {
-            console.log('QQQQ', err, session)
+        // const token = new CognitoRefreshToken({ RefreshToken: refreshToken })
+        // cognitoUser.refreshSession(token, (err, session) => {
+        //     console.log('QQQQ', err, session)
 
-            // If the session has succesfully been refreshed then verrify
-            if (!!session) {
-                console.log('QQQQ Valid session ', session.isValid())
-                const verrified = onCognitoUserSession(session)
+        //     // If the session has succesfully been refreshed then verrify
+        //     if (!!session) {
+        //         console.log('QQQQ Valid session ', session.isValid())
+        //         const verrified = onCognitoUserSession(session)
 
-                // If verrified, then no need to sign in or sign up
-                if (verrified) {
-                    authenticated()
-                }
-            }
-        })
+        //         // If verrified, then no need to sign in or sign up
+        //         if (verrified) {
+        //             authenticated()
+        //         }
+        //     }
+        // })
         return (
             <styled.Container>
 
                 <styled.LogoContainer>
                     <styled.LogoIcon className='icon-rmLogo' />
-                    <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
+                    <styled.LogoSubtitle> Studio </styled.LogoSubtitle>
                 </styled.LogoContainer>
 
-                <styled.SignInUpToggleContainer>
+                <styled.LogoWelcome> Wecome Back </styled.LogoWelcome>
+
+                
+                {/* <styled.SignInUpToggleContainer>
                     <styled.SignInToggleButton onClick={() => setSignIn(true)}>Sign In</styled.SignInToggleButton>
                     <styled.SignUpToggleButton onClick={() => setSignIn(false)}>Sign Up</styled.SignUpToggleButton>
-                </styled.SignInUpToggleContainer>
+                </styled.SignInUpToggleContainer> */}
 
                 <styled.SignInUpContainer>
 
