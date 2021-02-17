@@ -7,6 +7,8 @@ import { ThemeContext } from 'styled-components';
 // Import components
 import LineThroughputChart from './line_throughput_chart'
 
+// Import Actions
+import { getStationAnalytics } from '../../../../../../../redux/actions/stations_actions'
 
 // Import Charts
 import BarChart from '../../../chart_types/bar_chart'
@@ -76,6 +78,7 @@ const ThroughputChart = (props) => {
         throughputData,
         isThroughputLoading,
         timeSpan,
+        loadLineChartData,
     } = props
 
     const [showBar, setShowBar] = useState(false)
@@ -106,6 +109,7 @@ const ThroughputChart = (props) => {
                     style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
                     onClick={() => {
                         setShowBar(false)
+                        loadLineChartData(true)
                     }}
                     selected={!showBar}
                 >

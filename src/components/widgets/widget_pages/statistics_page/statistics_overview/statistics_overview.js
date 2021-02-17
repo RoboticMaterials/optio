@@ -181,7 +181,7 @@ const StatisticsOverview = (props) => {
      * @param {*} newTimeSpan 
      * @param {*} newDateIndex 
      */
-    const handleTimeSpan = async (newTimeSpan, newDateIndex) => {
+    const onTimeSpan = async (newTimeSpan, newDateIndex) => {
 
         setTimeSpan(newTimeSpan)
         setDateIndex(newDateIndex)
@@ -201,7 +201,7 @@ const StatisticsOverview = (props) => {
         dataPromise.then(response => {
 
             if (response === undefined) return setIsThroughputLoading(false)
-
+            console.log('QQQQ data promiese', response)
             setThroughputData(response)
             setIsThroughputLoading(false)
         })
@@ -241,7 +241,7 @@ const StatisticsOverview = (props) => {
             <div style={{ marginBottom: '1rem', alignItems: "center", display: "flex", flexDirection: "column" }}>
                 {
                     <>
-                        <TimeSpans color={colors[selector]} setTimeSpan={(timeSpan) => handleTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
+                        <TimeSpans color={colors[selector]} setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
 
                         {/* Commented out for now, only need through put bar chart */}
                         {/* {handleGaugeCharts()} */}
@@ -297,7 +297,7 @@ const StatisticsOverview = (props) => {
                     className='fas fa-chevron-left'
                     onClick={() => {
                         const index = dateIndex + 1
-                        handleTimeSpan(timeSpan, index)
+                        onTimeSpan(timeSpan, index)
                     }}
                 />
                 {isThroughputLoading ?
@@ -313,7 +313,7 @@ const StatisticsOverview = (props) => {
                         className='fas fa-chevron-right'
                         onClick={() => {
                             const index = dateIndex - 1
-                            handleTimeSpan(timeSpan, index)
+                            onTimeSpan(timeSpan, index)
                         }}
                     />
                     :
@@ -372,6 +372,9 @@ const StatisticsOverview = (props) => {
                     throughputData={throughputData}
                     isThroughputLoading={isThroughputLoading}
                     timeSpan={timeSpan}
+                    loadLineChartData={(bool) => {
+                        onTimeSpan('line', dateIndex)
+                    }}
                 />
                 <ReportChart
                     reportButtons={reportButtons}

@@ -429,7 +429,7 @@ const LineThroughputChart = (props) => {
                                     <styled.RowContainer style={{ justifyContent: 'space-between' }}>
                                         <styled.Label>
                                             Expected Output
-                                    </styled.Label>
+                                        </styled.Label>
                                         <TextField
                                             name={"expectedOutput"}
                                             placeholder='Qty'

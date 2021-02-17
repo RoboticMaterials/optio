@@ -409,7 +409,6 @@ export const throughputSchema = (ref) => {
         startOfBreak3,
         endOfBreak3
     } = ref
-    console.log('QQQQ ref', ref)
 
     return (
         Yup.object().shape({
