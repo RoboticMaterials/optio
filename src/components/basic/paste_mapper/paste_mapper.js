@@ -57,31 +57,52 @@ const PasteMapper = (props) => {
 		setIsRow(fieldDirection === 0)
 	}, [fieldDirection])
 
-	// useEffect(() => {
-	// 	let tempFieldLabels = []
-	// 	// columns
-	// 	if(isRow) {
-	// 		table.forEach((currCol, currColIndex) => {
-	// 			const currField = currCol[fieldLabelsIndex]
-	// 			// const {
-	// 			// 	fieldName,
-	// 			// 	dateType,
-	// 			// 	displayName
-	// 			// } = currField || {}
-	//
-	// 			tempFieldLabels.push({...currField})
-	// 		})
-	// 	}
-	//
-	// 	// rows
-	// 	else {
-	//
-	// 	}
-	//
-	// 	setFieldValue("selectedFieldNames", tempFieldLabels)
-	//
-	// 	// setSelectedFieldNames(tempFieldLabels)
-	// }, [fieldLabelsIndex, fieldDirection])
+	useEffect(() => {
+		let tempFieldLabels = []
+
+		// rows
+		if(isRow) {
+			table.forEach((currCol, currColIndex) => {
+				const currFieldName = currCol[fieldLabelsIndex]
+
+				let payload = {
+					fieldName: "",
+					dataType: FIELD_DATA_TYPES.STRING
+				}
+
+				if(currFieldName) {
+
+					payload = {
+						fieldName: currFieldName,
+						dataType: FIELD_DATA_TYPES.STRING,
+					}
+
+					for(const availableField of availableFieldNames) {
+						const {
+							fieldName: availableFieldName = "",
+						} = availableField
+
+						if(currFieldName === availableFieldName) {
+							payload = {...availableField}
+						}
+
+						break	// quit looping
+					}
+				}
+
+				tempFieldLabels.push(payload)
+			})
+		}
+
+		// columns
+		else {
+
+		}
+
+		setFieldValue("selectedFieldNames", tempFieldLabels)
+
+		// setSelectedFieldNames(tempFieldLabels)
+	}, [fieldLabelsIndex, fieldDirection])
 
 	useEffect(() => {
 		let tempUsedFieldNames = [...usedAvailableFieldNames]
@@ -123,16 +144,21 @@ const PasteMapper = (props) => {
 		let data = []
 
 		table.forEach((currCol, currColIndex) => {
-			currCol.forEach((currItem, currItemIndex) => {
+			currCol.filter((currItem, currItemIndex) => {
+				if((fieldLabelsIndex !== null) && (currItemIndex === fieldLabelsIndex)) return false
+				return true
+			})
+				.forEach((currItem, currItemIndex) => {
 				const label = selectedFieldNames[currColIndex]
 
 				let finalValue = currItem
 
 				const {
 					dataType = FIELD_DATA_TYPES.STRING,
-					fieldName = `undefined field ${currColIndex}`,
 					index
 				} = label || {}
+				let fieldName = label?.fieldName
+				if(!fieldName) fieldName = `undefined field ${currColIndex}`
 
 				const existingData = data[currItemIndex]
 				const {
@@ -183,7 +209,7 @@ const PasteMapper = (props) => {
 		return (
 			<styled.Table>
 				{
-					<styled.Column style={{flex: 0}}>
+					<styled.Column style={{flex: 0, minWidth: "fit-content"}}>
 						{isArray(table[0]) && table[0].map((junk, currIndex) => {
 
 							const isSelected = isRow ? (currIndex === fieldLabelsIndex) : false
@@ -357,21 +383,23 @@ const PasteMapper = (props) => {
 
 		<styled.Container>
 			<styled.Header>
-				<ButtonGroup
-					buttonViewCss={styled.buttonViewCss}
-					buttons={["Row", "Column"]}
-					selectedIndex={fieldDirection}
-					onPress={(index)=>{
-						setFieldDirection(index)
-					}}
-					containerCss={styled.buttonGroupContainerCss}
-					buttonViewSelectedCss={styled.buttonViewSelectedCss}
-					buttonCss={styled.buttonCss}
-				/>
+				<styled.Title>Map Data</styled.Title>
+				{/*<ButtonGroup*/}
+				{/*	buttonViewCss={styled.buttonViewCss}*/}
+				{/*	buttons={["Row", "Column"]}*/}
+				{/*	selectedIndex={fieldDirection}*/}
+				{/*	onPress={(index)=>{*/}
+				{/*		setFieldDirection(index)*/}
+				{/*	}}*/}
+				{/*	containerCss={styled.buttonGroupContainerCss}*/}
+				{/*	buttonViewSelectedCss={styled.buttonViewSelectedCss}*/}
+				{/*	buttonCss={styled.buttonCss}*/}
+				{/*/>*/}
 			</styled.Header>
 
 			<styled.Body>
 				<styled.FieldNamesContainer>
+					<styled.SectionTitle>Template Fields</styled.SectionTitle>
 					<Container
 						groupName="field_names"
 						onDragStart={(dragStartParams, b, c)=>{
@@ -465,6 +493,8 @@ const PasteMapper = (props) => {
 					})}
 					</Container>
 				</styled.FieldNamesContainer>
+
+				<styled.SectionBreak/>
 
 				{renderTable()}
 			</styled.Body>

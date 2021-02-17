@@ -227,6 +227,7 @@ const FormComponent = (props) => {
 				_id,
 				[lotTemplateId]: {
 					// ...values[lotTemplateId],
+					...getInitialValues(lotTemplate),
 					...remainingPayload
 				}
 			})
@@ -387,20 +388,20 @@ const FormComponent = (props) => {
 
 					switch(content){
 						case CONTENT.MOVE:
-							setFieldValue("buttonType", FORM_BUTTON_TYPES.MOVE_OK)
-							onSubmit()
+							// setFieldValue("buttonType", FORM_BUTTON_TYPES.MOVE_OK)
+							onSubmit(FORM_BUTTON_TYPES.MOVE_OK)
 							break
 						default:
-							setFieldValue("buttonType", FORM_BUTTON_TYPES.SAVE)
-							onSubmit()
+							// setFieldValue("buttonType", FORM_BUTTON_TYPES.SAVE)
+							onSubmit(FORM_BUTTON_TYPES.SAVE)
 							break
 					}
 				}
 				else {
 					// if the form mode is set to CREATE (the only option other than UPDATE), the default action of the enter key should be to add the lot
 					// this is done by setting buttonType to ADD and submitting the form
-					setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD)
-					onSubmit()
+					// setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD)
+					onSubmit(FORM_BUTTON_TYPES.ADD)
 				}
 
 			}
@@ -750,7 +751,7 @@ const FormComponent = (props) => {
 					availableFieldNames={[
 						...fieldNameArr,
 						{fieldName: "name", dateType: FIELD_DATA_TYPES.STRING, displayName: "Name"},
-						{fieldName: "quantity", dateType: FIELD_DATA_TYPES.INTEGER, displayName: "Quantity"}
+						{fieldName: "bins[QUEUE].count", dateType: FIELD_DATA_TYPES.INTEGER, displayName: "Quantity"}
 					]}
 					onCancel={() => setShowPasteMapper(false)}
 					table={pasteTable}
@@ -884,8 +885,8 @@ const FormComponent = (props) => {
 											style={{...buttonStyle, width: "8rem"}}
 											type={"button"}
 											onClick={() => {
-												setFieldValue("buttonType", FORM_BUTTON_TYPES.MOVE_OK)
-												onSubmit()
+												// setFieldValue("buttonType", FORM_BUTTON_TYPES.MOVE_OK)
+												onSubmit(FORM_BUTTON_TYPES.MOVE_OK)
 											}}
 											schema={"ok"}
 											secondary
@@ -927,9 +928,8 @@ const FormComponent = (props) => {
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
 											secondary
 											onClick={async () => {
-												setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD)
-												onSubmit()
-
+												// setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD)
+												onSubmit(FORM_BUTTON_TYPES.ADD)
 											}}
 										>
 											Add
@@ -953,8 +953,8 @@ const FormComponent = (props) => {
 
 												} else {
 													// function order matters
-													setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD_AND_NEXT)
-													onSubmit()
+													// setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD_AND_NEXT)
+													onSubmit(FORM_BUTTON_TYPES.ADD_AND_NEXT)
 												}
 
 
@@ -972,8 +972,8 @@ const FormComponent = (props) => {
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
 											secondary
 											onClick={async () => {
-												setFieldValue("buttonType", FORM_BUTTON_TYPES.SAVE)
-												onSubmit()
+												// setFieldValue("buttonType", FORM_BUTTON_TYPES.SAVE)
+												onSubmit(FORM_BUTTON_TYPES.SAVE)
 											}}
 										>
 											Save
@@ -1388,25 +1388,22 @@ const LotEditor = (props) => {
 
 
 							console.log("formikProps",formikProps)
-							const handleSubmit = async () => {
+							const handleSubmit = async (buttonType) => {
 								console.log("handleSubmit values",values)
-								await submitForm()
 								setSubmitting(true)
+								await submitForm()
 
 								const submissionErrors = await validateForm()
 
 								// abort if there are errors
 								if(!isEmpty(submissionErrors)) {
 									setSubmitting(false)
-									// setErrors(submissionErrors)
-									// setTouched
 									return false
 								}
 
 								const {
 									_id,
 									name,
-									buttonType,
 									changed,
 									new: isNew,
 									bins,
@@ -1415,6 +1412,8 @@ const LotEditor = (props) => {
 									processId: selectedProcessId,
 									[lotTemplateId]: templateValues,
 								} = values || {}
+
+								console.log("submit values",values)
 
 								const start = values?.dates?.start || null
 								const end = values?.dates?.end || null
@@ -1534,14 +1533,11 @@ const LotEditor = (props) => {
 
 
 										if(!(postResult instanceof Error)) {
-											console.log("postResult success",postResult)
 											const {
 												_id = null
 											} = postResult || {}
 
 											setFieldValue("_id", _id)
-
-											return true
 										}
 										else {
 											console.error("postResult error",postResult)
@@ -1553,6 +1549,8 @@ const LotEditor = (props) => {
 
 								setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
 								setSubmitting(false)
+
+								console.log("buttonType",buttonType)
 
 								switch(buttonType) {
 									case FORM_BUTTON_TYPES.ADD:

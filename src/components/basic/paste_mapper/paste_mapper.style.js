@@ -3,7 +3,6 @@ import {commonIcon, disabledButtonCss, iconButtonCss, newGlow, trapezoidCss} fro
 
 export const Container = styled.div`
 	display: flex;
-  //background: red;
   
   flex-direction: column;
   position: absolute;
@@ -12,10 +11,12 @@ export const Container = styled.div`
   transform: translate(-50%, -50%);
   z-index: 5000;
     
+    
   // padding: 1rem;
   overflow: hidden;
   min-height: 100%;
   min-width: 100%;
+  max-width: 100%;
   max-height: 100%;
   
   background: ${props => props.theme.bg.quaternary};
@@ -26,26 +27,52 @@ export const Header = styled.div`
     align-items: center;
     display: flex;
     flex-direction: column;
+    padding: 1rem;
 `
 
 export const Body = styled.div`
     display: flex;
     flex-direction: column;
     flex: 1;
+    overflow: hidden;
 `
 
 export const Footer = styled.div`
     background: ${props => props.theme.bg.quinary};
 `
 
+export const Title = styled.div`
+	flex: 2;
+	height: 100%;
+	min-height: 100%;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	display: flex;
+  flex-direction: column;
+	font-size: ${props => props.theme.fontSize.sz2};
+	font-weight: ${props => props.theme.fontWeight.bold};
+	
+`
+export const TitleText = styled.span`
 
+`
+
+export const SectionBreak = styled.hr`
+  color: black;
+    background: black;
+`
 
 
 export const Table = styled.div`
 padding: 1rem;
 	display: flex;
-  flex: 1;
+  //flex: 1;
   overflow: auto;
+    with: fit-content;
   //flex-direction: column;
   //background: yellow;
   
@@ -59,6 +86,7 @@ export const Column = styled.div`
   // border: 1px solid ${props => props.theme.bg.quaternary};
   background: ${props => props.theme.bg.quaternary};
     max-width: 10rem;
+    min-width: 10rem;
     align-items: stretch;
     
   	//background: green;
@@ -114,6 +142,7 @@ export const ItemContainer = styled.div`
   
   
   height: 2rem;
+  min-height: 2rem;
   max-height: 2rem;
     
   
@@ -145,7 +174,22 @@ export const FieldNamesContainer = styled.div`
     padding: 1rem;
     width: fit-content;
     display: flex;
-    
+    align-self: center;
+    flex-direction: column;
+`
+
+export const SectionTitle = styled.span`
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    font-size: ${props => props.theme.fontSize.sz2};
+    font-weight: ${props => props.theme.fontWeight.bold};
+    margin-bottom: 1rem;
 `
 
 export const FieldName = styled.div`
@@ -164,6 +208,7 @@ export const FieldName = styled.div`
 export const SelectButton = styled.button`
     ${iconButtonCss};
     ${commonIcon};
+    margin-right: .5rem;
     font-size: 1.5rem;
     color: ${props => props.selected ? props.theme.schema.error.solid : props.theme.schema.ok.solid};
     
