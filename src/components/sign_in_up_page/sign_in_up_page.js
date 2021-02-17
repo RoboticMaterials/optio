@@ -1,28 +1,13 @@
-// import { styled } from '@material-ui/core'
 import React, { useState } from 'react'
 
-// import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js'
-
-// import { Formik, Form } from 'formik'
-
-// Import Utils
-// import { signInSchema, signUpSchema } from '../../methods/utils/form_schemas'
-
-// Import Components
-// import TextField from '../basic/form/text_field/text_field'
-// import Textbox from '../basic/textbox/textbox'
-
-// import Button from '../basic/button/button'
-
+// Import styles
 import * as styled from './sign_in_up_page.style'
 
 // Import actions
-// import { postRefreshToken } from '../../redux/actions/authentication_actions'
-
-// Import API DELETE THIS ONCE FINISHED
-// import { getRefreshToken } from '../../api/authentication_api'
+import { postCognitoUserSession } from '../../redux/actions/authentication_actions'
 
 /**
  * This page handles both sign in and sign up for RMStudio
@@ -31,10 +16,9 @@ import * as styled from './sign_in_up_page.style'
 
 const SignInUpPage = (props) => {
 
-    // const dispatch = useDispatch()
-    // const onRefreshToken = (token, expiration) => dispatch(postRefreshToken(token, expiration))
-    
-    // const refreshToken = useSelector(state => state.authenticationReducer.refreshToken)
+    const dispatch = useDispatch()
+
+    const onCognitoUserSession = (JWT) => dispatch(postCognitoUserSession(JWT))
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -67,16 +51,8 @@ const SignInUpPage = (props) => {
         cognitoUser.authenticateUser(authenticationDetails, {
 
             onSuccess: function (result) {
-                console.log('QQQQ Success', typeof(result), result)
-                // const accessToken = result.getAccessToken().getJwtToken();
-
-                // const returnedRefreshToken = result.getRefreshToken().getToken()
-
-                // onRefreshToken(returnedRefreshToken)
-
-                /* Use the idToken for Logins Map when Federating User Pools with identity pools or when passing through an Authorization Header to an API Gateway Authorizer */
-                // const idToken = result.idToken.jwtToken;
-
+                console.log('QQQQ Success', typeof(result), result.accessToken.payload)
+                onCognitoUserSession(result.accessToken.payload)
             },
 
             onFailure: function (err) {

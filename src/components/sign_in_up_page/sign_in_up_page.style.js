@@ -15,7 +15,7 @@ export const InputContainer = styled.div`
 
 export const Input = styled.input`
     width: 90%;
-    border-radius: 10px
+    border-radius: 15px;
     font-size: 1.3rem;
     font-weight: 400;
     padding: 10px;

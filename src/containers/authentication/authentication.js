@@ -10,6 +10,8 @@ import SignInUpPage from '../../components/sign_in_up_page/sign_in_up_page'
 
 import { postCognitoUserSession } from '../../redux/actions/authentication_actions'
 
+import store from '../../redux/store'
+
 /**
  * After the APIs have been loaded in the api_container this container is loaded
  * It checks to see if the user has already signed in based on whether or not a refresh token exists in cookies
@@ -30,11 +32,8 @@ const Authentication = (props) => {
         authenticated
     } = props
 
-    // const dispatch = useDispatch()
-    // const onCognitoUserSession = (JWT) => dispatch(postCognitoUserSession(JWT))
-
-    // const refreshToken = useSelector(state => state.authenticationReducer.refreshToken)
-    // const cognitoUserSession = useSelector(state => state.authenticationReducer.cognitoUserSession)
+    const dispatch = useDispatch()
+    const onCognitoUserSession = (JWT) => dispatch(postCognitoUserSession(JWT))
 
     const [signIn, setSignIn] = useState(true)
 

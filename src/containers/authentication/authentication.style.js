@@ -8,7 +8,7 @@ export const Container = styled.div`
     top: 50%;
     left: 50%;
     transform: translate(-50%,-60%);
-    border-radius: 5px;
+    border-radius: 10px;
 `
 
 export const LogoContainer = styled.div`
