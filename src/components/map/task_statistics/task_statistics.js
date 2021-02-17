@@ -40,6 +40,7 @@ const TaskStatistics = (props) => {
         if (editingStation === true || editingPosition === true || taskEditing=== true || processEditing === true) return null
 
         const selectedTaskAnalysis = !!task ? tasksAnalysis[task._id]: null
+        console.log(task._id)
         const startPos = task.device_types[0] == 'human' && task.load.position == task.load.station ? stations[task.load.position] : positions[task.load.position]
         const endPos = task.device_types[0] == 'human' && task.unload.position == task.unload.station ? stations[task.unload.position] : positions[task.unload.position]
 
@@ -127,7 +128,7 @@ const TaskStatistics = (props) => {
 
               </styled.RowContainer>
 
-              {task.device_types[0] !== 'human'&&
+              {task.device_types[0] !== 'human' && !!selectedTaskAnalysis &&
                   <styled.RowContainer style={{ justifyContent: 'space-between', width: '82%', marginTop: '.25rem', borderTop: '1px solid black', paddingTop: '.3rem'}}>
                       <styled.RowContainer>
                           <styled.TaskIcon className='far fa-clock' />
