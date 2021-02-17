@@ -74,7 +74,6 @@ const Widgets = (props) => {
 
         // setTimeout(() => dispatchWidgetLoaded(true), 100)
         dispatchWidgetLoaded(true)
-        console.log('QQQQ hover station Info', hoveringInfo)
         return () => {
             onWidgetClose()
         }
@@ -358,6 +357,7 @@ const Widgets = (props) => {
         // Handles the x and y, use location x if right click menu so it can also move
         if (!!selectedPosition && selectedPosition.schema === 'temporary_position') {
 
+            // Handles when scale gets to large
             if (hoveringInfo.scale === .8) {
                 widgetPosition.x = selectedPosition.x - elementWidth / 2 - 25 + 'px'
                 widgetPosition.y = selectedPosition.y + elementHeight / 2 - 20 + 'px'
