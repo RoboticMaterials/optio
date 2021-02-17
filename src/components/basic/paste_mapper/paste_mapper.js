@@ -590,14 +590,14 @@ const PasteMapper = (props) => {
 
 
 			<styled.Footer>
-				<Button
-					type={"button"}
-					schema={schema}
-					label={"Create Lots"}
-					onClick={()=>{
-						createPayload()
-					}}
-				/>
+				{/*<Button*/}
+				{/*	type={"button"}*/}
+				{/*	schema={schema}*/}
+				{/*	label={"Create Lots"}*/}
+				{/*	onClick={()=>{*/}
+				{/*		createPayload()*/}
+				{/*	}}*/}
+				{/*/>*/}
 				<Button
 					type={"button"}
 					schema={schema}

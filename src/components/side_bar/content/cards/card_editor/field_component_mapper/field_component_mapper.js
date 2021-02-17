@@ -141,7 +141,6 @@ const FieldComponentMapper = (props) => {
 			)
 		}
 		case FIELD_COMPONENT_NAMES.CALENDAR_START_END: {
-			console.log("component mapper CALENDAR_START_END value",value)
 			let startDate, endDate
 			if(isArray(value) && value.length > 0) {
 				startDate = jsDateToObjDate(value[0])

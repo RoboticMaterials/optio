@@ -38,6 +38,9 @@ export const Body = styled.div`
 
 export const Footer = styled.div`
     background: ${props => props.theme.bg.quinary};
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `
 
 export const Title = styled.div`

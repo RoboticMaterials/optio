@@ -39,12 +39,6 @@ export const getLotTemplate = (id) =>  async (dispatch) => {
         // make request
         const lotTemplate = await api.getLotTemplate(id);
 
-        // const cardsObj = convertArrayToObject(cards, "_id")
-        // console.log("getCard cardsObj",cardsObj)
-
-        // format response
-        // const normalizedSchedules = normalize(schedules, schedulesSchema);
-
         // return payload for redux
         return {
             lotTemplate,
@@ -100,8 +94,6 @@ export const postLotTemplate = (lotTemplate) =>  async dispatch => {
 
     const callback = async () => {
         const createdLotTemplate = await api.postLotTemplate(lotTemplate);
-        console.log("createdLotTemplate",createdLotTemplate)
-        // const normalizedSchedules = normalize(createdSchedule, scheduleSchema);
 
         return {
             lotTemplate: createdLotTemplate,
@@ -155,6 +147,5 @@ export const putLotTemplate = (lotTemplate, id) => async dispatch => {
 // selected
 // ******************************
 export const setSelectedLotTemplate = (lotTemplateId) => async dispatch => {
-    console.log("setSelectedLotTemplate lotTemplateId",lotTemplateId)
      dispatch({ type: SET + LOT_TEMPLATE + SELECTED, payload: lotTemplateId })
 };
