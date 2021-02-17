@@ -50,7 +50,6 @@ const Settings = () => {
     const [mapSettingsState, setMapSettingsState] = useState(currentMap)
     const [mirUpdated, setMirUpdated] = useState(false)
     const [devicesEnabled, setDevicesEnabled] = useState(!!deviceEnabledSetting)
-
     /**
      *  Sets current settings to state so that changes can be discarded or saved
      * */
@@ -93,7 +92,7 @@ const Settings = () => {
             [key]: value,
         }
         setLocalSettingsState(updatedSettings)
-
+        console.log(localSettingsState)
     }
 
 
@@ -190,20 +189,24 @@ const Settings = () => {
                             <Switch
                                 checked={localSettingsState.non_local_api}
                                 onChange={() => {
-                                    handleUpdateLocalSettings({ non_local_api: !localSettings.non_local_api })
+                                    handleUpdateLocalSettings({ non_local_api: !localSettingsState.non_local_api })
+
                                 }}
                                 onColor='red'
                                 style={{ marginRight: '1rem' }}
                             />
-                            <Textbox
-                                placeholder="API IP Address"
-                                value={localSettingsState.non_local_api_ip}
-                                onChange={(event) => {
-                                    handleUpdateLocalSettings({ non_local_api_ip: event.target.value })
-                                }}
-                                style={{ width: '100%' }}
-                            // type = 'number'
-                            />
+                            {!!localSettingsState.non_local_api &&
+                              <Textbox
+                                  placeholder="API IP Address"
+                                  value={localSettingsState.non_local_api_ip}
+                                  onChange={(event) => {
+                                      handleUpdateLocalSettings({ non_local_api_ip: event.target.value })
+                                  }}
+                                  style={{ width: '100%' }}
+                              // type = 'number'
+                              />
+                            }
+
                         </styled.RowContainer>
 
                         <styled.Header style = {{fontSize: '1.2rem', paddingTop: '2rem'}}>Devices Enabled</styled.Header>
