@@ -19,6 +19,7 @@ import {
     postRouteClean,
     putRouteClean,
     setSelectedTask,
+    setSelectedHoveringTask,
 } from '../../../../../redux/actions/tasks_actions'
 import { setSelectedProcess, setFixingProcess } from '../../../../../redux/actions/processes_actions'
 import {handlePostTaskQueue, postTaskQueue} from '../../../../../redux/actions/task_queue_actions'
@@ -75,7 +76,7 @@ export const ProcessField = (props) => {
     const onHandlePostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
     const dispatchSetFixingProcess = async (bool) => await dispatch(setFixingProcess(bool))
     const dispatchDeleteRouteClean = async (routeId) => await dispatch(deleteRouteClean(routeId))
-
+    const dispatchSetSelectedHoveringTask = (task) => dispatch(setSelectedHoveringTask(task))
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const stations = useSelector(state => state.stationsReducer.stations)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -90,7 +91,6 @@ export const ProcessField = (props) => {
     const [editingTask, setEditingTask] = useState(false) // Used to tell if a task is being edited
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [showExistingTaskWarning, setShowExistingTaskWarning] = useState(false);
-
     const valuesRef = useRef(values);
 
     // throttled func
@@ -124,6 +124,13 @@ export const ProcessField = (props) => {
         }
 
     }, [editingTask])
+
+    useEffect(() => {
+      if(editingTask==false){
+        dispatchSetSelectedHoveringTask(null)
+      }
+    })
+
 
     const handleAddTask = async () => {
 

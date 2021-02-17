@@ -47,10 +47,12 @@ class Item extends Component {
           item.disabled ? `${LIB_NAME}-item-disabled` : ''
         }`}
         onClick={item.disabled ? undefined : () => methods.addItem(item)}
-        onFocus = {props.onMouseEnter}
         onKeyPress={item.disabled ? undefined : () => methods.addItem(item)}
         color={props.color}
-        schema={props.schema}>
+        schema={props.schema}
+        onMouseEnter = {() => props.onMouseEnter(item)}
+        onMouseLeave = {() => props.onMouseLeave(item)}
+        >
 
             <TextComponent>
               {getByPath(item, props.labelField)} {item.disabled && <ins>{props.disabledLabel}</ins>}
