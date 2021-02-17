@@ -18,7 +18,8 @@ const ErrorTooltip = (props) => {
         visible,
         onClick,
         className,
-        color
+        color,
+        containerStyle
     } = props
 
     // target input for initial display of tooltip
@@ -58,7 +59,9 @@ const ErrorTooltip = (props) => {
 
     return (
 
-        <ContainerComponent>
+        <ContainerComponent
+            style={containerStyle}
+        >
             {/*initial display on load*/}
             {autoFocus && visible &&
                 //wrap in portal to avoid clipping issues

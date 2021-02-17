@@ -56,11 +56,11 @@ export const commonIcon = css`
 
 export const trapezoidCss = `
   
-  // border-bottom: 50px solid #555;
-  // border-left: 25px solid transparent;
-  // border-right: 25px solid transparent;
-  // height: 0;
-  // width: 125px;
+  border-bottom: 50px solid #555;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  height: 0;
+  width: 125px;
   
   
   // width: 200px;

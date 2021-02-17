@@ -155,7 +155,8 @@ const PasteMapper = (props) => {
 
 				const {
 					dataType = FIELD_DATA_TYPES.STRING,
-					index
+					index,
+					fieldPath,
 				} = label || {}
 				let fieldName = label?.fieldName
 				if(!fieldName) fieldName = `undefined field ${currColIndex}`
@@ -184,17 +185,34 @@ const PasteMapper = (props) => {
 					}
 				}
 
-				console.log("createPayload label",label)
-				console.log("finalValue",finalValue)
+				let constructedPath = {}
+				if(isArray(fieldPath) && fieldPath.length > 0) {
+
+					finalValue = {
+						[fieldPath[fieldPath.length - 1]]: {
+							[fieldName]: finalValue
+						}
+					}
+
+					fieldPath.forEach((currentPath, currPathIndex) => {
+						if(currPathIndex === fieldPath.length - 1) return // skip last since it was done
+
+						finalValue = {[currentPath]: finalValue}
+					})
+				}
+				else{
+					finalValue = {[fieldName]: finalValue}
+				}
+
 
 				if(existingData) {
 					data[currItemIndex] =  {
 						...existingData,
-						[fieldName]: finalValue
+						...finalValue
 					}
 				}
 				else {
-					data.push({[fieldName]: finalValue})
+					data.push({...finalValue})
 				}
 			})
 		})
@@ -235,7 +253,7 @@ const PasteMapper = (props) => {
 								if(currIndex === 0) {
 									return(
 										<>
-											<styled.ItemContainer style={{background: "transparent", border: "none"}}>
+											<styled.ItemContainer style={{background: "transparent", border: "none", height: "4rem"}}>
 												{/*<div>Field Names</div>*/}
 											</styled.ItemContainer>
 											<styled.ItemContainer style={{background: "transparent", border: "none", alignSelf: "flex-end"}}>
@@ -293,6 +311,7 @@ const PasteMapper = (props) => {
 											{/**/}
 											{(currItemIndex === 0 && fieldDirection === 0) &&
 											<ContainerWrapper
+												showHighlight={false}
 												shiftable={false}
 												groupName="field_names"
 												onDragStart={(dragStartParams, b, c)=>{
@@ -344,23 +363,34 @@ const PasteMapper = (props) => {
 												}}
 											>
 												<Draggable>
-											<styled.Trapezoid>
+													<styled.FieldNameTab>
+														<styled.Trapezoid/>
+														<TextField
+															inputComponent={"input"}
+															containerStyle={{
+																alignSelf: "center",
+																// flex: .5
+																padding: "0 1rem",
+																flex: .9
+															}}
+															name={`selectedFieldNames[${currRowIndex}].fieldName`}
+															placeholder={"Field name..."}
+															style={{
+																background: themeContext.bg.tertiary,
+																maxHeight: "2rem",
+																color: "white",
+															}}
+															textboxContainerStyle={{
+																maxHeight: "2rem",
+																// border: "none",
+															}}
 
-												<TextField
+														/>
 
-													name={`selectedFieldNames[${currRowIndex}].fieldName`}
-													placeholder={"Field name..."}
-													style={{
-														background: themeContext.bg.tertiary,
-														maxHeight: "2rem",
-														color: "white"
-													}}
-													textboxContainerStyle={{
-														maxHeight: "2rem"
-													}}
 
-												/>
-											</styled.Trapezoid>
+													</styled.FieldNameTab>
+
+
 												</Draggable>
 											</ContainerWrapper>
 											}
@@ -495,8 +525,8 @@ const PasteMapper = (props) => {
 				</styled.FieldNamesContainer>
 
 				<styled.SectionBreak/>
-
 				{renderTable()}
+				<styled.SectionBreak/>
 			</styled.Body>
 
 

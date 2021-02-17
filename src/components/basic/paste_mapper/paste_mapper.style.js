@@ -35,6 +35,7 @@ export const Body = styled.div`
     flex-direction: column;
     flex: 1;
     overflow: hidden;
+    padding: 1rem;
 `
 
 export const Footer = styled.div`
@@ -62,17 +63,24 @@ export const TitleText = styled.span`
 `
 
 export const SectionBreak = styled.hr`
-  color: black;
-    background: black;
+    border-top: 1px solid ${props => props.theme.bg.secondary};
+    width: 100%;
+    margin: 0;
+    
 `
 
 
 export const Table = styled.div`
-padding: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    //margin-left: auto;
+    //margin-right: auto;
+//padding: 1rem;
 	display: flex;
   //flex: 1;
   overflow: auto;
-    with: fit-content;
+    //width: fit-content;
+    //align-self: center;
   //flex-direction: column;
   //background: yellow;
   
@@ -85,8 +93,8 @@ export const Column = styled.div`
 	display: flex;
   // border: 1px solid ${props => props.theme.bg.quaternary};
   background: ${props => props.theme.bg.quaternary};
-    max-width: 10rem;
-    min-width: 10rem;
+    //max-width: 10rem;
+    min-width: 13rem;
     align-items: stretch;
     
   	//background: green;
@@ -104,27 +112,28 @@ export const cellCss = css`
     
 `
 
-export const Trapezoid = styled.div`
-    ${trapezoidCss};
-    // background: ${props => props.theme.bg.tertiary};
-    // flex: 1;
-    // padding: .25rem;
-    // align-self: stretch;
+export const FieldNameTab = styled.div`
+    position: relative;
     display: flex;
-    flex-direction: column;
     justify-content: center;
-    align-self: center;
-    // align-items: center;
-    width: 98%;
-    // border: 1px solid ${props => props.theme.bg.senary};
-    // border-bottom: none;
+    align-items: center;
+    flex: 1;
+    align-self: stretch;
+    //padding: 1rem;
+    height: 4rem;
+`
+export const Trapezoid = styled.div`
+    position: absolute;
+    //top: 50%;
+    //left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    background: ${props => props.theme.bg.tertiary};
+    ${trapezoidCss};
+    //padding: 1rem;
+    width: 94.5%;
+    height: 100%;
     border: none;
-    
-    
-    // background: red;
-  //   height: 3rem;
-  // max-height: 3rem;
-  
 `
 
 export const ItemContainer = styled.div`
@@ -141,9 +150,9 @@ export const ItemContainer = styled.div`
   background: ${props => props.theme.bg.tertiary};
   
   
-  height: 2rem;
+  //height: 2rem;
   min-height: 2rem;
-  max-height: 2rem;
+  max-height: 4rem;
     
   
    border-top: .5px solid ${props => props.theme.bg.senary};
@@ -168,6 +177,7 @@ export const Cell = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: auto;
 `
 
 export const FieldNamesContainer = styled.div`

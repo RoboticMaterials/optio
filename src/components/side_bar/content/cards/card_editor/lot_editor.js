@@ -215,10 +215,11 @@ const FormComponent = (props) => {
 				bins,				// extract reserved fields
 				processId,			// extract reserved fields
 				_id,				// extract reserved fields
+				quantity,				// extract reserved fields
 				...remainingPayload
 			} = currentLot
 
-			formikProps.resetForm()
+			formikProps.resetForm()	// reset when switching
 
 			setValues({
 				name: payloadName ? payloadName : values.name,
@@ -751,7 +752,7 @@ const FormComponent = (props) => {
 					availableFieldNames={[
 						...fieldNameArr,
 						{fieldName: "name", dateType: FIELD_DATA_TYPES.STRING, displayName: "Name"},
-						{fieldName: "bins[QUEUE].count", dateType: FIELD_DATA_TYPES.INTEGER, displayName: "Quantity"}
+						{fieldName: "count", fieldPath: ["bins", "QUEUE"], dateType: FIELD_DATA_TYPES.INTEGER, displayName: "Quantity"}
 					]}
 					onCancel={() => setShowPasteMapper(false)}
 					table={pasteTable}
