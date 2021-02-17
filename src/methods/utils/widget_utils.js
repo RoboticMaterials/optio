@@ -22,9 +22,6 @@ import * as deviceActions from '../../redux/actions/devices_actions'
  */
 
 export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
-    // console.log('QQQQ horver loc', location, rd3tClassName, d3)
-    // console.log('QQQQ hover class', rd3tClassName)
-    // console.log('QQQQ hover d3', d3)
     let widgetInfo = {}
     widgetInfo.id = location._id
 
@@ -76,7 +73,6 @@ export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
         const el = location.schema === 'station' ? document.getElementById(`${rd3tClassName}-station`) : location.schema === 'temporary_position' ? document.getElementById(`${rd3tClassName}-temporary_position`) : document.getElementById(`${rd3tClassName}-position`)
         let bBox = null
 
-
         // Try catch for when page refreshses when in a widget. When refreshing in a widget, the elements is unmounted and cant get the bounding because of an unmounted element
         try {
             bBox = el.getBoundingClientRect()
@@ -84,29 +80,22 @@ export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
             return widgetInfo
         }
 
-        console.log('QQQQ Bbox', bBox)
-        console.log('QQQQ location', location)
-        console.log('QQQQ d3', d3)
-
         widgetInfo.scale = 1.3
         widgetInfo.yPosition = location.y + bBox.height / 2 - 75
-        // widgetInfo.xPosition = location.schema === 'station' ? location.x + 45 : location.x + 12
-        widgetInfo.xPosition = location.schema === 'station' ? location.x + 45 : location.schema === 'temporary_position' ? location.x + 45 : location.x + 12
-
+        widgetInfo.xPosition = location.schema === 'station' ? location.x + 45 : location.x + 12
 
         // Stops the widget from getting to small and keeping the widget relative to the location size
         if (d3.scale < .8) {
-            console.log('QQQQ HURRRR', location.schema === 'temporary_position')
             widgetInfo.scale = .8
-            widgetInfo.yPosition = location.schema === 'temporary_position' ? location.y + bBox.height / 2 - 6800 : location.y + bBox.height / 2 - 68
-            widgetInfo.xPosition = location.schema === 'temporary_position' ? location.x - 450 : location.x - 15
+            widgetInfo.yPosition = location.y + bBox.height / 2 - 68
+            widgetInfo.xPosition = location.x - 15
         }
 
         // Stops the widget from getting to large and keeping the widget relatice to the location size
         else if (d3.scale > 1.3) {
             widgetInfo.scale = 1.3
             widgetInfo.yPosition = location.y + bBox.height / 2 - 75
-            widgetInfo.xPosition = location.schema === 'station' ? location.x + 45 : location.schema === 'temporary_position' ? location.x + 45 : location.x + 12
+            widgetInfo.xPosition = location.schema === 'station' ? location.x + 45 : location.x + 12
         }
     }
 
