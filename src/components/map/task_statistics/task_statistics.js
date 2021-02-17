@@ -40,7 +40,6 @@ const TaskStatistics = (props) => {
         if (editingStation === true || editingPosition === true || taskEditing=== true || processEditing === true) return null
 
         const selectedTaskAnalysis = !!task ? tasksAnalysis[task._id]: null
-        console.log(task._id)
         const startPos = task.device_types[0] == 'human' && task.load.position == task.load.station ? stations[task.load.position] : positions[task.load.position]
         const endPos = task.device_types[0] == 'human' && task.unload.position == task.unload.station ? stations[task.unload.position] : positions[task.unload.position]
 
