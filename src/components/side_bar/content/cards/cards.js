@@ -155,9 +155,9 @@ const Cards = (props) => {
    * Clicking a lot should open the lot editor for the clicked lot
    * In order to do this, the function sets showCardEditor to true and sets selectedCard to the values passed in as arguments to this function
    *
-   * @param {cardId} string - id of card clicked
-   * @param {processId} string - id of clicked card's process
-   * @param {binId)} string - id of clicked card's bin
+   * @param {cardId} string - id of lot clicked
+   * @param {processId} string - id of clicked lot's process
+   * @param {binId)} string - id of clicked lot's bin
    *
    * */
     const handleCardClick = (cardId, processId, binId) => {

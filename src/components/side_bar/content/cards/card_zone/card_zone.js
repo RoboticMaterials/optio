@@ -103,7 +103,7 @@ const CardZone = ((props) => {
 
 	Object.values(cards).forEach((card) => {
 
-		// extract card attributes
+		// extract lot attributes
 		const {
 			bins,
 			_id,
@@ -124,10 +124,10 @@ const CardZone = ((props) => {
 					count
 				} = binValue
 
-				// don't render card being dragged - prevents flicker bug after drop
+				// don't render lot being dragged - prevents flicker bug after drop
 				if((binId === draggingBinId) && (_id === draggingLotId)) return
 
-				// if there is an entry in tempCardsSorted with key matching {binId}, add the card to this bin
+				// if there is an entry in tempCardsSorted with key matching {binId}, add the lot to this bin
 				if(tempCardsSorted[binId]) {
 					tempCardsSorted[binId].cards.push({
 						...rest,
@@ -137,7 +137,7 @@ const CardZone = ((props) => {
 					})
 				}
 
-				// if {binId} is queue, add the card to the queue
+				// if {binId} is queue, add the lot to the queue
 				else if(binId === "QUEUE") {
 					tempQueue.push({
 						...rest,
@@ -147,7 +147,7 @@ const CardZone = ((props) => {
 					})
 				}
 
-				// if the {binId} is finish, add the card to the finished column
+				// if the {binId} is finish, add the lot to the finished column
 				else if(binId === "FINISH") {
 					tempFinished.push({
 						...rest,

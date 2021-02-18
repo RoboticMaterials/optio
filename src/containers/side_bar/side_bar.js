@@ -95,7 +95,7 @@ const SideBar = (props) => {
     })
 
 
-    // sets width to full screen if card subpage is open in processes
+    // sets width to full screen if lot subpage is open in processes
     useEffect(() => {
         const {
 
@@ -109,7 +109,7 @@ const SideBar = (props) => {
         const time = Date.now()
         if ((page === "processes" || page === "lots") && ((subpage === "lots")) || (id === "timeline") || (id === "summary")) {
 
-            if (!prevWidth) setPrevWidth(width) // store previous width to restore when card page is left
+            if (!prevWidth) setPrevWidth(width) // store previous width to restore when lot page is left
             setWidth(window.innerWidth)
             onSetWidth(window.innerWidth)
 

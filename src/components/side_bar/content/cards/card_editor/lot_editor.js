@@ -1112,11 +1112,11 @@ const LotEditor = (props) => {
 	const [formMode, setFormMode] = useState(props.cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
 	const [showLotTemplateEditor, setShowLotTemplateEditor] = useState(false)
 
-	// get card object from redux by cardId
+	// get lot object from redux by cardId
 	const card = cards[cardId] || null
 	let lotTemplateId = selectedLotTemplatesId  // set template id to selected template from redux - set by sidebar when you pick a template
 
-	// if a template isn't provided by redux, check if card has template id
+	// if a template isn't provided by redux, check if lot has template id
 	if(!lotTemplateId && isObject(card) && card?.lotTemplateId) {
 		lotTemplateId = card?.lotTemplateId
 	}
@@ -1128,7 +1128,7 @@ const LotEditor = (props) => {
 		lotTemplate = BASIC_LOT_TEMPLATE
 	}
 
-	// extract card attributes
+	// extract lot attributes
 	const {
 		bins = {}
 	} = card || {}
@@ -1147,12 +1147,12 @@ const LotEditor = (props) => {
 			bins: {...remainingBins},
 		}
 
-		// if there are no remaining bins, delete the card
+		// if there are no remaining bins, delete the lot
 		if(isEmpty(remainingBins)) {
 			onDeleteCard(cardId, processId)
 		}
 
-		// otherwise update the card to contain only the remaining bins
+		// otherwise update the lot to contain only the remaining bins
 		else {
 			const result = await onPutCard(submitItem, cardId)
 		}
@@ -1191,24 +1191,24 @@ const LotEditor = (props) => {
 	}, [cardId])
 
 	/*
-	* if card exists, set form mode to update
+	* if lot exists, set form mode to update
 	* */
 	useEffect( () => {
 
-		// editing existing card
+		// editing existing lot
 		if(cardId) {
 			if(card) {
 
-				// if card has template, template and card must be loaded
+				// if lot has template, template and lot must be loaded
 				if(card?.lotTemplateId) {
 					if(lotTemplate && !loaded) {
 						setLoaded(true)
 					}
 				}
 
-				// No template, only need card to set loaded
+				// No template, only need lot to set loaded
 				else if(!loaded) {
-					setLoaded(true) // if card already exists, set loaded to true
+					setLoaded(true) // if lot already exists, set loaded to true
 				}
 			}
 
@@ -1259,7 +1259,7 @@ const LotEditor = (props) => {
 
 					// set initialValue for current item
 					// name of value is given by fieldName
-					// if card already has a value, use it. Otherwise, use appropriate default value for field type
+					// if lot already has a value, use it. Otherwise, use appropriate default value for field type
 					switch(component) {
 						case FIELD_COMPONENT_NAMES.TEXT_BOX: {
 							initialValues[fieldName] = isObject(card) ?
@@ -1437,7 +1437,7 @@ const LotEditor = (props) => {
 								const end = values?.dates?.end || null
 
 								if(content === CONTENT.MOVE) {
-									// moving card need to update count for correct bins
+									// moving lot need to update count for correct bins
 									if(moveCount && moveLocation) {
 
 										var submitItem = {
@@ -1512,7 +1512,7 @@ const LotEditor = (props) => {
 											bins: updatedBins
 										}
 
-										// update card
+										// update lot
 										onPutCard(submitItem, cardId)
 									}
 								}

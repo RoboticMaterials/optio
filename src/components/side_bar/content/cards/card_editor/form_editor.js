@@ -385,7 +385,7 @@ const LotCreatorForm = (props) => {
 	const [loaded, setLoaded] = useState(false)
 	const [formMode, setFormMode] = useState(props.lotTemplateId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
 
-	// get card object from redux by cardId
+	// get lot object from redux by cardId
 	const lotTemplate = lotTemplates[lotTemplateId] || null
 
 	/*
@@ -432,11 +432,11 @@ const LotCreatorForm = (props) => {
 	}, [lotTemplateId])
 
 	/*
-	* if card exists, set form mode to update
+	* if lot exists, set form mode to update
 	* */
 	useEffect( () => {
 		if(lotTemplate && !loaded) {
-			setLoaded(true) // if card already exists, set loaded to true
+			setLoaded(true) // if lot already exists, set loaded to true
 		}
 
 	}, [lotTemplate])

@@ -443,7 +443,7 @@ const ApiContainer = (props) => {
     }
 
     /*
-        Loads data pertinent to process card view
+        Loads data pertinent to process lot view
 
         required data:
         cards

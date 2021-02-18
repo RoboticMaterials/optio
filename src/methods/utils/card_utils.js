@@ -56,12 +56,12 @@ export const parseMessageFromEvent = (eventName, username, data) => {
 }
 
 /*
-* Converts date from a card into a JS date object
+* Converts date from a lot into a JS date object
 *
-* The card date object contains key, value pairs for year, month, and date
+* The lot date object contains key, value pairs for year, month, and date
 * These values are extracted, and if the values are valid, used to generate a new Date objects
 *
-* returns a JS Date object if the card date is valid, and null otherwise
+* returns a JS Date object if the lot date is valid, and null otherwise
 *
 * @param {object} cardDate - object containing year, month and date keys
 * */

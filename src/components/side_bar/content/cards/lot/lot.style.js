@@ -2,6 +2,7 @@ import styled, {css} from "styled-components";
 import { Draggable } from 'react-smooth-dnd';
 import {rowCss} from "../card_editor/lot_editor.style";
 import * as commonCss from "../../../../../common_css/common_css";
+import {commonIcon, iconButtonCss} from "../../../../../common_css/common_css";
 
 export const Container = styled.div`
  
@@ -113,13 +114,20 @@ export const FooterBar = styled.div`
   font-size: ${props => props.theme.fontSize.sz4};
 `
 
+export const FlagButton = styled.button`
+	${iconButtonCss};
+  	${commonIcon};
+  	margin: 0 1rem;
+`
+
 export const HeaderBar = styled.div`
 	height: fit-content;
 	background: ${props => props.theme.bg.septenary};
   	//background: ${props => props.color};
 	display: flex;
-	justify-content: flex-start;
+	justify-content: space-between;
 	padding: 0 0rem 0 1rem;
+  align-items: center;
   font-size: ${props => props.theme.fontSize.sz3};
 `
 

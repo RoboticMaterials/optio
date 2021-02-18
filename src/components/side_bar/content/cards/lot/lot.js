@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {useSelector} from "react-redux";
-import * as styled from "./card.style";
+import * as styled from "./lot.style";
 import { Draggable } from 'react-smooth-dnd';
 import PropTypes from "prop-types";
 import TextField from "../../../../basic/form/text_field/text_field";
@@ -13,13 +13,7 @@ function hashCode(str) { // java String#hashCode
     return hash;
 }
 
-function intToRGB(i){
-    var c = (i & 0x00FFFFFF)
-        .toString(16)
-        .toUpperCase();
 
-    return "00000".substring(0, 6 - c.length) + c;
-}
 
 
 
@@ -44,7 +38,6 @@ const Card = (props) => {
     const startDateText = ((start_date?.month + 1) && start_date?.day && start_date?.year) ?  (start_date.month + 1) + "/" + start_date.day + "/" + start_date.year : "Start"
     const endDateText = ((end_date?.month + 1) && end_date?.day && end_date?.year) ?  (end_date.month + 1) + "/" + end_date.day + "/" +end_date.year : "End"
 
-    const lotColor= "#" + intToRGB(hashCode(lotId))
 
     return(
         <styled.StyledDraggable key={id} index={index}>
@@ -52,13 +45,11 @@ const Card = (props) => {
                 selectable={selectable}
                 isSelected={isSelected}
                 onClick={onClick}
-                color={lotColor}
                 containerStyle={containerStyle}
             >
-                <styled.HeaderBar
-                    color={lotColor}
-                >
+                <styled.HeaderBar>
                     <styled.CardName>{name}</styled.CardName>
+                    <styled.FlagButton color={"red"} className="fas fa-flag"></styled.FlagButton>
                 </styled.HeaderBar>
                 <styled.ContentContainer>
 
