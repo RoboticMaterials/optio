@@ -223,7 +223,7 @@ const FormComponent = (props) => {
 			setValues({
 				name: payloadName ? payloadName : values.name,
 				bins: bins ? bins : defaultBins,
-				processId,
+				processId: processId ? processId : (values.processId ? values.processId : null),	// if currentLot has processId, use it. Otherwise if form has value, use it. Otherwise set to null
 				_id,
 				[lotTemplateId]: {
 					// ...values[lotTemplateId],
@@ -379,19 +379,15 @@ const FormComponent = (props) => {
 
 					switch(content){
 						case CONTENT.MOVE:
-							// setFieldValue("buttonType", FORM_BUTTON_TYPES.MOVE_OK)
 							onSubmit(FORM_BUTTON_TYPES.MOVE_OK)
 							break
 						default:
-							// setFieldValue("buttonType", FORM_BUTTON_TYPES.SAVE)
 							onSubmit(FORM_BUTTON_TYPES.SAVE)
 							break
 					}
 				}
 				else {
 					// if the form mode is set to CREATE (the only option other than UPDATE), the default action of the enter key should be to add the lot
-					// this is done by setting buttonType to ADD and submitting the form
-					// setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD)
 					onSubmit(FORM_BUTTON_TYPES.ADD)
 				}
 
@@ -908,7 +904,6 @@ const FormComponent = (props) => {
 											style={{...buttonStyle, width: "8rem"}}
 											type={"button"}
 											onClick={() => {
-												// setFieldValue("buttonType", FORM_BUTTON_TYPES.MOVE_OK)
 												onSubmit(FORM_BUTTON_TYPES.MOVE_OK)
 											}}
 											schema={"ok"}
@@ -951,7 +946,6 @@ const FormComponent = (props) => {
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
 											secondary
 											onClick={async () => {
-												// setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD)
 												onSubmit(FORM_BUTTON_TYPES.ADD)
 											}}
 										>
@@ -967,7 +961,6 @@ const FormComponent = (props) => {
 											secondary
 											onClick={async () => {
 												if (isArray(providedValues) && providedValues.length > 0) {
-													// setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD_AND_NEXT)
 													if (providedIndex < providedValues.length - 1) {
 														// function order matters
 														const submitWasSuccessful = await onSubmit()
@@ -976,7 +969,6 @@ const FormComponent = (props) => {
 
 												} else {
 													// function order matters
-													// setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD_AND_NEXT)
 													onSubmit(FORM_BUTTON_TYPES.ADD_AND_NEXT)
 												}
 
@@ -995,7 +987,6 @@ const FormComponent = (props) => {
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
 											secondary
 											onClick={async () => {
-												// setFieldValue("buttonType", FORM_BUTTON_TYPES.SAVE)
 												onSubmit(FORM_BUTTON_TYPES.SAVE)
 											}}
 										>
