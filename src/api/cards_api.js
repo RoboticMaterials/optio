@@ -12,6 +12,9 @@ export async function getCard(cardId) {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator + "/" + cardId,
+            headers: {
+                'X-API-Key': '123456'
+            }
         });
         // Success 🎉
         const data = response.data;
@@ -52,6 +55,9 @@ export async function getCards() {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator,
+            headers: {
+                'X-API-Key': '123456'
+            }
         });
         // Success 🎉
         const data = response.data;
@@ -93,6 +99,9 @@ export async function getProcessCards(processId) {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + "processes/" + processId + "/cards",
+            headers: {
+                'X-API-Key': '123456'
+            }
         });
         // Success 🎉
         const data = response.data;
@@ -178,7 +187,8 @@ export async function postCard(card) {
             url: apiIPAddress() + operator,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'X-API-Key': '123456'
             },
             data: card
         });

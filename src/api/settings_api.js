@@ -5,7 +5,7 @@ import logger from '../logger'
 import { apiIPAddress } from '../settings/settings'
 
 import store from '../redux/store'
-const token = store.getState().cognotoUserSession
+const token = '123456'//store.getState().cognotoUserSession
 
 const operator = 'settings'
 
@@ -16,7 +16,10 @@ export async function getSettings() {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator,
-            token: token.username
+            headers:{
+                'X-API-Key': '123456'
+            }
+            // token: token.username
         });
         // Success 🎉
         log.debug('getSettings response', response);
@@ -61,13 +64,15 @@ export async function getSettings() {
 }
 
 export async function postSettings(settings) {
+    console.log(settings)
     try {
         const response = await axios({
             method: 'POST',
             url: apiIPAddress() + operator,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'X-API-Key': '123456'
             },
             data: settings
         });

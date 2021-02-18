@@ -16,7 +16,9 @@ export async function getMaps() {
     const response = await axios({
       method: 'GET',
       url: apiIPAddress() + operator,
-      token: token.username
+      headers: {
+        'X-API-Key': '123456'
+    }
     });
 
     // Success 🎉

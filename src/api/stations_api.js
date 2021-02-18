@@ -3,8 +3,8 @@ import * as log from 'loglevel';
 
 import { apiIPAddress } from '../settings/settings'
 
-import store from '../redux/store'
-const token = store.getState().cognotoUserSession
+//import store from '../redux/store'
+const token = '123456' //store.getState().cognotoUserSession
 
 const operator = 'stations'
 
@@ -13,9 +13,11 @@ const logger = log.getLogger('Stations_Api', "Station");
 export async function getStations() {
     try {
         const response = await axios({
-            method: 'get',
+            method: 'GET',
             url: apiIPAddress() + operator,
-            token: token.username
+            headers: {
+                'X-API-Key': '123456'
+            }
         });
         // Success 🎉
         const data = response.data;
@@ -59,6 +61,7 @@ export async function deleteStation(ID) {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
+                'X-API-Key': '123456'
             },
         });
 
@@ -104,7 +107,8 @@ export async function postStation(station) {
             url: apiIPAddress() + operator,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'X-API-Key': '123456'
             },
             data: JSON.stringify(station)
         });
@@ -150,7 +154,8 @@ export async function putStation(station, ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'text/html'
+                'Accept': 'text/html',
+                'X-API-Key': '123456'
             },
             data: station
         });
@@ -195,7 +200,8 @@ export async function getStationAnalytics(id, timeSpan) {
             url: apiIPAddress() + operator + '/' + id + '/analysis',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'text/html'
+                'Accept': 'text/html',
+                'X-API-Key': '123456'
             },
             // A timespan is {time_span: 'day', index: 0}
             data: timeSpan

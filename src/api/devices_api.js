@@ -18,7 +18,10 @@ export async function getDevices() {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator,
-            token: token.username
+            headers: {
+                'X-API-Key': '123456'
+            }
+            // token: token.username
         });
         // Success 🎉
         const data = response.data;

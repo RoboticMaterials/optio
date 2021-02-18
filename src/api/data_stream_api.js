@@ -6,7 +6,7 @@ import store from '../redux/store'
 import { apiIPAddress } from '../settings/settings'
 const operator = 'data_stream'
 
-const token = store.getState().cognotoUserSession
+const token = '123456' //store.getState().cognotoUserSession
 
 const logger = log.getLogger('Positions_Api', "Position");
 
@@ -15,7 +15,9 @@ export async function getDataStream() {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator,
-            token: token.username
+            headers: {
+                'X-API-Key': '123456'
+            }
         });
         // Success 🎉
         const data = response.data;

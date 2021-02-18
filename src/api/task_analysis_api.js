@@ -9,6 +9,9 @@ export async function getTasksAnalysis() {
     const response = await axios({
       method: 'GET',
       url: apiIPAddress() + operator,
+      headers: {
+        'X-API-Key': '123456'
+    }
     });
 
     // Success 🎉
@@ -54,6 +57,9 @@ export async function getTaskAnalysis(id) {
     const response = await axios({
       method: 'GET',
       url: apiIPAddress() + operator + '/' + id,
+      headers: {
+        'X-API-Key': '123456'
+    }
     });
     // Success 🎉
     // log.debug('getTask: response: ', response);

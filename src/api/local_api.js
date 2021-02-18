@@ -47,7 +47,7 @@ export const deleteLocalSettings = async () => {
 export const getLocalSettings = async () => {
     let localSettings = localStorage.getItem("local-settings-config");
 
-    if (localSettings !== undefined) {
+    if (localSettings !== null) {
         localSettings = JSON.parse(localSettings);
 
         // if(localSettings.authentication !== undefined){

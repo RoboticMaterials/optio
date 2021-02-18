@@ -329,7 +329,7 @@ const ApiContainer = (props) => {
         // Cleaner Functions
         if (!!mapViewEnabled) {
 
-            const funtion = await handleDeviceWithoutADashboard(devices, dashboards)
+            // const funtion = await handleDeviceWithoutADashboard(devices, dashboards)
             // const funtion1 = await handleTasksWithBrokenPositions(tasks, stations, positions)
             // const funtion2 = await handlePositionsWithBrokenParents(stations, positions)
             // const funtion3 = await handleDevicesWithBrokenStations(devices, stations)
@@ -502,6 +502,7 @@ const ApiContainer = (props) => {
                 const newDashboard = onPostDashoard(newDeviceDashboard)
 
                 return newDashboard.then(async (dashPromise) => {
+                    console.log(dashPromise)
                     device.dashboards = [dashPromise._id.$oid]
                     await onPutDevice(device, device._id)
                 })
@@ -523,12 +524,14 @@ const ApiContainer = (props) => {
                     const newDashboard = onPostDashoard(newDeviceDashboard)
 
                     return newDashboard.then(async (dashPromise) => {
+                        if (dashPromise._id !== undefined){
                         // Add new dashboard
                         device.dashboards.push(dashPromise._id.$oid)
 
                         // Delete old dashboard
                         const index = device.dashboards.indexOf(dashboard)
                         device.dashboards.splice(index, 1)
+                        }
 
                         await onPutDevice(device, device._id)
                     })

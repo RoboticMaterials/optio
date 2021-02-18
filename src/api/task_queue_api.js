@@ -11,6 +11,9 @@ export async function getTaskQueue() {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator,
+            headers: {
+                'X-API-Key': '123456'
+            }
         });
         // Success 🎉
         const data = response.data;
@@ -55,6 +58,7 @@ export async function postTaskQueue(taskQueueItem) {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
+                'X-API-Key': '123456'
             },
             data: taskQueueItem,
             url: apiIPAddress() + operator,
@@ -104,6 +108,7 @@ export async function deleteTaskQueueAll() {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
+                'X-API-Key': '123456'
             },
             url: apiIPAddress() + operator,
         });
@@ -151,6 +156,7 @@ export async function deleteTaskQueueItem(id) {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
+                'X-API-Key': '123456'
             },
             url: apiIPAddress() + operator + '/' + id,
         });
@@ -196,7 +202,8 @@ export async function putTaskQueueItem(item, ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'text/html'
+                'Accept': 'text/html',
+                'X-API-Key': '123456'
             },
             data: item
         });

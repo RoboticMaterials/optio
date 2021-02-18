@@ -9,6 +9,9 @@ export async function getTasks() {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator,
+            headers: {
+                'X-API-Key': '123456'
+            }
         });
 
         // Success 🎉
@@ -53,6 +56,9 @@ export async function getTask(id) {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator + '/' + id,
+            headers: {
+                'X-API-Key': '123456'
+            }
         });
         // Success 🎉
         // log.debug('getTask: response: ', response);
@@ -99,7 +105,8 @@ export async function postTask(task) {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'text/html',
-            },
+                'X-API-Key': '123456'
+            },  
             url: apiIPAddress() + operator,
             data: JSON.stringify(task)
         });
@@ -149,6 +156,7 @@ export async function deleteTask(id) {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
+                'X-API-Key': '123456'
             },
             url: apiIPAddress() + operator + '/' + id
         });
@@ -194,7 +202,8 @@ export async function putTask(task, id) {
             method: 'put',
             headers: {
                 'Content-Type': 'application/json',
-
+                'Accept': 'application/json',
+                'X-API-Key': '123456'
             },
             url: apiIPAddress() + operator + '/' + id,
             data: JSON.stringify(task)

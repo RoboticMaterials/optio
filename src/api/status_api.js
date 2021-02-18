@@ -14,7 +14,10 @@ export async function getStatus() {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator,
-            token: token.username
+            headers: {
+                'X-API-Key': '123456'
+            }
+            // token: token.username
         });
         // Success 🎉
         //  log.debug('THE STATE OF PLAY IS!!! on get status',response);

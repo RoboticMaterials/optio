@@ -29,20 +29,20 @@ const SignInUpPage = (props) => {
 
 
     useEffect( () => {
-        // async function checkLocalSettings() {
-        //     // Get local storage
-        //     const localSettings = await onGetLocalSettings()
-        //     console.log(localSettings)
+        async function checkLocalSettings() {
+            // Get local storage
+            const localSettings = await onGetLocalSettings()
+            console.log(localSettings)
             
-        //     // See if authenticated is not null
-        //     if (localSettings.authenticated !== null){
-        //         // If so, assume logged in
-        //         setLoggedIn(true)
-        //     }
-        //     // Else, require login
-        //   }
+            // See if authenticated is not null
+            if (localSettings.authenticated !== null){
+                // If so, assume logged in
+                setLoggedIn(true)
+            }
+            // Else, require login
+          }
 
-        //   checkLocalSettings()
+        checkLocalSettings()
             
     }, [])
 

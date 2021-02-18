@@ -10,6 +10,9 @@ export async function getSchedules() {
     const response = await axios({
       method: 'get',
       url: apiIPAddress() + operator,
+      headers: {
+        'X-API-Key': '123456'
+    }
     });
     // Success 🎉
     // log.debug('res',response);

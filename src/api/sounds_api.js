@@ -9,6 +9,9 @@ export async function getSounds() {
     const response = await axios({
       method: 'get',
       url: apiIPAddress() + operator,
+      headers: {
+        'X-API-Key': '123456'
+    }
     });
     // Success 🎉
     // log.debug('res',response);

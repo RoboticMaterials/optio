@@ -49,7 +49,8 @@ export async function postSkill(skill) {
       url: apiIPAddress() + operator,
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'text/html'
+        'Accept': 'text/html',
+        'X-API-Key': '123456'
       },
       data: JSON.stringify(skill)
   });
@@ -94,7 +95,8 @@ export async function putSkill(skill, ID) {
       url: apiIPAddress() + operator+ '/' + ID,
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'text/html'
+        'Accept': 'text/html',
+        'X-API-Key': '123456'
       },
       data: JSON.stringify(skill)
   });
