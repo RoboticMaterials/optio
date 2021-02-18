@@ -95,8 +95,17 @@ export const BASIC_LOT_TEMPLATE = {
 	_id: BASIC_LOT_TEMPLATE_ID
 }
 
-export const NAME_FIELD = {fieldName: "name", dataType: FIELD_DATA_TYPES.STRING, displayName: "name"}
-export const COUNT_FIELD = {fieldName: "count", fieldPath: ["bins", "QUEUE"], dataType: FIELD_DATA_TYPES.INTEGER, displayName: "quantity"}
+export const DEFAULT_NAME_DISPLAY_NAME = "Name"
+export const DEFAULT_COUNT_DISPLAY_NAME = "Quantity"
+
+export const DEFAULT_DISPLAY_NAMES = {
+	name: DEFAULT_NAME_DISPLAY_NAME,
+	count: DEFAULT_COUNT_DISPLAY_NAME
+}
+
+export const NAME_FIELD = {fieldName: "name", dataType: FIELD_DATA_TYPES.STRING, displayName: DEFAULT_NAME_DISPLAY_NAME}
+export const COUNT_FIELD = {fieldName: "count", fieldPath: ["bins", "QUEUE"], dataType: FIELD_DATA_TYPES.INTEGER, displayName: DEFAULT_COUNT_DISPLAY_NAME}
 
 export const REQUIRED_FIELDS = [NAME_FIELD, COUNT_FIELD]
+
 

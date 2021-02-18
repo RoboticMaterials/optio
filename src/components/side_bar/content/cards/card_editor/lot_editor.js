@@ -31,8 +31,15 @@ import {FORM_MODES} from "../../../../../constants/scheduler_constants";
 import {
 	BASIC_LOT_TEMPLATE,
 	BASIC_LOT_TEMPLATE_ID,
-	CONTENT, FIELD_COMPONENT_NAMES, FIELD_DATA_TYPES,
-	FORM_BUTTON_TYPES, REQUIRED_FIELDS
+	CONTENT,
+	COUNT_FIELD,
+	DEFAULT_COUNT_DISPLAY_NAME,
+	DEFAULT_NAME_DISPLAY_NAME,
+	FIELD_COMPONENT_NAMES,
+	FIELD_DATA_TYPES,
+	FORM_BUTTON_TYPES,
+	NAME_FIELD,
+	REQUIRED_FIELDS
 } from "../../../../../constants/lot_contants";
 import {BASIC_FIELD_DEFAULTS} from "../../../../../constants/form_constants";
 
@@ -54,6 +61,7 @@ import LotCreatorForm from "./form_editor";
 import PasteMapper, {PasteForm} from "../../../../basic/paste_mapper/paste_mapper";
 import usePrevious from "../../../../../hooks/usePrevious";
 import SimpleModal from "../../../../basic/modals/simple_modal/simple_modal";
+import {getDisplayName} from "../../../../../methods/utils/lot_utils";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
@@ -104,11 +112,11 @@ const FormComponent = (props) => {
 	const formMode = cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE
 
 	// just for console logging
-	useEffect(() => {
-		console.log("lot_editor values",values)
-		console.log("lot_editor errors",errors)
-		console.log("lot_editor touched",touched)
-	}, [values, errors,touched])
+	// useEffect(() => {
+	// 	console.log("lot_editor values",values)
+	// 	console.log("lot_editor errors",errors)
+	// 	console.log("lot_editor touched",touched)
+	// }, [values, errors,touched])
 
 
 
@@ -525,7 +533,7 @@ const FormComponent = (props) => {
 
 					<div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
 						<styled.ObjectInfoContainer>
-							<styled.ObjectLabel>Quantity</styled.ObjectLabel>
+							<styled.ObjectLabel>{getDisplayName(lotTemplate, "count", DEFAULT_COUNT_DISPLAY_NAME)}</styled.ObjectLabel>
 							<NumberField
 								minValue={0}
 								name={`bins.${binId}.count`}
@@ -769,7 +777,15 @@ const FormComponent = (props) => {
 					reset={resetPasteTable}
 					availableFieldNames={[
 						...fieldNameArr,
-						...REQUIRED_FIELDS
+						// ...REQUIRED_FIELDS,
+						{
+							...NAME_FIELD,
+							displayName: getDisplayName(lotTemplate, "name", DEFAULT_COUNT_DISPLAY_NAME)
+						},
+						{
+							...COUNT_FIELD,
+							displayName: getDisplayName(lotTemplate, "count", DEFAULT_NAME_DISPLAY_NAME)
+						}
 					]}
 					onCancel={() => setShowPasteMapper(false)}
 					table={pasteTable}
@@ -834,7 +850,7 @@ const FormComponent = (props) => {
 							{(showProcessSelector || !values.processId) && renderProcessSelector()}
 							<styled.NameContainer>
 
-								<styled.LotName>Name</styled.LotName>
+								<styled.LotName>{getDisplayName(lotTemplate, "name", DEFAULT_NAME_DISPLAY_NAME)}</styled.LotName>
 								<TextField
 									name="name"
 									type="text"

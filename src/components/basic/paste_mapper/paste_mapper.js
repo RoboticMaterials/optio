@@ -169,7 +169,6 @@ const PasteMapper = (props) => {
 				})
 				.forEach((currItem, currItemIndex) => {
 					const label = selectedFieldNames[currColIndex]
-					console.log("create payload label",label)
 
 					let finalValue = currItem
 
@@ -180,7 +179,6 @@ const PasteMapper = (props) => {
 					} = label || {}
 					let fieldName = label?.fieldName
 					if(!fieldName) fieldName = `undefined field ${currColIndex}`
-					console.log("creatyrepayload dataType",dataType)
 
 					const existingData = data[currItemIndex]
 					const {
@@ -188,9 +186,11 @@ const PasteMapper = (props) => {
 					} = existingData || {}
 
 
+					/*
+					* parse data
+					* */
 					if(dataType === FIELD_DATA_TYPES.DATE_RANGE) {
 						let parsedDate = new Date(currItem)
-
 						if(isArray(currentFieldData)) {
 							finalValue = [...currentFieldData]
 							finalValue.splice(index, 0, parsedDate)
@@ -199,12 +199,11 @@ const PasteMapper = (props) => {
 							finalValue = [parsedDate]
 						}
 					}
-
 					else if(dataType === FIELD_DATA_TYPES.INTEGER) {
 						finalValue = parseInt(finalValue)
-						console.log("finalValue",finalValue)
 						if(!Number.isInteger(finalValue)) finalValue = BASIC_FIELD_DEFAULTS.NUMBER_FIELD
 					}
+
 					let constructedPath = {}
 					if(isArray(fieldPath) && fieldPath.length > 0) {
 
@@ -437,16 +436,25 @@ const PasteMapper = (props) => {
 																return isObject(inputVal) ? (inputVal.displayName) : ""
 															}}
 															mapOutput={(outputVal) => {
-																if(isEqualCI(outputVal, COUNT_FIELD.displayName)) {
-																	return COUNT_FIELD
+																let mappedOutputVal = {
+																	dataType: FIELD_DATA_TYPES.STRING,
+																	...values.selectedFieldNames[currRowIndex],
+																	fieldName: outputVal,
+																	displayName: outputVal,
 																}
-																else {
-																	return {
-																		...values.selectedFieldNames[currRowIndex],
-																		fieldName: outputVal,
-																		displayName: outputVal,
+
+																for(const availableField of availableFieldNames) {
+																	const {
+																		displayName: availableDisplayName = "",
+																	} = availableField
+
+																	if(isEqualCI(outputVal, availableDisplayName)) {
+																		mappedOutputVal = {...availableField}
+																		break	// quit looping
 																	}
 																}
+
+																return mappedOutputVal
 															}}
 															placeholder={"Field name..."}
 															style={{
