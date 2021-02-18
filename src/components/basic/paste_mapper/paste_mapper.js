@@ -26,6 +26,7 @@ import ContainerWrapper from "../container_wrapper/container_wrapper";
 import LotEditor from "../../side_bar/content/cards/card_editor/lot_editor";
 import {isObject} from "../../../methods/utils/object_utils";
 import {isEqualCI} from "../../../methods/utils/string_utils";
+import {BASIC_FIELD_DEFAULTS} from "../../../constants/form_constants";
 
 const PasteMapper = (props) => {
 
@@ -94,13 +95,13 @@ const PasteMapper = (props) => {
 					for(const availableField of availableFieldNames) {
 						const {
 							fieldName: availableFieldName = "",
+							displayName: availableDisplayName = "",
 						} = availableField
 
-						if(currFieldName === availableFieldName) {
+						if(isEqualCI(currFieldName, availableDisplayName)) {
 							payload = {...availableField}
+							break	// quit looping
 						}
-
-						break	// quit looping
 					}
 				}
 
@@ -160,70 +161,80 @@ const PasteMapper = (props) => {
 		let data = []
 
 		table.forEach((currCol, currColIndex) => {
-			currCol.filter((currItem, currItemIndex) => {
-				if((fieldLabelsIndex !== null) && (currItemIndex === fieldLabelsIndex)) return false
-				return true
-			})
+			currCol
+				// if a row is being used for field names, filter out this row when creating payload
+				.filter((currItem, currItemIndex) => {
+					if((fieldLabelsIndex !== null) && (currItemIndex === fieldLabelsIndex)) return false
+					return true
+				})
 				.forEach((currItem, currItemIndex) => {
-				const label = selectedFieldNames[currColIndex]
+					const label = selectedFieldNames[currColIndex]
+					console.log("create payload label",label)
 
-				let finalValue = currItem
+					let finalValue = currItem
 
-				const {
-					dataType = FIELD_DATA_TYPES.STRING,
-					index,
-					fieldPath,
-				} = label || {}
-				let fieldName = label?.fieldName
-				if(!fieldName) fieldName = `undefined field ${currColIndex}`
+					const {
+						dataType = FIELD_DATA_TYPES.STRING,
+						index,
+						fieldPath,
+					} = label || {}
+					let fieldName = label?.fieldName
+					if(!fieldName) fieldName = `undefined field ${currColIndex}`
+					console.log("creatyrepayload dataType",dataType)
 
-				const existingData = data[currItemIndex]
-				const {
-					[fieldName]: currentFieldData
-				} = existingData || {}
+					const existingData = data[currItemIndex]
+					const {
+						[fieldName]: currentFieldData
+					} = existingData || {}
 
-				if(dataType === FIELD_DATA_TYPES.DATE_RANGE) {
-					let parsedDate = new Date(currItem)
 
-					if(isArray(currentFieldData)) {
-						finalValue = [...currentFieldData]
-						finalValue.splice(index, 0, parsedDate)
-					}
-					else {
-						finalValue = [parsedDate]
-					}
-				}
+					if(dataType === FIELD_DATA_TYPES.DATE_RANGE) {
+						let parsedDate = new Date(currItem)
 
-				let constructedPath = {}
-				if(isArray(fieldPath) && fieldPath.length > 0) {
-
-					finalValue = {
-						[fieldPath[fieldPath.length - 1]]: {
-							[fieldName]: finalValue
+						if(isArray(currentFieldData)) {
+							finalValue = [...currentFieldData]
+							finalValue.splice(index, 0, parsedDate)
+						}
+						else {
+							finalValue = [parsedDate]
 						}
 					}
 
-					fieldPath.forEach((currentPath, currPathIndex) => {
-						if(currPathIndex === fieldPath.length - 1) return // skip last since it was done
-
-						finalValue = {[currentPath]: finalValue}
-					})
-				}
-				else{
-					finalValue = {[fieldName]: finalValue}
-				}
-
-
-				if(existingData) {
-					data[currItemIndex] =  {
-						...existingData,
-						...finalValue
+					else if(dataType === FIELD_DATA_TYPES.INTEGER) {
+						finalValue = parseInt(finalValue)
+						console.log("finalValue",finalValue)
+						if(!Number.isInteger(finalValue)) finalValue = BASIC_FIELD_DEFAULTS.NUMBER_FIELD
 					}
-				}
-				else {
-					data.push({...finalValue})
-				}
-			})
+					let constructedPath = {}
+					if(isArray(fieldPath) && fieldPath.length > 0) {
+
+						finalValue = {
+							[fieldPath[fieldPath.length - 1]]: {
+								[fieldName]: finalValue
+							}
+						}
+
+						fieldPath.forEach((currentPath, currPathIndex) => {
+							if(currPathIndex === fieldPath.length - 1) return // skip last since it was done
+
+							finalValue = {[currentPath]: finalValue}
+						})
+					}
+					else{
+						finalValue = {[fieldName]: finalValue}
+					}
+
+
+					if(existingData) {
+						data[currItemIndex] =  {
+							...existingData,
+							...finalValue
+						}
+					}
+					else {
+						data.push({...finalValue})
+					}
+				})
 		})
 
 		return data
@@ -549,15 +560,15 @@ const PasteMapper = (props) => {
 						behaviour={"drop-zone"}
 						style={{display: "flex"}}
 					>
-					{availableFieldNames.map((currField, currIndex) => {
+						{availableFieldNames.map((currField, currIndex) => {
 
-						const {
-							fieldName: currFieldName = "",
-							type: currType = "",
-							displayName: currDisplayName = ""
-						} = currField || {}
+							const {
+								fieldName: currFieldName = "",
+								type: currType = "",
+								displayName: currDisplayName = ""
+							} = currField || {}
 
-						const isUsed = usedAvailableFieldNames[currIndex]
+							const isUsed = usedAvailableFieldNames[currIndex]
 							return(
 								isUsed ?
 									<styled.FieldName disabled={isUsed}>{currDisplayName ? currDisplayName : currFieldName}</styled.FieldName>
@@ -569,13 +580,13 @@ const PasteMapper = (props) => {
 										<styled.FieldName disabled={isUsed}>{currDisplayName ? currDisplayName : currFieldName}</styled.FieldName>
 									</Draggable>
 							)
-					})}
+						})}
 					</Container>
 				</styled.FieldNamesContainer>
 
 				<styled.SectionBreak/>
 				<styled.TableContainer>
-				{renderTable()}
+					{renderTable()}
 				</styled.TableContainer>
 				<styled.SectionBreak/>
 			</styled.Body>
@@ -641,8 +652,8 @@ export const PasteForm = (props) => {
 			enableReinitialize={true}
 
 			onSubmit={async (values, { setSubmitting, setTouched, resetForm }) => {
-			// set submitting to true, handle submit, then set submitting to false
-			// the submitting property is useful for eg. displaying a loading indicator
+				// set submitting to true, handle submit, then set submitting to false
+				// the submitting property is useful for eg. displaying a loading indicator
 				const {
 					buttonType
 				} = values
