@@ -13,7 +13,8 @@ export async function getCard(cardId) {
             method: 'get',
             url: apiIPAddress() + operator + "/" + cardId,
             headers: {
-                'X-API-Key': '123456'
+                'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
             }
         });
         // Success 🎉
@@ -56,7 +57,8 @@ export async function getCards() {
             method: 'get',
             url: apiIPAddress() + operator,
             headers: {
-                'X-API-Key': '123456'
+                'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
             }
         });
         // Success 🎉
@@ -100,7 +102,8 @@ export async function getProcessCards(processId) {
             method: 'get',
             url: apiIPAddress() + "processes/" + processId + "/cards",
             headers: {
-                'X-API-Key': '123456'
+                'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
             }
         });
         // Success 🎉
@@ -188,7 +191,8 @@ export async function postCard(card) {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'X-API-Key': '123456'
+                'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
             },
             data: card
         });

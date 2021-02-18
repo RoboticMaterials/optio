@@ -13,7 +13,8 @@ export async function getDashboards() {
             method: 'get',
             url: apiIPAddress() + operator,
             headers: {
-                'X-API-Key': '123456'
+                'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
             }
         });
         // Success 🎉
@@ -56,7 +57,8 @@ export async function deleteDashboards(ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Accept': 'application/json',
-                'X-API-Key': '123456'
+                'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
             },
         });
 
@@ -101,7 +103,8 @@ export async function postDashboards(dashboards) {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'X-API-Key': '123456'
+                'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
             },
             data: dashboards
         });
@@ -150,7 +153,8 @@ export async function putDashboards(dashboard, ID) {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'text/html',
-                'X-API-Key': '123456'
+                'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
             },
             data: dashboard
         });

@@ -12,7 +12,8 @@ export async function getObjects() {
       method: 'get',
       url: apiIPAddress() + operator,
       headers: {
-        'X-API-Key': '123456'
+        'X-API-Key': '123456',
+        'Access-Control-Allow-Origin': '*'
     }
     });
     // Success 🎉
@@ -56,7 +57,8 @@ export async function deleteObject(ID) {
       url: apiIPAddress() + operator + '/' + ID,
       headers: {
         'Accept': 'application/json',
-        'X-API-Key': '123456'
+        'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
       },
   });
 
@@ -102,7 +104,8 @@ export async function postObject(object) {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'X-API-Key': '123456'
+        'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
       },
       data: JSON.stringify(object)
   });
@@ -149,7 +152,8 @@ export async function putObject(object, ID) {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/html',
-        'X-API-Key': '123456'
+        'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
       },
       data: object
   });

@@ -32,7 +32,7 @@ const SignInUpPage = (props) => {
         async function checkLocalSettings() {
             // Get local storage
             const localSettings = await onGetLocalSettings()
-                        
+
             // See if authenticated is not null
             if (localSettings.authenticated){
                 // If so, assume logged in
@@ -70,12 +70,16 @@ const SignInUpPage = (props) => {
 
         const cognitoUser = new CognitoUser(userData);
 
+        let serverIP = '18.220.200.169'
+
         cognitoUser.authenticateUser(authenticationDetails, {
 
             onSuccess: function (result) {
                 dispatchPostLocalSettings({
                     ...localReducer,
-                    authenticated: result.accessToken.payload.username
+                    authenticated: result.accessToken.payload.username,
+                    non_local_api_ip: serverIP,
+                    non_local_api: true
                 })
 
                 console.log('QQQQ Success', typeof(result), result.accessToken.payload, localReducer)

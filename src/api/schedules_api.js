@@ -11,7 +11,8 @@ export async function getSchedules() {
       method: 'get',
       url: apiIPAddress() + operator,
       headers: {
-        'X-API-Key': '123456'
+        'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
     }
     });
     // Success 🎉

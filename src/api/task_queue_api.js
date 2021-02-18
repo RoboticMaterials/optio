@@ -12,7 +12,8 @@ export async function getTaskQueue() {
             method: 'get',
             url: apiIPAddress() + operator,
             headers: {
-                'X-API-Key': '123456'
+                'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
             }
         });
         // Success 🎉
@@ -58,7 +59,8 @@ export async function postTaskQueue(taskQueueItem) {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'X-API-Key': '123456'
+                'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
             },
             data: taskQueueItem,
             url: apiIPAddress() + operator,
@@ -108,7 +110,8 @@ export async function deleteTaskQueueAll() {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'X-API-Key': '123456'
+                'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
             },
             url: apiIPAddress() + operator,
         });
@@ -156,7 +159,8 @@ export async function deleteTaskQueueItem(id) {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'X-API-Key': '123456'
+                'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
             },
             url: apiIPAddress() + operator + '/' + id,
         });
@@ -203,7 +207,8 @@ export async function putTaskQueueItem(item, ID) {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'text/html',
-                'X-API-Key': '123456'
+                'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
             },
             data: item
         });

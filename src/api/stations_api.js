@@ -16,7 +16,8 @@ export async function getStations() {
             method: 'GET',
             url: apiIPAddress() + operator,
             headers: {
-                'X-API-Key': '123456'
+                'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
             }
         });
         // Success 🎉
@@ -61,7 +62,8 @@ export async function deleteStation(ID) {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'X-API-Key': '123456'
+                'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
             },
         });
 
@@ -108,7 +110,8 @@ export async function postStation(station) {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'X-API-Key': '123456'
+                'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
             },
             data: JSON.stringify(station)
         });
@@ -155,7 +158,8 @@ export async function putStation(station, ID) {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'text/html',
-                'X-API-Key': '123456'
+                'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
             },
             data: station
         });
@@ -201,7 +205,8 @@ export async function getStationAnalytics(id, timeSpan) {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'text/html',
-                'X-API-Key': '123456'
+                'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
             },
             // A timespan is {time_span: 'day', index: 0}
             data: timeSpan

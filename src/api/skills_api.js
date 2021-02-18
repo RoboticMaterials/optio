@@ -50,7 +50,8 @@ export async function postSkill(skill) {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/html',
-        'X-API-Key': '123456'
+        'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
       },
       data: JSON.stringify(skill)
   });
@@ -96,7 +97,8 @@ export async function putSkill(skill, ID) {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/html',
-        'X-API-Key': '123456'
+        'X-API-Key': '123456',
+'Access-Control-Allow-Origin': '*'
       },
       data: JSON.stringify(skill)
   });
