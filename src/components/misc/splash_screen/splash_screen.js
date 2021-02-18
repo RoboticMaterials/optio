@@ -51,7 +51,7 @@ const SplashScreen = (props) => {
      */
     const handleSubmitApiIpAddress = async () => {
         console.log("submitting")
-        await onPostLocalSettings({ non_local_api: true, non_local_api_ip: apiIpAddress })
+        await onPostLocalSettings({ ...localSettings.localSettings, non_local_api: true, non_local_api_ip: apiIpAddress })
         window.location.reload(false);
     }
 

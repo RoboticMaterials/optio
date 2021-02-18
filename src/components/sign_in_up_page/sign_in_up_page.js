@@ -32,10 +32,9 @@ const SignInUpPage = (props) => {
         async function checkLocalSettings() {
             // Get local storage
             const localSettings = await onGetLocalSettings()
-            console.log(localSettings)
-            
+                        
             // See if authenticated is not null
-            if (localSettings.authenticated !== null){
+            if (localSettings.authenticated){
                 // If so, assume logged in
                 setLoggedIn(true)
             }
@@ -94,15 +93,15 @@ const SignInUpPage = (props) => {
             <styled.Container>
 
                 <styled.InputContainer>
-
-                <styled.Input
+                
+                {!loggedIn && <styled.Input
                     name={"email"}
                     placeholder='Email'
                     type='email'
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                />
-
+                />}
+                {!loggedIn && 
                 <styled.Input
                     name={"password"}
                     placeholder='Password'
@@ -110,10 +109,11 @@ const SignInUpPage = (props) => {
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     />
+                }
 
                 </styled.InputContainer>
 
-                <styled.Button onClick={signIn}> Login </styled.Button>
+                {!loggedIn && <styled.Button onClick={signIn}> Login </styled.Button>}
 
             </styled.Container>
     )

@@ -95,6 +95,9 @@ const Settings = () => {
             ...localSettingsState,
             [key]: value,
         }
+
+        console.log(updatedSettings)
+        
         setLocalSettingsState(updatedSettings)
 
     }
