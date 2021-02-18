@@ -284,11 +284,6 @@ function Station(props) {
                 // You can only push to a ware house
                 type = station.type === 'warehouse' ? 'push' : type
 
-                // if (station.parent !== null) {
-                //     unload.station = station._id
-                // } else {
-                //     type = 'push'
-                // }
                 dispatchSetTaskAttributes(selectedTask._id, { unload, type, handoff })
             }
 
@@ -308,13 +303,8 @@ function Station(props) {
 
                 // If it's a warehouse and the load position has not been selected then the task type is a pull
                 // You can only pull from a ware house
-                type = station.type === 'warehouse' ? 'pull' : type
+                type = station.type === 'warehouse' ? 'pull' : 'push'
 
-                // if (station.parent !== null) {
-                //     load.station = station._id
-                // } else {
-                //     type = 'pull'
-                // }
                 unload.position = null
                 unload.station = null
                 dispatchSetTaskAttributes(selectedTask._id, { load, unload, type, handoff })
