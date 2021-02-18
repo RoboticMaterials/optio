@@ -20,8 +20,11 @@ const TextField = ({
 					   ContentContainer,
 					   FieldContainer,
 					   mapInput,
-	mapOutput,
-	inputProps,
+						 setValues,
+						 getFieldMeta,
+						 fieldParent,
+						 mapOutput,
+	 				 	 inputProps,
 
 					   style,
 					   ...props }) => {
@@ -30,8 +33,11 @@ const TextField = ({
 	const [field, meta] = useField(props);
 	const { touched, error } = meta
 
+
 	const hasError = touched && error
+
 	useChange(setFieldValue)
+
 	const inputStyle = inputStyleFunc(hasError);
 	return (
 		<>
@@ -54,6 +60,7 @@ const TextField = ({
 							// update touched if necessary
 							if(!touched) {
 								setFieldTouched(field.name, true)
+								props.changed()
 							}
 
 							setFieldValue(field.name, mapOutput(event.target.value)) // update field value

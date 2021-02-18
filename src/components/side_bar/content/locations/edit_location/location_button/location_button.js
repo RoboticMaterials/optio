@@ -9,7 +9,7 @@ const LocationButton = (props) => {
     const {
         type,
         isSelected,
-        handleAddLocation
+        handleAddLocation,
     } = props
 
     const LocationTypes = {
@@ -24,7 +24,6 @@ const LocationButton = (props) => {
                 isNotSelected={!!isSelected && isSelected !== type}
                 id={`location-type-button-${type}`}
                 onMouseDown={async e => {
-
                     handleAddLocation(type)
 
                 }}

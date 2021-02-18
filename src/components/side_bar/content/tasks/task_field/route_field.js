@@ -54,6 +54,7 @@ import { removeTask } from "../../../../../redux/actions/tasks_actions";
 import { isArray } from "../../../../../methods/utils/array_utils";
 import usePrevious from "../../../../../hooks/usePrevious";
 import * as taskActions from "../../../../../redux/actions/tasks_actions";
+import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 
 const TaskField = (props) => {
 
@@ -113,6 +114,7 @@ const TaskField = (props) => {
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
     const dispatchSetEditing = async (props) => await dispatch(editingTask(props))
     const dispatchSetSelectedHoveringTask = async (task) => await dispatch(setSelectedHoveringTask(task))
+    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
     let routes = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -123,7 +125,6 @@ const TaskField = (props) => {
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
     const hoveringTask = useSelector(state => state.tasksReducer.selectedHoveringTask)
     const stations = useSelector(state => state.stationsReducer.stations)
-
 
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [needsValidate, setNeedsValidate] = useState(false);
@@ -233,7 +234,9 @@ const TaskField = (props) => {
         }
     }, [needsValidate])
 
-
+    useEffect(() => {
+      dispatchPageDataChanged(changed)
+    }, [changed])
 
 
     const renderLoadUnloadParameters = () => {

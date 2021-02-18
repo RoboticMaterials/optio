@@ -16,6 +16,8 @@ import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_sear
 import Textbox from '../../../../basic/textbox/textbox.js'
 import TextField from '../../../../basic/form/text_field/text_field.js'
 import Button from '../../../../basic/button/button'
+import PropTypes from "prop-types";
+
 
 // Import Constants
 import { StationTypes } from '../../../../../constants/station_constants'
@@ -25,13 +27,16 @@ import { LocationDefaultAttributes } from '../../../../../constants/location_con
 // Import utils
 import { deepCopy } from '../../../../../methods/utils/utils'
 import { locationSchema } from '../../../../../methods/utils/form_schemas'
+import useChange from "../../../../basic/form/useChange";
+
 
 // Import actions
 import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition, setEditingPosition, putPosition, postPosition, setSelectedStationChildrenCopy, removePosition } from '../../../../../redux/actions/positions_actions'
 import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setEditingStation, putStation, postStation, removeStation } from '../../../../../redux/actions/stations_actions'
-
-const EditLocation = () => {
+import {pageDataChanged} from '../../../../../redux/actions/sidebar_actions'
+const EditLocation = (props) => {
     const dispatch = useDispatch()
+
 
     // Station Dispatches
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
@@ -43,6 +48,8 @@ const EditLocation = () => {
     const dispatchPostStation = async (station) => await dispatch(postStation(station))
     const dispatchDeleteStation = async (id) => await dispatch(deleteStation(id))
     const dispatchRemoveStation = (id) => dispatch(removeStation(id))
+    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
+
 
     // Position Dispatches
     const dispatchSetSelectedPosition = async (position) => await dispatch(setSelectedPosition(position))
@@ -197,11 +204,12 @@ const EditLocation = () => {
         dispatchSetSelectedStation(null)
     }
 
+
     /**
      * The X and Y here are set in map view view dragNewEntity
      */
     const onAddLocation = async (type) => {
-
+        dispatchPageDataChanged(true)
         // TODO: Stick this into Constants
         const defaultAttributes = deepCopy(LocationDefaultAttributes)
 
@@ -267,6 +275,10 @@ const EditLocation = () => {
                 await dispatchSetSelectedPosition(updatedSelectedLocation)
             }
         })
+    }
+
+    const handlePageDataChange = () => {
+      dispatchPageDataChanged(true)
     }
 
     const handleSetChildPositionToCartCoords = (position) => {
@@ -352,6 +364,7 @@ const EditLocation = () => {
                     }}
                     initialTouched={{
                         locationName: false,
+
                     }}
                     validateOnChange={true}
                     validateOnMount={true}
@@ -400,6 +413,7 @@ const EditLocation = () => {
 
                                 <TextField
                                     name={"locationName"}
+                                    changed = {() => handlePageDataChange()}
                                     textStyle={{ fontWeight: 'Bold' }}
                                     placeholder='Enter Location Name'
                                     type='text'
@@ -482,6 +496,7 @@ const EditLocation = () => {
                             secondary
                             onClick={() => {
                                 handleSetPositionToCartCoords()
+                                dispatchPageDataChanged(true)
                             }}
                             style={{ marginBottom: '1rem' }}
                         >
@@ -501,5 +516,31 @@ const EditLocation = () => {
         </>
     )
 }
+EditLocation.propTypes = {
+    onSave: PropTypes.func,
+    toggleEditing: PropTypes.func,
+    fieldParent: null,
+    setFieldValue: PropTypes.func,
+    setValues: PropTypes.func,
+    setFieldTouched: PropTypes.func,
+    getFieldMeta: PropTypes.func,
+    onBackClick: PropTypes.func,
+    onRemove: PropTypes.func,
+    onDelete: PropTypes.func,
+};
+
+// Specifies the default values for props:
+EditLocation.defaultProps = {
+    onSave: () => { },
+    toggleEditing: () => { },
+    fieldParent: null,
+    setFieldValue: () => { },
+    setValues: () => { },
+    setFieldTouched: () => { },
+    getFieldMeta: () => { },
+    onBackClick: () => { },
+    onRemove: () => { },
+    onDelete: () => { },
+};
 
 export default EditLocation
