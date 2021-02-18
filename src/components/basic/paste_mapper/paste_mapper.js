@@ -91,6 +91,7 @@ const PasteMapper = (props) => {
 					payload = {
 						fieldName: currFieldName,
 						dataType: FIELD_DATA_TYPES.STRING,
+						displayName: currFieldName,
 					}
 
 					for(const availableField of availableFieldNames) {
@@ -399,7 +400,8 @@ const PasteMapper = (props) => {
 													if(removedIndex !== null) {
 														setFieldValue(`selectedFieldNames[${currRowIndex}]`,  {
 															fieldName: "",
-															dataType: FIELD_DATA_TYPES.STRING
+															dataType: FIELD_DATA_TYPES.STRING,
+															displayName: ""
 														})
 													}
 
@@ -525,6 +527,7 @@ const PasteMapper = (props) => {
 			<styled.Body>
 				<styled.FieldNamesContainer>
 					<styled.SectionTitle>Available Fields</styled.SectionTitle>
+
 					<Container
 						groupName="field_names"
 						onDragStart={(dragStartParams, b, c)=>{
@@ -591,6 +594,8 @@ const PasteMapper = (props) => {
 							)
 						})}
 					</Container>
+
+					<styled.SectionDescription>Drag one of the available fields onto a tab to map the values in that column to the field name.</styled.SectionDescription>
 				</styled.FieldNamesContainer>
 
 				<styled.SectionBreak/>
@@ -603,15 +608,15 @@ const PasteMapper = (props) => {
 
 
 			<styled.Footer>
-				{/*<Button*/}
-				{/*	type={"button"}*/}
-				{/*	schema={schema}*/}
-				{/*	label={"Create Lots"}*/}
-				{/*	onClick={()=>{*/}
-				{/*		const payload = createPayload()*/}
-				{/*		onCreateClick(payload)*/}
-				{/*	}}*/}
-				{/*/>*/}
+				<Button
+					type={"button"}
+					schema={schema}
+					label={"Create Lots"}
+					onClick={()=>{
+						const payload = createPayload()
+						onCreateClick(payload)
+					}}
+				/>
 				<Button
 					type={"button"}
 					schema={schema}

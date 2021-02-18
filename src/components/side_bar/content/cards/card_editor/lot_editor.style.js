@@ -245,30 +245,35 @@ export const SimpleModalText = styled.span`
 export const SimpleModalTextContainer = styled.div`
 `
 
+const mainCss = css`
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	width: 100%;
+	max-width: 100%;
+	overflow: hidden;
+	max-height: 100%;
+	height: 100%;
+	// max-height: 100%;
+	// overflow-x: hidden;
+	border-radius: .5rem;
+	position: relative;
+	
+	overflow: hidden;
+	background: ${props => props.theme.bg.quaternary};
+	flex: 1;
+	justify-content: space-between;
+`
+
 export const StyledForm = styled(Form)`
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    width: 100%;
-    max-width: 100%;
-  overflow: hidden;
-  max-height: 100%;
-  height: 100%;
-    // max-height: 100%;
-    // overflow-x: hidden;
-    border-radius: .5rem;
-    position: relative;
-    
-    overflow: hidden;
-  background: ${props => props.theme.bg.quaternary};
-    
-   
-    flex: 1;
-    
-    justify-content: space-between;
-  
-  
+    ${mainCss};
 `;
+
+export const SubContainer = styled.div`
+  ${mainCss};
+`
+
+
 
 export const ContentContainer = styled.div`
 	display: flex;
