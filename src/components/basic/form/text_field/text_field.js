@@ -60,7 +60,6 @@ const TextField = ({
 							// update touched if necessary
 							if(!touched) {
 								setFieldTouched(field.name, true)
-								props.changed()
 							}
 
 							setFieldValue(field.name, mapOutput(event.target.value)) // update field value
