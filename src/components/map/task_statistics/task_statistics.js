@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import * as styled from './task_statistics.style'
 import taskAnalysisReducer from "../../../redux/reducers/task_analysis_reducer";
 import IconButton from '../../basic/icon_button/icon_button'
+import {getTasksAnalysis} from "../../../redux/actions/task_analysis_actions";
 
 const TaskStatistics = (props) => {
 
@@ -14,6 +15,9 @@ const TaskStatistics = (props) => {
         // positions,
         d3,
     } = props
+
+    const dispatch = useDispatch()
+    const onGetTasksAnalysis = () => dispatch(getTasksAnalysis())
 
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
@@ -30,8 +34,8 @@ const TaskStatistics = (props) => {
     const location = useLocation()
 
     useEffect(() => {
+        onGetTasksAnalysis()
     }, [])
-
 
     const handleSingleTask = (task) => {
 
