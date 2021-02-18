@@ -516,31 +516,5 @@ const EditLocation = (props) => {
         </>
     )
 }
-EditLocation.propTypes = {
-    onSave: PropTypes.func,
-    toggleEditing: PropTypes.func,
-    fieldParent: null,
-    setFieldValue: PropTypes.func,
-    setValues: PropTypes.func,
-    setFieldTouched: PropTypes.func,
-    getFieldMeta: PropTypes.func,
-    onBackClick: PropTypes.func,
-    onRemove: PropTypes.func,
-    onDelete: PropTypes.func,
-};
-
-// Specifies the default values for props:
-EditLocation.defaultProps = {
-    onSave: () => { },
-    toggleEditing: () => { },
-    fieldParent: null,
-    setFieldValue: () => { },
-    setValues: () => { },
-    setFieldTouched: () => { },
-    getFieldMeta: () => { },
-    onBackClick: () => { },
-    onRemove: () => { },
-    onDelete: () => { },
-};
 
 export default EditLocation
