@@ -32,7 +32,7 @@ import {
 	BASIC_LOT_TEMPLATE,
 	BASIC_LOT_TEMPLATE_ID,
 	CONTENT, FIELD_COMPONENT_NAMES, FIELD_DATA_TYPES,
-	FORM_BUTTON_TYPES
+	FORM_BUTTON_TYPES, REQUIRED_FIELDS
 } from "../../../../../constants/lot_contants";
 import {BASIC_FIELD_DEFAULTS} from "../../../../../constants/form_constants";
 
@@ -221,7 +221,7 @@ const FormComponent = (props) => {
 			formikProps.resetForm()	// reset when switching
 
 			setValues({
-				name: payloadName ? payloadName : values.name,
+				name: payloadName ? payloadName : "",
 				bins: bins ? bins : defaultBins,
 				processId: processId ? processId : (values.processId ? values.processId : null),	// if currentLot has processId, use it. Otherwise if form has value, use it. Otherwise set to null
 				_id,
@@ -769,8 +769,7 @@ const FormComponent = (props) => {
 					reset={resetPasteTable}
 					availableFieldNames={[
 						...fieldNameArr,
-						{fieldName: "name", dateType: FIELD_DATA_TYPES.STRING, displayName: "Name"},
-						{fieldName: "count", fieldPath: ["bins", "QUEUE"], dateType: FIELD_DATA_TYPES.INTEGER, displayName: "Quantity"}
+						...REQUIRED_FIELDS
 					]}
 					onCancel={() => setShowPasteMapper(false)}
 					table={pasteTable}
@@ -835,7 +834,7 @@ const FormComponent = (props) => {
 							{(showProcessSelector || !values.processId) && renderProcessSelector()}
 							<styled.NameContainer>
 
-								<styled.LotName>Lot Name</styled.LotName>
+								<styled.LotName>Name</styled.LotName>
 								<TextField
 									name="name"
 									type="text"
@@ -961,9 +960,10 @@ const FormComponent = (props) => {
 											secondary
 											onClick={async () => {
 												if (isArray(providedValues) && providedValues.length > 0) {
+													const submitWasSuccessful = await onSubmit()
+
+													// go to next lot
 													if (providedIndex < providedValues.length - 1) {
-														// function order matters
-														const submitWasSuccessful = await onSubmit()
 														if(submitWasSuccessful) setProvidedIndex(providedIndex + 1)
 													}
 

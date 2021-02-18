@@ -12,12 +12,20 @@ import {
 	getTemplateMapperSchema,
 	templateMapperSchema
 } from "../../../methods/utils/form_schemas";
-import {CONTENT, FIELD_COMPONENT_NAMES, FIELD_DATA_TYPES, FORM_BUTTON_TYPES} from "../../../constants/lot_contants";
+import {
+	CONTENT,
+	COUNT_FIELD,
+	FIELD_COMPONENT_NAMES,
+	FIELD_DATA_TYPES,
+	FORM_BUTTON_TYPES
+} from "../../../constants/lot_contants";
 import {Formik} from "formik";
 import TextField from "../form/text_field/text_field";
 import {Container, Draggable} from "react-smooth-dnd";
 import ContainerWrapper from "../container_wrapper/container_wrapper";
 import LotEditor from "../../side_bar/content/cards/card_editor/lot_editor";
+import {isObject} from "../../../methods/utils/object_utils";
+import {isEqualCI} from "../../../methods/utils/string_utils";
 
 const PasteMapper = (props) => {
 
@@ -48,7 +56,6 @@ const PasteMapper = (props) => {
 	}, [selectedFieldNames])
 
 	useEffect(() => {
-		console.log("run effect")
 		if(reset) resetForm()
 	}, [reset])
 
@@ -117,7 +124,8 @@ const PasteMapper = (props) => {
 			const {
 				fieldName: currAvailableFieldName = "",
 				dataType: currAvailableDataType = FIELD_DATA_TYPES.STRING,
-				index: currAvailableIndex
+				index: currAvailableIndex,
+				displayName: currAvailableDisplayName,
 			} = currField || {}
 
 			tempUsedFieldNames[currIndex] = false
@@ -125,18 +133,19 @@ const PasteMapper = (props) => {
 				const {
 					fieldName: currSelectedFieldName = "",
 					dataType: currSelectedDataType = FIELD_DATA_TYPES.STRING,
-					index: currSelectedIndex
+					index: currSelectedIndex,
+					displayName: currSelectedDisplayName,
 				} = selectedField || {}
 
 				if(currAvailableDataType === FIELD_DATA_TYPES.DATE_RANGE) {
-					if(currAvailableIndex === currSelectedIndex && currSelectedFieldName === currAvailableFieldName) {
+					if(currAvailableIndex === currSelectedIndex && currSelectedDisplayName === currAvailableDisplayName) {
 						tempUsedFieldNames[currIndex] = true
 						break // no need to keep looping
 					}
 
 				}
 				else {
-					if(currSelectedFieldName === currAvailableFieldName) {
+					if(currSelectedDisplayName === currAvailableDisplayName) {
 						tempUsedFieldNames[currIndex] = true
 						break // no need to keep looping
 					}
@@ -409,11 +418,25 @@ const PasteMapper = (props) => {
 															inputComponent={"input"}
 															containerStyle={{
 																alignSelf: "center",
-																// flex: .5
 																padding: "0 1rem",
 																flex: .9
 															}}
-															name={`selectedFieldNames[${currRowIndex}].fieldName`}
+															name={`selectedFieldNames[${currRowIndex}]`}
+															mapInput={(inputVal) => {
+																return isObject(inputVal) ? (inputVal.displayName) : ""
+															}}
+															mapOutput={(outputVal) => {
+																if(isEqualCI(outputVal, COUNT_FIELD.displayName)) {
+																	return COUNT_FIELD
+																}
+																else {
+																	return {
+																		...values.selectedFieldNames[currRowIndex],
+																		fieldName: outputVal,
+																		displayName: outputVal,
+																	}
+																}
+															}}
 															placeholder={"Field name..."}
 															style={{
 																background: themeContext.bg.tertiary,
@@ -422,15 +445,10 @@ const PasteMapper = (props) => {
 															}}
 															textboxContainerStyle={{
 																maxHeight: "2rem",
-																// border: "none",
 															}}
 
 														/>
-
-
 													</styled.FieldNameTab>
-
-
 												</Draggable>
 											</ContainerWrapper>
 											}
@@ -535,47 +553,22 @@ const PasteMapper = (props) => {
 
 						const {
 							fieldName: currFieldName = "",
-							type: currType = ""
+							type: currType = "",
+							displayName: currDisplayName = ""
 						} = currField || {}
 
 						const isUsed = usedAvailableFieldNames[currIndex]
-
-						// if(currType === FIELD_COMPONENT_NAMES.CALENDAR_START_END) {
-						// 	return(
-						// 		isUsed ?
-						// 			<>
-						// 			<styled.FieldName disabled={isUsed}>{currFieldName}</styled.FieldName>
-						// 			</>
-						// 			:
-						// 			<>
-						// 			<Draggable
-						// 				disabled={isUsed}
-						// 				key={currIndex}
-						// 			>
-						// 				<styled.FieldName disabled={isUsed}>{currFieldName} Start</styled.FieldName>
-						// 			</Draggable>
-						// 				<Draggable
-						// 					disabled={isUsed}
-						// 					key={currIndex + "yo"}
-						// 				>
-						// 					<styled.FieldName disabled={isUsed}>{currFieldName} End</styled.FieldName>
-						// 				</Draggable>
-						// 			</>
-						// 	)
-						// }
-						// else {
 							return(
 								isUsed ?
-									<styled.FieldName disabled={isUsed}>{currFieldName}</styled.FieldName>
+									<styled.FieldName disabled={isUsed}>{currDisplayName ? currDisplayName : currFieldName}</styled.FieldName>
 									:
 									<Draggable
 										disabled={isUsed}
 										key={currIndex}
 									>
-										<styled.FieldName disabled={isUsed}>{currFieldName}</styled.FieldName>
+										<styled.FieldName disabled={isUsed}>{currDisplayName ? currDisplayName : currFieldName}</styled.FieldName>
 									</Draggable>
 							)
-						// }
 					})}
 					</Container>
 				</styled.FieldNamesContainer>
@@ -621,6 +614,7 @@ const PasteMapper = (props) => {
 }
 
 export const PasteForm = (props) => {
+
 	const {
 		onPreviewClick
 	} = props

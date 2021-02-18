@@ -95,3 +95,8 @@ export const BASIC_LOT_TEMPLATE = {
 	_id: BASIC_LOT_TEMPLATE_ID
 }
 
+export const NAME_FIELD = {fieldName: "name", dateType: FIELD_DATA_TYPES.STRING, displayName: "name"}
+export const COUNT_FIELD = {fieldName: "count", fieldPath: ["bins", "QUEUE"], dateType: FIELD_DATA_TYPES.INTEGER, displayName: "quantity"}
+
+export const REQUIRED_FIELDS = [NAME_FIELD, COUNT_FIELD]
+
