@@ -780,11 +780,11 @@ const FormComponent = (props) => {
 						// ...REQUIRED_FIELDS,
 						{
 							...NAME_FIELD,
-							displayName: getDisplayName(lotTemplate, "name", DEFAULT_COUNT_DISPLAY_NAME)
+							displayName: getDisplayName(lotTemplate, "name", DEFAULT_NAME_DISPLAY_NAME)
 						},
 						{
 							...COUNT_FIELD,
-							displayName: getDisplayName(lotTemplate, "count", DEFAULT_NAME_DISPLAY_NAME)
+							displayName: getDisplayName(lotTemplate, "count", DEFAULT_COUNT_DISPLAY_NAME)
 						}
 					]}
 					onCancel={() => setShowPasteMapper(false)}
@@ -794,6 +794,10 @@ const FormComponent = (props) => {
 						setShowProcessSelector(true)
 						setProvidedValues(payload)
 						setProvidedIndex(0)
+					}}
+					onCreateClick={(payload) => {
+						setShowPasteMapper(false)
+						setProvidedValues(payload)
 					}}
 				/>
 				}

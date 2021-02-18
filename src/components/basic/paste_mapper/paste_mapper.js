@@ -40,6 +40,7 @@ const PasteMapper = (props) => {
 		setFieldValue,
 		setSelectedFieldNames,
 		onPreviewClick,
+		onCreateClick,
 		reset,
 		resetForm
 	} = props
@@ -607,7 +608,8 @@ const PasteMapper = (props) => {
 				{/*	schema={schema}*/}
 				{/*	label={"Create Lots"}*/}
 				{/*	onClick={()=>{*/}
-				{/*		createPayload()*/}
+				{/*		const payload = createPayload()*/}
+				{/*		onCreateClick(payload)*/}
 				{/*	}}*/}
 				{/*/>*/}
 				<Button
