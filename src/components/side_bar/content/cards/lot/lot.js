@@ -49,7 +49,15 @@ const Card = (props) => {
             >
                 <styled.HeaderBar>
                     <styled.CardName>{name}</styled.CardName>
-                    <styled.FlagButton color={"red"} className="fas fa-flag"></styled.FlagButton>
+                    <styled.FlagButton
+                        type={"button"}
+                        color={"rgb(25,25,25,0.5)"}
+                        className="fas fa-flag"
+                        onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                        }}
+                    />
                 </styled.HeaderBar>
                 <styled.ContentContainer>
 
