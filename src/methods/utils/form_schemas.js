@@ -246,6 +246,7 @@ export const getMoveLotSchema = (maxCount) => Yup.object().shape({
 })
 
 export const getCardSchema = (mode, availableBinItems) => {
+    console.log('QQQQ Valid')
     switch (mode) {
         case CARD_SCHEMA_MODES.EDIT_LOT:
             return editLotSchema
