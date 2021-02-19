@@ -244,13 +244,20 @@ const LineThroughputChart = (props) => {
 
                     // If the output is greater then the expoutput and less then the next exp output, it belongs hur
                     if (expOutput.x <= output.x && nextExpOutput.x >= output.x) {
+
+                        // const weightedExpOutput = expOutput.x / convert24htoInt(compareExpectedOutput.startOfShift)
+                        const weightedExpOutput = expOutput.x
+
+                        // const weightedNextExpOutput = nextExpOutput.x / convert24htoInt(compareExpectedOutput.startOfShift)
+                        const weightedNextExpOutput = nextExpOutput.x
+
                         // Find the value of y at the output x point using y = mx + b
                         // Point 1 on the slope is the expOutput and point 2 is the nextExpOutput
-                        console.log('QQQQ expOutput', expOutput)
-                        console.log('QQQQ next', nextExpOutput)
+                        console.log('QQQQ expOutput', weightedExpOutput)
+                        console.log('QQQQ next', weightedNextExpOutput)
                         console.log('QQQQ X', output)
-                        const m = (nextExpOutput.y - expOutput.y) / (nextExpOutput.x - expOutput.x)
-                        const b = expOutput.y - m * expOutput.x
+                        const m = (nextExpOutput.y - expOutput.y) / (weightedNextExpOutput - weightedExpOutput)
+                        const b = expOutput.y - m * weightedExpOutput
                         console.log('QQQQ b', b)
                         const yValue = m * output.x + b
                         console.log('QQQQ y value', yValue)
