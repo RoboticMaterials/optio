@@ -81,7 +81,7 @@ const ThroughputChart = (props) => {
         loadLineChartData,
     } = props
 
-    const [showBar, setShowBar] = useState(false)
+    const [showBar, setShowBar] = useState(true)
 
     const filteredData = throughputData?.throughPut
 
@@ -131,7 +131,7 @@ const ThroughputChart = (props) => {
                     {!showBar ?
                         <LineThroughputChart
                             themeContext={themeContext}
-                            data={testData}
+                            data={filteredData ? filteredData : []}
                             isData={isData}
                         />
                         :

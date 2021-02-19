@@ -14,9 +14,9 @@ import ReportChart from './charts/report_chart'
 import TimeSpans from './timespans/timespans'
 import DataSelector from './data_selector/data_selector.js'
 import ApexGaugeChart from './apex_gauge_chart'
-import BarChart from '../chart_types/bar_chart'
 
-import { ResponsiveLine } from '@nivo/line'
+// Import Utils
+import { convertEpochTo12h } from '../../../../../methods/utils/time_utils'
 
 // Import Actions
 import { getStationAnalytics } from '../../../../../redux/actions/stations_actions'
@@ -202,6 +202,22 @@ const StatisticsOverview = (props) => {
 
             if (response === undefined) return setIsThroughputLoading(false)
             console.log('QQQQ data promiese', response)
+
+            // Convert Throughput
+            if (newTimeSpan === 'line') {
+                let convertedThroughput = []
+                response.throughPut.forEach((dataPoint) => {
+                    const convertedTime = convertEpochTo12h(dataPoint.x)
+                    convertedThroughput.push({ x: convertedTime, y: dataPoint.y })
+                })
+                response = {
+                    ...response,
+                    throughPut: convertedThroughput
+                }
+            }
+
+            console.log('QQQQ converted response', response)
+
             setThroughputData(response)
             setIsThroughputLoading(false)
         })

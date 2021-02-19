@@ -16,14 +16,14 @@ import LineChart from '../../../chart_types/line_chart'
 
 // Import utils
 import { throughputSchema } from '../../../../../../../methods/utils/form_schemas'
-import { convert12hto24h, convert24hto12h, convertTimeStringto24h } from '../../../../../../../methods/utils/time_utils'
+import { convert12hto24h, convert24hto12h, convertTimeStringto24h, convert24htoInt, convertIntto24h } from '../../../../../../../methods/utils/time_utils'
 import { deepCopy } from '../../../../../../../methods/utils/utils';
 
 
 const testExpectedOutput = {
-    startOfShift: '08:00',
+    startOfShift: '07:00',
     endOfShift: '20:00',
-    expectedOutput: null,
+    expectedOutput: 200,
     breaks: {
         break1: {
             enabled: false,
@@ -52,11 +52,19 @@ const LineThroughputChart = (props) => {
     } = props
 
     const [compareExpectedOutput, setCompareExpectedOutput] = useState(testExpectedOutput)
+    const [convertedData, setConvertedData] = useState(null)
 
     // This ref is used for formik values.
     // The issue it solves is that the values the formik is comparing might have changed, and formik does not have the latest vlaues
     // IE: Change the end of the first break to be after the start of the second break; causes error. Fix error by adjusting second break, but the second break updated time is not availabel in formik so it still throughs an error
     const ref = useRef(null)
+
+    useEffect(() => {
+        lineDataConverter()
+        return () => {
+
+        }
+    }, [])
 
     /**
     * This converts the incoming data for a line graph
@@ -66,44 +74,55 @@ const LineThroughputChart = (props) => {
     * 3) If breaks, adds 'stagnate' (flat) sections to the graph when no parts are being processes
     * 
     */
-    const lineDataConver = () => {
+    const lineDataConverter = () => {
         let convertedData = []
 
         let dataCopy = deepCopy(data)
 
-        // Modify X values based on start and end
-        const startOfShift12h = convert24hto12h(compareExpectedOutput.startOfShift)
-        let startOfShiftHour = startOfShift12h.split(':')[0]
-        // If the first character is a 0 then delete, the backend does not have 0 as the first character
-        if (startOfShiftHour.charAt(0) == 0) startOfShiftHour = startOfShiftHour.substring(1)
-        const startOfShiftModifier = startOfShift12h.split(' ')[1]
-        const startOfShift = `${startOfShiftHour} ${startOfShiftModifier}`
+        // Convert to int for comparison
+        const startInt = convert24htoInt(compareExpectedOutput.startOfShift)
         let startIndex
-        // Find Start of Shift in the test data based on selected inpt
+
+        // Find Start of Shift in the data based on selected input
         for (let i = 0; i < dataCopy.length; i++) {
-            if (dataCopy[i].x === startOfShift) startIndex = i
+            // Convert to int for comparision
+            const dataInt = convert24htoInt(dataCopy[i].x)
+            // Go through the data until the time is equal to or after the start of shift input
+            if (dataInt >= startInt) {
+                startIndex = i
+                break
+            }
+
         }
 
-        const endOfShift12h = convert24hto12h(compareExpectedOutput.endOfShift)
-        let endOfShiftHour = endOfShift12h.split(':')[0]
-        if (endOfShiftHour.charAt(0) == 0) endOfShiftHour = endOfShiftHour.substring(1)
-        const endOfShiftModifier = endOfShift12h.split(' ')[1]
-        const endOfShift = `${endOfShiftHour} ${endOfShiftModifier}`
+        // Convert to int for comparison
+        const endInt = convert24htoInt(compareExpectedOutput.endOfShift)
 
-        let endIndex
-        // Find End of shift
+        let endIndex = dataCopy.length
+        // Find end of Shift in the data based on selected input
         for (let i = 0; i < dataCopy.length; i++) {
-            if (dataCopy[i].x === endOfShift) endIndex = i + 1
+            // Convert to int for comparision
+            const dataInt = convert24htoInt(dataCopy[i].x)
+            // Go through the data until the time is  after the end of shift input and take the vlaue before that one
+            if (dataInt > endInt) {
+                startIndex = i - 1
+                break
+            }
         }
 
         dataCopy = dataCopy.slice(startIndex, endIndex)
-
         // Modify y values
         let stack = 0
         for (const point of dataCopy) {
-            convertedData.push({ x: point.x, y: stack + point.y })
+            convertedData.push({ x: convert24htoInt(point.x), y: stack + point.y })
             stack += point.y
         }
+
+        // Add 0 for the start of the shift
+        convertedData.unshift({ x: convert24htoInt(compareExpectedOutput.startOfShift), y: 0 })
+
+        // Add the last value in converted data to the end of the shift
+        convertedData.push({ x: convert24htoInt(compareExpectedOutput.endOfShift), y: convertedData[convertedData.length - 1].y })
 
         // This is the array of data that is passed to the line chart
         let expectedOutput = []
@@ -115,10 +134,20 @@ const LineThroughputChart = (props) => {
         // Add Expected output
         if (!!compareExpectedOutput.expectedOutput) {
 
-            for (let i = 0; i < dataCopy.length; i++) {
-                slopeValues.push(i)
-                expectedOutput.push({ x: dataCopy[i].x, y: null })
-            }
+            // Add the beginning and end of each shift
+            expectedOutput.push({ x: convert24htoInt(compareExpectedOutput.startOfShift), y: 0 })
+            expectedOutput.push({ x: convert24htoInt(compareExpectedOutput.endOfShift), y: compareExpectedOutput.expectedOutput })
+            slopeValues = expectedOutput.length
+
+            // let slopeInd = 0
+            // for (let i = convert24htoInt(compareExpectedOutput.startOfShift); i < convert24htoInt(compareExpectedOutput.endOfShift) + 1; i++) {
+            //     const x = convertIntto24h(i)
+
+            //     // Add to the array of slopeValues. Will be used for breaks
+            //     slopeValues.push(slopeInd)
+            //     expectedOutput.push({ x: x, y: null })
+            //     slopeInd += 1
+            // }
 
             /**
              * This handles breaks
@@ -127,7 +156,6 @@ const LineThroughputChart = (props) => {
              * It then sets the stagnant value to the value at the start of the break
              * This creates flat spots in the expected output graph
              */
-            // TODO: this will probably change depending on how we bin data together
             let breakObj = {}
             const breaks = Object.values(compareExpectedOutput.breaks)
             breaks.forEach((b, ind) => {
@@ -135,52 +163,136 @@ const LineThroughputChart = (props) => {
                 const start = b.startOfBreak
                 const end = b.endOfBreak
 
-                // Convert expected output to times
-                let convertedOutput = []
-                expectedOutput.forEach((output) => {
-                    const convert = convertTimeStringto24h(output.x)
-                    convertedOutput.push(convert)
-                })
+                // // Find the start index in the array 
+                // const matchedStartBreak = (el) => start === el
+                // const startIndex = expectedOutput.findIndex(matchedStartBreak)
+                // // Find the end index in the array
+                // const matchEndBreak = (el) => end === el
+                // const endIndex = expectedOutput.findIndex(matchEndBreak)
 
+                // Find the value of y at startof the break using y = mx + b
+                const m = (0 - compareExpectedOutput.expectedOutput) / (convert24htoInt(compareExpectedOutput.startOfShift) - convert24htoInt(compareExpectedOutput.endOfShift))
+                const yStart = m * convert24htoInt(start)
 
-                // Find the start index in the array 
-                // TODO: Probably pass through a function that finds the closest time
-                const matchedStartBreak = (el) => start === el
-                const startIndex = convertedOutput.findIndex(matchedStartBreak)
-                // Find the end index in the array
-                const matchEndBreak = (el) => end === el
-                const endIndex = convertedOutput.findIndex(matchEndBreak)
+                // Find where the x value fits and add the stagnent y value to the expected outPut
+                for (let i = 0; i < expectedOutput.length; i++) {
+                    const output = expectedOutput[i]
+                    const nextOutput = expectedOutput[i + 1]
 
-                // Create an array the contains the indexes between the start and end index
-                let arrayIndexList = []
-                for (let i = startIndex + 1; i <= endIndex; i++) {
-                    slopeValues.splice(slopeValues.indexOf(i), 1)
-                    arrayIndexList.push(i)
+                    // If the output x is less or equal to the start and the next output is greater or equal to the start, then this is where the break belongs in the expectedOutput
+                    if (output.x <= convert24htoInt(start) && nextOutput.x >= convert24htoInt(start)) {
+                        expectedOutput.splice(i + 1, 0, { x: convert24htoInt(start), y: yStart })
+                        expectedOutput.splice(i + 2, 0, { x: convert24htoInt(end), y: yStart })
+                        break
+                    }
                 }
 
-                // Add the created array to obj to use for creating the output data
-                breakObj = {
-                    ...breakObj,
-                    [ind]: arrayIndexList
-                }
+
+
+
+                // // Create an array the contains the indexes between the start and end index
+                // let arrayIndexList = []
+                // for (let i = startIndex + 1; i <= endIndex; i++) {
+                //     slopeValues.splice(slopeValues.indexOf(i), 1)
+                //     arrayIndexList.push(i)
+                // }
+
+                // // Add the created array to obj to use for creating the output data
+                // breakObj = {
+                //     ...breakObj,
+                //     [ind]: arrayIndexList
+                // }
 
             })
 
+            // // Add slope y points
+            // slopeValues.forEach((val, ind) => {
+            //     expectedOutput[val].y = (ind / (slopeValues.length - 1)) * compareExpectedOutput.expectedOutput
+            // })
 
-            // Add slope y points
-            slopeValues.forEach((val, ind) => {
-                expectedOutput[val].y = (ind / (slopeValues.length - 1)) * compareExpectedOutput.expectedOutput
-            })
-
-            // Add stagnent y points
-            Object.values(breakObj).forEach(b => {
-                const stagnantValue = expectedOutput[b[0] - 1].y
-                b.forEach(index => {
-                    expectedOutput[index].y = stagnantValue
-                })
-            })
+            // // Add stagnent y points
+            // Object.values(breakObj).forEach(b => {
+            //     const stagnantValue = expectedOutput[b[0] - 1].y
+            //     b.forEach(index => {
+            //         expectedOutput[index].y = stagnantValue
+            //     })
+            // })
 
         }
+
+
+        // Update expected to have the same x values as converted
+        convertedData.map((output, ind) => {
+            let inExpected = false
+
+            // Go through expected and see if the value is in it 
+            for (let i = 0; i < expectedOutput.length; i++) {
+                const expOutput = expectedOutput[i]
+                // If the x's are the same, then its in it
+                if (output.x === expOutput.x) {
+                    inExpected = true
+                    break
+                }
+            }
+
+            // If not in expected, add it
+            if (!inExpected) {
+                // Find where it belongs
+                for (let i = 0; i < expectedOutput.length; i++) {
+                    const expOutput = expectedOutput[i]
+                    const nextExpOutput = expectedOutput[i + 1]
+
+                    // If the output is greater then the expoutput and less then the next exp output, it belongs hur
+                    if (expOutput.x <= output.x && nextExpOutput.x >= output.x) {
+                        // Find the value of y at the output x point using y = mx + b
+                        // Point 1 on the slope is the expOutput and point 2 is the nextExpOutput
+                        console.log('QQQQ expOutput', expOutput)
+                        console.log('QQQQ next', nextExpOutput)
+                        console.log('QQQQ X', output)
+                        const m = (nextExpOutput.y - expOutput.y) / (nextExpOutput.x - expOutput.x)
+                        const b = expOutput.y - m * expOutput.x
+                        console.log('QQQQ b', b)
+                        const yValue = m * output.x + b
+                        console.log('QQQQ y value', yValue)
+                        expectedOutput.splice(i + 1, 0, { x: output.x, y: yValue })
+                        break
+                    }
+                }
+            }
+        })
+
+        // Do the same to converted
+        expectedOutput.map((output, ind) => {
+            let inExpected = false
+
+            // Go through expected and see if the value is in it 
+            for (let i = 0; i < convertedData.length; i++) {
+                const expOutput = convertedData[i]
+                // If the x's are the same, then its in it
+                if (output.x === expOutput.x) {
+                    inExpected = true
+                    break
+                }
+            }
+
+            // If not in expected, add it
+            if (!inExpected) {
+                // Find where it belongs
+                for (let i = 0; i < convertedData.length; i++) {
+                    const expOutput = convertedData[i]
+                    const nextExpOutput = convertedData[i + 1]
+
+                    // If the output is greater then the expoutput and less then the next exp output, it belongs hur
+                    if (expOutput.x <= output.x && nextExpOutput.x >= output.x) {
+                        // Find the value of y at the output x point using y = mx + b
+                        const m = (nextExpOutput.y - expOutput.y) / (nextExpOutput.x - expOutput.x)
+                        const yValue = m * output.x
+                        convertedData.splice(i + 1, 0, { x: output.x, y: yValue })
+                        break
+                    }
+                }
+            }
+        })
 
         const lineData = [{
             'id': 'actualData',
@@ -196,6 +308,8 @@ const LineThroughputChart = (props) => {
         },
         ]
 
+        console.log('QQQQ Line Data', lineData)
+        setConvertedData(lineData)
         return lineData
     }
 
@@ -507,8 +621,15 @@ const LineThroughputChart = (props) => {
             <styled.PlotContainer style={{ flexGrow: '7' }} minHeight={27}>
                 <LineChart
                     // data={filteredData ? filteredData : []}
-                    data={lineDataConver()}
+                    // data={lineDataConverter()}
+                    data={!!convertedData ? convertedData : []}
                     enableGridY={isData ? true : false}
+                    yScale={{
+                        type: 'linear',
+                        // stacked: boolean('stacked', false),
+                        // stacked: true,
+                    }}
+                    curve="monotoneX"
                     mainTheme={themeContext}
                     axisBottom={{
                         tickRotation: -90,
