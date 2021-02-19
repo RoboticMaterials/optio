@@ -17,7 +17,7 @@ export async function getDataStream() {
             url: apiIPAddress() + operator,
             headers: {
                 'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*'
             }
         });
         // Success 🎉
