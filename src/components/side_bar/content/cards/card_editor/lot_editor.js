@@ -45,7 +45,7 @@ import {BASIC_FIELD_DEFAULTS} from "../../../../../constants/form_constants";
 
 // utils
 import {parseMessageFromEvent} from "../../../../../methods/utils/card_utils";
-import {CARD_SCHEMA_MODES, cardSchema, getCardSchema} from "../../../../../methods/utils/form_schemas";
+import {CARD_SCHEMA_MODES, cardSchema, editLotSchema, getCardSchema} from "../../../../../methods/utils/form_schemas";
 import {getProcessStations} from "../../../../../methods/utils/processes_utils";
 import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
 import {arraysEqual} from "../../../../../methods/utils/utils";
@@ -62,6 +62,7 @@ import PasteMapper, {PasteForm} from "../../../../basic/paste_mapper/paste_mappe
 import usePrevious from "../../../../../hooks/usePrevious";
 import SimpleModal from "../../../../basic/modals/simple_modal/simple_modal";
 import {getDisplayName} from "../../../../../methods/utils/lot_utils";
+import StatusList from "../../../../basic/status_list/status_list";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
@@ -146,12 +147,14 @@ const FormComponent = (props) => {
 	const [showPasteMapper, setShowPasteMapper] = useState(false)
 	const [showSimpleModal, setShowSimpleModal] = useState(false)
 	const [mappedValues, setMappedValues] = useState([])
+	const [processedValues, setProcessedValues] = useState([])
 	const [createMappedValues, setCreateMappedValues] = useState(false)
-	const [providedIndex, setProvidedIndex] = useState(null)
+	const [showCreationStatus, setShowCreationStatus] = useState(false)
+	const [mappedValuesIndex, setMappedValuesIndex] = useState(null)
 	const [finalProcessOptions, setFinalProcessOptions] = useState([])
 	const [showProcessSelector, setShowProcessSelector] = useState(props.showProcessSelector)
 
-	const previousProvidedIndex = usePrevious(providedIndex)
+	const previousProvidedIndex = usePrevious(mappedValuesIndex)
 	const previousProvidedValues = usePrevious(mappedValues)
 
 	// derived state
@@ -165,6 +168,94 @@ const FormComponent = (props) => {
 	const errorCount = Object.keys(errors).length > 0 // get number of field errors
 	const touchedCount = Object.values(touched).length // number of touched fields
 	const submitDisabled = ((errorCount > 0) || (touchedCount === 0) || isSubmitting) && (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
+
+	useEffect(() => {
+		if(createMappedValues) {
+			let processedLots = []
+
+			mappedValues.forEach((currMappedLot, currMappedLotIndex) => {
+
+				const  {
+					name: payloadName,	// extract reserved fields
+					bins,				// extract reserved fields
+					processId,			// extract reserved fields
+					_id,				// extract reserved fields
+					quantity,				// extract reserved fields
+					...remainingPayload
+				} = currMappedLot
+
+				formikProps.resetForm()	// reset when switching
+
+				let newLot = {
+					name: payloadName ? payloadName : "",
+					bins: bins ? bins : defaultBins,
+					processId: processId ? processId : (values.processId ? values.processId : null),	// if currentLot has processId, use it. Otherwise if form has value, use it. Otherwise set to null
+					_id,
+					[lotTemplateId]: {
+						// ...values[lotTemplateId],
+						...getInitialValues(lotTemplate),
+						...remainingPayload
+					}
+				}
+
+				let currProcessedLot = {
+					index: currMappedLotIndex,
+					errors: {}
+				}
+
+				console.log("newLot ayo a",newLot)
+
+				try {
+					const validationResult = editLotSchema.validateSync(newLot, {abortEarly: false})
+					console.log("validationResult", validationResult)
+				}
+				catch (err) {
+					console.log("catch err", err)
+
+					const {
+						inner = [],
+						message
+					} = err || {}
+
+					// if(inner.length === 0) {
+					// 	currProcessedLot.
+					// }
+
+					inner.forEach((currErr) => {
+						const {
+							errors,			//: ["1 character minimum."]
+							inner,			//: []
+							message, 		//: "1 character minimum."
+							name, 		//: "ValidationError"
+							params, 			//: {path: "name", value: "", originalValue: "", label: undefined, min: 1}
+							path, 				//: "name"
+							type, 				//: "min"
+							value,				//: ""
+						} = currErr || {}
+
+						let existingErrors = currProcessedLot.errors[path] || []
+
+						currProcessedLot = {
+							...currProcessedLot,
+							errors: {
+								...currProcessedLot.errors,
+								[path]: [...existingErrors, ...errors]
+							}
+						}
+					})
+				}
+				finally {
+					console.log("finally")
+				}
+
+				processedLots.push(currProcessedLot)
+			})
+
+			setProcessedValues(processedLots)
+			setCreateMappedValues(false)
+			setShowCreationStatus(true)
+		}
+	}, [createMappedValues, mappedValues])
 
 	/*
 	* This effect sets default values when the lotTemplate changes.
@@ -199,7 +290,7 @@ const FormComponent = (props) => {
 	}, [processOptions, processes])
 
 	useEffect(() => {
-		if(isArray(mappedValues) && mappedValues.length > 0 && mappedValues[providedIndex] && providedIndex !== previousProvidedIndex) {
+		if(isArray(mappedValues) && mappedValues.length > 0 && mappedValues[mappedValuesIndex] && mappedValuesIndex !== previousProvidedIndex) {
 			const {
 				[lotTemplateId]: templateValues,
 				...rest
@@ -211,12 +302,12 @@ const FormComponent = (props) => {
 			}
 			setMappedValues(immutableReplace(mappedValues, newValue, previousProvidedIndex))
 		}
-	}, [values, providedIndex])
+	}, [values, mappedValuesIndex])
 
 	useEffect(() => {
-		if(isArray(mappedValues) && mappedValues.length > 0 && mappedValues[providedIndex] && providedIndex !== previousProvidedIndex) {
+		if(isArray(mappedValues) && mappedValues.length > 0 && mappedValues[mappedValuesIndex] && mappedValuesIndex !== previousProvidedIndex) {
 
-			const currentLot = mappedValues[providedIndex]
+			const currentLot = mappedValues[mappedValuesIndex]
 
 			const  {
 				name: payloadName,	// extract reserved fields
@@ -242,7 +333,7 @@ const FormComponent = (props) => {
 			})
 		}
 
-	}, [mappedValues, providedIndex])
+	}, [mappedValues, mappedValuesIndex])
 
 	/*
 	* This effect runs whenever lotTemplate changes
@@ -918,8 +1009,8 @@ const FormComponent = (props) => {
 													const submitWasSuccessful = await onSubmit()
 
 													// go to next lot
-													if (providedIndex < mappedValues.length - 1) {
-														if(submitWasSuccessful) setProvidedIndex(providedIndex + 1)
+													if (mappedValuesIndex < mappedValues.length - 1) {
+														if(submitWasSuccessful) setMappedValuesIndex(mappedValuesIndex + 1)
 													}
 
 												} else {
@@ -982,16 +1073,16 @@ const FormComponent = (props) => {
 					<styled.PageSelector>
 						<styled.PageSelectorButton className="fas fa-chevron-left"
 												   onClick={() => {
-													   if(providedIndex > 0) {
-														   setProvidedIndex(providedIndex - 1)
+													   if(mappedValuesIndex > 0) {
+														   setMappedValuesIndex(mappedValuesIndex - 1)
 													   }
 												   }}
 						/>
-						<styled.PageSelectorText>{providedIndex + 1}/{mappedValues.length}</styled.PageSelectorText>
+						<styled.PageSelectorText>{mappedValuesIndex + 1}/{mappedValues.length}</styled.PageSelectorText>
 						<styled.PageSelectorButton className="fas fa-chevron-right"
 												   onClick={() => {
-													   if(providedIndex < mappedValues.length - 1) {
-														   setProvidedIndex(providedIndex + 1)
+													   if(mappedValuesIndex < mappedValues.length - 1) {
+														   setMappedValuesIndex(mappedValuesIndex + 1)
 													   }
 
 												   }}
@@ -1039,35 +1130,59 @@ const FormComponent = (props) => {
 						<styled.SimpleModalText>A paste event was detected. Would you like to use pasted data to create lots?</styled.SimpleModalText>
 					</SimpleModal>
 					}
-							<PasteForm
-								reset={resetPasteTable}
-								availableFieldNames={[
-									...fieldNameArr,
-									// ...REQUIRED_FIELDS,
-									{
-										...NAME_FIELD,
-										displayName: getDisplayName(lotTemplate, "name", DEFAULT_NAME_DISPLAY_NAME)
-									},
-									{
-										...COUNT_FIELD,
-										displayName: getDisplayName(lotTemplate, "count", DEFAULT_COUNT_DISPLAY_NAME)
-									}
-								]}
-								onCancel={() => setShowPasteMapper(false)}
-								table={pasteTable}
-								onPreviewClick={(payload) => {
-									setShowPasteMapper(false)
-									setShowProcessSelector(true)
-									setMappedValues(payload)
-									setProvidedIndex(0)
-								}}
-								onCreateClick={(payload) => {
-									setShowPasteMapper(false)
-									setMappedValues(payload)
-									setCreateMappedValues(true)
-								}}
-							/>
+					<PasteForm
+						reset={resetPasteTable}
+						availableFieldNames={[
+							...fieldNameArr,
+							// ...REQUIRED_FIELDS,
+							{
+								...NAME_FIELD,
+								displayName: getDisplayName(lotTemplate, "name", DEFAULT_NAME_DISPLAY_NAME)
+							},
+							{
+								...COUNT_FIELD,
+								displayName: getDisplayName(lotTemplate, "count", DEFAULT_COUNT_DISPLAY_NAME)
+							}
+						]}
+						onCancel={() => setShowPasteMapper(false)}
+						table={pasteTable}
+						onPreviewClick={(payload) => {
+							setShowPasteMapper(false)
+							setShowProcessSelector(true)
+							setMappedValues(payload)
+							setMappedValuesIndex(0)
+						}}
+						onCreateClick={(payload) => {
+							setShowPasteMapper(false)
+							setMappedValues(payload)
+							setCreateMappedValues(true)
+						}}
+					/>
 				</>
+			)
+		}
+
+
+
+		if(createMappedValues) {
+			return(null)
+		}
+
+		if(showCreationStatus) {
+			return(
+				<StatusList
+					data={processedValues.map((currValue, currIndex) => {
+						const {
+							errors
+						} = currValue
+
+						return {
+							errors,
+							label: currIndex
+						}
+					})}
+
+				/>
 			)
 		}
 
