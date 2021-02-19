@@ -35,8 +35,6 @@ const CalendarField = ({
     const startDate = (startYearVal && (startMonthVal + 1) && startDayVal) ? new Date(startYearVal, startMonthVal, startDayVal, 0, 0, 0, 0) : new Date()
     const endDate = (endYearVal && (endMonthVal + 1) && endDayVal) ? new Date(endYearVal, endMonthVal, endDayVal, 0, 0, 0, 0) : null
 
-    console.log('QQQQ value', value)
-
     const isStart = startEnd === 'CALENDAR_START' ? true : false
 
     return (
@@ -59,7 +57,6 @@ const CalendarField = ({
                 // defaultValue={value}
                 {...props}
                 onChange={changeValue => {
-                    console.log('QQQQ Value in change', changeValue)
                     const isTouched = meta.touched;
                     if (!isTouched) {
                         setFieldTouched(true)
@@ -81,7 +78,6 @@ const CalendarField = ({
                     }
                     // Else add end
                     else {
-                        console.log('QQQQ adding end', value)
                         newValue = {
                             ...value,
                             end: { year, month, day }
