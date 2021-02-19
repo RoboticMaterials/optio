@@ -213,21 +213,28 @@ export const CARD_SCHEMA_MODES = {
     MOVE_LOT: "MOVE_LOT"
 }
 
-export const editLotSchema = Yup.object().shape({
-    name: Yup.string()
-        .min(1, '1 character minimum.')
-        .max(50, '50 character maximum.')
-        .required('Please enter a name.'),
-    description: Yup.string()
-        .min(1, '1 character minimum.')
-        .max(250, '250 character maximum.'),
-    bins: binsSchema,
-    processId: Yup.string()
-        .min(1, '1 character minimum.')
-        .max(100, '50 character maximum.')
-        .required('Please select a process.')
-        .nullable(),
-})
+export const editLotSchema = (startDate) => {
+
+
+    return (
+        Yup.object().shape({
+            name: Yup.string()
+                .min(1, '1 character minimum.')
+                .max(50, '50 character maximum.')
+                .required('Please enter a name.'),
+            description: Yup.string()
+                .min(1, '1 character minimum.')
+                .max(250, '250 character maximum.'),
+            bins: binsSchema,
+            processId: Yup.string()
+                .min(1, '1 character minimum.')
+                .max(100, '50 character maximum.')
+                .required('Please select a process.')
+                .nullable(),
+            // endDateText: 
+        })
+    )
+}
 
 export const getMoveLotSchema = (maxCount) => Yup.object().shape({
     moveCount: Yup.number()
@@ -245,11 +252,10 @@ export const getMoveLotSchema = (maxCount) => Yup.object().shape({
         .nullable(),
 })
 
-export const getCardSchema = (mode, availableBinItems) => {
-    console.log('QQQQ Valid')
+export const getCardSchema = (mode, availableBinItems, startDate) => {
     switch (mode) {
         case CARD_SCHEMA_MODES.EDIT_LOT:
-            return editLotSchema
+            return editLotSchema(startDate)
         case CARD_SCHEMA_MODES.MOVE_LOT:
             return getMoveLotSchema(availableBinItems)
         default:
@@ -333,8 +339,8 @@ export const locationSchema = (stations, selectedLocation) => {
 
     let stationNames = []
     Object.values(stations).forEach(station => {
-        if(!!selectedLocation && station._id === selectedLocation._id) {
-            
+        if (!!selectedLocation && station._id === selectedLocation._id) {
+
         }
         else {
             stationNames.push(station.name)

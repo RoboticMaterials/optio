@@ -570,7 +570,6 @@ const FormComponent = (props) => {
 									</styled.DateItem>
 
 									<styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
-
 									<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_END)}>
 										<styled.DateText name='endDateText'>{endDateText}</styled.DateText>
 									</styled.DateItem>
