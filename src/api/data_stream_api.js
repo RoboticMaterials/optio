@@ -1,24 +1,30 @@
 import axios from 'axios';
 import * as log from 'loglevel';
 
-import store from '../redux/store'
-
 import { apiIPAddress } from '../settings/settings'
+
+import https from 'https'
+
 const operator = 'data_stream'
 
-const token = '123456' //store.getState().cognotoUserSession
-
 const logger = log.getLogger('Positions_Api', "Position");
+
+// https.globalAgent.options.rejectUnauthorized = false;
+
+const httpsAgent = new https.Agent({
+    rejectUnauthorized: false
+  })
 
 export async function getDataStream() {
     try {
         const response = await axios({
-            method: 'get',
+            method: 'GET',
             url: apiIPAddress() + operator,
             headers: {
                 'X-API-Key': '123456',
                 'Access-Control-Allow-Origin': '*'
-            }
+            },
+            httpsAgent: httpsAgent
         });
         // Success 🎉
         const data = response.data;
