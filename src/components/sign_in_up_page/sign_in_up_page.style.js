@@ -1,43 +1,32 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-gap: 20px;
-    padding: 5% 5%;
+display:flex;
+flex-direction:column;
+grid-template-columns: 1fr;
+grid-gap: 0.1rem;
+align-content: center;
 `
 
-export const InputContainer = styled.div`
-    display: grid;
-    align-items: center;
-    padding-left: 20px;
-`
 
 export const Input = styled.input`
-    width: 90%;
+    width: 20rem;
     border-radius: 15px;
     font-size: 1.3rem;
     font-weight: 400;
-    padding: 10px;
-    margin-left: 4%;
-    margin: 10px
-`
-
-export const Login = styled.h2`
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    padding: 1rem;
+    margin: 1rem;
+    align-self: center;
 `
 
 export const Button = styled.button`
-    width: 40%;
-    border-radius: 10px;
+    cursor: 'pointer';
+    width: 10rem;
+    border-radius: 1rem;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transform: translate(70%);
     background-color: #FF4B4B;
     color: white;
     border-color: white;
+    align-self: center;
+    justify-content: center;
 `

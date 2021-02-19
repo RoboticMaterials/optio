@@ -95,8 +95,6 @@ const SignInUpPage = (props) => {
 
     return (
             <styled.Container>
-
-                <styled.InputContainer>
                 
                 {!loggedIn && <styled.Input
                     name={"email"}
@@ -115,7 +113,6 @@ const SignInUpPage = (props) => {
                     />
                 }
 
-                </styled.InputContainer>
 
                 {!loggedIn && <styled.Button onClick={signIn}> Login </styled.Button>}
 
