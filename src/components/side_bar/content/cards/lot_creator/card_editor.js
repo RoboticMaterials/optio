@@ -128,14 +128,14 @@ const CardEditor = (props) => {
 		let unloadStationId = matchingRoute?.unload?.station
 
 		loadStationId && dropdownOptions.push({
-			name: "Route: " + matchingRoute.name + " - Draggable: " + stations[loadStationId]?.name,
+			name: "Route: " + matchingRoute.name + " - Station: " + stations[loadStationId]?.name,
 			route_id: matchingRoute._id,
 			station_id: loadStationId,
 			_id: currRouteId + "+" + loadStationId
 		})
 
 		unloadStationId && dropdownOptions.push({
-			name: "Route: " + matchingRoute.name + " - Draggable: " + stations[unloadStationId]?.name,
+			name: "Route: " + matchingRoute.name + " - Station: " + stations[unloadStationId]?.name,
 			route_id: matchingRoute._id,
 			station_id: unloadStationId,
 			_id: currRouteId + "+" + unloadStationId
