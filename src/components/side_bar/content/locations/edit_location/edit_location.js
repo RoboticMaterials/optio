@@ -34,6 +34,7 @@ import useChange from "../../../../basic/form/useChange";
 import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition, setEditingPosition, putPosition, postPosition, setSelectedStationChildrenCopy, removePosition } from '../../../../../redux/actions/positions_actions'
 import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setEditingStation, putStation, postStation, removeStation } from '../../../../../redux/actions/stations_actions'
 import {pageDataChanged} from '../../../../../redux/actions/sidebar_actions'
+
 const EditLocation = (props) => {
     const dispatch = useDispatch()
 
@@ -516,31 +517,5 @@ const EditLocation = (props) => {
         </>
     )
 }
-EditLocation.propTypes = {
-    onSave: PropTypes.func,
-    toggleEditing: PropTypes.func,
-    fieldParent: null,
-    setFieldValue: PropTypes.func,
-    setValues: PropTypes.func,
-    setFieldTouched: PropTypes.func,
-    getFieldMeta: PropTypes.func,
-    onBackClick: PropTypes.func,
-    onRemove: PropTypes.func,
-    onDelete: PropTypes.func,
-};
-
-// Specifies the default values for props:
-EditLocation.defaultProps = {
-    onSave: () => { },
-    toggleEditing: () => { },
-    fieldParent: null,
-    setFieldValue: () => { },
-    setValues: () => { },
-    setFieldTouched: () => { },
-    getFieldMeta: () => { },
-    onBackClick: () => { },
-    onRemove: () => { },
-    onDelete: () => { },
-};
 
 export default EditLocation
