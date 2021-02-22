@@ -61,7 +61,7 @@ const ApiContainer = (props) => {
     const onGetTasks = () => dispatch(getTasks())
     const onGetSounds = (api) => dispatch(getSounds(api))
     const onGetTaskQueue = () => dispatch(getTaskQueue())
-    const onGetTasksAnalysis = () => dispatch(getTasksAnalysis())
+
     const dispatchGetDataStream = () => dispatch(getDataStream())
 
     const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
@@ -248,7 +248,7 @@ const ApiContainer = (props) => {
                 break;
 
             case 'dashboards':
-                setPageDataInterval(setInterval(() => loadDashboardsData(), 1000))
+                setPageDataInterval(setInterval(() => loadDashboardsData(), 3000))
                 break;
 
             case 'tasks':
@@ -317,8 +317,6 @@ const ApiContainer = (props) => {
         const taskQueue = await onGetTaskQueue()
         const processes = await onGetProcesses()
         const cards = onGetCards()
-
-        const tasksAnalysis = await onGetTasksAnalysis()
 
         const status = await onGetStatus()
         const getSchedules = await onGetSchedules()
@@ -410,10 +408,9 @@ const ApiContainer = (props) => {
     */
     const loadDashboardsData = async () => {
         const dashboards = await onGetDashboards();
-        await onGetReportEvents()
         await onGetCards()
         await onGetTasks()
-        onGetProcesses()
+        await onGetProcesses()
 
     }
 
@@ -426,7 +423,6 @@ const ApiContainer = (props) => {
     const loadMapData = async () => {
         const stations = await onGetStations();
         const positions = await onGetPositions();
-        const tasksAnalysis = await onGetTasksAnalysis()
     }
 
     /*
