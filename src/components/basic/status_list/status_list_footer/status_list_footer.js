@@ -13,11 +13,11 @@ const StatusListFooter = (props) => {
 
 	return (
 		<styled.Container>
-			<Button
-				label={"Show Mapper"}
-				type={"button"}
-				onClick={onShowMapperClick}
-			/>
+			{/*<Button*/}
+			{/*	label={"Show Mapper"}*/}
+			{/*	type={"button"}*/}
+			{/*	onClick={onShowMapperClick}*/}
+			{/*/>*/}
 
 			<Button
 				type={"button"}

@@ -35,7 +35,8 @@ const StatusListItem = (props) => {
 		item,
 		index,
 		showTopBorder,
-		showBottomBorer
+		showBottomBorer,
+		created
 	} = props
 
 	const [mappedErrors, setMappedErrors] = useState({})

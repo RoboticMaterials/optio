@@ -120,3 +120,8 @@ export const FORM_STATUS = {
 }
 
 
+export const defaultBins = {
+	"QUEUE": {
+		count: 0
+	},
+}
