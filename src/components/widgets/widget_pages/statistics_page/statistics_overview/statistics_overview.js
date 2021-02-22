@@ -201,13 +201,13 @@ const StatisticsOverview = (props) => {
         dataPromise.then(response => {
 
             if (response === undefined) return setIsThroughputLoading(false)
-            console.log('QQQQ data promiese', response)
-
             // Convert Throughput
             if (newTimeSpan === 'line') {
                 let convertedThroughput = []
                 response.throughPut.forEach((dataPoint) => {
-                    const convertedTime = convertEpochTo12h(dataPoint.x)
+                    // Round Epoch time and multiply by 1000 to match front end times
+                    let convertedTime = dataPoint.x * 1000
+                    convertedTime = Math.round(convertedTime)
                     convertedThroughput.push({ x: convertedTime, y: dataPoint.y })
                 })
                 response = {
@@ -215,8 +215,6 @@ const StatisticsOverview = (props) => {
                     throughPut: convertedThroughput
                 }
             }
-
-            console.log('QQQQ converted response', response)
 
             setThroughputData(response)
             setIsThroughputLoading(false)

@@ -138,6 +138,16 @@ export const convertIntto24h = (int) => {
     return `${hour}:${minute}`
 }
 
-export const convert24htoEpch = (time24h, date) => {
-
-}
+/**
+ * Converts strings into time
+ * time24h string format: 13:00
+ * date string format: May 13, 1993
+ * @param {*} time24h 
+ * @param {*} date 
+ */
+export const convert24htoEpoch = (time24h, date) => {
+    console.log('QQQQ Incoming times', time24h, date)
+    const epochTime = Date.parse(`${date} ${time24h}`)
+    
+    return epochTime
+}  

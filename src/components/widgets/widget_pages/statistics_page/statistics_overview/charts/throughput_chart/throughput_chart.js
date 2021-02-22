@@ -13,63 +13,6 @@ import { getStationAnalytics } from '../../../../../../../redux/actions/stations
 // Import Charts
 import BarChart from '../../../chart_types/bar_chart'
 
-const testData = [
-    {
-        "x": "8 am",
-        "y": 0
-    },
-    {
-        "x": "9 am",
-        "y": 251
-    },
-    {
-        "x": "10 am",
-        "y": 83
-    },
-    {
-        "x": "11 am",
-        "y": 0
-    },
-    {
-        "x": "12 am",
-        "y": 85
-    },
-    {
-        "x": "1 pm",
-        "y": 0
-    },
-    {
-        "x": "2 pm ",
-        "y": 75
-    },
-    {
-        "x": "3 pm ",
-        "y": 73
-    },
-    {
-        "x": "4 pm ",
-        "y": 75
-    },
-    {
-        "x": "5 pm",
-        "y": 0
-    },
-    {
-        "x": "6 pm",
-        "y": 69
-    },
-    {
-        "x": "7 pm",
-        "y": 212
-    },
-    {
-        "x": "8 pm",
-        "y": 33
-    }
-]
-
-
-
 const ThroughputChart = (props) => {
 
     const themeContext = useContext(ThemeContext);
@@ -133,6 +76,7 @@ const ThroughputChart = (props) => {
                             themeContext={themeContext}
                             data={filteredData ? filteredData : []}
                             isData={isData}
+                            date={throughputData.date_title}
                         />
                         :
                         <BarChart

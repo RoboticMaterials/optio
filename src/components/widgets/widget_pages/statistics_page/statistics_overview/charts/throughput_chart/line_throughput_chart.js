@@ -16,7 +16,7 @@ import LineChart from '../../../chart_types/line_chart'
 
 // Import utils
 import { throughputSchema } from '../../../../../../../methods/utils/form_schemas'
-import { convert12hto24h, convert24hto12h, convertTimeStringto24h, convert24htoInt, convertIntto24h } from '../../../../../../../methods/utils/time_utils'
+import { convert12hto24h, convert24hto12h, convertTimeStringto24h, convert24htoInt, convertIntto24h, convert24htoEpoch } from '../../../../../../../methods/utils/time_utils'
 import { deepCopy } from '../../../../../../../methods/utils/utils';
 
 
@@ -48,7 +48,8 @@ const LineThroughputChart = (props) => {
     const {
         data,
         themeContext,
-        isData
+        isData,
+        date,
     } = props
 
     const [compareExpectedOutput, setCompareExpectedOutput] = useState(testExpectedOutput)
@@ -79,16 +80,17 @@ const LineThroughputChart = (props) => {
 
         let dataCopy = deepCopy(data)
 
-        // Convert to int for comparison
-        const startInt = convert24htoInt(compareExpectedOutput.startOfShift)
+        // Convert to epoch
+        const startEpoch = convert24htoEpoch(compareExpectedOutput.startOfShift, date)
         let startIndex
+
+        console.log('QQQQ data', dataCopy)
 
         // Find Start of Shift in the data based on selected input
         for (let i = 0; i < dataCopy.length; i++) {
-            // Convert to int for comparision
-            const dataInt = convert24htoInt(dataCopy[i].x)
+            const dataDate = dataCopy[i].x
             // Go through the data until the time is equal to or after the start of shift input
-            if (dataInt >= startInt) {
+            if (dataDate >= startEpoch) {
                 startIndex = i
                 break
             }
@@ -96,15 +98,16 @@ const LineThroughputChart = (props) => {
         }
 
         // Convert to int for comparison
-        const endInt = convert24htoInt(compareExpectedOutput.endOfShift)
-
+        const endEpoch = convert24htoEpoch(compareExpectedOutput.endOfShift, date)
+        console.log('QQQQ Start epoch', startEpoch)
+        console.log('QQQQ end epoch', endEpoch)
         let endIndex = dataCopy.length
         // Find end of Shift in the data based on selected input
         for (let i = 0; i < dataCopy.length; i++) {
             // Convert to int for comparision
-            const dataInt = convert24htoInt(dataCopy[i].x)
+            const dataDate = dataCopy[i].x
             // Go through the data until the time is  after the end of shift input and take the vlaue before that one
-            if (dataInt > endInt) {
+            if (dataDate > endEpoch) {
                 startIndex = i - 1
                 break
             }
@@ -114,15 +117,15 @@ const LineThroughputChart = (props) => {
         // Modify y values
         let stack = 0
         for (const point of dataCopy) {
-            convertedData.push({ x: convert24htoInt(point.x), y: stack + point.y })
+            convertedData.push({ x: point.x, y: stack + point.y })
             stack += point.y
         }
 
         // Add 0 for the start of the shift
-        convertedData.unshift({ x: convert24htoInt(compareExpectedOutput.startOfShift), y: 0 })
+        convertedData.unshift({ x: startEpoch, y: 0 })
 
         // Add the last value in converted data to the end of the shift
-        convertedData.push({ x: convert24htoInt(compareExpectedOutput.endOfShift), y: convertedData[convertedData.length - 1].y })
+        convertedData.push({ x: endEpoch, y: convertedData[convertedData.length - 1].y })
 
         // This is the array of data that is passed to the line chart
         let expectedOutput = []
@@ -135,8 +138,8 @@ const LineThroughputChart = (props) => {
         if (!!compareExpectedOutput.expectedOutput) {
 
             // Add the beginning and end of each shift
-            expectedOutput.push({ x: convert24htoInt(compareExpectedOutput.startOfShift), y: 0 })
-            expectedOutput.push({ x: convert24htoInt(compareExpectedOutput.endOfShift), y: compareExpectedOutput.expectedOutput })
+            expectedOutput.push({ x: startEpoch, y: 0 })
+            expectedOutput.push({ x: endEpoch, y: compareExpectedOutput.expectedOutput })
             slopeValues = expectedOutput.length
 
             // let slopeInd = 0
@@ -160,8 +163,8 @@ const LineThroughputChart = (props) => {
             const breaks = Object.values(compareExpectedOutput.breaks)
             breaks.forEach((b, ind) => {
                 if (!b.enabled) return
-                const start = b.startOfBreak
-                const end = b.endOfBreak
+                const start = convert24htoEpoch(b.startOfBreak, date)
+                const end = convert24htoEpoch(b.endOfBreak, end)
 
                 // // Find the start index in the array 
                 // const matchedStartBreak = (el) => start === el
@@ -171,8 +174,8 @@ const LineThroughputChart = (props) => {
                 // const endIndex = expectedOutput.findIndex(matchEndBreak)
 
                 // Find the value of y at startof the break using y = mx + b
-                const m = (0 - compareExpectedOutput.expectedOutput) / (convert24htoInt(compareExpectedOutput.startOfShift) - convert24htoInt(compareExpectedOutput.endOfShift))
-                const yStart = m * convert24htoInt(start)
+                const m = (0 - compareExpectedOutput.expectedOutput) / (startEpoch - endEpoch)
+                const yStart = m * start
 
                 // Find where the x value fits and add the stagnent y value to the expected outPut
                 for (let i = 0; i < expectedOutput.length; i++) {
@@ -180,9 +183,9 @@ const LineThroughputChart = (props) => {
                     const nextOutput = expectedOutput[i + 1]
 
                     // If the output x is less or equal to the start and the next output is greater or equal to the start, then this is where the break belongs in the expectedOutput
-                    if (output.x <= convert24htoInt(start) && nextOutput.x >= convert24htoInt(start)) {
-                        expectedOutput.splice(i + 1, 0, { x: convert24htoInt(start), y: yStart })
-                        expectedOutput.splice(i + 2, 0, { x: convert24htoInt(end), y: yStart })
+                    if (output.x <= start && nextOutput.x >= start) {
+                        expectedOutput.splice(i + 1, 0, { x: start, y: yStart })
+                        expectedOutput.splice(i + 2, 0, { x: end, y: yStart })
                         break
                     }
                 }
@@ -299,6 +302,20 @@ const LineThroughputChart = (props) => {
                     }
                 }
             }
+        })
+
+
+        // Now convert all x values to times from Epoch
+        convertedData.forEach((data, i) => {
+            const xDate = new Date(data.x)
+            const xString = `${xDate.getHours()}:${xDate.getMinutes()}`
+            console.log('QQQQ xDate', xDate)
+            convertedData[i] = { x: xDate, y: data.y }
+        })
+        expectedOutput.forEach((data, i) => {
+            const xDate = new Date(data.x)
+            const xString = `${xDate.getHours()}:${xDate.getMinutes()}`
+            expectedOutput[i] = { x: xDate, y: data.y }
         })
 
         const lineData = [{
@@ -628,7 +645,12 @@ const LineThroughputChart = (props) => {
             <styled.PlotContainer style={{ flexGrow: '7' }} minHeight={27}>
                 <LineChart
                     // data={filteredData ? filteredData : []}
-                    // data={lineDataConverter()}
+                    xScale={{ 
+                        type: 'time', 
+                        // format: '%Y-%m-%d %H:%M:%S', 
+                        precision: 'minute', 
+                    }}
+                    xFormat={"time:%d.%b %H:%M"}
                     data={!!convertedData ? convertedData : []}
                     enableGridY={isData ? true : false}
                     yScale={{
@@ -638,9 +660,9 @@ const LineThroughputChart = (props) => {
                     }}
                     curve="monotoneX"
                     mainTheme={themeContext}
-                    axisBottom={{
-                        tickRotation: -90,
-                    }}
+                    // axisBottom={{
+                    //     tickRotation: -90,
+                    // }}
                     axisLeft={{
                         enable: true,
                     }}

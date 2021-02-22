@@ -26,7 +26,6 @@ const BarChart = (props) => {
 
     const themeContext = useContext(ThemeContext);
 
-
     const theme = {
         background: 'transparent',
         // background: 'red',
