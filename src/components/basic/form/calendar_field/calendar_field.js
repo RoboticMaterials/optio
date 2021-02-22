@@ -51,8 +51,6 @@ const CalendarField = ({
                 // value={[startDate, endDate]}
                 // allowPartialRange
                 value={!!isStart ? startDate : endDate}
-                // minDate={!isStart ? (startDate) : null}
-                // maxDate={isStart ? endDate : null}
 
                 // defaultValue={[initialStartDate, initialEndDate]}
                 // defaultActiveStartDate={initialStartDate}
