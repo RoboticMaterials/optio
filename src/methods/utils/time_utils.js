@@ -137,3 +137,7 @@ export const convertIntto24h = (int) => {
     }
     return `${hour}:${minute}`
 }
+
+export const convert24htoEpch = (time24h, date) => {
+
+}
