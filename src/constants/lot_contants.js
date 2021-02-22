@@ -108,4 +108,15 @@ export const COUNT_FIELD = {fieldName: "count", fieldPath: ["bins", "QUEUE"], da
 
 export const REQUIRED_FIELDS = [NAME_FIELD, COUNT_FIELD]
 
+export const FORM_STATUS = {
+	VALIDATION_START: 1,
+	VALIDATION_SUCCESS: 2,
+	VALIDATION_ERROR: 3,
+	CREATE_START: 4,
+	CREATE_SUCCESS: 5,
+	CREATE_ERROR: 6,
+	WAITING: 7,
+	CANCELLED: 8,
+}
+
 

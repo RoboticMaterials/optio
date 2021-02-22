@@ -7,20 +7,60 @@ import StatusListItem from "../status_list_item/status_list_item";
 const StatusListBody = (props) => {
 
 	const {
-		data
+		data,
+		onItemClick
 	} = props
 
 	const renderData = () => {
 		return data.map((currDatem, currIndex) => {
+			console.log("StatusListBody currDatem",currDatem)
+
+			const {
+				title,
+				errors,
+				validationStatus,
+				resourceStatus
+			} = currDatem || {}
+
+			const {
+				message: validationMessage,
+				code: validationCode
+			} = validationStatus || {}
+
+			const {
+				message: resourceMessage,
+				code: resourceCode
+			} = resourceStatus || {}
+
+
+
 			return(
 				<StatusListItem
-					title={currIndex}
+					key={currIndex}
+					index={currIndex}
+					item={currDatem}
+					onEditClick={onItemClick}
+					title={title}
+					errors={errors}
+					validationMessage={validationMessage}
+					validationCode={validationCode}
+					resourceMessage={resourceMessage}
+					resourceCode={resourceCode}
 				/>
 			)
 		})
 	}
 	return (
 		<styled.Container>
+			<styled.RowTitles>
+				{/*<styled.IndexTitle></styled.IndexTitle>*/}
+				<styled.NameTitle>Lot Name</styled.NameTitle>
+				<styled.StatusMessageTitle>Validation Status</styled.StatusMessageTitle>
+				<styled.StatusMessageTitle>Creation Status</styled.StatusMessageTitle>
+				{/*<styled.Filler/>*/}
+
+			</styled.RowTitles>
+
 			{renderData()}
 		</styled.Container>
 	);

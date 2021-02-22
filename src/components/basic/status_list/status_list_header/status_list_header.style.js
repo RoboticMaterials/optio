@@ -1,8 +1,8 @@
 import styled, {css} from "styled-components"
-import {columnRowCss} from "../../../../common_css/layout";
+import {columnRowLayout, headerStyle} from "../../../../common_css/layout";
 
 export const Container = styled.div`
-  	${columnRowCss};
-	background: red;
+  	${columnRowLayout};
+  	${headerStyle};
   	min-height: 5rem;
 `

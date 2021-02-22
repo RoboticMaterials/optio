@@ -1,7 +1,7 @@
 import styled, {css} from "styled-components"
-import {containerCss} from "../../../common_css/layout";
+import {containerLayout} from "../../../common_css/layout";
 
 export const Container = styled.div`
-	${containerCss};
+	${containerLayout};
   height: 90vh;
 `

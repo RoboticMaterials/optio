@@ -37,7 +37,7 @@ import {
 	DEFAULT_NAME_DISPLAY_NAME,
 	FIELD_COMPONENT_NAMES,
 	FIELD_DATA_TYPES,
-	FORM_BUTTON_TYPES,
+	FORM_BUTTON_TYPES, FORM_STATUS,
 	NAME_FIELD,
 	REQUIRED_FIELDS
 } from "../../../../../constants/lot_contants";
@@ -125,6 +125,7 @@ const FormComponent = (props) => {
 	const dispatch = useDispatch()
 	const onGetCardHistory = async (cardId) => await dispatch(getCardHistory(cardId))
 	const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
+	const onPostCard = async (card) => await dispatch(postCard(card))
 
 	// redux state
 	const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] })
@@ -200,53 +201,110 @@ const FormComponent = (props) => {
 
 				let currProcessedLot = {
 					index: currMappedLotIndex,
-					errors: {}
+					name: payloadName ? payloadName : "Unnamed Lot",
+					errors: {},
+					validationStatus: {
+						message: `Validating lot.`,
+						code: FORM_STATUS.VALIDATION_START
+					},
+					resourceStatus: {
+						message: `Validating lot.`,
+						code: FORM_STATUS.WAITING
+					},
 				}
 
-				console.log("newLot ayo a",newLot)
+					editLotSchema.validate(newLot, {abortEarly: false})
+						.then((ayo) => {
+							currProcessedLot.validationStatus = {
+								message: `Successfully validated lot!`,
+								code: FORM_STATUS.VALIDATION_SUCCESS
+							}
 
-				try {
-					const validationResult = editLotSchema.validateSync(newLot, {abortEarly: false})
-					console.log("validationResult", validationResult)
-				}
-				catch (err) {
-					console.log("catch err", err)
+							const {
+								name: newName,
+								bins: newBins,
+								processId: newProcessId,
+								[lotTemplateId]: templateValues,
+							} = newLot || {}
 
-					const {
-						inner = [],
-						message
-					} = err || {}
+							currProcessedLot.resourceStatus = {
+								message: `Creating lot. ${newName}`,
+								code: FORM_STATUS.CREATE_START
+							}
 
-					// if(inner.length === 0) {
-					// 	currProcessedLot.
-					// }
+							const submitItem = {
+								name: newName,
+								bins: newBins,
+								process_id: newProcessId,
+								lotTemplateId: lotTemplateId,
+								...templateValues
+							}
 
-					inner.forEach((currErr) => {
+							onPostCard(submitItem).then((result) => {
+								// const tempDescriptors = [...descriptorsReference.current];
+								// tempDescriptors[descriptorIndex] = response.data;
+								// // Next line is to update the descriptors into descriptors state, this phase doesn't happen immediately 'cause is asynchronous
+								// setDescriptors(tempDescriptors);
+								// // Next line is to update the descriptors in memory, this phase occurs immediately
+								// descriptorsReference.current = tempDescriptors
+								if(result) {
+									currProcessedLot.resourceStatus = {
+										message: `Successfully created lot!`,
+										code: FORM_STATUS.CREATE_SUCCESS
+									}
+								}
+
+								else {
+									currProcessedLot.resourceStatus = {
+										message: `Error creating lot.`,
+										code: FORM_STATUS.CREATE_ERROR
+									}
+								}
+							})
+							.catch((err) => {
+								console.log("post it err",err)
+							})
+
+						})
+					.catch((err) => {
+						console.log("ERRRRRORRRR", err)
+
 						const {
-							errors,			//: ["1 character minimum."]
-							inner,			//: []
-							message, 		//: "1 character minimum."
-							name, 		//: "ValidationError"
-							params, 			//: {path: "name", value: "", originalValue: "", label: undefined, min: 1}
-							path, 				//: "name"
-							type, 				//: "min"
-							value,				//: ""
-						} = currErr || {}
+							inner = [],
+							message
+						} = err || {}
 
-						let existingErrors = currProcessedLot.errors[path] || []
+						let lotErrors = {}
 
-						currProcessedLot = {
-							...currProcessedLot,
-							errors: {
-								...currProcessedLot.errors,
+						inner.forEach((currErr) => {
+							const {
+								errors,			//: ["1 character minimum."]
+								path, 				//: "name"
+							} = currErr || {}
+
+							let existingErrors = lotErrors[path] || []
+
+							lotErrors = {
+								...lotErrors,
 								[path]: [...existingErrors, ...errors]
 							}
+						})
+
+						console.log("lotErrors",lotErrors)
+
+						currProcessedLot.resourceStatus = {
+							message: `Creation cancelled: validation failed.`,
+							code: FORM_STATUS.CANCELLED
 						}
-					})
-				}
-				finally {
-					console.log("finally")
-				}
+						currProcessedLot.validationStatus = {
+							message: `Error validating lot.`,
+							code: FORM_STATUS.VALIDATION_ERROR
+						}
+						currProcessedLot.errors = lotErrors
+
+					});
+
+
 
 				processedLots.push(currProcessedLot)
 			})
@@ -479,16 +537,16 @@ const FormComponent = (props) => {
 
 					switch(content){
 						case CONTENT.MOVE:
-							onSubmit(FORM_BUTTON_TYPES.MOVE_OK)
+							onSubmit(values, FORM_BUTTON_TYPES.MOVE_OK)
 							break
 						default:
-							onSubmit(FORM_BUTTON_TYPES.SAVE)
+							onSubmit(values, FORM_BUTTON_TYPES.SAVE)
 							break
 					}
 				}
 				else {
 					// if the form mode is set to CREATE (the only option other than UPDATE), the default action of the enter key should be to add the lot
-					onSubmit(FORM_BUTTON_TYPES.ADD)
+					onSubmit(values, FORM_BUTTON_TYPES.ADD)
 				}
 
 			}
@@ -949,7 +1007,7 @@ const FormComponent = (props) => {
 											style={{...buttonStyle, width: "8rem"}}
 											type={"button"}
 											onClick={() => {
-												onSubmit(FORM_BUTTON_TYPES.MOVE_OK)
+												onSubmit(values, FORM_BUTTON_TYPES.MOVE_OK)
 											}}
 											schema={"ok"}
 											secondary
@@ -991,7 +1049,7 @@ const FormComponent = (props) => {
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
 											secondary
 											onClick={async () => {
-												onSubmit(FORM_BUTTON_TYPES.ADD)
+												onSubmit(values, FORM_BUTTON_TYPES.ADD)
 											}}
 										>
 											Add
@@ -1006,7 +1064,7 @@ const FormComponent = (props) => {
 											secondary
 											onClick={async () => {
 												if (isArray(mappedValues) && mappedValues.length > 0) {
-													const submitWasSuccessful = await onSubmit()
+													const submitWasSuccessful = await onSubmit(values)
 
 													// go to next lot
 													if (mappedValuesIndex < mappedValues.length - 1) {
@@ -1015,7 +1073,7 @@ const FormComponent = (props) => {
 
 												} else {
 													// function order matters
-													onSubmit(FORM_BUTTON_TYPES.ADD_AND_NEXT)
+													onSubmit(values, FORM_BUTTON_TYPES.ADD_AND_NEXT)
 												}
 
 
@@ -1033,7 +1091,7 @@ const FormComponent = (props) => {
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
 											secondary
 											onClick={async () => {
-												onSubmit(FORM_BUTTON_TYPES.SAVE)
+												onSubmit(values, FORM_BUTTON_TYPES.SAVE)
 											}}
 										>
 											Save
@@ -1171,14 +1229,18 @@ const FormComponent = (props) => {
 		if(showCreationStatus) {
 			return(
 				<StatusList
+					onItemClick={(item) => {
+						setMappedValuesIndex(item.index)
+						setShowCreationStatus(false)
+					}}
 					data={processedValues.map((currValue, currIndex) => {
 						const {
-							errors
+							name
 						} = currValue
 
 						return {
-							errors,
-							label: currIndex
+							...currValue,
+							title: name
 						}
 					})}
 
@@ -1318,6 +1380,8 @@ const LotEditor = (props) => {
 			bins: {...remainingBins},
 		}
 
+		let requestSuccessStatus = false
+
 		// if there are no remaining bins, delete the card
 		if(isEmpty(remainingBins)) {
 			onDeleteCard(cardId, processId)
@@ -1326,6 +1390,11 @@ const LotEditor = (props) => {
 		// otherwise update the card to contain only the remaining bins
 		else {
 			const result = await onPutCard(submitItem, cardId)
+
+			// check if request was successful
+			if(!(result instanceof Error)) {
+				requestSuccessStatus = true
+			}
 		}
 
 		close()
@@ -1572,7 +1641,6 @@ const LotEditor = (props) => {
 								setSubmitting,
 								setTouched,
 								resetForm,
-								values,
 								setFieldValue,
 								validateForm,
 								setErrors,
@@ -1580,7 +1648,7 @@ const LotEditor = (props) => {
 
 							} = formikProps
 
-							const handleSubmit = async (buttonType) => {
+							const handleSubmit = async (values, buttonType) => {
 								setSubmitting(true)
 								await submitForm()
 
@@ -1591,6 +1659,8 @@ const LotEditor = (props) => {
 									setSubmitting(false)
 									return false
 								}
+
+								let requestResult
 
 								const {
 									_id,
@@ -1684,7 +1754,8 @@ const LotEditor = (props) => {
 										}
 
 										// update card
-										onPutCard(submitItem, cardId)
+										requestResult = onPutCard(submitItem, cardId)
+
 									}
 								}
 
@@ -1702,7 +1773,7 @@ const LotEditor = (props) => {
 											...templateValues
 										}
 
-										onPutCard(submitItem, cardId)
+										requestResult = onPutCard(submitItem, cardId)
 									}
 
 									// create (POST)
@@ -1718,18 +1789,18 @@ const LotEditor = (props) => {
 											...templateValues
 										}
 
-										const postResult = await onPostCard(submitItem)
+										requestResult = await onPostCard(submitItem)
 
 
-										if(!(postResult instanceof Error)) {
+										if(!(requestResult instanceof Error)) {
 											const {
 												_id = null
-											} = postResult || {}
+											} = requestResult || {}
 
 											setFieldValue("_id", _id)
 										}
 										else {
-											console.error("postResult error",postResult)
+											console.error("requestResult error",requestResult)
 										}
 
 									}
@@ -1758,7 +1829,8 @@ const LotEditor = (props) => {
 										break
 								}
 
-								return true
+								return requestResult
+								// return true
 							}
 
 							return (
