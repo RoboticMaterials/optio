@@ -13,6 +13,8 @@ import Switch from 'react-ios-switch';
 
 import TimezonePicker, { timezones } from 'react-timezone';
 
+import Button from "../../../basic/button/button";
+
 // Import Actions
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
 import { postLocalSettings } from '../../../../redux/actions/local_actions'
@@ -209,6 +211,8 @@ const Settings = () => {
             return (
                 <styled.SettingContainer style={{ marginTop: '1rem' }}>
 
+
+
                     <styled.RowContainer style={{ position: 'relative', justifyContent: 'space-between' }}>
                         <styled.Header>MIR IP</styled.Header>
                         <styled.ConnectionButton onClick={() => handleMirConnection()} disabled={(connectionText === 'Connected' || connectionText === 'Connecting')}>
@@ -369,12 +373,30 @@ const Settings = () => {
         )
     }
 
+    const SignOut = () => {
+        const signOut = async () => {
+
+            await onPostLocalSettings({
+                authenticated: null
+            })
+
+         }
+        return (
+            <styled.SettingContainer>
+
+                <Button onClick={signOut}> Sign Out </Button>
+
+            </styled.SettingContainer>
+        )
+    }
+
     return (
         <styled.SettingsContainer>
             <ContentHeader content={'settings'} mode={'title'} saveEnabled={true} onClickSave={handleSumbitSettings} />
             {MirIp()}
             {MapViewEnabled()}
             {CurrentMap()}
+            {SignOut()}
             {APIAddress()}
 
             {/* {TimeZone()} */}

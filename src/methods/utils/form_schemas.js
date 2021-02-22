@@ -175,12 +175,6 @@ export const signUpSchema = Yup.object().shape({
         .email()
         .required('Please enter an email'),
     password: Yup.string()
-        // .min(8, '8 character minimum')
-        // .matches(
-        //     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-        //     'Password must contain atleast 8 characters, One Uppercase, One Lowercase, and one specail character',
-        // )
-
         .required('Please enter a password'),
 
     confirmPassword: Yup.string()

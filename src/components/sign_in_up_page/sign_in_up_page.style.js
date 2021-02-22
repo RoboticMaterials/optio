@@ -10,7 +10,7 @@ align-content: center;
 
 
 export const Input = styled.input`
-    width: 20rem;
+    width: 40rem;
     border-radius: 15px;
     font-size: 1.3rem;
     font-weight: 400;
