@@ -95,3 +95,41 @@ export const BASIC_LOT_TEMPLATE = {
 	_id: BASIC_LOT_TEMPLATE_ID
 }
 
+export const DEFAULT_NAME_DISPLAY_NAME = "Name"
+export const DEFAULT_COUNT_DISPLAY_NAME = "Quantity"
+
+export const DEFAULT_DISPLAY_NAMES = {
+	name: DEFAULT_NAME_DISPLAY_NAME,
+	count: DEFAULT_COUNT_DISPLAY_NAME
+}
+
+export const NAME_FIELD = {fieldName: "name", dataType: FIELD_DATA_TYPES.STRING, displayName: DEFAULT_NAME_DISPLAY_NAME}
+export const COUNT_FIELD = {fieldName: "count", fieldPath: ["bins", "QUEUE"], dataType: FIELD_DATA_TYPES.INTEGER, displayName: DEFAULT_COUNT_DISPLAY_NAME}
+
+export const REQUIRED_FIELDS = [NAME_FIELD, COUNT_FIELD]
+
+export const FORM_STATUS = {
+	VALIDATION_START: 1,
+	VALIDATION_SUCCESS: 2,
+	VALIDATION_ERROR: 3,
+	CREATE_START: 4,
+	CREATE_SUCCESS: 5,
+	CREATE_ERROR: 6,
+	WAITING: 7,
+	CANCELLED: 8,
+}
+
+
+export const defaultBins = {
+	"QUEUE": {
+		count: 0
+	},
+}
+
+export const FLAG_COLORS = {
+	RED: "#db2100",
+	BLUE: "#1a00c2",
+	GREEN: "#13a600",
+	PINK: "#d800db",
+	ORANGE: "#e3a600",
+}

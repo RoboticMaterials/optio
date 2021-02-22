@@ -1,14 +1,14 @@
 import styled, {css} from "styled-components"
-import {commonIcon, disabledButtonCss, iconButtonCss, newGlow, trapezoidCss} from "../../../common_css/common_css";
+import {commonClickableIcon, disabledButtonCss, iconButtonCss, newGlow, trapezoidCss} from "../../../common_css/common_css";
 
 export const Container = styled.div`
     display: flex;
     
     flex-direction: column;
-    position: absolute;
-    top:50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    //position: absolute;
+    //top:50%;
+    //left: 50%;
+    //transform: translate(-50%, -50%);
     z-index: 5000;
     
     overflow: hidden;
@@ -211,6 +211,20 @@ export const SectionTitle = styled.span`
     margin-bottom: 1rem;
 `
 
+export const SectionDescription = styled.span`
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    font-size: ${props => props.theme.fontSize.sz4};
+    //margin-bottom: 1rem;
+    margin-top: 1rem;
+`
+
 export const FieldName = styled.div`
     margin: 0 1rem;
     background: ${props => props.disabled ? "pink" : props.theme.bg.tertiary};
@@ -226,7 +240,7 @@ export const FieldName = styled.div`
 
 export const SelectButton = styled.button`
     ${iconButtonCss};
-    ${commonIcon};
+    ${commonClickableIcon};
     margin-right: .5rem;
     font-size: 1.5rem;
     color: ${props => props.color};

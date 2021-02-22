@@ -2,7 +2,7 @@ import styled, {css} from "styled-components";
 import { Draggable } from 'react-smooth-dnd';
 import {rowCss} from "../card_editor/lot_editor.style";
 import * as commonCss from "../../../../../common_css/common_css";
-import {commonIcon, iconButtonCss} from "../../../../../common_css/common_css";
+import {commonClickableIcon, commonIcon, iconButtonCss} from "../../../../../common_css/common_css";
 
 export const Container = styled.div`
  
@@ -116,8 +116,17 @@ export const FooterBar = styled.div`
 
 export const FlagButton = styled.button`
 	${iconButtonCss};
-  	${commonIcon};
+  	${commonClickableIcon};
   	margin: 0 1rem;
+`
+
+
+export const FlagsContainer = styled.div`
+    display: flex;
+    padding: 1rem 2rem;
+    align-items: center;
+    justify-content: center;
+    
 `
 
 export const HeaderBar = styled.div`

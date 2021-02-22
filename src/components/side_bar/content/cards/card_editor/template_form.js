@@ -24,7 +24,7 @@ import {FORM_MODES} from "../../../../../constants/scheduler_constants";
 import {parseMessageFromEvent} from "../../../../../methods/utils/card_utils";
 import {CARD_SCHEMA_MODES, cardSchema, getCardSchema, LotFormSchema} from "../../../../../methods/utils/form_schemas";
 import {getProcessStations} from "../../../../../methods/utils/processes_utils";
-import {isEmpty} from "../../../../../methods/utils/object_utils";
+import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
 
 // import styles
 import * as styled from "./lot_editor.style"
@@ -51,12 +51,17 @@ import {
 import lotTemplatesReducer from "../../../../../redux/reducers/lot_templates_reducer";
 import NumberInput from "../../../../basic/number_input/number_input";
 import useChange from "../../../../basic/form/useChange";
-import {EMPTY_DEFAULT_FIELDS} from "../../../../../constants/lot_contants";
+import {
+	DEFAULT_COUNT_DISPLAY_NAME,
+	DEFAULT_DISPLAY_NAMES,
+	DEFAULT_NAME_DISPLAY_NAME,
+	EMPTY_DEFAULT_FIELDS
+} from "../../../../../constants/lot_contants";
 import {ThemeContext} from "styled-components";
 
 
 const disabledStyle = {
-	filter: "contrast(50%)"
+	// filter: "contrast(50%)"
 }
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
@@ -126,6 +131,12 @@ const FormComponent = (props) => {
 	const errorCount = Object.keys(errors).length > 0 // get number of field errors
 	const touchedCount = Object.values(touched).length // number of touched fields
 	const submitDisabled = ((((errorCount > 0)) || (touchedCount === 0) || isSubmitting) && ((submitCount > 0)) ) || !values.changed // disable if there are errors or no touched field, and form has been submitted at least once
+
+	// useEffect(() => {
+	// 	console.log("Form Editor values",values)
+	// 	console.log("Form Editor errors",errors)
+	// 	console.log("Form Editor touched",touched)
+	// }, [values, errors, touched])
 
 	/*
 	* handles when enter key is pressed
@@ -232,63 +243,87 @@ const FormComponent = (props) => {
 				<LotEditorSidebar/>
 
 				<styled.SuperContainer>
-				<styled.SectionContainer>
-					<styled.FieldsHeader
-						style={disabledStyle}
-					>
-						<styled.NameContainer>
-							<styled.LotName>Lot Name</styled.LotName>
-							<div
-								style={{
-									flexDirection: "row",
-									alignItems: "center",
-									width: "100%",
-									position: "relative",
-									display: "flex",
-								}}
-							>
-								<Textbox
-									textboxContainerStyle={{flex: 1}}
-									disabled={true}
-									type="text"
-									placeholder="Enter name..."
+					<styled.SectionContainer>
+						<styled.FieldsHeader
+							style={disabledStyle}
+						>
+							<styled.NameContainer>
+								{/*<styled.LotName>Lot Name</styled.LotName>*/}
+								<TextField
+
+									style={{
+										fontSize: themeContext.fontSize.sz3,
+										fontWeight: themeContext.fontWeight.bold,
+										whiteSpace: "nowrap" ,
+										marginRight: "2rem",
+										marginBottom: ".5rem",
+										maxWidth: "10rem"
+									}}
+									name={"displayNames.name"}
 									InputComponent={Textbox}
 								/>
-							</div>
-						</styled.NameContainer>
-					</styled.FieldsHeader>
-					<styled.TheBody>
-						{loaded ?
-							<LotFormCreator
-								{...formikProps}
-								preview={preview}
-							/>
+								<div
+									style={{
+										flexDirection: "row",
+										alignItems: "center",
+										width: "100%",
+										position: "relative",
+										display: "flex",
+									}}
+								>
+									<Textbox
+										textboxContainerStyle={{flex: 1}}
+										// disabled={true}
+										type="text"
+										placeholder="Enter name..."
+										InputComponent={Textbox}
+									/>
+								</div>
+							</styled.NameContainer>
+						</styled.FieldsHeader>
+						<styled.TheBody>
+							{loaded ?
+								<LotFormCreator
+									{...formikProps}
+									preview={preview}
+								/>
 
-							:
-							<FadeLoader
-								css={styled.FadeLoaderCSS}
-								height={5}
-								width={3}
-								loading={true}
-							/>
-						}
+								:
+								<FadeLoader
+									css={styled.FadeLoaderCSS}
+									height={5}
+									width={3}
+									loading={true}
+								/>
+							}
 
 
-					</styled.TheBody>
-				</styled.SectionContainer>
+						</styled.TheBody>
+					</styled.SectionContainer>
 
-				<styled.BodyContainer style={disabledStyle}>
-					<div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-						<styled.ObjectInfoContainer>
-							<styled.ObjectLabel>Quantity</styled.ObjectLabel>
-							<NumberInput
-								inputDisabled={true}
-								minusDisabled={true}
-								plusDisabled={true}
-							/>
-						</styled.ObjectInfoContainer>
-					</div>
-				</styled.BodyContainer>
+					<styled.BodyContainer style={disabledStyle}>
+						<div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+							<styled.ObjectInfoContainer>
+								{/*<styled.ObjectLabel>Quantity</styled.ObjectLabel>*/}
+								<TextField
+									name={"displayNames.count"}
+									InputComponent={Textbox}
+									style={{
+										display: "inline-flex",
+										marginRight: "1rem",
+										fontWeight: "bold",
+										alignItems: "center",
+										textAlign: "center",
+									}}
+								/>
+								<NumberInput
+									inputDisabled={true}
+									minusDisabled={true}
+									plusDisabled={true}
+								/>
+							</styled.ObjectInfoContainer>
+						</div>
+					</styled.BodyContainer>
 				</styled.SuperContainer>
 			</styled.RowContainer>
 
@@ -454,18 +489,19 @@ const LotCreatorForm = (props) => {
 
 		const {
 			fields,
-			name
+			name,
+			displayNames
 		} = values
 
 
 		// update (PUT)
 		if(formMode === FORM_MODES.UPDATE) {
-			dispatchPutLotTemplate({fields, name}, lotTemplateId)
+			dispatchPutLotTemplate({fields, name, displayNames}, lotTemplateId)
 		}
 
 		// // create (POST)
 		else {
-			const response = await dispatchPostLotTemplate({fields, name})
+			const response = await dispatchPostLotTemplate({fields, name, displayNames})
 			//
 			if(!(response instanceof Error)) {
 				const {
@@ -510,7 +546,17 @@ const LotCreatorForm = (props) => {
 						EMPTY_DEFAULT_FIELDS,
 
 					name: lotTemplate ? lotTemplate.name : "",
-					changed: false
+					changed: false,
+					displayNames: lotTemplate ?
+						isObject(lotTemplate.displayNames) ?
+							{
+								name: lotTemplate?.displayNames?.name || DEFAULT_NAME_DISPLAY_NAME ,
+								count: lotTemplate?.displayNames?.count || DEFAULT_COUNT_DISPLAY_NAME
+							}
+							:
+							DEFAULT_DISPLAY_NAMES
+						:
+						DEFAULT_DISPLAY_NAMES
 				}}
 
 				// validation control

@@ -29,7 +29,6 @@ export const disabledButtonCss = css`
 `
 
 export const commonIcon = css`
-
   transition: all 0.25s ease;
   padding: 0;
   margin: 0;
@@ -37,7 +36,11 @@ export const commonIcon = css`
 
 
   filter: brightness(${props => props.filter});
+`
 
+export const commonClickableIcon = css`
+  ${commonIcon};
+  
   &:focus{
     //outline: 0 !important
   }
@@ -51,6 +54,8 @@ export const commonIcon = css`
     //box-shadow: none;
     filter: brightness(85%);
   }
+
+  
 
 `
 

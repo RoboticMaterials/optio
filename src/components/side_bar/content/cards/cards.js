@@ -20,7 +20,7 @@ import {ThemeContext} from "styled-components";
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
 import ZoneHeader from "./zone_header/zone_header";
 import {SORT_MODES} from "../../../../constants/common_contants";
-import LotCreatorForm from "./card_editor/form_editor";
+import LotCreatorForm from "./card_editor/template_form";
 import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
 
 const Cards = (props) => {

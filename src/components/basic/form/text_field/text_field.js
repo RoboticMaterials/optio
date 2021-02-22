@@ -5,30 +5,31 @@ import { useField, useFormikContext } from "formik";
 import ErrorTooltip from '../error_tooltip/error_tooltip';
 import useChange from '../../../basic/form/useChange'
 import * as styled from './text_field.style'
+import {getMessageFromError} from "../../../../methods/utils/form_utils";
 
 const TextField = ({
-					   InputComponent,
-					   ErrorComponent,
-					   LabelComponent,
-					   InputContainer,
-					   fieldLabel,
-					   onBlur,
-					   onFocus,
-					   onChange,
-					   inputStyleFunc,
-					   IconContainerComponent,
-					   ContentContainer,
-					   inputContainerStyle,
-					   errorTooltipContainerStyle,
-	showErrorStyle,
-	containerStyle,
-					   FieldContainer,
-					   mapInput,
-	mapOutput,
-	inputProps,
+					InputComponent,
+					ErrorComponent,
+					LabelComponent,
+					InputContainer,
+					fieldLabel,
+					onBlur,
+					onFocus,
+					onChange,
+					inputStyleFunc,
+					IconContainerComponent,
+					ContentContainer,
+					inputContainerStyle,
+					errorTooltipContainerStyle,
+					showErrorStyle,
+					containerStyle,
+					FieldContainer,
+					mapInput,
+					mapOutput,
+					inputProps,
 
-					   style,
-					   ...props }) => {
+					style,
+					...props }) => {
 
 	const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext();
 	const [field, meta] = useField(props);
@@ -37,6 +38,8 @@ const TextField = ({
 	const hasError = touched && error
 	useChange(setFieldValue)
 	const inputStyle = inputStyleFunc(hasError, showErrorStyle);
+
+	const errorMessage = getMessageFromError(error)
 
 	return (
 		<>
@@ -81,7 +84,7 @@ const TextField = ({
 					/>
 					<ErrorTooltip
 						visible={hasError}
-						text={error}
+						text={errorMessage}
 						ContainerComponent={IconContainerComponent}
 						containerStyle={errorTooltipContainerStyle}
 					/>

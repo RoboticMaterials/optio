@@ -19,7 +19,8 @@ const ErrorTooltip = (props) => {
         onClick,
         className,
         color,
-        containerStyle
+        containerStyle,
+        tooltip
     } = props
 
     // target input for initial display of tooltip
@@ -78,7 +79,12 @@ const ErrorTooltip = (props) => {
                 //wrap in portal to avoid clipping issues
                 <Portal>
                     <ReactTooltip eventOff={'mouseout'} id={id}>
+                        {text &&
                         <span>{text}</span>
+                        }
+                        {tooltip &&
+                        tooltip
+                        }
                     </ReactTooltip>
                 </Portal>
             }

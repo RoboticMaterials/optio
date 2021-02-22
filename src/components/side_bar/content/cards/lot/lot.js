@@ -1,21 +1,14 @@
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import {useSelector} from "react-redux";
 import * as styled from "./lot.style";
 import { Draggable } from 'react-smooth-dnd';
 import PropTypes from "prop-types";
 import TextField from "../../../../basic/form/text_field/text_field";
-
-function hashCode(str) { // java String#hashCode
-    var hash = 0;
-    for (var i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return hash;
-}
-
-
-
-
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
+import {ThemeContext} from "styled-components";
+import theme from "../../../../../theme";
+import {FLAG_COLORS} from "../../../../../constants/lot_contants";
 
 
 const Card = (props) => {
@@ -35,6 +28,8 @@ const Card = (props) => {
         isSelected
     } = props
 
+    const themeContext = useContext(ThemeContext)
+
     const startDateText = ((start_date?.month + 1) && start_date?.day && start_date?.year) ?  (start_date.month + 1) + "/" + start_date.day + "/" + start_date.year : "Start"
     const endDateText = ((end_date?.month + 1) && end_date?.day && end_date?.year) ?  (end_date.month + 1) + "/" + end_date.day + "/" +end_date.year : "End"
 
@@ -49,15 +44,43 @@ const Card = (props) => {
             >
                 <styled.HeaderBar>
                     <styled.CardName>{name}</styled.CardName>
-                    <styled.FlagButton
-                        type={"button"}
-                        color={"rgb(25,25,25,0.5)"}
-                        className="fas fa-flag"
-                        onClick={(e) => {
-                            e.preventDefault()
-                            e.stopPropagation()
+
+                    <Popup
+                        contentStyle={{
+                            background: themeContext.bg.octonary,
+                            width: "fit-content"
                         }}
-                    />
+                        arrowStyle={{
+                            color: themeContext.bg.octonary,
+                        }}
+
+                        trigger={open => (
+                            <styled.FlagButton
+                                type={"button"}
+                                color={"rgb(25,25,25,0.5)"}
+                                className="fas fa-flag"
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    e.stopPropagation()
+                                }}
+                            />
+                        )}
+                        position="right center"
+                        closeOnDocumentClick
+                    >
+                        <styled.FlagsContainer>
+                            {Object.values(FLAG_COLORS).map((currColor, currIndex) => {
+                                return(
+                                    <styled.FlagButton
+                                        color={currColor}
+                                        className="fas fa-flag"
+                                        key={currIndex}
+                                    />
+                                )
+                            })}
+                        </styled.FlagsContainer>
+                    </Popup>
+
                 </styled.HeaderBar>
                 <styled.ContentContainer>
 
