@@ -9,6 +9,9 @@ const mapValues = require('lodash/mapValues')
 
 Yup.addMethod(Yup.object, 'startEndDate', function (startPath, endPath, message) {
     return this.test('startEndDate', message, function (value) {
+
+        if(!value) return true
+
         const {
             path,
             createError
@@ -18,7 +21,7 @@ Yup.addMethod(Yup.object, 'startEndDate', function (startPath, endPath, message)
         const endDate = convertCardDate(value[endPath])
 
         if(startDate && endDate) {
-            if(endDate <= startDate) {
+            if(endDate < startDate) {
                 return this.createError({
                     path: `${path}`,
                     message,
@@ -252,7 +255,7 @@ export const editLotSchema = Yup.object().shape({
         .max(100, '50 character maximum.')
         .required('Please select a process.')
         .nullable(),
-    dates: Yup.object().startEndDate("start", "end", "End date must be after start date.")
+    dates: Yup.object().nullable().startEndDate("start", "end", "End date must be after start date.")
 })
 
 export const getMoveLotSchema = (maxCount) => Yup.object().shape({
