@@ -216,8 +216,6 @@ const StatisticsOverview = (props) => {
                 }
             }
 
-            console.log('QQQQ HUR')
-
             setThroughputData(response)
             setIsThroughputLoading(false)
         })

@@ -309,7 +309,7 @@ const LineThroughputChart = (props) => {
         },
         ]
 
-        setConvertedData(lineData)
+        // setConvertedData(lineData)
         return lineData
     }
 
