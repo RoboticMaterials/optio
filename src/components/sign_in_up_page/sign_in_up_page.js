@@ -70,7 +70,7 @@ const SignInUpPage = (props) => {
 
         const cognitoUser = new CognitoUser(userData);
 
-        let serverIP = '18.220.200.169'
+        let serverIP = ''
 
         cognitoUser.authenticateUser(authenticationDetails, {
 

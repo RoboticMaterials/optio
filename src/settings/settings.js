@@ -30,14 +30,13 @@ export const apiIPAddress = () => {
 
         // If there is no api use the local host
         if (storeState.localReducer.localSettings.non_local_api_ip === undefined) {
-            return apiIPAddress = 'https://' + 'localhost' + ':5000/api/'
+            return apiIPAddress = 'http://' + 'localhost' + ':5000/api/'
         } else {
             hostServerIpAddress = storeState.localReducer.localSettings.non_local_api_ip;
-            return apiIPAddress = 'https://' + hostServerIpAddress + ':5000/api/'
-
+            return apiIPAddress = 'http://' + hostServerIpAddress + ':5000/api/'
         }
     } else {
-        return apiIPAddress = 'https://' + window.location.hostname + ':5000/api/'
+        return apiIPAddress = 'http://' + window.location.hostname + ':5000/api/'
     }
 };
 
