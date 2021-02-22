@@ -2,9 +2,32 @@ import * as Yup from 'yup';
 
 import { notBrokenRegex, notTaskDeletedRegex } from "./regex_utils";
 import { isObject } from "./object_utils";
+import {convertCardDate} from "./card_utils";
 
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
+
+Yup.addMethod(Yup.object, 'startEndDate', function (startPath, endPath, message) {
+    return this.test('startEndDate', message, function (value) {
+        const {
+            path,
+            createError
+        } = this
+
+        const startDate = convertCardDate(value[startPath])
+        const endDate = convertCardDate(value[endPath])
+
+        if(startDate && endDate) {
+            if(endDate <= startDate) {
+                return this.createError({
+                    path: `${path}`,
+                    message,
+                });
+            }
+        }
+        return true;
+    });
+});
 
 export const scheduleSchema = Yup.object().shape({
     name: Yup.string()
@@ -213,6 +236,8 @@ export const CARD_SCHEMA_MODES = {
     MOVE_LOT: "MOVE_LOT"
 }
 
+
+
 export const editLotSchema = Yup.object().shape({
     name: Yup.string()
         .min(1, '1 character minimum.')
@@ -227,6 +252,7 @@ export const editLotSchema = Yup.object().shape({
         .max(100, '50 character maximum.')
         .required('Please select a process.')
         .nullable(),
+    dates: Yup.object().startEndDate("start", "end", "End date must be after start date.")
 })
 
 export const getMoveLotSchema = (maxCount) => Yup.object().shape({

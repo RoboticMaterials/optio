@@ -574,6 +574,14 @@ const FormComponent = (props) => {
 									<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_END)}>
 										<styled.DateText>{endDateText}</styled.DateText>
 									</styled.DateItem>
+
+									{errors.dates &&
+									<ErrorTooltip
+										visible={errors.dates}
+										text={errors.dates}
+										ContainerComponent={styled.ErrorTooltipContainer}
+									/>
+									}
 								</styled.DatesContainer>
 							</>
 							}
