@@ -12,6 +12,7 @@ export default function TaskPaths(props) {
     } = props
 
     const selectedTaskReducer = useSelector(state => state.tasksReducer.selectedTask)
+    const selectedHoveringTask = useSelector(state => state.tasksReducer.selectedHoveringTask)
     const positions = useSelector(state => state.positionsReducer.positions)
     const stations = useSelector(state => state.stationsReducer.stations)
     const dispatch = useDispatch()
@@ -22,7 +23,12 @@ export default function TaskPaths(props) {
     // It would be using props because this task path is part of a process
     if (!!route) {
         selectedTask = route
-    } else {
+    }
+    else if (!!selectedHoveringTask){
+      selectedTask = selectedHoveringTask
+    }
+
+    else {
         selectedTask = selectedTaskReducer
     }
 
@@ -59,10 +65,15 @@ export default function TaskPaths(props) {
 
     // Set the start and end position if they exist
     useEffect(() => {
+      if(!!selectedTask){
         const loadPositionId = getLoadPositionId(selectedTask)
         const unloadPositionId = getUnloadPositionId(selectedTask)
-
-        if (selectedTask !== null) {
+      }
+      else{
+        const loadPositionId = getLoadPositionId(selectedHoveringTask)
+        const unloadPositionId = getUnloadPositionId(selectedHoveringTask)
+      }
+        if (selectedTask !== null || selectedHoveringTask!==null) {
             if (loadPositionId !== null) {
                 // Check to see if its a station or position
                 const startPos = !!positions[loadPositionId] ? positions[loadPositionId] : stations[loadPositionId]

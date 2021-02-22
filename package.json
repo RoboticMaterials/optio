@@ -25,6 +25,7 @@
     "immutable": "^4.0.0-rc.12",
     "jquery": "^3.5.1",
     "jsmpeg": "^1.0.0",
+    "local-storage": "^2.0.0",
     "loglevel": "^1.7.0",
     "loglevel-plugin-remote": "^0.6.8",
     "nivo": "^0.31.0",

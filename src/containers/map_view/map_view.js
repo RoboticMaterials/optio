@@ -83,7 +83,6 @@ export class MapView extends Component {
         // maps, but componentDidUpdate will catch that and set the current map to the first map
         // in the returned list (which will be the active map)
         // this.refreshMap()
-
         this.checkForMapLoad()
         window.addEventListener('mousedown', () => this.mouseDown = true, { passive: false })
         window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, { passive: false })
@@ -651,11 +650,15 @@ export class MapView extends Component {
                             </foreignObject>
                         </styled.MapGroup>
 
-                        {!!this.props.selectedTask &&
+                        {!!this.props.selectedTask  &&
                             <TaskPaths d3={this.d3} />
                         }
 
-                        {!!this.props.selectedProcess &&
+                        {!!this.props.selectedHoveringTask  &&
+                            <TaskPaths d3={this.d3} />
+                        }
+
+                        {!!this.props.selectedProcess && 
                             <ProcessPaths d3={this.d3} />
                         }
 
@@ -781,6 +784,7 @@ const mapStateToProps = function (state) {
         editingPosition: state.positionsReducer.editingPosition,
 
         selectedTask: state.tasksReducer.selectedTask,
+        selectedHoveringTask: state.tasksReducer.selectedHoveringTask,
         selectedProcess: state.processesReducer.selectedProcess,
         fixingProcess: state.processesReducer.fixingProcess,
 
