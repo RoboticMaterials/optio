@@ -60,13 +60,6 @@ const LineThroughputChart = (props) => {
     // IE: Change the end of the first break to be after the start of the second break; causes error. Fix error by adjusting second break, but the second break updated time is not availabel in formik so it still throughs an error
     const ref = useRef(null)
 
-    useEffect(() => {
-        lineDataConverter()
-        return () => {
-
-        }
-    }, [convertedData])
-
     /**
     * This converts the incoming data for a line graph
     * IT does a few things
@@ -627,8 +620,8 @@ const LineThroughputChart = (props) => {
             {renderForm()}
             <styled.PlotContainer style={{ flexGrow: '7' }} minHeight={27}>
                 <ResponsiveLine
-                    // data={lineDataConverter()}
-                    data={!!convertedData ? convertedData : []}
+                    data={lineDataConverter()}
+                    // data={!!convertedData ? convertedData : []}
 
                     xScale={{ type: "time" }}
                     xFormat="time:%H:%M"
