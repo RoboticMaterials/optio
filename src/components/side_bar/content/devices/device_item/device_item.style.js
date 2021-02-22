@@ -17,7 +17,7 @@ export const DeviceContainer = styled.div`
 export const DeviceIcon = styled.i`
 	${sharedDeviceCss};
     font-size: 6rem;
-    
+
 	${props => props.isSmall && {
 		fontSize: "3rem"
 	}};
@@ -29,7 +29,7 @@ export const BatterySvg = styled.svg`
     height: 40%;
     right: -.2rem;
     top: 50%;
-    transform: translateY(-50%);    
+    transform: translateY(-50%);
 `
 
 export const OEESvg = styled.svg`
@@ -48,7 +48,7 @@ export const BatteryText = styled.p`
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz3};
     user-select: none;
-    
+
     ${props => props.isSmall && {
 		fontSize: props.theme.fontSize.sz4
 	}};
@@ -60,10 +60,8 @@ export const BigCircle = styled.div`
     display: flex;
     align-items: center;
     flex-direction: column;
-    overflow: hidden;
     border: solid .2rem black;
     border-radius: 50%;
-
 
     /* $border: 1rem;
     background-clip: padding-box;
@@ -76,10 +74,10 @@ export const BigCircle = styled.div`
         top: 0; right: 0; bottom: 0; left: 0;
         z-index: -1;
         margin: -$border;
-        border-radius: inherit; 
+        border-radius: inherit;
         background: linear-gradient(to right, red, orange);
     } */
-	
+
 	${props => props.isSmall && {
 		width: "15rem",
 		height: "15rem"
@@ -104,9 +102,12 @@ export const DeviceTitle = styled.h2`
     transform: translateY(-50%);
     max-width: 13.5rem;
 
-    user-select: none;
+    user-sel
+		&:hover: {
+			cursor:pointer;
+		}ect: none;
 
-    
+
     // small style
     ${props => props.isSmall && {
 		fontSize: props.theme.fontSize.sz2
@@ -122,9 +123,9 @@ export const EditDeviceIcon = styled.i`
     &:hover{
         cursor: pointer;
     }
-    
+
     font-size: 2rem;
-    
+
     ${props => props.isSmall && {
 		fontSize: "1.5rem"
 	}};
@@ -140,10 +141,26 @@ export const StatusContainer = styled.div`
     position: absolute;
     text-overflow: ellipsis;
     overflow: hidden;
-    
+		align-self: center;
+		z-index: 10;
+		&:hover {
+			cursor: pointer;
+			background-color: red;
+		}
     bottom: 25%;
     transform: translateY(50%);
-    
+
+
+`
+export const ConnectionStatusContainer = styled.div`
+	display: flex;
+	margin-top: ${props=>props.isSmall ? '4.8rem': '6.7rem'};
+	width: 70%;
+	justify-content: center;
+	color: white;
+	&:hover {
+		cursor: pointer;
+	}
 `
 
 export const StatusText = styled.p`
@@ -153,8 +170,19 @@ export const StatusText = styled.p`
     color: ${props => props.theme.bg.octonary};
     overflow: hidden;
     user-select: none;
-    
+
+
     ${props => props.isSmall && {
 		fontSize: props.theme.fontSize.sz4
 	}};
+`
+export const ConnectionStatusText = styled.p`
+    font-family: ${props => props.theme.font.primary};
+    font-size: ${props =>props.isSmall ? '0.9rem' : '1.2rem'};
+    color: ${props => props.theme.bg.octonary};
+		align-self: center;
+		padding-right: .3rem;
+		padding-left: .5rem;
+		margin-bottom: 1.2rem;
+
 `
