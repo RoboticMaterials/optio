@@ -12,7 +12,7 @@ import TimePickerField from '../../../../../../basic/form/time_picker_field/time
 import Switch from 'react-ios-switch'
 
 // Import Charts
-import LineChart from '../../../chart_types/line_chart'
+import { ResponsiveLine, Line } from '@nivo/line'
 
 // Import utils
 import { throughputSchema } from '../../../../../../../methods/utils/form_schemas'
@@ -26,17 +26,17 @@ const testExpectedOutput = {
     expectedOutput: 200,
     breaks: {
         break1: {
-            enabled: false,
+            enabled: true,
             startOfBreak: '10:00',
             endOfBreak: '11:00',
         },
         break2: {
-            enabled: false,
+            enabled: true,
             startOfBreak: '12:00',
             endOfBreak: '13:00',
         },
         break3: {
-            enabled: false,
+            enabled: true,
             startOfBreak: '16:00',
             endOfBreak: '17:00',
         },
@@ -65,7 +65,7 @@ const LineThroughputChart = (props) => {
         return () => {
 
         }
-    }, [])
+    }, [convertedData])
 
     /**
     * This converts the incoming data for a line graph
@@ -84,8 +84,6 @@ const LineThroughputChart = (props) => {
         const startEpoch = convert24htoEpoch(compareExpectedOutput.startOfShift, date)
         let startIndex
 
-        console.log('QQQQ data', dataCopy)
-
         // Find Start of Shift in the data based on selected input
         for (let i = 0; i < dataCopy.length; i++) {
             const dataDate = dataCopy[i].x
@@ -99,8 +97,6 @@ const LineThroughputChart = (props) => {
 
         // Convert to int for comparison
         const endEpoch = convert24htoEpoch(compareExpectedOutput.endOfShift, date)
-        console.log('QQQQ Start epoch', startEpoch)
-        console.log('QQQQ end epoch', endEpoch)
         let endIndex = dataCopy.length
         // Find end of Shift in the data based on selected input
         for (let i = 0; i < dataCopy.length; i++) {
@@ -161,10 +157,10 @@ const LineThroughputChart = (props) => {
              */
             let breakObj = {}
             const breaks = Object.values(compareExpectedOutput.breaks)
-            breaks.forEach((b, ind) => {
-                if (!b.enabled) return
-                const start = convert24htoEpoch(b.startOfBreak, date)
-                const end = convert24htoEpoch(b.endOfBreak, end)
+            breaks.forEach((br, ind) => {
+                if (!br.enabled) return
+                const start = convert24htoEpoch(br.startOfBreak, date)
+                const end = convert24htoEpoch(br.endOfBreak, date)
 
                 // // Find the start index in the array 
                 // const matchedStartBreak = (el) => start === el
@@ -174,8 +170,9 @@ const LineThroughputChart = (props) => {
                 // const endIndex = expectedOutput.findIndex(matchEndBreak)
 
                 // Find the value of y at startof the break using y = mx + b
-                const m = (0 - compareExpectedOutput.expectedOutput) / (startEpoch - endEpoch)
-                const yStart = m * start
+                const m = (compareExpectedOutput.expectedOutput - 0) / (endEpoch - startEpoch)
+                const b = compareExpectedOutput.expectedOutput - m * endEpoch
+                const yStart = m * start + b
 
                 // Find where the x value fits and add the stagnent y value to the expected outPut
                 for (let i = 0; i < expectedOutput.length; i++) {
@@ -248,22 +245,11 @@ const LineThroughputChart = (props) => {
                     // If the output is greater then the expoutput and less then the next exp output, it belongs hur
                     if (expOutput.x <= output.x && nextExpOutput.x >= output.x) {
 
-                        // const weightedExpOutput = expOutput.x / convert24htoInt(compareExpectedOutput.startOfShift)
-                        const weightedExpOutput = expOutput.x
-
-                        // const weightedNextExpOutput = nextExpOutput.x / convert24htoInt(compareExpectedOutput.startOfShift)
-                        const weightedNextExpOutput = nextExpOutput.x
-
                         // Find the value of y at the output x point using y = mx + b
                         // Point 1 on the slope is the expOutput and point 2 is the nextExpOutput
-                        console.log('QQQQ expOutput', weightedExpOutput)
-                        console.log('QQQQ next', weightedNextExpOutput)
-                        console.log('QQQQ X', output)
-                        const m = (nextExpOutput.y - expOutput.y) / (weightedNextExpOutput - weightedExpOutput)
-                        const b = expOutput.y - m * weightedExpOutput
-                        console.log('QQQQ b', b)
+                        const m = (nextExpOutput.y - expOutput.y) / (nextExpOutput.x - expOutput.x)
+                        const b = expOutput.y - m * expOutput.x
                         const yValue = m * output.x + b
-                        console.log('QQQQ y value', yValue)
                         expectedOutput.splice(i + 1, 0, { x: output.x, y: yValue })
                         break
                     }
@@ -294,9 +280,12 @@ const LineThroughputChart = (props) => {
 
                     // If the output is greater then the expoutput and less then the next exp output, it belongs hur
                     if (expOutput.x <= output.x && nextExpOutput.x >= output.x) {
+
                         // Find the value of y at the output x point using y = mx + b
+                        // Point 1 on the slope is the expOutput and point 2 is the nextExpOutput
                         const m = (nextExpOutput.y - expOutput.y) / (nextExpOutput.x - expOutput.x)
-                        const yValue = m * output.x
+                        const b = expOutput.y - m * expOutput.x
+                        const yValue = m * output.x + b
                         convertedData.splice(i + 1, 0, { x: output.x, y: yValue })
                         break
                     }
@@ -307,15 +296,10 @@ const LineThroughputChart = (props) => {
 
         // Now convert all x values to times from Epoch
         convertedData.forEach((data, i) => {
-            const xDate = new Date(data.x)
-            const xString = `${xDate.getHours()}:${xDate.getMinutes()}`
-            console.log('QQQQ xDate', xDate)
-            convertedData[i] = { x: xDate, y: data.y }
+            convertedData[i] = { x: new Date(data.x), y: data.y }
         })
         expectedOutput.forEach((data, i) => {
-            const xDate = new Date(data.x)
-            const xString = `${xDate.getHours()}:${xDate.getMinutes()}`
-            expectedOutput[i] = { x: xDate, y: data.y }
+            expectedOutput[i] = { x: new Date(data.x), y: data.y }
         })
 
         const lineData = [{
@@ -332,7 +316,6 @@ const LineThroughputChart = (props) => {
         },
         ]
 
-        console.log('QQQQ Line Data', lineData)
         setConvertedData(lineData)
         return lineData
     }
@@ -643,29 +626,73 @@ const LineThroughputChart = (props) => {
         <styled.RowContainer>
             {renderForm()}
             <styled.PlotContainer style={{ flexGrow: '7' }} minHeight={27}>
-                <LineChart
-                    // data={filteredData ? filteredData : []}
-                    xScale={{ 
-                        type: 'time', 
-                        // format: '%Y-%m-%d %H:%M:%S', 
-                        precision: 'minute', 
-                    }}
-                    xFormat={"time:%d.%b %H:%M"}
+                <ResponsiveLine
+                    // data={lineDataConverter()}
                     data={!!convertedData ? convertedData : []}
-                    enableGridY={isData ? true : false}
-                    yScale={{
-                        type: 'linear',
-                        // stacked: boolean('stacked', false),
-                        // stacked: true,
+
+                    xScale={{ type: "time" }}
+                    xFormat="time:%H:%M"
+                    yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
+
+                    axisTop={null}
+                    axisRight={null}
+                    axisBottom={{ format: "%H:%M", tickRotation: 45 }}
+                    axisLeft={{
+                        orient: 'left',
+                        tickSize: 5,
+                        tickPadding: 5,
+                        tickOffset: 10,
+                        tickValues: 4
                     }}
-                    curve="monotoneX"
-                    mainTheme={themeContext}
-                    // axisBottom={{
-                    //     tickRotation: -90,
-                    // }}
                     axisLeft={{
                         enable: true,
                     }}
+
+                    animate={true}
+                    useMesh={true}
+
+                    enablePoints={true}
+                    pointSize={5}
+                    pointBorderWidth={1}
+                    pointBorderColor={{ from: 'white' }}
+                    pointLabel="y"
+                    pointLabelYOffset={-12}
+
+                    margin={{ top: 22, left: 70, right: 70, bottom: 30 }}
+                    enableGridY={isData ? true : false}
+
+                    // curve="monotoneX"
+                    mainTheme={themeContext}
+
+                    theme={{
+                        textColor: '#ffffff',
+                        axis: {
+                            ticks: {
+                                line: {
+                                    stroke: "fff",
+                                },
+                                // text: {
+                                //     fill: "fff",
+                                //     textColor: '#ffffff',
+                                //     // fontFamily: 'Montserrat',
+                                //     fontSize: "0.8rem"
+                                // },
+                            }
+                        },
+                        grid: {
+                            line: {
+                                stroke: '#55575e',
+                                strokeWidth: 1,
+                            }
+                        },
+                        crosshair: {
+                            line: {
+                                stroke: "#fff",
+                                strokeDasharray: "0"
+                            }
+                        }
+                    }}
+
                 />
 
 

@@ -146,7 +146,6 @@ export const convertIntto24h = (int) => {
  * @param {*} date 
  */
 export const convert24htoEpoch = (time24h, date) => {
-    console.log('QQQQ Incoming times', time24h, date)
     const epochTime = Date.parse(`${date} ${time24h}`)
     
     return epochTime
