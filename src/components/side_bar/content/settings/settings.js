@@ -374,9 +374,13 @@ const Settings = () => {
     }
 
     const SignOut = () => {
+
+        const localReducer = useSelector(state => state.localReducer.localSettings)
+
         const signOut = async () => {
 
             await onPostLocalSettings({
+                ...localReducer,
                 authenticated: null
             })
 

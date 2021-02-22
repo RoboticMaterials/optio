@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
-// import { CognitoUser, CognitoUserPool, CognitoRefreshToken, CognitoUserSession } from 'amazon-cognito-identity-js'
+import { CognitoUser, CognitoUserPool, CognitoRefreshToken, CognitoUserSession } from 'amazon-cognito-identity-js'
 
 import * as styled from './authentication.style'
 
 // Import components
 import SignInUpPage from '../../components/sign_in_up_page/sign_in_up_page'
 
-// import { postCognitoUserSession } from '../../redux/actions/authentication_actions'
+import { postCognitoUserSession } from '../../redux/actions/authentication_actions'
 
 /**
  * After the APIs have been loaded in the api_container this container is loaded
@@ -30,15 +30,51 @@ const Authentication = (props) => {
         authenticated
     } = props
 
-    // const dispatch = useDispatch()
-    // const onCognitoUserSession = (JWT) => dispatch(postCognitoUserSession(JWT))
+    const dispatch = useDispatch()
+    const onCognitoUserSession = (JWT) => dispatch(postCognitoUserSession(JWT))
 
-    // const refreshToken = useSelector(state => state.authenticationReducer.refreshToken)
-    // const cognitoUserSession = useSelector(state => state.authenticationReducer.cognitoUserSession)
+    const refreshToken = useSelector(state => state.authenticationReducer.refreshToken)
+    const cognitoUserSession = useSelector(state => state.authenticationReducer.cognitoUserSession)
 
     const [signIn, setSignIn] = useState(true)
 
     const handleInitialLoad = () => {
+
+        // Information assembled for the request
+        const poolData = {
+            UserPoolId: 'us-east-2_YFnCIb6qJ',
+            ClientId: '5bkenhii8f4mqv36k0trq6hgc7',
+        }
+
+        const userPool = new CognitoUserPool(poolData)
+
+        const userData = {
+            Username: 'daniel@roboticmaterials.com',
+            Pool: userPool,
+        }
+
+        const cognitoUser = new CognitoUser(userData);
+
+        // Gets new tokens if access token is not valid
+        // .refreshSession requies an instance of the CognitioRefreshToken class not just the refresh token sting
+        const token = new CognitoRefreshToken({ RefreshToken: refreshToken })
+
+        console.log(token)
+        
+        cognitoUser.refreshSession(token, (err, session) => {
+            console.log('QQQQ', err, session)
+
+            // If the session has succesfully been refreshed then verrify
+            if (!!session) {
+                console.log('QQQQ Valid session ', session.isValid())
+                const verified = onCognitoUserSession(session)
+
+                // If verrified, then no need to sign in or sign up
+                if (verified) {
+                    authenticated()
+                }
+            }
+        })
 
         return (
             <styled.Container>
