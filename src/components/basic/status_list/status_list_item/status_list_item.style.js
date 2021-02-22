@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components"
 import {textSpanStyle} from "../../../../common_css/layout";
-import {commonIcon, iconButtonCss} from "../../../../common_css/common_css";
+import {commonClickableIcon, commonIcon, iconButtonCss} from "../../../../common_css/common_css";
 
 export const Container = styled.div`
 	align-self: stretch;
@@ -73,12 +73,12 @@ export const StatusMessage = styled.span`
 `
 
 export const StatusIcon = styled.i`
-	
+	${commonIcon};
 `
 
 export const EditButton = styled.button`
 	${iconButtonCss};
-	${commonIcon};
+	${commonClickableIcon};
   	font-size: 1.75rem;
   //background: forestgreen;
 `

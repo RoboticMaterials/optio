@@ -147,6 +147,7 @@ const FormComponent = (props) => {
 	// const [tempPasteTable, setTempPasteTable] = useState([])
 	const [showPasteMapper, setShowPasteMapper] = useState(false)
 	const [showSimpleModal, setShowSimpleModal] = useState(false)
+	const [pasteMapperHidden, setPasteMapperHidden] = useState(true)
 	const [mappedValues, setMappedValues] = useState([])
 	const [processedValues, setProcessedValues] = useState([])
 	const [createMappedValues, setCreateMappedValues] = useState(false)
@@ -208,7 +209,7 @@ const FormComponent = (props) => {
 						code: FORM_STATUS.VALIDATION_START
 					},
 					resourceStatus: {
-						message: `Validating lot.`,
+						message: `Waiting.`,
 						code: FORM_STATUS.WAITING
 					},
 				}
@@ -228,7 +229,7 @@ const FormComponent = (props) => {
 							} = newLot || {}
 
 							currProcessedLot.resourceStatus = {
-								message: `Creating lot. ${newName}`,
+								message: `Creating lot.`,
 								code: FORM_STATUS.CREATE_START
 							}
 
@@ -1030,7 +1031,6 @@ const FormComponent = (props) => {
 									schema={'lots'}
 									type={"button"}
 									style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-									secondary
 									onClick={async () => {
 										setShowTemplateSelector(!showTemplateSelector)
 										dispatchSetSelectedLotTemplate(lotTemplateId)
@@ -1038,6 +1038,17 @@ const FormComponent = (props) => {
 								>
 									{showTemplateSelector ? "Hide Templates" : "Show Templates"}
 								</Button>
+
+								{(isArray(mappedValues) && mappedValues.length > 0) &&
+									<Button
+										type={"button"}
+										label={"Show Mapper"}
+										onClick={() => {
+											setShowPasteMapper(true)
+											setPasteMapperHidden(false)
+										}}
+									/>
+								}
 
 								{formMode === FORM_MODES.CREATE ?
 									<>
@@ -1047,7 +1058,6 @@ const FormComponent = (props) => {
 											type={"button"}
 											disabled={submitDisabled}
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-											secondary
 											onClick={async () => {
 												onSubmit(values, FORM_BUTTON_TYPES.ADD)
 											}}
@@ -1061,7 +1071,6 @@ const FormComponent = (props) => {
 											type={"button"}
 											disabled={submitDisabled}
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-											secondary
 											onClick={async () => {
 												if (isArray(mappedValues) && mappedValues.length > 0) {
 													const submitWasSuccessful = await onSubmit(values)
@@ -1089,7 +1098,6 @@ const FormComponent = (props) => {
 											type={"button"}
 											disabled={submitDisabled}
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-											secondary
 											onClick={async () => {
 												onSubmit(values, FORM_BUTTON_TYPES.SAVE)
 											}}
@@ -1100,7 +1108,6 @@ const FormComponent = (props) => {
 										<Button
 											schema={'lots'}
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-											secondary
 											type={"button"}
 											onClick={() => onDeleteClick(binId)}
 										>
@@ -1112,7 +1119,6 @@ const FormComponent = (props) => {
 											schema={'lots'}
 											type={"button"}
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-											secondary
 											onClick={async () => {
 												setContent(CONTENT.MOVE)
 											}}
@@ -1154,84 +1160,21 @@ const FormComponent = (props) => {
 
 	if(loaded) {
 
-		if(showPasteMapper) {
-			return(
-				<>
-					{showSimpleModal &&
-					<SimpleModal
-						isOpen={true}
-						title={"Paste Event Detected"}
-						onRequestClose={() => setShowSimpleModal(false)}
-						onCloseButtonClick={() => setShowSimpleModal(false)}
-						handleOnClick1={() => {
-							setShowPasteMapper(true)
-							setShowSimpleModal(false)
-
-
-							setResetPasteTable(true)
-							setTimeout(() => {
-								setResetPasteTable(false)
-							}, 250)
-
-							// setPasteTable([])
-							// setPasteTable([])
-							// setPasteTable(tempPasteTable)
-							// setTempPasteTable([])
-						}}
-						handleOnClick2={() => {
-							setShowSimpleModal(false)
-						}}
-						button_1_text={"Yes"}
-						button_2_text={"No"}
-
-					>
-						<styled.SimpleModalText>A paste event was detected. Would you like to use pasted data to create lots?</styled.SimpleModalText>
-					</SimpleModal>
-					}
-					<PasteForm
-						reset={resetPasteTable}
-						availableFieldNames={[
-							...fieldNameArr,
-							// ...REQUIRED_FIELDS,
-							{
-								...NAME_FIELD,
-								displayName: getDisplayName(lotTemplate, "name", DEFAULT_NAME_DISPLAY_NAME)
-							},
-							{
-								...COUNT_FIELD,
-								displayName: getDisplayName(lotTemplate, "count", DEFAULT_COUNT_DISPLAY_NAME)
-							}
-						]}
-						onCancel={() => setShowPasteMapper(false)}
-						table={pasteTable}
-						onPreviewClick={(payload) => {
-							setShowPasteMapper(false)
-							setShowProcessSelector(true)
-							setMappedValues(payload)
-							setMappedValuesIndex(0)
-						}}
-						onCreateClick={(payload) => {
-							setShowPasteMapper(false)
-							setMappedValues(payload)
-							setCreateMappedValues(true)
-						}}
-					/>
-				</>
-			)
-		}
-
-
-
-		if(createMappedValues) {
-			return(null)
-		}
-
-		if(showCreationStatus) {
-			return(
+		return(
+			<>
+				{showCreationStatus &&
 				<StatusList
 					onItemClick={(item) => {
 						setMappedValuesIndex(item.index)
 						setShowCreationStatus(false)
+					}}
+					onCloseClick={() => {
+						setShowCreationStatus(false)
+					}}
+					onShowMapperClick={() => {
+						setShowCreationStatus(false)
+						setShowPasteMapper(true)
+						setPasteMapperHidden(false)
 					}}
 					data={processedValues.map((currValue, currIndex) => {
 						const {
@@ -1245,11 +1188,43 @@ const FormComponent = (props) => {
 					})}
 
 				/>
-			)
-		}
-
-		return(
-			<>
+				}
+				{showPasteMapper &&
+					<PasteForm
+						hidden={pasteMapperHidden}
+						reset={resetPasteTable}
+						availableFieldNames={[
+							...fieldNameArr,
+							// ...REQUIRED_FIELDS,
+							{
+								...NAME_FIELD,
+								displayName: getDisplayName(lotTemplate, "name", DEFAULT_NAME_DISPLAY_NAME)
+							},
+							{
+								...COUNT_FIELD,
+								displayName: getDisplayName(lotTemplate, "count", DEFAULT_COUNT_DISPLAY_NAME)
+							}
+						]}
+						onCancel={() => {
+							setShowPasteMapper(false)
+							setPasteMapperHidden(true)
+						}}
+						table={pasteTable}
+						onPreviewClick={(payload) => {
+							// setShowPasteMapper(false)
+							setShowProcessSelector(true)
+							setMappedValues(payload)
+							setMappedValuesIndex(0)
+							setPasteMapperHidden(true)
+						}}
+						onCreateClick={(payload) => {
+							// setShowPasteMapper(false)
+							setMappedValues(payload)
+							setCreateMappedValues(true)
+							setPasteMapperHidden(true)
+						}}
+					/>
+				}
 				{showSimpleModal &&
 				<SimpleModal
 					isOpen={true}
@@ -1258,6 +1233,7 @@ const FormComponent = (props) => {
 					onCloseButtonClick={() => setShowSimpleModal(false)}
 					handleOnClick1={() => {
 						setShowPasteMapper(true)
+						setPasteMapperHidden(false)
 						setShowSimpleModal(false)
 
 
@@ -1281,7 +1257,7 @@ const FormComponent = (props) => {
 					<styled.SimpleModalText>A paste event was detected. Would you like to use pasted data to create lots?</styled.SimpleModalText>
 				</SimpleModal>
 				}
-				{renderForm()}
+				{!(showCreationStatus) && (pasteMapperHidden) && renderForm()}
 				<SubmitErrorHandler
 					submitCount={submitCount}
 					isValid={formikProps.isValid}

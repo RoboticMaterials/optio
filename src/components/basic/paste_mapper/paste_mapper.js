@@ -42,7 +42,8 @@ const PasteMapper = (props) => {
 		onPreviewClick,
 		onCreateClick,
 		reset,
-		resetForm
+		resetForm,
+		hidden
 	} = props
 
 	const {
@@ -506,143 +507,150 @@ const PasteMapper = (props) => {
 		)
 	}
 
-	return (
+	if(!hidden) {
+		return (
 
-		<styled.Container>
-			<styled.Header>
-				<styled.Title>Map Data</styled.Title>
-				{/*<ButtonGroup*/}
-				{/*	buttonViewCss={styled.buttonViewCss}*/}
-				{/*	buttons={["Row", "Column"]}*/}
-				{/*	selectedIndex={fieldDirection}*/}
-				{/*	onPress={(index)=>{*/}
-				{/*		setFieldDirection(index)*/}
-				{/*	}}*/}
-				{/*	containerCss={styled.buttonGroupContainerCss}*/}
-				{/*	buttonViewSelectedCss={styled.buttonViewSelectedCss}*/}
-				{/*	buttonCss={styled.buttonCss}*/}
-				{/*/>*/}
-			</styled.Header>
+			<styled.Container>
+				<styled.Header>
+					<styled.Title>Map Data</styled.Title>
+					{/*<ButtonGroup*/}
+					{/*	buttonViewCss={styled.buttonViewCss}*/}
+					{/*	buttons={["Row", "Column"]}*/}
+					{/*	selectedIndex={fieldDirection}*/}
+					{/*	onPress={(index)=>{*/}
+					{/*		setFieldDirection(index)*/}
+					{/*	}}*/}
+					{/*	containerCss={styled.buttonGroupContainerCss}*/}
+					{/*	buttonViewSelectedCss={styled.buttonViewSelectedCss}*/}
+					{/*	buttonCss={styled.buttonCss}*/}
+					{/*/>*/}
+				</styled.Header>
 
-			<styled.Body>
-				<styled.FieldNamesContainer>
-					<styled.SectionTitle>Available Fields</styled.SectionTitle>
+				<styled.Body>
+					<styled.FieldNamesContainer>
+						<styled.SectionTitle>Available Fields</styled.SectionTitle>
 
-					<Container
-						groupName="field_names"
-						onDragStart={(dragStartParams, b, c)=>{
-							const {
-								isSource,
-								payload,
-								willAcceptDrop
-							} = dragStartParams
+						<Container
+							groupName="field_names"
+							onDragStart={(dragStartParams, b, c)=>{
+								const {
+									isSource,
+									payload,
+									willAcceptDrop
+								} = dragStartParams
 
-							if(isSource) {
-							}
-						}}
-						onDragEnd={(dragEndParams)=>{
-							const {
-								isSource,
-								payload,
-								willAcceptDrop
-							} = dragEndParams
+								if(isSource) {
+								}
+							}}
+							onDragEnd={(dragEndParams)=>{
+								const {
+									isSource,
+									payload,
+									willAcceptDrop
+								} = dragEndParams
 
-							if(isSource) {
-							}
-						}}
-						onDrop={(dropResult) => {
-							const {
-								removedIndex,
-								addedIndex,
-								payload
-							} = dropResult
+								if(isSource) {
+								}
+							}}
+							onDrop={(dropResult) => {
+								const {
+									removedIndex,
+									addedIndex,
+									payload
+								} = dropResult
 
-						}}
-						getChildPayload={index => {
-							const selectedField = availableFieldNames[index]
-							const {
-								fieldName = ""
-							} = selectedField || {}
+							}}
+							getChildPayload={index => {
+								const selectedField = availableFieldNames[index]
+								const {
+									fieldName = ""
+								} = selectedField || {}
 
-							return selectedField
-						}}
-						getGhostParent={()=>{
-							return document.body
-						}}
-						behaviour={"drop-zone"}
-						style={{display: "flex"}}
-					>
-						{availableFieldNames.map((currField, currIndex) => {
+								return selectedField
+							}}
+							getGhostParent={()=>{
+								return document.body
+							}}
+							behaviour={"drop-zone"}
+							style={{display: "flex"}}
+						>
+							{availableFieldNames.map((currField, currIndex) => {
 
-							const {
-								fieldName: currFieldName = "",
-								type: currType = "",
-								displayName: currDisplayName = ""
-							} = currField || {}
+								const {
+									fieldName: currFieldName = "",
+									type: currType = "",
+									displayName: currDisplayName = ""
+								} = currField || {}
 
-							const isUsed = usedAvailableFieldNames[currIndex]
-							return(
-								isUsed ?
-									<styled.FieldName disabled={isUsed}>{currDisplayName ? currDisplayName : currFieldName}</styled.FieldName>
-									:
-									<Draggable
-										disabled={isUsed}
-										key={currIndex}
-									>
+								const isUsed = usedAvailableFieldNames[currIndex]
+								return(
+									isUsed ?
 										<styled.FieldName disabled={isUsed}>{currDisplayName ? currDisplayName : currFieldName}</styled.FieldName>
-									</Draggable>
-							)
-						})}
-					</Container>
+										:
+										<Draggable
+											disabled={isUsed}
+											key={currIndex}
+										>
+											<styled.FieldName disabled={isUsed}>{currDisplayName ? currDisplayName : currFieldName}</styled.FieldName>
+										</Draggable>
+								)
+							})}
+						</Container>
 
-					<styled.SectionDescription>Drag one of the available fields onto a tab to map the values in that column to the field name.</styled.SectionDescription>
-				</styled.FieldNamesContainer>
+						<styled.SectionDescription>Drag one of the available fields onto a tab to map the values in that column to the field name.</styled.SectionDescription>
+					</styled.FieldNamesContainer>
 
-				<styled.SectionBreak/>
-				<styled.TableContainer>
-					{renderTable()}
-				</styled.TableContainer>
-				<styled.SectionBreak/>
-			</styled.Body>
+					<styled.SectionBreak/>
+					<styled.TableContainer>
+						{renderTable()}
+					</styled.TableContainer>
+					<styled.SectionBreak/>
+				</styled.Body>
 
 
 
-			<styled.Footer>
-				<Button
-					type={"button"}
-					schema={schema}
-					label={"Create Lots"}
-					onClick={()=>{
-						const payload = createPayload()
-						onCreateClick(payload)
-					}}
-				/>
-				<Button
-					type={"button"}
-					schema={schema}
-					label={"Preview Lots"}
-					onClick={() => {
-						const payload = createPayload()
-						onPreviewClick(payload)
-					}}
-				/>
-				<Button
-					schema={schema}
-					type={"button"}
-					label={"Cancel"}
-					onClick={onCancel}
-				/>
-			</styled.Footer>
-		</styled.Container>
+				<styled.Footer>
+					<Button
+						type={"button"}
+						schema={schema}
+						label={"Create Lots"}
+						onClick={()=>{
+							const payload = createPayload()
+							onCreateClick(payload)
+						}}
+					/>
+					<Button
+						type={"button"}
+						schema={schema}
+						label={"Preview Lots"}
+						onClick={() => {
+							const payload = createPayload()
+							onPreviewClick(payload)
+						}}
+					/>
+					<Button
+						schema={schema}
+						type={"button"}
+						label={"Cancel"}
+						onClick={onCancel}
+					/>
+				</styled.Footer>
+			</styled.Container>
 
-	)
+		)
+	}
+	else {
+		return null
+	}
+
 
 }
 
 export const PasteForm = (props) => {
 
 	const {
-		onPreviewClick
+		onPreviewClick,
+		hidden
 	} = props
 
 	const [selectedFieldNames, setSelectedFieldNames] = useState([])
@@ -664,7 +672,7 @@ export const PasteForm = (props) => {
 			validateOnChange={true}
 			validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
 			validateOnBlur={true}
-			enableReinitialize={true}
+			enableReinitialize={false}
 
 			onSubmit={async (values, { setSubmitting, setTouched, resetForm }) => {
 				// set submitting to true, handle submit, then set submitting to false
@@ -687,7 +695,6 @@ export const PasteForm = (props) => {
 					setSelectedFieldNames={setSelectedFieldNames}
 				/>
 			}
-
 		</Formik>
 	)
 }

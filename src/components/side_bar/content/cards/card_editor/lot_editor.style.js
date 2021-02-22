@@ -1,7 +1,7 @@
 import styled, {css} from "styled-components";
 import Modal from "react-modal";
 import {Form} from "formik";
-import {commonIcon, iconButtonCss} from "../../../../../common_css/common_css";
+import {commonClickableIcon, iconButtonCss} from "../../../../../common_css/common_css";
 
 export const rowCss = css`
 	margin-bottom: 1rem;
@@ -372,7 +372,7 @@ export const PageSelector = styled.div`
 
 export const PageSelectorButton = styled.div`
 	${iconButtonCss};
-  ${commonIcon};
+  ${commonClickableIcon};
   
 `
 export const PageSelectorText = styled.span`
