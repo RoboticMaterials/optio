@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom'
 import {useDispatch, useSelector} from "react-redux";
 
 // internal components
-import CardEditor from "./card_editor/card_editor";
+import LotEditor from "./card_editor/lot_editor";
 import CardMenu from "./card_menu/card_menu";
 import CardZone from "./card_zone/card_zone";
 import SummaryZone from "./summary_zone/summary_zone";
@@ -20,7 +20,7 @@ import {ThemeContext} from "styled-components";
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
 import ZoneHeader from "./zone_header/zone_header";
 import {SORT_MODES} from "../../../../constants/common_contants";
-import LotCreatorForm from "./card_editor/form_editor";
+import LotCreatorForm from "./card_editor/template_form";
 import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
 
 const Cards = (props) => {
@@ -168,7 +168,7 @@ const Cards = (props) => {
     return(
         <styled.Container>
             {showCardEditor &&
-            <CardEditor
+            <LotEditor
                 isOpen={showCardEditor}
                 onAfterOpen={null}
                 cardId={selectedCard ? selectedCard.cardId : null}

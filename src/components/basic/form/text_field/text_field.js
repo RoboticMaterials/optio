@@ -6,32 +6,34 @@ import { useSelector, useDispatch } from 'react-redux'
 import ErrorTooltip from '../error_tooltip/error_tooltip';
 import useChange from '../../../basic/form/useChange'
 import * as styled from './text_field.style'
+import {getMessageFromError} from "../../../../methods/utils/form_utils";
 
 import {pageDataChanged} from '../../../../redux/actions/sidebar_actions'
 
 
 const TextField = ({
-					   InputComponent,
-					   ErrorComponent,
-					   LabelComponent,
-					   InputContainer,
-					   fieldLabel,
-					   onBlur,
-					   onFocus,
-					   onChange,
-					   inputStyleFunc,
-					   IconContainerComponent,
-					   ContentContainer,
-					   FieldContainer,
-					   mapInput,
-						 setValues,
-						 getFieldMeta,
-						 fieldParent,
-						 mapOutput,
-	 				 	 inputProps,
+					InputComponent,
+					ErrorComponent,
+					LabelComponent,
+					InputContainer,
+					fieldLabel,
+					onBlur,
+					onFocus,
+					onChange,
+					inputStyleFunc,
+					IconContainerComponent,
+					ContentContainer,
+					inputContainerStyle,
+					errorTooltipContainerStyle,
+					showErrorStyle,
+					containerStyle,
+					FieldContainer,
+					mapInput,
+					mapOutput,
+					inputProps,
 
-					   style,
-					   ...props }) => {
+					style,
+					...props }) => {
 
 	const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext();
 	const [field, meta] = useField(props);
@@ -43,15 +45,18 @@ const TextField = ({
 	const hasError = touched && error
 
 	useChange(setFieldValue)
+	const inputStyle = inputStyleFunc(hasError, showErrorStyle);
 
-	const inputStyle = inputStyleFunc(hasError);
+	const errorMessage = getMessageFromError(error)
+
 	return (
 		<>
 			{fieldLabel &&
 			<LabelComponent hasError={hasError} htmlFor={props.id || props.name}>{fieldLabel}</LabelComponent>
 			}
-			<ContentContainer>
-				<InputContainer>
+			<ContentContainer style={containerStyle}>
+				<InputContainer
+				>
 					<InputComponent
 
 						// inputStyle={{...inputStyle, ...style}}
@@ -88,8 +93,9 @@ const TextField = ({
 					/>
 					<ErrorTooltip
 						visible={hasError}
-						text={error}
+						text={errorMessage}
 						ContainerComponent={IconContainerComponent}
+						containerStyle={errorTooltipContainerStyle}
 					/>
 				</InputContainer>
 
@@ -107,17 +113,18 @@ const TextField = ({
 * Accepts hasError prop, which can be used to change styling based on presence of errors
 *
 * */
-const defaultInputStyleFunc = (hasError) => {
+const defaultInputStyleFunc = (hasError, showErrorStyle) => {
 	return {
 		// borderColor: hasError && 'red',
 		// border: hasError && '1px solid red',
-		transition: "all .5s ease-in-out",
-		boxShadow: hasError && `0 0 5px red !important`,
+		transition: "box-shadow .5s ease-in-out, border .5s ease-in-out",
+		// boxShadow:  && `0 0 1px red !important`,
+		boxShadow: (hasError && showErrorStyle) && `0 0 5px red`,
 
-		borderLeft: hasError ? '1px solid red' : "1px solid transparent",
-		borderTop: hasError ? '1px solid red' : "1px solid transparent",
-		borderRight: hasError ? '1px solid red' : "1px solid transparent",
-		borderBottom: hasError && '1px solid red',
+		borderLeft: (hasError && showErrorStyle) ? '1px solid red' : "1px solid transparent",
+		borderTop: (hasError && showErrorStyle) ? '1px solid red' : "1px solid transparent",
+		borderRight: (hasError && showErrorStyle) ? '1px solid red' : "1px solid transparent",
+		borderBottom: (hasError && showErrorStyle) && '1px solid red',
 
 
 		overflow: "hidden",
@@ -142,6 +149,7 @@ TextField.propTypes = {
 	IconContainerComponent: PropTypes.elementType,
 	ContentComponent: PropTypes.elementType,
 	style: PropTypes.object,
+	showErrorStyle: PropTypes.bool,
 };
 
 // Specifies the default values for props:
@@ -159,6 +167,7 @@ TextField.defaultProps = {
 	FieldContainer: styled.DefaultFieldContainer,
 	style: {},
 	validateOnBlur: false,
+	showErrorStyle: true,
 	mapInput: (val) => val,
 	mapOutput: (val) => val,
 };

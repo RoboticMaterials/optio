@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import {rowCss} from "../../card_editor/card_editor.style";
+import {rowCss} from "../../card_editor/lot_editor.style";
 
 export const Container = styled.div`
     background: ${props => props.theme.bg.quaternary};

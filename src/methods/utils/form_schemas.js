@@ -173,9 +173,55 @@ export const dashboardSchema = Yup.object().shape({
 });
 
 // returns error if any item in nested array is duplicate
-Yup.addMethod(Yup.array, "unique", function(message, path) {
+Yup.addMethod(Yup.object, "unique", function(message, fieldPath) {
+    let mapper
+    if(fieldPath) mapper = x => get(x, fieldPath)
+
+    return this.test("unique", message, function(item) {
+        const { path, createError, parent } = this
+        var index = path.match(/\[(.*?)\]/);
+
+        if (index) {
+            index = index[1];
+        }
+
+        let compareItem
+        if(mapper) compareItem = mapper(item)
+
+
+        let isUnique = true
+
+        let currIndex = 0
+        for(const currString of parent) {
+            const mapped = mapper(currString)
+            if(parseInt(currIndex) !== parseInt(index)) {
+
+                if(mapper){
+                    if(compareItem === mapper(currString)) {
+                        isUnique = false
+                        return createError({ path: `${path}.${fieldPath}`, message })
+                    }
+                }
+                else {
+                    if(item === currString) {
+                        isUnique = false
+                        return createError({ path: `${path}.${fieldPath}`, message })
+                    }
+                }
+            }
+            currIndex = currIndex + 1
+        }
+
+        if (isUnique) {
+            return true;
+        }
+    });
+});
+
+// returns error if any item in nested array is duplicate
+Yup.addMethod(Yup.array, "nestedUnique", function(message, path) {
     const mapper = x => get(x, path);
-    return this.test("unique", message, function(list) {
+    return this.test("nestedUnique", message, function(list) {
         let set
         let totalList = []
         list.forEach((currList, currListIndex) => {
@@ -252,8 +298,8 @@ const binsSchema = lazy(obj => object(
     mapValues(obj, (value, key) => {
         return Yup.object().shape({
             count: Yup.number()
-                .min(1, "Quantity must be at least 1.")
-                .required('Quantity required.'),
+                .min(1, "Must be at least 1.")
+                .required('This field is required.'),
         })
     })
 ));
@@ -309,11 +355,22 @@ export const LotFormSchema = Yup.object().shape({
                 style: Yup.object()
             })
         )
-    ).unique('Field names must be unique.', "fieldName"), //message, path
+    ).nestedUnique('Field names must be unique.', "fieldName"), //message, path
     name: Yup.string()
         .min(1, '1 character minimum.')
         .max(50, '50 character maximum.')
         .required('Please enter a name.'),
+})
+
+export const templateMapperSchema = Yup.object().shape({
+    selectedFieldNames: Yup.array().of(
+        Yup.object().shape({
+            fieldName: Yup.string()
+                .min(1, '1 character minimum.')
+                .max(255, '50 character maximum.')
+                .required('Please enter field name.'),
+        }).unique("Field names must be unique", "fieldName")
+    )
 })
 
 

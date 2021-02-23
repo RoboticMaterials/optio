@@ -1,6 +1,6 @@
 import styled, {css} from "styled-components";
 import { Draggable } from 'react-smooth-dnd';
-import {rowCss} from "../card_editor/card_editor.style";
+import {rowCss} from "../card_editor/lot_editor.style";
 import * as commonCss from "../../../../../common_css/common_css";
 
 export const Container = styled.div`

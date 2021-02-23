@@ -17,10 +17,22 @@ export const goodGlow = css`
   ${props => glow(props.theme.good)};
 `;
 
+export const iconButtonCss = `
+  border: none;
+  background: transparent;
+  outline: none !important;
+`
+
+export const disabledButtonCss = css`
+  cursor: not-allowed;
+  background: ${props => props.theme.disabled}
+`
+
 export const commonIcon = css`
-  //border: none;
-  //font-size: 2rem;
+
   transition: all 0.25s ease;
+  padding: 0;
+  margin: 0;
   color: ${props => props.color};
 
 
@@ -40,4 +52,20 @@ export const commonIcon = css`
     filter: brightness(85%);
   }
 
+`
+
+export const trapezoidCss = `
+  
+  border-bottom: 50px solid #555;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  height: 0;
+  width: 125px;
+  
+  
+  // width: 200px;
+  // height: 150px;
+  // background: red;
+  transform: perspective(10px) rotateX(1deg);
+  // margin: 50px;
 `

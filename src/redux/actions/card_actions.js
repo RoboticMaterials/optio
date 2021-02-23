@@ -151,8 +151,6 @@ export const postCard = (card) =>  async dispatch => {
     const payload = await api_action(actionName, callback, dispatch, card);
 
     return payload.card
-    // return Object.values(payload.createdCards)[0];
-
 };
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
