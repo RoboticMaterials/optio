@@ -18,6 +18,8 @@ const SimpleModal = (props) => {
         handleOnClick2,
         button_1_text,
         button_2_text,
+        button_1_disabled,
+        button_2_disabled,
         children,
         contentLabel
     } = props
@@ -58,6 +60,7 @@ const SimpleModal = (props) => {
                                 onClick={handleOnClick1}
                                 label={button_1_text}
                                 type="button"
+                                disabled={button_1_disabled}
                             />
                             <Button
                                 tertiary
@@ -65,6 +68,7 @@ const SimpleModal = (props) => {
                                 onClick={handleOnClick2}
                                 label={button_2_text}
                                 type="button"
+                                disabled={button_2_disabled}
                             />
                         </styled.ButtonForm>
             </styled.BodyContainer>
@@ -97,6 +101,8 @@ SimpleModal.defaultProps = {
     button_1_text: "Ok",
     button_2_text: "Cancel",
     children: null,
+    button_1_disabled: false,
+    button_2_disabled: false,
 };
 
 

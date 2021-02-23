@@ -345,12 +345,12 @@ const DashboardScreen = (props) => {
                     title={"Kick Off"}
                     close={() => setReportModal(null)}
                     dashboard={currentDashboard}
-                    onSubmit={(name, success) => {
+                    onSubmit={(name, success, quantity, message) => {
                         // set alert
                         setAddTaskAlert({
                             type: success ? ADD_TASK_ALERT_TYPE.KICK_OFF_SUCCESS : ADD_TASK_ALERT_TYPE.KICK_OFF_FAILURE,
                             label: success ? "Lot Kick Off Successful" : "Lot Kick Off Failed",
-                            message: name ? `"` + name + `"` : null
+                            message: message
                         })
 
                         // clear alert

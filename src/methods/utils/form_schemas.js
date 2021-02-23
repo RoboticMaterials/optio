@@ -294,6 +294,13 @@ export const signInSchema = Yup.object().shape({
 })
 
 
+export const quantityOneSchema = Yup.object().shape({
+    quantity: Yup.number()
+        .min(1, "Must be at least 1.")
+        .required('This field is required.'),
+})
+
+
 const binsSchema = lazy(obj => object(
     mapValues(obj, (value, key) => {
         return Yup.object().shape({
