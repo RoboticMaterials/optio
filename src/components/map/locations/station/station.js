@@ -210,12 +210,17 @@ function Station(props) {
     // Used to see if a widget Page is opened
     let params = useParams()
     useEffect(() => {
-        window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
+        window.addEventListener("mouseup", onSetListener)
         return () => {
-            window.removeEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
+            window.removeEventListener("mouseup", onSetListener)
         }
 
     }, [])
+
+    const onSetListener = () => {
+        setRotating(false)
+        setTranslating(false)
+    }
 
 
     /**
