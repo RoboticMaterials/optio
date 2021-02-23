@@ -72,46 +72,17 @@ const KickOffModal = (props) => {
         // extract card attributes
         const {
             bins,
-            name: cardName,
-            process_id,
-            _id: cardId,
         } = lot
 
-        // get process of card
-        const cardProcess = processes[process_id]
-
-        // get routes of process
-        const processRoutes = cardProcess.routes
-
-        // get id of first route
-        var firstRouteId = null
-        if(processRoutes && Array.isArray(processRoutes)) firstRouteId = processRoutes[0]
-
-        // get first route
-        const firstRoute = routes[firstRouteId]
-
-        // extract route attributes
+        // extract first station's bin and queue bin from bins
         const {
-            load: {
-                station: loadStation
-            }
-        } = firstRoute || {}
+            ["QUEUE"]: queueBin,
+        } = bins || {}
 
-        // update card
-        if(firstRouteId && firstRoute && loadStation) {
+        const queueBinCount = queueBin?.count ? queueBin.count : 0
 
-            // extract first station's bin and queue bin from bins
-            const {
-                [loadStation]: firstStationBin,
-                ["QUEUE"]: queueBin,
-                ...unalteredBins
-            } = bins || {}
-
-            const queueBinCount = queueBin?.count ? queueBin.count : 0
-
-            setLotCount(queueBinCount)
-            setSelectedLot(lot)
-        }
+        setLotCount(queueBinCount)
+        setSelectedLot(lot)
     }
 
     /*

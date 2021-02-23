@@ -365,12 +365,12 @@ const DashboardScreen = (props) => {
                     title={"Finish"}
                     close={() => setReportModal(null)}
                     dashboard={currentDashboard}
-                    onSubmit={(name, success) => {
+                    onSubmit={(name, success, quantity, message) => {
                         // set alert
                         setAddTaskAlert({
                             type: success ? ADD_TASK_ALERT_TYPE.FINISH_SUCCESS : ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
                             label: success ? "Finish Successful" : "Finish Failed",
-                            message: name ? `"` + name + `"` : null
+                            message: message
                         })
 
                         // clear alert
