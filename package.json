@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@aws-amplify/ui-react": "^1.0.2",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@nivo/bar": "^0.67.0",
@@ -15,6 +16,7 @@
     "amazon-cognito-identity-js": "^4.5.3",
     "apexcharts": "^3.22.0",
     "array-move": "^2.2.1",
+    "aws-amplify": "^3.3.20",
     "aws-sdk": "^2.849.0",
     "axios": "^0.21.1",
     "bootstrap": "^4.5.3",

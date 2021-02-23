@@ -1,23 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
-import { CognitoUser, CognitoUserPool, CognitoRefreshToken, CognitoUserSession } from 'amazon-cognito-identity-js'
-
+// Import Styles
 import * as styled from './authentication.style'
+
+// Import actions
+import { postLocalSettings } from '../../redux/actions/local_actions'
 
 // Import components
 import SignInUpPage from '../../components/sign_in_up_page/sign_in_up_page'
 
-import { postCognitoUserSession } from '../../redux/actions/authentication_actions'
-
-// import 'cross-fetch/polyfill';
-import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
-
-import * as AWS from 'aws-sdk/global';
-
-// Import actions
-import { postLocalSettings } from '../../redux/actions/local_actions'
-import { getLocalSettings } from '../../redux/actions/local_actions'
+// Import Auth from Amplify
+import { Auth } from 'aws-amplify'
 
 /**
  * After the APIs have been loaded in the api_container this container is loaded
@@ -40,47 +34,35 @@ const Authentication = (props) => {
     } = props
 
     const dispatch = useDispatch()
-    const onCognitoUserSession = (JWT) => dispatch(postCognitoUserSession(JWT))
-
-    const refreshToken = useSelector(state => state.authenticationReducer.refreshToken)
-    const cognitoUserSession = useSelector(state => state.authenticationReducer.cognitoUserSession)
-
-    const [signIn, setSignIn] = useState(true)
 
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const localReducer = useSelector(state => state.localReducer.localSettings)
+
+    const [signIn, setSignIn] = useState(true)
+
+    const [user, setUser] = useState(null)
 
     const handleSignInChange = (value) => {
         setSignIn(value)
     }
 
+    useEffect(() => {
+        checkUser()
+    }, [])
+
+    async function checkUser() {
+        const user = await Auth.currentAuthenticatedUser()
+        console.log(user)
+        setUser(user)
+    }
+
     const handleInitialLoad = () => {
 
-        var poolData = {
-            UserPoolId: 'us-east-2_YFnCIb6qJ',
-            ClientId: '5bkenhii8f4mqv36k0trq6hgc7',
-        };
-
-        var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-        var cognitoUser = userPool.getCurrentUser();
-        
-        if (cognitoUser != null) {
-            cognitoUser.getSession(function(err, session) {
-                if (err) {
-                    alert(err.message || JSON.stringify(err));
-                    return;
-                }
-                console.log('session validity: ' + session.isValid());
-
-                if(session.isValid()){
-                    dispatchPostLocalSettings({
-                        ...localReducer,
-                        authenticated: true,
-                        non_local_api_ip: '18.223.113.55',
-                        non_local_api: true,
-                    })
-                }
-            });
+        if (user) {  
+            dispatchPostLocalSettings({
+                ...localReducer,
+                authenticated: true,
+            })
         }
 
         return (

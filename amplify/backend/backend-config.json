@@ -1,0 +1,11 @@
+{
+  "auth": {
+    "rmstudio283aa6e5": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
+    }
+  },
+  "api": {}
+}

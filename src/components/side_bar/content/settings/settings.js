@@ -7,15 +7,14 @@ import ContentHeader from '../content_header/content_header'
 
 // Import Components
 import Textbox from '../../../basic/textbox/textbox'
-import Header from '../../../basic/header/header'
-import SmallButton from '../../../basic/small_button/small_button'
 import Switch from 'react-ios-switch';
 
 import TimezonePicker, { timezones } from 'react-timezone';
 
 import Button from "../../../basic/button/button";
 
-import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
+// Get Auth from amplify
+import { Auth } from 'aws-amplify';
 
 // Import Actions
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
@@ -28,7 +27,6 @@ import { setCurrentMap } from '../../../../redux/actions/map_actions'
 // Import Utils
 import { isEquivalent } from '../../../../methods/utils/utils'
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
-import * as taskActions from "../../../../redux/actions/tasks_actions";
 
 const Settings = () => {
 
@@ -381,14 +379,11 @@ const Settings = () => {
 
         const signOut = async () => {
 
-            var poolData = {
-                UserPoolId: 'us-east-2_YFnCIb6qJ',
-                ClientId: '5bkenhii8f4mqv36k0trq6hgc7',
-            };
-    
-            var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-            var cognitoUser = userPool.getCurrentUser();
-            cognitoUser.signOut();
+            try {
+                await Auth.signOut({ global: true });
+            } catch (error) {
+                console.log('error signing out: ', error);
+            }
 
             await onPostLocalSettings({
                 ...localReducer,

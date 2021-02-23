@@ -19,7 +19,6 @@ import { deleteLocalSettings } from './api/local_api'
 //import * as localActions from './redux/actions/local_actions'
 import { stopAPICalls } from './redux/actions/local_actions'
 
-
 // import containers
 import ApiContainer from './containers/api_container/api_container';
 import StatusHeader from './containers/status_header/status_header';
@@ -34,6 +33,11 @@ import ListView from "./components/list_view/list_view";
 import TestsContainer from "./containers/api_container/tests_container";
 import HILModals from "./components/hil_modals/hil_modals";
 import ConfirmDeleteModal from './components/basic/modals/confirm_delete_modal/confirm_delete_modal'
+
+// Amplify configuration globally
+import Amplify from 'aws-amplify'
+import config from './aws-exports'
+Amplify.configure(config)
 
 const widthBreakPoint = 1000;
 
