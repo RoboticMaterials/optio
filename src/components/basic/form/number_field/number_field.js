@@ -5,6 +5,7 @@ import { useField, useFormikContext } from "formik";
 import ErrorTooltip from '../error_tooltip/error_tooltip';
 import * as styled from './number_field.style'
 import useLongPress from "../../../../hooks/useLongPress";
+import NumberInput from "../../number_input/number_input";
 
 // function setDeceleratingTimeout(callback, factor, initialRate, times, minRate)
 // {
@@ -70,12 +71,9 @@ const NumberField = ({
 
 
 	return (
-		<styled.HilInputContainer>
-			<styled.HilInputIcon
-				disabled={!(fieldValue > minValue)}
-				className='fas fa-minus-circle'
-				color={'#ff1818'}
-				onClick={() => {
+			<NumberInput
+				inputCss={hasError ? styled.errorCss : null}
+				onMinusClick={() => {
 					if(!touched) {
 						setFieldTouched(fieldName, true)
 					}
@@ -88,69 +86,46 @@ const NumberField = ({
 						}
 					}
 
-					// if(minValue !== null) {
-						// fieldValue cannot be negative
-						if (fieldValue > minValue) setFieldValue(fieldName,fieldValue - 1)
-					// }
-
+					// fieldValue cannot be negative
+					if (fieldValue > minValue) setFieldValue(fieldName,fieldValue - 1)
 					// setFieldValue(fieldName,fieldValue - 1)
+				}}
+				minusDisabled={!(fieldValue > minValue)}
+				hasError={hasError}
+				onInputChange={(e) => {
+
+					if(!touched) {
+						setFieldTouched(fieldName, true)
+					}
+
+					const enteredValue = e.target.value
+					const enteredValueInt = parseInt(enteredValue)
+
+					if (isNaN(enteredValueInt)) {
+						if(enteredValue === "-") {
+							setFieldValue(fieldName, -0)
+						}
+						else {
+							setFieldValue(fieldName, 0)
+						}
+					}
+					else {
+						// if there is a maxValue, the fieldValue cannot exceed this
+						if (maxValue) {
+							if (enteredValueInt <= maxValue) setFieldValue(fieldName,enteredValueInt)
+						}
+
+						// otherwise the value can be anything
+						else {
+							setFieldValue(fieldName, enteredValueInt)
+						}
+					}
 
 
 				}}
-			/>
-
-			<div style={{position: "relative"}}>
-				<styled.HilInput
-					hasError={hasError}
-					type="number"
-					onChange={(e) => {
-
-						if(!touched) {
-							setFieldTouched(fieldName, true)
-						}
-
-						const enteredValue = e.target.value
-						const enteredValueInt = parseInt(enteredValue)
-
-						if (isNaN(enteredValueInt)) {
-							if(enteredValue === "-") {
-								setFieldValue(fieldName, -0)
-							}
-							else {
-								setFieldValue(fieldName, 0)
-							}
-						}
-						else {
-							// if there is a maxValue, the fieldValue cannot exceed this
-							if (maxValue) {
-								if (enteredValueInt <= maxValue) setFieldValue(fieldName,enteredValueInt)
-							}
-
-							// otherwise the value can be anything
-							else {
-								setFieldValue(fieldName, enteredValueInt)
-							}
-						}
-
-
-					}}
-					value={fieldValue}
-				/>
-				<ErrorTooltip
-					visible={hasError}
-					text={error}
-					ContainerComponent={styled.IconContainerComponent}
-				/>
-			</div>
-
-
-
-			<styled.HilInputIcon
-				defaultValue={0}
-				disabled={!(fieldValue < maxValue)}
-				className='fas fa-plus-circle'
-				color={'#1c933c'}
-				onClick={() => {
+				value={fieldValue}
+				plusDisabled={(maxValue) && !(fieldValue < maxValue)}
+				onPlusClick={() => {
 
 					if(!touched) {
 						setFieldTouched(fieldName, true)
@@ -174,10 +149,13 @@ const NumberField = ({
 					}
 
 				}}
+				inputChildren={<ErrorTooltip
+					visible={hasError}
+					text={error}
+					ContainerComponent={styled.IconContainerComponent}
+				/>}
+
 			/>
-
-
-		</styled.HilInputContainer>
 	);
 };
 
