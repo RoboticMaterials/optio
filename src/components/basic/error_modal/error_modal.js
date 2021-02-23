@@ -1,6 +1,5 @@
 import React from "react";
 import ReactModalAdapter from '../styled_modal/styled_modal';
-import TreeView from 'react-treeview';
 
 import * as styled from './error_modal.style'
 
