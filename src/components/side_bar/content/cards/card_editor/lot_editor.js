@@ -1565,6 +1565,7 @@ const LotEditor = (props) => {
 										var submitItem = {
 											name,
 											bins,
+											flags: isObject(card) ? (card.flags || []) : [],
 											process_id: card.process_id,
 											start_date: start,
 											end_date: end,
@@ -1647,6 +1648,7 @@ const LotEditor = (props) => {
 										var submitItem = {
 											name,
 											bins,
+											flags: isObject(card) ? (card.flags || []) : [],
 											process_id: card.process_id,
 											start_date: start,
 											end_date: end,
@@ -1663,6 +1665,7 @@ const LotEditor = (props) => {
 										const submitItem = {
 											name,
 											bins,
+											flags: [],
 											process_id: processId ? processId : selectedProcessId,
 											start_date: start,
 											end_date: end,
