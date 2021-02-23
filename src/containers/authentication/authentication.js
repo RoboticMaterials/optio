@@ -10,6 +10,15 @@ import SignInUpPage from '../../components/sign_in_up_page/sign_in_up_page'
 
 import { postCognitoUserSession } from '../../redux/actions/authentication_actions'
 
+// import 'cross-fetch/polyfill';
+import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
+
+import * as AWS from 'aws-sdk/global';
+
+// Import actions
+import { postLocalSettings } from '../../redux/actions/local_actions'
+import { getLocalSettings } from '../../redux/actions/local_actions'
+
 /**
  * After the APIs have been loaded in the api_container this container is loaded
  * It checks to see if the user has already signed in based on whether or not a refresh token exists in cookies
@@ -38,43 +47,81 @@ const Authentication = (props) => {
 
     const [signIn, setSignIn] = useState(true)
 
+    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const localReducer = useSelector(state => state.localReducer.localSettings)
+
     const handleInitialLoad = () => {
 
-        // Information assembled for the request
-        const poolData = {
+        var poolData = {
             UserPoolId: 'us-east-2_YFnCIb6qJ',
             ClientId: '5bkenhii8f4mqv36k0trq6hgc7',
-        }
+        };
 
-        const userPool = new CognitoUserPool(poolData)
-
-        const userData = {
-            Username: 'daniel@roboticmaterials.com',
-            Pool: userPool,
-        }
-
-        const cognitoUser = new CognitoUser(userData);
-
-        // Gets new tokens if access token is not valid
-        // .refreshSession requies an instance of the CognitioRefreshToken class not just the refresh token sting
-        const token = new CognitoRefreshToken({ RefreshToken: refreshToken })
-
-        console.log(token)
+        var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+        var cognitoUser = userPool.getCurrentUser();
         
-        cognitoUser.refreshSession(token, (err, session) => {
-            console.log('QQQQ', err, session)
-
-            // If the session has succesfully been refreshed then verrify
-            if (!!session) {
-                console.log('QQQQ Valid session ', session.isValid())
-                const verified = onCognitoUserSession(session)
-
-                // If verrified, then no need to sign in or sign up
-                if (verified) {
-                    authenticated()
+        if (cognitoUser != null) {
+            cognitoUser.getSession(function(err, session) {
+                if (err) {
+                    alert(err.message || JSON.stringify(err));
+                    return;
                 }
-            }
-        })
+                console.log('session validity: ' + session.isValid());
+
+                if(session.isValid()){
+                    dispatchPostLocalSettings({
+                        ...localReducer,
+                        authenticated: true,
+                        non_local_api_ip: '18.223.113.55',
+                        non_local_api: true,
+                    })
+                }
+            });
+        }
+
+        // // check to see if refresh token exists and is still good
+        // if(localReducer.refreshToken !== null){
+        //     // Information assembled for the request
+        //     const poolData = {
+                // UserPoolId: 'us-east-2_YFnCIb6qJ',
+                // ClientId: '5bkenhii8f4mqv36k0trq6hgc7',
+        //     }
+
+        //     const userPool = new CognitoUserPool(poolData)
+
+        //     const userData = {
+        //         Username: 'daniel@roboticmaterials.com',
+        //         Pool: userPool,
+        //     }
+
+        //     const cognitoUser = userPool.getCurrentUser()
+
+        //     // Gets new tokens if access token is not valid
+        //     // .refreshSession requies an instance of the CognitioRefreshToken class not just the refresh token sting
+        //     const token = new CognitoRefreshToken({ RefreshToken: localReducer.refreshToken })
+
+        //     let serverIP = '18.223.113.55'
+            
+        //     cognitoUser.refreshSession(token, (err, session) => {
+        //         console.log('QQQQ', err, session)
+
+        //         // If the session has succesfully been refreshed then verify
+        //         if (!!session) {
+        //             console.log('QQQQ Valid session ', session.isValid())
+        //             const verified = onCognitoUserSession(session)
+
+        //             // If verrified, then no need to sign in or sign up
+        //             if (verified) {
+        //                 dispatchPostLocalSettings({
+        //                     ...localReducer,
+        //                     authenticated: userData.Username,
+        //                     non_local_api_ip: serverIP,
+        //                     non_local_api: true
+        //                 })
+        //             }
+        //         }
+        //     })
+        // }
 
         return (
             <styled.Container>

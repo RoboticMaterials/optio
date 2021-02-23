@@ -14,7 +14,7 @@ export async function getCardHistory(ID) {
             url: apiIPAddress() + operator + '/' + ID + '/card_history',
             headers: {
                 'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*'
             }
         });
         // Success 🎉

@@ -20,7 +20,7 @@ export async function getDevices() {
             url: apiIPAddress() + operator,
             headers: {
                 'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*'
             }
             // token: token.username
         });
@@ -65,6 +65,7 @@ export async function deleteDevices(ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Accept': 'application/json',
+                'X-API-Key': '123456',
             },
         });
 
@@ -108,7 +109,8 @@ export async function postDevices(devices) {
             url: apiIPAddress() + operator,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'X-API-Key': '123456',
             },
             data: devices
         });
@@ -156,7 +158,8 @@ export async function putDevices(device, ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'text/html'
+                'Accept': 'text/html',
+                'X-API-Key': '123456',
             },
             data: device
         });

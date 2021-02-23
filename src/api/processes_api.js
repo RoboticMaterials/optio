@@ -58,6 +58,8 @@ export async function deleteProcesses(ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Accept': 'application/json',
+                'X-API-Key': '123456',
+                'Access-Control-Allow-Origin': '*'
             },
         });
 
@@ -151,8 +153,8 @@ export async function putProcesses(process, ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
                 'X-API-Key': '123456',
+                'Accept': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
             data: process

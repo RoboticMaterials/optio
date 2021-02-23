@@ -18,7 +18,7 @@ export async function getMaps() {
       url: apiIPAddress() + operator,
       headers: {
         'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*'
     }
     });
 
@@ -68,6 +68,7 @@ export async function getMap(map_id) {
       url: apiIPAddress() + operator + '/' + map_id,
       headers: {
         'Accept': 'application/json',
+        'X-API-Key': '123456',
       },
   });
 

@@ -58,7 +58,7 @@ export async function deleteObject(ID) {
       headers: {
         'Accept': 'application/json',
         'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*'
       },
   });
 
@@ -105,7 +105,7 @@ export async function postObject(object) {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*'
       },
       data: JSON.stringify(object)
   });
@@ -153,7 +153,7 @@ export async function putObject(object, ID) {
         'Content-Type': 'application/json',
         'Accept': 'text/html',
         'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*'
       },
       data: object
   });

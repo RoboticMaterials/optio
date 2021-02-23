@@ -11,7 +11,7 @@ export async function getSounds() {
       url: apiIPAddress() + operator,
       headers: {
         'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*'
     }
     });
     // Success 🎉

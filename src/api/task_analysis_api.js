@@ -11,7 +11,7 @@ export async function getTasksAnalysis() {
       url: apiIPAddress() + operator,
       headers: {
         'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*'
     }
     });
 
@@ -60,7 +60,7 @@ export async function getTaskAnalysis(id) {
       url: apiIPAddress() + operator + '/' + id,
       headers: {
         'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*'
     }
     });
     // Success 🎉

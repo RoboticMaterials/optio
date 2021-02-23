@@ -11,7 +11,7 @@ export async function getTasks() {
             url: apiIPAddress() + operator,
             headers: {
                 'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*'
             }
         });
 
@@ -59,7 +59,7 @@ export async function getTask(id) {
             url: apiIPAddress() + operator + '/' + id,
             headers: {
                 'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*'
             }
         });
         // Success 🎉
@@ -106,9 +106,9 @@ export async function postTask(task) {
             method: 'post',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'text/html',
                 'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+                'Accept': 'text/html',
+                'Access-Control-Allow-Origin': '*'
             },  
             url: apiIPAddress() + operator,
             data: JSON.stringify(task)
@@ -158,9 +158,9 @@ export async function deleteTask(id) {
             method: 'delete',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
                 'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+                'Accept': 'application/json',
+                'Access-Control-Allow-Origin': '*'
             },
             url: apiIPAddress() + operator + '/' + id
         });
@@ -206,9 +206,9 @@ export async function putTask(task, id) {
             method: 'put',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
                 'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+                'Accept': 'application/json',
+                'Access-Control-Allow-Origin': '*'
             },
             url: apiIPAddress() + operator + '/' + id,
             data: JSON.stringify(task)

@@ -9,8 +9,6 @@ import {
 } from "react-device-detect";
 import {defaultLocalSettings} from "../constants/local_settings_constants";
 
-
-
 const log = logger.getLogger('LocalStorage')
 
 export async function getLoggers() {

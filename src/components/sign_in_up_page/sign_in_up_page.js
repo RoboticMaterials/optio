@@ -10,11 +10,11 @@ import { Formik, Form } from 'formik'
 import { signInSchema, signUpSchema } from '../../methods/utils/form_schemas'
 
 // Import Components
-import TextField from '../basic/form/text_field/text_field'
+// import TextField from '../basic/form/text_field/text_field'
 import Textbox from '../basic/textbox/textbox'
 
 // Import actions
-// import { postRefreshToken } from '../../redux/actions/authentication_actions'
+import { postRefreshToken } from '../../redux/actions/authentication_actions'
 
 import * as styled from './sign_in_up_page.style'
 
@@ -41,30 +41,32 @@ const SignInUpPage = (props) => {
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const localReducer = useSelector(state => state.localReducer.localSettings)
 
-    const onGetLocalSettings = () => dispatch(getLocalSettings())
+    // refresh token
+    // const onRefreshToken = (token, expiration) => dispatch(postRefreshToken(token, expiration))
+    // const refreshToken = useSelector(state => state.authenticationReducer.refreshToken)
 
-    const [loggedIn, setLoggedIn] = useState(false)
+    // const onGetLocalSettings = () => dispatch(getLocalSettings())
+
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
 
+    // useEffect( () => {
+    //     async function checkLocalSettings() {
+    //         // Get local storage
+    //         const localSettings = await onGetLocalSettings()
 
-    useEffect( () => {
-        async function checkLocalSettings() {
-            // Get local storage
-            const localSettings = await onGetLocalSettings()
+    //         // See if authenticated is not null
+    //         if (localSettings.authenticated){
+    //             // If so, assume logged in
+    //             setLoggedIn(true)
+    //         }
+    //         // Else, require login
+    //       }
 
-            // See if authenticated is not null
-            if (localSettings.authenticated){
-                // If so, assume logged in
-                setLoggedIn(true)
-            }
-            // Else, require login
-          }
-
-        checkLocalSettings()
+    //     checkLocalSettings()
             
-    }, [])
+    // }, [])
 
     const handleSubmit = () => {
 
@@ -75,6 +77,8 @@ const SignInUpPage = (props) => {
         }
 
         const userPool = new CognitoUserPool(poolData)
+
+        console.log(email, password, confirmPassword)
         // If the request is a sign in then run these functions
         if (signIn) {
 
@@ -95,8 +99,6 @@ const SignInUpPage = (props) => {
 
             let serverIP = '18.223.113.55'
 
-            console.log(userData)
-
             cognitoUser.authenticateUser(authenticationDetails, {
 
                 onSuccess: function (result) {
@@ -104,8 +106,11 @@ const SignInUpPage = (props) => {
                         ...localReducer,
                         authenticated: result.accessToken.payload.username,
                         non_local_api_ip: serverIP,
-                        non_local_api: true
+                        non_local_api: true,
+                        refreshToken: result.getRefreshToken().getToken()
                     })
+
+                    // onRefreshToken(result.getRefreshToken().getToken())
 
                     console.log('QQQQ Success', typeof(result), result.accessToken.payload, localReducer)
 
@@ -117,18 +122,21 @@ const SignInUpPage = (props) => {
 
             });
         }else{
-            userPool.signUp(email, password, [], null, (err, data) => {
-                if (err){
-                    console.log('QQQQ Error', err)
-                    alert(err.message)
-                }else {
-                    console.log('QQQQ Success', data)
-                }
-            });
+            if(password === confirmPassword){
+                userPool.signUp(email, password, [], null, (err, data) => {
+                    if (err){
+                        console.log('QQQQ Error', err)
+                        alert(err.message)
+                    }else {
+                        console.log('QQQQ Success', data)
 
-            setEmail('')
-            setPassword('')
-            setConfirmPassword('')
+                    }
+                });
+            }else{
+                alert('Passwords must match!')
+            }
+
+            
         }
     }
 
@@ -159,6 +167,7 @@ const SignInUpPage = (props) => {
                 await handleSubmit(values)
 
                 setSubmitting(false)
+
             }}
 
         >

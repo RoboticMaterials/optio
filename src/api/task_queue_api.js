@@ -13,7 +13,7 @@ export async function getTaskQueue() {
             url: apiIPAddress() + operator,
             headers: {
                 'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*'
             }
         });
         // Success 🎉
@@ -58,9 +58,9 @@ export async function postTaskQueue(taskQueueItem) {
             method: 'post',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
                 'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+                'Accept': 'application/json',
+                'Access-Control-Allow-Origin': '*'
             },
             data: taskQueueItem,
             url: apiIPAddress() + operator,
@@ -109,9 +109,9 @@ export async function deleteTaskQueueAll() {
             method: 'delete',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
                 'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+                'Accept': 'application/json',
+                'Access-Control-Allow-Origin': '*'
             },
             url: apiIPAddress() + operator,
         });
@@ -158,9 +158,9 @@ export async function deleteTaskQueueItem(id) {
             method: 'delete',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
                 'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+                'Accept': 'application/json',
+                'Access-Control-Allow-Origin': '*'
             },
             url: apiIPAddress() + operator + '/' + id,
         });
@@ -206,9 +206,9 @@ export async function putTaskQueueItem(item, ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'text/html',
                 'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+                'Accept': 'text/html',
+                'Access-Control-Allow-Origin': '*'
             },
             data: item
         });

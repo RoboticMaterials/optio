@@ -9,6 +9,9 @@ export async function getSkills() {
     const response = await axios({
       method: 'get',
       url: apiIPAddress() + operator,
+      headers:{
+        'X-API-Key': '123456',
+      }
     });
     // Success 🎉
     const data = response.data;
@@ -51,7 +54,7 @@ export async function postSkill(skill) {
         'Content-Type': 'application/json',
         'Accept': 'text/html',
         'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*'
       },
       data: JSON.stringify(skill)
   });
@@ -98,7 +101,7 @@ export async function putSkill(skill, ID) {
         'Content-Type': 'application/json',
         'Accept': 'text/html',
         'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*'
       },
       data: JSON.stringify(skill)
   });
@@ -145,6 +148,7 @@ export async function deleteSkill(skillId) {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/html',
+        'X-API-Key': '123456',
       },
       url: apiIPAddress() + operator + '/' + skillId
     });

@@ -16,7 +16,7 @@ export async function getStatus() {
             url: apiIPAddress() + operator,
             headers: {
                 'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*'
             }
             // token: token.username
         });
@@ -64,6 +64,7 @@ export async function postStatus(status) {
             url: apiIPAddress() + operator,
             headers: {
                 'Content-Type': 'application/json',
+                'X-API-Key': '123456',
                 'Accept': 'application/json'
             },
             data: status

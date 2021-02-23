@@ -18,7 +18,7 @@ export async function getSettings() {
             url: apiIPAddress() + operator,
             headers:{
                 'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*'
             }
             // token: token.username
         });
@@ -72,9 +72,9 @@ export async function postSettings(settings) {
             url: apiIPAddress() + operator,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
                 'X-API-Key': '123456',
-'Access-Control-Allow-Origin': '*'
+                'Accept': 'application/json',
+                'Access-Control-Allow-Origin': '*'
             },
             data: settings
         });
