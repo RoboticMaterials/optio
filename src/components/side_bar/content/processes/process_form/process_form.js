@@ -46,6 +46,7 @@ const ProcessForm = (props) => {
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
 	const objects = useSelector(state => state.objectsReducer.objects)
+	const currentMap = useSelector(state => state.mapReducer.currentMap)
 
 	useEffect(() => {
 		return () => {
@@ -76,7 +77,8 @@ const ProcessForm = (props) => {
 		if (remainingValues.new) {
 			await dispatchPostProcess({
 				...remainingValues,
-				routes: mappedRoutes
+				routes: mappedRoutes,
+				map_id: currentMap._id,
 			})
 		}
 
@@ -84,7 +86,8 @@ const ProcessForm = (props) => {
 		else {
 			await dispatchPutProcess({
 				...remainingValues,
-				routes: mappedRoutes
+				routes: mappedRoutes,
+				map_id: currentMap._id,
 			})
 		}
 
@@ -200,7 +203,8 @@ const ProcessForm = (props) => {
 				broken: selectedProcess ? selectedProcess.broken : false,
 				_id: selectedProcess ? selectedProcess._id : uuid.v4(),
 				new: selectedProcess.new,
-				newRoute: null
+				newRoute: null,
+				map_id: currentMap._id,
 			}}
 
 			// validation control

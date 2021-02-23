@@ -39,6 +39,7 @@ const ProcessesContent = () => {
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const processes = useSelector(state => state.processesReducer.processes)
     const editing = useSelector(state => state.processesReducer.editingProcess)
+    const currentMap = useSelector(state => state.mapReducer.currentMap)
 
     // State definitions
     const [shift, setShift] = useState(false) // Is shift key pressed ?
@@ -91,7 +92,9 @@ const ProcessesContent = () => {
                 title={'Processes'}
                 schema={'processes'}
                 // elements={Object.values(tasks)}
-                elements={Object.values(processes)}
+                elements={
+                    Object.values(processes).filter((currProcess) => currProcess.map_id === currentMap._id)
+                }
                 onMouseEnter={(process) => dispatchSetSelectedProcess(process)}
                 onMouseLeave={() => dispatchSetSelectedProcess(null)}
                 handleCardView={(element) => onCardView(element)}
