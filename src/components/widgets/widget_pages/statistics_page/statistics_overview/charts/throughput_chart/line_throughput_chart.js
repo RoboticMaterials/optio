@@ -198,6 +198,12 @@ const LineThroughputChart = (props) => {
 
             })
 
+            // TODO: This HAS to work
+            // 1) Sum all time between start and end of shift
+            // 2) Subtract time that belongs to breaks
+            // 3) Find expected output sum for each point found in step 2
+            // 4) Find Y value for each existing point in expected output line in the array generated in step 3
+
             // // Add slope y points
             // slopeValues.forEach((val, ind) => {
             //     expectedOutput[val].y = (ind / (slopeValues.length - 1)) * compareExpectedOutput.expectedOutput
