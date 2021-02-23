@@ -3,6 +3,7 @@ import {
     SET_ACTION,
     SET_WIDTH,
     SET_OPEN,
+    PAGE_DATA_CHANGED,
 } from '../types/sidebar_types'
 
 
@@ -11,6 +12,7 @@ const defaultState = {
     action: null,
     width: 450,
     open: false,
+    pageDataChanged:false,
 };
 
 export default function sidebarReducer(state = defaultState, action) {
@@ -39,6 +41,12 @@ export default function sidebarReducer(state = defaultState, action) {
             return {
                 ...state,
                 open: action.payload
+            }
+
+        case PAGE_DATA_CHANGED:
+            return {
+                ...state,
+                pageDataChanged: action.payload
             }
 
 

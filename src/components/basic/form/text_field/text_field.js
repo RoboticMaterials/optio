@@ -1,11 +1,15 @@
 import React from "react";
 import PropTypes from 'prop-types';
 import { useField, useFormikContext } from "formik";
+import { useSelector, useDispatch } from 'react-redux'
 
 import ErrorTooltip from '../error_tooltip/error_tooltip';
 import useChange from '../../../basic/form/useChange'
 import * as styled from './text_field.style'
 import {getMessageFromError} from "../../../../methods/utils/form_utils";
+
+import {pageDataChanged} from '../../../../redux/actions/sidebar_actions'
+
 
 const TextField = ({
 					InputComponent,
@@ -35,8 +39,13 @@ const TextField = ({
 	const [field, meta] = useField(props);
 	const { touched, error } = meta
 
+	const dispatch = useDispatch()
+	const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
+
 	const hasError = touched && error
+
 	useChange(setFieldValue)
+
 	const inputStyle = inputStyleFunc(hasError, showErrorStyle);
 
 	const errorMessage = getMessageFromError(error)
@@ -63,6 +72,7 @@ const TextField = ({
 							// update touched if necessary
 							if(!touched) {
 								setFieldTouched(field.name, true)
+								dispatchPageDataChanged(true)
 							}
 
 							setFieldValue(field.name, mapOutput(event.target.value)) // update field value

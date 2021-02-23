@@ -117,7 +117,6 @@ export class MapView extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-
         // If new maps are available, refresh current map
         // NOTE: will be useless once we have a method to select map
         // if (prevProps.maps.length != this.props.maps.length) {
@@ -658,7 +657,7 @@ export class MapView extends Component {
                             <TaskPaths d3={this.d3} />
                         }
 
-                        {!!this.props.selectedProcess && 
+                        {!!this.props.selectedProcess &&
                             <ProcessPaths d3={this.d3} />
                         }
 
@@ -729,10 +728,15 @@ export class MapView extends Component {
                                         <></>
                                         :
                                         Object.values(devices).filter(device => device.device_model == 'MiR100').map((device, ind) =>
+                                        <>
+                                          {device.connected==true &&
                                             <MiR100 key={device._id}
                                                 device={device}
                                                 d3={this.d3}
                                             />
+                                          }
+                                        </>
+
                                         )
                                 }</>
                             </>

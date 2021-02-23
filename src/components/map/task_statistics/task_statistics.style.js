@@ -12,7 +12,8 @@ export const TaskStatisticsContainer = styled.div`
     left: ${props => props.xPosition};
 
     max-height: 6.5rem;
-    width: 14rem;
+    min-width: 7rem;
+    max-width: 15rem;
     padding: .1rem;
 
     background: red;
@@ -57,6 +58,9 @@ export const TaskText = styled.p`
     margin-bottom: auto;
     font-family: ${props => props.theme.font.primary};
 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 `
 
 export const TaskIcon = styled.i`
@@ -67,4 +71,5 @@ export const RowContainer = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: center
 `
