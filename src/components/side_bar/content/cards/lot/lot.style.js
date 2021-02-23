@@ -114,11 +114,20 @@ export const FooterBar = styled.div`
   font-size: ${props => props.theme.fontSize.sz4};
 `
 
+const notSelectedFlagCss = css`
+    filter: contrast(20%);
+    filter: brightness(50%);
+`
+
 export const FlagButton = styled.button`
 	${iconButtonCss};
   	${commonClickableIcon};
   	margin: 0 1rem;
+  	
+  	${props => !props.selected && notSelectedFlagCss};
 `
+
+
 
 
 export const FlagsContainer = styled.div`

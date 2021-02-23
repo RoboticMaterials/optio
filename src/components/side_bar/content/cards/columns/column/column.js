@@ -156,7 +156,8 @@ const Column = ((props) => {
 								object_id,
 								cardId,
 								start_date,
-								end_date
+								end_date,
+								flags
 							} = card
 
 							// const lotName = lots[lot_id] ? lots[lot_id].name : null
@@ -169,7 +170,8 @@ const Column = ((props) => {
 									end_date={end_date}
 									objectName={objectName}
 									count={count}
-									id={index}
+									id={cardId}
+									flags={flags || []}
 									index={index}
 									onClick={()=>handleCardClick(cardId, processId, station_id)}
 									containerStyle={{marginBottom: "0.5rem"}}
