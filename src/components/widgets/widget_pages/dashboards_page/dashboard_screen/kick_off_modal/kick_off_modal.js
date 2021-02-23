@@ -55,10 +55,16 @@ const KickOffModal = (props) => {
     const [submitting, setSubmitting] = useState(false)
     const [showLotEditor, setShowLotEditor] = useState(false)
     const [didLoadData, setDidLoadData] = useState(false)
+    const [showQuantitySelector, setShowQuantitySelector] = useState(false)
     const [availableKickOffCards, setAvailableKickOffCards] = useState([])
     const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
     const isButtons = availableKickOffCards.length > 0
     const stationId = dashboard.station
+
+    const onButtonClick = async (lot) => {
+        setShowQuantitySelector(true)
+        // moveLot(lot)
+    }
 
     /*
     * handles the logic for when a kick-off button is pressed
@@ -68,7 +74,7 @@ const KickOffModal = (props) => {
     *
     * This is done by updating the cards station_id and route_id to those of the first station in the first route
     * */
-    const onButtonClick = async (card) => {
+    const moveLot = async (card) => {
 
         // extract card attributes
         const {
