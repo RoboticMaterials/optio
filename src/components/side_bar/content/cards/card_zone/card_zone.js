@@ -42,13 +42,13 @@ const CardZone = ((props) => {
 		binId: draggingBinId = ""
 	} = draggedLotInfo || {}
 
+	const {
+		name: processName = ""
+	} = currentProcess || {}
 
-
-	// console.log("draggedLotInfo",draggedLotInfo)
-
-	const [cardsSorted, setCardsSorted] = useState({})
-	const [queue, setQueue] = useState([])
-	const [finished, setFinished] = useState([])
+	// const [cardsSorted, setCardsSorted] = useState({})
+	// const [queue, setQueue] = useState([])
+	// const [finished, setFinished] = useState([])
 
 	// const onSetDataPage = (page) => setDataPage(page)
 	//
@@ -136,7 +136,8 @@ const CardZone = ((props) => {
 						...rest,
 						binId,
 						count,
-						cardId: _id
+						cardId: _id,
+						processName
 					})
 				}
 
@@ -146,7 +147,8 @@ const CardZone = ((props) => {
 						...rest,
 						count,
 						binId,
-						cardId: _id
+						cardId: _id,
+						processName
 					})
 				}
 
@@ -156,7 +158,8 @@ const CardZone = ((props) => {
 						...rest,
 						count,
 						binId,
-						cardId: _id
+						cardId: _id,
+						processName
 					})
 				}
 

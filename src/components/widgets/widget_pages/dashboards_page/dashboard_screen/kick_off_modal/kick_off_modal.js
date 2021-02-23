@@ -20,7 +20,7 @@ import LotEditor from "../../../../../side_bar/content/cards/card_editor/lot_edi
 import Textbox from "../../../../../basic/textbox/textbox";
 import {SORT_MODES} from "../../../../../../constants/common_contants";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
-import Card from "../../../../../side_bar/content/cards/lot/lot";
+import Lot from "../../../../../side_bar/content/cards/lot/lot";
 
 Modal.setAppElement('body');
 
@@ -167,13 +167,20 @@ const KickOffModal = (props) => {
                     name,
                     start_date,
                     end_date,
-                    bins = {}
+                    bins = {},
+                    process_id: processId
                 } = currCard
+
+                const process = processes[processId]
+                const {
+                    name: processName
+                } = process || {}
 
                 const count = bins["QUEUE"]?.count || 0
 
                 return(
-                        <Card
+                        <Lot
+                            processName={processName}
                             name={name}
                             start_date={start_date}
                             end_date={end_date}
