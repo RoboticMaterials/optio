@@ -27,7 +27,7 @@ const testExpectedOutput = {
     breaks: {
         break1: {
             enabled: true,
-            startOfBreak: '10:00',
+            startOfBreak: '10:30',
             endOfBreak: '11:00',
         },
         break2: {
@@ -68,7 +68,7 @@ const LineThroughputChart = (props) => {
     * 3) If breaks, adds 'stagnate' (flat) sections to the graph when no parts are being processes
     * 
     */
-    const lineDataConverter = () => {
+    const lineDataConverter = useMemo(() => {
         let convertedData = []
 
         let dataCopy = deepCopy(data)
@@ -119,9 +119,20 @@ const LineThroughputChart = (props) => {
         // This is the array of data that is passed to the line chart
         let expectedOutput = []
 
+        // 1s) Create an array of minutes between the start and end of the shift
+        // 2s) Subtract time that belongs to breaks
+        // 3s) Find expected output sum for each point found in step 2
+        // 4s) Find Y value for each existing point in expected output line in the array generated in step 3
+
+        // 1s) Create an array of minutes between the start and end of the shift
+        // Iterates I by 1 minute in epoch times (1000 (converts to seconds) * 60 (converts to minutes))
+
         // This array is used to find indexes in the expected output where a slope should be applied to
         // IE, where the expected output is not stagnant (part of a break)
         let slopeValues = []
+        for (let i = startEpoch; i <= endEpoch; i = i + 60000) {
+            slopeValues.push(i)
+        }
 
         // Add Expected output
         if (!!compareExpectedOutput.expectedOutput) {
@@ -129,17 +140,6 @@ const LineThroughputChart = (props) => {
             // Add the beginning and end of each shift
             expectedOutput.push({ x: startEpoch, y: 0 })
             expectedOutput.push({ x: endEpoch, y: compareExpectedOutput.expectedOutput })
-            slopeValues = expectedOutput.length
-
-            // let slopeInd = 0
-            // for (let i = convert24htoInt(compareExpectedOutput.startOfShift); i < convert24htoInt(compareExpectedOutput.endOfShift) + 1; i++) {
-            //     const x = convertIntto24h(i)
-
-            //     // Add to the array of slopeValues. Will be used for breaks
-            //     slopeValues.push(slopeInd)
-            //     expectedOutput.push({ x: x, y: null })
-            //     slopeInd += 1
-            // }
 
             /**
              * This handles breaks
@@ -155,33 +155,23 @@ const LineThroughputChart = (props) => {
                 const start = convert24htoEpoch(br.startOfBreak, date)
                 const end = convert24htoEpoch(br.endOfBreak, date)
 
-                // // Find the start index in the array 
-                // const matchedStartBreak = (el) => start === el
-                // const startIndex = expectedOutput.findIndex(matchedStartBreak)
-                // // Find the end index in the array
-                // const matchEndBreak = (el) => end === el
-                // const endIndex = expectedOutput.findIndex(matchEndBreak)
-
                 // Find the value of y at startof the break using y = mx + b
                 const m = (compareExpectedOutput.expectedOutput - 0) / (endEpoch - startEpoch)
                 const b = compareExpectedOutput.expectedOutput - m * endEpoch
                 const yStart = m * start + b
 
-                // Find where the x value fits and add the stagnent y value to the expected outPut
-                for (let i = 0; i < expectedOutput.length; i++) {
-                    const output = expectedOutput[i]
-                    const nextOutput = expectedOutput[i + 1]
 
-                    // If the output x is less or equal to the start and the next output is greater or equal to the start, then this is where the break belongs in the expectedOutput
-                    if (output.x <= start && nextOutput.x >= start) {
-                        expectedOutput.splice(i + 1, 0, { x: start, y: yStart })
-                        expectedOutput.splice(i + 2, 0, { x: end, y: yStart })
-                        break
-                    }
-                }
+                // Add the break time to the expected output expected output
 
 
 
+                // // Find the start index in the array 
+                // // TODO: Probably pass through a function that finds the closest time
+                // const matchedStartBreak = (el) => start === el
+                // const startIndex = convertedOutput.findIndex(matchedStartBreak)
+                // // Find the end index in the array
+                // const matchEndBreak = (el) => end === el
+                // const endIndex = convertedOutput.findIndex(matchEndBreak)
 
                 // // Create an array the contains the indexes between the start and end index
                 // let arrayIndexList = []
@@ -196,18 +186,47 @@ const LineThroughputChart = (props) => {
                 //     [ind]: arrayIndexList
                 // }
 
+
+
+
+
+                // Find where the x value fits and add the stagnent y value to the expected outPut
+                for (let i = 0; i < expectedOutput.length; i++) {
+                    const output = expectedOutput[i]
+                    const nextOutput = expectedOutput[i + 1]
+
+                    // If the output x is less or equal to the start and the next output is greater or equal to the start, then this is where the break belongs in the expectedOutput
+                    if (output.x <= start && nextOutput.x >= start) {
+                        expectedOutput.splice(i + 1, 0, { x: start, y: 0 })
+                        expectedOutput.splice(i + 2, 0, { x: end, y: 0 })
+                        break
+                    }
+                }
+
+                // 2s) Subtract time that belongs to breaks
+                for (let i = start + 60000; i <= end; i = i + 60000) {
+                    slopeValues = slopeValues.filter(item => item !== i)
+                }
+
             })
 
             // TODO: This HAS to work
-            // 1) Sum all time between start and end of shift
-            // 2) Subtract time that belongs to breaks
-            // 3) Find expected output sum for each point found in step 2
-            // 4) Find Y value for each existing point in expected output line in the array generated in step 3
+            console.log('QQQQ Slope Vals', slopeValues)
+            console.log('QQQQ expected output', deepCopy(expectedOutput))
 
-            // // Add slope y points
-            // slopeValues.forEach((val, ind) => {
-            //     expectedOutput[val].y = (ind / (slopeValues.length - 1)) * compareExpectedOutput.expectedOutput
-            // })
+            // Add slope y points
+            slopeValues.forEach((val, ind) => {
+                expectedOutput.forEach((output, ind2) => {
+                    // console.log('QQQQ outp', output.x)
+                    if (output.x !== val) {
+                        return
+                    }
+                    else {
+                        console.log('QQQQ adding')
+                        expectedOutput[ind2].y = (ind / (slopeValues.length - 1)) * compareExpectedOutput.expectedOutput
+                    }
+                })
+            })
 
             // // Add stagnent y points
             // Object.values(breakObj).forEach(b => {
@@ -218,6 +237,7 @@ const LineThroughputChart = (props) => {
             // })
 
         }
+
 
 
         // Update expected to have the same x values as converted
@@ -317,7 +337,7 @@ const LineThroughputChart = (props) => {
 
         // setConvertedData(lineData)
         return lineData
-    }
+    }, [compareExpectedOutput])
 
     const renderBreaks = () => {
 
@@ -485,7 +505,7 @@ const LineThroughputChart = (props) => {
                                     <styled.RowContainer style={{ justifyContent: 'space-between' }}>
                                         <styled.Label>
                                             Start of Shift
-                                </styled.Label>
+                                        </styled.Label>
                                         <TimePickerField
                                             mapInput={
                                                 (value) => {
@@ -626,7 +646,7 @@ const LineThroughputChart = (props) => {
             {renderForm()}
             <styled.PlotContainer style={{ flexGrow: '7' }} minHeight={27}>
                 <ResponsiveLine
-                    data={lineDataConverter()}
+                    data={lineDataConverter}
                     // data={!!convertedData ? convertedData : []}
 
                     xScale={{ type: "time" }}
