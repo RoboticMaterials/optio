@@ -15,6 +15,7 @@ import {setDataPage} from "../../../../../redux/actions/api_actions"
 
 // styles
 import * as styled from "./card_zone.style"
+import {getMatchesFilter} from "../../../../../methods/utils/lot_utils";
 
 const CardZone = ((props) => {
 
@@ -26,6 +27,7 @@ const CardZone = ((props) => {
 		showCardEditor,
 		maxHeight,
 		lotFilterValue,
+		selectedFilterOption,
 		sortMode
 	} = props
 
@@ -110,7 +112,8 @@ const CardZone = ((props) => {
 			...rest
 		} = card
 
-		const matchesFilter = card.name.toLowerCase().includes(lotFilterValue.toLowerCase())
+
+		const matchesFilter = getMatchesFilter(card, lotFilterValue, selectedFilterOption)
 
 		if(card.bins && matchesFilter) {
 

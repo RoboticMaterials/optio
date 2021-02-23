@@ -165,6 +165,7 @@ const Column = ((props) => {
 
 							return(
 								<Card
+									key={cardId}
 									name={name}
 									start_date={start_date}
 									end_date={end_date}

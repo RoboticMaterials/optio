@@ -148,3 +148,12 @@ export const FLAG_OPTIONS = {
 		id: 4
 	},
 }
+
+export const LOT_FILTER_OPTIONS = {
+	name: {
+		label: "Name"
+	},
+	flags: {
+		label: "Flags"
+	},
+}

@@ -20,9 +20,6 @@ const Card = (props) => {
         id,
         onClick,
         count,
-        objectName,
-        lotName,
-        lotId = 2,
         start_date,
         end_date,
         containerStyle,
@@ -30,7 +27,6 @@ const Card = (props) => {
         isSelected,
         flags
     } = props
-    console.log("flags",flags)
 
     const themeContext = useContext(ThemeContext)
 
@@ -88,10 +84,6 @@ const Card = (props) => {
                                                         padding: 0,
                                                         fontSize: "1rem"
                                                     }}
-                                                    onClick={(e) => {
-                                                        // e.preventDefault()
-                                                        // e.stopPropagation()
-                                                    }}
                                                 />
                                             )
                                         })
@@ -105,10 +97,6 @@ const Card = (props) => {
                                         color={"rgb(25,25,25,0.5)"}
                                         selected={true}
                                         className="fas fa-flag"
-                                        onClick={(e) => {
-                                            // e.preventDefault()
-                                            // e.stopPropagation()
-                                        }}
                                     />
                                 }
                             </styled.FlagsContainer>
@@ -178,26 +166,7 @@ const Card = (props) => {
                         <styled.Label>Quantity</styled.Label>
                         <styled.Count>{count}</styled.Count>
                     </styled.Row>
-
-
-
-
-
-
                 </styled.ContentContainer>
-
-
-                {/*<styled.FooterBar*/}
-                {/*    color={lotColor}*/}
-                {/*>*/}
-
-
-                {/*    {objectName &&*/}
-                {/*        <styled.Count style={{marginRight: "1rem"}}>{objectName}:</styled.Count>*/}
-                {/*    }*/}
-
-
-                {/*</styled.FooterBar>*/}
 
             </styled.Container>
         </styled.StyledDraggable>

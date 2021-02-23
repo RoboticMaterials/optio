@@ -201,10 +201,6 @@ export const putCardAttributes = (attributes, cardId) => async (dispatch, getSta
     const state = getState()
     const card = state.cardsReducer.cards[cardId]
 
-    console.log("putCardAttributes state", state)
-    console.log("putCardAttributes cardId", cardId)
-    console.log("putCardAttributes card", card)
-
     if(card) {
         const callback = async () => {
             const response = await api.putCard({
