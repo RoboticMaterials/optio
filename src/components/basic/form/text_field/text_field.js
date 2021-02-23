@@ -20,8 +20,8 @@ const TextField = ({
 					   ContentContainer,
 					   FieldContainer,
 					   mapInput,
-	mapOutput,
-	inputProps,
+					   mapOutput,
+					   inputProps,
 
 					   style,
 					   ...props }) => {

@@ -15,6 +15,8 @@ import TimezonePicker, { timezones } from 'react-timezone';
 
 import Button from "../../../basic/button/button";
 
+import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
+
 // Import Actions
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
 import { postLocalSettings } from '../../../../redux/actions/local_actions'
@@ -379,10 +381,21 @@ const Settings = () => {
 
         const signOut = async () => {
 
+            var poolData = {
+                UserPoolId: 'us-east-2_YFnCIb6qJ',
+                ClientId: '5bkenhii8f4mqv36k0trq6hgc7',
+            };
+    
+            var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+            var cognitoUser = userPool.getCurrentUser();
+            cognitoUser.signOut();
+
             await onPostLocalSettings({
                 ...localReducer,
-                authenticated: null
+                authenticated: false
             })
+
+            window.location.reload();
 
          }
         return (
