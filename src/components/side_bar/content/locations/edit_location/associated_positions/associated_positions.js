@@ -18,6 +18,7 @@ import { setStationAttributes } from '../../../../../../redux/actions/stations_a
 import { setPositionAttributes, deletePosition, addPosition, postPosition, setSelectedStationChildrenCopy } from '../../../../../../redux/actions/positions_actions'
 import * as positionActions from '../../../../../../redux/actions/positions_actions'
 import { deleteTask } from '../../../../../../redux/actions/tasks_actions'
+import { pageDataChanged } from '../../../../../../redux/actions/sidebar_actions'
 import { deepCopy } from '../../../../../../methods/utils/utils'
 
 // Import Constants
@@ -36,7 +37,7 @@ export default function Positions(props) {
     const dispatchAddPosition = (position) => dispatch(addPosition(position))
     const disptachPostPosition = (position) => dispatch(postPosition(position))
     const dispatchSetSelectedStationChildrenCopy = (positions) => dispatch(setSelectedStationChildrenCopy(positions))
-
+    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(true))
     const dispatchSetStationAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
 
     const positions = useSelector(state => state.positionsReducer.positions)
@@ -89,6 +90,7 @@ export default function Positions(props) {
                                 value={position.name}
                                 onChange={(e) => {
                                     setEditingIndex(i)
+                                    dispatchPageDataChanged(true)
                                     dispatch(positionActions.setPositionAttributes(position._id, { name: e.target.value }))
                                 }}
 

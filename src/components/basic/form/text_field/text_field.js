@@ -1,91 +1,104 @@
 import React from "react";
 import PropTypes from 'prop-types';
 import { useField, useFormikContext } from "formik";
+import { useSelector, useDispatch } from 'react-redux'
 
 import ErrorTooltip from '../error_tooltip/error_tooltip';
 import useChange from '../../../basic/form/useChange'
 import * as styled from './text_field.style'
 
+import {pageDataChanged} from '../../../../redux/actions/sidebar_actions'
+
+
 const TextField = ({
-    InputComponent,
-    ErrorComponent,
-    LabelComponent,
-    InputContainer,
-    fieldLabel,
-    onBlur,
-    onFocus,
-    onChange,
-    inputStyleFunc,
-    IconContainerComponent,
-    ContentContainer,
-    FieldContainer,
-    mapInput,
-    mapOutput,
-    inputProps,
+					   InputComponent,
+					   ErrorComponent,
+					   LabelComponent,
+					   InputContainer,
+					   fieldLabel,
+					   onBlur,
+					   onFocus,
+					   onChange,
+					   inputStyleFunc,
+					   IconContainerComponent,
+					   ContentContainer,
+					   FieldContainer,
+					   mapInput,
+						 setValues,
+						 getFieldMeta,
+						 fieldParent,
+						 mapOutput,
+	 				 	 inputProps,
 
-    style,
-    ...props }) => {
+					   style,
+					   ...props }) => {
 
-    const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext();
-    const [field, meta] = useField(props);
-    const { touched, error } = meta
+	const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext();
+	const [field, meta] = useField(props);
+	const { touched, error } = meta
 
-    const hasError = touched && error
-    useChange(setFieldValue)
-    const inputStyle = inputStyleFunc(hasError);
-    return (
-        <>
-            {fieldLabel &&
-                <LabelComponent hasError={hasError} htmlFor={props.id || props.name}>{fieldLabel}</LabelComponent>
-            }
-            <ContentContainer>
-                <InputContainer>
-                    <InputComponent
+	const dispatch = useDispatch()
+	const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
-                        // inputStyle={{...inputStyle, ...style}}
-                        // inputStyle={inputStyle}
-                        className='form-control'
-                        {...field}
-                        {...inputProps}
-                        {...props}
-                        style={{ ...style, ...inputStyle }}
-                        value={mapInput(field.value)}
-                        onChange={(event) => {
-                            // update touched if necessary
-                            if (!touched) {
-                                setFieldTouched(field.name, true)
-                            }
+	const hasError = touched && error
 
-                            setFieldValue(field.name, mapOutput(event.target.value)) // update field value
+	useChange(setFieldValue)
 
-                            onChange(event) // call additional onChange prop if necessary
-                        }}
-                        // set field touched and call onBlur prop
-                        onBlur={(event) => {
-                            // update touched if necessary
-                            if (!touched) {
-                                setFieldTouched(field.name, true)
-                            }
+	const inputStyle = inputStyleFunc(hasError);
+	return (
+		<>
+			{fieldLabel &&
+			<LabelComponent hasError={hasError} htmlFor={props.id || props.name}>{fieldLabel}</LabelComponent>
+			}
+			<ContentContainer>
+				<InputContainer>
+					<InputComponent
 
-                            // validateOnBlur && validateField(field.name) // validate if necessary
-                            // validateField(field.name) // validate if necessary
+						// inputStyle={{...inputStyle, ...style}}
+						// inputStyle={inputStyle}
+						className='form-control'
+						{...field}
+						{...inputProps}
+						{...props}
+						style={{...style, ...inputStyle}}
+						value={mapInput(field.value)}
+						onChange={(event)=> {
+							// update touched if necessary
+							if(!touched) {
+								setFieldTouched(field.name, true)
+								dispatchPageDataChanged(true)
+							}
 
-                            onBlur(event) // call onBlur prop if passed
-                        }}
-                    />
-                    <ErrorTooltip
-                        visible={hasError}
-                        text={error}
-                        ContainerComponent={IconContainerComponent}
-                    />
-                </InputContainer>
+							setFieldValue(field.name, mapOutput(event.target.value)) // update field value
 
-            </ContentContainer>
+							onChange(event) // call additional onChange prop if necessary
+						}}
+						// set field touched and call onBlur prop
+						onBlur={(event)=>{
+							// update touched if necessary
+							if(!touched) {
+								setFieldTouched(field.name, true)
+							}
+
+							// validateOnBlur && validateField(field.name) // validate if necessary
+							// validateField(field.name) // validate if necessary
+
+							onBlur(event) // call onBlur prop if passed
+						}}
+					/>
+					<ErrorTooltip
+						visible={hasError}
+						text={error}
+						ContainerComponent={IconContainerComponent}
+					/>
+				</InputContainer>
+
+			</ContentContainer>
 
 
 
-        </>
-    );
+		</>
+	);
 };
 
 /* *

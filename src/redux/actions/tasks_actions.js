@@ -35,6 +35,7 @@ import {
     DESELECT_TASK,
     EDITING_TASK,
     REMOVE_TASKS,
+    SET_SELECTED_HOVERING_TASK,
 } from '../types/tasks_types'
 
 import { deepCopy } from '../../methods/utils/utils';
@@ -332,6 +333,10 @@ export const selectTask = (id) => {
 
 export const setSelectedTask = (task) => {
     return { type: SET_SELECTED_TASK, payload: { task }}
+}
+
+export const setSelectedHoveringTask = (task) => {
+    return { type: SET_SELECTED_HOVERING_TASK, payload: { task }}
 }
 
 export const deselectTask = () => {

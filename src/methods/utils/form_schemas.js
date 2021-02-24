@@ -2,7 +2,9 @@ import * as Yup from 'yup';
 
 import { notBrokenRegex, notTaskDeletedRegex } from "./regex_utils";
 import { isObject } from "./object_utils";
-
+import { get } from "lodash"
+import {isArray} from "./array_utils";
+import {LOT_TEMPLATES_RESERVED_FIELD_NAMES} from "../../constants/form_constants";
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
 
@@ -170,6 +172,54 @@ export const dashboardSchema = Yup.object().shape({
 
 });
 
+// returns error if any item in nested array is duplicate
+Yup.addMethod(Yup.array, "unique", function(message, path) {
+    const mapper = x => get(x, path);
+    return this.test("unique", message, function(list) {
+        let set
+        let totalList = []
+        list.forEach((currList, currListIndex) => {
+            totalList = totalList.concat(currList)
+        })
+
+        set = [...new Set(totalList.map(mapper))];
+        const isUnique = totalList.length === set.length;
+        if (isUnique) {
+            return true;
+        }
+
+        let idx = 0
+        let rowIdx = 0
+        let i = 0
+        let err
+
+        for(const sublist of list) {
+            idx = 0
+
+            for(const item of sublist) {
+                if(!err && mapper(item) !== set[i]) {
+                    err = this.createError({ path: `fields[${rowIdx}][${idx}].${path}`, message })
+                }
+
+                idx = idx + 1
+                i = i + 1
+            }
+            rowIdx = rowIdx + 1
+        }
+
+        return err
+    });
+});
+
+// returns error if value is in arr
+Yup.addMethod(Yup.string, "notIn", function(message, arr) {
+    return this.test("notIn", message, function(value) {
+        const { path, createError } = this;
+        if(arr.includes(value)) return createError({ path, message })
+        return true
+    });
+});
+
 export const signUpSchema = Yup.object().shape({
     email: Yup.string()
         .email()
@@ -244,6 +294,28 @@ export const getMoveLotSchema = (maxCount) => Yup.object().shape({
         .required('Please select a destination.')
         .nullable(),
 })
+
+export const LotFormSchema = Yup.object().shape({
+    fields: Yup.array().of(
+        Yup.array().of(
+            Yup.object().shape({
+                _id: Yup.string()
+                    .required('Field missing ID.'),
+                fieldName: Yup.string()
+                    .min(1, '1 character minimum.')
+                    .max(50, '50 character maximum.')
+                    .notIn("This field name is reserved.", Object.values(LOT_TEMPLATES_RESERVED_FIELD_NAMES))
+                    .required('Please enter a name for this field.'),
+                style: Yup.object()
+            })
+        )
+    ).unique('Field names must be unique.', "fieldName"), //message, path
+    name: Yup.string()
+        .min(1, '1 character minimum.')
+        .max(50, '50 character maximum.')
+        .required('Please enter a name.'),
+})
+
 
 export const getCardSchema = (mode, availableBinItems) => {
     switch (mode) {

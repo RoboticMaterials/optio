@@ -16,13 +16,14 @@ export const Container = styled(Modal)`
   bottom: auto;
 
   position: absolute;
-
+	overflow: hidden;
   z-index: 50;
   
   min-width: 95%;
   max-width: 95%;
   max-height: 95%;
-  // height: 95%;
+  
+   height: ${props => props.formEditor && "95%"};
   
   color: ${props => props.theme.bg.octonary};
   
@@ -43,10 +44,20 @@ export const Header = styled.div`
 `
 
 export const NameContainer = styled.div`
+  align-self: stretch;
+  padding: 1rem;
 	background: ${props => props.theme.bg.quaternary};
-	width: 100%;
-	//padding: 0rem 1rem;
-  	margin-bottom: 1rem;
+  flex-direction: column;
+	flex: 1;
+  //align-self: center;
+  display: flex;
+  align-items: flex-start;
+`
+
+export const NameLabel = styled.span`
+	margin-right: 1rem;
+  white-space: nowrap ;
+  width: fit-content;
 `
 
 export const CloseButton = styled.button`
@@ -89,27 +100,46 @@ export const InfoText = styled.span`
 
 export const SectionContainer = styled.div`
 	border-bottom: 1px solid ${props => props.theme.bg.quinary};
-  padding: 0 1rem;
-  //display: flex;
-  
-  //background: green;
+  //padding: 0 1rem;
+  flex: 1;
   display: flex;
   flex-direction: column;
+  
   
 `
 
 export const TheBody = styled.div`
-	//background: blue;
-  padding-top: 1rem;
+  position: relative;
   overflow: auto;
+  flex: 1;
+  display: flex;
+  //min-height: 40rem;
+  flex-direction: column;
+  //width: 100%;
+  
+
+`
+
+export const SuperContainer = styled.div`
+  position: relative;
+  overflow: auto;
+  flex: 1;
+  display: flex;
+  //min-height: 40rem;
+  flex-direction: column;
+  
 
 `
 
 
+
+
 export const ProcessFieldContainer = styled.div`
-  margin-bottom: 1rem;
+  //margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
+  padding: 1rem;
+  padding-bottom: 0;
   //width: auto;
 `
 
@@ -213,6 +243,9 @@ export const StyledForm = styled(Form)`
     flex: 1;
     width: 100%;
     max-width: 100%;
+  overflow: hidden;
+  max-height: 100%;
+  height: 100%;
     // max-height: 100%;
     // overflow-x: hidden;
     border-radius: .5rem;
@@ -239,16 +272,28 @@ export const ContentContainer = styled.div`
 	justify-content: space-between;
 `
 
+export const FieldContainer = styled.div`
+  margin: 1rem;
+  flex: 1;
+  align-self: center;
+  justify-content: center;
+  display: flex;
+`
+
 export const BodyContainer = styled.div`
 	display: flex;
 	flex-direction: column;
+  width: 100%;
+  min-width: 100%;
+  background: ${props => props.theme.bg.quaternary};
 	padding: 1rem;
-	flex: 1;
+  align-self: stretch;
+  
+	//flex: 1;
 	justify-content: space-between;
   min-height: ${props => props.minHeight};
+
 	
-	background: ${props => props.theme.bg.quaternary};
-  background: transparent;
 `
 
 export const WidgetContainer = styled.div`
@@ -268,18 +313,11 @@ export const Icon = styled.i`
 export const ObjectInfoContainer = styled.div`
 	display: flex;
 	//width: 100%;
-	//flex-direction: column;
+	flex-direction: column;
 	align-items: center;
-	//background: red;
-	margin-bottom: 1rem;
 `
 
 
-export const ObjectTitleContainer = styled.div`
-	display: flex;
-	margin-right: 1rem;
-  flex: 1;
-`
 
 export const CountInput = styled.input`
 	width: fit-content;
@@ -290,6 +328,7 @@ export const ObjectLabel = styled.span`
 	margin-right: 1rem;
 	font-weight: bold;
   align-items: center;
+  text-align: center;
 `
 
 export const QuantityErrorContainerComponent = styled.div`
@@ -386,10 +425,31 @@ export const ContentHeader = styled.div`
 	//padding: 1rem;
 `
 
+export const FieldsHeader = styled.div`
+  align-self: stretch;
+	display: flex;
+  //padding: 1rem;
+  flex-direction: column;
+	//justify-content: space-between;
+	width: 100%;
+  	//margin-bottom: 1rem;
+  border-bottom: 1px solid ${props => props.theme.bg.tertiary};
+	//padding: 1rem;
+`
+
 export const ContentTitle = styled.span`
 	font-size: ${props => props.theme.fontSize.sz3};
 	font-weight: ${props => props.theme.fontWeight.bold};
 `
+export const LotName = styled.span`
+	font-size: ${props => props.theme.fontSize.sz3};
+	font-weight: ${props => props.theme.fontWeight.bold};
+  white-space: nowrap ;
+  margin-right: 2rem;
+  margin-bottom: .5rem;
+`
+
+
 
 export const CalendarContainer = styled.div`
 	overflow: auto;
@@ -399,13 +459,27 @@ export const CalendarContainer = styled.div`
 
 export const RowContainer = styled.div`
 	display: flex;
-	margin-bottom: 1rem;
+  align-items: center;
+`
+
+export const ColumnContainer = styled.div`
+	display: flex;
+  flex-direction: column;
+  flex: 1;
+  align-self: stretch;
+  
+	// margin-bottom: 1rem;
+  
 `
 
 export const FadeLoaderCSS = css`
   display: block;
   margin: 0 auto;
   border-color: red;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 
@@ -517,7 +591,7 @@ export const buttonGroupContainerCss = css`
 	flex-direction: row;
 	align-self: center;
 	padding: 0;
-	margin: 0 0 1rem 0;
+	//margin: 0 0 1rem 0;
   width: fit-content;
   
 	
@@ -539,6 +613,21 @@ export const buttonCss = css`
 		cursor: default;
 	}
 	
+`
+
+export const TemplateNameContainer = styled.div`
+  margin: 0 auto;
+  padding: 1rem 0;
+  align-self: center;
+  display: flex;
+  align-items: center;
+`
+
+export const TemplateLabel = styled.span`
+	margin-right: 1rem;
+  white-space: nowrap ;
+  width: fit-content;
+  font-size: ${props => props.theme.fontSize.sz2};
 `
 
 

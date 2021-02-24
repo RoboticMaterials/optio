@@ -5,8 +5,6 @@ import { Draggable } from 'react-smooth-dnd';
 import PropTypes from "prop-types";
 import TextField from "../../../../basic/form/text_field/text_field";
 
-
-
 function hashCode(str) { // java String#hashCode
     var hash = 0;
     for (var i = 0; i < str.length; i++) {
