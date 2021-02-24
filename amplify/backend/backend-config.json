@@ -7,5 +7,21 @@
       "customAuth": false
     }
   },
-  "api": {}
+  "api": {
+    "rmstudio": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authrmstudio283aa6e5"
+            }
+          },
+          "additionalAuthenticationProviders": []
+        }
+      }
+    }
+  }
 }

@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "rmstudio",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authrmstudio283aa6e5",
+      "Outputs.UserPoolId"
+    ]
+  }
+}

@@ -1,6 +1,7 @@
 module.exports = {
     "rules": {
-        "no-unused-vars": "off"
+        // "ignoreRestSiblings": 0,
+        // "args": "none"
       },
     "settings": {
         "react": {
