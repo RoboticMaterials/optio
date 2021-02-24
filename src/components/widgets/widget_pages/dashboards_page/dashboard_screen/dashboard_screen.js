@@ -41,6 +41,7 @@ import KickOffModal from "./kick_off_modal/kick_off_modal";
 import FinishModal from "./finish_modal/finish_modal";
 import { getProcesses } from "../../../../../redux/actions/processes_actions";
 import { isEmpty } from "../../../../../methods/utils/object_utils";
+import {isRouteInQueue} from "../../../../../methods/utils/task_queue_utils";
 
 
 
@@ -198,11 +199,7 @@ const DashboardScreen = (props) => {
             return handleHilSuccess(custom)
         }
 
-        let inQueue = false
-        Object.values(taskQueue).map((item) => {
-            // If its in the Q and not a handoff, then alert the user saying its already there
-            if (item.task_id === Id && !tasks[item.task_id].handoff && deviceType === item.device_type) inQueue = true
-        })
+        let inQueue = isRouteInQueue(Id, deviceType)
 
         // add alert to notify task has been added
         if (inQueue) {
