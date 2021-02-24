@@ -1,20 +1,20 @@
-import React from 'react';
+import React from "react";
 
-import Switch from 'react-ios-switch';
+import Switch from "react-ios-switch";
 
-import theme from '../../../theme';
-import * as styled from './rm_switch.style';
+import theme from "../../../theme";
+import * as styled from "./rm_switch.style";
 
 const RmSwitch = (props) => {
-    return(
-      <Switch
-          {...props}
-          onColor = {theme.main.bg.secondary}
-          handleColor = {theme.main.fg.primary}
-          //style={{borderColor: theme.main.bg.quinary}}
-          offColor={theme.main.bg.quaternary}
+  return (
+    <Switch
+      {...props}
+      onColor={theme.main.bg.secondary}
+      handleColor={theme.main.fg.primary}
+      //style={{borderColor: theme.main.bg.quinary}}
+      offColor={theme.main.bg.quaternary}
 
-          /*
+      /*
           className={undefined}
           disabled={undefined}
           name={undefined}
@@ -23,8 +23,8 @@ const RmSwitch = (props) => {
           readOnly={undefined}
 
           */
-      />
-    );
+    />
+  );
 };
 
 export default RmSwitch;

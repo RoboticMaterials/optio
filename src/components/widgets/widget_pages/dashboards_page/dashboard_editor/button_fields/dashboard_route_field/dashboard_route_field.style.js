@@ -1,23 +1,27 @@
-import styled, { css } from 'styled-components'
+import styled, { css } from "styled-components";
 
-import { hexToRGBA, RGB_Linear_Shade, LightenDarkenColor } from '../../../../../../../methods/utils/color_utils';
+import {
+  hexToRGBA,
+  RGB_Linear_Shade,
+  LightenDarkenColor,
+} from "../../../../../../../methods/utils/color_utils";
 
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import ColorLensIcon from '@material-ui/icons/ColorLens';
+import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
+import ColorLensIcon from "@material-ui/icons/ColorLens";
 import Textbox from "../../../../../../basic/textbox/textbox";
 
 export const TransparentTextBox = styled(Textbox)`
-    background: rgba(0 ,0 ,0 , 0.2);
-    border-bottom: 2px solid rgba(0 ,0 ,0 , 0.1);
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
 
-    &:focus {
-        background-color: rgba(0 ,0 ,0 , 0.3);
-        border-bottom: 2px solid white;
-        outline: none !important;
-    }
+  &:focus {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-bottom: 2px solid white;
+    outline: none !important;
+  }
 
-    text-align: center;
-`
+  text-align: center;
+`;
 
 export const DashboardEditButton = styled.div`
     height: 6rem;
@@ -25,7 +29,7 @@ export const DashboardEditButton = styled.div`
     display: flex;
     flex-direction: row;
         
-    background: ${props => `linear-gradient(180deg, 
+    background: ${(props) => `linear-gradient(180deg, 
                                 ${LightenDarkenColor(props.color, 20)} 0%, 
                                 ${props.color} 50%, 
                                 ${LightenDarkenColor(props.color, -20)} 100%)`};
@@ -59,62 +63,57 @@ export const DashboardEditButton = styled.div`
     }
 
 }
-`
+`;
 
 export const CenterContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    align-items: center;
-    justify-content: center;
-`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+`;
 
 export const TaskName = styled.span`
+  font: ${(props) => props.theme.font.primary};
+  font-size: ${(props) => props.theme.fontSize.sz3};
 
-  font: ${props => props.theme.font.primary};
-  font-size: ${props => props.theme.fontSize.sz3};
-
-  color: ${props => props.theme.bg.tertiary};
-
-`
+  color: ${(props) => props.theme.bg.tertiary};
+`;
 
 // ===== Delete Button ===== //
 export const DeleteButtonIcon = styled(DeleteForeverIcon)`
-    color: white;
+  color: white;
 
-    &:hover {
-        color: ${LightenDarkenColor('#FFFFFF', -20)};
-    }
+  &:hover {
+    color: ${LightenDarkenColor("#FFFFFF", -20)};
+  }
 
-    width: 5rem;
-    height: 5rem;
-  
-`
+  width: 5rem;
+  height: 5rem;
+`;
 
 export const DeleteButton = styled.button`
-    margin: 0;
-    padding: 0;
-    background: transparent;
-    border: transparent;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: transparent;
+  outline: none;
+  z-index: 7;
+  color: white;
+
+  &:focus {
     outline: none;
-    z-index: 7;
-    color: white;
-    
-    &:focus {
-        outline: none;
-    }
+  }
 
-    width: 3rem;
-    margin-left: 1rem;
-
-   
-`
+  width: 3rem;
+  margin-left: 1rem;
+`;
 
 export const ColorDropdownInnerContainer = styled.div`
-    height: 100%;
-    line-height: 100%;
+  height: 100%;
+  line-height: 100%;
 
-    position: relative;
-    width: 8rem;
-    margin-right: 1rem;
-`
+  position: relative;
+  width: 8rem;
+  margin-right: 1rem;
+`;

@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import moment from 'moment';
-import classNames from 'classnames';
+import React, { Component } from "react";
+import moment from "moment";
+import classNames from "classnames";
 
 class Header extends Component {
   static defaultProps = {
@@ -11,7 +11,7 @@ class Header extends Component {
     super(props);
     const { value, format } = props;
     this.state = {
-      str: (value && value.format(format)) || '',
+      str: (value && value.format(format)) || "",
       invalid: false,
     };
   }
@@ -35,7 +35,7 @@ class Header extends Component {
     if (value !== prevProps.value) {
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState({
-        str: (value && value.format(format)) || '',
+        str: (value && value.format(format)) || "",
         invalid: false,
       });
     }
@@ -47,7 +47,7 @@ class Header extends Component {
     }
   }
 
-  onInputChange = event => {
+  onInputChange = (event) => {
     const str = event.target.value;
     this.setState({
       str,
@@ -73,10 +73,7 @@ class Header extends Component {
         });
         return;
       }
-      value
-        .hour(parsed.hour())
-        .minute(parsed.minute())
-        .second(parsed.second());
+      value.hour(parsed.hour()).minute(parsed.minute()).second(parsed.second());
 
       // if time value not allowed, response warning.
       if (
@@ -93,11 +90,17 @@ class Header extends Component {
       // if time value is disabled, response warning.
       const disabledHourOptions = disabledHours();
       const disabledMinuteOptions = disabledMinutes(value.hour());
-      const disabledSecondOptions = disabledSeconds(value.hour(), value.minute());
+      const disabledSecondOptions = disabledSeconds(
+        value.hour(),
+        value.minute()
+      );
       if (
-        (disabledHourOptions && disabledHourOptions.indexOf(value.hour()) >= 0) ||
-        (disabledMinuteOptions && disabledMinuteOptions.indexOf(value.minute()) >= 0) ||
-        (disabledSecondOptions && disabledSecondOptions.indexOf(value.second()) >= 0)
+        (disabledHourOptions &&
+          disabledHourOptions.indexOf(value.hour()) >= 0) ||
+        (disabledMinuteOptions &&
+          disabledMinuteOptions.indexOf(value.minute()) >= 0) ||
+        (disabledSecondOptions &&
+          disabledSecondOptions.indexOf(value.second()) >= 0)
       ) {
         this.setState({
           invalid: true,
@@ -130,7 +133,7 @@ class Header extends Component {
     });
   };
 
-  onKeyDown = e => {
+  onKeyDown = (e) => {
     const { onEsc, onKeyDown } = this.props;
     if (e.keyCode === 27) {
       onEsc();
@@ -147,11 +150,11 @@ class Header extends Component {
   getInput() {
     const { prefixCls, placeholder, inputReadOnly } = this.props;
     const { invalid, str } = this.state;
-    const invalidClass = invalid ? `${prefixCls}-input-invalid` : '';
+    const invalidClass = invalid ? `${prefixCls}-input-invalid` : "";
     return (
       <input
         className={classNames(`${prefixCls}-input`, invalidClass)}
-        ref={ref => {
+        ref={(ref) => {
           this.refInput = ref;
         }}
         onKeyDown={this.onKeyDown}

@@ -1,6 +1,6 @@
 // higher-order component that passes the dimensions of the window as props to
 // the wrapped component
-import React, { Component } from 'react';
+import React, { Component } from "react";
 //
 // export default (ComposedComponent) => {
 //
@@ -67,30 +67,20 @@ import React, { Component } from 'react';
 // };
 
 export default (ComposedComponent) => {
-
   class windowSize extends Component {
-
     constructor() {
       super();
-
     }
 
     render() {
       // pass window dimensions as props to wrapped component
-      return (
-        <ComposedComponent
-          {...this.props}
-        />
-      );
+      return <ComposedComponent {...this.props} />;
     }
-
   }
 
-  const composedComponentName = ComposedComponent.displayName
-    || ComposedComponent.name
-    || 'Component';
+  const composedComponentName =
+    ComposedComponent.displayName || ComposedComponent.name || "Component";
 
   windowSize.displayName = `windowSize(${composedComponentName})`;
   return windowSize;
-
 };

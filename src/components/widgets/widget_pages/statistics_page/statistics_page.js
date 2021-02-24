@@ -1,31 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-import * as styled from './statistics_page.style'
+import * as styled from "./statistics_page.style";
 
 // Import Components
-import StatisticsOverview from './statistics_overview/statistics_overview'
-import StatisticsCharts from './statistics_charts/statistics_charts'
+import StatisticsOverview from "./statistics_overview/statistics_overview";
+import StatisticsCharts from "./statistics_charts/statistics_charts";
 
 // Import Actions
-import moduleName from '../../../../redux/actions/'
+import moduleName from "../../../../redux/actions/";
 
 const StatisticsPage = () => {
+  useEffect(() => {
+    return () => {};
+  }, []);
 
-    useEffect(() => {
-        
-        return () => {
-            
-        }
-    }, [])
-
-    return (
-        <styled.StatisticsContainer>
-
-            {/* <styled.StatisticsDownloadButton>
+  return (
+    <styled.StatisticsContainer>
+      {/* <styled.StatisticsDownloadButton>
                 Download CSV
             </styled.StatisticsDownloadButton> */}
 
-            {/* <styled.StatisticsSectionsContainer>
+      {/* <styled.StatisticsSectionsContainer>
                 <styled.StatisticsSectionsButton 
                     style={{borderRadius:'.5rem 0rem 0rem .5rem'}} 
                     onClick={() => {
@@ -51,9 +46,9 @@ const StatisticsPage = () => {
 
             </styled.StatisticsSectionsContainer> */}
 
-            <StatisticsOverview/>
-            
-            {/* 
+      <StatisticsOverview />
+
+      {/* 
 
             {showOverview &&
                 <div style={{display:'flex', width:'100%', justifyContent:'center', alignItems:'center', marginTop:'5rem', flexDirection:'column'}}>
@@ -67,9 +62,8 @@ const StatisticsPage = () => {
                     <StatisticsCharts/>
                 </div>
             } */}
+    </styled.StatisticsContainer>
+  );
+};
 
-        </styled.StatisticsContainer>
-    )
-}
-
-export default StatisticsPage
+export default StatisticsPage;

@@ -1,514 +1,571 @@
-import React, { useState, useEffect, useContext, useRef, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux'
-import { useParams, useHistory } from 'react-router-dom'
+import React, { useState, useEffect, useContext, useRef, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams, useHistory } from "react-router-dom";
 
 // Import styles
-import * as styled from './statistics_overview.style'
-import { ThemeContext } from 'styled-components';
+import * as styled from "./statistics_overview.style";
+import { ThemeContext } from "styled-components";
 
 // Import Components
-import TimeSpans from './timespans/timespans'
-import DataSelector from './data_selector/data_selector.js'
-import ApexGaugeChart from './apex_gauge_chart'
-import BarChart from '../statistics_charts/statistics_charts_types/bar_chart'
+import TimeSpans from "./timespans/timespans";
+import DataSelector from "./data_selector/data_selector.js";
+import ApexGaugeChart from "./apex_gauge_chart";
+import BarChart from "../statistics_charts/statistics_charts_types/bar_chart";
 
-import { ResponsiveLine } from '@nivo/line'
+import { ResponsiveLine } from "@nivo/line";
 
 // Import Actions
-import { getStationAnalytics } from '../../../../../redux/actions/stations_actions'
+import { getStationAnalytics } from "../../../../../redux/actions/stations_actions";
 
-
-import { ResponsiveBar } from '@nivo/bar';
+import { ResponsiveBar } from "@nivo/bar";
 
 // Import Utils
-import { getDateName, getDateFromString, convertArrayToObject } from '../../../../../methods/utils/utils'
-import {getReportAnalytics, getReportEvents} from "../../../../../redux/actions/report_event_actions";
+import {
+  getDateName,
+  getDateFromString,
+  convertArrayToObject,
+} from "../../../../../methods/utils/utils";
+import {
+  getReportAnalytics,
+  getReportEvents,
+} from "../../../../../redux/actions/report_event_actions";
 
-const tempColors = ['#FF4B4B', '#56d5f5', '#50de76', '#f2ae41', '#c7a0fa']
+const tempColors = ["#FF4B4B", "#56d5f5", "#50de76", "#f2ae41", "#c7a0fa"];
 
 // TODO: Commented out charts for the time being (See comments that start with TEMP)
 const StatisticsOverview = (props) => {
+  const themeContext = useContext(ThemeContext);
 
-    const themeContext = useContext(ThemeContext);
+  const params = useParams();
+  const stationID = params.stationID;
+  let plotRef = useRef();
 
-    const params = useParams()
-    const stationID = params.stationID
-    let plotRef = useRef()
+  const dispatch = useDispatch();
+  const onGetReportEvents = () => dispatch(getReportEvents());
 
-    const dispatch = useDispatch()
-    const onGetReportEvents = () => dispatch(getReportEvents());
+  const [delayChartRender, setDelayChartRender] = useState("none");
+  const widgetPageLoaded = useSelector((state) => {
+    return state.widgetReducer.widgetPageLoaded;
+  });
+  const stations = useSelector((state) => state.stationsReducer.stations);
+  const devices = useSelector((state) => state.devicesReducer.devices);
+  const reportEvents =
+    useSelector((state) => {
+      return state.reportEventsReducer.reportEvents;
+    }) || {};
+  const dashboards =
+    useSelector((state) => {
+      return state.dashboardsReducer.dashboards;
+    }) || {};
 
-    const [delayChartRender, setDelayChartRender] = useState('none')
-    const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
-    const stations = useSelector(state => state.stationsReducer.stations)
-    const devices = useSelector(state => state.devicesReducer.devices)
-    const reportEvents = useSelector(state => { return state.reportEventsReducer.reportEvents }) || {}
-    const dashboards = useSelector(state => { return state.dashboardsReducer.dashboards }) || {}
+  const [throughputData, setThroughputData] = useState(null);
+  const [reportData, setReportData] = useState(null);
 
-    const [throughputData, setThroughputData] = useState(null)
-    const [reportData, setReportData] = useState(null)
+  const [timeSpan, setTimeSpan] = useState("day");
+  const [dateIndex, setDateIndex] = useState(0);
+  const [format, setFormat] = useState("%m-%d %H:%M");
+  const [selector, setSelector] = useState("throughPut");
+  const [slice, setSlice] = useState(null);
+  const [defaultTicks, setDefaultTicks] = useState([]);
+  const [isThroughputLoading, setIsThroughputLoading] = useState(false);
+  const [isReportsLoading, setIsReportsLoading] = useState(false);
 
-    const [timeSpan, setTimeSpan] = useState('day')
-    const [dateIndex, setDateIndex] = useState(0)
-    const [format, setFormat] = useState('%m-%d %H:%M')
-    const [selector, setSelector] = useState('throughPut')
-    const [slice, setSlice] = useState(null)
-    const [defaultTicks, setDefaultTicks] = useState([])
-    const [isThroughputLoading, setIsThroughputLoading] = useState(false)
-    const [isReportsLoading, setIsReportsLoading] = useState(false)
+  const [isDevice, setIsDevice] = useState(false);
+  const [locationName, setLocationName] = useState("");
+  const [reportButtons, setReportButtons] = useState([]);
 
-    const [isDevice, setIsDevice] = useState(false)
-    const [locationName, setLocationName] = useState("")
-    const [reportButtons, setReportButtons] = useState([])
+  // update location properties
+  useEffect(() => {
+    const location = stations[stationID];
+    setLocationName(location.name);
 
-    // update location properties
-    useEffect(() => {
+    // get report buttons
+    const dashboardId =
+      location.dashboards &&
+      Array.isArray(location.dashboards) &&
+      location.dashboards[0];
+    const dashboard = dashboards[dashboardId] ? dashboards[dashboardId] : {};
+    const currReportButtons = dashboard.report_buttons
+      ? dashboard.report_buttons
+      : [];
 
-        const location = stations[stationID]
-        setLocationName(location.name)
+    // store as object of ids to prevent excessive looping
+    setReportButtons(convertArrayToObject(currReportButtons, "_id"));
+  }, [stationID, dashboards, stations]);
 
-        // get report buttons
-        const dashboardId = location.dashboards && Array.isArray(location.dashboards) && location.dashboards[0]
-        const dashboard = dashboards[dashboardId] ? dashboards[dashboardId] : {}
-        const currReportButtons = dashboard.report_buttons ? dashboard.report_buttons : []
+  const colors = {
+    taktTime: "#42e395",
+    pYield: "#59dbff",
+    throughPut: "#d177ed",
+  };
 
-        // store as object of ids to prevent excessive looping
-        setReportButtons(convertArrayToObject(currReportButtons, "_id"))
+  // On page load, load in the data for today
+  useEffect(() => {
+    onGetReportEvents(); // load report events
 
-    }, [stationID, dashboards, stations])
-
-
-    const colors = {
-        taktTime: '#42e395',
-        pYield: '#59dbff',
-        throughPut: '#d177ed'
-    }
-
-    // On page load, load in the data for today
-    useEffect(() => {
-        onGetReportEvents() // load report events
-
-
-        if (stations[params.stationID].device_id !== undefined) {
-            setIsDevice(true)
-        }
-
-        // TEMP
-        // If the page has been loaded in (see widget pages) then don't delay chart load, 
-        // else delay chart load because it slows down the widget page opening animation.
-        if (widgetPageLoaded) {
-            setDelayChartRender('flex')
-        } else {
-            setTimeout(() => {
-                setDelayChartRender('flex')
-            }, 300);
-        }
-
-        // TEMP
-        const body = { timespan: timeSpan, index: dateIndex }
-        const dataPromise = getStationAnalytics(stationID, body)
-        dataPromise.then(response => {
-            if (response === undefined) return
-            setThroughputData(response)
-
-        })
-
-        getReportData(body)
-    }, [])
-
-    const getReportData = async (body) => {
-        const reportAnalyticsResponse = await getReportAnalytics(stationID, body)
-
-        if(reportAnalyticsResponse && !(reportAnalyticsResponse instanceof Error)) {
-            setReportData(reportAnalyticsResponse)
-            setIsReportsLoading(false)
-        }
-    }
-
-    const handleDeviceStatistics = () => {
-
-        const device = devices[stations[params.stationID].device_id]
-        if (device === undefined) return
-        return (
-
-            <>
-                {/* <p>{Object.keys(device.real_data)}</p> */}
-                <styled.StatLabel>{device.real_data}</styled.StatLabel>
-            </>
-        )
+    if (stations[params.stationID].device_id !== undefined) {
+      setIsDevice(true);
     }
 
     // TEMP
-    // useEffect(() => {
-    //     if (data !== null) {
-    //         const N = Math.round(Math.max(data[selector].length, 80) / 6)
-    //         const ticks = everyN(data[selector], N).map(datapoint => datapoint.x)
-    //         setDefaultTicks(ticks)
-    //     }
-    // }, [data])
-
-    const findSlice = e => {
-        // console.log(e.clientX, plotRef.getBoundingClientRect())
+    // If the page has been loaded in (see widget pages) then don't delay chart load,
+    // else delay chart load because it slows down the widget page opening animation.
+    if (widgetPageLoaded) {
+      setDelayChartRender("flex");
+    } else {
+      setTimeout(() => {
+        setDelayChartRender("flex");
+      }, 300);
     }
 
-    const everyN = (array, N) => {
-        return array.filter(function (value, index) {
-            return index % N == 0 || index == array.length - 1;
-        });
+    // TEMP
+    const body = { timespan: timeSpan, index: dateIndex };
+    const dataPromise = getStationAnalytics(stationID, body);
+    dataPromise.then((response) => {
+      if (response === undefined) return;
+      setThroughputData(response);
+    });
+
+    getReportData(body);
+  }, []);
+
+  const getReportData = async (body) => {
+    const reportAnalyticsResponse = await getReportAnalytics(stationID, body);
+
+    if (
+      reportAnalyticsResponse &&
+      !(reportAnalyticsResponse instanceof Error)
+    ) {
+      setReportData(reportAnalyticsResponse);
+      setIsReportsLoading(false);
+    }
+  };
+
+  const handleDeviceStatistics = () => {
+    const device = devices[stations[params.stationID].device_id];
+    if (device === undefined) return;
+    return (
+      <>
+        {/* <p>{Object.keys(device.real_data)}</p> */}
+        <styled.StatLabel>{device.real_data}</styled.StatLabel>
+      </>
+    );
+  };
+
+  // TEMP
+  // useEffect(() => {
+  //     if (data !== null) {
+  //         const N = Math.round(Math.max(data[selector].length, 80) / 6)
+  //         const ticks = everyN(data[selector], N).map(datapoint => datapoint.x)
+  //         setDefaultTicks(ticks)
+  //     }
+  // }, [data])
+
+  const findSlice = (e) => {
+    // console.log(e.clientX, plotRef.getBoundingClientRect())
+  };
+
+  const everyN = (array, N) => {
+    return array.filter(function (value, index) {
+      return index % N == 0 || index == array.length - 1;
+    });
+  };
+
+  const pickN = (array, N) => {
+    const linspace = Math.round(array.length / N);
+    return everyN(array, linspace);
+  };
+
+  const ToolTipCallback = (props) => {
+    setSlice(props.slice.points[0].data);
+    return null;
+  };
+
+  /**
+   * Gets the new data based on the selected time span and dateIndex
+   *
+   * TimeSpan:
+   * Can be either Day, Week, Month or Year
+   *
+   * DateIndex:
+   * The current date (today) index is 0, if you want to go back to the past date, the index would be 1
+   *
+   * @param {*} newTimeSpan
+   * @param {*} newDateIndex
+   */
+  const handleTimeSpan = async (newTimeSpan, newDateIndex) => {
+    setTimeSpan(newTimeSpan);
+    setDateIndex(newDateIndex);
+
+    setIsThroughputLoading(true);
+    setIsReportsLoading(true);
+
+    const body = { timespan: newTimeSpan, index: newDateIndex };
+    const dataPromise = getStationAnalytics(stationID, body);
+    const reportAnalyticsResponse = await getReportAnalytics(stationID, body);
+
+    if (
+      reportAnalyticsResponse &&
+      !(reportAnalyticsResponse instanceof Error)
+    ) {
+      setReportData(reportAnalyticsResponse);
+      setIsReportsLoading(false);
     }
 
-    const pickN = (array, N) => {
-        const linspace = Math.round(array.length / N)
-        return everyN(array, linspace)
+    dataPromise.then((response) => {
+      if (response === undefined) return setIsThroughputLoading(false);
+
+      setThroughputData(response);
+      setIsThroughputLoading(false);
+    });
+
+    // Usses a regex to take all characters before a '['
+    // switch (timeSpan(/^(.*?)(?=\[|$)/)) {
+    switch (newTimeSpan) {
+      case "live":
+        setFormat("%I:%M:%S %p");
+        setTimeSpan("live");
+        break;
+      case "day":
+        setFormat("%I:%M %p");
+        setTimeSpan("day");
+        break;
+      case "week":
+        setFormat("%m-%d %I:%M %p");
+        setTimeSpan("week");
+        break;
+      case "month":
+        setFormat("%m-%d");
+        setTimeSpan("month");
+        break;
+      case "year":
+        setFormat("%Y-%m-%d");
+        setTimeSpan("year");
+        break;
+      case "all":
+        setFormat("%Y-%m-%d");
+        setTimeSpan("all");
+        break;
     }
+  };
 
-    const ToolTipCallback = (props) => {
-        setSlice(props.slice.points[0].data)
-        return null
-    }
+  const renderHeader = () => {
+    return (
+      <div
+        style={{
+          marginBottom: "1rem",
+          alignItems: "center",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {
+          <>
+            <TimeSpans
+              color={colors[selector]}
+              setTimeSpan={(timeSpan) => handleTimeSpan(timeSpan, 0)}
+              timeSpan={timeSpan}
+            ></TimeSpans>
 
-    /**
-     * Gets the new data based on the selected time span and dateIndex
-     * 
-     * TimeSpan:
-     * Can be either Day, Week, Month or Year
-     * 
-     * DateIndex:
-     * The current date (today) index is 0, if you want to go back to the past date, the index would be 1 
-     * 
-     * @param {*} newTimeSpan 
-     * @param {*} newDateIndex 
-     */
-    const handleTimeSpan = async (newTimeSpan, newDateIndex) => {
-
-        setTimeSpan(newTimeSpan)
-        setDateIndex(newDateIndex)
-
-        setIsThroughputLoading(true)
-        setIsReportsLoading(true)
-
-        const body = { timespan: newTimeSpan, index: newDateIndex }
-        const dataPromise = getStationAnalytics(stationID, body)
-        const reportAnalyticsResponse = await getReportAnalytics(stationID, body)
-
-        if(reportAnalyticsResponse && !(reportAnalyticsResponse instanceof Error)) {
-            setReportData(reportAnalyticsResponse)
-            setIsReportsLoading(false)
+            {/* Commented out for now, only need through put bar chart */}
+            {/* {handleGaugeCharts()} */}
+          </>
         }
+        {renderDateSelector()}
+      </div>
+    );
+  };
 
-        dataPromise.then(response => {
+  const renderReportChart = () => {
+    // get array of report buttons for current station
+    const reportButtonsArr = Object.values(reportButtons);
 
-            if (response === undefined) return setIsThroughputLoading(false)
+    // get just the names of the buttons as an array
+    const reportButtonNames =
+      reportButtonsArr && Array.isArray(reportButtonsArr)
+        ? reportButtonsArr.map((currButton) => currButton.label)
+        : [];
 
-            setThroughputData(response)
-            setIsThroughputLoading(false)
-        })
+    // data comes from back end with the key of the button as the key and the value as the count, but we want the name of the button
+    // therefore, must map through each item and replace the button's id with its name
+    const filteredData =
+      reportData && reportData.reports && Array.isArray(reportData.reports)
+        ? reportData.reports.map((currReport) => {
+            const {
+              lable, // extract label
+              ...currReportEntries // this contains the button keys followed by their count as the value
+            } = currReport;
 
-        // Usses a regex to take all characters before a '['
-        // switch (timeSpan(/^(.*?)(?=\[|$)/)) {
-        switch (newTimeSpan) {
-            case 'live':
-                setFormat('%I:%M:%S %p')
-                setTimeSpan('live')
-                break
-            case 'day':
-                setFormat('%I:%M %p')
-                setTimeSpan('day')
-                break
-            case 'week':
-                setFormat('%m-%d %I:%M %p')
-                setTimeSpan('week')
-                break
-            case 'month':
-                setFormat('%m-%d')
-                setTimeSpan('month')
-                break
-            case 'year':
-                setFormat('%Y-%m-%d')
-                setTimeSpan('year')
-                break
-            case 'all':
-                setFormat('%Y-%m-%d')
-                setTimeSpan('all')
-                break
-        }
-    }
+            // create object for storing new key value paies (buttonName: count)
+            var updatedReport = {
+              lable,
+            };
 
-    const renderHeader = () => {
-        return (
-            <div style={{ marginBottom: '1rem', alignItems: "center", display: "flex", flexDirection: "column" }}>
-                {
-                    <>
-                        <TimeSpans color={colors[selector]} setTimeSpan={(timeSpan) => handleTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
+            const currReportButtonIds = Object.keys(currReportEntries);
 
-                        {/* Commented out for now, only need through put bar chart */}
-                        {/* {handleGaugeCharts()} */}
-                    </>
-                }
-                {renderDateSelector()}
-            </div>
-        )
-    }
+            currReportButtonIds.forEach((currButtonId) => {
+              // if there is a button with the corresponding id
+              if (reportButtons[currButtonId]) {
+                // get the label from the actual button, and get the count from the entry, then add it to the updated report
+                updatedReport[
+                  reportButtons[currButtonId].label
+                ] = currReportEntries[currButtonId]
+                  ? currReportEntries[currButtonId]
+                  : 0;
+              }
+            });
 
-    const renderReportChart = () => {
-        // get array of report buttons for current station
-        const reportButtonsArr = Object.values(reportButtons)
+            return updatedReport;
+          })
+        : [];
 
-        // get just the names of the buttons as an array
-        const reportButtonNames = (reportButtonsArr && Array.isArray(reportButtonsArr)) ? reportButtonsArr.map((currButton) => currButton.label) : []
-
-        // data comes from back end with the key of the button as the key and the value as the count, but we want the name of the button
-        // therefore, must map through each item and replace the button's id with its name
-        const filteredData = (reportData && reportData.reports && Array.isArray(reportData.reports))  ?
-            reportData.reports.map((currReport) => {
-
-                const {
-                    lable, // extract label
-                    ...currReportEntries // this contains the button keys followed by their count as the value
-                } = currReport
-
-                // create object for storing new key value paies (buttonName: count)
-                var updatedReport = {
-                    lable
-                }
-
-                const currReportButtonIds = Object.keys(currReportEntries)
-
-                currReportButtonIds.forEach((currButtonId) => {
-
-                    // if there is a button with the corresponding id
-                    if(reportButtons[currButtonId]) {
-                        // get the label from the actual button, and get the count from the entry, then add it to the updated report
-                        updatedReport[reportButtons[currButtonId].label] =  currReportEntries[currButtonId] ? currReportEntries[currButtonId] : 0
-                    }
-                })
-
-                return updatedReport
-            })
-            :
-            []
-
-        // set min height based on number of entries so chart won't squeeze rows too close together
-        const minHeight = (filteredData && Array.isArray(filteredData)) ?  filteredData.length * 2 : 0
-
-        return (
-            <styled.SinglePlotContainer
-                minHeight={minHeight}
-            >
-                <styled.PlotHeader>
-                    <styled.PlotTitle>Reports</styled.PlotTitle>
-                </styled.PlotHeader>
-
-                {isThroughputLoading ?
-                    <styled.PlotContainer>
-                        <styled.LoadingIcon className="fas fa-circle-notch fa-spin" style={{ fontSize: '3rem', marginTop: '5rem' }} />
-                    </styled.PlotContainer>
-                    :
-                    <styled.PlotContainer
-                        minHeight={minHeight}
-                    >
-                        <BarChart
-                            data={filteredData ? filteredData : []}
-                            keys={reportButtonNames}
-                            indexBy={'lable'}
-                            colorBy={"id"}
-                            mainTheme={themeContext}
-                            timeSpan={timeSpan}
-                            layout={true ? "horizontal" : "vertical"}
-                            enableGridX={true ? true : false}
-                            enableGridY={!true ? true : false}
-                            axisBottom={{
-                                legend: 'Count',
-                            }}
-                            axisLeft={{
-                                legend: 'Time'
-                            }}
-                        />
-
-                        {!throughputData &&
-                        <styled.NoDataText>No Data</styled.NoDataText>
-                        }
-                    </styled.PlotContainer>
-                }
-
-            </styled.SinglePlotContainer>
-        )
-    }
-
-    const renderThroughputChart = () => {
-
-        const filteredData = throughputData?.throughPut
-
-        const minHeight = 0
-
-        const isData = (filteredData && Array.isArray(filteredData) && filteredData.length > 0)
-
-        return (
-            <styled.SinglePlotContainer
-                minHeight={minHeight}
-            >
-                <styled.PlotHeader>
-                    <styled.PlotTitle>Throughput</styled.PlotTitle>
-                </styled.PlotHeader>
-
-                {isThroughputLoading ?
-                    <styled.PlotContainer>
-                        <styled.LoadingIcon className="fas fa-circle-notch fa-spin" style={{ fontSize: '3rem', marginTop: '5rem' }} />
-                    </styled.PlotContainer>
-                    :
-
-                    <styled.PlotContainer
-                        minHeight={minHeight}
-                    >
-                        <BarChart
-                            data={filteredData ? filteredData : []}
-                            enableGridY={isData ? true : false}
-                            mainTheme={themeContext}
-                            timeSpan={timeSpan}
-                            axisBottom={{
-                                tickRotation: -90,
-                            }}
-                            axisLeft={{
-                                enable: true,
-                            }}
-                        />
-
-                        {!throughputData &&
-                            <styled.NoDataText>No Data</styled.NoDataText>
-                        }
-                    </styled.PlotContainer>
-                }
-
-            </styled.SinglePlotContainer>
-        )
-    }
-
-    // Handles the date selector at the top of the charts
-    const renderDateSelector = () => {
-
-        if (throughputData === null) return null
-
-        const throughPut = throughputData.throughPut
-
-        let dateSelectorTitle = ''
-        let date
-        const today = new Date()
-
-        switch (timeSpan) {
-            case 'day':
-                // date = getDateFromString(Object.values(throughPut)[0].x)
-                dateSelectorTitle = today.toDateString()
-                break;
-
-            case 'week':
-                const firstDate = getDateFromString(Object.values(throughPut)[0].x)
-                const lastDate = getDateFromString(Object.values(throughPut)[Object.values(throughPut).length - 1].x)
-                dateSelectorTitle = `${firstDate.toDateString()} - ${lastDate.toDateString()}`
-                break;
-
-            case 'month':
-                date = getDateFromString(Object.values(throughPut)[0].x)
-                const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                dateSelectorTitle = `${months[date.getMonth()]} ${date.getFullYear()}`
-                break;
-
-            case 'year':
-                date = getDateFromString(Object.values(throughPut)[0].x)
-                dateSelectorTitle = `${date.getFullYear()}`
-                break;
-
-            default:
-                break;
-        }
-
-
-        return (
-            <styled.RowContainer>
-                <styled.DateSelectorIcon
-                    className='fas fa-chevron-left'
-                    onClick={() => {
-                        const index = dateIndex + 1
-                        handleTimeSpan(timeSpan, index)
-                    }}
-                />
-                {isThroughputLoading ?
-                    <styled.LoadingIcon className="fas fa-circle-notch fa-spin" />
-                    :
-                    <styled.DateSelectorTitle>{throughputData.date_title}</styled.DateSelectorTitle>
-
-                }
-
-                {/* If the current dateIndex is 0, then have a blank icon that does nothing. Can't go to the future now can we dummy */}
-                {dateIndex !== 0 ?
-                    <styled.DateSelectorIcon
-                        className='fas fa-chevron-right'
-                        onClick={() => {
-                            const index = dateIndex - 1
-                            handleTimeSpan(timeSpan, index)
-                        }}
-                    />
-                    :
-                    <styled.DateSelectorIcon />
-
-                }
-            </styled.RowContainer>
-        )
-
-    }
-
-    const handleGaugeCharts = () => {
-        return (
-            <styled.StatsSection>
-                <ApexGaugeChart max={Math.min(...throughputData.taktTime.map(point => point.y))} min={Math.max(...throughputData.taktTime.map(point => point.y))} value={throughputData.taktTime[throughputData.taktTime.length - 1].y}
-                    formatValue={() => {
-                        // const val = data.taktTime[data.taktTime.length - 1].y
-                        // return String(Math.floor(val)) + ':' + String(Math.round((val % 1) * 60))
-                        return '1:23'
-                    }}
-                    name='Takt Time' color={colors.taktTime} onClick={() => setSelector('taktTime')} selected={selector == 'taktTime'} />
-                <ApexGaugeChart min={Math.min(...throughputData.pYield.map(point => point.y))} max={Math.max(...throughputData.pYield.map(point => point.y))} value={throughputData.pYield[throughputData.pYield.length - 1].y}
-                    formatValue={() =>
-                        Math.round(10 * throughputData.pYield[throughputData.pYield.length - 1].y) / 10
-                    }
-                    name='Quality' color={colors.pYield} onClick={() => setSelector('pYield')} selected={selector == 'pYield'} />
-                <ApexGaugeChart min={Math.min(...throughputData.throughPut.map(point => point.y))} max={Math.max(...throughputData.throughPut.map(point => point.y))} value={throughputData.throughPut[throughputData.throughPut.length - 1].y}
-                    formatValue={() =>
-                        throughputData.throughPut[throughputData.throughPut.length - 1].y
-                    }
-                    name='Throughput' color={colors.throughPut} onClick={() => setSelector('throughPut')} selected={selector == 'throughPut'} />
-            </styled.StatsSection>
-        )
-    }
-
-
+    // set min height based on number of entries so chart won't squeeze rows too close together
+    const minHeight =
+      filteredData && Array.isArray(filteredData) ? filteredData.length * 2 : 0;
 
     return (
+      <styled.SinglePlotContainer minHeight={minHeight}>
+        <styled.PlotHeader>
+          <styled.PlotTitle>Reports</styled.PlotTitle>
+        </styled.PlotHeader>
 
-        <styled.OverviewContainer>
-            <styled.Header>
-                <styled.StationName>{locationName}</styled.StationName>
-            </styled.Header>
+        {isThroughputLoading ? (
+          <styled.PlotContainer>
+            <styled.LoadingIcon
+              className="fas fa-circle-notch fa-spin"
+              style={{ fontSize: "3rem", marginTop: "5rem" }}
+            />
+          </styled.PlotContainer>
+        ) : (
+          <styled.PlotContainer minHeight={minHeight}>
+            <BarChart
+              data={filteredData ? filteredData : []}
+              keys={reportButtonNames}
+              indexBy={"lable"}
+              colorBy={"id"}
+              mainTheme={themeContext}
+              timeSpan={timeSpan}
+              layout={true ? "horizontal" : "vertical"}
+              enableGridX={true ? true : false}
+              enableGridY={!true ? true : false}
+              axisBottom={{
+                legend: "Count",
+              }}
+              axisLeft={{
+                legend: "Time",
+              }}
+            />
 
-            {/* {isDevice &&
+            {!throughputData && <styled.NoDataText>No Data</styled.NoDataText>}
+          </styled.PlotContainer>
+        )}
+      </styled.SinglePlotContainer>
+    );
+  };
+
+  const renderThroughputChart = () => {
+    const filteredData = throughputData?.throughPut;
+
+    const minHeight = 0;
+
+    const isData =
+      filteredData && Array.isArray(filteredData) && filteredData.length > 0;
+
+    return (
+      <styled.SinglePlotContainer minHeight={minHeight}>
+        <styled.PlotHeader>
+          <styled.PlotTitle>Throughput</styled.PlotTitle>
+        </styled.PlotHeader>
+
+        {isThroughputLoading ? (
+          <styled.PlotContainer>
+            <styled.LoadingIcon
+              className="fas fa-circle-notch fa-spin"
+              style={{ fontSize: "3rem", marginTop: "5rem" }}
+            />
+          </styled.PlotContainer>
+        ) : (
+          <styled.PlotContainer minHeight={minHeight}>
+            <BarChart
+              data={filteredData ? filteredData : []}
+              enableGridY={isData ? true : false}
+              mainTheme={themeContext}
+              timeSpan={timeSpan}
+              axisBottom={{
+                tickRotation: -90,
+              }}
+              axisLeft={{
+                enable: true,
+              }}
+            />
+
+            {!throughputData && <styled.NoDataText>No Data</styled.NoDataText>}
+          </styled.PlotContainer>
+        )}
+      </styled.SinglePlotContainer>
+    );
+  };
+
+  // Handles the date selector at the top of the charts
+  const renderDateSelector = () => {
+    if (throughputData === null) return null;
+
+    const throughPut = throughputData.throughPut;
+
+    let dateSelectorTitle = "";
+    let date;
+    const today = new Date();
+
+    switch (timeSpan) {
+      case "day":
+        // date = getDateFromString(Object.values(throughPut)[0].x)
+        dateSelectorTitle = today.toDateString();
+        break;
+
+      case "week":
+        const firstDate = getDateFromString(Object.values(throughPut)[0].x);
+        const lastDate = getDateFromString(
+          Object.values(throughPut)[Object.values(throughPut).length - 1].x
+        );
+        dateSelectorTitle = `${firstDate.toDateString()} - ${lastDate.toDateString()}`;
+        break;
+
+      case "month":
+        date = getDateFromString(Object.values(throughPut)[0].x);
+        const months = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
+        dateSelectorTitle = `${months[date.getMonth()]} ${date.getFullYear()}`;
+        break;
+
+      case "year":
+        date = getDateFromString(Object.values(throughPut)[0].x);
+        dateSelectorTitle = `${date.getFullYear()}`;
+        break;
+
+      default:
+        break;
+    }
+
+    return (
+      <styled.RowContainer>
+        <styled.DateSelectorIcon
+          className="fas fa-chevron-left"
+          onClick={() => {
+            const index = dateIndex + 1;
+            handleTimeSpan(timeSpan, index);
+          }}
+        />
+        {isThroughputLoading ? (
+          <styled.LoadingIcon className="fas fa-circle-notch fa-spin" />
+        ) : (
+          <styled.DateSelectorTitle>
+            {throughputData.date_title}
+          </styled.DateSelectorTitle>
+        )}
+
+        {/* If the current dateIndex is 0, then have a blank icon that does nothing. Can't go to the future now can we dummy */}
+        {dateIndex !== 0 ? (
+          <styled.DateSelectorIcon
+            className="fas fa-chevron-right"
+            onClick={() => {
+              const index = dateIndex - 1;
+              handleTimeSpan(timeSpan, index);
+            }}
+          />
+        ) : (
+          <styled.DateSelectorIcon />
+        )}
+      </styled.RowContainer>
+    );
+  };
+
+  const handleGaugeCharts = () => {
+    return (
+      <styled.StatsSection>
+        <ApexGaugeChart
+          max={Math.min(...throughputData.taktTime.map((point) => point.y))}
+          min={Math.max(...throughputData.taktTime.map((point) => point.y))}
+          value={throughputData.taktTime[throughputData.taktTime.length - 1].y}
+          formatValue={() => {
+            // const val = data.taktTime[data.taktTime.length - 1].y
+            // return String(Math.floor(val)) + ':' + String(Math.round((val % 1) * 60))
+            return "1:23";
+          }}
+          name="Takt Time"
+          color={colors.taktTime}
+          onClick={() => setSelector("taktTime")}
+          selected={selector == "taktTime"}
+        />
+        <ApexGaugeChart
+          min={Math.min(...throughputData.pYield.map((point) => point.y))}
+          max={Math.max(...throughputData.pYield.map((point) => point.y))}
+          value={throughputData.pYield[throughputData.pYield.length - 1].y}
+          formatValue={() =>
+            Math.round(
+              10 * throughputData.pYield[throughputData.pYield.length - 1].y
+            ) / 10
+          }
+          name="Quality"
+          color={colors.pYield}
+          onClick={() => setSelector("pYield")}
+          selected={selector == "pYield"}
+        />
+        <ApexGaugeChart
+          min={Math.min(...throughputData.throughPut.map((point) => point.y))}
+          max={Math.max(...throughputData.throughPut.map((point) => point.y))}
+          value={
+            throughputData.throughPut[throughputData.throughPut.length - 1].y
+          }
+          formatValue={() =>
+            throughputData.throughPut[throughputData.throughPut.length - 1].y
+          }
+          name="Throughput"
+          color={colors.throughPut}
+          onClick={() => setSelector("throughPut")}
+          selected={selector == "throughPut"}
+        />
+      </styled.StatsSection>
+    );
+  };
+
+  return (
+    <styled.OverviewContainer>
+      <styled.Header>
+        <styled.StationName>{locationName}</styled.StationName>
+      </styled.Header>
+
+      {/* {isDevice &&
                 handleDeviceStatistics()
             } */}
 
+      {/* Commented out for now, only need through put bar chart */}
+      {/* <DataSelector selector={selector} setSelector={setSelector} /> */}
 
-            {/* Commented out for now, only need through put bar chart */}
-            {/* <DataSelector selector={selector} setSelector={setSelector} /> */}
+      <styled.PlotsContainer
+        ref={(pc) => (plotRef = pc)}
+        // onMouseMove={findSlice}
+        onMouseLeave={() => {
+          setSlice(null);
+        }}
+      >
+        {renderHeader()}
+        {renderThroughputChart()}
+        {renderReportChart()}
+      </styled.PlotsContainer>
+    </styled.OverviewContainer>
+  );
+};
 
-            <styled.PlotsContainer
-                ref={pc => plotRef = pc}
-                // onMouseMove={findSlice}
-                onMouseLeave={() => { setSlice(null) }}
-            >
-                {renderHeader()}
-                {renderThroughputChart()}
-                {renderReportChart()}
-            </styled.PlotsContainer>
-
-        </styled.OverviewContainer>
-    )
-}
-
-export default StatisticsOverview
+export default StatisticsOverview;

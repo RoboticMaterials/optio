@@ -1,26 +1,25 @@
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from "react-redux";
 
 import {
-    SELECT_LOCATION,
-    SET_SELECTED_LOCATION,
-    SET_SELECTED_LOCATION_COPY,
-    SET_SELECTED_LOCATION_CHILDREN_COPY,
-    DESELECT_LOCATION,
-    EDITING_LOCATION,
-} from '../types/locations_types'
+  SELECT_LOCATION,
+  SET_SELECTED_LOCATION,
+  SET_SELECTED_LOCATION_COPY,
+  SET_SELECTED_LOCATION_CHILDREN_COPY,
+  DESELECT_LOCATION,
+  EDITING_LOCATION,
+} from "../types/locations_types";
 
-import * as stationActions from './stations_actions.js'
-import { deleteStation } from './stations_actions.js'
-import * as positionActions from './positions_actions.js'
-import { deletePosition } from './positions_actions.js'
-import { setSelectedDevice, putDevices } from './devices_actions'
-import { deleteDashboard } from './dashboards_actions'
-import { deleteTask } from './tasks_actions'
-import { putProcesses } from './processes_actions'
+import * as stationActions from "./stations_actions.js";
+import { deleteStation } from "./stations_actions.js";
+import * as positionActions from "./positions_actions.js";
+import { deletePosition } from "./positions_actions.js";
+import { setSelectedDevice, putDevices } from "./devices_actions";
+import { deleteDashboard } from "./dashboards_actions";
+import { deleteTask } from "./tasks_actions";
+import { putProcesses } from "./processes_actions";
 
-import { deepCopy } from '../../methods/utils/utils';
-import uuid from 'uuid';
-
+import { deepCopy } from "../../methods/utils/utils";
+import uuid from "uuid";
 
 // // get
 // // ******************************
@@ -94,14 +93,11 @@ import uuid from 'uuid';
 // export const updateChildren = (location) => {
 //     return async dispatch => {
 
-
-
 //         dispatch(stationActions.updateStation(location))
 //         dispatch(positionActions.updatePosition(location))
 
 //     }
 // }
-
 
 // export const updateLocations = (locations) => {
 //     return async dispatch => {
@@ -167,18 +163,15 @@ import uuid from 'uuid';
 //     return { type: SET_SELECTED_LOCATION_CHILDREN_COPY, payload: locationChildren }
 // }
 
-
 export const editing = (bool) => {
-    return { type: EDITING_LOCATION, payload: bool }
-}
-
+  return { type: EDITING_LOCATION, payload: bool };
+};
 
 // ======================================== //
 //                                          //
 //  Back, Delete, Save Location Functions   //
 //                                          //
 // ======================================== //
-
 
 /**
  * This handles when the back button is pressed on either devices or locations
@@ -187,18 +180,10 @@ export const editing = (bool) => {
  * @param {*} props
  */
 
-export const sideBarBack = (props) => {
-    
-}
-
-
-
-
+export const sideBarBack = (props) => {};
 
 /**
-* Called when the delete button is pressed. Deletes the location, its children, its dashboards,
-* and any tasks associated with the location
-*/
-export const deleteLocationProcess = (props) => {
-
-}
+ * Called when the delete button is pressed. Deletes the location, its children, its dashboards,
+ * and any tasks associated with the location
+ */
+export const deleteLocationProcess = (props) => {};

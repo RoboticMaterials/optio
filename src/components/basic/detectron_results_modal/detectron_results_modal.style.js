@@ -1,6 +1,6 @@
-import styled from 'styled-components'
-import Modal from 'react-modal';
-import {css} from 'styled-components'
+import styled from "styled-components";
+import Modal from "react-modal";
+import { css } from "styled-components";
 
 const sharedButtonStyle = css`
   outline: none !important;
@@ -12,7 +12,7 @@ const sharedButtonStyle = css`
   -webkit-transition-duration: 0.4s; /* Safari */
   transition-duration: 0.4s;
   cursor: pointer;
-`
+`;
 
 export const Container = styled(Modal)`
   outline: none !important;
@@ -25,10 +25,10 @@ export const Container = styled(Modal)`
 
   position: absolute;
 
-  background: ${props => props.theme.bg.primary};
+  background: ${(props) => props.theme.bg.primary};
   border-width: thin;
-  border-radius: .5em;
-  border-color: ${props => props.theme.bg.quarternary};
+  border-radius: 0.5em;
+  border-color: ${(props) => props.theme.bg.quarternary};
   border-style: solid;
   padding: 2rem;
   z-index: 20;
@@ -47,8 +47,8 @@ export const HeaderContainer = styled.div`
 
 export const Title = styled.h2`
   text-align: center;
-  font-size: ${props =>  props.theme.fontSize.sz3};
-  font-family: ${props =>  props.theme.font.primary};
+  font-size: ${(props) => props.theme.fontSize.sz3};
+  font-family: ${(props) => props.theme.font.primary};
   font-weight: bold;
 `;
 
@@ -61,40 +61,39 @@ export const TextContainer = styled.div`
 
 export const TextMain = styled.h4`
   text-align: center;
-  font-size: ${props =>  props.theme.fontSize.sz3};
-  font-family: ${props =>  props.theme.font.primary};
+  font-size: ${(props) => props.theme.fontSize.sz3};
+  font-family: ${(props) => props.theme.font.primary};
   font-weight: 500;
 `;
 
 export const Caption = styled.h5`
   text-align: center;
-  font-size: ${props =>  props.theme.fontSize.sz4};
-  font-family: ${props =>  props.theme.font.primary};
+  font-size: ${(props) => props.theme.fontSize.sz4};
+  font-family: ${(props) => props.theme.font.primary};
   font-weight: 400;
   font-style: italic;
 `;
 
 export const ButtonContainer = styled.div`
-
   display: flex;
   flex-direction: row;
   justify-content: center;
 `;
 
 export const Icon = styled.i`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: auto auto;
-    color: green;
-    fill: green;
-    font-size: 7rem;
-    width: 14rem;
-    &:hover {
-        cursor: pointer;
-    }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto auto;
+  color: green;
+  fill: green;
+  font-size: 7rem;
+  width: 14rem;
+  &:hover {
+    cursor: pointer;
+  }
 
-    &:active{
-        filter: brightness(85%)
-    }
-`
+  &:active {
+    filter: brightness(85%);
+  }
+`;

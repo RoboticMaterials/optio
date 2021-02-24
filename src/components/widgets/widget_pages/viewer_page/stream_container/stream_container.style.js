@@ -1,27 +1,24 @@
-import styled, { css } from 'styled-components';
-
+import styled, { css } from "styled-components";
 
 export const VideoContainer = styled.video`
-    z-index: 500;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-`
+  z-index: 500;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+`;
 
 export const PlayerWrapper = styled.div`
-z-index:500;
+  z-index: 500;
   position: relative;
   width: 100%;
   height: 100%;
   background: grey;
-   /* Player ratio: 100 / (1280 / 720) */
+  /* Player ratio: 100 / (1280 / 720) */
   //padding-top: 56.25%;
   //max-height: 20rem;
-
-
-`
+`;
 
 export const TextContainer = styled.div`
   position: absolute;
@@ -33,8 +30,7 @@ export const TextContainer = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-
-`
+`;
 
 export const loaderCss = css`
   z-index: 2000;
@@ -42,25 +38,18 @@ export const loaderCss = css`
   margin: 0 auto;
   //color: pink;
   //border-color: red;
-
-
-`
+`;
 
 const textStyle = css`
-
   //color: red;
-
-`
-
+`;
 
 export const ErrorText = styled.div`
   ${textStyle};
   color: red;
-
-`
+`;
 
 export const StatusText = styled.div`
   ${textStyle};
   color: white;
-
-`
+`;

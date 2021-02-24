@@ -1,10 +1,10 @@
-import { denormalize, schema } from 'normalizr';
-import { uuidv4 } from '../methods/utils/utils';
+import { denormalize, schema } from "normalizr";
+import { uuidv4 } from "../methods/utils/utils";
 
 // schema for single task
 export const taskSchema = new schema.Entity(
   // key
-  'tasks',
+  "tasks",
   // definition
   {
     //condition: conditionSchema
@@ -12,18 +12,15 @@ export const taskSchema = new schema.Entity(
   // options
   {
     idAttribute: (value, parent, key) => {
-      return value._id
+      return value._id;
     },
 
     // processStrategy
     processStrategy: (value, parent, key) => {
       return value;
-
     },
-
-  },
-
+  }
 );
 
 // schema for list of tasks
-export const tasksSchema = [taskSchema]
+export const tasksSchema = [taskSchema];

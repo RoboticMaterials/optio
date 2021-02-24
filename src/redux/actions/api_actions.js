@@ -7,20 +7,16 @@ import {
   SET_STATUS_API,
   SET_TASK_QUEUE_API,
   SET_TASKS_API,
-} from '../types/api_types';
+} from "../types/api_types";
 
-import {
-  SET
-} from "../types/prefixes"
+import { SET } from "../types/prefixes";
 
-import {
-  DATA_PAGE
-} from "../types/data_types"
+import { DATA_PAGE } from "../types/data_types";
 
 // set page
 // ******************************
 export const setDataPage = (page) => {
-  return async dispatch => {
+  return async (dispatch) => {
     dispatch({ type: SET + DATA_PAGE, payload: page });
   };
 };
@@ -28,7 +24,7 @@ export const setDataPage = (page) => {
 // setConditionsApi
 // ******************************
 export const setConditionsApi = (api) => {
-  return async dispatch => {
+  return async (dispatch) => {
     dispatch({ type: SET_CONDITIONS_API, payload: api });
   };
 };
@@ -37,7 +33,7 @@ export const setConditionsApi = (api) => {
 // setConditionsApi
 // ******************************
 export const setSchedulesApi = (api) => {
-  return async dispatch => {
+  return async (dispatch) => {
     dispatch({ type: SET_SCHEDULES_API, payload: api });
   };
 };
@@ -46,7 +42,7 @@ export const setSchedulesApi = (api) => {
 // setStatusApi
 // ******************************
 export const setStatusApi = (api) => {
-  return async dispatch => {
+  return async (dispatch) => {
     dispatch({ type: SET_STATUS_API, payload: api });
   };
 };
@@ -55,7 +51,7 @@ export const setStatusApi = (api) => {
 // setTaskQueueApi
 // ******************************
 export const setTaskQueueApi = (api) => {
-  return async dispatch => {
+  return async (dispatch) => {
     dispatch({ type: SET_TASK_QUEUE_API, payload: api });
   };
 };
@@ -64,11 +60,9 @@ export const setTaskQueueApi = (api) => {
 // setTasksApi
 // ******************************
 export const setTasksApi = (api) => {
-  return async dispatch => {
+  return async (dispatch) => {
     dispatch({ type: SET_TASKS_API, payload: api });
   };
 };
-
-
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

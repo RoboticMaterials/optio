@@ -1,5 +1,5 @@
 export const valueExistInSelected = (value, values, props) =>
-  !!values.find((val) => getByPath(val, props['valueField']) === value);
+  !!values.find((val) => getByPath(val, props["valueField"]) === value);
 
 export const hexToRGBA = (hex, alpha) => {
   const RR = parseInt(hex.slice(1, 3), 16);
@@ -28,14 +28,14 @@ export const isEqual = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 export const getByPath = (object, path) => {
   // console.log('getByPath: {object, path}', {object, path})
 
-  let new_path = path.split('.')
+  let new_path = path.split(".");
   // console.log('getByPath: new_path', {new_path})
 
   if (!path) {
     return;
   }
 
-  return path.split('.').reduce((acc, value) => acc[value], object)
+  return path.split(".").reduce((acc, value) => acc[value], object);
 };
 
 export const getProp = (object, path, defaultValue) => {
@@ -43,7 +43,9 @@ export const getProp = (object, path, defaultValue) => {
     return object;
   }
 
-  const normalizedPath = Array.isArray(path) ? path : path.split('.').filter((item) => item.length);
+  const normalizedPath = Array.isArray(path)
+    ? path
+    : path.split(".").filter((item) => item.length);
 
   if (!normalizedPath.length) {
     return object === undefined ? defaultValue : object;

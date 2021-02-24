@@ -1,7 +1,7 @@
 /* eslint jsx-a11y/no-noninteractive-element-to-interactive-role: 0 */
-import React, { Component } from 'react';
-import classNames from 'classnames';
-import raf from 'raf';
+import React, { Component } from "react";
+import classNames from "classnames";
+import raf from "raf";
 
 const scrollTo = (element, to, duration) => {
   // jump to target if duration zero
@@ -41,7 +41,7 @@ class Select extends Component {
     }
   }
 
-  onSelect = value => {
+  onSelect = (value) => {
     const { onSelect, type } = this.props;
     onSelect(type, value);
   };
@@ -58,7 +58,7 @@ class Select extends Component {
         : () => {
             this.onSelect(item.value);
           };
-      const onKeyDown = e => {
+      const onKeyDown = (e) => {
         if (e.keyCode === 13) onClick();
         else if (e.keyCode === 27) onEsc();
       };
@@ -78,7 +78,7 @@ class Select extends Component {
     });
   }
 
-  handleMouseEnter = e => {
+  handleMouseEnter = (e) => {
     const { onMouseEnter } = this.props;
     this.setState({ active: true });
     onMouseEnter(e);
@@ -88,11 +88,11 @@ class Select extends Component {
     this.setState({ active: false });
   };
 
-  saveRoot = node => {
+  saveRoot = (node) => {
     this.root = node;
   };
 
-  saveList = node => {
+  saveList = (node) => {
     this.list = node;
   };
 

@@ -1,10 +1,10 @@
-import { denormalize, schema } from 'normalizr';
-import { uuidv4 } from '../methods/utils/utils';
+import { denormalize, schema } from "normalizr";
+import { uuidv4 } from "../methods/utils/utils";
 
 // status schema
 export const statusSchema = new schema.Entity(
   // key
-  'status',
+  "status",
   // definition
   {
     //condition: conditionSchema
@@ -12,16 +12,15 @@ export const statusSchema = new schema.Entity(
   // options
   {
     idAttribute: (value, parent, key) => {
-      return value._id.$oid
+      return value._id.$oid;
     },
 
     // processStrategy
     processStrategy: (value, parent, key) => {
-      return value
-    }
-  },
-
+      return value;
+    },
+  }
 );
 
 // schema for list of status
-export const statusesSchema = [statusSchema]
+export const statusesSchema = [statusSchema];

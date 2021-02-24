@@ -1,16 +1,25 @@
-import React, { Component } from 'react';
-import moment from 'moment';
-import classNames from 'classnames';
-import Header from './Header';
-import Combobox from './Combobox';
+import React, { Component } from "react";
+import moment from "moment";
+import classNames from "classnames";
+import Header from "./Header";
+import Combobox from "./Combobox";
 
-import * as styled from './panel.style'
+import * as styled from "./panel.style";
 function noop() {}
 
-function generateOptions(length, disabledOptions, hideDisabledOptions, step = 1) {
+function generateOptions(
+  length,
+  disabledOptions,
+  hideDisabledOptions,
+  step = 1
+) {
   const arr = [];
   for (let value = 0; value < length; value += step) {
-    if (!disabledOptions || disabledOptions.indexOf(value) < 0 || !hideDisabledOptions) {
+    if (
+      !disabledOptions ||
+      disabledOptions.indexOf(value) < 0 ||
+      !hideDisabledOptions
+    ) {
       arr.push(value);
     }
   }
@@ -23,16 +32,20 @@ function toNearestValidTime(time, hourOptions, minuteOptions, secondOptions) {
     .sort((a, b) => Math.abs(time.hour() - a) - Math.abs(time.hour() - b))[0];
   const minute = minuteOptions
     .slice()
-    .sort((a, b) => Math.abs(time.minute() - a) - Math.abs(time.minute() - b))[0];
+    .sort(
+      (a, b) => Math.abs(time.minute() - a) - Math.abs(time.minute() - b)
+    )[0];
   const second = secondOptions
     .slice()
-    .sort((a, b) => Math.abs(time.second() - a) - Math.abs(time.second() - b))[0];
-  return moment(`${hour}:${minute}:${second}`, 'HH:mm:ss');
+    .sort(
+      (a, b) => Math.abs(time.second() - a) - Math.abs(time.second() - b)
+    )[0];
+  return moment(`${hour}:${minute}:${second}`, "HH:mm:ss");
 }
 
 class Panel extends Component {
   static defaultProps = {
-    prefixCls: 'rc-time-picker-panel',
+    prefixCls: "rc-time-picker-panel",
     onChange: noop,
     disabledHours: noop,
     disabledMinutes: noop,
@@ -48,7 +61,7 @@ class Panel extends Component {
   state = {};
 
   static getDerivedStateFromProps(props, state) {
-    if ('value' in props) {
+    if ("value" in props) {
       return {
         ...state,
         value: props.value,
@@ -57,18 +70,18 @@ class Panel extends Component {
     return null;
   }
 
-  onChange = newValue => {
+  onChange = (newValue) => {
     const { onChange } = this.props;
     this.setState({ value: newValue });
     onChange(newValue);
   };
 
-  onAmPmChange = ampm => {
+  onAmPmChange = (ampm) => {
     const { onAmPmChange } = this.props;
     onAmPmChange(ampm);
   };
 
-  onCurrentSelectPanelChange = currentSelectPanel => {
+  onCurrentSelectPanelChange = (currentSelectPanel) => {
     this.setState({ currentSelectPanel });
   };
 
@@ -77,9 +90,11 @@ class Panel extends Component {
     let disabledOptions = disabledHours();
     if (use12Hours && Array.isArray(disabledOptions)) {
       if (this.isAM()) {
-        disabledOptions = disabledOptions.filter(h => h < 12).map(h => (h === 0 ? 12 : h));
+        disabledOptions = disabledOptions
+          .filter((h) => h < 12)
+          .map((h) => (h === 0 ? 12 : h));
       } else {
-        disabledOptions = disabledOptions.map(h => (h === 12 ? 12 : h - 12));
+        disabledOptions = disabledOptions.map((h) => (h === 12 ? 12 : h - 12));
       }
     }
     return disabledOptions;
@@ -128,27 +143,32 @@ class Panel extends Component {
     const disabledMinuteOptions = disabledMinutes(value ? value.hour() : null);
     const disabledSecondOptions = disabledSeconds(
       value ? value.hour() : null,
-      value ? value.minute() : null,
+      value ? value.minute() : null
     );
-    const hourOptions = generateOptions(24, disabledHourOptions, hideDisabledOptions, hourStep);
+    const hourOptions = generateOptions(
+      24,
+      disabledHourOptions,
+      hideDisabledOptions,
+      hourStep
+    );
     const minuteOptions = generateOptions(
       60,
       disabledMinuteOptions,
       hideDisabledOptions,
-      minuteStep,
+      minuteStep
     );
     const secondOptions = generateOptions(
       60,
       disabledSecondOptions,
       hideDisabledOptions,
-      secondStep,
+      secondStep
     );
 
     const validDefaultOpenValue = toNearestValidTime(
       defaultOpenValue,
       hourOptions,
       minuteOptions,
-      secondOptions,
+      secondOptions
     );
 
     return (

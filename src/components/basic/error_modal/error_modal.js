@@ -1,26 +1,30 @@
 import React from "react";
-import ReactModalAdapter from '../styled_modal/styled_modal';
+import ReactModalAdapter from "../styled_modal/styled_modal";
 
-import * as styled from './error_modal.style'
+import * as styled from "./error_modal.style";
 
-const style={
+const style = {
   overlay: {
-    backgroundColor: 'red'
+    backgroundColor: "red",
   },
   content: {
+    background: "blue",
+  },
+};
 
-    background: 'blue',
-
-  }
-
-}
-
-const ErrorModal = ({ isOpen, onDeleteClick, onCancelClick, message, title, subtitle, error }) => {
-
+const ErrorModal = ({
+  isOpen,
+  onDeleteClick,
+  onCancelClick,
+  message,
+  title,
+  subtitle,
+  error,
+}) => {
   return (
     <styled.Container
       isOpen={isOpen}
-      backdrop={ 'static' }
+      backdrop={"static"}
       overlayClassName={"overlay"}
       shouldCloseOnOverlayClick={false}
       onRequestClose={onCancelClick}
@@ -30,8 +34,6 @@ const ErrorModal = ({ isOpen, onDeleteClick, onCancelClick, message, title, subt
       contentLabel="Error"
       shouldFocusAfterRender={true}
     >
-
-
       <styled.HeaderContainer>
         <styled.Title>{title}</styled.Title>
       </styled.HeaderContainer>
@@ -41,10 +43,10 @@ const ErrorModal = ({ isOpen, onDeleteClick, onCancelClick, message, title, subt
       </styled.TextContainer>
 
       <styled.ButtonContainer>
-        <styled.CancelButton   type={"button"} onClick={onCancelClick}>Ok</styled.CancelButton>
-
+        <styled.CancelButton type={"button"} onClick={onCancelClick}>
+          Ok
+        </styled.CancelButton>
       </styled.ButtonContainer>
-
     </styled.Container>
   );
 };

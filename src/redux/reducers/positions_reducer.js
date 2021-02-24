@@ -1,235 +1,242 @@
 import {
-    GET_POSITIONS_STARTED,
-    GET_POSITIONS_SUCCESS,
-    GET_POSITIONS_FAILURE,
-
-    POST_POSITION_STARTED,
-    POST_POSITION_SUCCESS,
-    POST_POSITION_FAILURE,
-
-    PUT_POSITION_STARTED,
-    PUT_POSITION_SUCCESS,
-    PUT_POSITION_FAILURE,
-
-    DELETE_POSITION_STARTED,
-    DELETE_POSITION_SUCCESS,
-    DELETE_POSITION_FAILURE,
-
-    ADD_POSITION,
-    SET_SELECTED_POSITION,
-    UPDATE_POSITION,
-    SET_POSITION_ATTRIBUTES,
-    UPDATE_POSITIONS,
-    REMOVE_POSITION,
-    EDITING_POSITION,
-    SET_SELECTED_STATION_CHILDREN_COPY
-
-} from '../types/positions_types'
+  GET_POSITIONS_STARTED,
+  GET_POSITIONS_SUCCESS,
+  GET_POSITIONS_FAILURE,
+  POST_POSITION_STARTED,
+  POST_POSITION_SUCCESS,
+  POST_POSITION_FAILURE,
+  PUT_POSITION_STARTED,
+  PUT_POSITION_SUCCESS,
+  PUT_POSITION_FAILURE,
+  DELETE_POSITION_STARTED,
+  DELETE_POSITION_SUCCESS,
+  DELETE_POSITION_FAILURE,
+  ADD_POSITION,
+  SET_SELECTED_POSITION,
+  UPDATE_POSITION,
+  SET_POSITION_ATTRIBUTES,
+  UPDATE_POSITIONS,
+  REMOVE_POSITION,
+  EDITING_POSITION,
+  SET_SELECTED_STATION_CHILDREN_COPY,
+} from "../types/positions_types";
 
 // Import Utils
-import { deepCopy, isEquivalent } from '../../methods/utils/utils';
-import { compareExistingVsIncomingLocations } from '../../methods/utils/locations_utils'
+import { deepCopy, isEquivalent } from "../../methods/utils/utils";
+import { compareExistingVsIncomingLocations } from "../../methods/utils/locations_utils";
 
 const defaultState = {
-    positions: {},
+  positions: {},
 
-    selectedPosition: null,
+  selectedPosition: null,
 
-    editingPosition: false,
-    selectedStationChildrenCopy: null,
+  editingPosition: false,
+  selectedStationChildrenCopy: null,
 
-    d3: {},
+  d3: {},
 
-    error: {},
-    pending: false,
-}
+  error: {},
+  pending: false,
+};
 
 const positionsReducer = (state = defaultState, action) => {
-    let positionsCopy
+  let positionsCopy;
 
-    /**
-     * Updates the state of positions to include the incoming payload position.
-     * If the payload is the current selected Position, then update that as well
-     * @param {object} position 
-     */
-    const onUpdatePosition = (position) => {
+  /**
+   * Updates the state of positions to include the incoming payload position.
+   * If the payload is the current selected Position, then update that as well
+   * @param {object} position
+   */
+  const onUpdatePosition = (position) => {
+    return {
+      ...state,
+      positions: {
+        ...state.positions,
+        [position._id]: position,
+      },
+      // If the post position is the selectedPosition, then update selected position
+      selectedPosition:
+        state.selectedPosition !== null &&
+        state.selectedPosition._id === position._id &&
+        position,
+      pending: false,
+    };
+  };
+
+  switch (action.type) {
+    // ========== UTILS ========== //
+
+    // Adds position to front-end without adding it to the backend
+    case ADD_POSITION:
+      return onUpdatePosition(action.payload);
+
+    // Sets Positions Attributes
+    case SET_POSITION_ATTRIBUTES:
+      // If editing a child position then update the position in the childrencopy
+      if (
+        !!state.selectedStationChildrenCopy &&
+        action.payload.id in state.selectedStationChildrenCopy
+      ) {
         return {
-            ...state,
-            positions: {
-                ...state.positions,
-                [position._id]: position
+          ...state,
+          selectedStationChildrenCopy: {
+            ...state.selectedStationChildrenCopy,
+            [action.payload.id]: {
+              ...state.selectedStationChildrenCopy[action.payload.id],
+              ...action.payload.attr,
             },
-            // If the post position is the selectedPosition, then update selected position
-            selectedPosition: state.selectedPosition !== null && state.selectedPosition._id === position._id && position,
-            pending: false,
-        }
-    }
+          },
+        };
+      }
 
-    switch (action.type) {
+      // If there is a selected station and the payload is that station, then edit the selected station and dont edit the station in state
+      else if (
+        !!state.selectedPosition &&
+        action.payload.id === state.selectedPosition._id
+      ) {
+        return {
+          ...state,
+          selectedPosition: {
+            ...state.selectedPosition,
+            ...action.payload.attr,
+          },
+        };
+      } else {
+        let updatedPosition = state.positions[action.payload.id];
+        Object.assign(updatedPosition, action.payload.attr);
+        return onUpdatePosition(updatedPosition);
+      }
 
-        // ========== UTILS ========== //
+    // Sets a selected Position
+    case SET_SELECTED_POSITION:
+      return {
+        ...state,
+        selectedPosition: action.payload,
+      };
 
-        // Adds position to front-end without adding it to the backend
-        case ADD_POSITION:
-            return onUpdatePosition(action.payload)
+    // Updates a position locally on the front-end
+    case UPDATE_POSITION:
+      return onUpdatePosition(action.payload);
 
-        // Sets Positions Attributes
-        case SET_POSITION_ATTRIBUTES:
-            // If editing a child position then update the position in the childrencopy
-            if (!!state.selectedStationChildrenCopy && action.payload.id in state.selectedStationChildrenCopy) {
-                return {
-                    ...state,
-                    selectedStationChildrenCopy: {
-                        ...state.selectedStationChildrenCopy,
-                        [action.payload.id]: {
-                            ...state.selectedStationChildrenCopy[action.payload.id],
-                            ...action.payload.attr,
-                        }
-                    },
-                }
-            }
+    // Upates positions locally on the front-end
+    case UPDATE_POSITIONS:
+      // TODO Comment
+      return {
+        ...state,
+        positions: action.payload.positions,
+        selectedPosition: action.payload.selectedPosition
+          ? action.payload.selectedPosition
+          : state.selectedPosition,
+        selectedStationChildrenCopy: action.payload.childrenPositions
+          ? action.payload.childrenPositions
+          : state.selectedStationChildrenCopy,
+        d3: action.payload.d3 ? action.payload.d3 : state.d3,
+      };
 
-            // If there is a selected station and the payload is that station, then edit the selected station and dont edit the station in state
-            else if (!!state.selectedPosition && action.payload.id === state.selectedPosition._id) {
-                return {
-                    ...state,
-                    selectedPosition: {
-                        ...state.selectedPosition,
-                        ...action.payload.attr
-                    }
-                }
-            }
+    case EDITING_POSITION:
+      return {
+        ...state,
+        editingPosition: action.payload,
+      };
 
-            else {
-                let updatedPosition = state.positions[action.payload.id]
-                Object.assign(updatedPosition, action.payload.attr)
-                return onUpdatePosition(updatedPosition)
-            }
+    case SET_SELECTED_STATION_CHILDREN_COPY:
+      return {
+        ...state,
+        selectedStationChildrenCopy: action.payload,
+      };
 
-        // Sets a selected Position
-        case SET_SELECTED_POSITION:
-            return {
-                ...state,
-                selectedPosition: action.payload
-            }
+    case REMOVE_POSITION:
+      positionsCopy = deepCopy(state.positions);
+      delete positionsCopy[action.payload];
+      // positionsCopy.delete(action.payload)
+      return {
+        ...state,
+        positions: positionsCopy,
+      };
 
-        // Updates a position locally on the front-end
-        case UPDATE_POSITION:
-            return onUpdatePosition(action.payload)
+    // ========== GET ========== //
+    case GET_POSITIONS_STARTED:
+      return Object.assign({}, state, {
+        pending: true,
+      });
 
-        // Upates positions locally on the front-end
-        case UPDATE_POSITIONS:
-            // TODO Comment
-            return {
-                ...state,
-                positions: action.payload.positions,
-                selectedPosition: !!action.payload.selectedPosition ? action.payload.selectedPosition : state.selectedPosition,
-                selectedStationChildrenCopy: !!action.payload.childrenPositions ? action.payload.childrenPositions : state.selectedStationChildrenCopy,
-                d3: !!action.payload.d3 ? action.payload.d3 : state.d3
-            }
+    case GET_POSITIONS_SUCCESS:
+      const parsedPositions = compareExistingVsIncomingLocations(
+        deepCopy(action.payload),
+        deepCopy(state.positions),
+        state.d3
+      );
 
-        case EDITING_POSITION:
-            return {
-                ...state,
-                editingPosition: action.payload
-            }
+      return {
+        ...state,
+        positions: parsedPositions,
+        pending: false,
+      };
 
-        case SET_SELECTED_STATION_CHILDREN_COPY:
-            return {
-                ...state,
-                selectedStationChildrenCopy: action.payload
-            }
+    case GET_POSITIONS_FAILURE:
+      return Object.assign({}, state, {
+        error: action.payload,
+        pending: false,
+      });
 
-        case REMOVE_POSITION:
-            positionsCopy = deepCopy(state.positions)
-            delete positionsCopy[action.payload]
-            // positionsCopy.delete(action.payload)
-            return {
-                ...state,
-                positions: positionsCopy
-            }
+    // ========== POST ========== //
+    case POST_POSITION_STARTED:
+      return Object.assign({}, state, {
+        pending: true,
+      });
 
-        // ========== GET ========== //
-        case GET_POSITIONS_STARTED:
-            return Object.assign({}, state, {
-                pending: true
-            });
+    case POST_POSITION_SUCCESS:
+      return onUpdatePosition(action.payload);
 
-        case GET_POSITIONS_SUCCESS:
+    case POST_POSITION_FAILURE:
+      return Object.assign({}, state, {
+        error: action.payload,
+        pending: false,
+      });
 
-            const parsedPositions = compareExistingVsIncomingLocations(deepCopy(action.payload), deepCopy(state.positions), state.d3)
+    // ========== PUT ========== //
+    case PUT_POSITION_STARTED:
+      return Object.assign({}, state, {
+        pending: true,
+      });
 
-            return {
-                ...state,
-                positions: parsedPositions,
-                pending: false
-            }
+    case PUT_POSITION_SUCCESS:
+      if (action.payload.change_key === "deleted") {
+        return state;
+      }
+      return onUpdatePosition(action.payload);
 
-        case GET_POSITIONS_FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
+    case PUT_POSITION_FAILURE:
+      return Object.assign({}, state, {
+        error: action.payload,
+        pending: false,
+      });
 
-        // ========== POST ========== //
-        case POST_POSITION_STARTED:
-            return Object.assign({}, state, {
-                pending: true
-            });
+    // ========== DELETE ========== //
+    case DELETE_POSITION_STARTED:
+      return Object.assign({}, state, {
+        pending: true,
+      });
 
-        case POST_POSITION_SUCCESS:
-            return onUpdatePosition(action.payload)
+    case DELETE_POSITION_SUCCESS:
+      positionsCopy = deepCopy(state.positions);
+      delete positionsCopy[action.payload];
+      return {
+        ...state,
+        positions: positionsCopy,
+        selectedPosition: null,
+        pending: false,
+      };
 
-        case POST_POSITION_FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
+    case DELETE_POSITION_FAILURE:
+      return Object.assign({}, state, {
+        error: action.payload,
+        pending: false,
+      });
 
-        // ========== PUT ========== //
-        case PUT_POSITION_STARTED:
-            return Object.assign({}, state, {
-                pending: true
-            });
+    default:
+      return state;
+  }
+};
 
-        case PUT_POSITION_SUCCESS:
-            if (action.payload.change_key === 'deleted') {
-                return state
-            }
-            return onUpdatePosition(action.payload)
-
-        case PUT_POSITION_FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
-
-        // ========== DELETE ========== //
-        case DELETE_POSITION_STARTED:
-            return Object.assign({}, state, {
-                pending: true
-            });
-
-        case DELETE_POSITION_SUCCESS:
-            positionsCopy = deepCopy(state.positions)
-            delete positionsCopy[action.payload]
-            return {
-                ...state,
-                positions: positionsCopy,
-                selectedPosition: null,
-                pending: false,
-            }
-
-        case DELETE_POSITION_FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
-
-        default:
-            return state
-    }
-
-}
-
-export default positionsReducer
+export default positionsReducer;

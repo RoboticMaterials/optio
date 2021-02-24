@@ -1,34 +1,48 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
-import { LIB_NAME } from '../constants';
-import NoData from './NoData';
-import Item from './Item';
-import Label from './Label';
+import { LIB_NAME } from "../constants";
+import NoData from "./NoData";
+import Item from "./Item";
+import Label from "./Label";
 
-import { valueExistInSelected, hexToRGBA } from '../util';
+import { valueExistInSelected, hexToRGBA } from "../util";
 
 const textboxPosition = (props, methods) => {
-  const TextboxBoundingClientRect = methods.getSelectRef().getBoundingClientRect();
+  const TextboxBoundingClientRect = methods
+    .getSelectRef()
+    .getBoundingClientRect();
   const textboxHeight =
-    TextboxBoundingClientRect.bottom + parseInt(props.textboxHeight, 10) + parseInt(props.textboxGap, 10);
+    TextboxBoundingClientRect.bottom +
+    parseInt(props.textboxHeight, 10) +
+    parseInt(props.textboxGap, 10);
 
-  if (props.textboxPosition !== 'auto') {
+  if (props.textboxPosition !== "auto") {
     return props.textboxPosition;
   }
 
-  if (textboxHeight > window.innerHeight && textboxHeight > TextboxBoundingClientRect.top) {
-    return 'top';
+  if (
+    textboxHeight > window.innerHeight &&
+    textboxHeight > TextboxBoundingClientRect.top
+  ) {
+    return "top";
   }
 
-  return 'bottom';
+  return "bottom";
 };
 
-const Textbox = ({ ItemComponent, props, TextBoxComponent, state, methods, TextComponent }) => {
+const Textbox = ({
+  ItemComponent,
+  props,
+  TextBoxComponent,
+  state,
+  methods,
+  TextComponent,
+}) => {
   // console.log('Textbox props', props)
   // console.log('Textbox ItemComponent', ItemComponent)
 
-  return(
+  return (
     <TextBoxComponent
       tabIndex="-1"
       aria-expanded="true"
@@ -41,24 +55,31 @@ const Textbox = ({ ItemComponent, props, TextBoxComponent, state, methods, TextC
       className={`${LIB_NAME}-textbox ${LIB_NAME}-textbox-position-${textboxPosition(
         props,
         methods
-      )}`}>
+      )}`}
+    >
       {props.textboxRenderer ? (
         props.textboxRenderer({ props, state, methods })
       ) : (
         <React.Fragment>
-          {props.create && state.search && !valueExistInSelected(state.search, state.values, props) && (
-            <AddNew
-
-              className={`${LIB_NAME}-textbox-add-new`}
-              color={props.color}
-              onClick={() => methods.createNew(state.search)}>
-              {props.createNewLabel.replace('{search}', `"${state.search}"`)}
-            </AddNew>
+          {props.create &&
+            state.search &&
+            !valueExistInSelected(state.search, state.values, props) && (
+              <AddNew
+                className={`${LIB_NAME}-textbox-add-new`}
+                color={props.color}
+                onClick={() => methods.createNew(state.search)}
+              >
+                {props.createNewLabel.replace("{search}", `"${state.search}"`)}
+              </AddNew>
+            )}
+          {state.currentValue.length > 0 && (
+            <Label
+              LabelComponent={props.LabelComponent}
+              label={props.label}
+              schema={props.schema}
+            ></Label>
           )}
-          {state.currentValue.length > 0 && 
-            <Label LabelComponent={props.LabelComponent} label={props.label} schema={props.schema}></Label>
-          }
-          {methods.searchResults().length > 0 && (
+          {methods.searchResults().length > 0 &&
             methods
               .searchResults()
               .map((item, itemIndex) => (
@@ -72,18 +93,17 @@ const Textbox = ({ ItemComponent, props, TextBoxComponent, state, methods, TextC
                   props={props}
                   methods={methods}
                 />
-              ))
-          )}
+              ))}
         </React.Fragment>
       )}
     </TextBoxComponent>
   );
-}
+};
 
 export const DefaultTextBoxComponent = styled.div`
   position: absolute;
   ${({ selectBounds, textboxGap, textboxPosition }) =>
-    textboxPosition === 'top'
+    textboxPosition === "top"
       ? `bottom: ${selectBounds.height + 2 + textboxGap}px`
       : `top: ${selectBounds.height + 2 + textboxGap}px`};
 
@@ -93,14 +113,14 @@ export const DefaultTextBoxComponent = styled.div`
       position: fixed;
       top: ${selectBounds.bottom + textboxGap}px;
       left: ${selectBounds.left - 1}px;`
-      : 'left: -1px;'};
+      : "left: -1px;"};
   width: ${({ selectBounds }) => selectBounds.width}px;
   padding: 0;
   display: flex;
   flex-direction: column;
-  background: ${props => props.theme.bg.quinary};
+  background: ${(props) => props.theme.bg.quinary};
   border-radius: 2px;
-  box-shadow: 0 0 10px 0 ${() => hexToRGBA('#000000', 0.2)};
+  box-shadow: 0 0 10px 0 ${() => hexToRGBA("#000000", 0.2)};
   max-height: ${({ textboxHeight }) => textboxHeight};
   overflow: auto;
   z-index: 1;
@@ -149,7 +169,7 @@ const AddNew = styled.div`
 `;
 
 Textbox.defaultProps = {
-  TextBoxComponent: DefaultTextBoxComponent
+  TextBoxComponent: DefaultTextBoxComponent,
 };
 
 export default Textbox;

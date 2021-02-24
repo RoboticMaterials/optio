@@ -1,13 +1,11 @@
-import { denormalize, schema } from 'normalizr';
-import { uuidv4 } from '../methods/utils/utils';
+import { denormalize, schema } from "normalizr";
+import { uuidv4 } from "../methods/utils/utils";
 
 export const conditionSchema = new schema.Entity(
   // key
-  'conditions',
+  "conditions",
   // definition
-  {
-
-  },
+  {},
   // options
   {
     idAttribute: (value, parent, key) => {
@@ -21,21 +19,19 @@ export const conditionSchema = new schema.Entity(
 
       //value.tempId = uuidv4()
 
-      var paramString = value.type + " "
+      var paramString = value.type + " ";
       entries.forEach((entry, index, entries) => {
-
-        if(entry[0] != "type" && entry[0] != "id") {
-          paramString += '[' + entry[0] + ': ' + entry[1] + ']'
+        if (entry[0] != "type" && entry[0] != "id") {
+          paramString += "[" + entry[0] + ": " + entry[1] + "]";
         }
-
-      })
+      });
 
       //value.tempLabel = paramString
 
       return value;
-    }
-  },
+    },
+  }
 );
 
 // schema for list of conditions
-export const conditionsSchema = [conditionSchema]
+export const conditionsSchema = [conditionSchema];

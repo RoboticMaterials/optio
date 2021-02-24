@@ -1,348 +1,339 @@
-import * as Yup from 'yup';
+import * as Yup from "yup";
 
 import { notBrokenRegex, notTaskDeletedRegex } from "./regex_utils";
 import { isObject } from "./object_utils";
 
-const { object, lazy, string, number } = require('yup')
-const mapValues = require('lodash/mapValues')
+const { object, lazy, string, number } = require("yup");
+const mapValues = require("lodash/mapValues");
 
 export const scheduleSchema = Yup.object().shape({
-    name: Yup.string()
-        .min(1, '1 character minimum.')
-        .max(50, '50 character maximum.')
-        .required('Please enter a name.'),
-    task: Yup.array().of(
-        Yup.object().shape({
-            name: Yup.string()
-                // .min(1, '1 character minimum')
-                // .max(2, '50 character maximum')
-                .matches(notTaskDeletedRegex, "Task is deleted.")
-                .required('Please select a task.'),
-            status: Yup.string().matches(notBrokenRegex, "Task is broken."),
-        })
-    ).required('Required'),
-    days_on: Yup.array()
-        .min(1, 'Please select at least one day.')
-        .required('Required'),
-    start_time: Yup.string()
-        .required('Required'),
-    time_interval: Yup.string(), // not required
-    stop_time: Yup.string() // not required
+  name: Yup.string()
+    .min(1, "1 character minimum.")
+    .max(50, "50 character maximum.")
+    .required("Please enter a name."),
+  task: Yup.array()
+    .of(
+      Yup.object().shape({
+        name: Yup.string()
+          // .min(1, '1 character minimum')
+          // .max(2, '50 character maximum')
+          .matches(notTaskDeletedRegex, "Task is deleted.")
+          .required("Please select a task."),
+        status: Yup.string().matches(notBrokenRegex, "Task is broken."),
+      })
+    )
+    .required("Required"),
+  days_on: Yup.array()
+    .min(1, "Please select at least one day.")
+    .required("Required"),
+  start_time: Yup.string().required("Required"),
+  time_interval: Yup.string(), // not required
+  stop_time: Yup.string(), // not required
 });
 
 export const reportEventSchema = Yup.object().shape({
-    label: Yup.string()
-        .min(1, '1 character minimum.')
-        .max(50, '50 character maximum.')
-        .required('Please enter a label.'),
-    description: Yup.string()
+  label: Yup.string()
+    .min(1, "1 character minimum.")
+    .max(50, "50 character maximum.")
+    .required("Please enter a label."),
+  description: Yup.string(),
 });
 
 export const objectSchema = Yup.object().shape({
-    name: Yup.string()
-        .min(1, '1 character minimum.')
-        .max(50, '50 character maximum.')
-        .required('Please enter a name.'),
-    description: Yup.string()
-        .max(1000, '1000 character maximum.'),
-    // width: Yup.number()
-    //     .positive("Please enter a positive number.")
-    //     .moreThan(0, "Must be greater than 0.")
-    //     .required("Please enter the object's width."),
-    // height: Yup.number()
-    //     .positive("Please enter a positive number.")
-    //     .moreThan(0, "Must be greater than 0.")
-    //     .required("Please enter the object's height."),
-    // length: Yup.number()
-    //     .positive("Please enter a positive number.")
-    //     .moreThan(0, "Must be greater than 0.")
-    //     .required("Please enter the object's length."),
-    // modelName: Yup.string()
-    //     .required("Please select a model."),
+  name: Yup.string()
+    .min(1, "1 character minimum.")
+    .max(50, "50 character maximum.")
+    .required("Please enter a name."),
+  description: Yup.string().max(1000, "1000 character maximum."),
+  // width: Yup.number()
+  //     .positive("Please enter a positive number.")
+  //     .moreThan(0, "Must be greater than 0.")
+  //     .required("Please enter the object's width."),
+  // height: Yup.number()
+  //     .positive("Please enter a positive number.")
+  //     .moreThan(0, "Must be greater than 0.")
+  //     .required("Please enter the object's height."),
+  // length: Yup.number()
+  //     .positive("Please enter a positive number.")
+  //     .moreThan(0, "Must be greater than 0.")
+  //     .required("Please enter the object's length."),
+  // modelName: Yup.string()
+  //     .required("Please select a model."),
 });
 
-
 export const hilSchema = Yup.object().shape({
-    instruction: Yup.string()
-        .max(20, '20 character maximum.')
-        .required('Please enter instructions.'),
-    position: Yup.array().of(
-        Yup.object().shape({
-            name: Yup.string()
-                .required('Position is missing name.'),
-        })
+  instruction: Yup.string()
+    .max(20, "20 character maximum.")
+    .required("Please enter instructions."),
+  position: Yup.array()
+    .of(
+      Yup.object().shape({
+        name: Yup.string().required("Position is missing name."),
+      })
     )
-        .required('Please select a position.'),
-    dashboard: Yup.array().of(
-        Yup.object().shape({
-            name: Yup.string()
-                .required('Dashboard is missing name.'),
-        })
+    .required("Please select a position."),
+  dashboard: Yup.array()
+    .of(
+      Yup.object().shape({
+        name: Yup.string().required("Dashboard is missing name."),
+      })
     )
-        .required('Please select a dashboard.'),
-    sound: Yup.array().of(
-        Yup.object().shape({
-            name: Yup.string()
-                .required('Sound is missing name.'),
-        })
+    .required("Please select a dashboard."),
+  sound: Yup.array()
+    .of(
+      Yup.object().shape({
+        name: Yup.string().required("Sound is missing name."),
+      })
     )
-        .required('Please select a sound.'),
-    timeout: Yup.string()
-        .nullable()
-        .required('Please select timeout.'),
+    .required("Please select a sound."),
+  timeout: Yup.string().nullable().required("Please select timeout."),
 });
 
 export const moveSchema = Yup.object().shape({
-    location: Yup.array().of(
-        Yup.object().shape({
-            name: Yup.string()
-                .required('Location is missing name.'),
-            _id: Yup.string()
-                .required('Location is missing ID.'),
-        })
-    ).required('Please select a location.'),
+  location: Yup.array()
+    .of(
+      Yup.object().shape({
+        name: Yup.string().required("Location is missing name."),
+        _id: Yup.string().required("Location is missing ID."),
+      })
+    )
+    .required("Please select a location."),
 });
 
-
-
 export const nameSchema = Yup.object().shape({
-    name: Yup.string()
-        .min(1, '1 character minimum.')
-        .max(50, '50 character maximum.')
-        .required('Please enter a name.'),
+  name: Yup.string()
+    .min(1, "1 character minimum.")
+    .max(50, "50 character maximum.")
+    .required("Please enter a name."),
 });
 
 export const hilGoalSchema = Yup.object().shape({
-    hil: Yup.array().of(
-        Yup.object().shape({
-            name: Yup.string()
-                .required('HIL is missing name.'),
-        })
-    ).required('Please select a HIL.')
+  hil: Yup.array()
+    .of(
+      Yup.object().shape({
+        name: Yup.string().required("HIL is missing name."),
+      })
+    )
+    .required("Please select a HIL."),
 });
 
 export const objectAtLocationGoalSchema = Yup.object().shape({
-    quantity: Yup.array().of(
-        Yup.object().shape({
-            name: Yup.string()
-                .required('Quantity is missing name.'),
-        })
-    ).required('Please select a quantity.'),
-    object: Yup.array().of(
-        Yup.object().shape({
-            name: Yup.string()
-                .required('Object is missing name.'),
-        })
-    ).min(1, "Please select an object.").nullable(),
-    position: Yup.array().of(
-        Yup.object().shape({
-            name: Yup.string()
-                .required('Position is missing name.'),
-        })
-    ).required('Please select a position.'),
+  quantity: Yup.array()
+    .of(
+      Yup.object().shape({
+        name: Yup.string().required("Quantity is missing name."),
+      })
+    )
+    .required("Please select a quantity."),
+  object: Yup.array()
+    .of(
+      Yup.object().shape({
+        name: Yup.string().required("Object is missing name."),
+      })
+    )
+    .min(1, "Please select an object.")
+    .nullable(),
+  position: Yup.array()
+    .of(
+      Yup.object().shape({
+        name: Yup.string().required("Position is missing name."),
+      })
+    )
+    .required("Please select a position."),
 });
 
 export const dashboardSchema = Yup.object().shape({
-    name: Yup.string()
-        .min(1, '1 character minimum.')
-        .max(50, '50 character maximum.')
-        .required('Please enter a name.'),
-    buttons: Yup.array().of(
-        Yup.object().shape({
-            name: Yup.string()
-                .required('Please enter a name.'),
-            // task: Yup.array().of(
-            //     Yup.object().shape({
-            //         Description: Yup.string()
-            //             .matches(notBrokenRegex, "Task is broken.")
-            //             .required('Task is missing description.'),
-            //         task_id: Yup.string()
-            //             .required('Task is missing ID.'),
-            //     })
-            // ).required('Please select a task.'),
-            // banana: Yup.string()
-            //     .required('Please enter a name.'),
-            color: Yup.string()
-                .required('Please select a color.'),
-
-        })
-    ),
-
+  name: Yup.string()
+    .min(1, "1 character minimum.")
+    .max(50, "50 character maximum.")
+    .required("Please enter a name."),
+  buttons: Yup.array().of(
+    Yup.object().shape({
+      name: Yup.string().required("Please enter a name."),
+      // task: Yup.array().of(
+      //     Yup.object().shape({
+      //         Description: Yup.string()
+      //             .matches(notBrokenRegex, "Task is broken.")
+      //             .required('Task is missing description.'),
+      //         task_id: Yup.string()
+      //             .required('Task is missing ID.'),
+      //     })
+      // ).required('Please select a task.'),
+      // banana: Yup.string()
+      //     .required('Please enter a name.'),
+      color: Yup.string().required("Please select a color."),
+    })
+  ),
 });
 
 export const signUpSchema = Yup.object().shape({
-    email: Yup.string()
-        .email()
-        .required('Please enter an email'),
-    password: Yup.string()
-        .required('Please enter a password')
-        .matches(
-            /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-            "Must Contain 8 characters, one uppercase, one lowercase, one number and one special character"
-        ),
+  email: Yup.string().email().required("Please enter an email"),
+  password: Yup.string()
+    .required("Please enter a password")
+    .matches(
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+      "Must Contain 8 characters, one uppercase, one lowercase, one number and one special character"
+    ),
 
-    confirmPassword: Yup.string()
-        .oneOf([Yup.ref('password'), null], 'Passwords must match')
-        .required('Password confirm is required'),
-})
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password"), null], "Passwords must match")
+    .required("Password confirm is required"),
+});
 
 export const signInSchema = Yup.object().shape({
-    email: Yup.string()
-        .email()
-        .required('Please enter an email'),
-    password: Yup.string()
-        .required('Please enter a password'),
+  email: Yup.string().email().required("Please enter an email"),
+  password: Yup.string().required("Please enter a password"),
+});
 
-})
-
-
-const binsSchema = lazy(obj => object(
+const binsSchema = lazy((obj) =>
+  object(
     mapValues(obj, (value, key) => {
-        return Yup.object().shape({
-            count: Yup.number()
-                .min(1, "Quantity must be at least 1.")
-                .required('Quantity required.'),
-        })
+      return Yup.object().shape({
+        count: Yup.number()
+          .min(1, "Quantity must be at least 1.")
+          .required("Quantity required."),
+      });
     })
-));
+  )
+);
 
 export const CARD_SCHEMA_MODES = {
-    EDIT_LOT: "EDIT_LOT",
-    MOVE_LOT: "MOVE_LOT"
-}
+  EDIT_LOT: "EDIT_LOT",
+  MOVE_LOT: "MOVE_LOT",
+};
 
 export const editLotSchema = Yup.object().shape({
-    name: Yup.string()
-        .min(1, '1 character minimum.')
-        .max(50, '50 character maximum.')
-        .required('Please enter a name.'),
-    description: Yup.string()
-        .min(1, '1 character minimum.')
-        .max(250, '250 character maximum.'),
-    bins: binsSchema,
-    processId: Yup.string()
-        .min(1, '1 character minimum.')
-        .max(100, '50 character maximum.')
-        .required('Please select a process.')
-        .nullable(),
-})
+  name: Yup.string()
+    .min(1, "1 character minimum.")
+    .max(50, "50 character maximum.")
+    .required("Please enter a name."),
+  description: Yup.string()
+    .min(1, "1 character minimum.")
+    .max(250, "250 character maximum."),
+  bins: binsSchema,
+  processId: Yup.string()
+    .min(1, "1 character minimum.")
+    .max(100, "50 character maximum.")
+    .required("Please select a process.")
+    .nullable(),
+});
 
-export const getMoveLotSchema = (maxCount) => Yup.object().shape({
+export const getMoveLotSchema = (maxCount) =>
+  Yup.object().shape({
     moveCount: Yup.number()
-        .min(1, 'Must be positive value.')
-        .max(maxCount, `Only ${maxCount} items are available.`)
-        .required('Please enter a quantity.'),
-    moveLocation: Yup.array().of(
+      .min(1, "Must be positive value.")
+      .max(maxCount, `Only ${maxCount} items are available.`)
+      .required("Please enter a quantity."),
+    moveLocation: Yup.array()
+      .of(
         Yup.object().shape({
-            name: Yup.string()
-                .required('Please select a destination.'),
+          name: Yup.string().required("Please select a destination."),
         })
-    )
-        .min(1, 'Please select a destination.')
-        .required('Please select a destination.')
-        .nullable(),
-})
+      )
+      .min(1, "Please select a destination.")
+      .required("Please select a destination.")
+      .nullable(),
+  });
 
 export const getCardSchema = (mode, availableBinItems) => {
-    switch (mode) {
-        case CARD_SCHEMA_MODES.EDIT_LOT:
-            return editLotSchema
-        case CARD_SCHEMA_MODES.MOVE_LOT:
-            return getMoveLotSchema(availableBinItems)
-        default:
-            return editLotSchema
+  switch (mode) {
+    case CARD_SCHEMA_MODES.EDIT_LOT:
+      return editLotSchema;
+    case CARD_SCHEMA_MODES.MOVE_LOT:
+      return getMoveLotSchema(availableBinItems);
+    default:
+      return editLotSchema;
+  }
+};
 
-    }
-
-}
-
-const routeStationSchema = lazy(obj => {
-
-    let positionSchema
-    let stationSchema
-    if (isObject(obj)) {
-        if (!obj.position && !obj.station) {
-            positionSchema = Yup.string().nullable()
-            stationSchema = Yup.string().nullable().required('Please select a location.')
-        }
-        else if (obj.station && !obj.position) {
-            positionSchema = Yup.string().nullable()
-            stationSchema = Yup.string().nullable().required('Please select a location.')
-        }
-        else if (obj.position && !obj.station) {
-            positionSchema = Yup.string().nullable().required('Please select a location.')
-            stationSchema = Yup.string().nullable()
-        }
-        else {
-            positionSchema = Yup.string().nullable().required('Please select a location.')
-            stationSchema = Yup.string().nullable().required('Please select a location.')
-        }
+const routeStationSchema = lazy((obj) => {
+  let positionSchema;
+  let stationSchema;
+  if (isObject(obj)) {
+    if (!obj.position && !obj.station) {
+      positionSchema = Yup.string().nullable();
+      stationSchema = Yup.string()
+        .nullable()
+        .required("Please select a location.");
+    } else if (obj.station && !obj.position) {
+      positionSchema = Yup.string().nullable();
+      stationSchema = Yup.string()
+        .nullable()
+        .required("Please select a location.");
+    } else if (obj.position && !obj.station) {
+      positionSchema = Yup.string()
+        .nullable()
+        .required("Please select a location.");
+      stationSchema = Yup.string().nullable();
     } else {
-        positionSchema = Yup.string().nullable().required('Please select a location.')
-        stationSchema = Yup.string().nullable().required('Please select a location.')
+      positionSchema = Yup.string()
+        .nullable()
+        .required("Please select a location.");
+      stationSchema = Yup.string()
+        .nullable()
+        .required("Please select a location.");
     }
+  } else {
+    positionSchema = Yup.string()
+      .nullable()
+      .required("Please select a location.");
+    stationSchema = Yup.string()
+      .nullable()
+      .required("Please select a location.");
+  }
 
-
-
-    return Yup.object().shape({
-        instructions: Yup.string().nullable(),
-        position: positionSchema,
-        station: stationSchema,
-        timeout: Yup.string().nullable(),
-    })
+  return Yup.object().shape({
+    instructions: Yup.string().nullable(),
+    position: positionSchema,
+    station: stationSchema,
+    timeout: Yup.string().nullable(),
+  });
 });
 
 export const routeSchema = Yup.object().shape({
-    name: Yup.string()
-        .min(1, '1 character minimum.')
-        .max(50, '50 character maximum.')
-        .required('Please enter a name.'),
-    obj: Yup.object().shape({
-        name: Yup.string()
-            .required('Please enter a name.'),
-    }).nullable(),
-    track_quantity: Yup.bool().required('Please select whether to use quantities or fractions.'),
-    load: routeStationSchema, //.required("Required."),
-    unload: routeStationSchema//.required("Required."),
-})
+  name: Yup.string()
+    .min(1, "1 character minimum.")
+    .max(50, "50 character maximum.")
+    .required("Please enter a name."),
+  obj: Yup.object()
+    .shape({
+      name: Yup.string().required("Please enter a name."),
+    })
+    .nullable(),
+  track_quantity: Yup.bool().required(
+    "Please select whether to use quantities or fractions."
+  ),
+  load: routeStationSchema, //.required("Required."),
+  unload: routeStationSchema, //.required("Required."),
+});
 
-
-
-export const routesSchema = Yup.array().of(
-    routeSchema
-)
+export const routesSchema = Yup.array().of(routeSchema);
 
 export const processSchema = Yup.object().shape({
-    name: Yup.string()
-        .min(1, '1 character minimum.')
-        .max(50, '50 character maximum.')
-        .required('Please enter a name.'),
-    routes: routesSchema,
-    newRoute: routeSchema.nullable(),
-
-})
+  name: Yup.string()
+    .min(1, "1 character minimum.")
+    .max(50, "50 character maximum.")
+    .required("Please enter a name."),
+  routes: routesSchema,
+  newRoute: routeSchema.nullable(),
+});
 
 export const getProcessSchema = () => {
-    return
-}
+  return;
+};
 
 export const locationSchema = (stations, selectedLocation) => {
+  let stationNames = [];
+  Object.values(stations).forEach((station) => {
+    if (!!selectedLocation && station._id === selectedLocation._id) {
+    } else {
+      stationNames.push(station.name);
+    }
+  });
 
-    let stationNames = []
-    Object.values(stations).forEach(station => {
-        if(!!selectedLocation && station._id === selectedLocation._id) {
-            
-        }
-        else {
-            stationNames.push(station.name)
-        }
-    })
-
-    return (
-        Yup.object().shape({
-            locationName: Yup.string()
-                .required('Please enter a name')
-                .notOneOf(stationNames, 'Name already in use')
-        })
-    )
-}
+  return Yup.object().shape({
+    locationName: Yup.string()
+      .required("Please enter a name")
+      .notOneOf(stationNames, "Name already in use"),
+  });
+};

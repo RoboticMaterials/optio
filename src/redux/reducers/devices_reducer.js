@@ -1,245 +1,230 @@
 import {
-    GET_DEVICES,
-    GET_DEVICES_STARTED,
-    GET_DEVICES_SUCCESS,
-    GET_DEVICES_FAILURE,
+  GET_DEVICES,
+  GET_DEVICES_STARTED,
+  GET_DEVICES_SUCCESS,
+  GET_DEVICES_FAILURE,
+  POST_DEVICES,
+  POST_DEVICES_STARTED,
+  POST_DEVICES_SUCCESS,
+  POST_DEVICES_FAILURE,
+  PUT_DEVICES,
+  PUT_DEVICES_STARTED,
+  PUT_DEVICES_SUCCESS,
+  PUT_DEVICES_FAILURE,
+  DELETE_DEVICES,
+  DELETE_DEVICES_STARTED,
+  DELETE_DEVICES_SUCCESS,
+  DELETE_DEVICES_FAILURE,
+} from "../types/devices_types";
 
-    POST_DEVICES,
-    POST_DEVICES_STARTED,
-    POST_DEVICES_SUCCESS,
-    POST_DEVICES_FAILURE,
-
-    PUT_DEVICES,
-    PUT_DEVICES_STARTED,
-    PUT_DEVICES_SUCCESS,
-    PUT_DEVICES_FAILURE,
-
-    DELETE_DEVICES,
-    DELETE_DEVICES_STARTED,
-    DELETE_DEVICES_SUCCESS,
-    DELETE_DEVICES_FAILURE,
-} from '../types/devices_types'
-
-import { deepCopy, isEquivalent } from '../../methods/utils/utils';
-import { convertRealToD3 } from '../../methods/utils/map_utils'
+import { deepCopy, isEquivalent } from "../../methods/utils/utils";
+import { convertRealToD3 } from "../../methods/utils/map_utils";
 
 const defaultState = {
-    devices: {},
-    d3: null,
-    selectedDevice: null,
-}
+  devices: {},
+  d3: null,
+  selectedDevice: null,
+};
 
 const devicesReducer = (state = defaultState, action) => {
-    let devicesClone = {}
-    let currentDevice = ''
-    let updatedDeviceIndex = ''
-    let index = ''
+  let devicesClone = {};
+  let currentDevice = "";
+  let updatedDeviceIndex = "";
+  let index = "";
+
+  // ======================================== //
+  //                                          //
+  //         DEVICE UTILITY FUNCTIONS         //
+  //                                          //
+  // ======================================== //
+  const setDevices = (devices) => {
+    if (Object.keys(devices).length === 0) return;
+
+    // What this does is update the devices X and Y positions based on the values in the backend.
+    // When the RMStudio initially loads, the devices X and Y is calculated in the map_view container, but those values aren't put to the backend.
+    // When a get call is made, the state.devices is overwritten with the backend data (data without X and Y coords). This removes the device from the map view, which we dont want.
+    // This function takes care of that and adds new X and Y coordinates on every get call. state.d3 is added in mapview
+    if (!isEquivalent(devices, state.devices)) {
+      devicesClone = deepCopy(devices);
+      // devicesClone = devices
+
+      Object.keys(devicesClone).map((key, ind) => {
+        const updatedDevice = devices[key];
+        if (updatedDevice.position !== undefined) {
+          // On page load, the d3 state will be null. This is here so that devices wont be undifened on page load
+          if (state.d3 === null) {
+            devicesClone[key] = {
+              ...devicesClone[key],
+              position: {
+                ...devicesClone[key].position,
+                x: updatedDevice.position.pos_x,
+                y: updatedDevice.position.pos_y,
+              },
+            };
+          } else {
+            let [x, y] = convertRealToD3(
+              [updatedDevice.position.pos_x, updatedDevice.position.pos_y],
+              state.d3
+            );
+            devicesClone[key] = {
+              ...devicesClone[key],
+              position: {
+                ...devicesClone[key].position,
+                x: x,
+                y: y,
+              },
+            };
+          }
+        }
+        return devicesClone;
+      });
+    } else {
+      return state;
+    }
+    return {
+      ...state,
+      devices: { ...devicesClone },
+      pending: false,
+    };
+  };
+
+  switch (action.type) {
+    // ======================================== //
+    //                                          //
+    //              Get Devices                 //
+    //                                          //
+    // ======================================== //
+    case GET_DEVICES:
+      break;
+
+    case GET_DEVICES_SUCCESS:
+      // Fix for when action.payload is undefined
+      let devices = action.payload ? action.payload : {};
+      return setDevices(devices);
+
+    case GET_DEVICES_FAILURE:
+      return Object.assign({}, state, {
+        error: action.payload,
+        pending: false,
+      });
+
+    case GET_DEVICES_STARTED:
+      return Object.assign({}, state, {
+        pending: true,
+      });
 
     // ======================================== //
     //                                          //
-    //         DEVICE UTILITY FUNCTIONS         //
+    //             Post Devices                 //
     //                                          //
     // ======================================== //
-    const setDevices = (devices) => {
+    case POST_DEVICES:
+      break;
 
-        if(Object.keys(devices).length === 0) return
+    case POST_DEVICES_SUCCESS:
+      devicesClone = deepCopy(state.devices);
+      devicesClone[action.payload._id.$oid] = action.payload;
 
-        // What this does is update the devices X and Y positions based on the values in the backend.
-        // When the RMStudio initially loads, the devices X and Y is calculated in the map_view container, but those values aren't put to the backend.
-        // When a get call is made, the state.devices is overwritten with the backend data (data without X and Y coords). This removes the device from the map view, which we dont want.
-        // This function takes care of that and adds new X and Y coordinates on every get call. state.d3 is added in mapview
-        if (!isEquivalent(devices, state.devices)) {
-            devicesClone = deepCopy(devices)
-            // devicesClone = devices
+      return {
+        ...state,
+        devices: devicesClone,
+        pending: false,
+      };
 
-            Object.keys(devicesClone).map((key, ind) => {
-                const updatedDevice = devices[key]
-                if (updatedDevice.position !== undefined) {
+    case POST_DEVICES_FAILURE:
+      return Object.assign({}, state, {
+        error: action.payload,
+        pending: false,
+      });
 
-                    // On page load, the d3 state will be null. This is here so that devices wont be undifened on page load
-                    if (state.d3 === null) {
-                        devicesClone[key] = {
-                            ...devicesClone[key],
-                            position: {
-                                ...devicesClone[key].position,
-                                x: updatedDevice.position.pos_x,
-                                y: updatedDevice.position.pos_y,
-                            }
-                        }
-                    }
+    case POST_DEVICES_STARTED:
+      return Object.assign({}, state, {
+        pending: true,
+      });
+    // ~~~~~~~~~~~~~~~
 
-                    else {
-                        let [x, y] = convertRealToD3([updatedDevice.position.pos_x, updatedDevice.position.pos_y], state.d3)
-                        devicesClone[key] = {
-                            ...devicesClone[key],
-                            position: {
-                                ...devicesClone[key].position,
-                                x: x,
-                                y: y,
-                            }
-                        }
-                    }
-                }
-                return devicesClone
-            })
-        } else {
-            return state
-        }
-        return {
-            ...state,
-            devices: { ...devicesClone },
-            pending: false,
-        }
-    }
+    // ======================================== //
+    //                                          //
+    //              Put Devices                 //
+    //                                          //
+    // ======================================== //
+    case PUT_DEVICES:
+      break;
 
+    case PUT_DEVICES_SUCCESS:
+      // Find the corresponding device and replace it with the new one
+      currentDevice = action.payload;
 
-    switch (action.type) {
+      devicesClone = deepCopy(state.devices);
 
-        // ======================================== //
-        //                                          //
-        //              Get Devices                 //
-        //                                          //
-        // ======================================== //
-        case GET_DEVICES:
-            break;
+      devicesClone[currentDevice._id] = currentDevice;
 
-        case GET_DEVICES_SUCCESS:
+      return setDevices(devicesClone);
 
-            // Fix for when action.payload is undefined
-            let devices = !!action.payload ? action.payload : {}
-            return setDevices(devices)
+    case PUT_DEVICES_FAILURE:
+      return Object.assign({}, state, {
+        error: action.payload,
+        pending: false,
+      });
 
-        case GET_DEVICES_FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
+    case PUT_DEVICES_STARTED:
+      return Object.assign({}, state, {
+        pending: true,
+      });
+    // ~~~~~~~~~~~~~~~
 
-        case GET_DEVICES_STARTED:
-            return Object.assign({}, state, {
-                pending: true
-            });
+    // ======================================== //
+    //                                          //
+    //           Delete Devices                 //
+    //                                          //
+    // ======================================== //
+    case DELETE_DEVICES:
+      break;
 
-        // ======================================== //
-        //                                          //
-        //             Post Devices                 //
-        //                                          //
-        // ======================================== //
-        case POST_DEVICES:
-            break;
+    case DELETE_DEVICES_SUCCESS:
+      devicesClone = deepCopy(state.devices);
 
-        case POST_DEVICES_SUCCESS:
-            devicesClone = deepCopy(state.devices)
-            devicesClone[action.payload._id.$oid] = action.payload
+      delete devicesClone[action.payload];
+      return {
+        ...state,
+        devices: devicesClone,
+      };
 
-            return {
-                ...state,
-                devices: devicesClone,
-                pending: false,
-            }
+    case DELETE_DEVICES_FAILURE:
+      return Object.assign({}, state, {
+        error: action.payload,
+        pending: false,
+      });
 
+    case DELETE_DEVICES_STARTED:
+      return Object.assign({}, state, {
+        pending: true,
+      });
 
-        case POST_DEVICES_FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
+    // ~~~~~~~~~~~~~~~
 
-        case POST_DEVICES_STARTED:
-            return Object.assign({}, state, {
-                pending: true
-            });
-        // ~~~~~~~~~~~~~~~
+    // ======================================== //
+    //                                          //
+    //             Utilities                    //
+    //                                          //
+    // ======================================== //
+    case "UPDATE_DEVICES":
+      return {
+        ...state,
+        devices: deepCopy(action.payload.devices),
+        // devices: action.payload.devices,
+        d3: action.payload.d3,
+      };
 
-        // ======================================== //
-        //                                          //
-        //              Put Devices                 //
-        //                                          //
-        // ======================================== //
-        case PUT_DEVICES:
-            break;
+    case "SET_SELECTED_DEVICE":
+      return {
+        ...state,
+        selectedDevice: action.payload,
+      };
 
-        case PUT_DEVICES_SUCCESS:
-            // Find the corresponding device and replace it with the new one
-            currentDevice = action.payload
+    default:
+      return state;
+  }
+};
 
-            devicesClone = deepCopy(state.devices)
-
-            devicesClone[currentDevice._id] = currentDevice
-
-            return setDevices(devicesClone)
-
-        case PUT_DEVICES_FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
-
-        case PUT_DEVICES_STARTED:
-            return Object.assign({}, state, {
-                pending: true
-            });
-        // ~~~~~~~~~~~~~~~
-
-        // ======================================== //
-        //                                          //
-        //           Delete Devices                 //
-        //                                          //
-        // ======================================== //
-        case DELETE_DEVICES:
-            break;
-
-        case DELETE_DEVICES_SUCCESS:
-
-            devicesClone = deepCopy(state.devices)
-
-            delete devicesClone[action.payload]
-            return {
-                ...state,
-                devices: devicesClone
-            }
-
-        case DELETE_DEVICES_FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
-
-        case DELETE_DEVICES_STARTED:
-            return Object.assign({}, state, {
-                pending: true
-            });
-
-
-        // ~~~~~~~~~~~~~~~
-
-        // ======================================== //
-        //                                          //
-        //             Utilities                    //
-        //                                          //
-        // ======================================== //
-        case 'UPDATE_DEVICES':
-            return {
-                ...state,
-                devices: deepCopy(action.payload.devices),
-                // devices: action.payload.devices,
-                d3: action.payload.d3,
-            }
-
-        case 'SET_SELECTED_DEVICE':
-            return {
-                ...state,
-                selectedDevice: action.payload
-
-            }
-
-        default:
-            return state
-
-
-
-
-    }
-}
-
-export default devicesReducer
+export default devicesReducer;

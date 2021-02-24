@@ -1,33 +1,32 @@
-import React, { useState } from "react"
+import React, { useState } from "react";
 
 // external functions
-import {SortableContainer} from "react-sortable-hoc"
-import { useSelector} from "react-redux"
-import PropTypes from "prop-types"
+import { SortableContainer } from "react-sortable-hoc";
+import { useSelector } from "react-redux";
+import PropTypes from "prop-types";
 
 // internal components
-import CardZone from "../card_zone/card_zone"
-import ZoneHeader from "../zone_header/zone_header"
+import CardZone from "../card_zone/card_zone";
+import ZoneHeader from "../zone_header/zone_header";
 
 // styles
-import * as styled from "./summary_zone.style"
+import * as styled from "./summary_zone.style";
 
 /*
-* This component renders a CardZone for a list of processes
-* */
-const SummaryZone = ((props) => {
+ * This component renders a CardZone for a list of processes
+ * */
+const SummaryZone = (props) => {
+  // extract props
+  const {
+    handleCardClick,
+    setShowCardEditor,
+    showCardEditor,
+    lotFilterValue,
+    selectedProcesses,
+    sortMode,
+  } = props;
 
-	// extract props
-	const {
-		handleCardClick,
-		setShowCardEditor,
-		showCardEditor,
-		lotFilterValue,
-		selectedProcesses,
-		sortMode
-	} = props
-
-	/*
+  /*
    * This function renders a CardZone for each process in {selectedProcesses}
    *
    * For each process, the process's name and id are extracted
@@ -35,61 +34,56 @@ const SummaryZone = ((props) => {
    *
    * no params
    * */
-	const renderSelectedProcesses = () => {
-		return (
-			// map through {selectedProcesses}
-			selectedProcesses.map((currProcess, processIndex) => {
+  const renderSelectedProcesses = () => {
+    return (
+      // map through {selectedProcesses}
+      selectedProcesses.map((currProcess, processIndex) => {
+        // extract process attributes
+        const { name: processName, _id: processId } = currProcess;
 
-				// extract process attributes
-				const {
-					name: processName,
-					_id: processId
-				} = currProcess
+        // return a CardZone wrapped with a styled container and any additional elements
+        return (
+          <styled.ZoneContainer>
+            <styled.ProcessName>{processName}</styled.ProcessName>
 
-				// return a CardZone wrapped with a styled container and any additional elements
-				return	(
-					<styled.ZoneContainer>
-						<styled.ProcessName>{processName}</styled.ProcessName>
+            <CardZone
+              sortMode={sortMode}
+              lotFilterValue={lotFilterValue}
+              setShowCardEditor={setShowCardEditor}
+              showCardEditor={showCardEditor}
+              maxHeight={"30rem"}
+              processId={processId}
+              handleCardClick={handleCardClick}
+            />
+          </styled.ZoneContainer>
+        );
+      })
+    );
+  };
 
-						<CardZone
-							sortMode={sortMode}
-							lotFilterValue={lotFilterValue}
-							setShowCardEditor={setShowCardEditor}
-							showCardEditor={showCardEditor}
-							maxHeight={"30rem"}
-							processId={processId}
-							handleCardClick={handleCardClick}
-						/>
-					</styled.ZoneContainer>
-				)
-			})
-		)
-	}
-
-	return(
-		<styled.Container >
-			<styled.ProcessesContainer>
-				{renderSelectedProcesses()}
-			</styled.ProcessesContainer>
-		</styled.Container>
-	)
-})
+  return (
+    <styled.Container>
+      <styled.ProcessesContainer>
+        {renderSelectedProcesses()}
+      </styled.ProcessesContainer>
+    </styled.Container>
+  );
+};
 
 // Specifies propTypes
 SummaryZone.propTypes = {
-	handleCardClick: PropTypes.func,
-	setShowCardEditor: PropTypes.func,
-	showCardEditor: PropTypes.bool,
-	lotFilterValue: PropTypes.string
-}
+  handleCardClick: PropTypes.func,
+  setShowCardEditor: PropTypes.func,
+  showCardEditor: PropTypes.bool,
+  lotFilterValue: PropTypes.string,
+};
 
 // Specifies the default values for props:
 SummaryZone.defaultProps = {
-	handleCardClick: () => {},
-	setShowCardEditor: () => {},
-	showCardEditor: false,
-	lotFilterValue: ""
-}
+  handleCardClick: () => {},
+  setShowCardEditor: () => {},
+  showCardEditor: false,
+  lotFilterValue: "",
+};
 
-export default SummaryZone
-
+export default SummaryZone;

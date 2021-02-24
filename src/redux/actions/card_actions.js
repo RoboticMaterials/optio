@@ -1,201 +1,184 @@
-import { normalize } from 'normalizr';
+import { normalize } from "normalizr";
 
 // import types
-import {
-    GET,
-    POST,
-    DELETE,
-    PUT
-} from '../types/prefixes';
+import { GET, POST, DELETE, PUT } from "../types/prefixes";
 
 import {
-    CARDS,
-    CARD,
-    CARD_HISTORY,
-    PROCESS_CARDS,
-    SHOW_EDITOR
-} from '../types/data_types';
+  CARDS,
+  CARD,
+  CARD_HISTORY,
+  PROCESS_CARDS,
+  SHOW_EDITOR,
+} from "../types/data_types";
 
-import { api_action } from './index';
-import * as api from '../../api/cards_api'
+import { api_action } from "./index";
+import * as api from "../../api/cards_api";
 
 // import schema
-import { scheduleSchema, schedulesSchema } from '../../normalizr/schedules_schema';
+import {
+  scheduleSchema,
+  schedulesSchema,
+} from "../../normalizr/schedules_schema";
 
-import log from "../../logger"
-import {convertArrayToObject} from "../../methods/utils/utils";
+import log from "../../logger";
+import { convertArrayToObject } from "../../methods/utils/utils";
 
-const logger = log.getLogger("Cards", "Redux")
-logger.setLevel("debug")
+const logger = log.getLogger("Cards", "Redux");
+logger.setLevel("debug");
 // get
 // ******************************
-export const getCard = (cardId) =>  async (dispatch) => {
-
-    /*
+export const getCard = (cardId) => async (dispatch) => {
+  /*
         Invoked in api_action()
         Whatever is returned from this function is the payload
         that will be dispatched to redux (if successful)
     */
-    const callback = async () => {
+  const callback = async () => {
+    // make request
+    const card = await api.getCard(cardId);
 
-        // make request
-        const card = await api.getCard(cardId);
+    // const cardsObj = convertArrayToObject(cards, "_id")
+    // console.log("getCard cardsObj",cardsObj)
 
-        // const cardsObj = convertArrayToObject(cards, "_id")
-        // console.log("getCard cardsObj",cardsObj)
+    // format response
+    // const normalizedSchedules = normalize(schedules, schedulesSchema);
 
-        // format response
-        // const normalizedSchedules = normalize(schedules, schedulesSchema);
+    // return payload for redux
+    return {
+      card,
+    };
+  };
 
-        // return payload for redux
-        return {
-            card,
-        };
-    }
+  const actionName = GET + CARD;
 
-    const actionName = GET + CARD;
+  // payload is returned back
+  const payload = await api_action(actionName, callback, dispatch, cardId);
 
-    // payload is returned back
-    const payload = await api_action(actionName, callback, dispatch, cardId);
-
-    return payload;
-
+  return payload;
 };
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // get
 // ******************************
-export const getCards = () =>  async (dispatch) => {
-
-    /*
+export const getCards = () => async (dispatch) => {
+  /*
         Invoked in api_action()
         Whatever is returned from this function is the payload
         that will be dispatched to redux (if successful)
     */
-    const callback = async () => {
+  const callback = async () => {
+    // make request
+    const cards = await api.getCards();
 
-        // make request
-        const cards = await api.getCards();
+    const cardsObj = convertArrayToObject(cards, "_id");
 
-        const cardsObj = convertArrayToObject(cards, "_id")
+    // format response
+    // const normalizedSchedules = normalize(schedules, schedulesSchema);
 
-        // format response
-        // const normalizedSchedules = normalize(schedules, schedulesSchema);
+    // return payload for redux
+    return {
+      cards: cardsObj,
+    };
+  };
 
-        // return payload for redux
-        return {
-            cards: cardsObj,
-        };
-    }
+  const actionName = GET + CARDS;
 
-    const actionName = GET + CARDS;
+  // payload is returned back
+  const payload = await api_action(actionName, callback, dispatch);
 
-    // payload is returned back
-    const payload = await api_action(actionName, callback, dispatch);
-
-    return payload;
-
+  return payload;
 };
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // get
 // ******************************
-export const getProcessCards = (processId) =>  async (dispatch) => {
-
-    /*
+export const getProcessCards = (processId) => async (dispatch) => {
+  /*
         Invoked in api_action()
         Whatever is returned from this function is the payload
         that will be dispatched to redux (if successful)
     */
-    const callback = async () => {
+  const callback = async () => {
+    // make request
+    const cards = await api.getProcessCards(processId);
 
-        // make request
-        const cards = await api.getProcessCards(processId);
+    const cardsObj = convertArrayToObject(cards, "_id");
 
-        const cardsObj = convertArrayToObject(cards, "_id")
+    // return payload for redux
+    return {
+      cards: cardsObj,
+      processId,
+    };
+  };
 
-        // return payload for redux
-        return {
-            cards: cardsObj,
-            processId
-        };
-    }
+  const actionName = GET + PROCESS_CARDS;
 
-    const actionName = GET + PROCESS_CARDS;
+  // payload is returned back
+  const payload = await api_action(actionName, callback, dispatch);
 
-    // payload is returned back
-    const payload = await api_action(actionName, callback, dispatch);
-
-    return payload;
-
+  return payload;
 };
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 // create
 // ******************************
-export const postCard = (card) =>  async dispatch => {
+export const postCard = (card) => async (dispatch) => {
+  const callback = async () => {
+    const createdCard = await api.postCard(card);
+    // const normalizedSchedules = normalize(createdSchedule, scheduleSchema);
 
-    const callback = async () => {
-        const createdCard = await api.postCard(card);
-        // const normalizedSchedules = normalize(createdSchedule, scheduleSchema);
+    return {
+      card: createdCard,
+      processId: card.process_id,
+    };
+  };
+  //
+  const actionName = POST + CARD;
 
-        return {
-            card: createdCard,
-            processId: card.process_id
-        };
-    }
-    //
-    const actionName = POST + CARD;
+  const payload = await api_action(actionName, callback, dispatch, card);
 
-    const payload = await api_action(actionName, callback, dispatch, card);
-
-    return payload.card
-    // return Object.values(payload.createdCards)[0];
-
+  return payload.card;
+  // return Object.values(payload.createdCards)[0];
 };
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // delete
 // ******************************
 export const deleteCard = (cardId, processId) => async (dispatch) => {
+  const callback = async () => {
+    await api.deleteCard(cardId);
 
-    const callback = async () => {
-        await api.deleteCard(cardId);
-
-        return {
-            cardId,
-            processId
-        };
-    }
-    //
-    const actionName = DELETE + CARD;
-    const payload = await api_action(actionName, callback, dispatch, cardId);
-    return payload;
-
+    return {
+      cardId,
+      processId,
+    };
+  };
+  //
+  const actionName = DELETE + CARD;
+  const payload = await api_action(actionName, callback, dispatch, cardId);
+  return payload;
 };
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // update
 // ******************************
-export const putCard = (card, cardID) => async dispatch => {
+export const putCard = (card, cardID) => async (dispatch) => {
+  const callback = async () => {
+    const response = await api.putCard(card, cardID);
+    // const normalizedSchedule = normalize(response, scheduleSchema);
+    //
+    return {
+      card: response,
+      processId: card.process_id,
+    };
+  };
 
-    const callback = async () => {
-        const response = await api.putCard(card, cardID);
-        // const normalizedSchedule = normalize(response, scheduleSchema);
-        //
-        return {
-            card: response,
-            processId: card.process_id
-        };
-    }
-
-    const actionName = PUT + CARD;
-    const payload = await api_action(actionName, callback, dispatch, { card});
-    return card;
+  const actionName = PUT + CARD;
+  const payload = await api_action(actionName, callback, dispatch, { card });
+  return card;
 };
 
 export const showEditor = (bool) => {
-    return { type: SHOW_EDITOR, payload: bool }
-}
+  return { type: SHOW_EDITOR, payload: bool };
+};
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -17,7 +17,7 @@ export function disabledMinutes(h) {
     case 0:
       return [0];
     default:
-      return[];
+      return [];
   }
 }
 

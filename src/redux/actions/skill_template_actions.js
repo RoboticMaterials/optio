@@ -1,17 +1,16 @@
 import {
-    GET_SKILL_TEMPLATES,
-    GET_SKILL_TEMPLATES_STARTED,
-    GET_SKILL_TEMPLATES_SUCCESS,
-    GET_SKILL_TEMPLATES_FAILURE,
-} from '../types/skill_templates_types'
+  GET_SKILL_TEMPLATES,
+  GET_SKILL_TEMPLATES_STARTED,
+  GET_SKILL_TEMPLATES_SUCCESS,
+  GET_SKILL_TEMPLATES_FAILURE,
+} from "../types/skill_templates_types";
 
-import * as api from '../../api/skill_templates_api'
+import * as api from "../../api/skill_templates_api";
 
 // get
 // ******************************
 export const getSkillTemplates = () => {
-  return async dispatch => {
-
+  return async (dispatch) => {
     function onStart() {
       dispatch({ type: GET_SKILL_TEMPLATES_STARTED });
     }

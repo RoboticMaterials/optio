@@ -1,13 +1,11 @@
-import { denormalize, schema } from 'normalizr';
+import { denormalize, schema } from "normalizr";
 
 // poses schema
 export const modelSchema = new schema.Entity(
   // key
-  'models',
+  "models",
   // definition
-  {
-
-  },
+  {},
   // options
   {
     /*
@@ -19,9 +17,8 @@ export const modelSchema = new schema.Entity(
     // processStrategy
     processStrategy: (value, parent, key) => {
       return value;
-    }
-  },
-
+    },
+  }
 );
 
 // schema for list of models

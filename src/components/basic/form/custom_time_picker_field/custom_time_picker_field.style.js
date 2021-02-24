@@ -1,13 +1,11 @@
-import styled from 'styled-components'
-
+import styled from "styled-components";
 
 export const DefaultContainer = styled.div`
-	width: 100%;
-    flex: 1;
-    position: relative;
-    overflow: hidden;
+  width: 100%;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
 `;
-
 
 export const IconContainerComponent = styled.div`
     width: auto;

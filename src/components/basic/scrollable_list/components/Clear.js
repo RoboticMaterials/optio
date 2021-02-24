@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from '@emotion/styled';
-import { LIB_NAME } from '../constants';
+import React from "react";
+import styled from "@emotion/styled";
+import { LIB_NAME } from "../constants";
 
 const Clear = ({ props, state, methods }) =>
   props.clearRenderer ? (
@@ -10,7 +10,8 @@ const Clear = ({ props, state, methods }) =>
       className={`${LIB_NAME}-clear`}
       tabIndex="-1"
       onClick={() => methods.clearAll()}
-      onKeyPress={() => methods.clearAll()}>
+      onKeyPress={() => methods.clearAll()}
+    >
       &times;
     </ClearComponent>
   );

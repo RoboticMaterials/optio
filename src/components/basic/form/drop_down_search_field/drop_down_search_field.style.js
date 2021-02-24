@@ -1,24 +1,23 @@
-import styled from 'styled-components'
+import styled from "styled-components";
 
 export const TitleContainer = styled.h1`
-    font-size: ${props => props.theme.fontSize.sz2};
-    font-family: ${props => props.theme.font.primary};
-    color: ${props => props.theme.bg.septenary};
-    margin-top: .6rem;
+  font-size: ${(props) => props.theme.fontSize.sz2};
+  font-family: ${(props) => props.theme.font.primary};
+  color: ${(props) => props.theme.bg.septenary};
+  margin-top: 0.6rem;
 `;
 
-export const DefaultContainer = styled.div`
-`;
+export const DefaultContainer = styled.div``;
 
 export const DefaultFieldContentContainer = styled.div`
-    width: 100%;
-    height: auto;
-    position: relative;
-    // background: blue;
+  width: 100%;
+  height: auto;
+  position: relative;
+  // background: blue;
 `;
 
 export const DefaultFieldDropdownContainer = styled.div`
-    flex: 1;
+  flex: 1;
 `;
 
 export const IconContainerComponent = styled.div`

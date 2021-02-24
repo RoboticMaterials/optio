@@ -1,3 +1,3 @@
 export const getMinutesFromMoment = (m) => {
-    return m.minutes() + m.hours() * 60;
-}
+  return m.minutes() + m.hours() * 60;
+};

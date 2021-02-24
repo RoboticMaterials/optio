@@ -1,24 +1,24 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
 export default function withPropsChecker(WrappedComponent) {
   return class PropsChecker extends Component {
     constructor(props) {
-        super(props);
+      super(props);
 
-        this.logger = this.props.logger;
+      this.logger = this.props.logger;
     }
     componentWillReceiveProps(nextProps) {
       Object.keys(nextProps)
-        .filter(key => {
+        .filter((key) => {
           return nextProps[key] !== this.props[key];
         })
-        .map(key => {
+        .map((key) => {
           this.logger.debug(
-            'changed property:',
+            "changed property:",
             key,
-            'from',
+            "from",
             this.props[key],
-            'to',
+            "to",
             nextProps[key]
           );
         });

@@ -1,247 +1,237 @@
 import {
-    GET_TASK_QUEUE,
-    TASK_QUEUE,
-    TASK_QUEUE_ALL,
-    TASK_QUEUE_ITEM,
-    GET_TASK_QUEUE_STARTED,
-    GET_TASK_QUEUE_SUCCESS,
-    GET_TASK_QUEUE_FAILURE,
-
-    GET_TASK_QUEUE_ITEM,
-    GET_TASK_QUEUE_ITEM_STARTED,
-    GET_TASK_QUEUE_ITEM_SUCCESS,
-    GET_TASK_QUEUE_ITEM_FAILURE,
-
-    POST_TASK_QUEUE,
-    POST_TASK_QUEUE_STARTED,
-    POST_TASK_QUEUE_SUCCESS,
-    POST_TASK_QUEUE_FAILURE,
-
-    PUT_TASK_QUEUE,
-    PUT_TASK_QUEUE_STARTED,
-    PUT_TASK_QUEUE_SUCCESS,
-    PUT_TASK_QUEUE_FAILURE,
-
-    DELETE_TASK_QUEUE,
-    DELETE_TASK_QUEUE_STARTED,
-    DELETE_TASK_QUEUE_SUCCESS,
-    DELETE_TASK_QUEUE_FAILURE,
-
-    TASK_QUEUE_OPEN,
-    INCREMENT_GET_DATA_FAILURE_COUNT
-} from '../types/task_queue_types';
+  GET_TASK_QUEUE,
+  TASK_QUEUE,
+  TASK_QUEUE_ALL,
+  TASK_QUEUE_ITEM,
+  GET_TASK_QUEUE_STARTED,
+  GET_TASK_QUEUE_SUCCESS,
+  GET_TASK_QUEUE_FAILURE,
+  GET_TASK_QUEUE_ITEM,
+  GET_TASK_QUEUE_ITEM_STARTED,
+  GET_TASK_QUEUE_ITEM_SUCCESS,
+  GET_TASK_QUEUE_ITEM_FAILURE,
+  POST_TASK_QUEUE,
+  POST_TASK_QUEUE_STARTED,
+  POST_TASK_QUEUE_SUCCESS,
+  POST_TASK_QUEUE_FAILURE,
+  PUT_TASK_QUEUE,
+  PUT_TASK_QUEUE_STARTED,
+  PUT_TASK_QUEUE_SUCCESS,
+  PUT_TASK_QUEUE_FAILURE,
+  DELETE_TASK_QUEUE,
+  DELETE_TASK_QUEUE_STARTED,
+  DELETE_TASK_QUEUE_SUCCESS,
+  DELETE_TASK_QUEUE_FAILURE,
+  TASK_QUEUE_OPEN,
+  INCREMENT_GET_DATA_FAILURE_COUNT,
+} from "../types/task_queue_types";
 
 import {
-    GET_,
-    POST_,
-    DELETE_,
-    PUT_,
+  GET_,
+  POST_,
+  DELETE_,
+  PUT_,
+  _STARTED,
+  _SUCCESS,
+  _FAILURE,
+} from "../types/api_types";
 
-    _STARTED,
-    _SUCCESS,
-    _FAILURE,
-} from '../types/api_types';
-
-import { clone_object, deepCopy } from '../../methods/utils/utils';
+import { clone_object, deepCopy } from "../../methods/utils/utils";
 
 const defaultState = {
-    taskQueue: {},
-    pending: false,
-    error: '',
-    taskQueueItemClicked: '',
-    hilTimers: {},
-    hilResponse: '',
-    activeHilDashboards: {},
-    localHumanTask: null,
-    taskQueueOpen: false,
-    getFailureCount: 1
+  taskQueue: {},
+  pending: false,
+  error: "",
+  taskQueueItemClicked: "",
+  hilTimers: {},
+  hilResponse: "",
+  activeHilDashboards: {},
+  localHumanTask: null,
+  taskQueueOpen: false,
+  getFailureCount: 1,
 };
 
 export default function taskQueueReducer(state = defaultState, action) {
-    let taskQueue = {}
+  let taskQueue = {};
 
-    switch (action.type) {
+  switch (action.type) {
+    /**
+     * HILs?
+     */
+    case "TASK_QUEUE_ITEM_CLICKED":
+      return {
+        ...state,
+        taskQueueItemClicked: action.payload,
+      };
 
-        /**
-         * HILs?
-         */
-        case 'TASK_QUEUE_ITEM_CLICKED':
-            return {
-                ...state,
-                taskQueueItemClicked: action.payload
-            }
+    case "HIL_TIMERS":
+      return {
+        ...state,
+        hilTimers: action.payload,
+      };
 
-        case 'HIL_TIMERS':
-            return {
-                ...state,
-                hilTimers: action.payload,
-            }
+    // Used for immediate HIL response input
+    case "HIL_RESPONSE":
+      return {
+        ...state,
+        hilResponse: action.payload,
+      };
 
-        // Used for immediate HIL response input
-        case 'HIL_RESPONSE':
-            return {
-                ...state,
-                hilResponse: action.payload,
-            }
+    // Used for when a human task is clicked, should only show dashboard on the clicked tablet
+    case "LOCAL_HUMAN_TASK":
+      return {
+        ...state,
+        localHumanTask: action.payload,
+      };
 
-        // Used for when a human task is clicked, should only show dashboard on the clicked tablet
-        case 'LOCAL_HUMAN_TASK':
-            return {
-                ...state,
-                localHumanTask: action.payload,
-            }
+    // Used to set first in, first out dashboard HILs
+    // Not 100% tested, but in theory should work
+    case "ACTIVE_HIL_DASHBOARDS":
+      return {
+        ...state,
+        activeHilDashboards: action.payload,
+      };
 
-        // Used to set first in, first out dashboard HILs
-        // Not 100% tested, but in theory should work
-        case 'ACTIVE_HIL_DASHBOARDS':
-            return {
-                ...state,
-                activeHilDashboards: action.payload,
-            }
+    // get
+    // ***************
+    case GET_TASK_QUEUE_SUCCESS:
+      if (action.payload === undefined) {
+        action.payload = {};
+      }
+      return Object.assign({}, state, {
+        taskQueue: action.payload,
+        pending: false,
+      });
 
+    case GET_TASK_QUEUE_FAILURE:
+      return Object.assign({}, state, {
+        error: action.payload,
+        pending: false,
+      });
 
-        // get
-        // ***************
-        case GET_TASK_QUEUE_SUCCESS:
-            if (action.payload === undefined) {
-                action.payload = {}
-            }
-            return Object.assign({}, state, {
-                taskQueue: action.payload,
-                pending: false
-            });
+    case GET_TASK_QUEUE_STARTED:
+      return {
+        ...state,
+        pending: true,
+      };
+    // ~~~~~~~~~~~~~~~
 
-        case GET_TASK_QUEUE_FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
+    // post
+    // ***************
+    case POST_TASK_QUEUE_SUCCESS:
+      return {
+        ...state,
+        taskQueue: {
+          ...state.taskQueue,
+          [action.payload.createdTaskQueueItem._id]:
+            action.payload.createdTaskQueueItem,
+        },
+        error: "",
+        pending: false,
+      };
 
-        case GET_TASK_QUEUE_STARTED:
+    case POST_TASK_QUEUE_FAILURE:
+      return Object.assign({}, state, {
+        error: action.payload,
+        pending: false,
+      });
 
-            return {
-                ...state,
-                pending: true,
-            }
-        // ~~~~~~~~~~~~~~~
+    case POST_TASK_QUEUE_STARTED:
+      return Object.assign({}, state, {
+        pending: true,
+      });
+    // ~~~~~~~~~~~~~~~
 
-        // post
-        // ***************
-        case POST_TASK_QUEUE_SUCCESS:
-            return {
-                ...state,
-                taskQueue: {
-                    ...state.taskQueue,
-                    [action.payload.createdTaskQueueItem._id]: action.payload.createdTaskQueueItem
-                },
-                error: '',
-                pending: false,
-            }
+    // put
+    // ***************
+    case PUT_TASK_QUEUE_SUCCESS:
+      const updatedTaskQ = deepCopy({
+        ...action.payload.item,
+        _id: { $oid: action.payload.ID },
+      });
 
-        case POST_TASK_QUEUE_FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
+      let forceUpdate = {};
 
-        case POST_TASK_QUEUE_STARTED:
-            return Object.assign({}, state, {
-                pending: true
-            });
-        // ~~~~~~~~~~~~~~~
+      forceUpdate = Object.assign(forceUpdate, updatedTaskQ);
 
-        // put
-        // ***************
-        case PUT_TASK_QUEUE_SUCCESS:
+      return {
+        ...state,
+        taskQueue: {
+          ...state.taskQueue,
+          [action.payload.ID]: forceUpdate,
+        },
+        error: "",
+        pending: false,
+      };
 
-            const updatedTaskQ = deepCopy({
-                ...action.payload.item,
-                _id: { $oid: action.payload.ID }
+    case PUT_TASK_QUEUE_FAILURE:
+      return Object.assign({}, state, {
+        error: action.payload,
+        pending: false,
+      });
 
-            })
+    case PUT_TASK_QUEUE_STARTED:
+      return Object.assign({}, state, {
+        pending: true,
+      });
+    // ~~~~~~~~~~~~~~~
 
-            let forceUpdate = {}
+    // delete
+    // ***************
+    case DELETE_ + TASK_QUEUE_ALL + _SUCCESS:
+      return Object.assign({}, state, {
+        taskQueue: {},
+        pending: false,
+      });
 
-            forceUpdate = Object.assign(forceUpdate, updatedTaskQ)
+    case DELETE_ + TASK_QUEUE_ALL + _FAILURE:
+      return Object.assign({}, state, {
+        error: action.payload,
+        pending: false,
+      });
 
-            return {
-                ...state,
-                taskQueue: {
-                    ...state.taskQueue,
-                    [action.payload.ID]: forceUpdate,
-                },
-                error: '',
-                pending: false,
-            }
+    case DELETE_ + TASK_QUEUE_ALL + _STARTED:
+      return Object.assign({}, state, {
+        pending: true,
+      });
+    // ~~~~~~~~~~~~~~~
 
-        case PUT_TASK_QUEUE_FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
+    // delete
+    // ***************
+    case DELETE_ + TASK_QUEUE_ITEM + _SUCCESS:
+      taskQueue = clone_object(state.taskQueue);
+      delete taskQueue[action.payload.id];
 
-        case PUT_TASK_QUEUE_STARTED:
-            return Object.assign({}, state, {
-                pending: true
-            });
-        // ~~~~~~~~~~~~~~~
+      return Object.assign({}, state, {
+        taskQueue: { ...taskQueue },
+        pending: false,
+      });
 
-        // delete
-        // ***************
-        case DELETE_ + TASK_QUEUE_ALL + _SUCCESS:
-            return Object.assign({}, state, {
-                taskQueue: {},
-                pending: false
-            });
+    case DELETE_ + TASK_QUEUE_ITEM + _FAILURE:
+      return Object.assign({}, state, {
+        error: action.payload,
+        pending: false,
+      });
 
-        case DELETE_ + TASK_QUEUE_ALL + _FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
+    case DELETE_ + TASK_QUEUE_ITEM + _STARTED:
+      return Object.assign({}, state, {
+        pending: true,
+      });
 
-        case DELETE_ + TASK_QUEUE_ALL + _STARTED:
-            return Object.assign({}, state, {
-                pending: true
-            });
-        // ~~~~~~~~~~~~~~~
+    case TASK_QUEUE_OPEN:
+      return {
+        ...state,
+        taskQueueOpen: action.payload,
+      };
 
-        // delete
-        // ***************
-        case DELETE_ + TASK_QUEUE_ITEM + _SUCCESS:
-            taskQueue = clone_object(state.taskQueue);
-            delete taskQueue[action.payload.id];
+    case INCREMENT_GET_DATA_FAILURE_COUNT:
+      return {
+        ...state,
+        getFailureCount: state.getFailureCount + 1,
+      };
+    // ~~~~~~~~~~~~~~~
 
-            return Object.assign({}, state, {
-                taskQueue: { ...taskQueue },
-                pending: false
-            });
-
-        case DELETE_ + TASK_QUEUE_ITEM + _FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
-
-        case DELETE_ + TASK_QUEUE_ITEM + _STARTED:
-            return Object.assign({}, state, {
-                pending: true
-            });
-
-        case TASK_QUEUE_OPEN:
-            return {
-                ...state,
-                taskQueueOpen: action.payload,
-            }
-
-        case INCREMENT_GET_DATA_FAILURE_COUNT:
-            return {
-                ...state,
-                getFailureCount: state.getFailureCount + 1,
-            }
-        // ~~~~~~~~~~~~~~~
-
-        default:
-            return state
-    }
+    default:
+      return state;
+  }
 }

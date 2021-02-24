@@ -17,217 +17,202 @@ Instructions of creating a new logger:
 */
 
 // import external dependencies
-import React, {Component} from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
 // import actions
-import { getLoggers, postLoggers } from '../../redux/actions/local_actions';
+import { getLoggers, postLoggers } from "../../redux/actions/local_actions";
 
 // import methods
-import { deepCopy, arraysEqual } from '../../methods/utils/utils'
+import { deepCopy, arraysEqual } from "../../methods/utils/utils";
 
 // import logger
-import log from '../../logger.js';
+import log from "../../logger.js";
 
 class LoggerContainer extends Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
-          //loggers: log.getLoggers(),
-          disableAll: false,
-          enableAll: false,
-        }
+    this.state = {
+      //loggers: log.getLoggers(),
+      disableAll: false,
+      enableAll: false,
+    };
 
-        this.logger = log.getLogger(this.constructor.name);
+    this.logger = log.getLogger(this.constructor.name);
+  }
 
+  componentDidMount() {
+    // initial call to check for loggers
+    this.checkForLoggers();
+
+    // check for new loggers on interval
+    // doesn't appear to be necessary at the moment
+    // this.checkLoggersInterval = setInterval(() => this.checkForLoggers(), 10000);
+  }
+
+  componentWillUnmount() {
+    // clearInterval(this.checkLoggersInterval);
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    // const currentReduxLoggers = this.props.loggers;
+    // const prevReduxLoggers = prevProps.loggers;
+
+    const currentReduxLoggerNames = Object.keys(this.props.loggers);
+    const prevReduxLoggerNames = Object.keys(prevProps.loggers);
+
+    const loggersChanged = !arraysEqual(
+      currentReduxLoggerNames,
+      prevReduxLoggerNames
+    );
+
+    if (loggersChanged) {
+      // this.checkForLoggers();
     }
+  }
 
-    componentDidMount() {
-        // initial call to check for loggers
-        this.checkForLoggers();
-
-        // check for new loggers on interval
-        // doesn't appear to be necessary at the moment
-        // this.checkLoggersInterval = setInterval(() => this.checkForLoggers(), 10000);
-
-    }
-
-    componentWillUnmount() {
-        // clearInterval(this.checkLoggersInterval);
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        // const currentReduxLoggers = this.props.loggers;
-        // const prevReduxLoggers = prevProps.loggers;
-
-        const currentReduxLoggerNames = Object.keys(this.props.loggers);
-        const prevReduxLoggerNames = Object.keys(prevProps.loggers);
-
-        const loggersChanged = !arraysEqual(currentReduxLoggerNames, prevReduxLoggerNames);
-
-        if(loggersChanged) {
-            // this.checkForLoggers();
-        }
-
-
-
-    }
-
-
-    /*
+  /*
         This function disables all loggers
     */
-    disableAll = () => {
-      this.logger.trace('disableAll called')
-      //Object.values(log.getLoggers()).forEach((logger, index) => {
-      //  logger.setLevel(5);
-      //})
+  disableAll = () => {
+    this.logger.trace("disableAll called");
+    //Object.values(log.getLoggers()).forEach((logger, index) => {
+    //  logger.setLevel(5);
+    //})
 
-      Object.values(this.props.loggers).forEach((redux_logger, index) => {
+    Object.values(this.props.loggers).forEach((redux_logger, index) => {
+      let logger = log.getLogger(redux_logger.name);
+      logger.setLevel(5);
+    });
 
-          let logger = log.getLogger(redux_logger.name);
-          logger.setLevel(5);
+    log.disableAll();
+    this.setState({ disableAll: true, enableAll: false });
+  };
 
-      })
-
-      log.disableAll();
-      this.setState({disableAll: true, enableAll: false});
-    }
-
-    /*
+  /*
         This function enables all loggers
     */
-    enableAll = () => {
-      //Object.values(log.getLoggers()).forEach((logger, index) => {
-      //  logger.setLevel(0);
-      //})
+  enableAll = () => {
+    //Object.values(log.getLoggers()).forEach((logger, index) => {
+    //  logger.setLevel(0);
+    //})
 
-      Object.values(this.props.loggers).forEach((redux_logger, index) => {
-          let logger = log.getLogger(redux_logger.name);
-          logger.setLevel(0);
-      })
-      log.enableAll();
-      this.setState({enableAll: true, disableAll: false});
-    }
+    Object.values(this.props.loggers).forEach((redux_logger, index) => {
+      let logger = log.getLogger(redux_logger.name);
+      logger.setLevel(0);
+    });
+    log.enableAll();
+    this.setState({ enableAll: true, disableAll: false });
+  };
 
-
-
-    /*
+  /*
         This function updates the actual logger settings to match the config in redux
     */
-    updateLoggers = () => {
+  updateLoggers = () => {
+    const existingLoggerNames = Object.values(log.getLoggers()).map(
+      (logger, index) => logger.name
+    );
 
-        const existingLoggerNames = Object.values(log.getLoggers()).map((logger, index) => logger.name);
-
-        //If disableAll all is true
-        if(this.props.disableAll && !this.state.disableAll){
-          this.disableAll();
-        }
-
-        if(!this.props.disableAll && this.state.disableAll){
-          this.setState({disableAll: false});
-        }
-
-        //If mute all is false
-        if(this.props.enableAll && !this.state.enableAll){
-          this.enableAll();
-        }
-
-        if(!this.props.enableAll && this.state.enableAll){
-          this.setState({enableAll: false});
-        }
-
-        // only perform the logger updates if neither disableAll nor enableAll are true
-        if(!this.props.disableAll && !this.props.enableAll) {
-
-          // for each logger in redux:
-          //    get the actual logger
-          //    set the level to match the redux config
-          Object.values(this.props.loggers).forEach((redux_logger, index) => {
-
-            if(existingLoggerNames.includes(redux_logger.name)) {
-                let logger = log.getLogger(redux_logger.name);
-
-                let level = redux_logger.level;
-                let enabled = redux_logger.enabled;
-
-                // if logger isn't enabled and isn't already set to silent,
-                // set it to silent
-                if(!enabled && (logger.getLevel() !== 5)) {
-                  logger.setLevel(5);
-                }
-
-                // if the logger is enabled, and the actual level doesn't
-                // match the level config in redux, update it
-                if(enabled && (logger.getLevel() !== level)) {
-                  logger.setLevel(level);
-                }
-            }
-
-          });
-        }
-
+    //If disableAll all is true
+    if (this.props.disableAll && !this.state.disableAll) {
+      this.disableAll();
     }
 
+    if (!this.props.disableAll && this.state.disableAll) {
+      this.setState({ disableAll: false });
+    }
 
+    //If mute all is false
+    if (this.props.enableAll && !this.state.enableAll) {
+      this.enableAll();
+    }
 
+    if (!this.props.enableAll && this.state.enableAll) {
+      this.setState({ enableAll: false });
+    }
 
-    /*
+    // only perform the logger updates if neither disableAll nor enableAll are true
+    if (!this.props.disableAll && !this.props.enableAll) {
+      // for each logger in redux:
+      //    get the actual logger
+      //    set the level to match the redux config
+      Object.values(this.props.loggers).forEach((redux_logger, index) => {
+        if (existingLoggerNames.includes(redux_logger.name)) {
+          let logger = log.getLogger(redux_logger.name);
+
+          let level = redux_logger.level;
+          let enabled = redux_logger.enabled;
+
+          // if logger isn't enabled and isn't already set to silent,
+          // set it to silent
+          if (!enabled && logger.getLevel() !== 5) {
+            logger.setLevel(5);
+          }
+
+          // if the logger is enabled, and the actual level doesn't
+          // match the level config in redux, update it
+          if (enabled && logger.getLevel() !== level) {
+            logger.setLevel(level);
+          }
+        }
+      });
+    }
+  };
+
+  /*
         This function checks if any loggers exist that do not exist in the redux store
         If a logger is found that isn't in the store, it will add a new logger object to the store
     */
-    checkForLoggers = async () => {
-        // true if the redux store has read the logger config
-        // false otherwise
-        const { loaded } = this.props;
+  checkForLoggers = async () => {
+    // true if the redux store has read the logger config
+    // false otherwise
+    const { loaded } = this.props;
 
-        // only perform the check if the saved settings have been loaded
-        if(true) {
+    // only perform the check if the saved settings have been loaded
+    if (true) {
+      // get all loggers
+      const loggers = Object.values(log.getLoggers());
+      const loggerNames = loggers.map((logger) => logger.name);
 
-          // get all loggers
-          const loggers = Object.values(log.getLoggers());
-          const loggerNames = loggers.map((logger) => logger.name);
+      // get name of loggers in redux
+      const reduxLoggerNames = Object.values(this.props.loggers).map(
+        (logger, index) => {
+          return logger.name;
+        }
+      );
 
-          // get name of loggers in redux
-          const reduxLoggerNames = Object.values(this.props.loggers).map((logger, index) => {
-            return logger.name;
-          });
+      // for each logger
+      //    check if the redux store contains a logger with the same name
+      //    if a logger isn't found, create a new one
+      let newLoggers = [];
+      loggers.forEach(async (logger, index) => {
+        let name = logger.name;
+        let level = logger.getLevel();
 
-          // for each logger
-          //    check if the redux store contains a logger with the same name
-          //    if a logger isn't found, create a new one
-          let newLoggers = [];
-          loggers.forEach( async (logger, index) => {
+        // if level is equal to 5 (silent), enabled is false, and true otherwise
+        let enabled = level === 5 ? false : true;
 
-              let name = logger.name;
-              let level = logger.getLevel();
+        if (!reduxLoggerNames.includes(name)) {
+          let newLogger = {
+            name,
+            level,
+            enabled,
+          };
 
-              // if level is equal to 5 (silent), enabled is false, and true otherwise
-              let enabled = level === 5 ? false : true;
+          this.logger.info("Adding new logger", newLogger);
 
-              if(!reduxLoggerNames.includes(name)) {
+          newLoggers.push(newLogger);
+        }
+      });
 
-                  let newLogger = {
-                    name,
-                    level,
-                    enabled
-                  };
+      await this.addLoggers(newLoggers);
 
-                  this.logger.info('Adding new logger', newLogger)
+      // this block will remove loggers from redux that don't actually exist
+      // this will be necessary for loggers that have been deleted from code
+      // but still have local saved settings
 
-                  newLoggers.push(newLogger);
-              }
-          });
-
-          await this.addLoggers(newLoggers);
-
-
-          // this block will remove loggers from redux that don't actually exist
-          // this will be necessary for loggers that have been deleted from code
-          // but still have local saved settings
-
-          /*
+      /*
           let removeLoggers = [];
           // delete
           reduxLoggerNames.forEach( (reduxLoggerName, index) => {
@@ -243,65 +228,61 @@ class LoggerContainer extends Component {
 
           }
           */
-
-
-        }
     }
+  };
 
-    /*
+  /*
         This function adds a new logger to the redux store
     */
-    addLoggers = async (newLoggers) => {
-        const { loggers, enableAll, disableAll, loaded } = this.props;
+  addLoggers = async (newLoggers) => {
+    const { loggers, enableAll, disableAll, loaded } = this.props;
 
-        // copy loggers (don't directly modify state)
-        let loggersCopy = deepCopy(loggers);
+    // copy loggers (don't directly modify state)
+    let loggersCopy = deepCopy(loggers);
 
-        newLoggers.forEach((newLogger, index) => {
-            // add newLogger to loggers copy
-            loggersCopy[newLogger.name] = newLogger;
-        })
+    newLoggers.forEach((newLogger, index) => {
+      // add newLogger to loggers copy
+      loggersCopy[newLogger.name] = newLogger;
+    });
 
+    // create logger config
+    var loggerConfig = {};
+    loggerConfig["loggers"] = loggersCopy;
+    loggerConfig["enableAll"] = enableAll;
+    loggerConfig["disableAll"] = disableAll;
 
-        // create logger config
-        var loggerConfig = {};
-        loggerConfig['loggers'] = loggersCopy;
-        loggerConfig['enableAll'] = enableAll;
-        loggerConfig['disableAll'] = disableAll;
+    await this.props.postLoggers(loggerConfig, loaded);
+  };
 
-        await this.props.postLoggers(loggerConfig, loaded);
-    }
-
-    /*
+  /*
         This function removes logger from the redux store
     */
-    removeLogger = async (loggerNames) => {
-        const { loggers, enableAll, disableAll } = this.props;
+  removeLogger = async (loggerNames) => {
+    const { loggers, enableAll, disableAll } = this.props;
 
-        this.logger.debug("removeLogger: loggerNames", loggerNames);
-        this.logger.debug("removeLogger: loggers", loggers)
+    this.logger.debug("removeLogger: loggerNames", loggerNames);
+    this.logger.debug("removeLogger: loggers", loggers);
 
-        // copy loggers (don't directly modify state)
-        let loggersCopy = deepCopy(loggers);
+    // copy loggers (don't directly modify state)
+    let loggersCopy = deepCopy(loggers);
 
-        loggerNames.forEach((name, index) => {
-          // delete logger
-          delete loggersCopy[name];
-        })
+    loggerNames.forEach((name, index) => {
+      // delete logger
+      delete loggersCopy[name];
+    });
 
+    this.logger.debug("removeLogger: loggersCopy after removal", loggersCopy);
 
-        this.logger.debug("removeLogger: loggersCopy after removal", loggersCopy)
+    // create logger config
+    var loggerConfig = {};
+    loggerConfig["loggers"] = loggersCopy;
+    loggerConfig["enableAll"] = enableAll;
+    loggerConfig["disableAll"] = disableAll;
 
-        // create logger config
-        var loggerConfig = {};
-        loggerConfig['loggers'] = loggersCopy;
-        loggerConfig['enableAll'] = enableAll;
-        loggerConfig['disableAll'] = disableAll;
+    await this.props.postLoggers(loggerConfig);
+  };
 
-        await this.props.postLoggers(loggerConfig);
-    }
-
-    /*
+  /*
     printLoggers = () => {
       let loggers = Object.values(log.getLoggers());
       console.log('printLoggers')
@@ -317,7 +298,7 @@ class LoggerContainer extends Component {
     }
     */
 
-    /*
+  /*
     printReduxLoggers = () => {
       let loggers = Object.values(this.props.loggers);
       console.log('printReduxLoggers')
@@ -333,22 +314,17 @@ class LoggerContainer extends Component {
     }
     */
 
-    render(){
+  render() {
+    this.updateLoggers();
 
-      this.updateLoggers();
+    //this.printLoggers()
+    //this.printReduxLoggers()
 
-      //this.printLoggers()
-      //this.printReduxLoggers()
-
-
-      return(
-        <>
-        </>
-      );
-    }
+    return <></>;
+  }
 }
 
-const mapStateToProps = function(state) {
+const mapStateToProps = function (state) {
   return {
     loggers: state.localReducer.loggers,
     enableAll: state.localReducer.enableAll,
@@ -359,7 +335,7 @@ const mapStateToProps = function(state) {
 
 const mapDispatchToProps = (dispatch, props) => {
   return {
-    postLoggers: (loggerConfig) => dispatch(postLoggers(loggerConfig))
+    postLoggers: (loggerConfig) => dispatch(postLoggers(loggerConfig)),
   };
 };
 

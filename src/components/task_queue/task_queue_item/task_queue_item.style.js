@@ -1,62 +1,57 @@
-import styled, {css} from "styled-components";
+import styled, { css } from "styled-components";
 
-import RemoveIcon from '@material-ui/icons/Remove';
+import RemoveIcon from "@material-ui/icons/Remove";
 
 export const containerCss = css`
-	background-color: #FFFFFF;
-	border-color: transparent;
-	border-width: 2px;
-	color: transparent;
-    height: 4.5rem;
-    width: 100%;
-    padding: .25rem;
+  background-color: #ffffff;
+  border-color: transparent;
+  border-width: 2px;
+  color: transparent;
+  height: 4.5rem;
+  width: 100%;
+  padding: 0.25rem;
 
-		&:hover{
-				border-color: #798fd9;
-
-		}
-
-`
+  &:hover {
+    border-color: #798fd9;
+  }
+`;
 
 export const titleCss = css`
-    color: #000000;
-    margin-right: .5rem;
-		width:100%;
-		word-break: break-word;
-
-
-`
+  color: #000000;
+  margin-right: 0.5rem;
+  width: 100%;
+  word-break: break-word;
+`;
 
 export const contentContainerCss = css`
-    flex-direction: row;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    /* white-space: nowrap; */
+  flex-direction: row;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* white-space: nowrap; */
 
-    /* justify-content: flex-start; */
-`
+  /* justify-content: flex-start; */
+`;
 
 export const rightContentContainerCss = css`
-	width: auto;
-	margin-left: .5rem;
-	margin-right: .25rem;
-	display: flex;
-	align-items: center;
-`
-
+  width: auto;
+  margin-left: 0.5rem;
+  margin-right: 0.25rem;
+  display: flex;
+  align-items: center;
+`;
 
 export const StyledRemoveIcon = styled(RemoveIcon)`
-	padding: 0;
-	margin: 0;
-`
+  padding: 0;
+  margin: 0;
+`;
 
 export const Spacer = styled.div`
-	height: 0.4rem;
-	width: 100%;
-`
+  height: 0.4rem;
+  width: 100%;
+`;
 
 export const ItemDiv = styled.div`
-    &:hover{
-        cursor: pointer;
-    }
-`
+  &:hover {
+    cursor: pointer;
+  }
+`;

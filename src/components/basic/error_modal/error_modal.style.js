@@ -1,7 +1,7 @@
-import styled from 'styled-components'
-import Modal from 'react-modal';
-import ReactModalAdapter from '../../basic/styled_modal/styled_modal';
-import {css} from 'styled-components'
+import styled from "styled-components";
+import Modal from "react-modal";
+import ReactModalAdapter from "../../basic/styled_modal/styled_modal";
+import { css } from "styled-components";
 
 const sharedButtonStyle = css`
   outline: none !important;
@@ -13,11 +13,11 @@ const sharedButtonStyle = css`
   -webkit-transition-duration: 0.4s; /* Safari */
   transition-duration: 0.4s;
   cursor: pointer;
-`
+`;
 
 const StyledModal = styled(ReactModalAdapter).attrs({
-  overlayClassName: 'Overlay',
-  modalClassName: 'Modal'
+  overlayClassName: "Overlay",
+  modalClassName: "Modal",
 })`
   .Modal {
     styles: here;
@@ -25,26 +25,25 @@ const StyledModal = styled(ReactModalAdapter).attrs({
   .Overlay {
     styles: here;
   }
-`
+`;
 
 export const Container = styled(ReactModalAdapter).attrs({
   overlayClassName: {
     base: "Overlay",
     afterOpen: "Overlay--after-open",
-    beforeClose: "Overlay--before-close"
+    beforeClose: "Overlay--before-close",
   },
-    modalClassName: {
-      base: "Modal",
-      afterOpen: "Modal--after-open",
-      beforeClose: "Modal--before-close"
-  }
-  })`
-
+  modalClassName: {
+    base: "Modal",
+    afterOpen: "Modal--after-open",
+    beforeClose: "Modal--before-close",
+  },
+})`
   .Modal {
     outline: none !important;
     outline-offset: none !important;
 
-    background: ${props =>  props.theme.bg.primary};
+    background: ${(props) => props.theme.bg.primary};
     border-width: thin;
     border-color: black;
     border-style: solid;
@@ -58,11 +57,9 @@ export const Container = styled(ReactModalAdapter).attrs({
     }
 
     &--after-open {
-
     }
 
     &--before-close {
-
     }
   }
 
@@ -73,23 +70,16 @@ export const Container = styled(ReactModalAdapter).attrs({
     top: 2rem;
     right: 2rem;
 
-
-
     &--after-open {
       // background-color: rgba(255, 0, 0, .75);
       transition: background-color 1000ms linear;
       top: 2rem;
       right: 2rem;
-
     }
 
     &--before-close {
-
     }
   }
-
-
-
 `;
 
 export const HeaderContainer = styled.div`
@@ -105,8 +95,8 @@ export const HeaderContainer = styled.div`
 
 export const Title = styled.h2`
   text-align: center;
-  font-size: ${props =>  props.theme.fontSize.sz2};
-  font-family: ${props =>  props.theme.font.primary};
+  font-size: ${(props) => props.theme.fontSize.sz2};
+  font-family: ${(props) => props.theme.font.primary};
   font-weight: bold;
 `;
 
@@ -119,39 +109,40 @@ export const TextContainer = styled.div`
 
 export const TextMain = styled.h4`
   text-align: center;
-  font-size: ${props =>  props.theme.fontSize.sz3};
-  font-family: ${props =>  props.theme.font.primary};
+  font-size: ${(props) => props.theme.fontSize.sz3};
+  font-family: ${(props) => props.theme.font.primary};
   font-weight: 500;
 `;
 
 export const Caption = styled.h5`
   text-align: center;
-  font-size: ${props =>  props.theme.fontSize.sz4};
-  font-family: ${props =>  props.theme.font.primary};
+  font-size: ${(props) => props.theme.fontSize.sz4};
+  font-family: ${(props) => props.theme.font.primary};
   font-weight: 400;
-  font-style: italic
+  font-style: italic;
 `;
-
-
 
 export const DeleteButton = styled.button`
   ${sharedButtonStyle}
-  background: ${props =>  props.theme.bg.quaternary};
+  background: ${(props) => props.theme.bg.quaternary};
   margin-left: 1rem;
   color: black;
-  &:hover {background: #FF0000}
+  &:hover {
+    background: #ff0000;
+  }
 `;
 
 export const CancelButton = styled.button`
   ${sharedButtonStyle}
-  background: ${props =>  props.theme.bg.senary};
+  background: ${(props) => props.theme.bg.senary};
   margin-left: 1rem;
   color: black;
-  &:hover {color: #FF0000}
+  &:hover {
+    color: #ff0000;
+  }
 `;
 
 export const ButtonContainer = styled.div`
-
   display: flex;
   flex-direction: row;
   justify-content: center;

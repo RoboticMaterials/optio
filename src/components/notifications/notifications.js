@@ -1,32 +1,32 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from "react-redux";
 
-import * as styled from './notifications.style'
+import * as styled from "./notifications.style";
 
-import Notification from './notification/notification'
+import Notification from "./notification/notification";
 
 const Notifications = () => {
-    const notifications = useSelector(state => state.notificationsReducer.notifications)
+  const notifications = useSelector(
+    (state) => state.notificationsReducer.notifications
+  );
 
-    const handleNotifications = () => {
-        return (
-            <>{
-                notifications.sort((a, b) => b.dateTime - a.dateTime).map((notification, ind) =>
-                    <Notification
-                        key={`notification-${ind}`}
-                        ind={ind}
-                        notification={notification}
-                    />
-                )
-            }</>
-        )
-    }
-
+  const handleNotifications = () => {
     return (
-        <>
-            {handleNotifications()}
-        </>
-    )
-}
+      <>
+        {notifications
+          .sort((a, b) => b.dateTime - a.dateTime)
+          .map((notification, ind) => (
+            <Notification
+              key={`notification-${ind}`}
+              ind={ind}
+              notification={notification}
+            />
+          ))}
+      </>
+    );
+  };
 
-export default Notifications
+  return <>{handleNotifications()}</>;
+};
+
+export default Notifications;

@@ -1,35 +1,38 @@
-import React from 'react';
-import styled from '@emotion/styled';
-import {getByPath} from '../util';
-import { LIB_NAME } from '../constants';
+import React from "react";
+import styled from "@emotion/styled";
+import { getByPath } from "../util";
+import { LIB_NAME } from "../constants";
 
 const Option = ({ item, props, state, methods }) => {
-
-    const OptionComponent = props.OptionComponent ? props.OptionComponent : DefaultOptionComponent
-    return(
-        item && props.optionRenderer ? (
-          props.optionRenderer({ item, props, state, methods })
-        ) : (
-          <OptionComponent
-            role="listitem"
-            disabled={props.disabled}
-            direction={props.direction}
-            className={`${LIB_NAME}-option`}
-            color={props.color}>
-            <span className={`${LIB_NAME}-option-label`}>{getByPath(item, props.labelField)}</span>
-            <span
-              className={`${LIB_NAME}-option-remove`}
-              onClick={(event) => methods.removeItem(event, item, props.closeOnSelect)}>
-              &times;
-            </span>
-          </OptionComponent>
-        )
-    );
-
-}
+  const OptionComponent = props.OptionComponent
+    ? props.OptionComponent
+    : DefaultOptionComponent;
+  return item && props.optionRenderer ? (
+    props.optionRenderer({ item, props, state, methods })
+  ) : (
+    <OptionComponent
+      role="listitem"
+      disabled={props.disabled}
+      direction={props.direction}
+      className={`${LIB_NAME}-option`}
+      color={props.color}
+    >
+      <span className={`${LIB_NAME}-option-label`}>
+        {getByPath(item, props.labelField)}
+      </span>
+      <span
+        className={`${LIB_NAME}-option-remove`}
+        onClick={(event) =>
+          methods.removeItem(event, item, props.closeOnSelect)
+        }
+      >
+        &times;
+      </span>
+    </OptionComponent>
+  );
+};
 
 export const DefaultOptionComponent = styled.span`
-
   padding: 0 5px;
   border-radius: 2px;
   line-height: 21px;
@@ -37,8 +40,8 @@ export const DefaultOptionComponent = styled.span`
   background: ${({ color }) => color};
   color: #fff;
   display: flex;
-  flex-direction: ${({ direction }) => direction === 'rtl' ? 'row-reverse' : 'row'};
-
+  flex-direction: ${({ direction }) =>
+    direction === "rtl" ? "row-reverse" : "row"};
 
   .${LIB_NAME}-option-remove {
     cursor: pointer;
@@ -58,13 +61,11 @@ export const DefaultOptionComponent = styled.span`
   :hover > span {
     opacity: 0.9;
   }
-
 `;
-
 
 // Specifies the default values for props:
 Option.defaultProps = {
-    OptionComponent: DefaultOptionComponent,
+  OptionComponent: DefaultOptionComponent,
 };
 
 export default Option;

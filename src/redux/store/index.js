@@ -1,48 +1,48 @@
-import React from 'react';
-import {createStore, applyMiddleware, compose} from 'redux';
-import { createDevTools } from 'redux-devtools';
-import { createLogger } from 'redux-logger'
-import reducers from '../reducers/index';
-import thunk from 'redux-thunk';
-import LogMonitor from 'redux-devtools-log-monitor';
+import React from "react";
+import { createStore, applyMiddleware, compose } from "redux";
+import { createDevTools } from "redux-devtools";
+import { createLogger } from "redux-logger";
+import reducers from "../reducers/index";
+import thunk from "redux-thunk";
+import LogMonitor from "redux-devtools-log-monitor";
 
-import log_module from '../../logger.js';
+import log_module from "../../logger.js";
 
-const reduxLogger = log_module.getLogger('ReduxLogger');
+const reduxLogger = log_module.getLogger("ReduxLogger");
 
-var logger = createLogger({logger: reduxLogger, level: "info"});
+var logger = createLogger({ logger: reduxLogger, level: "info" });
 
 const muteReducer = () => {
-  if(reducers.settingsReducer.muteReducer){
-    return applyMiddleware(thunk)
+  if (reducers.settingsReducer.muteReducer) {
+    return applyMiddleware(thunk);
   } else {
-    return applyMiddleware(logger, thunk)
+    return applyMiddleware(logger, thunk);
   }
-}
+};
 
 const composeEnhancers =
-  typeof window === 'object' &&
-  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
-    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-      // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
-      // actionCreators,
-      trace: true,
-      traceLimit: 25,
-    }) : compose;
+  typeof window === "object" && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+        // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
+        // actionCreators,
+        trace: true,
+        traceLimit: 25,
+      })
+    : compose;
 
 const enhancer = composeEnhancers(
-  applyMiddleware(logger, thunk),
+  applyMiddleware(logger, thunk)
   // other store enhancers if any
 );
 
 const store = createStore(reducers, enhancer);
 
 if (module.hot) {
-  module.hot.accept('../reducers/index.js', () => {
+  module.hot.accept("../reducers/index.js", () => {
     // const nextReducer = combineReducers(require('../reducers'))
     // store.replaceReducer(nextReducer)
-    store.replaceReducer(require('../reducers/index.js').default)
-  })
+    store.replaceReducer(require("../reducers/index.js").default);
+  });
 }
 
-export default store
+export default store;

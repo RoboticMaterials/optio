@@ -1,183 +1,169 @@
 import {
-    GET_EVENTS,
-    GET_EVENTS_STARTED,
-    GET_EVENTS_SUCCESS,
-    GET_EVENTS_FAILURE,
+  GET_EVENTS,
+  GET_EVENTS_STARTED,
+  GET_EVENTS_SUCCESS,
+  GET_EVENTS_FAILURE,
+  POST_EVENTS,
+  POST_EVENTS_STARTED,
+  POST_EVENTS_SUCCESS,
+  POST_EVENTS_FAILURE,
+  PUT_EVENTS,
+  PUT_EVENTS_STARTED,
+  PUT_EVENTS_SUCCESS,
+  PUT_EVENTS_FAILURE,
+  DELETE_EVENTS,
+  DELETE_EVENTS_STARTED,
+  DELETE_EVENTS_SUCCESS,
+  DELETE_EVENTS_FAILURE,
+} from "../types/events_types";
 
-    POST_EVENTS,
-    POST_EVENTS_STARTED,
-    POST_EVENTS_SUCCESS,
-    POST_EVENTS_FAILURE,
-
-    PUT_EVENTS,
-    PUT_EVENTS_STARTED,
-    PUT_EVENTS_SUCCESS,
-    PUT_EVENTS_FAILURE,
-
-    DELETE_EVENTS,
-    DELETE_EVENTS_STARTED,
-    DELETE_EVENTS_SUCCESS,
-    DELETE_EVENTS_FAILURE,
-} from '../types/events_types'
-
-import { clone_object, deepCopy } from '../../methods/utils/utils';
+import { clone_object, deepCopy } from "../../methods/utils/utils";
 
 const defaultState = {
-    events: {},
-}
+  events: {},
+};
 
 const eventsReducer = (state = defaultState, action) => {
-    let eventsClone = {}
-    let currentEvent = ''
-    let updatedEventIndex = ''
-    let index = ''
+  let eventsClone = {};
+  let currentEvent = "";
+  let updatedEventIndex = "";
+  let index = "";
 
+  switch (action.type) {
+    // ======================================== //
+    //                                          //
+    //              Get Events                 //
+    //                                          //
+    // ======================================== //
+    case GET_EVENTS:
+      break;
 
-    switch (action.type) {
+    case GET_EVENTS_SUCCESS:
+      return {
+        ...state,
+        events: { ...action.payload },
+        pending: false,
+      };
 
-        // ======================================== //
-        //                                          //
-        //              Get Events                 //
-        //                                          //
-        // ======================================== //
-        case GET_EVENTS:
-            break;
+    case GET_EVENTS_FAILURE:
+      return Object.assign({}, state, {
+        error: action.payload,
+        pending: false,
+      });
 
-        case GET_EVENTS_SUCCESS:
+    case GET_EVENTS_STARTED:
+      return Object.assign({}, state, {
+        pending: true,
+      });
 
+    // ======================================== //
+    //                                          //
+    //             Post Events                 //
+    //                                          //
+    // ======================================== //
+    case POST_EVENTS:
+      break;
 
-            return {
-    
-                ...state,
-                events: { ...action.payload },
-                pending: false,
-            }
+    case POST_EVENTS_SUCCESS:
+      eventsClone = deepCopy(state.events);
 
+      eventsClone[action.payload._id.$oid] = action.payload;
 
-        case GET_EVENTS_FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
+      return {
+        ...state,
+        events: eventsClone,
+        pending: false,
+      };
 
-        case GET_EVENTS_STARTED:
-            return Object.assign({}, state, {
-                pending: true
-            });
+    case POST_EVENTS_FAILURE:
+      return Object.assign({}, state, {
+        error: action.payload,
+        pending: false,
+      });
 
-        // ======================================== //
-        //                                          //
-        //             Post Events                 //
-        //                                          //
-        // ======================================== //
-        case POST_EVENTS:
-            break;
+    case POST_EVENTS_STARTED:
+      return Object.assign({}, state, {
+        pending: true,
+      });
+    // ~~~~~~~~~~~~~~~
 
-        case POST_EVENTS_SUCCESS:
+    // ======================================== //
+    //                                          //
+    //              Put Events              //
+    //                                          //
+    // ======================================== //
+    case PUT_EVENTS:
+      break;
 
-            eventsClone = deepCopy(state.events)
+    case PUT_EVENTS_SUCCESS:
+      // Find the corresponding event and replace it with the new one
+      currentEvent = JSON.parse(action.payload);
 
-            eventsClone[action.payload._id.$oid] = action.payload
+      eventsClone = deepCopy(state.events);
 
-            return {
-                ...state,
-                events: eventsClone,
-                pending: false
-            }
+      eventsClone[currentEvent._id.$oid] = currentEvent;
 
+      return {
+        ...state,
+        events: { ...eventsClone },
+      };
 
-        case POST_EVENTS_FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
+    case PUT_EVENTS_FAILURE:
+      return Object.assign({}, state, {
+        error: action.payload,
+        pending: false,
+      });
 
-        case POST_EVENTS_STARTED:
-            return Object.assign({}, state, {
-                pending: true
-            });
-        // ~~~~~~~~~~~~~~~
+    case PUT_EVENTS_STARTED:
+      return Object.assign({}, state, {
+        pending: true,
+      });
+    // ~~~~~~~~~~~~~~~
 
-        // ======================================== //
-        //                                          //
-        //              Put Events              //
-        //                                          //
-        // ======================================== //
-        case PUT_EVENTS:
-            break;
+    // ======================================== //
+    //                                          //
+    //           Delete Events                 //
+    //                                          //
+    // ======================================== //
+    case DELETE_EVENTS:
+      break;
 
-        case PUT_EVENTS_SUCCESS:
-            // Find the corresponding event and replace it with the new one
-            currentEvent = JSON.parse(action.payload)
+    case DELETE_EVENTS_SUCCESS:
+      eventsClone = deepCopy(state.events);
 
-            eventsClone = deepCopy(state.events)
+      delete eventsClone[action.payload];
 
-            eventsClone[currentEvent._id.$oid] = currentEvent
+      return {
+        ...state,
+        events: eventsClone,
+      };
 
-            return {
-                ...state,
-                events: { ...eventsClone }
-            }
+    case DELETE_EVENTS_FAILURE:
+      return Object.assign({}, state, {
+        error: action.payload,
+        pending: false,
+      });
 
-        case PUT_EVENTS_FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
+    case DELETE_EVENTS_STARTED:
+      return Object.assign({}, state, {
+        pending: true,
+      });
+    // ~~~~~~~~~~~~~~~
 
-        case PUT_EVENTS_STARTED:
-            return Object.assign({}, state, {
-                pending: true
-            });
-        // ~~~~~~~~~~~~~~~
+    // ======================================== //
+    //                                          //
+    //             Utilities                    //
+    //                                          //
+    // ======================================== //
+    case "UPDATE_EVENTS":
+      return {
+        ...state,
+        events: deepCopy(action.payload.events),
+      };
 
-        // ======================================== //
-        //                                          //
-        //           Delete Events                 //
-        //                                          //
-        // ======================================== //
-        case DELETE_EVENTS:
-            break;
+    default:
+      return state;
+  }
+};
 
-        case DELETE_EVENTS_SUCCESS:
-
-            eventsClone = deepCopy(state.events)
-
-            delete eventsClone[action.payload]
-
-            return {
-                ...state,
-                events: eventsClone
-            }
-
-        case DELETE_EVENTS_FAILURE:
-            return Object.assign({}, state, {
-                error: action.payload,
-                pending: false
-            });
-
-        case DELETE_EVENTS_STARTED:
-            return Object.assign({}, state, {
-                pending: true
-            });
-        // ~~~~~~~~~~~~~~~
-
-        // ======================================== //
-        //                                          //
-        //             Utilities                    //
-        //                                          //
-        // ======================================== //
-        case 'UPDATE_EVENTS':
-            return {
-                ...state,
-                events: deepCopy(action.payload.events)
-            }
-
-        default:
-            return state
-
-
-    }
-}
-
-export default eventsReducer
+export default eventsReducer;

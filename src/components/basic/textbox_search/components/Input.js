@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import styled from 'styled-components';
-import { valueExistInSelected } from '../util';
-import * as PropTypes from 'prop-types';
-import { LIB_NAME } from '../constants';
+import React, { Component } from "react";
+import styled from "styled-components";
+import { valueExistInSelected } from "../util";
+import * as PropTypes from "prop-types";
+import { LIB_NAME } from "../constants";
 
-import { LightenDarkenColor } from '../../../../methods/utils/color_utils'
+import { LightenDarkenColor } from "../../../../methods/utils/color_utils";
 
 const handlePlaceHolder = (props, state) => {
   const { addPlaceholder, searchable, placeholder } = props;
@@ -20,10 +20,10 @@ const handlePlaceHolder = (props, state) => {
   }
 
   if (hasValues && !searchable) {
-    return '';
+    return "";
   }
 
-  return '';
+  return "";
 };
 
 class Input extends Component {
@@ -31,14 +31,19 @@ class Input extends Component {
 
   componentDidUpdate(prevProps) {
     if (
-      this.props.state.textbox || (prevProps.state.textbox !== this.props.state.textbox && this.props.state.textbox) ||
+      this.props.state.textbox ||
+      (prevProps.state.textbox !== this.props.state.textbox &&
+        this.props.state.textbox) ||
       this.props.props.autoFocus
     ) {
       this.input.current.focus();
     }
 
-    if (prevProps.state.textbox !== this.props.state.textbox && !this.props.state.textbox) {
-       this.input.current.blur();
+    if (
+      prevProps.state.textbox !== this.props.state.textbox &&
+      !this.props.state.textbox
+    ) {
+      this.input.current.blur();
     }
   }
 
@@ -56,7 +61,7 @@ class Input extends Component {
 
     return (
       props.create &&
-      event.key === 'Enter' &&
+      event.key === "Enter" &&
       !valueExistInSelected(state.search, state.values, this.props) &&
       state.search &&
       state.cursor === null &&
@@ -68,7 +73,12 @@ class Input extends Component {
     const { props, state, methods, InputComponent } = this.props;
 
     if (props.inputRenderer) {
-      return props.inputRenderer({ props, state, methods, inputRef: this.input });
+      return props.inputRenderer({
+        props,
+        state,
+        methods,
+        inputRef: this.input,
+      });
     }
 
     return (
@@ -76,19 +86,21 @@ class Input extends Component {
         ref={this.input}
         tabIndex="-1"
         onFocus={(event) => {
-          event.stopPropagation()
-          methods.setSearch({target: {value: !!state.currentValue ? state.currentValue : ''}})
+          event.stopPropagation();
+          methods.setSearch({
+            target: { value: state.currentValue ? state.currentValue : "" },
+          });
         }}
         className={`${LIB_NAME}-input`}
         size={methods.getInputSize()}
         value={state.currentValue}
         readOnly={!props.searchable}
-        onClick={() => methods.dropDown('open')}
+        onClick={() => methods.dropDown("open")}
         onKeyPress={this.handleKeyPress}
         onChange={(e) => {
-          methods.setSearch(e)
-          methods.setValue(e.target.value)
-          props.onChange([{name: e.target.value}])
+          methods.setSearch(e);
+          methods.setValue(e.target.value);
+          props.onChange([{ name: e.target.value }]);
         }}
         onBlur={this.onBlur}
         placeholder={handlePlaceHolder(props, state)}
@@ -100,27 +112,28 @@ class Input extends Component {
 }
 
 export const TextboxInput = styled.input`
-    background-color: ${props => props.theme.bg.quinary};
-    border: none;
-    font-size: 1.2rem;
-    font-family: ${props => props.theme.font.primary};
-    font-weight: 500;
-    display: flex;
-    flex-grow: 1;
-    color: ${props => props.theme.bg.octonary};
+  background-color: ${(props) => props.theme.bg.quinary};
+  border: none;
+  font-size: 1.2rem;
+  font-family: ${(props) => props.theme.font.primary};
+  font-weight: 500;
+  display: flex;
+  flex-grow: 1;
+  color: ${(props) => props.theme.bg.octonary};
 
-    margin: 0 0.5rem 0 0.5rem;
+  margin: 0 0.5rem 0 0.5rem;
 
-    &:focus {
-      background-color: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};
-      outline: none !important;
+  &:focus {
+    background-color: ${(props) =>
+      LightenDarkenColor(props.theme.bg.quinary, 10)};
+    outline: none !important;
   }
 
-    &::placeholder {
-        font-size: ${props => props.theme.fontSize.sz4};
-        font-family: ${props => props.theme.font.secondary};
-        color: ${props => props.theme.bg.senary};
-    }
+  &::placeholder {
+    font-size: ${(props) => props.theme.fontSize.sz4};
+    font-family: ${(props) => props.theme.font.secondary};
+    color: ${(props) => props.theme.bg.senary};
+  }
 `;
 
 // export const DefaultInputComponent = styled.input`
@@ -142,20 +155,20 @@ export const TextboxInput = styled.input`
 //     vertical-align: middle;
 //     line-height: 2rem;
 //     height: 2rem;
-    
+
 //     &::placeholder {
 //       color: ${props => props.theme.bg.senary};
 //     }
 //     `;
 
 Input.propTypes = {
-    props: PropTypes.object,
-    state: PropTypes.object,
-    methods: PropTypes.object
+  props: PropTypes.object,
+  state: PropTypes.object,
+  methods: PropTypes.object,
 };
 
 Input.defaultProps = {
-    InputComponent: TextboxInput
+  InputComponent: TextboxInput,
 };
 
 export default Input;

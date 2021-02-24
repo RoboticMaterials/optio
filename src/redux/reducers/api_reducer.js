@@ -7,15 +7,11 @@ import {
   SET_STATUS_API,
   SET_TASK_QUEUE_API,
   SET_TASKS_API,
-} from '../types/api_types';
+} from "../types/api_types";
 
-import {
-  SET
-} from "../types/prefixes"
+import { SET } from "../types/prefixes";
 
-import {
-  DATA_PAGE
-} from "../types/data_types"
+import { DATA_PAGE } from "../types/data_types";
 
 const defaultState = {
   conditionsApi: null,
@@ -30,42 +26,39 @@ const defaultState = {
 };
 
 export default function apiReducer(state = defaultState, action) {
-
   switch (action.type) {
-
     case SET + DATA_PAGE:
       return {
         ...state,
         page: action.payload,
-      }
+      };
 
     case SET_CONDITIONS_API:
-      return  Object.assign({}, state, {
+      return Object.assign({}, state, {
         conditionsApi: action.payload,
       });
 
     case SET_SCHEDULES_API:
-      return  Object.assign({}, state, {
+      return Object.assign({}, state, {
         schedulesApi: action.payload,
       });
 
     case SET_STATUS_API:
-      return  Object.assign({}, state, {
+      return Object.assign({}, state, {
         statusApi: action.payload,
       });
 
     case SET_TASK_QUEUE_API:
-      return  Object.assign({}, state, {
+      return Object.assign({}, state, {
         taskQueueApi: action.payload,
       });
 
     case SET_TASKS_API:
-      return  Object.assign({}, state, {
+      return Object.assign({}, state, {
         tasksApi: action.payload,
       });
 
     default:
-      return state
+      return state;
   }
-
 }

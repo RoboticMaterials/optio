@@ -1,6 +1,5 @@
-import log from 'loglevel';
+import log from "loglevel";
 // import remote from 'loglevel-plugin-remote';
-
 
 /*
 
@@ -42,24 +41,24 @@ Object.defineProperty(log, "category", {
 const getLogger = log.getLogger;
 
 log.getLogger = function getLoggerAndSetCategory(name, category) {
-    const logger = getLogger(name);
+  const logger = getLogger(name);
 
-    if(category) {
-        Object.defineProperty(logger, "category", {
-          value: category,
-          writable: true
-        })
-    }
+  if (category) {
+    Object.defineProperty(logger, "category", {
+      value: category,
+      writable: true,
+    });
+  }
 
-    return logger;
+  return logger;
 };
 
-log.getCategoryLoggers = function(category) {
+log.getCategoryLoggers = function (category) {
   const loggers = Object.values(log.getLoggers());
   const categoryLoggers = [];
 
   loggers.forEach((logger, index) => {
-    if(logger.category == category) categoryLoggers.push(logger);
+    if (logger.category == category) categoryLoggers.push(logger);
   });
 
   return categoryLoggers;
@@ -77,5 +76,3 @@ log.getCategoryLoggers = function(category) {
 // log.setLevel(log.getLevel());
 
 export default log;
-
-

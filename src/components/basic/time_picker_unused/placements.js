@@ -7,25 +7,25 @@ const targetOffset = [0, 0];
 
 const placements = {
   bottomLeft: {
-    points: ['tl', 'tl'],
+    points: ["tl", "tl"],
     overflow: autoAdjustOverflow,
     offset: [0, -3],
     targetOffset,
   },
   bottomRight: {
-    points: ['tr', 'tr'],
+    points: ["tr", "tr"],
     overflow: autoAdjustOverflow,
     offset: [0, -3],
     targetOffset,
   },
   topRight: {
-    points: ['br', 'br'],
+    points: ["br", "br"],
     overflow: autoAdjustOverflow,
     offset: [0, 3],
     targetOffset,
   },
   topLeft: {
-    points: ['bl', 'bl'],
+    points: ["bl", "bl"],
     overflow: autoAdjustOverflow,
     offset: [0, 3],
     targetOffset,

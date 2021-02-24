@@ -1,11 +1,15 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
-import { LIB_NAME } from './constants';
-import {globStyle} from '../../../../global_style';
-import { hexToRGBA, LightenDarkenColor, RGB_Linear_Shade } from '../../../../methods/utils/color_utils';
+import { LIB_NAME } from "./constants";
+import { globStyle } from "../../../../global_style";
+import {
+  hexToRGBA,
+  LightenDarkenColor,
+  RGB_Linear_Shade,
+} from "../../../../methods/utils/color_utils";
 
 export const DefaultItemComponent = styled.span`
-  padding: .5rem 1rem .5rem 1rem;
+  padding: 0.5rem 1rem 0.5rem 1rem;
   cursor: pointer;
   border-bottom: 1px solid ${globStyle.white};
   white-space: nowrap;
@@ -16,7 +20,8 @@ export const DefaultItemComponent = styled.span`
 
   &.${LIB_NAME}-item-active {
     border-bottom: 1px solid ${globStyle.white};
-    ${({ disabled, color }) => !disabled && color && `background: ${hexToRGBA(color, 0.1)};`}
+    ${({ disabled, color }) =>
+      !disabled && color && `background: ${hexToRGBA(color, 0.1)};`}
   }
 
   :hover,
@@ -54,13 +59,11 @@ export const DefaultItemComponent = styled.span`
       text-transform: uppercase;
     }
     `
-      : ''}
+      : ""}
 
-    background-color: ${globStyle.white};
-    background-color: transparent;
-
+  background-color: ${globStyle.white};
+  background-color: transparent;
 `;
-
 
 export const DefaultButtonComponent = styled.button`
   // margin-left: 3rem;
@@ -70,14 +73,12 @@ export const DefaultButtonComponent = styled.button`
   border-width: 0;
 `;
 
-export const DefaultButtonIconComponent = styled.i`
-
-`;
+export const DefaultButtonIconComponent = styled.i``;
 
 export const DefaultTextComponent = styled.span`
-    white-space: normal;
-    word-wrap: break-word;
-    word-break: break-all;
-    display: flex;
-    align-self: center;
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-all;
+  display: flex;
+  align-self: center;
 `;

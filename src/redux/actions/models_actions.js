@@ -1,30 +1,25 @@
 import {
-
   GET_MODELS,
   GET_MODELS_STARTED,
   GET_MODELS_SUCCESS,
   GET_MODELS_FAILURE,
+} from "../types/models_types";
 
-} from '../types/models_types';
-
-import * as api from '../../api/models_api'
+import * as api from "../../api/models_api";
 
 //import logger
-import log from '../../logger.js';
+import log from "../../logger.js";
 
+import { modelSchema, modelsSchema } from "../../normalizr/models_schema";
 
-import { modelSchema, modelsSchema } from '../../normalizr/models_schema';
-
-import { normalize, schema } from 'normalizr';
+import { normalize, schema } from "normalizr";
 
 const logger = log.getLogger("Models", "Models");
-
 
 // get
 // ******************************
 export const getModels = () => {
-  return async dispatch => {
-
+  return async (dispatch) => {
     function onStart() {
       dispatch({ type: GET_MODELS_STARTED });
     }
@@ -40,7 +35,7 @@ export const getModels = () => {
     try {
       onStart();
       const models = await api.getModels();
-      logger.debug("getModels: models", models)
+      logger.debug("getModels: models", models);
 
       // models are currently returned as array of strings
       // so no need to normalize

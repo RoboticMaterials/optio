@@ -1,16 +1,22 @@
-import React from 'react';
-import styled from '@emotion/styled';
-import PropTypes from 'prop-types';
+import React from "react";
+import styled from "@emotion/styled";
+import PropTypes from "prop-types";
 
 class ClickOutside extends React.Component {
   container = React.createRef();
 
   componentDidMount() {
-    document.addEventListener('click', this.handleClick, {capture:true, passive:true});
+    document.addEventListener("click", this.handleClick, {
+      capture: true,
+      passive: true,
+    });
   }
 
   componentWillUnmount() {
-    document.removeEventListener('click', this.handleClick, {capture:true, passive:true});
+    document.removeEventListener("click", this.handleClick, {
+      capture: true,
+      passive: true,
+    });
   }
 
   handleClick = (event) => {
@@ -18,7 +24,10 @@ class ClickOutside extends React.Component {
     const { target } = event;
     const { onClickOutside } = this.props;
 
-    if ((container && container === target) || (container && !container.contains(target))) {
+    if (
+      (container && container === target) ||
+      (container && !container.contains(target))
+    ) {
       onClickOutside(event);
     }
   };
@@ -34,19 +43,16 @@ class ClickOutside extends React.Component {
   }
 }
 
-const DefaultClickOutsideComponent = styled.div`
-
-`;
+const DefaultClickOutsideComponent = styled.div``;
 
 ClickOutside.propTypes = {
   onClickOutside: PropTypes.func.isRequired,
   children: PropTypes.node.isRequired,
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 ClickOutside.defaultProps = {
-  ClickOutsideComponent: DefaultClickOutsideComponent
+  ClickOutsideComponent: DefaultClickOutsideComponent,
 };
-
 
 export default ClickOutside;

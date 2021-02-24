@@ -1,25 +1,22 @@
-import { denormalize, schema } from 'normalizr';
+import { denormalize, schema } from "normalizr";
 
 // poses schema
 export const poseSchema = new schema.Entity(
   // key
-  'poses',
+  "poses",
   // definition
-  {
-
-  },
+  {},
   // options
   {
     idAttribute: (value, parent, key) => {
-      return value._id
+      return value._id;
     },
 
     // processStrategy
     processStrategy: (value, parent, key) => {
       return value;
-    }
-  },
-
+    },
+  }
 );
 
 // schema for list of schedules

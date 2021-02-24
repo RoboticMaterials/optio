@@ -1,72 +1,66 @@
-import styled from 'styled-components'
-
+import styled from "styled-components";
 
 export const TaskStatisticsContainer = styled.div`
-    position: absolute;
-    display: flex;
+  position: absolute;
+  display: flex;
 
-    flex-direction: column;
-    align-items: center;
+  flex-direction: column;
+  align-items: center;
 
-    top: ${props => props.yPosition};
-    left: ${props => props.xPosition};
+  top: ${(props) => props.yPosition};
+  left: ${(props) => props.xPosition};
 
-    max-height: 6.5rem;
-    width: 10rem;
-    padding: .5rem;
+  max-height: 6.5rem;
+  width: 10rem;
+  padding: 0.5rem;
 
-    background: red;
-    border-radius: 1rem;
-    box-shadow: 0 0.1rem 0.2rem 0rem #303030;
-    background-color: rgba(255, 255, 255, 0.9);
+  background: red;
+  border-radius: 1rem;
+  box-shadow: 0 0.1rem 0.2rem 0rem #303030;
+  background-color: rgba(255, 255, 255, 0.9);
 
-    overflow: hidden;
-
-`
+  overflow: hidden;
+`;
 
 export const TaskNameText = styled.span`
-    margin-bottom: 0rem;
-    font-family: ${props => props.theme.font.primary};
-    font-size: ${props => props.theme.fontSize.sz3};
-    font-weight: bold;
+  margin-bottom: 0rem;
+  font-family: ${(props) => props.theme.font.primary};
+  font-size: ${(props) => props.theme.fontSize.sz3};
+  font-weight: bold;
 
-    overflow-wrap: break-word;
-    align-items: center;
-    box-align: center;
-    width: 100%;
-    height: 100%;
-    word-break: break-word;
-
-`
+  overflow-wrap: break-word;
+  align-items: center;
+  box-align: center;
+  width: 100%;
+  height: 100%;
+  word-break: break-word;
+`;
 
 export const TaskNameContainer = styled.div`
-	flex: 1;
-	display: flex;
-	justify-content: first baseline;
-    flex-direction: column;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  flex: 1;
+  display: flex;
+  justify-content: first baseline;
+  flex-direction: column;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
-    max-height: 4rem;
-
-
-`
+  max-height: 4rem;
+`;
 
 export const TaskText = styled.p`
-    align-self: auto;
-    margin-left: .25rem;
-    margin-top: auto;
-    margin-bottom: auto;
-    font-family: ${props => props.theme.font.primary};
-
-`
+  align-self: auto;
+  margin-left: 0.25rem;
+  margin-top: auto;
+  margin-bottom: auto;
+  font-family: ${(props) => props.theme.font.primary};
+`;
 
 export const TaskIcon = styled.i`
-    margin-bottom: .2rem;
-`
+  margin-bottom: 0.2rem;
+`;
 
 export const RowContainer = styled.div`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;

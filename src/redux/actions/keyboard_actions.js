@@ -1,17 +1,11 @@
-import {
-  ON_BLUR,
-  ON_FOCUS
-} from '../types/keyboard_types';
-
-
-
+import { ON_BLUR, ON_FOCUS } from "../types/keyboard_types";
 
 // focus
 // ******************************
 export const actions_keyboards_onFocus = (target) => {
-  return async dispatch => {
+  return async (dispatch) => {
     var payload = {};
-    payload.target = target
+    payload.target = target;
     dispatch({ type: ON_FOCUS, payload });
   };
 };

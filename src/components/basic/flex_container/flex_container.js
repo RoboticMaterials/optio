@@ -1,8 +1,6 @@
-import React from 'react';
-import * as style from './flex_container.style'
+import React from "react";
+import * as style from "./flex_container.style";
 
-const FlexContainer = ({}) => (
-    <style.></style.>
-);
+const FlexContainer = ({}) => <></>;
 
 export default FlexContainer;

@@ -1,7 +1,5 @@
 export const getDefaultStation = () => {
-	return {
-		dashboards: []
-	}
-
-}
-
+  return {
+    dashboards: [],
+  };
+};

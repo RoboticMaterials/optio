@@ -1,20 +1,27 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
-import styled from '@emotion/styled';
-import ClickOutside from './components/ClickOutside';
+import React, { Component } from "react";
+import ReactDOM from "react-dom";
+import PropTypes from "prop-types";
+import styled from "@emotion/styled";
+import ClickOutside from "./components/ClickOutside";
 
-import {globStyle} from '../../../global_style'
+import { globStyle } from "../../../global_style";
 
-import Content from './components/Content';
-import Dropdown from './components/Dropdown';
-import Loading from './components/Loading';
-import Clear from './components/Clear';
-import Separator from './components/Separator';
-import DropdownHandle from './components/DropdownHandle';
+import Content from "./components/Content";
+import Dropdown from "./components/Dropdown";
+import Loading from "./components/Loading";
+import Clear from "./components/Clear";
+import Separator from "./components/Separator";
+import DropdownHandle from "./components/DropdownHandle";
 
-import { debounce, hexToRGBA, isEqual, getByPath, getProp, valueExistInSelected } from './util';
-import { LIB_NAME } from './constants';
+import {
+  debounce,
+  hexToRGBA,
+  isEqual,
+  getByPath,
+  getProp,
+  valueExistInSelected,
+} from "./util";
+import { LIB_NAME } from "./constants";
 
 export class ScrollableList extends Component {
   static propTypes = {
@@ -67,9 +74,9 @@ export class ScrollableList extends Component {
     this.state = {
       dropdown: true,
       values: props.values,
-      search: '',
+      search: "",
       selectBounds: {},
-      cursor: null
+      cursor: null,
     };
 
     this.methods = {
@@ -90,7 +97,7 @@ export class ScrollableList extends Component {
       activeCursorItem: this.activeCursorItem,
       createNew: this.createNew,
       sortBy: this.sortBy,
-      safeString: this.safeString
+      safeString: this.safeString,
     };
 
     this.select = React.createRef();
@@ -98,12 +105,15 @@ export class ScrollableList extends Component {
   }
 
   componentDidMount() {
-
     this.props.portal && this.props.portal.appendChild(this.dropdownRoot);
-    window.addEventListener('resize', debounce(this.updateSelectBounds), {passive:true});
-    window.addEventListener('scroll', debounce(this.onScroll), {passive:true});
+    window.addEventListener("resize", debounce(this.updateSelectBounds), {
+      passive: true,
+    });
+    window.addEventListener("scroll", debounce(this.onScroll), {
+      passive: true,
+    });
 
-    this.dropDown('close');
+    this.dropDown("close");
 
     if (this.select) {
       this.updateSelectBounds();
@@ -116,11 +126,14 @@ export class ScrollableList extends Component {
       !isEqual(prevProps.values, this.props.values) &&
       isEqual(prevProps.values, prevState.values)
     ) {
-      this.setState({
-        values: this.props.values
-      }, () => {
-        this.props.onChange(this.state.values);
-      });
+      this.setState(
+        {
+          values: this.props.values,
+        },
+        () => {
+          this.props.onChange(this.state.values);
+        }
+      );
       this.updateSelectBounds();
     }
 
@@ -134,7 +147,7 @@ export class ScrollableList extends Component {
     }
 
     if (prevState.values !== this.state.values && this.props.closeOnSelect) {
-      this.dropDown('close');
+      this.dropDown("close");
     }
 
     if (prevProps.multi !== this.props.multi) {
@@ -153,10 +166,15 @@ export class ScrollableList extends Component {
   componentWillUnmount() {
     this.props.portal && this.props.portal.removeChild(this.dropdownRoot);
     window.removeEventListener(
-      'resize',
-      debounce(this.updateSelectBounds, this.props.debounceDelay), {passive:true}
+      "resize",
+      debounce(this.updateSelectBounds, this.props.debounceDelay),
+      { passive: true }
     );
-    window.removeEventListener('scroll', debounce(this.onScroll, this.props.debounceDelay), {passive:true});
+    window.removeEventListener(
+      "scroll",
+      debounce(this.onScroll, this.props.debounceDelay),
+      { passive: true }
+    );
   }
 
   onDropdownClose = () => {
@@ -166,7 +184,7 @@ export class ScrollableList extends Component {
 
   onScroll = () => {
     if (this.props.closeOnScroll) {
-      this.dropDown('close');
+      this.dropDown("close");
     }
 
     this.updateSelectBounds();
@@ -175,12 +193,12 @@ export class ScrollableList extends Component {
   updateSelectBounds = () =>
     this.select.current &&
     this.setState({
-      selectBounds: this.select.current.getBoundingClientRect()
+      selectBounds: this.select.current.getBoundingClientRect(),
     });
 
   getSelectBounds = () => this.state.selectBounds;
 
-  dropDown = (action = 'toggle', event) => {
+  dropDown = (action = "toggle", event) => {
     const target = (event && event.target) || (event && event.srcElement);
 
     if (
@@ -190,7 +208,7 @@ export class ScrollableList extends Component {
       event &&
       target &&
       target.offsetParent &&
-      target.offsetParent.classList.contains('react-dropdown-select-dropdown')
+      target.offsetParent.classList.contains("react-dropdown-select-dropdown")
     ) {
       return;
     }
@@ -199,20 +217,20 @@ export class ScrollableList extends Component {
       return this.setState({ dropdown: true });
     }
 
-    if (action === 'close' && this.state.dropdown) {
+    if (action === "close" && this.state.dropdown) {
       this.select.current.blur();
 
       return this.setState({
         dropdown: false,
-        search: this.props.clearOnBlur ? '' : this.state.search
+        search: this.props.clearOnBlur ? "" : this.state.search,
       });
     }
 
-    if (action === 'open' && !this.state.dropdown) {
+    if (action === "open" && !this.state.dropdown) {
       return this.setState({ dropdown: true });
     }
 
-    if (action === 'toggle') {
+    if (action === "toggle") {
       this.select.current.focus();
       return this.setState({ dropdown: !this.state.dropdown });
     }
@@ -225,22 +243,26 @@ export class ScrollableList extends Component {
   addItem = (item) => {
     if (this.props.multi) {
       if (
-        valueExistInSelected(getByPath(item, this.props.valueField), this.state.values, this.props)
+        valueExistInSelected(
+          getByPath(item, this.props.valueField),
+          this.state.values,
+          this.props
+        )
       ) {
         return this.removeItem(null, item, false);
       }
 
       this.setState({
-        values: [...this.state.values, item]
+        values: [...this.state.values, item],
       });
     } else {
       this.setState({
         values: [item],
-        dropdown: false
+        dropdown: false,
       });
     }
 
-    this.props.clearOnSelect && this.setState({ search: '' });
+    this.props.clearOnSelect && this.setState({ search: "" });
 
     return true;
   };
@@ -249,24 +271,25 @@ export class ScrollableList extends Component {
     if (event && close) {
       event.preventDefault();
       event.stopPropagation();
-      this.dropDown('close');
+      this.dropDown("close");
     }
 
     this.setState({
       values: this.state.values.filter(
         (values) =>
-          getByPath(values, this.props.valueField) !== getByPath(item, this.props.valueField)
-      )
+          getByPath(values, this.props.valueField) !==
+          getByPath(item, this.props.valueField)
+      ),
     });
   };
 
   setSearch = (event) => {
     this.setState({
-      cursor: null
+      cursor: null,
     });
 
     this.setState({
-      search: event.target.value
+      search: event.target.value,
     });
   };
 
@@ -284,22 +307,24 @@ export class ScrollableList extends Component {
 
   toggleSelectAll = () => {
     return this.setState({
-      values: this.state.values.length === 0 ? this.selectAll() : this.clearAll()
+      values:
+        this.state.values.length === 0 ? this.selectAll() : this.clearAll(),
     });
   };
 
   clearAll = () => {
     this.props.onClearAll();
     this.setState({
-      values: []
+      values: [],
     });
   };
 
-  selectAll = (valuesList=[]) => {
+  selectAll = (valuesList = []) => {
     this.props.onSelectAll();
-    const values = valuesList.length > 0
-      ? valuesList
-      : this.props.options.filter((option) => !option.disabled);
+    const values =
+      valuesList.length > 0
+        ? valuesList
+        : this.props.options.filter((option) => !option.disabled);
 
     this.setState({ values });
   };
@@ -307,13 +332,15 @@ export class ScrollableList extends Component {
   isSelected = (option) =>
     !!this.state.values.find(
       (value) =>
-        getByPath(value, this.props.valueField) === getByPath(option, this.props.valueField)
+        getByPath(value, this.props.valueField) ===
+        getByPath(option, this.props.valueField)
     );
 
   areAllSelected = () =>
-    this.state.values.length === this.props.options.filter((option) => !option.disabled).length;
+    this.state.values.length ===
+    this.props.options.filter((option) => !option.disabled).length;
 
-  safeString = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  safeString = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
   sortBy = () => {
     const { sortBy, options } = this.props;
@@ -336,24 +363,31 @@ export class ScrollableList extends Component {
   };
 
   searchFn = ({ state, methods }) => {
-    const regexp = new RegExp(methods.safeString(state.search), 'i');
+    const regexp = new RegExp(methods.safeString(state.search), "i");
 
     return methods
       .sortBy()
       .filter((item) =>
-        regexp.test(getByPath(item, this.props.searchBy) || getByPath(item, this.props.valueField))
+        regexp.test(
+          getByPath(item, this.props.searchBy) ||
+            getByPath(item, this.props.valueField)
+        )
       );
   };
 
   searchResults = () => {
-    const args = { state: this.state, props: this.props, methods: this.methods };
+    const args = {
+      state: this.state,
+      props: this.props,
+      methods: this.methods,
+    };
 
     return this.props.searchFn(args) || this.searchFn(args);
   };
 
   activeCursorItem = (activeCursorItem) =>
     this.setState({
-      activeCursorItem
+      activeCursorItem,
     });
 
   handleKeyDown = (event) => {
@@ -362,7 +396,7 @@ export class ScrollableList extends Component {
       state: this.state,
       props: this.props,
       methods: this.methods,
-      setState: this.setState.bind(this)
+      setState: this.setState.bind(this),
     };
 
     return this.props.handleKeyDownFn(args) || this.handleKeyDownFn(args);
@@ -370,16 +404,16 @@ export class ScrollableList extends Component {
 
   handleKeyDownFn = ({ event, state, props, methods, setState }) => {
     const { cursor } = state;
-    const escape = event.key === 'Escape';
-    const enter = event.key === 'Enter';
-    const arrowUp = event.key === 'ArrowUp';
-    const arrowDown = event.key === 'ArrowDown';
-      const tab = event.key === 'Tab' && !event.shiftKey;
-    const shiftTab = event.shiftKey && event.key === 'Tab';
+    const escape = event.key === "Escape";
+    const enter = event.key === "Enter";
+    const arrowUp = event.key === "ArrowUp";
+    const arrowDown = event.key === "ArrowDown";
+    const tab = event.key === "Tab" && !event.shiftKey;
+    const shiftTab = event.shiftKey && event.key === "Tab";
 
     if ((arrowDown || tab) && cursor === null) {
       return setState({
-        cursor: 0
+        cursor: 0,
       });
     }
 
@@ -388,13 +422,16 @@ export class ScrollableList extends Component {
     }
 
     if (escape) {
-      this.dropDown('close');
+      this.dropDown("close");
     }
 
     if (enter) {
       const currentItem = methods.searchResults()[cursor];
       if (currentItem && !currentItem.disabled) {
-        if (props.create && valueExistInSelected(state.search, state.values, props)) {
+        if (
+          props.create &&
+          valueExistInSelected(state.search, state.values, props)
+        ) {
           return null;
         }
 
@@ -404,25 +441,25 @@ export class ScrollableList extends Component {
 
     if ((arrowDown || tab) && methods.searchResults().length === cursor) {
       return setState({
-        cursor: 0
+        cursor: 0,
       });
     }
 
     if (arrowDown || tab) {
       setState((prevState) => ({
-        cursor: prevState.cursor + 1
+        cursor: prevState.cursor + 1,
       }));
     }
 
     if ((arrowUp || shiftTab) && cursor > 0) {
       setState((prevState) => ({
-        cursor: prevState.cursor - 1
+        cursor: prevState.cursor - 1,
       }));
     }
 
     if ((arrowUp || shiftTab) && cursor === 0) {
       setState({
-        cursor: methods.searchResults().length
+        cursor: methods.searchResults().length,
       });
     }
   };
@@ -430,75 +467,95 @@ export class ScrollableList extends Component {
   renderDropdown = (ItemComponent) =>
     this.props.portal ? (
       ReactDOM.createPortal(
-        <Dropdown ItemComponent={ItemComponent} DropDownComponent={this.props.DropDownComponent} props={this.props} state={this.state} methods={this.methods} />,
+        <Dropdown
+          ItemComponent={ItemComponent}
+          DropDownComponent={this.props.DropDownComponent}
+          props={this.props}
+          state={this.state}
+          methods={this.methods}
+        />,
         this.dropdownRoot
       )
     ) : (
-      <Dropdown ItemComponent={ItemComponent} DropDownComponent={this.props.DropDownComponent} props={this.props} state={this.state} methods={this.methods} />
+      <Dropdown
+        ItemComponent={ItemComponent}
+        DropDownComponent={this.props.DropDownComponent}
+        props={this.props}
+        state={this.state}
+        methods={this.methods}
+      />
     );
 
   createNew = (item) => {
     const newValue = {
       [this.props.labelField]: item,
-      [this.props.valueField]: item
+      [this.props.valueField]: item,
     };
 
     this.addItem(newValue);
     this.props.onCreateNew(newValue);
-    this.setState({ search: '' });
+    this.setState({ search: "" });
   };
 
   render() {
-
     const { ItemComponent, ReactDropdownSelect, Container } = this.props;
 
     return (
-    <Container className={this.props.className}>
-      <ClickOutside ClickOutsideComponent={this.props.ClickOutsideComponent} onClickOutside={(event) => this.dropDown('close', event)}>
-        <ReactDropdownSelect
-          onKeyDown={this.handleKeyDown}
-          onClick={(event) => this.dropDown('open', event)}
-          // onFocus={(event) => this.dropDown('open', event)}
-          tabIndex={this.props.disabled ? '-1' : '0'}
-          direction={this.props.direction}
-          style={this.props.style}
-          ref={this.select}
-          disabled={this.props.disabled}
-          className={`${LIB_NAME} ${this.props.className}`}
-          color={this.props.color}
-          {...this.props.additionalProps}>
-          {this.props.showContent &&
-            (<Content ContentComponent={this.props.ContentComponent} props={this.props} state={this.state} methods={this.methods} />)
+      <Container className={this.props.className}>
+        <ClickOutside
+          ClickOutsideComponent={this.props.ClickOutsideComponent}
+          onClickOutside={(event) => this.dropDown("close", event)}
+        >
+          <ReactDropdownSelect
+            onKeyDown={this.handleKeyDown}
+            onClick={(event) => this.dropDown("open", event)}
+            // onFocus={(event) => this.dropDown('open', event)}
+            tabIndex={this.props.disabled ? "-1" : "0"}
+            direction={this.props.direction}
+            style={this.props.style}
+            ref={this.select}
+            disabled={this.props.disabled}
+            className={`${LIB_NAME} ${this.props.className}`}
+            color={this.props.color}
+            {...this.props.additionalProps}
+          >
+            {this.props.showContent && (
+              <Content
+                ContentComponent={this.props.ContentComponent}
+                props={this.props}
+                state={this.state}
+                methods={this.methods}
+              />
+            )}
 
-          }
+            {(this.props.name || this.props.required) && (
+              <input
+                // inputRef={this.input}
+                tabIndex={-1}
+                style={{ opacity: 0, width: 0, position: "absolute" }}
+                name={this.props.name}
+                required={this.props.required}
+                pattern={this.props.pattern}
+                value={
+                  this.state.values
+                    .map((value) => value[this.props.labelField])
+                    .toString() || []
+                }
+                disabled={this.props.disabled}
+              />
+            )}
 
+            {this.props.loading && <Loading props={this.props} />}
 
-          {(this.props.name || this.props.required) && (
-            <input
-              // inputRef={this.input}
-              tabIndex={-1}
-              style={{ opacity: 0, width: 0, position: 'absolute'}}
-              name={this.props.name}
-              required={this.props.required}
-              pattern={this.props.pattern}
-              value={this.state.values.map(value => value[this.props.labelField]).toString() || []}
-              disabled={this.props.disabled}
-
-            />
-          )}
-
-          {this.props.loading && <Loading props={this.props} />}
-
-          {this.renderDropdown(ItemComponent)}
-        </ReactDropdownSelect>
-      </ClickOutside>
-    </Container>
+            {this.renderDropdown(ItemComponent)}
+          </ReactDropdownSelect>
+        </ClickOutside>
+      </Container>
     );
   }
 }
 
 const DefaultReactDropdownSelect = styled.div`
-
   background-color: ${globStyle.grey5};
   color: ${globStyle.black};
 
@@ -512,7 +569,6 @@ const DefaultReactDropdownSelect = styled.div`
   line-height: 2rem;
   height: 2rem;
 
-
   width: 100%;
   border-radius: 2px;
   padding: 2px 5px;
@@ -520,54 +576,54 @@ const DefaultReactDropdownSelect = styled.div`
   cursor: pointer;
   min-height: 36px;
   ${({ disabled }) =>
-    disabled ? 'cursor: not-allowed;pointer-events: none;opacity: 0.3;' : 'pointer-events: all;'}
+    disabled
+      ? "cursor: not-allowed;pointer-events: none;opacity: 0.3;"
+      : "pointer-events: all;"}
 
   :focus,
   :focus-within {
-      color: ${globStyle.black};
-      background-color: ${globStyle.grey5};
-      box-shadow: none;
-      border: 1px solid ${globStyle.red};
+    color: ${globStyle.black};
+    background-color: ${globStyle.grey5};
+    box-shadow: none;
+    border: 1px solid ${globStyle.red};
   }
 `;
 
-const DefaultContainer = styled.div`
-
-`;
+const DefaultContainer = styled.div``;
 
 ScrollableList.defaultProps = {
-  addPlaceholder: '',
-  placeholder: 'Select...',
+  addPlaceholder: "",
+  placeholder: "Select...",
   values: [],
   options: [],
   multi: false,
   disabled: false,
-  searchBy: 'label',
+  searchBy: "label",
   sortBy: null,
   clearable: false,
   searchable: true,
   dropdownHandle: true,
   separator: false,
   keepOpen: undefined,
-  noDataLabel: 'No data',
-  createNewLabel: 'add {search}',
-  disabledLabel: 'disabled',
+  noDataLabel: "No data",
+  createNewLabel: "add {search}",
+  disabledLabel: "disabled",
   dropdownGap: 5,
   closeOnScroll: false,
   debounceDelay: 0,
-  labelField: 'label',
-  valueField: 'value',
-  color: '#0074D9',
+  labelField: "label",
+  valueField: "value",
+  color: "#0074D9",
   keepSelectedInList: true,
   closeOnSelect: false,
   clearOnBlur: true,
   clearOnSelect: true,
-  dropdownPosition: 'bottom',
-  dropdownHeight: '300px',
+  dropdownPosition: "bottom",
+  dropdownHeight: "300px",
   autoFocus: false,
   portal: null,
   create: false,
-  direction: 'ltr',
+  direction: "ltr",
   name: null,
   required: false,
   pattern: false,
@@ -584,9 +640,7 @@ ScrollableList.defaultProps = {
   ReactDropdownSelect: DefaultReactDropdownSelect,
   Container: DefaultContainer,
   allowItemClick: true,
-  showContent: true
+  showContent: true,
 };
-
-
 
 export default ScrollableList;

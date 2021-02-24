@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import styled from '@emotion/styled';
-import { hexToRGBA, getByPath } from '../util';
-import * as PropTypes from 'prop-types';
-import { LIB_NAME } from '../constants';
+import React, { Component } from "react";
+import styled from "@emotion/styled";
+import { hexToRGBA, getByPath } from "../util";
+import * as PropTypes from "prop-types";
+import { LIB_NAME } from "../constants";
 
-import {globStyle} from '../../../../global_style'
+import { globStyle } from "../../../../global_style";
 
 class Item extends Component {
   item = React.createRef();
@@ -12,13 +12,27 @@ class Item extends Component {
   componentDidUpdate() {
     if (this.props.state.cursor === this.props.itemIndex) {
       this.item.current &&
-        this.item.current.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+        this.item.current.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "start",
+        });
     }
   }
 
   render() {
     // console.log('Item render this.props',this.props)
-    const { props, state, methods, item, itemIndex, ItemComponent, ContentContainer, ButtonComponent, TextComponent } = this.props;
+    const {
+      props,
+      state,
+      methods,
+      item,
+      itemIndex,
+      ItemComponent,
+      ContentContainer,
+      ButtonComponent,
+      TextComponent,
+    } = this.props;
 
     if (props.itemRenderer) {
       return props.itemRenderer({ item, itemIndex, props, state, methods });
@@ -39,35 +53,38 @@ class Item extends Component {
         aria-disabled={item.disabled}
         disabled={item.disabled}
         aria-label={getByPath(item, props.labelField)}
-        key={`${getByPath(item, props.valueField)}${getByPath(item, props.labelField)}`}
+        key={`${getByPath(item, props.valueField)}${getByPath(
+          item,
+          props.labelField
+        )}`}
         tabIndex="-1"
         className={`${LIB_NAME}-item ${
-          methods.isSelected(item) ? `${LIB_NAME}-item-selected` : ''
-        } ${state.cursor === itemIndex ? `${LIB_NAME}-item-active` : ''} ${
-          item.disabled ? `${LIB_NAME}-item-disabled` : ''
+          methods.isSelected(item) ? `${LIB_NAME}-item-selected` : ""
+        } ${state.cursor === itemIndex ? `${LIB_NAME}-item-active` : ""} ${
+          item.disabled ? `${LIB_NAME}-item-disabled` : ""
         }`}
         onClick={item.disabled ? undefined : () => methods.addItem(item)}
         onKeyPress={item.disabled ? undefined : () => methods.addItem(item)}
-        color={props.color}>
+        color={props.color}
+      >
+        <TextComponent>
+          {getByPath(item, props.labelField)}{" "}
+          {item.disabled && <ins>{props.disabledLabel}</ins>}
+        </TextComponent>
 
-            <TextComponent>
-              {getByPath(item, props.labelField)} {item.disabled && <ins>{props.disabledLabel}</ins>}
-            </TextComponent>
-
-            {props.showButton &&
-              <ButtonComponent
-                type={"button"}
-                onClick={(e) => {
-                  if (!e) var e = window.event;
-                  e.cancelBubble = true;
-                  if (e.stopPropagation) e.stopPropagation();
-                  props.onDetailsClick(item.id);
-                }}
-              >
-                Details
-              </ButtonComponent>
-            }
-
+        {props.showButton && (
+          <ButtonComponent
+            type={"button"}
+            onClick={(e) => {
+              if (!e) var e = window.event;
+              e.cancelBubble = true;
+              if (e.stopPropagation) e.stopPropagation();
+              props.onDetailsClick(item.id);
+            }}
+          >
+            Details
+          </ButtonComponent>
+        )}
       </ItemComponent>
     );
   }
@@ -83,7 +100,7 @@ Item.propTypes = {
 };
 
 const DefaultItemComponent = styled.span`
-  padding: .5rem 1rem .5rem 1rem;
+  padding: 0.5rem 1rem 0.5rem 1rem;
   cursor: pointer;
   border-bottom: 1px solid ${globStyle.white};
   white-space: nowrap;
@@ -93,7 +110,8 @@ const DefaultItemComponent = styled.span`
 
   &.${LIB_NAME}-item-active {
     border-bottom: 1px solid ${globStyle.white};
-    ${({ disabled, color }) => !disabled && color && `background: ${hexToRGBA(color, 0.1)};`}
+    ${({ disabled, color }) =>
+      !disabled && color && `background: ${hexToRGBA(color, 0.1)};`}
   }
 
   :hover,
@@ -131,9 +149,9 @@ const DefaultItemComponent = styled.span`
       text-transform: uppercase;
     }
     `
-      : ''}
+      : ""}
 
-    background-color: ${globStyle.white};
+  background-color: ${globStyle.white};
 `;
 
 const DefaultContentContainer = styled.div`
@@ -144,7 +162,6 @@ const DefaultContentContainer = styled.div`
   overflow: hidden;
   white-space: nowrap;
 `;
-
 
 const DefaultButtonComponent = styled.button`
   margin-left: 3rem;
@@ -159,10 +176,10 @@ const DefaultTextComponent = styled.span`
 
 // Specifies the default values for props:
 Item.defaultProps = {
-    ItemComponent: DefaultItemComponent,
-    ContentContainer: DefaultContentContainer,
-    ButtonComponent: DefaultButtonComponent,
-    TextComponent: DefaultTextComponent,
+  ItemComponent: DefaultItemComponent,
+  ContentContainer: DefaultContentContainer,
+  ButtonComponent: DefaultButtonComponent,
+  TextComponent: DefaultTextComponent,
 };
 
 export default Item;

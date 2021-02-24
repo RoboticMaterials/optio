@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from '@emotion/styled';
-import { LIB_NAME } from '../constants';
+import React from "react";
+import styled from "@emotion/styled";
+import { LIB_NAME } from "../constants";
 
 const Loading = ({ props }) =>
   props.loadingRenderer ? (
@@ -25,7 +25,7 @@ const LoadingComponent = styled.div`
   height: auto;
 
   :after {
-    content: ' ';
+    content: " ";
     display: block;
     width: 16px;
     height: 16px;

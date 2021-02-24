@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import styled from 'styled-components';
-import { valueExistInSelected } from '../util';
-import * as PropTypes from 'prop-types';
-import { LIB_NAME } from '../constants';
+import React, { Component } from "react";
+import styled from "styled-components";
+import { valueExistInSelected } from "../util";
+import * as PropTypes from "prop-types";
+import { LIB_NAME } from "../constants";
 
 const handlePlaceHolder = (props, state) => {
   const { addPlaceholder, searchable, placeholder } = props;
@@ -18,10 +18,10 @@ const handlePlaceHolder = (props, state) => {
   }
 
   if (hasValues && !searchable) {
-    return '';
+    return "";
   }
 
-  return '';
+  return "";
 };
 
 class Input extends Component {
@@ -29,14 +29,19 @@ class Input extends Component {
 
   componentDidUpdate(prevProps) {
     if (
-      this.props.state.dropdown || (prevProps.state.dropdown !== this.props.state.dropdown && this.props.state.dropdown) ||
+      this.props.state.dropdown ||
+      (prevProps.state.dropdown !== this.props.state.dropdown &&
+        this.props.state.dropdown) ||
       this.props.props.autoFocus
     ) {
       this.input.current.focus();
     }
 
-    if (prevProps.state.dropdown !== this.props.state.dropdown && !this.props.state.dropdown) {
-       this.input.current.blur();
+    if (
+      prevProps.state.dropdown !== this.props.state.dropdown &&
+      !this.props.state.dropdown
+    ) {
+      this.input.current.blur();
     }
   }
 
@@ -54,7 +59,7 @@ class Input extends Component {
 
     return (
       props.create &&
-      event.key === 'Enter' &&
+      event.key === "Enter" &&
       !valueExistInSelected(state.search, state.values, this.props) &&
       state.search &&
       state.cursor === null &&
@@ -66,7 +71,12 @@ class Input extends Component {
     const { props, state, methods, InputComponent } = this.props;
 
     if (props.inputRenderer) {
-      return props.inputRenderer({ props, state, methods, inputRef: this.input });
+      return props.inputRenderer({
+        props,
+        state,
+        methods,
+        inputRef: this.input,
+      });
     }
 
     return (
@@ -78,7 +88,7 @@ class Input extends Component {
         size={methods.getInputSize()}
         value={state.search}
         readOnly={!props.searchable}
-        onClick={() => methods.dropDown('open')}
+        onClick={() => methods.dropDown("open")}
         onKeyPress={this.handleKeyPress}
         onChange={methods.setSearch}
         onBlur={this.onBlur}
@@ -91,38 +101,39 @@ class Input extends Component {
 }
 
 export const DefaultInputComponent = styled.input`
-    cursor: pointer;
-    line-height: inherit;
+  cursor: pointer;
+  line-height: inherit;
 
-    // width: ${props => props.filled ? `calc(${props.size}ch + 5px)` : `100%`};
-    width: ${props => `calc(${props.size}ch + 5px)`};
+  // width: ${(props) =>
+    props.filled ? `calc(${props.size}ch + 5px)` : `100%`};
+  width: ${(props) => `calc(${props.size}ch + 5px)`};
 
-    border: none;
-    margin-left: 5px;
-    background: transparent;
-    font-size: smaller;
-    ${({ readOnly }) => readOnly && 'cursor: pointer;'}
-    :focus {
-      outline: none;
-    }
+  border: none;
+  margin-left: 5px;
+  background: transparent;
+  font-size: smaller;
+  ${({ readOnly }) => readOnly && "cursor: pointer;"}
+  :focus {
+    outline: none;
+  }
 
-    vertical-align: middle;
-    line-height: 2rem;
-    height: 2rem;
-    
-    &::placeholder {
-      color: ${props => props.theme.bg.senary};
-    }
-    `;
+  vertical-align: middle;
+  line-height: 2rem;
+  height: 2rem;
+
+  &::placeholder {
+    color: ${(props) => props.theme.bg.senary};
+  }
+`;
 
 Input.propTypes = {
-    props: PropTypes.object,
-    state: PropTypes.object,
-    methods: PropTypes.object
+  props: PropTypes.object,
+  state: PropTypes.object,
+  methods: PropTypes.object,
 };
 
 Input.defaultProps = {
-    InputComponent: DefaultInputComponent
+  InputComponent: DefaultInputComponent,
 };
 
 export default Input;

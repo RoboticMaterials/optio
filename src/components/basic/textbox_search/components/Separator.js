@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from '@emotion/styled';
-import { LIB_NAME } from '../constants';
+import React from "react";
+import styled from "@emotion/styled";
+import { LIB_NAME } from "../constants";
 
 const Separator = ({ props, state, methods }) =>
   props.separatorRenderer ? (

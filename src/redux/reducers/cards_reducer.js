@@ -1,141 +1,161 @@
-import {
-  GET,
-  POST,
-  DELETE,
-  PUT
-} from '../types/prefixes';
+import { GET, POST, DELETE, PUT } from "../types/prefixes";
 
-import {
-  STARTED,
-  SUCCESS,
-  FAILURE
-} from '../types/suffixes'
+import { STARTED, SUCCESS, FAILURE } from "../types/suffixes";
 
 import {
   CARD,
   CARDS,
   CARD_HISTORY,
   PROCESS_CARDS,
-  SHOW_EDITOR
-} from '../types/data_types'
+  SHOW_EDITOR,
+} from "../types/data_types";
 
-import {uuidv4} from "../../methods/utils/utils";
-
+import { uuidv4 } from "../../methods/utils/utils";
 
 const defaultState = {
-
   cards: {},
   processCards: {},
   cardHistories: {},
   error: {},
   pending: false,
-  showEditor:false
-
+  showEditor: false,
 };
 
 export default function cardsReducer(state = defaultState, action) {
-  let processCards = {}
+  let processCards = {};
 
   switch (action.type) {
     case GET + CARD + SUCCESS:
       return {
         ...state,
-        cards: {...state.cards, [action.payload.card._id]: action.payload.card},
+        cards: {
+          ...state.cards,
+          [action.payload.card._id]: action.payload.card,
+        },
         pending: false,
-      }
+      };
 
     case GET + CARDS + SUCCESS:
-
-      Object.values(action.payload.cards).forEach((card,index) => {
-        if(processCards[card.process_id]) {
-          processCards[card.process_id][card._id] = card
+      Object.values(action.payload.cards).forEach((card, index) => {
+        if (processCards[card.process_id]) {
+          processCards[card.process_id][card._id] = card;
         } else {
           processCards[card.process_id] = {
-            [card._id]: card
-          }
+            [card._id]: card,
+          };
         }
-
-      })
+      });
       return {
         ...state,
-        cards: {...state.cards, ...action.payload.cards},
+        cards: { ...state.cards, ...action.payload.cards },
         processCards: processCards,
         pending: false,
-      }
+      };
 
     case GET + PROCESS_CARDS + SUCCESS:
       return {
         ...state,
-        processCards: {...state.processCards, [action.payload.processId]: {
-          ...state.processCards[action.payload.processId], ...action.payload.cards
-          }},
+        processCards: {
+          ...state.processCards,
+          [action.payload.processId]: {
+            ...state.processCards[action.payload.processId],
+            ...action.payload.cards,
+          },
+        },
         pending: false,
-      }
+      };
 
     case PUT + CARD + SUCCESS:
       return {
         ...state,
-        cards: {...state.cards, [action.payload.card._id]: action.payload.card},
-        processCards: {...state.processCards, [action.payload.processId]: {
-            ...state.processCards[action.payload.processId], [action.payload.card._id]: action.payload.card
-          }},
+        cards: {
+          ...state.cards,
+          [action.payload.card._id]: action.payload.card,
+        },
+        processCards: {
+          ...state.processCards,
+          [action.payload.processId]: {
+            ...state.processCards[action.payload.processId],
+            [action.payload.card._id]: action.payload.card,
+          },
+        },
         pending: false,
-      }
+      };
 
     case POST + CARD + SUCCESS:
       return {
         ...state,
-        cards: {...state.cards, [action.payload.card._id]: action.payload.card},
-        processCards: {...state.processCards, [action.payload.processId]: {
-            ...state.processCards[action.payload.processId], [action.payload.card._id]: action.payload.card
-          }},
+        cards: {
+          ...state.cards,
+          [action.payload.card._id]: action.payload.card,
+        },
+        processCards: {
+          ...state.processCards,
+          [action.payload.processId]: {
+            ...state.processCards[action.payload.processId],
+            [action.payload.card._id]: action.payload.card,
+          },
+        },
         pending: false,
-      }
+      };
 
     case DELETE + CARD + SUCCESS:
       const { [action.payload.cardId]: value, ...rest } = state.cards; // extracts payload card from rest
       const {
-
-        [action.payload.processId]: {[action.payload.cardId]: removedCard, ...remaining} ,
+        [action.payload.processId]: {
+          [action.payload.cardId]: removedCard,
+          ...remaining
+        },
         ...unchangedProcessGroups
-
       } = state.processCards; // extracts payload card from rest
 
       return {
         ...state,
-        cards: {...rest},
-        processCards: {...unchangedProcessGroups, [action.payload.processId]: remaining},
+        cards: { ...rest },
+        processCards: {
+          ...unchangedProcessGroups,
+          [action.payload.processId]: remaining,
+        },
         pending: false,
-      }
+      };
 
     case GET + CARD_HISTORY + SUCCESS:
       return {
         ...state,
-        cardHistories: {...state.cardHistories, [action.payload.cardHistory.card_id]: action.payload.cardHistory},
+        cardHistories: {
+          ...state.cardHistories,
+          [action.payload.cardHistory.card_id]: action.payload.cardHistory,
+        },
         pending: false,
-      }
+      };
 
     case POST + CARD_HISTORY + SUCCESS:
       return {
         ...state,
-        cardHistories: {...state.cardHistories, [action.payload.cardHistory.card_id]: action.payload.cardHistory},
+        cardHistories: {
+          ...state.cardHistories,
+          [action.payload.cardHistory.card_id]: action.payload.cardHistory,
+        },
         pending: false,
-      }
+      };
 
     case PUT + CARD_HISTORY + SUCCESS:
       return {
         ...state,
-        cardHistories: {...state.cardHistories, [action.payload.cardHistory.card_id]: action.payload.cardHistory},
+        cardHistories: {
+          ...state.cardHistories,
+          [action.payload.cardHistory.card_id]: action.payload.cardHistory,
+        },
         pending: false,
-      }
+      };
 
-      case SHOW_EDITOR:
-          return {
-              ...state,
-              showEditor: action.payload,
-          }
+    case SHOW_EDITOR:
+      return {
+        ...state,
+        showEditor: action.payload,
+      };
 
     default:
-      return state
+      return state;
   }
 }

@@ -1,10 +1,10 @@
-import React from 'react';
-import styled from '@emotion/styled';
+import React from "react";
+import styled from "@emotion/styled";
 
-import Option from './Option';
-import Input from './Input';
-import { LIB_NAME } from '../constants';
-import {getByPath} from '../util';
+import Option from "./Option";
+import Input from "./Input";
+import { LIB_NAME } from "../constants";
+import { getByPath } from "../util";
 
 const Content = ({ props, state, methods, ContentComponent, select }) => {
   return (
@@ -14,8 +14,9 @@ const Content = ({ props, state, methods, ContentComponent, select }) => {
       }`}
       onClick={(event) => {
         event.stopPropagation();
-        methods.dropDown('open');
-      }}>
+        methods.dropDown("open");
+      }}
+    >
       {props.contentRenderer ? (
         props.contentRenderer({ props, state, methods })
       ) : (
@@ -24,7 +25,10 @@ const Content = ({ props, state, methods, ContentComponent, select }) => {
             ? state.values &&
               state.values.map((item) => (
                 <Option
-                  key={`${getByPath(item, props.valueField)}${getByPath(item, props.labelField)}`}
+                  key={`${getByPath(item, props.valueField)}${getByPath(
+                    item,
+                    props.labelField
+                  )}`}
                   item={item}
                   state={state}
                   props={props}
@@ -32,8 +36,15 @@ const Content = ({ props, state, methods, ContentComponent, select }) => {
                 />
               ))
             : state.values &&
-              state.values.length > 0 && <span>{getByPath(state.values[0], props.labelField)}</span>}
-          <Input select={select} props={props} methods={methods} state={state} />
+              state.values.length > 0 && (
+                <span>{getByPath(state.values[0], props.labelField)}</span>
+              )}
+          <Input
+            select={select}
+            props={props}
+            methods={methods}
+            state={state}
+          />
         </React.Fragment>
       )}
     </ContentComponent>
@@ -48,7 +59,7 @@ const DefaultContentComponent = styled.div`
 
 // Specifies the default values for props:
 Content.defaultProps = {
-    ContentComponent: DefaultContentComponent,
+  ContentComponent: DefaultContentComponent,
 };
 
 export default Content;

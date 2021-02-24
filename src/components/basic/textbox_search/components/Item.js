@@ -1,10 +1,13 @@
-import React, { Component } from 'react';
-import styled from 'styled-components'
-import { getByPath } from '../util';
-import * as PropTypes from 'prop-types';
-import { LIB_NAME } from '../constants';
+import React, { Component } from "react";
+import styled from "styled-components";
+import { getByPath } from "../util";
+import * as PropTypes from "prop-types";
+import { LIB_NAME } from "../constants";
 
-import { LightenDarkenColor, hexToRGBA } from '../../../../methods/utils/color_utils'
+import {
+  LightenDarkenColor,
+  hexToRGBA,
+} from "../../../../methods/utils/color_utils";
 
 class Item extends Component {
   item = React.createRef();
@@ -12,13 +15,27 @@ class Item extends Component {
   componentDidUpdate() {
     if (this.props.state.cursor === this.props.itemIndex) {
       this.item.current &&
-        this.item.current.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+        this.item.current.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "start",
+        });
     }
   }
 
   render() {
     // console.log('Item render this.props',this.props)
-    const { props, state, methods, item, itemIndex, ItemComponent, ContentContainer, ButtonComponent, TextComponent } = this.props;
+    const {
+      props,
+      state,
+      methods,
+      item,
+      itemIndex,
+      ItemComponent,
+      ContentContainer,
+      ButtonComponent,
+      TextComponent,
+    } = this.props;
 
     if (props.itemRenderer) {
       return props.itemRenderer({ item, itemIndex, props, state, methods });
@@ -39,33 +56,45 @@ class Item extends Component {
         aria-disabled={item.disabled}
         disabled={item.disabled}
         aria-label={getByPath(item, props.labelField)}
-        key={`${getByPath(item, props.valueField)}${getByPath(item, props.labelField)}`}
+        key={`${getByPath(item, props.valueField)}${getByPath(
+          item,
+          props.labelField
+        )}`}
         tabIndex="-1"
         className={`${LIB_NAME}-item ${
-          methods.isSelected(item) ? `${LIB_NAME}-item-selected` : ''
-        } ${state.cursor === itemIndex ? `${LIB_NAME}-item-active` : ''} ${
-          item.disabled ? `${LIB_NAME}-item-disabled` : ''
+          methods.isSelected(item) ? `${LIB_NAME}-item-selected` : ""
+        } ${state.cursor === itemIndex ? `${LIB_NAME}-item-active` : ""} ${
+          item.disabled ? `${LIB_NAME}-item-disabled` : ""
         }`}
-        onClick={item.disabled ? undefined : () => {console.log(item); methods.addItem(item); methods.setValue(item.name)}}
+        onClick={
+          item.disabled
+            ? undefined
+            : () => {
+                console.log(item);
+                methods.addItem(item);
+                methods.setValue(item.name);
+              }
+        }
         onKeyPress={item.disabled ? undefined : () => methods.addItem(item)}
         color={props.color}
-        schema={props.schema}>
+        schema={props.schema}
+      >
+        <TextComponent>
+          {getByPath(item, props.labelField)}{" "}
+          {item.disabled && <ins>{props.disabledLabel}</ins>}
+        </TextComponent>
 
-            <TextComponent>
-              {getByPath(item, props.labelField)} {item.disabled && <ins>{props.disabledLabel}</ins>}
-            </TextComponent>
-
-            {props.showButton && !!props.onDetailsClick &&
-              <ButtonComponent className='fas fa-ellipsis-h'
-                  onClick={(e) => {
-                    if (!e) var e = window.event;
-                    e.cancelBubble = true;
-                    if (e.stopPropagation) e.stopPropagation();
-                    props.onDetailsClick(item.id);
-                  }}>
-              </ButtonComponent>
-            }
-
+        {props.showButton && !!props.onDetailsClick && (
+          <ButtonComponent
+            className="fas fa-ellipsis-h"
+            onClick={(e) => {
+              if (!e) var e = window.event;
+              e.cancelBubble = true;
+              if (e.stopPropagation) e.stopPropagation();
+              props.onDetailsClick(item.id);
+            }}
+          ></ButtonComponent>
+        )}
       </ItemComponent>
     );
   }
@@ -81,14 +110,13 @@ Item.propTypes = {
 };
 
 export const DefaultItemComponent = styled.span`
-
-  padding: .5rem 1rem .5rem calc(1rem - 5px);
+  padding: 0.5rem 1rem 0.5rem calc(1rem - 5px);
   cursor: pointer;
   white-space: nowrap;
   display: flex;
   justify-content: space-between;
-  font-family: ${props => props.theme.font.primary};
-  font-size: ${props => props.theme.fontSize.sz3};
+  font-family: ${(props) => props.theme.font.primary};
+  font-size: ${(props) => props.theme.fontSize.sz3};
 
   border-left: 5px solid transparent;
 
@@ -98,28 +126,41 @@ export const DefaultItemComponent = styled.span`
 
   :hover,
   :focus {
-    background: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};
+    background: ${(props) => LightenDarkenColor(props.theme.bg.quinary, 10)};
     outline: none;
   }
 
-
   &.${LIB_NAME}-item-selected {
-    ${props => props.disabled ? `
+    ${(props) =>
+      props.disabled
+        ? `
       background: rgba(0,0,0,0.01);
       color: ${props.theme.bg.primary};
     `
-    : `
-      background: ${!!props.schema ? hexToRGBA(props.theme.schema[props.schema].solid, 0.1) : hexToRGBA(props.theme.bg.senary, 0.1)};
-      color: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.bg.senary};
-      border-color: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.bg.senary};
+        : `
+      background: ${
+        props.schema
+          ? hexToRGBA(props.theme.schema[props.schema].solid, 0.1)
+          : hexToRGBA(props.theme.bg.senary, 0.1)
+      };
+      color: ${
+        props.schema
+          ? props.theme.schema[props.schema].solid
+          : props.theme.bg.senary
+      };
+      border-color: ${
+        props.schema
+          ? props.theme.schema[props.schema].solid
+          : props.theme.bg.senary
+      };
     `}
   }
 
   ${({ disabled }) =>
     disabled
       ? `
-    background: ${props => props.theme.bg.secondary};
-    color: ${props => props.theme.bg.tertiary};
+    background: ${(props) => props.theme.bg.secondary};
+    color: ${(props) => props.theme.bg.tertiary};
 
     ins {
       text-decoration: none;
@@ -130,8 +171,7 @@ export const DefaultItemComponent = styled.span`
       text-transform: uppercase;
     }
     `
-      : ''}
-
+      : ""}
 `;
 
 const DefaultContentContainer = styled.div`
@@ -145,15 +185,15 @@ const DefaultContentContainer = styled.div`
 `;
 
 const DefaultButtonComponent = styled.i`
-    display: flex;
-    color: grey;
-    font-size: 1rem;
-    &:hover {
-        cursor: pointer;
-    }
-    line-height: 2rem;
-    text-align: center;
-`
+  display: flex;
+  color: grey;
+  font-size: 1rem;
+  &:hover {
+    cursor: pointer;
+  }
+  line-height: 2rem;
+  text-align: center;
+`;
 
 const DefaultTextComponent = styled.span`
   overflow: hidden;
@@ -167,10 +207,10 @@ const DefaultTextComponent = styled.span`
 
 // Specifies the default values for props:
 Item.defaultProps = {
-    ItemComponent: DefaultItemComponent,
-    ContentContainer: DefaultContentContainer,
-    ButtonComponent: DefaultButtonComponent,
-    TextComponent: DefaultTextComponent,
+  ItemComponent: DefaultItemComponent,
+  ContentContainer: DefaultContentContainer,
+  ButtonComponent: DefaultButtonComponent,
+  TextComponent: DefaultTextComponent,
 };
 
 export default Item;

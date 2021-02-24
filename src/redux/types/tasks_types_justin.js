@@ -1,6 +1,6 @@
 // TASKS types
-export const TASKS = 'TASKS';
-export const TASK = 'TASK';
+export const TASKS = "TASKS";
+export const TASK = "TASK";
 
 // get multiple
 // ***************

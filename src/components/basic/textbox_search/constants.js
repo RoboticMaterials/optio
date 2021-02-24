@@ -1,1 +1,1 @@
-export const LIB_NAME = 'react-dropdown-select';
+export const LIB_NAME = "react-dropdown-select";

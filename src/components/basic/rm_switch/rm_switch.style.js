@@ -1,1 +1,1 @@
-import Switch from 'react-ios-switch';
+import Switch from "react-ios-switch";

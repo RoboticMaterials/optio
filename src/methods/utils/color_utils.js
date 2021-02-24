@@ -6,31 +6,31 @@ export const hexToRGBA = (hex, alpha) => {
   return `rgba(${RR}, ${GG}, ${BB}${alpha && `, ${alpha}`})`;
 };
 
-export function LightenDarkenColor(col,amt) {
-    var usePound = false;
-    if ( col[0] === "#" ) {
-        col = col.slice(1);
-        usePound = true;
-    }
+export function LightenDarkenColor(col, amt) {
+  var usePound = false;
+  if (col[0] === "#") {
+    col = col.slice(1);
+    usePound = true;
+  }
 
-    var num = parseInt(col,16);
+  var num = parseInt(col, 16);
 
-    var r = (num >> 16) + amt;
+  var r = (num >> 16) + amt;
 
-    if ( r > 255 ) r = 255;
-    else if  (r < 0) r = 0;
+  if (r > 255) r = 255;
+  else if (r < 0) r = 0;
 
-    var b = ((num >> 8) & 0x00FF) + amt;
+  var b = ((num >> 8) & 0x00ff) + amt;
 
-    if ( b > 255 ) b = 255;
-    else if  (b < 0) b = 0;
+  if (b > 255) b = 255;
+  else if (b < 0) b = 0;
 
-    var g = (num & 0x0000FF) + amt;
+  var g = (num & 0x0000ff) + amt;
 
-    if ( g > 255 ) g = 255;
-    else if  ( g < 0 ) g = 0;
+  if (g > 255) g = 255;
+  else if (g < 0) g = 0;
 
-    return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
+  return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16);
 }
 
 // export function pSBC(p,c0,c1,l){
@@ -58,22 +58,101 @@ export function LightenDarkenColor(col,amt) {
 //     else return"#"+(4294967296+r*16777216+g*65536+b*256+(f?m(a*255):0)).toString(16).slice(1,f?undefined:-2)
 // }
 
-export const RGB_Linear_Blend=(p,c0,c1)=>{
-    var i=parseInt,r=Math.round,P=1-p,[a,b,c,d]=c0.split(","),[e,f,g,h]=c1.split(","),x=d||h,j=x?","+(!d?h:!h?d:r((parseFloat(d)*P+parseFloat(h)*p)*1000)/1000+")"):")";
-    return"rgb"+(x?"a(":"(")+r(i(a[3]==="a"?a.slice(5):a.slice(4))*P+i(e[3]=="a"?e.slice(5):e.slice(4))*p)+","+r(i(b)*P+i(f)*p)+","+r(i(c)*P+i(g)*p)+j;
-}
+export const RGB_Linear_Blend = (p, c0, c1) => {
+  var i = parseInt,
+    r = Math.round,
+    P = 1 - p,
+    [a, b, c, d] = c0.split(","),
+    [e, f, g, h] = c1.split(","),
+    x = d || h,
+    j = x
+      ? "," +
+        (!d
+          ? h
+          : !h
+          ? d
+          : r((parseFloat(d) * P + parseFloat(h) * p) * 1000) / 1000 + ")")
+      : ")";
+  return (
+    "rgb" +
+    (x ? "a(" : "(") +
+    r(
+      i(a[3] === "a" ? a.slice(5) : a.slice(4)) * P +
+        i(e[3] == "a" ? e.slice(5) : e.slice(4)) * p
+    ) +
+    "," +
+    r(i(b) * P + i(f) * p) +
+    "," +
+    r(i(c) * P + i(g) * p) +
+    j
+  );
+};
 
-export const RGB_Linear_Shade=(p,c)=>{
-    var i=parseInt,r=Math.round,[a,b,c,d]=c.split(","),P=p<0,t=P?0:255*p,P=P?1+p:1-p;
-    return"rgb"+(d?"a(":"(")+r(i(a[3]==="a"?a.slice(5):a.slice(4))*P+t)+","+r(i(b)*P+t)+","+r(i(c)*P+t)+(d?","+d:")");
-}
+export const RGB_Linear_Shade = (p, c) => {
+  var i = parseInt,
+    r = Math.round,
+    [a, b, c, d] = c.split(","),
+    P = p < 0,
+    t = P ? 0 : 255 * p,
+    P = P ? 1 + p : 1 - p;
+  return (
+    "rgb" +
+    (d ? "a(" : "(") +
+    r(i(a[3] === "a" ? a.slice(5) : a.slice(4)) * P + t) +
+    "," +
+    r(i(b) * P + t) +
+    "," +
+    r(i(c) * P + t) +
+    (d ? "," + d : ")")
+  );
+};
 
-export const RGB_Log_Blend=(p,c0,c1)=>{
-    var i=parseInt,r=Math.round,P=1-p,[a,b,c,d]=c0.split(","),[e,f,g,h]=c1.split(","),x=d||h,j=x?","+(!d?h:!h?d:r((parseFloat(d)*P+parseFloat(h)*p)*1000)/1000+")"):")";
-    return"rgb"+(x?"a(":"(")+r((P*i(a[3]==="a"?a.slice(5):a.slice(4))**2+p*i(e[3]=="a"?e.slice(5):e.slice(4))**2)**0.5)+","+r((P*i(b)**2+p*i(f)**2)**0.5)+","+r((P*i(c)**2+p*i(g)**2)**0.5)+j;
-}
+export const RGB_Log_Blend = (p, c0, c1) => {
+  var i = parseInt,
+    r = Math.round,
+    P = 1 - p,
+    [a, b, c, d] = c0.split(","),
+    [e, f, g, h] = c1.split(","),
+    x = d || h,
+    j = x
+      ? "," +
+        (!d
+          ? h
+          : !h
+          ? d
+          : r((parseFloat(d) * P + parseFloat(h) * p) * 1000) / 1000 + ")")
+      : ")";
+  return (
+    "rgb" +
+    (x ? "a(" : "(") +
+    r(
+      (P * i(a[3] === "a" ? a.slice(5) : a.slice(4)) ** 2 +
+        p * i(e[3] == "a" ? e.slice(5) : e.slice(4)) ** 2) **
+        0.5
+    ) +
+    "," +
+    r((P * i(b) ** 2 + p * i(f) ** 2) ** 0.5) +
+    "," +
+    r((P * i(c) ** 2 + p * i(g) ** 2) ** 0.5) +
+    j
+  );
+};
 
-export const RGB_Log_Shade=(p,c)=>{
-    var i=parseInt,r=Math.round,[a,b,c,d]=c.split(","),P=p<0,t=P?0:p*255**2,P=P?1+p:1-p;
-    return"rgb"+(d?"a(":"(")+r((P*i(a[3]==="a"?a.slice(5):a.slice(4))**2+t)**0.5)+","+r((P*i(b)**2+t)**0.5)+","+r((P*i(c)**2+t)**0.5)+(d?","+d:")");
-}
+export const RGB_Log_Shade = (p, c) => {
+  var i = parseInt,
+    r = Math.round,
+    [a, b, c, d] = c.split(","),
+    P = p < 0,
+    t = P ? 0 : p * 255 ** 2,
+    P = P ? 1 + p : 1 - p;
+  return (
+    "rgb" +
+    (d ? "a(" : "(") +
+    r((P * i(a[3] === "a" ? a.slice(5) : a.slice(4)) ** 2 + t) ** 0.5) +
+    "," +
+    r((P * i(b) ** 2 + t) ** 0.5) +
+    "," +
+    r((P * i(c) ** 2 + t) ** 0.5) +
+    (d ? "," + d : ")")
+  );
+};
