@@ -3,3 +3,18 @@ type Todo @model {
   name: String!
   description: String
 }
+
+type Station @model {
+  id: ID!
+  name: String!
+  schema: String!
+  type:String!
+  pox_x: Int!
+  pos_y: Int!
+  rotation: Int!
+  x: Int!
+  y: Int!
+  map_id: String!
+  children: AWSJSON!
+  dashboards: AWSJSON!
+}
