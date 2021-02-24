@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 
 // external functions
 import PropTypes from "prop-types";
@@ -34,7 +34,7 @@ import {
 	CONTENT,
 	COUNT_FIELD,
 	DEFAULT_COUNT_DISPLAY_NAME,
-	DEFAULT_NAME_DISPLAY_NAME,
+	DEFAULT_NAME_DISPLAY_NAME, defaultBins,
 	FIELD_COMPONENT_NAMES,
 	FIELD_DATA_TYPES,
 	FORM_BUTTON_TYPES, FORM_STATUS,
@@ -44,7 +44,12 @@ import {
 import {BASIC_FIELD_DEFAULTS} from "../../../../../constants/form_constants";
 
 // utils
-import {parseMessageFromEvent} from "../../../../../methods/utils/card_utils";
+import {
+	convertExcelToLot,
+	convertLotToExcel,
+	getInitialValues,
+	parseMessageFromEvent
+} from "../../../../../methods/utils/card_utils";
 import {CARD_SCHEMA_MODES, cardSchema, editLotSchema, getCardSchema} from "../../../../../methods/utils/form_schemas";
 import {getProcessStations} from "../../../../../methods/utils/processes_utils";
 import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
@@ -68,19 +73,15 @@ const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
 
 
-const defaultBins = {
-	"QUEUE": {
-		count: 0
-	},
-}
+
 
 const FormComponent = (props) => {
 
 	const {
 		// formMode,
+		card,
 		setShowLotTemplateEditor,
 		showLotTemplateEditor,
-		getInitialValues,
 		lotTemplate,
 		lotTemplateId,
 		bins,
@@ -119,8 +120,6 @@ const FormComponent = (props) => {
 	// 	console.log("lot_editor touched",touched)
 	// }, [values, errors,touched])
 
-
-
 	// actions
 	const dispatch = useDispatch()
 	const onGetCardHistory = async (cardId) => await dispatch(getCardHistory(cardId))
@@ -135,18 +134,14 @@ const FormComponent = (props) => {
 	const processes = useSelector(state => { return state.processesReducer.processes }) || {}
 	const processesArray = Object.values(processes)
 
-
-
-	// component state
-	const [showLotInfo, setShowLotInfo] = useState(true)
 	const [calendarFieldName, setCalendarFieldName] = useState(null)
 	const [showTemplateSelector, setShowTemplateSelector] = useState(formMode === FORM_MODES.CREATE)
 	const [fieldNameArr, setFieldNameArr] = useState([]) // if cardId was passed, update existing. Otherwise create new
 	const [pasteTable, setPasteTable] = useState([])
 	const [resetPasteTable, setResetPasteTable] = useState(false)
-	// const [tempPasteTable, setTempPasteTable] = useState([])
 	const [showPasteMapper, setShowPasteMapper] = useState(false)
 	const [showSimpleModal, setShowSimpleModal] = useState(false)
+	const [pasteMapperHidden, setPasteMapperHidden] = useState(true)
 	const [mappedValues, setMappedValues] = useState([])
 	const [processedValues, setProcessedValues] = useState([])
 	const [createMappedValues, setCreateMappedValues] = useState(false)
@@ -157,6 +152,9 @@ const FormComponent = (props) => {
 
 	const previousProvidedIndex = usePrevious(mappedValuesIndex)
 	const previousProvidedValues = usePrevious(mappedValues)
+
+	const mappedValuesRef = useRef(null)
+	const processedValuesRef = useRef(null)
 
 	// derived state
 	const selectedBinName = stations[binId] ?
@@ -171,35 +169,42 @@ const FormComponent = (props) => {
 	const submitDisabled = ((errorCount > 0) || (touchedCount === 0) || isSubmitting) && (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
 
 	useEffect(() => {
+		if(isArray(mappedValues) && mappedValues.length > 0 && mappedValues[mappedValuesIndex] && mappedValuesIndex !== previousProvidedIndex) {
+			const newValue = convertLotToExcel(values, lotTemplateId)
+			setMappedValues(immutableReplace(mappedValues, newValue, previousProvidedIndex))
+		}
+	}, [values, mappedValuesIndex])
+
+	useEffect(() => {
+		if(isArray(mappedValues) && mappedValues.length > 0 && mappedValues[mappedValuesIndex] && mappedValuesIndex !== previousProvidedIndex) {
+
+			const currMappedValue = mappedValues[mappedValuesIndex]
+
+			const currMappedLot = convertExcelToLot(currMappedValue, lotTemplate, values.processId)
+
+			formikProps.resetForm()	// reset when switching
+
+			setValues(currMappedLot)
+		}
+
+	}, [mappedValues, mappedValuesIndex])
+
+	useEffect(() => {
 		if(createMappedValues) {
 			let processedLots = []
+			mappedValuesRef.current = [...mappedValues]
 
 			mappedValues.forEach((currMappedLot, currMappedLotIndex) => {
 
 				const  {
 					name: payloadName,	// extract reserved fields
-					bins,				// extract reserved fields
-					processId,			// extract reserved fields
-					_id,				// extract reserved fields
-					quantity,				// extract reserved fields
-					...remainingPayload
 				} = currMappedLot
 
 				formikProps.resetForm()	// reset when switching
 
-				let newLot = {
-					name: payloadName ? payloadName : "",
-					bins: bins ? bins : defaultBins,
-					processId: processId ? processId : (values.processId ? values.processId : null),	// if currentLot has processId, use it. Otherwise if form has value, use it. Otherwise set to null
-					_id,
-					[lotTemplateId]: {
-						// ...values[lotTemplateId],
-						...getInitialValues(lotTemplate),
-						...remainingPayload
-					}
-				}
+				let newLot = convertExcelToLot(currMappedLot, lotTemplate, values.processId)
 
-				let currProcessedLot = {
+				let currLotStatus = {
 					index: currMappedLotIndex,
 					name: payloadName ? payloadName : "Unnamed Lot",
 					errors: {},
@@ -208,105 +213,14 @@ const FormComponent = (props) => {
 						code: FORM_STATUS.VALIDATION_START
 					},
 					resourceStatus: {
-						message: `Validating lot.`,
+						message: `Waiting.`,
 						code: FORM_STATUS.WAITING
 					},
 				}
 
-					editLotSchema.validate(newLot, {abortEarly: false})
-						.then((ayo) => {
-							currProcessedLot.validationStatus = {
-								message: `Successfully validated lot!`,
-								code: FORM_STATUS.VALIDATION_SUCCESS
-							}
+				superSubmit(newLot, currMappedLotIndex, currLotStatus)
 
-							const {
-								name: newName,
-								bins: newBins,
-								processId: newProcessId,
-								[lotTemplateId]: templateValues,
-							} = newLot || {}
-
-							currProcessedLot.resourceStatus = {
-								message: `Creating lot. ${newName}`,
-								code: FORM_STATUS.CREATE_START
-							}
-
-							const submitItem = {
-								name: newName,
-								bins: newBins,
-								process_id: newProcessId,
-								lotTemplateId: lotTemplateId,
-								...templateValues
-							}
-
-							onPostCard(submitItem).then((result) => {
-								// const tempDescriptors = [...descriptorsReference.current];
-								// tempDescriptors[descriptorIndex] = response.data;
-								// // Next line is to update the descriptors into descriptors state, this phase doesn't happen immediately 'cause is asynchronous
-								// setDescriptors(tempDescriptors);
-								// // Next line is to update the descriptors in memory, this phase occurs immediately
-								// descriptorsReference.current = tempDescriptors
-								if(result) {
-									currProcessedLot.resourceStatus = {
-										message: `Successfully created lot!`,
-										code: FORM_STATUS.CREATE_SUCCESS
-									}
-								}
-
-								else {
-									currProcessedLot.resourceStatus = {
-										message: `Error creating lot.`,
-										code: FORM_STATUS.CREATE_ERROR
-									}
-								}
-							})
-							.catch((err) => {
-								console.log("post it err",err)
-							})
-
-						})
-					.catch((err) => {
-						console.log("ERRRRRORRRR", err)
-
-						const {
-							inner = [],
-							message
-						} = err || {}
-
-						let lotErrors = {}
-
-						inner.forEach((currErr) => {
-							const {
-								errors,			//: ["1 character minimum."]
-								path, 				//: "name"
-							} = currErr || {}
-
-							let existingErrors = lotErrors[path] || []
-
-							lotErrors = {
-								...lotErrors,
-								[path]: [...existingErrors, ...errors]
-							}
-						})
-
-						console.log("lotErrors",lotErrors)
-
-						currProcessedLot.resourceStatus = {
-							message: `Creation cancelled: validation failed.`,
-							code: FORM_STATUS.CANCELLED
-						}
-						currProcessedLot.validationStatus = {
-							message: `Error validating lot.`,
-							code: FORM_STATUS.VALIDATION_ERROR
-						}
-						currProcessedLot.errors = lotErrors
-
-					});
-
-
-
-				processedLots.push(currProcessedLot)
+				processedLots.push(currLotStatus)
 			})
 
 			setProcessedValues(processedLots)
@@ -314,6 +228,127 @@ const FormComponent = (props) => {
 			setShowCreationStatus(true)
 		}
 	}, [createMappedValues, mappedValues])
+
+	useEffect(() => {
+		if(mappedValuesRef && mappedValuesRef.current) {
+			setMappedValues(mappedValuesRef.current)
+		}
+	}, [mappedValuesRef, mappedValuesRef.current])
+
+	const superSubmit = (values, index, lotStatus) => {
+		let updatedItem = {...values}
+
+		// let lotStatus = processedValues[index]
+		editLotSchema.validate(values, {abortEarly: false})
+			.then((ayo) => {
+				lotStatus.validationStatus = {
+					message: `Successfully validated lot!`,
+					code: FORM_STATUS.VALIDATION_SUCCESS
+				}
+
+				const {
+					name: newName,
+					bins: newBins,
+					processId: newProcessId,
+					[lotTemplateId]: templateValues,
+				} = values || {}
+
+				lotStatus.resourceStatus = {
+					message: `Creating lot.`,
+					code: FORM_STATUS.CREATE_START
+				}
+
+				const submitItem = {
+					name: newName,
+					bins: newBins,
+					process_id: newProcessId,
+					lotTemplateId: lotTemplateId,
+					...templateValues
+				}
+
+				onPostCard(submitItem).then((result) => {
+
+					if(result) {
+						const {
+							_id = null
+						} = result || {}
+
+						console.log("post result", result)
+
+						const currMappedLot = convertLotToExcel(values, lotTemplateId)
+						mappedValuesRef.current = immutableReplace(mappedValuesRef.current, {
+							...currMappedLot,
+							_id
+						}, index)
+
+						updatedItem._id = _id
+
+						lotStatus.resourceStatus = {
+							message: `Successfully created lot!`,
+							code: FORM_STATUS.CREATE_SUCCESS
+						}
+
+						if(mappedValuesIndex === index) {
+							formikProps.resetForm()
+							setValues({
+								...values,
+								_id
+							})
+						}
+					}
+
+					else {
+						lotStatus.resourceStatus = {
+							message: `Error creating lot.`,
+							code: FORM_STATUS.CREATE_ERROR
+						}
+					}
+				})
+					.catch((err) => {
+						console.log("post it err",err)
+					})
+
+			})
+			.catch((err) => {
+				console.log("ERRRRRORRRR", err)
+
+				const {
+					inner = [],
+					message
+				} = err || {}
+
+				let lotErrors = {}
+
+				inner.forEach((currErr) => {
+					const {
+						errors,			//: ["1 character minimum."]
+						path, 				//: "name"
+					} = currErr || {}
+
+					let existingErrors = lotErrors[path] || []
+
+					lotErrors = {
+						...lotErrors,
+						[path]: [...existingErrors, ...errors]
+					}
+				})
+
+				console.log("lotErrors",lotErrors)
+
+				lotStatus.resourceStatus = {
+					message: `Creation cancelled: validation failed.`,
+					code: FORM_STATUS.CANCELLED
+				}
+				lotStatus.validationStatus = {
+					message: `Error validating lot.`,
+					code: FORM_STATUS.VALIDATION_ERROR
+				}
+				lotStatus.errors = lotErrors
+
+			});
+
+		return updatedItem
+	}
 
 	/*
 	* This effect sets default values when the lotTemplate changes.
@@ -330,7 +365,7 @@ const FormComponent = (props) => {
 		} = values || {}
 
 		// if doesn't contain values for current object, set initialValues
-		if(!templateValues) setFieldValue(lotTemplateId, getInitialValues(lotTemplate))
+		if(!templateValues) setFieldValue(lotTemplateId, getInitialValues(lotTemplate, card))
 
 	}, [lotTemplateId, fieldNameArr])
 
@@ -347,51 +382,7 @@ const FormComponent = (props) => {
 
 	}, [processOptions, processes])
 
-	useEffect(() => {
-		if(isArray(mappedValues) && mappedValues.length > 0 && mappedValues[mappedValuesIndex] && mappedValuesIndex !== previousProvidedIndex) {
-			const {
-				[lotTemplateId]: templateValues,
-				...rest
-			} = values
 
-			const newValue = {
-				...templateValues,
-				...rest
-			}
-			setMappedValues(immutableReplace(mappedValues, newValue, previousProvidedIndex))
-		}
-	}, [values, mappedValuesIndex])
-
-	useEffect(() => {
-		if(isArray(mappedValues) && mappedValues.length > 0 && mappedValues[mappedValuesIndex] && mappedValuesIndex !== previousProvidedIndex) {
-
-			const currentLot = mappedValues[mappedValuesIndex]
-
-			const  {
-				name: payloadName,	// extract reserved fields
-				bins,				// extract reserved fields
-				processId,			// extract reserved fields
-				_id,				// extract reserved fields
-				quantity,				// extract reserved fields
-				...remainingPayload
-			} = currentLot
-
-			formikProps.resetForm()	// reset when switching
-
-			setValues({
-				name: payloadName ? payloadName : "",
-				bins: bins ? bins : defaultBins,
-				processId: processId ? processId : (values.processId ? values.processId : null),	// if currentLot has processId, use it. Otherwise if form has value, use it. Otherwise set to null
-				_id,
-				[lotTemplateId]: {
-					// ...values[lotTemplateId],
-					...getInitialValues(lotTemplate),
-					...remainingPayload
-				}
-			})
-		}
-
-	}, [mappedValues, mappedValuesIndex])
 
 	/*
 	* This effect runs whenever lotTemplate changes
@@ -439,6 +430,7 @@ const FormComponent = (props) => {
 			// }
 		}
 	}, [lotTemplate])
+
 
 	/*
 	* This function gets a list of names and ids for the stations button group
@@ -1030,7 +1022,6 @@ const FormComponent = (props) => {
 									schema={'lots'}
 									type={"button"}
 									style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-									secondary
 									onClick={async () => {
 										setShowTemplateSelector(!showTemplateSelector)
 										dispatchSetSelectedLotTemplate(lotTemplateId)
@@ -1038,6 +1029,29 @@ const FormComponent = (props) => {
 								>
 									{showTemplateSelector ? "Hide Templates" : "Show Templates"}
 								</Button>
+
+								{(isArray(mappedValues) && mappedValues.length > 0) &&
+									null
+									// <Button
+									// 	type={"button"}
+									// 	label={"Show Mapper"}
+									// 	onClick={() => {
+									// 		setShowPasteMapper(true)
+									// 		setPasteMapperHidden(false)
+									// 	}}
+									// />
+								}
+
+								{(isArray(processedValues) && processedValues.length > 0) &&
+								// <Button
+								// 	type={"button"}
+								// 	label={"Show Status"}
+								// 	onClick={() => {
+								// 		setShowCreationStatus(true)
+								// 	}}
+								// />
+									null
+								}
 
 								{formMode === FORM_MODES.CREATE ?
 									<>
@@ -1047,7 +1061,6 @@ const FormComponent = (props) => {
 											type={"button"}
 											disabled={submitDisabled}
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-											secondary
 											onClick={async () => {
 												onSubmit(values, FORM_BUTTON_TYPES.ADD)
 											}}
@@ -1061,7 +1074,6 @@ const FormComponent = (props) => {
 											type={"button"}
 											disabled={submitDisabled}
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-											secondary
 											onClick={async () => {
 												if (isArray(mappedValues) && mappedValues.length > 0) {
 													const submitWasSuccessful = await onSubmit(values)
@@ -1089,7 +1101,6 @@ const FormComponent = (props) => {
 											type={"button"}
 											disabled={submitDisabled}
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-											secondary
 											onClick={async () => {
 												onSubmit(values, FORM_BUTTON_TYPES.SAVE)
 											}}
@@ -1100,7 +1111,6 @@ const FormComponent = (props) => {
 										<Button
 											schema={'lots'}
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-											secondary
 											type={"button"}
 											onClick={() => onDeleteClick(binId)}
 										>
@@ -1112,7 +1122,6 @@ const FormComponent = (props) => {
 											schema={'lots'}
 											type={"button"}
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-											secondary
 											onClick={async () => {
 												setContent(CONTENT.MOVE)
 											}}
@@ -1154,41 +1163,45 @@ const FormComponent = (props) => {
 
 	if(loaded) {
 
-		if(showPasteMapper) {
-			return(
-				<>
-					{showSimpleModal &&
-					<SimpleModal
-						isOpen={true}
-						title={"Paste Event Detected"}
-						onRequestClose={() => setShowSimpleModal(false)}
-						onCloseButtonClick={() => setShowSimpleModal(false)}
-						handleOnClick1={() => {
-							setShowPasteMapper(true)
-							setShowSimpleModal(false)
+		return(
+			<>
+				{showCreationStatus &&
+				<StatusList
+					onItemClick={(item) => {
+						setMappedValuesIndex(item.index)
+						setShowCreationStatus(false)
+					}}
+					onCloseClick={() => {
+						setShowCreationStatus(false)
+					}}
+					onShowMapperClick={() => {
+						setShowCreationStatus(false)
+						setShowPasteMapper(true)
+						setPasteMapperHidden(false)
+					}}
+					data={processedValues.map((currValue, currIndex) => {
+						const {
+							name
+						} = currValue
 
+						const wholeVal = mappedValues[currIndex]
 
-							setResetPasteTable(true)
-							setTimeout(() => {
-								setResetPasteTable(false)
-							}, 250)
+						const {
+							_id
+						} = wholeVal
 
-							// setPasteTable([])
-							// setPasteTable([])
-							// setPasteTable(tempPasteTable)
-							// setTempPasteTable([])
-						}}
-						handleOnClick2={() => {
-							setShowSimpleModal(false)
-						}}
-						button_1_text={"Yes"}
-						button_2_text={"No"}
+						return {
+							...currValue,
+							title: name,
+							created: !!_id
+						}
+					})}
 
-					>
-						<styled.SimpleModalText>A paste event was detected. Would you like to use pasted data to create lots?</styled.SimpleModalText>
-					</SimpleModal>
-					}
+				/>
+				}
+				{showPasteMapper &&
 					<PasteForm
+						hidden={pasteMapperHidden}
 						reset={resetPasteTable}
 						availableFieldNames={[
 							...fieldNameArr,
@@ -1202,54 +1215,27 @@ const FormComponent = (props) => {
 								displayName: getDisplayName(lotTemplate, "count", DEFAULT_COUNT_DISPLAY_NAME)
 							}
 						]}
-						onCancel={() => setShowPasteMapper(false)}
+						onCancel={() => {
+							setShowPasteMapper(false)
+							setPasteMapperHidden(true)
+						}}
 						table={pasteTable}
 						onPreviewClick={(payload) => {
-							setShowPasteMapper(false)
+							// setShowPasteMapper(false)
 							setShowProcessSelector(true)
 							setMappedValues(payload)
 							setMappedValuesIndex(0)
+							setPasteMapperHidden(true)
 						}}
 						onCreateClick={(payload) => {
-							setShowPasteMapper(false)
+							// setShowPasteMapper(false)
 							setMappedValues(payload)
+							setMappedValuesIndex(0)
 							setCreateMappedValues(true)
+							setPasteMapperHidden(true)
 						}}
 					/>
-				</>
-			)
-		}
-
-
-
-		if(createMappedValues) {
-			return(null)
-		}
-
-		if(showCreationStatus) {
-			return(
-				<StatusList
-					onItemClick={(item) => {
-						setMappedValuesIndex(item.index)
-						setShowCreationStatus(false)
-					}}
-					data={processedValues.map((currValue, currIndex) => {
-						const {
-							name
-						} = currValue
-
-						return {
-							...currValue,
-							title: name
-						}
-					})}
-
-				/>
-			)
-		}
-
-		return(
-			<>
+				}
 				{showSimpleModal &&
 				<SimpleModal
 					isOpen={true}
@@ -1258,6 +1244,7 @@ const FormComponent = (props) => {
 					onCloseButtonClick={() => setShowSimpleModal(false)}
 					handleOnClick1={() => {
 						setShowPasteMapper(true)
+						setPasteMapperHidden(false)
 						setShowSimpleModal(false)
 
 
@@ -1281,7 +1268,7 @@ const FormComponent = (props) => {
 					<styled.SimpleModalText>A paste event was detected. Would you like to use pasted data to create lots?</styled.SimpleModalText>
 				</SimpleModal>
 				}
-				{renderForm()}
+				{!(showCreationStatus) && (pasteMapperHidden) && renderForm()}
 				<SubmitErrorHandler
 					submitCount={submitCount}
 					isValid={formikProps.isValid}
@@ -1471,115 +1458,7 @@ const LotEditor = (props) => {
 
 	}, [])
 
-	/*
-	* extracts initial values from the current lot and maps them to the template parameter
-	* */
-	const getInitialValues = (lotTemplate) => {
 
-		let initialValues = {} // initialize to empty object
-
-		// make sure lotTemplate is object to avoid errors
-		// make sure lotTemplate.fields is array
-		if(isObject(lotTemplate) && isArray(lotTemplate.fields)) {
-
-
-			// loop through rows in column
-			lotTemplate.fields.forEach((currRow, currRowIndex) => {
-
-				// loop through items in row
-				currRow.forEach((currItem, currItemIndex) => {
-
-					// extract properties of currItem
-					const {
-						fieldName,
-						_id: fieldId,
-						component,
-						key
-					} = currItem || {}
-
-					// set initialValue for current item
-					// name of value is given by fieldName
-					// if card already has a value, use it. Otherwise, use appropriate default value for field type
-					switch(component) {
-						case FIELD_COMPONENT_NAMES.TEXT_BOX: {
-							initialValues[fieldName] = isObject(card) ?
-								(card[fieldName] || BASIC_FIELD_DEFAULTS.TEXT_FIELD)
-								:
-								isObject(initialValues) ?
-									(initialValues[fieldName] || BASIC_FIELD_DEFAULTS.TEXT_FIELD)
-									:
-									BASIC_FIELD_DEFAULTS.TEXT_FIELD
-							break;
-						}
-
-						case FIELD_COMPONENT_NAMES.TEXT_BOX_BIG: {
-							initialValues[fieldName] = isObject(card) ?
-								(card[fieldName] || BASIC_FIELD_DEFAULTS.TEXT_FIELD)
-								:
-								isObject(initialValues) ?
-									(initialValues[fieldName] || BASIC_FIELD_DEFAULTS.TEXT_FIELD)
-									:
-									BASIC_FIELD_DEFAULTS.TEXT_FIELD
-							break;
-						}
-
-						case FIELD_COMPONENT_NAMES.CALENDAR_SINGLE: {
-							initialValues[fieldName] = isObject(card) ?
-								(card[fieldName] || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD)
-								:
-								isObject(initialValues) ?
-									(initialValues[fieldName] || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD)
-									:
-									BASIC_FIELD_DEFAULTS.CALENDAR_FIELD
-							break;
-						}
-
-						case FIELD_COMPONENT_NAMES.CALENDAR_START_END: {
-							let updatedValues = BASIC_FIELD_DEFAULTS.CALENDAR_FIELD
-
-							if(isObject(card) && isArray(card[fieldName])) {
-								const val = card[fieldName]
-								if(val.length > 0) {
-									updatedValues = [new Date(val[0])]
-								}
-								if(val.length > 1) {
-									updatedValues.push(new Date(val[1]))
-								}
-							}
-							else if(isObject(initialValues) && isArray(initialValues[fieldName])) {
-								const val = initialValues[fieldName]
-								if(val.length > 0) {
-									updatedValues = [new Date(val[0])]
-								}
-								if(val.length > 1) {
-									updatedValues.push(new Date(val[1]))
-								}
-							}
-
-							initialValues[fieldName] = updatedValues
-							break;
-						}
-
-						case FIELD_COMPONENT_NAMES.NUMBER_INPUT: {
-							initialValues[fieldName] = isObject(card) ?
-								(card[fieldName] || BASIC_FIELD_DEFAULTS.NUMBER_FIELD)
-								:
-								isObject(initialValues) ?
-									(initialValues[fieldName] || BASIC_FIELD_DEFAULTS.NUMBER_FIELD)
-									:
-									BASIC_FIELD_DEFAULTS.NUMBER_FIELD
-							break;
-						}
-					}
-				})
-			})
-		}
-		else {
-
-		}
-
-		return initialValues
-	}
 
 	if(loaded) {
 		return(
@@ -1622,7 +1501,7 @@ const LotEditor = (props) => {
 								:
 								defaultBins,
 							[lotTemplateId]: {
-								...getInitialValues(lotTemplate)
+								...getInitialValues(lotTemplate, card)
 							}
 
 						}}
@@ -1647,6 +1526,8 @@ const LotEditor = (props) => {
 								submitForm
 
 							} = formikProps
+
+
 
 							const handleSubmit = async (values, buttonType) => {
 								setSubmitting(true)
@@ -1838,7 +1719,6 @@ const LotEditor = (props) => {
 									onSubmit={handleSubmit}
 									setShowLotTemplateEditor={setShowLotTemplateEditor}
 									showLotTemplateEditor={showLotTemplateEditor}
-									getInitialValues={getInitialValues}
 									lotTemplate={lotTemplate}
 									lotTemplateId={lotTemplateId}
 									loaded={loaded}
@@ -1858,6 +1738,7 @@ const LotEditor = (props) => {
 									showProcessSelector={showProcessSelector}
 									content={content}
 									setContent={setContent}
+									card={card}
 								/>
 							)
 						}}

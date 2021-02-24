@@ -19,7 +19,8 @@ const StatusListBody = (props) => {
 				title,
 				errors,
 				validationStatus,
-				resourceStatus
+				resourceStatus,
+				created
 			} = currDatem || {}
 
 			const {
@@ -36,6 +37,7 @@ const StatusListBody = (props) => {
 
 			return(
 				<StatusListItem
+					created={created}
 					key={currIndex}
 					index={currIndex}
 					item={currDatem}

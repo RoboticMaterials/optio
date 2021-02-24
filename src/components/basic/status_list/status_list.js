@@ -11,7 +11,9 @@ const StatusList = (props) => {
 
 	const {
 		data,
-		onItemClick
+		onItemClick,
+		onCloseClick,
+		onShowMapperClick
 	} = props
 
 	return (
@@ -26,7 +28,8 @@ const StatusList = (props) => {
 			/>
 
 			<StatusListFooter
-
+				onCloseClick={onCloseClick}
+				onShowMapperClick={onShowMapperClick}
 			/>
 		</styled.Container>
 	)
