@@ -6,6 +6,17 @@ const EVENT_NAMES = {
 	UPDATE: "update"
 }
 
+export const jsDateToObjDate = (jsDate) => {
+	let trimmed = new Date(jsDate.toDateString());
+
+	let month = trimmed.getUTCMonth()
+	let day = trimmed.getUTCDate();
+	let year = trimmed.getUTCFullYear();
+
+	return {year, month: month + 1, day}
+}
+
+
 export const generateBinId = (index, stationId) => {
 	return index + "+" + stationId
 }

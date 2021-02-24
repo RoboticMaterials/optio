@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
+import ls from 'local-storage'
 import * as styled from './settings.style'
 
 import ContentHeader from '../content_header/content_header'
@@ -15,9 +15,9 @@ import TimezonePicker, { timezones } from 'react-timezone';
 
 // Import Actions
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
-import { postLocalSettings, devicesEnabled } from '../../../../redux/actions/local_actions'
+import { postLocalSettings } from '../../../../redux/actions/local_actions'
+import { deviceEnabled } from '../../../../redux/actions/settings_actions'
 import { getStatus } from '../../../../redux/actions/status_actions'
-import { postStatus } from '../../../../api/status_api'
 import { setCurrentMap } from '../../../../redux/actions/map_actions'
 
 // Import Utils
@@ -28,20 +28,18 @@ import * as taskActions from "../../../../redux/actions/tasks_actions";
 const Settings = () => {
 
     const dispatch = useDispatch()
-    const onPostSettings = (settings) => dispatch(postSettings(settings))
-    const onGetSettings = () => dispatch(getSettings())
-    const onPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
-    const onSetCurrentMap = (map) => dispatch(setCurrentMap(map))
-    const onGetStatus = () => dispatch(getStatus())
-    const onDevicesEnabled = (bool) => dispatch(devicesEnabled(bool))
+    const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
+    const dispatchGetSettings = () => dispatch(getSettings())
+    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const dispatchSetCurrentMap = (map) => dispatch(setCurrentMap(map))
+    const dispatchGetStatus = () => dispatch(getStatus())
+    const dispatchDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
 
     const mapReducer = useSelector(state => state.mapReducer)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
     const localSettings = useSelector(state => state.localReducer.localSettings)
-    const status = useSelector(state => state.statusReducer.status)
-    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const devices = useSelector(state =>state.devicesReducer.devices)
-    const deviceEnabledSetting = useSelector(state => state.localReducer.devicesEnabled)
+    const deviceEnabledSetting = serverSettings.deviceEnabled
     const {
         currentMap,
         maps
@@ -51,13 +49,24 @@ const Settings = () => {
     const [localSettingsState, setLocalSettingsState] = useState({})
     const [mapSettingsState, setMapSettingsState] = useState(currentMap)
     const [mirUpdated, setMirUpdated] = useState(false)
-    const [deviceEnabled, setDeviceEnabled] = useState(!!deviceEnabledSetting)
+    const [devicesEnabled, setDevicesEnabled] = useState(!!deviceEnabledSetting)
+
+    const [mapViewEnabled, setMapViewEnabled] = useState({})
+    const [developerSettingsEnabled, setDeveloperSettingsEnabled] = useState({})
+    const [nonLocalAPIEnabled, setNonLocalAPIEnabled] = useState({})
+    const [nonLocalAPIAddress, setNonLocalAPIAddress] = useState({})
+
     /**
      *  Sets current settings to state so that changes can be discarded or saved
      * */
     useEffect(() => {
         setServerSettingsState(serverSettings)
         setLocalSettingsState(localSettings)
+
+        setMapViewEnabled(ls.get('MapViewEnabled') || false)
+        setDeveloperSettingsEnabled(ls.get('DeveloperSettingsEnabled') || false)
+        setNonLocalAPIEnabled(ls.get('NonLocalAPIAddressEnabled') || false)
+        setNonLocalAPIAddress(ls.get('NonLocalAPIAddress') || null)
     }, [])
 
 
@@ -94,32 +103,25 @@ const Settings = () => {
             [key]: value,
         }
         setLocalSettingsState(updatedSettings)
-
     }
 
-    // Submits the Mir Connection to the backend
-    const handleMirConnection = async () => {
-        // Tells the backend that a new mir ip has been entered
-        const mir = { mir_connection: 'connecting' }
 
-        // post both settiings and status because the IP address is in settings but the backend knows it was updated from the status
-        await onPostSettings(serverSettingsState)
-        await postStatus(mir)
-
-        setMirUpdated(false)
-
-    }
 
     // Submits settings to the backend
     const handleSumbitSettings = async () => {
         // Sees if either settings have changed. If the state settigns and redux settings are different, then they've changed
+        ls.set('MapViewEnabled', mapViewEnabled)
+        ls.set('DeveloperSettingsEnabled', developerSettingsEnabled)
+        ls.set('NonLocalAPIAddressEnabled', nonLocalAPIEnabled)
+        ls.set('NonLocalAPIAddress', nonLocalAPIAddress)
+
         const localChange = isEquivalent(localSettingsState, localSettings)
         const serverChange = isEquivalent(serverSettingsState, serverSettings)
         const mapChange = !isEquivalent(mapSettingsState, currentMap)
         const deviceChange = isEquivalent(deviceEnabled, deviceEnabledSetting)
 
         if (!localChange) {
-            await onPostLocalSettings(localSettingsState)
+            await dispatchPostLocalSettings(localSettingsState)
             if(localSettingsState.mapViewEnabled){
               //const hamburger = document.querySelector('.hamburger')
               //hamburger.classList.toggle('is-active')
@@ -129,20 +131,21 @@ const Settings = () => {
 
         if (!serverChange) {
             delete serverSettingsState._id
-            await onPostSettings(serverSettingsState)
+            await dispatchPostSettings(serverSettingsState)
         }
 
         if (mapChange) {
-            // await onPostLocalSettings(localSettingsState)
-            await onSetCurrentMap(mapSettingsState)
+            // await dispatchPostLocalSettings(localSettingsState)
+            await dispatchSetCurrentMap(mapSettingsState)
         }
 
         if(!deviceChange) {
-          await onDevicesEnabled(deviceEnabled)
+          await dispatchDeviceEnabled(devicesEnabled)
+          await dispatchPostSettings(serverSettingsState)
         }
 
-        await onGetSettings()
-        await onGetStatus()
+        await dispatchGetSettings()
+        await dispatchGetStatus()
 
     }
 
@@ -170,65 +173,7 @@ const Settings = () => {
         )
     }
 
-    // Handles the MIR IP connectiong
-    const MirIp = () => {
 
-        let connectionIcon = ''
-        let connectionText = ''
-
-        // Sets the connection variables according to the state of
-        if (mirUpdated) {
-            connectionIcon = 'fas fa-question'
-            connectionText = 'Not Connected'
-        }
-        else if (status.mir_connection === 'connected') {
-            connectionIcon = 'fas fa-check'
-            connectionText = 'Connected'
-        }
-        else if (status.mir_connection === 'connecting') {
-            connectionIcon = 'fas fa-circle-notch fa-spin'
-            connectionText = 'Connecting'
-        }
-        else if (status.mir_connection === 'failed') {
-            connectionIcon = 'fas fa-times'
-            connectionText = 'Failed'
-        }
-        else {
-            connectionIcon = 'fas fa-question'
-            connectionText = 'Not Connected'
-
-        }
-
-        if (MiRMapEnabled) {
-            return (
-                <styled.SettingContainer style={{ marginTop: '1rem' }}>
-
-                    <styled.RowContainer style={{ position: 'relative', justifyContent: 'space-between' }}>
-                        <styled.Header>MIR IP</styled.Header>
-                        <styled.ConnectionButton onClick={() => handleMirConnection()} disabled={(connectionText === 'Connected' || connectionText === 'Connecting')}>
-                            {connectionText}
-                            <styled.ConnectionIcon className={connectionIcon} />
-                        </styled.ConnectionButton>
-
-                    </styled.RowContainer>
-
-                    <Textbox
-                        placeholder="MiR IP Address"
-                        value={serverSettingsState.mir_ip}
-                        onChange={(event) => {
-                            setServerSettingsState({
-                                ...serverSettingsState,
-                                mir_ip: event.target.value
-                            })
-                        }}
-                        style={{ width: '100%' }}
-
-                    />
-
-                </styled.SettingContainer>
-            )
-        }
-    }
 
     const APIAddress = () => {
         //  if(MiRMapEnabled){
@@ -240,9 +185,10 @@ const Settings = () => {
                 <styled.RowContainer>
                     <styled.Header>Show Developer Settings</styled.Header>
 `                  <Switch
-                        checked={localSettingsState.toggleDevOptions}
+                        checked={!!developerSettingsEnabled}
                         onChange={() => {
                             handleUpdateLocalSettings({ toggleDevOptions: !localSettingsState.toggleDevOptions })
+                            setDeveloperSettingsEnabled(!developerSettingsEnabled)
                         }}
                         onColor='red'
                         style={{ marginRight: '1rem' }}
@@ -250,29 +196,34 @@ const Settings = () => {
 
                 </styled.RowContainer>
 
-                {localSettingsState.toggleDevOptions ?
+                {!!developerSettingsEnabled ?
                     <>
 
                         <styled.Header style = {{fontSize: '1.2rem'}}>Non Local API IP Address</styled.Header>
 
                         <styled.RowContainer>
                             <Switch
-                                checked={localSettingsState.non_local_api}
+                                checked={!!nonLocalAPIEnabled}
                                 onChange={() => {
-                                    handleUpdateLocalSettings({ non_local_api: !localSettings.non_local_api })
+                                    handleUpdateLocalSettings({ non_local_api: !localSettingsState.non_local_api })
+                                    setNonLocalAPIEnabled(!nonLocalAPIEnabled)
                                 }}
                                 onColor='red'
                                 style={{ marginRight: '1rem' }}
                             />
-                            <Textbox
-                                placeholder="API IP Address"
-                                value={localSettingsState.non_local_api_ip}
-                                onChange={(event) => {
-                                    handleUpdateLocalSettings({ non_local_api_ip: event.target.value })
-                                }}
-                                style={{ width: '100%' }}
-                            // type = 'number'
-                            />
+                            {!!nonLocalAPIEnabled &&
+                              <Textbox
+                                  placeholder="API IP Address"
+                                  value={!!nonLocalAPIAddress ? nonLocalAPIAddress:""}
+                                  onChange={(event) => {
+                                      setNonLocalAPIAddress(event.target.value)
+                                      handleUpdateLocalSettings({ non_local_api_ip: event.target.value })
+                                  }}
+                                  style={{ width: '100%' }}
+                              // type = 'number'
+                              />
+                            }
+
                         </styled.RowContainer>
 
                         <styled.Header style = {{fontSize: '1.2rem', paddingTop: '2rem'}}>Devices Enabled</styled.Header>
@@ -280,9 +231,13 @@ const Settings = () => {
                         <styled.RowContainer>
                             <styled.Header style = {{fontSize: '.8rem', paddingTop: '1rem', paddingRight: '1rem'}}>Disabled</styled.Header>
                             <Switch
-                                checked={deviceEnabled}
+                                checked={serverSettingsState.deviceEnabled}
                                 onChange={() => {
-                                    setDeviceEnabled(!deviceEnabled)
+                                    setDevicesEnabled(!devicesEnabled)
+                                    setServerSettingsState({
+                                        ...serverSettingsState,
+                                        deviceEnabled: !devicesEnabled
+                                    })
                                 }}
                                 onColor='red'
                                 style={{ marginRight: '1rem' }}
@@ -312,9 +267,10 @@ const Settings = () => {
                     <styled.SwitchContainerLabel>Show List View</styled.SwitchContainerLabel>
                     <Switch
                         onColor='red'
-                        checked={localSettingsState.mapViewEnabled}
+                        checked={!!mapViewEnabled}
                         onChange={() => {
                             handleUpdateLocalSettings({ mapViewEnabled: !localSettingsState.mapViewEnabled })
+                            setMapViewEnabled(!mapViewEnabled)
                         }}
                         style={{ margin: "0 2rem 0 2rem" }}
                     />
@@ -362,7 +318,6 @@ const Settings = () => {
     return (
         <styled.SettingsContainer>
             <ContentHeader content={'settings'} mode={'title'} saveEnabled={true} onClickSave={handleSumbitSettings} />
-            {MirIp()}
             {MapViewEnabled()}
             {CurrentMap()}
             {APIAddress()}

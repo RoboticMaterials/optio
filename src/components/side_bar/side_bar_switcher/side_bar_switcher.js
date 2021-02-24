@@ -26,7 +26,8 @@ const SideBarSwitcher = (props) => {
 
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const mode = useSelector(state => state.sidebarReducer.mode)
-    const devicesEnabled = useSelector(state => state.localReducer.devicesEnabled)
+    const serverSettings = useSelector(state => state.settingsReducer.settings)
+    const deviceEnabled = serverSettings.deviceEnabled
     const wrapperRef = useRef(null)
 
     const history = useHistory()
@@ -110,7 +111,7 @@ const SideBarSwitcher = (props) => {
                 currentMode={url}
             />
 
-            {!!devicesEnabled &&
+            {!!deviceEnabled &&
               <SideBarButton
                   mode={'devices'}
                   setShowSideBarPage={(page) => {

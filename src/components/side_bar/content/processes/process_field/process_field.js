@@ -19,9 +19,12 @@ import {
     postRouteClean,
     putRouteClean,
     setSelectedTask,
+    setSelectedHoveringTask,
 } from '../../../../../redux/actions/tasks_actions'
 import { setSelectedProcess, setFixingProcess } from '../../../../../redux/actions/processes_actions'
 import {handlePostTaskQueue, postTaskQueue} from '../../../../../redux/actions/task_queue_actions'
+import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
+
 
 // Import Utils
 import {
@@ -75,6 +78,9 @@ export const ProcessField = (props) => {
     const onHandlePostTaskQueue = (props) => dispatch(handlePostTaskQueue(props))
     const dispatchSetFixingProcess = async (bool) => await dispatch(setFixingProcess(bool))
     const dispatchDeleteRouteClean = async (routeId) => await dispatch(deleteRouteClean(routeId))
+    const dispatchSetSelectedHoveringTask = (task) => dispatch(setSelectedHoveringTask(task))
+    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
+
 
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const stations = useSelector(state => state.stationsReducer.stations)
@@ -90,7 +96,6 @@ export const ProcessField = (props) => {
     const [editingTask, setEditingTask] = useState(false) // Used to tell if a task is being edited
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [showExistingTaskWarning, setShowExistingTaskWarning] = useState(false);
-
     const valuesRef = useRef(values);
 
     // throttled func
@@ -125,6 +130,15 @@ export const ProcessField = (props) => {
 
     }, [editingTask])
 
+    useEffect(() => {
+      if(editingTask==false){
+        dispatchSetSelectedHoveringTask(null)
+      }
+    })
+
+    useEffect(() => {
+      dispatchPageDataChanged(values.changed)
+    }, [values.changed])
     const handleAddTask = async () => {
 
         // contains new route
@@ -487,6 +501,7 @@ export const ProcessField = (props) => {
     }
     return(
         <>
+          {selectedProcess.routes.length !==0 ?
             <ConfirmDeleteModal
                 isOpen={!!confirmDeleteModal}
                 title={"Are you sure you want to delete this process?"}
@@ -502,6 +517,25 @@ export const ProcessField = (props) => {
                     setConfirmDeleteModal(null)
                 }}
             />
+            :
+            <ConfirmDeleteModal
+                isOpen={!!confirmDeleteModal}
+                title={"Are you sure you want to delete this process?"}
+                button_1_text={"Yes"}
+                button_2_text={"No"}
+                handleClose={() => setConfirmDeleteModal(null)}
+                handleOnClick1={() => {
+                  onDelete(true)
+                  setConfirmDeleteModal(null)
+                }}
+                handleOnClick2={() => {
+                  setConfirmDeleteModal(null)
+
+                }}
+            />
+
+          }
+
 
             {showExistingTaskWarning &&
             <ConfirmDeleteModal

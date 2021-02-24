@@ -36,6 +36,8 @@ import { setFixingProcess } from '../../../../../redux/actions/processes_actions
 import { putStation } from '../../../../../redux/actions/stations_actions'
 import { setSelectedStation } from '../../../../../redux/actions/stations_actions'
 import { setSelectedPosition } from '../../../../../redux/actions/positions_actions'
+import { setSelectedHoveringTask, editingTask } from '../../../../../redux/actions/tasks_actions'
+import { processHover } from '../../../../../redux/actions/widget_actions'
 import {
     buildDefaultRouteName,
     getLoadStationId,
@@ -52,6 +54,7 @@ import { removeTask } from "../../../../../redux/actions/tasks_actions";
 import { isArray } from "../../../../../methods/utils/array_utils";
 import usePrevious from "../../../../../hooks/usePrevious";
 import * as taskActions from "../../../../../redux/actions/tasks_actions";
+import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 
 const TaskField = (props) => {
 
@@ -109,7 +112,9 @@ const TaskField = (props) => {
     const dispatchSetFixingProcess = (bool) => dispatch(setFixingProcess(bool))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
-    const dispatchSetEditing = async (props) => await dispatch(taskActions.editingTask(props))
+    const dispatchSetEditing = async (props) => await dispatch(editingTask(props))
+    const dispatchSetSelectedHoveringTask = async (task) => await dispatch(setSelectedHoveringTask(task))
+    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
     let routes = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -118,13 +123,12 @@ const TaskField = (props) => {
     const objects = useSelector(state => state.objectsReducer.objects)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
-
+    const hoveringTask = useSelector(state => state.tasksReducer.selectedHoveringTask)
     const stations = useSelector(state => state.stationsReducer.stations)
 
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [needsValidate, setNeedsValidate] = useState(false);
     const [didSetHandoff, setDidSetHandoff] = useState(false);
-
 
     const previousLoadStationId = usePrevious(getLoadStationId(values))
     const previousUnloadStationId = usePrevious(getUnloadStationId(values))
@@ -230,7 +234,9 @@ const TaskField = (props) => {
         }
     }, [needsValidate])
 
-
+    useEffect(() => {
+      dispatchPageDataChanged(changed)
+    }, [changed])
 
 
     const renderLoadUnloadParameters = () => {
@@ -334,9 +340,6 @@ const TaskField = (props) => {
 
 
 
-
-
-
     return (
         <>
             {!!selectedTask &&
@@ -417,7 +420,10 @@ const TaskField = (props) => {
                                 label="Choose An Existing Route"
                                 labelField="name"
                                 valueField="name"
-
+                                onMouseEnter = {(item) => {
+                                  dispatchSetSelectedHoveringTask(item)
+                                }}
+                                onMouseLeave = {(item) => dispatchSetSelectedHoveringTask(null)}
                                 options={
 
                                     Object.values(routes)

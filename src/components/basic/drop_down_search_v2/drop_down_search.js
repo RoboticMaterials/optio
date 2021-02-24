@@ -32,6 +32,7 @@ export class DropDownSearch extends Component {
     options: PropTypes.array.isRequired,
     keepOpen: PropTypes.bool,
     showSelectedBox: PropTypes.bool,
+    fixedHeight: PropTypes.bool,
     dropdownGap: PropTypes.number,
     multi: PropTypes.bool,
     placeholder: PropTypes.string,
@@ -76,7 +77,13 @@ export class DropDownSearch extends Component {
       values: props.values,
       search: '',
       selectBounds: {},
-      cursor: null
+      cursor: null,
+      dropdownSize: {
+        offsetWidth: 0,
+        offsetHeight: 0,
+        offsetLeft: 0,
+        offsetTop: 0,
+      }
     };
 
     this.methods = {
@@ -101,6 +108,7 @@ export class DropDownSearch extends Component {
     };
 
     this.select = React.createRef();
+    this.dropdownRef = React.createRef()
     this.dropdownRoot = typeof document !== 'undefined' && document.createElement('div');
   }
 
@@ -155,7 +163,44 @@ export class DropDownSearch extends Component {
     if (prevState.values !== this.state.values && !this.props.fillable && this.state.values.length) {
       this.clearAll();
     }
+
+    // if dropdown ref has current value
+    if(this.dropdownRef.current && !this.props.fixedHeight) {
+      // get height
+      let offsetHeight = this.dropdownRef.current.offsetHeight;
+
+      // check if state offsetHeight does not match current offsetHeight
+      if(offsetHeight !== this.state.dropdownSize.offsetHeight) {
+        let offsetWidth  = this.dropdownRef.current.offsetWidth;
+        let offsetTop  = this.dropdownRef.current.offsetTop;
+        let offsetLeft  = this.dropdownRef.current.offsetLeft;
+
+        // update state
+        this.setState({
+          dropdownSize: {
+            offsetWidth,
+            offsetHeight,
+            offsetLeft,
+            offsetTop,
+          },
+        });
+      }
+    }
+    // if dropdownRef doesn't have current value, and offsetHeight isn't already 0, set it to zero
+    else if(this.state.dropdownSize.offsetHeight !== 0 ) {
+      // update state
+      this.setState({
+        dropdownSize: {
+          offsetWidth: 0,
+          offsetHeight: 0,
+          offsetLeft: 0,
+          offsetTop: 0,
+        },
+      });
+    }
   }
+
+
 
   componentWillUnmount() {
     this.props.portal && this.props.portal.removeChild(this.dropdownRoot);
@@ -437,11 +482,13 @@ export class DropDownSearch extends Component {
   renderDropdown = (ItemComponent) =>
     this.props.portal ? (
       ReactDOM.createPortal(
-        <Dropdown ItemComponent={ItemComponent} DropDownComponent={this.props.DropDownComponent} props={this.props} state={this.state} methods={this.methods} />,
+        <Dropdown dropdownRef={this.dropdownRef} ItemComponent={ItemComponent} DropDownComponent={this.props.DropDownComponent}
+        props={this.props} state={this.state} methods={this.methods} onMouseEnter = {(item) => this.props.onMouseEnter(item)} onMouseLeave = {(item) => this.props.onMouseLeave(item)} />,
         this.dropdownRoot
       )
     ) : (
-        <Dropdown ItemComponent={ItemComponent} TextComponent={this.props.TextComponent} DropDownComponent={this.props.DropDownComponent} props={this.props} state={this.state} methods={this.methods} />
+        <Dropdown dropdownRef={this.dropdownRef} ItemComponent={ItemComponent} TextComponent={this.props.TextComponent} DropDownComponent={this.props.DropDownComponent}
+         props={this.props} state={this.state} methods={this.methods} onMouseEnter = {(item) => this.props.onMouseEnter} onMouseLeave = {(item) => this.props.onMouseLeave} />
       );
 
   createNew = (item) => {
@@ -460,7 +507,7 @@ export class DropDownSearch extends Component {
     const { ItemComponent, ReactDropdownSelect, Container } = this.props;
 
     return (
-      <Container className={this.props.className}>
+      <Container className={this.props.className} style={!this.props.fixedHeight ? {paddingBottom: this.state.dropdownSize.offsetHeight} : {}}>
         <ClickOutside ClickOutsideComponent={this.props.ClickOutsideComponent} onClickOutside={(event) => this.dropDown('close', event)}>
           <ReactDropdownSelect
             onKeyDown={this.handleKeyDown}
@@ -568,6 +615,7 @@ DropDownSearch.defaultProps = {
   sortBy: null,
   clearable: false,
   searchable: true,
+  fixedHeight: true,
   dropdownHandle: true,
   separator: false,
   keepOpen: undefined,

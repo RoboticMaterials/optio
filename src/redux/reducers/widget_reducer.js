@@ -12,7 +12,6 @@ import {
     widgetXYCoordinates: {x: '', y: ''},
     widgetLoaded: false,
     hoverStationInfo: null,
-
 };
 
 const widgetReducer = (state = defaultState, action) => {
@@ -42,6 +41,7 @@ const widgetReducer = (state = defaultState, action) => {
                   ...state,
                   hoverStationInfo: action.payload.info,
               }
+
 
         default:
             return state

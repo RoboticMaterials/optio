@@ -26,7 +26,8 @@ import {
 
     HANDLE_POST_TASK_QUEUE,
     TASK_QUEUE_OPEN,
-    INCREMENT_GET_DATA_FAILURE_COUNT
+    INCREMENT_GET_DATA_FAILURE_COUNT,
+    SET_SHOW_MODAL_ID
 } from '../types/task_queue_types';
 
 import {
@@ -217,7 +218,7 @@ export const handlePostTaskQueue = (props) => {
 
             await dispatch(postTaskQueue(
                 {
-                    _id: uuid.v4(),
+                    _id: uuid.v4(), dashboardID,
                     "task_id": Id,
                     'custom_task': custom,
                     "device_type": deviceType
@@ -249,6 +250,7 @@ export const handlePostTaskQueue = (props) => {
                         "task_id": Id,
                         dashboard: dashboardID,
                         hil_response: null,
+                        showModal: null,
                     }
                     await dispatch({ type: 'LOCAL_HUMAN_TASK', payload: postTask._id })
                     const postToQueue = dispatch(postTaskQueue(postTask))
@@ -279,4 +281,8 @@ export const handlePostTaskQueue = (props) => {
 export const taskQueueOpen = (bool) => {
     return { type: TASK_QUEUE_OPEN, payload: bool }
 };
+
+export const setShowModalId = (id) => {
+    return { type: SET_SHOW_MODAL_ID, payload: id}
+}
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

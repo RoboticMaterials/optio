@@ -13,6 +13,10 @@ body {
 
 }
 
+.dragging-field {
+  opacity: .5;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 10px;

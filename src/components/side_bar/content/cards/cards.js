@@ -20,6 +20,8 @@ import {ThemeContext} from "styled-components";
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
 import ZoneHeader from "./zone_header/zone_header";
 import {SORT_MODES} from "../../../../constants/common_contants";
+import LotCreatorForm from "./card_editor/form_editor";
+import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
 
 const Cards = (props) => {
 
@@ -34,9 +36,13 @@ const Cards = (props) => {
     // theme
     const themeContext = useContext(ThemeContext)
 
+    const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
+
     //redux state
     const processes = useSelector(state => { return state.processesReducer.processes })
     const showCardEditor = useSelector(state=> {return state.cardsReducer.showEditor})
+    const selectedLotTemplatesId = useSelector(state => {return state.lotTemplatesReducer.selectedLotTemplatesId})
+    const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
 
     // actions
     const dispatch = useDispatch()
@@ -61,6 +67,11 @@ const Cards = (props) => {
 
     // refs
     const zoneRef = useRef(null);
+
+    useEffect( () => {
+        dispatchGetLotTemplates()
+
+    }, [])
 
     /*
     * This effect monitors the div referenced by zoneRef and the window height
