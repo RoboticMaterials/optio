@@ -477,7 +477,7 @@ const CardEditor = (props) => {
 												labelField={'name'}
 												options={Object.values(objects)}
 												valueField={"_id"}
-												// label={'Choose Station'}
+												// label={'Choose Draggable'}
 												onDropdownOpen={() => {
 												}}
 											/>
@@ -519,7 +519,7 @@ const CardEditor = (props) => {
 								{/*	labelField={'name'}*/}
 								{/*	options={dropdownOptions}*/}
 								{/*	valueField={"_id"}*/}
-								{/*	label={'Choose Station'}*/}
+								{/*	label={'Choose Draggable'}*/}
 								{/*	onDropdownOpen={() => {*/}
 								{/*	}}*/}
 								{/*/>*/}

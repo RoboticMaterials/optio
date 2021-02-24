@@ -265,7 +265,7 @@ const FormComponent = (props) => {
 		)
 	}
 
-	const renderCalendarContent = () => {
+	const renderCalendarContent = (content) => {
 		return(
 			<styled.BodyContainer>
 				<styled.ContentHeader style={{}}>
@@ -276,6 +276,7 @@ const FormComponent = (props) => {
 				<styled.CalendarContainer>
 					<CalendarField
 						name={"dates"}
+                        startEnd = {content}
 					/>
 				</styled.CalendarContainer>
 			</styled.BodyContainer>
@@ -570,9 +571,17 @@ const FormComponent = (props) => {
 
 									<styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
 
-									<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_START)}>
+									<styled.DateItem onClick={()=>setContent(CONTENT.CALENDAR_END)}>
 										<styled.DateText>{endDateText}</styled.DateText>
 									</styled.DateItem>
+
+									{errors.dates &&
+									<ErrorTooltip
+										visible={errors.dates}
+										text={errors.dates}
+										ContainerComponent={styled.ErrorTooltipContainer}
+									/>
+									}
 								</styled.DatesContainer>
 							</>
 							}
@@ -601,7 +610,7 @@ const FormComponent = (props) => {
 					renderMainContent()
 					}
 					{(((content === CONTENT.CALENDAR_END) || (content === CONTENT.CALENDAR_START))) &&
-					renderCalendarContent()
+					renderCalendarContent(content)
 					}
 					{(content === CONTENT.HISTORY) &&
 					renderHistory()
@@ -616,6 +625,24 @@ const FormComponent = (props) => {
 				{
 					{
 						"CALENDAR_START":
+                        <styled.ButtonContainer style={{width: "100%"}}>
+                        <Button
+                            style={{...buttonStyle, width: "8rem"}}
+                            onClick={()=>setContent(null)}
+                            schema={"ok"}
+                            secondary
+                        >
+                            Ok
+                        </Button>
+                        <Button
+                            style={buttonStyle}
+                            onClick={()=>setContent(null)}
+                            schema={"error"}
+                        >
+                            Cancel
+                        </Button>
+                    </styled.ButtonContainer>,
+                        "CALENDAR_END":
 							<styled.ButtonContainer style={{width: "100%"}}>
 								<Button
 									style={{...buttonStyle, width: "8rem"}}

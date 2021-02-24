@@ -356,6 +356,10 @@ export const DateItem = styled.div`
 	
 `
 
+export const ErrorTooltipContainer = styled.div`
+	margin-left: 1rem;
+`
+
 export const DateArrow = styled.i`
 	margin-left: 1rem;
 	margin-right: 1rem;
