@@ -1,4 +1,8 @@
 import store from '../../redux/store/index'
+import {
+    OPERATION_TYPES,
+    TYPES
+} from "../../components/widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
 
 export const postToDashboards = (dashboardName) => {
     // Requires: buttonID, param, type, buttonName, dashboardName
@@ -86,4 +90,27 @@ export const handleCurrentDashboard = (dashboards, dashboardID) => {
     })
 
     return availableDash[dashboardNameIndex]
+}
+
+
+/*
+* returns whether or not the current button type should be allowed to be deleted from a dashboard
+*
+* currently none of them should be able to, but still use this function so if things change it can all be managed here
+*
+* args: needs button type passed in as object key, this way you can pass the entire button or just a simple object containing this key
+* */
+export const getCanDeleteDashboardButton = ({type: buttonType}) => {
+    switch (buttonType) {
+        case TYPES.ROUTES.key:
+        case OPERATION_TYPES.FINISH.key:
+        case OPERATION_TYPES.KICK_OFF.key:
+            return false
+
+        case OPERATION_TYPES.REPORT.key:
+            return true
+
+        default:
+            return false
+    }
 }

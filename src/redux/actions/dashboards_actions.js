@@ -52,6 +52,8 @@ import * as stationActions from "./stations_actions";
 import {getDefaultStation} from "../../methods/utils/station_utils";
 import {removeArrayIndices} from "../../methods/utils/array_utils";
 import {ROUTE_TYPES} from "../../constants/route_constants";
+import {TYPES} from "../../components/widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
+import {DASHBOARD_BUTTON_COLORS} from "../../constants/dashboard_contants";
 
 
 export const getDashboards = () => {
@@ -223,7 +225,8 @@ export const addRouteToDashboards = (route) => {
             color: '#bcbcbc',
             id: uuid.v4(),
             name: routeName,
-            task_id: routeId
+            task_id: routeId,
+            type: TYPES.ROUTES.key,
         }
 
         if (dashboard === undefined) {

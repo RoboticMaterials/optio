@@ -128,14 +128,11 @@ const DashboardEditor = (props) => {
     *   button names can't be empty
     * */
     const handleSubmit = async (values) => {
-        logger.log("DashboardEditor: handleSubmit: values", values)
-
         // destructure values
         const { name, buttons } = values
 
         // clone dashboard
         const dashboardCopy = deepCopy(dashboard)
-        logger.log("DashboardEditor: handleSubmit: dashboardCopy", dashboardCopy)
 
         // save id then delete (api doesn't want id in object)
         // get dashboard id
@@ -148,12 +145,9 @@ const DashboardEditor = (props) => {
         }
         catch (e) { }
 
-        logger.log("DashboardEditor: handleSubmit: dashboardId", dashboardId)
-
         // update dashboard objects properties with submit values
         dashboardCopy.buttons = buttons
         dashboardCopy.name = name
-        console.log(buttons)
 
         // if dashboard has id, it must already exist, so update with put
         if (dashboardId) {
@@ -185,7 +179,6 @@ const DashboardEditor = (props) => {
             validateOnBlur={true}
             validationSchema={dashboardSchema}
             onSubmit={async (values, { setSubmitting }) => {
-                logger.log("onSubmit called")
                 setSubmitting(true);    // set submitting to true on start
                 await handleSubmit(values)        // perform submission logic
                 setSubmitting(false);   // set submitting to false after completion
