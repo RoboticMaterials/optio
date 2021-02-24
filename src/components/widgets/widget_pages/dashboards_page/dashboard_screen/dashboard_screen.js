@@ -53,7 +53,6 @@ const DashboardScreen = (props) => {
 
     const {
         dashboardId,
-        setShowSidebar,
         showSidebar,
         setEditingDashboard,
     } = props
@@ -134,6 +133,7 @@ const DashboardScreen = (props) => {
      */
     const handleDashboardButtons = () => {
         let { buttons } = currentDashboard	// extract buttons from dashboard
+        let taskIds = []    // array of task ids
 
         // filter out buttons with missing task
         buttons = buttons.filter((currButton) => {
@@ -141,6 +141,11 @@ const DashboardScreen = (props) => {
                 task_id,
                 type
             } = currButton
+
+            if(task_id && taskIds.includes(task_id)) {
+                console.error(`Button with duplicate task_id found in dashboard. {dashboardId: ${dashboardID}, task_id:${task_id}`)
+                return false // don't add duplicate tasks
+            }
 
             // If the button is a custom task, then the task wont exist, so dont remove button
             if (!!currButton.custom_task) return true
@@ -150,6 +155,7 @@ const DashboardScreen = (props) => {
                 return false
             }
 
+            taskIds.push(task_id)
             return true
         })
 
@@ -383,7 +389,6 @@ const DashboardScreen = (props) => {
                 showBackButton={false}
                 showEditButton={true}
                 showSidebar={showSidebar}
-                setShowSidebar={setShowSidebar}
                 page={PAGES.DASHBOARD}
                 setEditingDashboard={() => setEditingDashboard(dashboardId)}
 

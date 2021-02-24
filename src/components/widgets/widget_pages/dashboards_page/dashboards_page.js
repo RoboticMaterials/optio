@@ -201,27 +201,18 @@ const DashboardsPage = (props) => {
     // sets showSidebar to false if on dashboard page, effectively hiding the sidebar
     // sidebar is never used in a dashboard
     useEffect(() => {
-        if (page === PAGES.DASHBOARD) setShowSidebar(false)
-        else if (page === PAGES.EDITING || page === PAGES.DASHBOARDS) setShowSidebar(true)
+        if(page === PAGES.EDITING) {
+            setShowSidebar(true)
+        }
+        else {
+            setShowSidebar(false)
+        }
     }, [page])
 
 
     return (
         <style.PageContainer>
             <DndProvider backend={HTML5Backend}>
-
-                <div style={{ width: showSidebar && window.innerWidth > 1000 ? sidebarWidth : 0 }}>
-                    <DashboardsSidebar
-                        dashboardId={dashboardID}
-                        stationID={stationID}
-                        width={showSidebar ? sidebarWidth : 0}
-                        setWidth={setSidebarWidth}
-                        minWidth={300}
-
-                        clickable={page === PAGES.DASHBOARDS}
-                    />
-                </div>
-
                 <style.Container style={{ flexGrow: '1' }}>
                     {/* If the length of ID is not 0, then a dashboard must have been clicked */}
                     {page === PAGES.DASHBOARDS ?
@@ -233,7 +224,6 @@ const DashboardsPage = (props) => {
                             setEditingDashboard={(dashID) => {
                                 props.history.push(`/locations/${stationID}/dashboards/${dashID}/editing`)
                             }}
-                            setShowSidebar={setShowSidebar}
                             showSidebar={showSidebar}
                         />
                         :
@@ -249,7 +239,6 @@ const DashboardsPage = (props) => {
                                 dashboardId={selectedDashboard}
                                 setSelectedDashboard={setSelectedDashboard}
                                 goBack={() => setSelectedDashboard(null)}
-                                setShowSidebar={setShowSidebar}
                                 showSidebar={showSidebar}
                                 setEditingDashboard={(dashID) => {
                                     props.history.push(`/locations/${stationID}/dashboards/${dashID}/editing`)

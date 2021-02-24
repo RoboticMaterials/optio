@@ -43,13 +43,13 @@ import log from '../../../../../logger.js';
 import DashboardAddButton from "./dashboard_add_button/dashboard_add_button";
 import { useChange } from "../../../../basic/form/useChange";
 import { PAGES } from "../../../../../constants/dashboard_contants";
+import DashboardsSidebar, {TYPES} from "../dashboards_sidebar/dashboards_sidebar";
 
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
 const DashboardEditor = (props) => {
     let {
         dashboard,
-        setShowSidebar,
         showSidebar,
     } = props
 
@@ -66,6 +66,8 @@ const DashboardEditor = (props) => {
 
     const stations = useSelector(state => state.stationsReducer.stations)
 
+    const [sidebarWidth, setSidebarWidth] = useState(window.innerWidth < 2000 ? 400 : 700)
+
     /*
     * Returns initialValues object for Formik
     */
@@ -74,12 +76,28 @@ const DashboardEditor = (props) => {
             name: "",
             buttons: []
         }
+        let taskIds = []
 
         try {
             const buttons = dashboard.buttons   // get buttons
 
             let initialButtons = [];
-            buttons.map((value, index) => {
+            buttons
+            .filter((currButton) => {
+                const {
+                    task_id,
+                    type
+                } = currButton
+
+                if(task_id && taskIds.includes(task_id)) {
+                    console.error(`Button with duplicate task_id found in dashboard. {task_id:${task_id}`)
+                    return false // don't add duplicate tasks
+                }
+
+                taskIds.push(task_id)
+                return true
+            })
+            .map((value, index) => {
                 initialButtons.push(value)
             })
 
@@ -240,14 +258,36 @@ const DashboardEditor = (props) => {
 
                 }
 
+                const {
+                    buttons: dashboardButtons,
+                    name: dashboardName,
+                    station: dashboardStationId,
+                    device: dashboardDeviceId,
+                    _id: dashboardIdObject
+                } = dashboard || {}
+
+                const {
+                    $oid: dashboardId
+                } = dashboardIdObject || {}
+
+
                 return (
+                    <style.Container>
+                        <DashboardsSidebar
+                            existingButtons={values.buttons || []}
+                            dashboardId={dashboardId}
+                            stationID={dashboardStationId ? dashboardStationId : dashboardDeviceId}
+                            width={sidebarWidth}
+                            setWidth={setSidebarWidth}
+                            minWidth={300}
+                            clickable={true}
+                        />
                     <style.StyledForm>
                         <DashboardsHeader
                             showTitle={false}
                             showSidebar={showSidebar}
                             showBackButton={true}
                             showSaveButton={true}
-                            setShowSidebar={setShowSidebar}
                             page={PAGES.EDITING}
                             onDelete={() => {
                                 handleDeleteDashboard()
@@ -283,11 +323,13 @@ const DashboardEditor = (props) => {
                             />
                         </style.BodyContainer>
                     </style.StyledForm>
+                    </style.Container>
 
                 )
             }
             }
         </Formik>
+
 
     )
 }

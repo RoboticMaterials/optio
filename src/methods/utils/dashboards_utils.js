@@ -3,6 +3,7 @@ import {
     OPERATION_TYPES,
     TYPES
 } from "../../components/widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
+import {isArray, isNonEmptyArray} from "./array_utils";
 
 export const postToDashboards = (dashboardName) => {
     // Requires: buttonID, param, type, buttonName, dashboardName
@@ -113,4 +114,41 @@ export const getCanDeleteDashboardButton = ({type: buttonType}) => {
         default:
             return false
     }
+}
+
+export const getIsKickoffEnabled = (availableProcessIds) => {
+    return isNonEmptyArray(availableProcessIds)
+}
+
+export const getIsFinishEnabled = (availableProcessIds) => {
+    return isNonEmptyArray(availableProcessIds)
+}
+
+export const getDashboardContainsRouteButton = ({buttons: existingDashboardButtons}, {task_id: currButtonTaskId}) => {
+    for(const existingDashboardButton of existingDashboardButtons) {
+        const {
+            task_id: existingButtonTaskId = ""
+        } = existingDashboardButton || {}
+
+        if(existingButtonTaskId === currButtonTaskId) {
+            return true // quit looping
+        }
+    }
+
+    return false
+}
+
+export const getDashboardContainsOperationButton = ({buttons: existingDashboardButtons}, {type: currButtonType}) => {
+
+    for(const existingDashboardButton of existingDashboardButtons) {
+        const {
+            type: existingButtonType = ""
+        } = existingDashboardButton || {}
+
+        if(existingButtonType === currButtonType) {
+            return true // quit looping
+        }
+    }
+
+    return false
 }

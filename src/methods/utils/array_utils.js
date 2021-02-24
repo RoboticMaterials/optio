@@ -26,3 +26,7 @@ function arraysEqual(a, b) {
 	}
 	return true;
 }
+
+export const isNonEmptyArray = (arr) => {
+	return isArray(arr) && arr.length > 0
+}
