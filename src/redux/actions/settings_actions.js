@@ -44,6 +44,7 @@ export const getSettings = () => {
     }
 }
 export const postSettings = (settings) => {
+    console.log('QQQQ posting settings', settings)
     return async dispatch => {
         function onStart() {
             dispatch({ type: POST_SETTINGS_STARTED });
