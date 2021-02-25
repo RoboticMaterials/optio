@@ -1,5 +1,5 @@
 import styled, {css} from "styled-components"
-import {commonIcon, disabledButtonCss, iconButtonCss, newGlow, trapezoidCss} from "../../../common_css/common_css";
+import {commonClickableIcon, disabledButtonCss, iconButtonCss, newGlow, trapezoidCss} from "../../../common_css/common_css";
 
 export const Container = styled.div`
     display: flex;
@@ -240,7 +240,7 @@ export const FieldName = styled.div`
 
 export const SelectButton = styled.button`
     ${iconButtonCss};
-    ${commonIcon};
+    ${commonClickableIcon};
     margin-right: .5rem;
     font-size: 1.5rem;
     color: ${props => props.color};

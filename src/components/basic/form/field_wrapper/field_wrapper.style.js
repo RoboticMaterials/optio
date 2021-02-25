@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import {css} from 'styled-components'
 import {borderGlowCss} from "../../../widgets/widget_pages/dashboards_page/dashboard_buttons/dashboard_buttons.style";
-import {commonIcon, newGlow} from "../../../../common_css/common_css";
+import {commonClickableIcon, newGlow} from "../../../../common_css/common_css";
 
 
 export const IconContainerComponent = styled.div`
@@ -61,7 +61,7 @@ export const DeleteContainer = styled.div`
 `
 
 export const DeleteIcon = styled.i`
-  ${commonIcon};
+  ${commonClickableIcon};
   //color: #ec0000;
   margin-left: 1rem;
   position: absolute;
@@ -69,7 +69,7 @@ export const DeleteIcon = styled.i`
 `
 
 export const AlignIcon = styled.i`
-  ${commonIcon};
+  ${commonClickableIcon};
   //color: #ec0000;
   margin: 0 .5rem;
 `

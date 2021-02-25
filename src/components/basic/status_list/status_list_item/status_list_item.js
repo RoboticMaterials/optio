@@ -35,7 +35,8 @@ const StatusListItem = (props) => {
 		item,
 		index,
 		showTopBorder,
-		showBottomBorer
+		showBottomBorer,
+		created
 	} = props
 
 	const [mappedErrors, setMappedErrors] = useState({})
@@ -120,7 +121,7 @@ const StatusListItem = (props) => {
 						[FORM_STATUS.VALIDATION_SUCCESS]:
 							<styled.StatusIcon
 								className={"fas fa-check"}
-								color={themeContext.good}
+								color={FADE_LOADER_COLORS.green}
 							/>,
 
 						[FORM_STATUS.VALIDATION_ERROR]:
@@ -168,7 +169,7 @@ const StatusListItem = (props) => {
 							[FORM_STATUS.CREATE_SUCCESS]:
 								<styled.StatusIcon
 									className={"fas fa-check"}
-									color={themeContext.good}
+									color={FADE_LOADER_COLORS.green}
 								/>,
 
 							[FORM_STATUS.CREATE_ERROR]:

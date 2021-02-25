@@ -45,6 +45,7 @@ const TextField = ({
 	const hasError = touched && error
 
 	useChange(setFieldValue)
+
 	const inputStyle = inputStyleFunc(hasError, showErrorStyle);
 
 	const errorMessage = getMessageFromError(error)
