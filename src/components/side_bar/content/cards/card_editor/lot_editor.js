@@ -933,24 +933,27 @@ const FormComponent = (props) => {
 							{(showProcessSelector || !values.processId) && renderProcessSelector()}
 
 							<styled.RowContainer>
-							<styled.NameContainer style={{flex: 0}}>
-								<styled.LotName>Lot Number</styled.LotName>
-									<Textbox
-										value={formatLotNumber(collectionCount)}
+								<styled.NameContainer style={{flex: 0}}>
+									<styled.LotName>Lot Number</styled.LotName>
+										<Textbox
+											value={formatLotNumber(collectionCount)}
+											style={{
+												cursor: "not-allowed"
+											}}
+										/>
+								</styled.NameContainer>
+
+								<styled.NameContainer>
+
+
+									<styled.LotName>{getDisplayName(lotTemplate, "name", DEFAULT_NAME_DISPLAY_NAME)}</styled.LotName>
+									<TextField
+										name={"name"}
+										type={"text"}
+										placeholder={"Enter name..."}
+										InputComponent={Textbox}
 									/>
-							</styled.NameContainer>
-
-							<styled.NameContainer>
-
-
-								<styled.LotName>{getDisplayName(lotTemplate, "name", DEFAULT_NAME_DISPLAY_NAME)}</styled.LotName>
-								<TextField
-									name={"name"}
-									type={"text"}
-									placeholder={"Enter name..."}
-									InputComponent={Textbox}
-								/>
-							</styled.NameContainer>
+								</styled.NameContainer>
 							</styled.RowContainer>
 						</styled.FieldsHeader>
 
