@@ -58,7 +58,7 @@ import {getProcessStations} from "../../../../../methods/utils/processes_utils";
 import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
 import {arraysEqual} from "../../../../../methods/utils/utils";
 import {immutableReplace, isArray} from "../../../../../methods/utils/array_utils";
-import {getDisplayName} from "../../../../../methods/utils/lot_utils";
+import {formatLotNumber, getDisplayName} from "../../../../../methods/utils/lot_utils";
 
 // import styles
 import * as styled from "./lot_editor.style"
@@ -931,16 +931,27 @@ const FormComponent = (props) => {
 						<styled.FieldsHeader>
 
 							{(showProcessSelector || !values.processId) && renderProcessSelector()}
+
+							<styled.RowContainer>
+							<styled.NameContainer style={{flex: 0}}>
+								<styled.LotName>Lot Number</styled.LotName>
+									<Textbox
+										value={formatLotNumber(collectionCount)}
+									/>
+							</styled.NameContainer>
+
 							<styled.NameContainer>
+
 
 								<styled.LotName>{getDisplayName(lotTemplate, "name", DEFAULT_NAME_DISPLAY_NAME)}</styled.LotName>
 								<TextField
-									name="name"
-									type="text"
-									placeholder="Enter name..."
+									name={"name"}
+									type={"text"}
+									placeholder={"Enter name..."}
 									InputComponent={Textbox}
 								/>
 							</styled.NameContainer>
+							</styled.RowContainer>
 						</styled.FieldsHeader>
 
 						{(content === null) &&
