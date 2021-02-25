@@ -3,12 +3,14 @@ import * as log from "loglevel";
 
 import { apiIPAddress } from "../settings/settings";
 
-//import store from '../redux/store'
-const token = "123456"; //store.getState().cognotoUserSession
+// import the API category from Amplify library
+import { API } from 'aws-amplify'
+
+// import the GraphQL queries, mutations and subscriptions
+import { listStations } from '../graphql/queries'
+import { createStation } from '../graphql/mutations'
 
 const operator = "stations";
-
-const logger = log.getLogger("Stations_Api", "Station");
 
 export async function getStations() {
   try {
@@ -20,11 +22,36 @@ export async function getStations() {
         "Access-Control-Allow-Origin": "*",
       },
     });
-    // Success 🎉
+
+    const res = await API.graphql({
+      query: listStations
+    })
+
     const data = response.data;
     const dataJson = JSON.parse(data);
-    return dataJson;
+
+    // console.log('Got the data!', res.data.listStations.items, dataJson)
+
+    let GQLdata = res.data.listStations.items
+
+    GQLdata.forEach(element => {
+      return {
+        ...element,
+        children: JSON.parse(element.children),
+        dashboards: JSON.parse(element.dashboards),
+        pos_x: Number(element.pos_x),
+        pos_y: Number(element.pos_y),
+        _id: element.id
+      }
+    });
+
+    console.log(GQLdata)
+
+    // Success 🎉;
+    return dataJson
+
   } catch (error) {
+    console.log(error)
     // Error 😨
     if (error.response) {
       /*
@@ -96,6 +123,7 @@ export async function deleteStation(ID) {
 
 export async function postStation(station) {
   try {
+
     const response = await axios({
       method: "POST",
       url: apiIPAddress() + operator,
@@ -112,8 +140,27 @@ export async function postStation(station) {
     const data = response.data;
     const dataJson = JSON.parse(data);
 
+    // Amplify!
+
+    const input = {
+      ...station,
+      children: JSON.stringify(station.children),
+      dashboards: JSON.stringify(station.dashboards),
+      pos_x: station.pos_x.toString(),
+      pos_y: station.children.toString()
+    }
+
+    delete input.neame
+    delete input._id
+
+    await API.graphql({
+      query: createStation,
+      variables: { input: input }
+    })
+
     return dataJson;
   } catch (error) {
+    console.log(error)
     // Error 😨
     if (error.response) {
       /*

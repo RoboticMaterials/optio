@@ -1,16 +1,10 @@
-type Todo @model {
-  id: ID!
-  name: String!
-  description: String
-}
-
 type Station @model {
   id: ID!
   name: String!
   schema: String!
   type:String!
-  pox_x: Int!
-  pos_y: Int!
+  pos_x: Float!
+  pos_y: Float!
   rotation: Int!
   x: Int!
   y: Int!

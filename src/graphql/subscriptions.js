@@ -1,39 +1,6 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const onCreateTodo = /* GraphQL */ `
-  subscription OnCreateTodo {
-    onCreateTodo {
-      id
-      name
-      description
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onUpdateTodo = /* GraphQL */ `
-  subscription OnUpdateTodo {
-    onUpdateTodo {
-      id
-      name
-      description
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onDeleteTodo = /* GraphQL */ `
-  subscription OnDeleteTodo {
-    onDeleteTodo {
-      id
-      name
-      description
-      createdAt
-      updatedAt
-    }
-  }
-`;
 export const onCreateStation = /* GraphQL */ `
   subscription OnCreateStation {
     onCreateStation {
@@ -41,7 +8,7 @@ export const onCreateStation = /* GraphQL */ `
       name
       schema
       type
-      pox_x
+      pos_x
       pos_y
       rotation
       x
@@ -61,7 +28,7 @@ export const onUpdateStation = /* GraphQL */ `
       name
       schema
       type
-      pox_x
+      pos_x
       pos_y
       rotation
       x
@@ -81,7 +48,7 @@ export const onDeleteStation = /* GraphQL */ `
       name
       schema
       type
-      pox_x
+      pos_x
       pos_y
       rotation
       x
