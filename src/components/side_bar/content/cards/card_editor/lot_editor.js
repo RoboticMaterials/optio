@@ -827,7 +827,9 @@ const FormComponent = (props) => {
 									[fieldName]: fieldValue
 								} = templateValues || {}
 
-								return <styled.FieldContainer>
+								return <styled.FieldContainer
+									key={dropContainerId}
+								>
 									<FieldComponentMapper
 										value={fieldValue}
 										onCalendarClick={() => {
@@ -1337,7 +1339,6 @@ const LotEditor = (props) => {
 
 	const getCount =  async () => {
 		const count = await getCardsCount()
-		console.log("count count",count)
 		setCollectionCount(count)
 	}
 

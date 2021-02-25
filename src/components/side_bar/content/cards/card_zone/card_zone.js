@@ -58,7 +58,6 @@ const CardZone = ((props) => {
 	// need to loop through the process's routes first and get all station ids involved in the process
 	// this must be done first in order to avoid showing lots that are in stations that are no longer a part of the process
 	useEffect(() => {
-		console.log("bin effect")
 		let prevLoadStationId		// tracks previous load station id when looping through routes
 		let prevUnloadStationId		// tracks previous unload station id when looping through routes
 		let tempBins = {}	// temp var for storing sorted cards
@@ -252,7 +251,7 @@ CardZone.propTypes = {
 	processId: PropTypes.string,
 	lotFilterValue: PropTypes.string,
 	showCardEditor: PropTypes.bool,
-	maxHeight: PropTypes.number
+	maxHeight: PropTypes.string
 }
 
 // Specifies the default values for props:

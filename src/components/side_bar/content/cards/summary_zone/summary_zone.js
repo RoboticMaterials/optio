@@ -25,8 +25,6 @@ const SummaryZone = ((props) => {
 		sortMode
 	} = props
 
-	console.log("summary zone")
-
 	/*
    * This function renders a CardZone for each process in {selectedProcesses}
    *
@@ -48,7 +46,9 @@ const SummaryZone = ((props) => {
 
 				// return a CardZone wrapped with a styled container and any additional elements
 				return	(
-					<styled.ZoneContainer>
+					<styled.ZoneContainer
+						key={processId}
+					>
 						<styled.ProcessName>{processName}</styled.ProcessName>
 
 						<CardZone
