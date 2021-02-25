@@ -328,7 +328,7 @@ export const editLotSchema = Yup.object().shape({
     name: Yup.string()
         .min(1, '1 character minimum.')
         .max(50, '50 character maximum.')
-        .required('Please enter a name.')
+        // .required('Please enter a name.')
         .uniqueByPath("A lot with this name already exists.", "cardNames"),
     description: Yup.string()
         .min(1, '1 character minimum.')

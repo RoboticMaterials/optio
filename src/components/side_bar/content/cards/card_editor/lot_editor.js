@@ -69,6 +69,7 @@ import usePrevious from "../../../../../hooks/usePrevious";
 
 // logger
 import log from '../../../../../logger'
+import {getCardsCount} from "../../../../../api/cards_api";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
@@ -77,6 +78,7 @@ const FormComponent = (props) => {
 
 	const {
 		// formMode,
+		collectionCount,
 		card,
 		setShowLotTemplateEditor,
 		showLotTemplateEditor,
@@ -234,7 +236,6 @@ const FormComponent = (props) => {
 	const superSubmit = (values, index, lotStatus) => {
 		let updatedItem = {...values}
 
-		// let lotStatus = processedValues[index]
 		editLotSchema.validate(values, {abortEarly: false})
 			.then((ayo) => {
 				lotStatus.validationStatus = {
@@ -259,7 +260,8 @@ const FormComponent = (props) => {
 					bins: newBins,
 					process_id: newProcessId,
 					lotTemplateId: lotTemplateId,
-					...templateValues
+					...templateValues,
+					lotNumber: collectionCount + index
 				}
 
 				onPostCard(submitItem).then((result) => {
@@ -268,8 +270,6 @@ const FormComponent = (props) => {
 						const {
 							_id = null
 						} = result || {}
-
-						console.log("post result", result)
 
 						const currMappedLot = convertLotToExcel(values, lotTemplateId)
 						mappedValuesRef.current = immutableReplace(mappedValuesRef.current, {
@@ -1328,6 +1328,18 @@ const LotEditor = (props) => {
 	const [formMode, setFormMode] = useState(props.cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
 	const [showLotTemplateEditor, setShowLotTemplateEditor] = useState(false)
 	const [cardNames, setCardNames] = useState([])
+	const [collectionCount, setCollectionCount] = useState(null)
+
+	const getCount =  async () => {
+		const count = await getCardsCount()
+		console.log("count count",count)
+		setCollectionCount(count)
+	}
+
+	useEffect(() => {
+		getCount()
+
+	}, [])
 
 	// get card object from redux by cardId
 	const card = cards[cardId] || null
@@ -1433,31 +1445,33 @@ const LotEditor = (props) => {
 	* */
 	useEffect( () => {
 
-		// editing existing card
-		if(cardId) {
-			if(card) {
+		if(collectionCount !== null) {
+			// editing existing card
+			if(cardId) {
+				if(card) {
 
-				// if card has template, template and card must be loaded
-				if(card?.lotTemplateId) {
-					if(lotTemplate && !loaded) {
-						setLoaded(true)
+					// if card has template, template and card must be loaded
+					if(card?.lotTemplateId) {
+						if(lotTemplate && !loaded) {
+							setLoaded(true)
+						}
+					}
+
+					// No template, only need card to set loaded
+					else if(!loaded) {
+						setLoaded(true) // if card already exists, set loaded to true
 					}
 				}
 
-				// No template, only need card to set loaded
-				else if(!loaded) {
-					setLoaded(true) // if card already exists, set loaded to true
-				}
 			}
 
+			// creating new, set loaded to true
+			else {
+				if(!loaded) setLoaded(true)
+			}
 		}
 
-		// creating new, set loaded to true
-		else {
-			if(!loaded) setLoaded(true)
-		}
-
-	}, [card, lotTemplate, lotTemplateId])
+	}, [card, lotTemplate, lotTemplateId, collectionCount])
 
 	useEffect( () => {
 		dispatchGetLotTemplates()
@@ -1506,7 +1520,7 @@ const LotEditor = (props) => {
 							processId: processId,
 							moveCount: 0,
 							moveLocation: [],
-							name: card ? card.name : "",
+							name: card ? card.name : `#00000${collectionCount}`,
 							bins: card && card.bins ?
 								card.bins
 								:
@@ -1662,7 +1676,8 @@ const LotEditor = (props) => {
 											start_date: start,
 											end_date: end,
 											lotTemplateId,
-											...templateValues
+											...templateValues,
+											lotNumber: collectionCount
 										}
 
 										requestResult = onPutCard(submitItem, cardId)
@@ -1678,7 +1693,8 @@ const LotEditor = (props) => {
 											start_date: start,
 											end_date: end,
 											lotTemplateId,
-											...templateValues
+											...templateValues,
+											lotNumber: collectionCount
 										}
 
 										requestResult = await onPostCard(submitItem)
@@ -1727,6 +1743,7 @@ const LotEditor = (props) => {
 
 							return (
 								<FormComponent
+									collectionCount={collectionCount}
 									onSubmit={handleSubmit}
 									setShowLotTemplateEditor={setShowLotTemplateEditor}
 									showLotTemplateEditor={showLotTemplateEditor}
