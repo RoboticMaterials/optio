@@ -271,10 +271,13 @@ Yup.addMethod(Yup.string, "uniqueByPath", function(message, arrPath) {
     return this.test("uniqueByPath", message, function(value) {
         const { path, createError, parent } = this;
 
-        const parentValues = parent[arrPath]
+        if(value) {
+            const parentValues = parent[arrPath]
 
-        if(parentValues.includes(value)) {
-            return createError({ path, message })
+
+            if(isArray(parentValues) && parentValues.includes(value)) {
+                return createError({ path, message })
+            }
         }
 
         return true
@@ -326,9 +329,8 @@ export const CARD_SCHEMA_MODES = {
 
 export const editLotSchema = Yup.object().shape({
     name: Yup.string()
-        .min(1, '1 character minimum.')
+        // .min(1, '1 character minimum.')
         .max(50, '50 character maximum.')
-        // .required('Please enter a name.')
         .uniqueByPath("A lot with this name already exists.", "cardNames"),
     description: Yup.string()
         .min(1, '1 character minimum.')

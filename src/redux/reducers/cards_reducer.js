@@ -94,13 +94,13 @@ export default function cardsReducer(state = defaultState, action) {
       }
 
     case DELETE + CARD + SUCCESS:
-      const { [action.payload.cardId]: value, ...rest } = state.cards; // extracts payload card from rest
+      const { [action.payload.cardId]: value, ...rest } = state.cards; // extracts payload lot from rest
       const {
 
         [action.payload.processId]: {[action.payload.cardId]: removedCard, ...remaining} ,
         ...unchangedProcessGroups
 
-      } = state.processCards; // extracts payload card from rest
+      } = state.processCards; // extracts payload lot from rest
 
       return {
         ...state,

@@ -23,6 +23,7 @@ const SummaryZone = ((props) => {
 		setShowCardEditor,
 		showCardEditor,
 		lotFilterValue,
+		selectedFilterOption,
 		selectedProcesses,
 		sortMode
 	} = props
@@ -54,6 +55,7 @@ const SummaryZone = ((props) => {
 						<CardZone
 							sortMode={sortMode}
 							lotFilterValue={lotFilterValue}
+							selectedFilterOption={selectedFilterOption}
 							setShowCardEditor={setShowCardEditor}
 							showCardEditor={showCardEditor}
 							maxHeight={"30rem"}
@@ -88,7 +90,8 @@ SummaryZone.defaultProps = {
 	handleCardClick: () => {},
 	setShowCardEditor: () => {},
 	showCardEditor: false,
-	lotFilterValue: ""
+	lotFilterValue: "",
+	selectedFilterOption: null
 }
 
 export default SummaryZone

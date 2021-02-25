@@ -79,6 +79,7 @@ const FormComponent = (props) => {
 	const {
 		// formMode,
 		collectionCount,
+		cardNames,
 		card,
 		setShowLotTemplateEditor,
 		showLotTemplateEditor,
@@ -235,8 +236,12 @@ const FormComponent = (props) => {
 
 	const superSubmit = (values, index, lotStatus) => {
 		let updatedItem = {...values}
+		console.log("superSubmit values", values)
 
-		editLotSchema.validate(values, {abortEarly: false})
+		editLotSchema.validate({
+			...values,
+			cardNames
+		}, {abortEarly: false})
 			.then((ayo) => {
 				lotStatus.validationStatus = {
 					message: `Successfully validated lot!`,
@@ -1520,7 +1525,7 @@ const LotEditor = (props) => {
 							processId: processId,
 							moveCount: 0,
 							moveLocation: [],
-							name: card ? card.name : `#00000${collectionCount}`,
+							name: card ? card.name : ``,
 							bins: card && card.bins ?
 								card.bins
 								:
@@ -1590,6 +1595,8 @@ const LotEditor = (props) => {
 										var submitItem = {
 											name,
 											bins,
+											lotNumber: (card && card.lotNumber !== null) ? card.lotNumber : collectionCount,
+											flags: isObject(card) ? (card.flags || []) : [],
 											process_id: card.process_id,
 											start_date: start,
 											end_date: end,
@@ -1672,6 +1679,7 @@ const LotEditor = (props) => {
 										var submitItem = {
 											name,
 											bins,
+											flags: isObject(card) ? (card.flags || []) : [],
 											process_id: card.process_id,
 											start_date: start,
 											end_date: end,
@@ -1689,6 +1697,7 @@ const LotEditor = (props) => {
 										const submitItem = {
 											name,
 											bins,
+											flags: [],
 											process_id: processId ? processId : selectedProcessId,
 											start_date: start,
 											end_date: end,
@@ -1743,6 +1752,7 @@ const LotEditor = (props) => {
 
 							return (
 								<FormComponent
+									cardNames={cardNames}
 									collectionCount={collectionCount}
 									onSubmit={handleSubmit}
 									setShowLotTemplateEditor={setShowLotTemplateEditor}

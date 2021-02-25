@@ -196,6 +196,37 @@ export const putCard = (card, cardID) => async dispatch => {
     return card;
 };
 
+// update
+// ******************************
+export const putCardAttributes = (attributes, cardId) => async (dispatch, getState) => {
+
+    // current state
+    const state = getState()
+    const card = state.cardsReducer.cards[cardId]
+
+    if(card) {
+        const callback = async () => {
+            const response = await api.putCard({
+                ...card,
+                ...attributes
+            }, cardId);
+
+            return {
+                card: response,
+                processId: response.process_id
+            };
+        }
+
+        const actionName = PUT + CARD;
+        const payload = await api_action(actionName, callback, dispatch, {attributes, cardId});
+        return card;
+    }
+
+    return null
+
+
+};
+
 export const showEditor = (bool) => {
     return { type: SHOW_EDITOR, payload: bool }
 }
