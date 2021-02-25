@@ -1,10 +1,11 @@
 type Station @model {
   id: ID!
+  _id: String!
   name: String!
   schema: String!
   type:String!
-  pos_x: Float!
-  pos_y: Float!
+  pos_x: Float
+  pos_y: Float
   rotation: Int!
   x: Int!
   y: Int!

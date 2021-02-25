@@ -8,6 +8,7 @@ export const createStation = /* GraphQL */ `
   ) {
     createStation(input: $input, condition: $condition) {
       id
+      _id
       name
       schema
       type
@@ -31,6 +32,7 @@ export const updateStation = /* GraphQL */ `
   ) {
     updateStation(input: $input, condition: $condition) {
       id
+      _id
       name
       schema
       type
@@ -54,6 +56,7 @@ export const deleteStation = /* GraphQL */ `
   ) {
     deleteStation(input: $input, condition: $condition) {
       id
+      _id
       name
       schema
       type

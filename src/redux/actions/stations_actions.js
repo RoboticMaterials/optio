@@ -166,7 +166,7 @@ export const putStationWithoutSavingChildren = (station) => {
 
 // delete
 // ******************************
-export const deleteStation = (ID) => {
+export const deleteStationByID = (ID) => {
   return async (dispatch) => {
     function onStart() {
       dispatch({ type: DELETE_STATION_STARTED });
@@ -183,7 +183,7 @@ export const deleteStation = (ID) => {
     try {
       onStart();
       const station = await dispatch(onDeleteStation(ID));
-      const removeStation = await api.deleteStation(station._id);
+      const removeStation = await api.deleteStationByID(station.id);
       return onSuccess(ID);
     } catch (error) {
       return onError(error);

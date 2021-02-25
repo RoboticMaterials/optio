@@ -43,7 +43,7 @@ import {
   setSelectedStation,
   setStationAttributes,
   addStation,
-  deleteStation,
+  deleteStationByID,
   updateStation,
   setEditingStation,
   putStation,
@@ -67,7 +67,7 @@ const EditLocation = () => {
     await dispatch(putStation(station));
   const dispatchPostStation = async (station) =>
     await dispatch(postStation(station));
-  const dispatchDeleteStation = async (id) => await dispatch(deleteStation(id));
+  const dispatchDeleteStation = async (id) => await dispatch(deleteStationByID(id));
   const dispatchRemoveStation = (id) => dispatch(removeStation(id));
 
   // Position Dispatches

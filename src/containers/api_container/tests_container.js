@@ -34,7 +34,7 @@ import {
 } from "../../redux/actions/positions_actions";
 import {
   putStation,
-  deleteStation,
+  deleteStationByID,
 } from "../../redux/actions/stations_actions";
 
 import { postLocalSettings } from "../../redux/actions/local_actions";

@@ -48,7 +48,7 @@ import {
 import {
   getStations,
   putStation,
-  deleteStation,
+  deleteStationByID,
 } from "../../redux/actions/stations_actions";
 
 import { postLocalSettings } from "../../redux/actions/local_actions";
@@ -110,7 +110,7 @@ const ApiContainer = (props) => {
   const onDeleteTask = (ID) => dispatch(deleteTask(ID));
   const onDeleteDashboard = (ID) => dispatch(deleteDashboard(ID));
   const onDeletePosition = (position, ID) => dispatch(deletePosition(position));
-  const onDeleteStation = async (ID) => await dispatch(deleteStation(ID));
+  const onDeleteStation = async (ID) => await dispatch(deleteStationByID(ID));
   const onDeleteTaskQItem = async (ID) =>
     await dispatch(deleteTaskQueueItem(ID));
 

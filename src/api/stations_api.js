@@ -7,48 +7,30 @@ import { apiIPAddress } from "../settings/settings";
 import { API } from 'aws-amplify'
 
 // import the GraphQL queries, mutations and subscriptions
-import { listStations } from '../graphql/queries'
-import { createStation } from '../graphql/mutations'
+import { listStations, getStation } from '../graphql/queries'
+import { createStation, deleteStation, updateStation } from '../graphql/mutations'
 
 const operator = "stations";
 
 export async function getStations() {
   try {
-    const response = await axios({
-      method: "GET",
-      url: apiIPAddress() + operator,
-      headers: {
-        "X-API-Key": "123456",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
 
     const res = await API.graphql({
       query: listStations
     })
 
-    const data = response.data;
-    const dataJson = JSON.parse(data);
+    let GQLdata = []
 
-    // console.log('Got the data!', res.data.listStations.items, dataJson)
-
-    let GQLdata = res.data.listStations.items
-
-    GQLdata.forEach(element => {
-      return {
+    res.data.listStations.items.forEach(element => {
+      GQLdata.push( {
         ...element,
         children: JSON.parse(element.children),
         dashboards: JSON.parse(element.dashboards),
-        pos_x: Number(element.pos_x),
-        pos_y: Number(element.pos_y),
-        _id: element.id
-      }
+      })
     });
 
-    console.log(GQLdata)
-
     // Success 🎉;
-    return dataJson
+    return GQLdata
 
   } catch (error) {
     console.log(error)
@@ -76,24 +58,13 @@ export async function getStations() {
   }
 }
 
-export async function deleteStation(ID) {
+export async function deleteStationByID(ID) {
   try {
-    const response = await axios({
-      method: "DELETE",
-      url: apiIPAddress() + operator + "/" + ID,
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": "123456",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
 
-    // Success 🎉
-    const data = response.data;
-    const dataJson = JSON.parse(data);
-
-    console.log(dataJson);
+    const dataJson = await API.graphql({
+      query: deleteStation,
+      variables: { input: {id: ID} }
+    })
 
     return dataJson;
   } catch (error) {
@@ -124,36 +95,20 @@ export async function deleteStation(ID) {
 export async function postStation(station) {
   try {
 
-    const response = await axios({
-      method: "POST",
-      url: apiIPAddress() + operator,
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": "123456",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      data: JSON.stringify(station),
-    });
-
-    // Success 🎉
-    const data = response.data;
-    const dataJson = JSON.parse(data);
-
     // Amplify!
 
     const input = {
       ...station,
       children: JSON.stringify(station.children),
       dashboards: JSON.stringify(station.dashboards),
-      pos_x: station.pos_x.toString(),
-      pos_y: station.children.toString()
+      pos_x: parseFloat(station.pos_x),
+      pos_y: parseFloat(station.pos_y),
+      _id: station._id.toString()
     }
 
     delete input.neame
-    delete input._id
 
-    await API.graphql({
+    const dataJson = await API.graphql({
       query: createStation,
       variables: { input: input }
     })
@@ -187,24 +142,49 @@ export async function postStation(station) {
 
 export async function putStation(station, ID) {
   try {
-    const response = await axios({
-      method: "PUT",
-      url: apiIPAddress() + operator + "/" + ID,
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": "123456",
-        Accept: "text/html",
-        "Access-Control-Allow-Origin": "*",
-      },
-      data: station,
-    });
+    // const response = await axios({
+    //   method: "PUT",
+    //   url: apiIPAddress() + operator + "/" + ID,
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "X-API-Key": "123456",
+    //     Accept: "text/html",
+    //     "Access-Control-Allow-Origin": "*",
+    //   },
+    //   data: station,
+    // });
 
-    // Success 🎉
-    const data = response.data;
-    const dataJson = JSON.parse(data);
+    // // Success 🎉
+    // const data = response.data;
+    // const dataJson = JSON.parse(data);
+
+    const input = {
+      ...station,
+      children: JSON.stringify(station.children),
+      dashboards: JSON.stringify(station.dashboards),
+      pos_x: parseFloat(station.pos_x),
+      pos_y: parseFloat(station.pos_y),
+      x: parseInt(station.x),
+      y: parseInt(station.y),
+      _id: station._id.toString()
+    }
+
+    // delete input.id
+    delete input.createdAt
+    delete input.updatedAt
+
+    console.log(input)
+
+    const dataJson = await API.graphql({
+      query: updateStation,
+      variables: { input: input }
+    })
+
+    console.log(dataJson)
 
     return dataJson;
   } catch (error) {
+    console.log(error)
     // Error 😨
     if (error.response) {
       /*

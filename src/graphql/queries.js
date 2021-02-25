@@ -5,6 +5,7 @@ export const getStation = /* GraphQL */ `
   query GetStation($id: ID!) {
     getStation(id: $id) {
       id
+      _id
       name
       schema
       type
@@ -30,6 +31,7 @@ export const listStations = /* GraphQL */ `
     listStations(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
+        _id
         name
         schema
         type

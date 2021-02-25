@@ -10,7 +10,7 @@ import {
 } from "../types/locations_types";
 
 import * as stationActions from "./stations_actions.js";
-import { deleteStation } from "./stations_actions.js";
+import { deleteStationByID } from "./stations_actions.js";
 import * as positionActions from "./positions_actions.js";
 import { deletePosition } from "./positions_actions.js";
 import { setSelectedDevice, putDevices } from "./devices_actions";
@@ -62,7 +62,7 @@ import uuid from "uuid";
 // // ******************************
 // export const deleteLocation = (id) => {
 //     return async dispatch => {
-//         dispatch(stationActions.deleteStation(id))
+//         dispatch(stationActions.deleteStationByID(id))
 //         // TODO: Why is this here? Is this a catch because it may either be a position or location?
 //         // dispatch(positionActions.deletePosition(id))
 //     }

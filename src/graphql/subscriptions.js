@@ -5,6 +5,7 @@ export const onCreateStation = /* GraphQL */ `
   subscription OnCreateStation {
     onCreateStation {
       id
+      _id
       name
       schema
       type
@@ -25,6 +26,7 @@ export const onUpdateStation = /* GraphQL */ `
   subscription OnUpdateStation {
     onUpdateStation {
       id
+      _id
       name
       schema
       type
@@ -45,6 +47,7 @@ export const onDeleteStation = /* GraphQL */ `
   subscription OnDeleteStation {
     onDeleteStation {
       id
+      _id
       name
       schema
       type
