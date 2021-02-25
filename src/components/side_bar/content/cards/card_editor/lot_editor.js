@@ -20,6 +20,10 @@ import NumberField from "../../../../basic/form/number_field/number_field";
 import FieldComponentMapper from "./field_component_mapper/field_component_mapper";
 import TemplateSelectorSidebar from "./lot_sidebars/template_selector_sidebar/template_selector_sidebar";
 import SubmitErrorHandler from "../../../../basic/form/submit_error_handler/submit_error_handler";
+import LotCreatorForm from "./template_form";
+import PasteMapper, {PasteForm} from "../../../../basic/paste_mapper/paste_mapper";
+import SimpleModal from "../../../../basic/modals/simple_modal/simple_modal";
+import StatusList from "../../../../basic/status_list/status_list";
 
 // actions
 import {deleteCard, getCard, postCard, putCard} from "../../../../../redux/actions/card_actions";
@@ -41,7 +45,6 @@ import {
 	NAME_FIELD,
 	REQUIRED_FIELDS
 } from "../../../../../constants/lot_contants";
-import {BASIC_FIELD_DEFAULTS} from "../../../../../constants/form_constants";
 
 // utils
 import {
@@ -55,25 +58,20 @@ import {getProcessStations} from "../../../../../methods/utils/processes_utils";
 import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
 import {arraysEqual} from "../../../../../methods/utils/utils";
 import {immutableReplace, isArray} from "../../../../../methods/utils/array_utils";
+import {getDisplayName} from "../../../../../methods/utils/lot_utils";
 
 // import styles
 import * as styled from "./lot_editor.style"
 import * as FormStyle from "./lot_form_creator/lot_form_creator.style"
 
+// hooks
+import usePrevious from "../../../../../hooks/usePrevious";
+
 // logger
 import log from '../../../../../logger'
-import LotCreatorForm from "./template_form";
-import PasteMapper, {PasteForm} from "../../../../basic/paste_mapper/paste_mapper";
-import usePrevious from "../../../../../hooks/usePrevious";
-import SimpleModal from "../../../../basic/modals/simple_modal/simple_modal";
-import {getDisplayName} from "../../../../../methods/utils/lot_utils";
-import StatusList from "../../../../basic/status_list/status_list";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
-
-
-
 
 const FormComponent = (props) => {
 
@@ -151,10 +149,8 @@ const FormComponent = (props) => {
 	const [showProcessSelector, setShowProcessSelector] = useState(props.showProcessSelector)
 
 	const previousProvidedIndex = usePrevious(mappedValuesIndex)
-	const previousProvidedValues = usePrevious(mappedValues)
 
 	const mappedValuesRef = useRef(null)
-	const processedValuesRef = useRef(null)
 
 	// derived state
 	const selectedBinName = stations[binId] ?
@@ -1331,6 +1327,7 @@ const LotEditor = (props) => {
 	const [loaded, setLoaded] = useState(false)
 	const [formMode, setFormMode] = useState(props.cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
 	const [showLotTemplateEditor, setShowLotTemplateEditor] = useState(false)
+	const [cardNames, setCardNames] = useState([])
 
 	// get card object from redux by cardId
 	const card = cards[cardId] || null
@@ -1399,6 +1396,20 @@ const LotEditor = (props) => {
 		// }
 	}
 
+
+	useEffect(() => {
+		let tempCardNames = []
+
+		Object.values(cards).forEach((currCard, currCardIndex) => {
+			const {
+				name
+			} = currCard || {}
+
+			tempCardNames.push(name)
+		})
+
+		setCardNames(tempCardNames)
+	}, [cards])
 
 
 	/*
@@ -1502,8 +1513,8 @@ const LotEditor = (props) => {
 								defaultBins,
 							[lotTemplateId]: {
 								...getInitialValues(lotTemplate, card)
-							}
-
+							},
+							cardNames
 						}}
 
 						// validation control
