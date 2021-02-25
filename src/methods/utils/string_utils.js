@@ -9,4 +9,7 @@ export const isEqualCI = (string1, string2) => {
     return string1.toLowerCase() === string2.toLowerCase();
 }
 
+export const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 

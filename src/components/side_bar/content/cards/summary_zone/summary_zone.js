@@ -1,13 +1,10 @@
-import React, { useState } from "react"
+import React, { useState, memo } from "react"
 
 // external functions
-import {SortableContainer} from "react-sortable-hoc"
-import { useSelector} from "react-redux"
 import PropTypes from "prop-types"
 
 // internal components
 import CardZone from "../card_zone/card_zone"
-import ZoneHeader from "../zone_header/zone_header"
 
 // styles
 import * as styled from "./summary_zone.style"
@@ -27,6 +24,8 @@ const SummaryZone = ((props) => {
 		selectedProcesses,
 		sortMode
 	} = props
+
+	console.log("summary zone")
 
 	/*
    * This function renders a CardZone for each process in {selectedProcesses}
@@ -94,5 +93,5 @@ SummaryZone.defaultProps = {
 	selectedFilterOption: null
 }
 
-export default SummaryZone
+export default memo(SummaryZone)
 

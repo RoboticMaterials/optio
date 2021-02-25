@@ -1,19 +1,23 @@
-import DropDownSearch from "../../../../basic/drop_down_search_v2/drop_down_search";
-import React, {useContext, useState} from "react";
-import {useSelector} from "react-redux";
+import React, {useContext, useEffect, useState} from "react";
 
-import * as styled from './zone_header.style'
+// components internal
+import DropDownSearch from "../../../../basic/drop_down_search_v2/drop_down_search";
 import Textbox from "../../../../basic/textbox/textbox";
-import {ThemeContext} from "styled-components";
+
+// constants
 import {SORT_MODES, SORT_OPTIONS} from "../../../../../constants/common_contants";
 import {FLAG_OPTIONS, LOT_FILTER_OPTIONS} from "../../../../../constants/lot_contants";
-import {getByPath} from "../../../../basic/drop_down_search_v2/util";
-import {LIB_NAME} from "../../../../basic/drop_down_search_v2/constants";
+
+// functions external
+import {ThemeContext} from "styled-components";
+import {useSelector} from "react-redux";
+
+// utils
 import {isArray} from "../../../../../methods/utils/array_utils";
+import {getAllTemplateFields} from "../../../../../methods/utils/lot_utils";
 
-
-
-
+// styles
+import * as styled from './zone_header.style'
 
 const ZoneHeader = (props) => {
 
@@ -27,6 +31,22 @@ const ZoneHeader = (props) => {
 		selectedFilterOption,
 		setSelectedFilterOption
 	} = props
+
+	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
+
+	const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])
+
+	useEffect(() => {
+		const templateFields = getAllTemplateFields()
+
+		let tempLotFilterOptions = [...Object.values(LOT_FILTER_OPTIONS)]
+
+		templateFields.map((currTemplateField) => {
+			tempLotFilterOptions.push(currTemplateField)
+		})
+
+		setLotFilterOptions(tempLotFilterOptions)
+	}, [lotTemplates])
 
 	const selectedSortOption =  SORT_OPTIONS.find((currOption) => currOption.sortMode === sortMode)
 
@@ -88,7 +108,7 @@ const ZoneHeader = (props) => {
 
 				<styled.ItemContainer>
 					<DropDownSearch
-						options={Object.values(LOT_FILTER_OPTIONS)}
+						options={lotFilterOptions}
 						onChange={(values) => {
 							setSelectedFilterOption(values[0])
 							setLotFilterValue(null)
@@ -103,6 +123,7 @@ const ZoneHeader = (props) => {
 							borderBottomRightRadius: 0,
 							borderTopLeftRadius: "1rem",
 							borderBottomLeftRadius: "1rem",
+							minWidth: "10rem",
 							borderBottom: `1px solid ${themeContext.bg.quinary}`,
 						}}
 					/>
@@ -141,6 +162,9 @@ const ZoneHeader = (props) => {
 
 												return (
 													<styled.FlagButton
+														style={{
+															margin: "0 .5rem",
+														}}
 														key={currColorId}
 														type={"button"}
 														color={currColor}
@@ -167,8 +191,15 @@ const ZoneHeader = (props) => {
 									id: currColorId
 								} = item
 
+								const isSelected = methods.isSelected(item)
+
 								return(
 									<styled.FlagButton
+										style={{
+											paddingTop: ".5rem",
+											paddingBottom: ".5rem",
+										}}
+										selected={isSelected}
 										key={currColorId}
 										type={"button"}
 										color={currColor}
@@ -212,7 +243,6 @@ const ZoneHeader = (props) => {
 							schema={"lots"}
 						/>
 					}
-
 				</styled.ItemContainer>
 			</styled.ColumnContainer>
 		</styled.Container>

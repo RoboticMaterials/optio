@@ -1,18 +1,26 @@
-import {SortableContainer} from "react-sortable-hoc";
-import {useDispatch, useSelector} from "react-redux";
-import {deleteCard, putCard} from "../../../../../../redux/actions/card_actions";
-import * as styled from "./column.style";
-import {Container} from "react-smooth-dnd";
-import Card from "../../lot/lot";
 import React, {useState} from "react";
+
+// actions
+import {deleteCard, putCard} from "../../../../../../redux/actions/card_actions";
 import {
 	setDroppingLotId,
 	setColumnHovering,
 	setLotHovering,
 	setDraggingLotId
 } from "../../../../../../redux/actions/card_page_actions";
-import {generateBinId, sortBy} from "../../../../../../methods/utils/card_utils";
+
+// components external
 import { Draggable } from 'react-smooth-dnd';
+import {Container} from "react-smooth-dnd";
+
+// components internal
+import Card from "../../lot/lot";
+
+// functions external
+import {useDispatch, useSelector} from "react-redux";
+
+// styles
+import * as styled from "./column.style";
 
 // const animationDuration = 500
 const Column = ((props) => {
@@ -30,22 +38,25 @@ const Column = ((props) => {
 		sortMode
 	} = props
 
-	if(sortMode) {
-		sortBy(cards, sortMode)
-	}
+	// if(sortMode) {
+	// 	sortBy(cards, sortMode)
+	// }
 
+	// redux state
 	const objects = useSelector(state => { return state.objectsReducer.objects })
 	const reduxCards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || {}
 	const hoveringLotId = useSelector(state => { return state.cardPageReducer.hoveringLotId }) || null
 	const draggingLotId = useSelector(state => { return state.cardPageReducer.draggingLotId }) || null
 
-	const [dragEnter, setDragEnter] = useState(false)
-
+	// actions
 	const dispatch = useDispatch()
-	const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
+	const dispatchPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 	const dispatchSetDroppingLotId = async (lotId, binId) => await dispatch(setDroppingLotId(lotId, binId))
 	const dispatchSetLotHovering = async (lotId) => await dispatch(setLotHovering(lotId))
 	const dispatchSetDraggingLotId = async (lotId) => await dispatch(setDraggingLotId(lotId))
+
+	// component state
+	const [dragEnter, setDragEnter] = useState(false)
 
 	const shouldAcceptDrop = (sourceContainerOptions, payload) => {
 		const {
@@ -73,7 +84,7 @@ const Column = ((props) => {
 		const { removedIndex, addedIndex, payload, element } = dropResult;
 
 		if (payload === null) { //  No new button, only reorder
-
+			return
 		} else {
 			if(addedIndex !== null) {
 				const {
@@ -105,7 +116,7 @@ const Column = ((props) => {
 							const oldCount = parseInt(oldBins[station_id]?.count || 0)
 							const movedCount = parseInt(movedBin?.count || 0)
 
-							await onPutCard({
+							await dispatchPutCard({
 								...remainingPayload,
 								bins: {
 									...remainingOldBins,
@@ -119,7 +130,7 @@ const Column = ((props) => {
 
 						// no items in bin
 						else {
-							const a = await onPutCard({
+							const a = await dispatchPutCard({
 								...remainingPayload,
 								bins: {
 									...remainingOldBins,
@@ -143,7 +154,7 @@ const Column = ((props) => {
 			<styled.BodyContainer
 				dragEnter={dragEnter}
 			>
-				<div onTouchEndCapture={null}></div>
+				{/*<div onTouchEndCapture={null}></div>*/}
 				<Container
 					onDrop={async (DropResult)=> {
 						await handleDrop(DropResult)
@@ -152,8 +163,6 @@ const Column = ((props) => {
 					shouldAcceptDrop={shouldAcceptDrop}
 					getGhostParent={()=>document.body}
 					onDragStart={(dragStartParams, b, c)=>{
-						//
-						console.log("dragStartParams",dragStartParams)
 						const {
 							isSource,
 							payload,
