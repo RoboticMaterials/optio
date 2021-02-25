@@ -180,6 +180,8 @@ Item.defaultProps = {
     ContentContainer: DefaultContentContainer,
     ButtonComponent: DefaultButtonComponent,
     TextComponent: DefaultTextComponent,
+    onMouseEnter: () => {},
+    onMouseLeave: () => {}
 };
 
 export default Item;

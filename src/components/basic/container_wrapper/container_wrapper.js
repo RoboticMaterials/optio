@@ -12,6 +12,8 @@ const ContainerWrapper = (props) => {
 		color,
 		showHighlight,
 		onHoverChange,
+		highlightColor,
+		shiftable,
 		...rest
 	} = props
 
@@ -44,8 +46,9 @@ const ContainerWrapper = (props) => {
 				...style,
 				// border: "1px solid black",
 				transition: "all 0.5s ease",
-				padding: (hovering || props.hovering) ? (isRow ? "2.5rem 0" : "0 2.5rem") : 0,
-				background: (hovering || props.hovering) ? (showHighlight ? "rgb(50,50,50)" : "transparent") : (color ? color : "transparent"),
+				padding: shiftable && ((hovering || props.hovering) ? (isRow ? "2.5rem 0" : "0 2.5rem") : 0),
+				background: (hovering || props.hovering) ? (showHighlight ? highlightColor : "transparent") : (color ? color : "transparent"),
+				filter: hovering && "brightness(120%)",
 			}}
 			{...rest}
 		>
@@ -65,7 +68,9 @@ ContainerWrapper.defaultProps = {
 	onDrop: null,
 	showHighlight: true,
 	onHoverChange: null,
-	hovering: false
+	hovering: false,
+	highlightColor: "rgb(50,50,50)",
+	shiftable: true
 };
 
 export default ContainerWrapper

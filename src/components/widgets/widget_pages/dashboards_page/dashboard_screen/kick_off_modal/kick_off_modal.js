@@ -16,11 +16,11 @@ import * as styled from './kick_off_modal.style'
 import {useTheme} from "styled-components";
 import {getProcesses} from "../../../../../../redux/actions/processes_actions";
 import FadeLoader from "react-spinners/FadeLoader";
-import CardEditor from "../../../../../side_bar/content/cards/card_editor/card_editor";
+import LotEditor from "../../../../../side_bar/content/cards/card_editor/lot_editor";
 import Textbox from "../../../../../basic/textbox/textbox";
 import {SORT_MODES} from "../../../../../../constants/common_contants";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
-import Card from "../../../../../side_bar/content/cards/card/card";
+import Card from "../../../../../side_bar/content/cards/lot/lot";
 
 Modal.setAppElement('body');
 
@@ -63,14 +63,14 @@ const KickOffModal = (props) => {
     /*
     * handles the logic for when a kick-off button is pressed
     *
-    * When a kick-off button is pressed, the card is to be moved from the queue of the current process it resides in
+    * When a kick-off button is pressed, the lot is to be moved from the queue of the current process it resides in
     * to the first station in the process
     *
     * This is done by updating the cards station_id and route_id to those of the first station in the first route
     * */
     const onButtonClick = async (card) => {
 
-        // extract card attributes
+        // extract lot attributes
         const {
             bins,
             name: cardName,
@@ -78,7 +78,7 @@ const KickOffModal = (props) => {
             _id: cardId,
         } = card
 
-        // get process of card
+        // get process of lot
         const cardProcess = processes[process_id]
 
         // get routes of process
@@ -98,7 +98,7 @@ const KickOffModal = (props) => {
             }
         } = firstRoute || {}
 
-        // update card
+        // update lot
         if(firstRouteId && firstRoute && loadStation) {
 
             // extract first station's bin and queue bin from bins
@@ -111,7 +111,7 @@ const KickOffModal = (props) => {
             const queueBinCount = queueBin?.count ? queueBin.count : 0
             const firstStationCount = firstStationBin?.count ? firstStationBin.count : 0
 
-            // udpated card will maintain all of the cards previous attributes with the station_id and route_id updated
+            // udpated lot will maintain all of the cards previous attributes with the station_id and route_id updated
             const updatedCard = {
                 ...card,                                // spread unaltered attributes
                 bins: {
@@ -211,14 +211,14 @@ const KickOffModal = (props) => {
     /**
      * Get the cards actually available for kick off
      *
-     * For a card to be available for kick off, it must have at least 1 item in the 'queue' bin
+     * For a lot to be available for kick off, it must have at least 1 item in the 'queue' bin
      *
-     * This function creates a temporary array for storing kick off cards as it checks each card of each process associated with the station
+     * This function creates a temporary array for storing kick off cards as it checks each lot of each process associated with the station
      *
-     * This function loops through every card belonging to a process that the current station is the first station of
-     * Each card's bins attribute is checked to see if it contains any items in the "QUEUE" bin
+     * This function loops through every lot belonging to a process that the current station is the first station of
+     * Each lot's bins attribute is checked to see if it contains any items in the "QUEUE" bin
      *
-     * if a card is found to have items in the "QUEUE" bin, it is added to the list of kick off cards
+     * if a lot is found to have items in the "QUEUE" bin, it is added to the list of kick off cards
      *
      * finally, local state variable availableKickOffCards is set to the list of kick off cards for later use
      *
@@ -267,7 +267,7 @@ const KickOffModal = (props) => {
             }}
         >
             {showLotEditor &&
-            <CardEditor
+            <LotEditor
                 isOpen={true}
                 onAfterOpen={null}
                 processOptions={kickOffEnabledInfo}

@@ -36,10 +36,12 @@ const LineThroughputChart = (props) => {
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
 
     const settings = useSelector(state => state.settingsReducer.settings)
-    console.log('QQQQ settings', settings)
-    const shiftDetails = settings.shiftDetails;
-    console.log('QQQQ shiftdetails', shiftDetails)
+
     const [breaksEnabled, setBreaksEnabled] = useState({})
+
+    const shiftDetails = settings.shiftDetails;
+
+
     // Settings local state here because enabled breaks needs to access breaks outside of formik
     // See the Switch below forme details
     useEffect(() => {
@@ -52,7 +54,6 @@ const LineThroughputChart = (props) => {
                 const breakString = `break${ind}`
                 enabledBreaks[ind] = enabled
             })
-            console.log('QQQQ enabled breaks', enabledBreaks)
             setBreaksEnabled(enabledBreaks)
         }
         else {
@@ -323,7 +324,6 @@ const LineThroughputChart = (props) => {
     // Submits the shift details to the backend via settings
     const onSubmitShift = (values) => {
 
-        console.log('QQQQ vals', values)
         let {
             startOfShift,
             endOfShift,
@@ -430,7 +430,7 @@ const LineThroughputChart = (props) => {
                                 style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
                                 containerStyle={{ width: '6rem' }}
                                 showHour={true}
-                                showMinute={false}
+                                showMinute={true}
                                 showSecond={false}
                                 className="xxx"
                                 use12Hours
@@ -463,7 +463,7 @@ const LineThroughputChart = (props) => {
                                 style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
                                 containerStyle={{ width: '6rem' }}
                                 showHour={true}
-                                showMinute={false}
+                                showMinute={true}
                                 showSecond={false}
                                 className="xxx"
                                 use12Hours
@@ -481,7 +481,6 @@ const LineThroughputChart = (props) => {
     }, [shiftDetails, breaksEnabled])
 
     const renderForm = () => {
-        console.log('QQQQ rendering form')
         return (
             <div style={{ flexGrow: '3' }}>
                 <Formik
@@ -509,7 +508,6 @@ const LineThroughputChart = (props) => {
 
                     onSubmit={async (values, { setSubmitting, setTouched, }) => {
                         setSubmitting(true)
-                        console.log('QQQQ values', values)
                         onSubmitShift(values)
                         setSubmitting(false)
                     }}
@@ -526,12 +524,6 @@ const LineThroughputChart = (props) => {
 
                         return (
                             <Form
-                                onMouseDown={() => {
-                                    // console.log('QQQQ Submitting form', errors)
-                                    // if (Object.keys(errors).length === 0) {
-                                    //     submitForm(errors)
-                                    // }
-                                }}
                                 style={{
                                     backgroundColor: '#6c6e78',
                                     padding: '.5rem',

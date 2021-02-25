@@ -44,7 +44,6 @@ export const getSettings = () => {
     }
 }
 export const postSettings = (settings) => {
-    console.log('QQQQ posting settings', settings)
     return async dispatch => {
         function onStart() {
             dispatch({ type: POST_SETTINGS_STARTED });
@@ -60,7 +59,8 @@ export const postSettings = (settings) => {
 
         try {
             onStart();
-            const newSettings = await api.postSettings(JSON.stringify(settings));
+            delete settings._id
+            const newSettings = await api.postSettings(settings);
             return onSuccess(newSettings)
         } catch (error) {
             return onError(error)

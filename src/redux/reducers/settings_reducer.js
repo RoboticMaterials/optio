@@ -86,7 +86,6 @@ const settingsReducer = (state = defaultState, action) => {
             break;
 
         case GET_SETTINGS_SUCCESS:
-            console.log('QQQQ settings', action.payload)
             return {
                 ...state,
                 settings: {
