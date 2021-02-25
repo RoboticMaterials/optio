@@ -56,7 +56,7 @@ const SimpleModal = (props) => {
                         <styled.ButtonForm>
                             <Button
                                 tertiary
-                                schema={"delete"}
+                                schema={"ok"}
                                 onClick={handleOnClick1}
                                 label={button_1_text}
                                 type="button"
