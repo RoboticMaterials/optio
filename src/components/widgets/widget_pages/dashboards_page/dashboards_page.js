@@ -11,11 +11,16 @@ import { withRouter } from "react-router-dom";
 import DashboardsList from './dashboard_list/DashboardsList'
 import DashboardScreen from './dashboard_screen/dashboard_screen'
 import DashboardEditor from './dashboard_editor/dashboard_editor'
-import DashboardsSidebar from "./dashboards_sidebar/dashboards_sidebar.jsx"
+import DashboardsSidebar, {OPERATION_TYPES} from "./dashboards_sidebar/dashboards_sidebar.jsx"
 
 import { PAGES } from "../../../../constants/dashboard_contants";
 
-import {getDashboards, setDashboardKickOffProcesses, setDashboardFinishProcesses} from '../../../../redux/actions/dashboards_actions'
+import {
+    getDashboards,
+    setDashboardKickOffProcesses,
+    setDashboardFinishProcesses,
+    putDashboardAttributes
+} from '../../../../redux/actions/dashboards_actions'
 import { getTasks } from '../../../../redux/actions/tasks_actions'
 
 // Import Styles
@@ -23,6 +28,11 @@ import * as style from './dashboards_page.style'
 
 // logging
 import log from "../../../../logger";
+import {
+    getContainsFinishButton,
+    getContainsKickoffButton,
+    getOperationButton
+} from "../../../../methods/utils/dashboards_utils";
 const logger = log.getLogger("DashboardsPage");
 
 const DashboardsPage = (props) => {
@@ -31,6 +41,8 @@ const DashboardsPage = (props) => {
     const dispatch = useDispatch()
     const dispatchSetDashboardKickOffProcesses = async (dashboardId, kickOffEnabled) => await dispatch(setDashboardKickOffProcesses(dashboardId, kickOffEnabled))
     const dispatchSetDashboardFinishProcesses = async (dashboardId, finishEnabled) => await dispatch(setDashboardFinishProcesses(dashboardId, finishEnabled))
+    const dispatchPutDashboardAttributes = async (attributes, id) => await dispatch(putDashboardAttributes(attributes, id))
+
     const dispatchGetTasks = () => dispatch(getTasks())
 
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
@@ -67,6 +79,7 @@ const DashboardsPage = (props) => {
         var firstStationProcesses = []
         var lastStationProcesses = []
 
+
         // loop through processes and check if the load station of the first route of any process matches the current dashboards station
         Object.values(processes).forEach((currProcess) => {
             if(currProcess && currProcess.routes && Array.isArray(currProcess.routes)) {
@@ -99,12 +112,41 @@ const DashboardsPage = (props) => {
             }
         })
 
+        const dashboard = dashboards[dashboardID]
+        const {
+            buttons = []
+        } = dashboard || {}
+
         if(firstStationProcesses.length > 0 ) {
             dispatchSetDashboardKickOffProcesses(dashboardID, firstStationProcesses)
+
+            // check if kickoff button needs to be added
+            const containsKickoffButton = getContainsKickoffButton({buttons})
+
+            // if dashboard doesn't already contain kickoff button, add it
+            if(!containsKickoffButton) {
+                const kickOffButton = getOperationButton(OPERATION_TYPES.KICK_OFF.key)
+
+                dispatchPutDashboardAttributes({
+                    buttons: [...buttons, kickOffButton]
+                }, dashboardID)
+            }
         }
 
         if(lastStationProcesses.length > 0) {
             dispatchSetDashboardFinishProcesses(dashboardID, lastStationProcesses)
+
+            // check if finish button needs to be added
+            const containsFinishButton = getContainsFinishButton({buttons})
+
+            // add finish button
+            if(!containsFinishButton) {
+                const finishButton = getOperationButton(OPERATION_TYPES.FINISH.key)
+
+                dispatchPutDashboardAttributes({
+                    buttons: [...buttons, finishButton]
+                }, dashboardID)
+            }
         }
 
     }, [processes])

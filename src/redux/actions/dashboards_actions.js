@@ -136,6 +136,23 @@ export const putDashboard = (dashboard, ID) => {
         }
     }
 }
+
+export const putDashboardAttributes = (attributes, id) => {
+
+    return async (dispatch, getState) => {
+
+        const state = getState()
+        const dashboards = state.dashboardsReducer.dashboards || {}
+
+        const dashboard = dashboards[id]
+
+        dispatch(putDashboard({
+            ...dashboard,
+            ...attributes
+        }, id))
+    }
+}
+
 export const deleteDashboard = (ID) => {
     return async dispatch => {
         function onStart() {

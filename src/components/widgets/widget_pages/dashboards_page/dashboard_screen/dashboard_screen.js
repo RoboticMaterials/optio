@@ -1,53 +1,46 @@
 import React, { Component, useState, useEffect } from 'react';
 
-import { useHistory, useParams } from 'react-router-dom'
+
 
 // import external functions
 import { connect, useDispatch, useSelector } from 'react-redux';
+import { useHistory, useParams } from 'react-router-dom'
 
 // Import components
 import DashboardButtonList from "./dashboard_button_list/dashboard_button_list";
 import TaskAddedAlert from "./task_added_alert/task_added_alert";
 import DashboardTaskQueue from './dashboard_task_queue/dashboard_task_queue'
+import DashboardsHeader from "../dashboards_header/dashboards_header";
+import ReportModal from "./report_modal/report_modal";
+import KickOffModal from "./kick_off_modal/kick_off_modal";
+import FinishModal from "./finish_modal/finish_modal";
+
+// constants
+import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../constants/dashboard_contants";
+import { OPERATION_TYPES, TYPES } from "../dashboards_sidebar/dashboards_sidebar";
 
 // Import Utils
-import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../constants/dashboard_contants";
 import { deepCopy } from '../../../../../methods/utils/utils'
-import uuid from 'uuid';
 
 // Import Hooks
 import useWindowSize from '../../../../../hooks/useWindowSize'
 
-// Import API
-import { postStatus } from '../../../../../api/status_api'
-
 // Import Actions
 import { handlePostTaskQueue, postTaskQueue, putTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import { dashboardOpen, setDashboardKickOffProcesses } from '../../../../../redux/actions/dashboards_actions'
-
 import * as localActions from '../../../../../redux/actions/local_actions'
+import { getProcesses } from "../../../../../redux/actions/processes_actions";
 
 // Import styles
 import * as pageStyle from '../dashboards_header/dashboards_header.style'
 import * as style from './dashboard_screen.style'
 
-import DashboardsHeader from "../dashboards_header/dashboards_header";
-
 // import logging
 import log from "../../../../../logger";
-import { OPERATION_TYPES, TYPES } from "../dashboards_sidebar/dashboards_sidebar";
-import ReportModal from "./report_modal/report_modal";
-import KickOffModal from "./kick_off_modal/kick_off_modal";
-import FinishModal from "./finish_modal/finish_modal";
-import { getProcesses } from "../../../../../redux/actions/processes_actions";
-import { isEmpty } from "../../../../../methods/utils/object_utils";
-
-
 
 const logger = log.getLogger("DashboardsPage");
 
 const widthBreakPoint = 1026;
-
 
 const DashboardScreen = (props) => {
 
@@ -58,14 +51,10 @@ const DashboardScreen = (props) => {
     } = props
 
     // redux state
-    const status = useSelector(state => { return state.statusReducer.status })
     const currentDashboard = useSelector(state => { return state.dashboardsReducer.dashboards[dashboardId] })
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
-    const devices = useSelector(state => state.devicesReducer.devices)
-    const positions = useSelector(state => state.positionsReducer.positions)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
-    const stopAPICalls = useSelector(state => state.localReducer.stopAPICalls)
 
     //actions
     const dispatchGetProcesses = () => dispatch(getProcesses())
@@ -73,7 +62,6 @@ const DashboardScreen = (props) => {
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
     const [reportModal, setReportModal] = useState(null);
-    const [allowKickOff, setAllowKickOff] = useState(false);
 
     // actions
     const dispatch = useDispatch()
@@ -94,7 +82,6 @@ const DashboardScreen = (props) => {
     const windowWidth = size.width
 
     const mobileMode = windowWidth < widthBreakPoint;
-
 
     /**
      * When a dashboard screen is loaded, tell redux that its open
@@ -143,7 +130,7 @@ const DashboardScreen = (props) => {
             } = currButton
 
             if(task_id && taskIds.includes(task_id)) {
-                console.error(`Button with duplicate task_id found in dashboard. {dashboardId: ${dashboardID}, task_id:${task_id}`)
+                logger.error(`Button with duplicate task_id found in dashboard. {dashboardId: ${dashboardID}, task_id:${task_id}`)
                 return false // don't add duplicate tasks
             }
 
@@ -151,7 +138,7 @@ const DashboardScreen = (props) => {
             if (!!currButton.custom_task) return true
 
             else if (task_id && !(tasks[task_id])) {
-                console.error('Task does not exist! Hiding button from dashboard')
+                logger.error('Task does not exist! Hiding button from dashboard')
                 return false
             }
 

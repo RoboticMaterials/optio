@@ -90,7 +90,7 @@ const DashboardEditor = (props) => {
                 } = currButton
 
                 if(task_id && taskIds.includes(task_id)) {
-                    console.error(`Button with duplicate task_id found in dashboard. {task_id:${task_id}`)
+                    logger.error(`Button with duplicate task_id found in dashboard. {task_id:${task_id}`)
                     return false // don't add duplicate tasks
                 }
 

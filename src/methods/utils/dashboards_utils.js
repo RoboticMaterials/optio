@@ -4,6 +4,8 @@ import {
     TYPES
 } from "../../components/widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
 import {isArray, isNonEmptyArray} from "./array_utils";
+import {DASHBOARD_BUTTON_COLORS} from "../../constants/dashboard_contants";
+import uuid from 'uuid'
 
 export const postToDashboards = (dashboardName) => {
     // Requires: buttonID, param, type, buttonName, dashboardName
@@ -21,6 +23,50 @@ export const findDashboardByID = (availableDashboards, ID) => {
         return d._id.$oid === ID;
     })
     return dashboardNameIndex
+}
+
+export const getContainsKickoffButton = ({buttons}) => {
+    for(const currButton of buttons) {
+        const {
+            type
+        } = currButton
+
+        if(type === OPERATION_TYPES.KICK_OFF.key) return true
+    }
+
+    return false
+}
+
+export const getContainsFinishButton = ({buttons}) => {
+    for(const currButton of buttons) {
+        const {
+            type
+        } = currButton
+
+        if(type === OPERATION_TYPES.FINISH.key) return true
+    }
+
+    return false
+}
+
+export const getOperationButton = (key) => {
+
+    let index = 0
+    for(const entry of Object.entries(OPERATION_TYPES)) {
+        const currValue = entry[1]
+        const currKey = entry[0]
+
+        if(currKey === key) {
+            return {
+                name: currValue.name,
+                color: DASHBOARD_BUTTON_COLORS[index % DASHBOARD_BUTTON_COLORS.length].hex,
+                id: uuid.v4(),
+                type: currKey,
+            }
+        }
+
+        index = index + 1
+    }
 }
 
 export const handleAvailableTasks = (tasks, station) => {

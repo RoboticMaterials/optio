@@ -19,7 +19,7 @@ import {
     getDashboardContainsOperationButton,
     getDashboardContainsRouteButton,
     getIsFinishEnabled,
-    getIsKickoffEnabled,
+    getIsKickoffEnabled, getOperationButton,
     handleAvailableTasks
 } from "../../../../../methods/utils/dashboards_utils";
 
@@ -237,12 +237,10 @@ const DashboardsSidebar = (props) => {
             const currValue = currEntry[1]
             const currKey = currEntry[0]
 
+            const button = getOperationButton(currKey)
             return {
-                name: currValue.name,
-                color: DASHBOARD_BUTTON_COLORS[ind % DASHBOARD_BUTTON_COLORS.length].hex,
-                // themeContext.schema[currValue.schema].solid,
+                ...button,
                 id: currValue._id,
-                type: currKey,
             }
         })
     }
