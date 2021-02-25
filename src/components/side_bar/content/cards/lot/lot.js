@@ -17,7 +17,9 @@ import {formatLotNumber} from "../../../../../methods/utils/lot_utils";
 const Card = (props) => {
     const {
         name,
+        highlight,
         index,
+        totalQuantity,
         lotNumber,
         id,
         onClick,
@@ -45,13 +47,17 @@ const Card = (props) => {
     const endDateText = ((end_date?.month + 1) && end_date?.day && end_date?.year) ?  (end_date.month + 1) + "/" + end_date.day + "/" +end_date.year : "End"
 
     return(
-        <styled.StyledDraggable key={id} index={index}>
+<div>
+
+
             <styled.Container
+                highlight={highlight}
                 selectable={selectable}
                 isSelected={isSelected}
                 onClick={onClick}
                 containerStyle={containerStyle}
             >
+
                 <styled.HeaderBar>
                     <styled.NameContainer>
                         <styled.CardName>{name ? name : formattedLotNumber}</styled.CardName>
@@ -178,12 +184,13 @@ const Card = (props) => {
 
                     <styled.Row style={{border: "none"}}>
                         <styled.Label>Quantity</styled.Label>
-                        <styled.Count>{count}</styled.Count>
+                        <styled.Count>{count}/{totalQuantity}</styled.Count>
                     </styled.Row>
                 </styled.ContentContainer>
 
             </styled.Container>
-        </styled.StyledDraggable>
+</div>
+
     )
 }
 
@@ -197,7 +204,8 @@ Card.propTypes = {
 Card.defaultProps = {
     isSelected: false,
     selectable: false,
-    flags: []
+    flags: [],
+    highlight: false
 };
 
 export default Card

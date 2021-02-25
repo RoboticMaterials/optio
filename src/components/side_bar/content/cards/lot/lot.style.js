@@ -1,11 +1,11 @@
 import styled, {css} from "styled-components";
-import { Draggable } from 'react-smooth-dnd';
+
 import {rowCss} from "../card_editor/lot_editor.style";
 import * as commonCss from "../../../../../common_css/common_css";
 import {commonClickableIcon, commonIcon, iconButtonCss} from "../../../../../common_css/common_css";
 
 export const Container = styled.div`
- 
+ 	margin: 6px; // prevents glow from being cut off
      height: fit-content;
   
 
@@ -16,7 +16,7 @@ export const Container = styled.div`
         
     background: white;
     border-radius: 0.6rem;
-  	border: 3px solid ${props => props.color};
+  	border: 1px solid ${props => props.color};
   
     outline: none;
     &:focus {
@@ -48,26 +48,27 @@ export const Container = styled.div`
   
   ${props => props.selectable && (props.isSelected ? selectedCss : notSelectedCss)};
   ${props => props.containerStyle};
+  
 `
 
 const selectedCss = css`
-	${commonCss.goodGlow};
+	${commonCss.whiteGlow};
 
   &:active {
-    ${commonCss.goodGlow};
+    ${commonCss.whiteGlow};
     transform: translateY(-2px);
     cursor: grabbing;
   }
 
   &:hover {
-    ${commonCss.goodGlow};
+    ${commonCss.whiteGlow};
     transform: translateY(-2px);
     cursor: grabbing;
   }
 `
 
 const notSelectedCss = css`
-  filter: contrast(70%);
+  filter: contrast(50%);
 `
 
 export const Row = styled.div`
@@ -166,12 +167,6 @@ export const HeaderBar = styled.div`
   font-size: ${props => props.theme.fontSize.sz3};
 `
 
-export const StyledDraggable = styled(Draggable)`
-	.smooth-dnd-ghost .vertical .smooth-dnd-draggable-wrapper {
-		background: blue;
-		padding: 2rem;
-	}
-`
 
 export const DatesContainer = styled.span`
 	display: inline-flex;

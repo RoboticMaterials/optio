@@ -15,7 +15,7 @@ import {setDataPage} from "../../../../../redux/actions/api_actions"
 
 // styles
 import * as styled from "./card_zone.style"
-import {getMatchesFilter} from "../../../../../methods/utils/lot_utils";
+import {getLotTotalQuantity, getMatchesFilter} from "../../../../../methods/utils/lot_utils";
 
 const CardZone = ((props) => {
 
@@ -36,15 +36,12 @@ const CardZone = ((props) => {
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
 	const cards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || []
 	const stations = useSelector(state => { return state.stationsReducer.stations })
-	const draggedLotInfo = useSelector(state => { return state.cardPageReducer.draggedLotInfo })
+	const draggedLotInfo = useSelector(state => { return state.cardPageReducer.droppedLotInfo })
 	const {
 		lotId: draggingLotId = "",
 		binId: draggingBinId = ""
 	} = draggedLotInfo || {}
 
-
-
-	// console.log("draggedLotInfo",draggedLotInfo)
 
 	const [cardsSorted, setCardsSorted] = useState({})
 	const [queue, setQueue] = useState([])
@@ -112,6 +109,8 @@ const CardZone = ((props) => {
 			...rest
 		} = card
 
+		const totalQuantity = getLotTotalQuantity(card)
+
 
 		const matchesFilter = getMatchesFilter(card, lotFilterValue, selectedFilterOption)
 
@@ -130,34 +129,27 @@ const CardZone = ((props) => {
 				// don't render lot being dragged - prevents flicker bug after drop
 				if((binId === draggingBinId) && (_id === draggingLotId)) return
 
+				const lotItem = {
+					...rest,
+					totalQuantity,
+					binId,
+					count,
+					cardId: _id
+				}
+
 				// if there is an entry in tempCardsSorted with key matching {binId}, add the lot to this bin
 				if(tempCardsSorted[binId]) {
-					tempCardsSorted[binId].cards.push({
-						...rest,
-						binId,
-						count,
-						cardId: _id
-					})
+					tempCardsSorted[binId].cards.push(lotItem)
 				}
 
 				// if {binId} is queue, add the lot to the queue
 				else if(binId === "QUEUE") {
-					tempQueue.push({
-						...rest,
-						count,
-						binId,
-						cardId: _id
-					})
+					tempQueue.push(lotItem)
 				}
 
 				// if the {binId} is finish, add the lot to the finished column
 				else if(binId === "FINISH") {
-					tempFinished.push({
-						...rest,
-						count,
-						binId,
-						cardId: _id
-					})
+					tempFinished.push(lotItem)
 				}
 
 			})

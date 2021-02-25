@@ -5,7 +5,7 @@ import * as styled from "./lot_queue.style";
 import {Container} from "react-smooth-dnd";
 import Card from "../../lot/lot";
 import React, {useState} from "react";
-import {setCardDragging, setColumnHovering} from "../../../../../../redux/actions/card_page_actions";
+import {setDroppingLotId, setColumnHovering} from "../../../../../../redux/actions/card_page_actions";
 import Button from "../../../../../basic/button/button";
 import CalendarField from "../../../../../basic/form/calendar_field/calendar_field";
 import PropTypes from 'prop-types';

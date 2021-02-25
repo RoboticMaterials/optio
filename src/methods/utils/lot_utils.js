@@ -53,3 +53,19 @@ export const formatLotNumber = (lotNumber) => {
 		:
 		``
 }
+
+export const getLotTotalQuantity = ({bins}) => {
+	let totalQuantity = 0
+
+	if(isObject(bins)) {
+		Object.values(bins).forEach(currBin => {
+			const {
+				count
+			} = currBin || {}
+
+			totalQuantity = totalQuantity + parseInt(count)
+		})
+	}
+
+	return totalQuantity
+}
