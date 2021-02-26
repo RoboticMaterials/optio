@@ -263,8 +263,18 @@ const Column = ((props) => {
 			>
 				{HeaderContent}
 
-				<styled.BodyContainer>
-					<styled.RotatedRouteName>{stationName}</styled.RotatedRouteName>
+				<styled.BodyContainer style={{
+					padding: "1rem 0",
+					whiteSpace: "nowrap",
+					overflow: "hidden",
+					textOverflow: "ellipsis",
+
+				}}>
+					<styled.RotationWrapperOuter>
+						<styled.RotationWrapperInner>
+							<styled.RotatedRouteName>{stationName}</styled.RotatedRouteName>
+						</styled.RotationWrapperInner>
+					</styled.RotationWrapperOuter>
 				</styled.BodyContainer>
 			</styled.StationContainer>
 		)

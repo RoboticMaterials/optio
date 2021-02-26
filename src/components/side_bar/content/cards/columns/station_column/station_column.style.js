@@ -89,6 +89,11 @@ export const StationLabel = styled.span`
 export const StationTitle = styled.span`
     text-align: center;
     font-size: ${props => props.theme.fontSize.sz3};
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* number of lines to show */
+    -webkit-box-orient: vertical;
 `
 
 
