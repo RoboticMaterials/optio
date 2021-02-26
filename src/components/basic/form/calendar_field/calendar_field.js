@@ -23,10 +23,14 @@ const CalendarField = ({
 	mode,
 	mapInput,
 	mapOutput,
+	minDate,
+	maxDate,
    selectRange,
 	...props
 }) => {
 
+	console.log("cal minDate",minDate)
+	console.log("cal maxDate",maxDate)
 	const { setFieldValue, setFieldTouched, ...formikContext } = useFormikContext();
 	const [{value: fieldValue, ...field}, {initialValue, ...meta}] = useField(props);
 	const hasError = meta.touched && meta.error;
@@ -47,6 +51,8 @@ const CalendarField = ({
 					// defaultValue={[initialStartDate, initialEndDate]}
 					value={mapInput(fieldValue)}
 					allowPartialRange
+					minDate={minDate}
+					maxDate={maxDate}
 					// defaultActiveStartDate={initialStartDate}
 					// defaultValue={value}
 					{...props}

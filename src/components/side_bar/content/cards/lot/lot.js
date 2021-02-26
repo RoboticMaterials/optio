@@ -185,7 +185,6 @@ const Lot = (props) => {
             </styled.HeaderBar>
             <styled.ContentContainer>
 
-                    <styled.Label>Dates</styled.Label>
                     {processName &&
                     <styled.Row>
                         <styled.Label>Process</styled.Label>

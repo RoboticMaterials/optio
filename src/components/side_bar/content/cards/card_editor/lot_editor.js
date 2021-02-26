@@ -78,6 +78,7 @@ const FormComponent = (props) => {
 
 	const {
 		// formMode,
+		lotNumber,
 		collectionCount,
 		cardNames,
 		card,
@@ -623,17 +624,37 @@ const FormComponent = (props) => {
 	* renders calender for selected dates
 	* */
 	const renderCalendarContent = () => {
+
+		const {
+			fullFieldName,
+			fieldName
+		} = calendarFieldName || {}
+
+		// get templateValues
+		const {
+			[lotTemplateId]: templateValues
+		} = values || {}
+
+		// get field value
+		const {
+			[fieldName]: fieldValue
+		} = templateValues || {}
+
+		console.log("here fieldValue",fieldValue)
+
+
 		return(
 			<styled.BodyContainer>
 				<styled.ContentHeader style={{}}>
 					<styled.ContentTitle>Select Start and End Date</styled.ContentTitle>
-					<div></div>
 				</styled.ContentHeader>
 
 				<styled.CalendarContainer>
 					<CalendarField
+						minDate={calendarFieldMode === CALENDAR_FIELD_MODES.END && fieldValue[0]}
+						maxDate={calendarFieldMode === CALENDAR_FIELD_MODES.START && fieldValue[1]}
 						selectRange={false}
-						name={`${calendarFieldName}[${calendarFieldMode === CALENDAR_FIELD_MODES.START ? 0 : 1}]`}
+						name={`${fullFieldName}[${calendarFieldMode === CALENDAR_FIELD_MODES.START ? 0 : 1}]`}
 					/>
 				</styled.CalendarContainer>
 			</styled.BodyContainer>
@@ -823,11 +844,19 @@ const FormComponent = (props) => {
 								const {
 									[lotTemplateId]: templateValues
 								} = values || {}
-
 								// get field value
 								const {
 									[fieldName]: fieldValue
 								} = templateValues || {}
+
+								// get template error
+								const {
+									[lotTemplateId]: templateErrors
+								} = errors || {}
+								// get field error
+								const {
+									[fieldName]: fieldError
+								} = templateErrors || {}
 
 								return <styled.FieldContainer
 									key={dropContainerId}
@@ -836,7 +865,7 @@ const FormComponent = (props) => {
 										value={fieldValue}
 										onCalendarClick={(mode) => {
 											setContent(CONTENT.CALENDAR)
-											setCalendarFieldName(fullFieldName)
+											setCalendarFieldName({fullFieldName, fieldName})
 											setCalendarFieldMode(mode)
 										}}
 										displayName={fieldName}
@@ -939,7 +968,7 @@ const FormComponent = (props) => {
 								<styled.NameContainer style={{flex: 0}}>
 									<styled.LotName>Lot Number</styled.LotName>
 										<Textbox
-											value={formatLotNumber(collectionCount)}
+											value={formatLotNumber(lotNumber)}
 											style={{
 												cursor: "not-allowed"
 											}}
@@ -991,6 +1020,14 @@ const FormComponent = (props) => {
 											secondary
 										>
 											Ok
+										</Button>
+										<Button
+											style={{...buttonStyle}}
+											onClick={() => setFieldValue(`${calendarFieldName.fullFieldName}[${calendarFieldMode === CALENDAR_FIELD_MODES.START ? 0 : 1}]`, null)}
+											// secondary={"error"}
+											schema={"error"}
+										>
+											Clear Date
 										</Button>
 										<Button
 											style={buttonStyle}
@@ -1354,6 +1391,7 @@ const LotEditor = (props) => {
 	const [cardNames, setCardNames] = useState([])
 	const [collectionCount, setCollectionCount] = useState(null)
 
+
 	const getCount =  async () => {
 		const count = await getCardsCount()
 		setCollectionCount(count)
@@ -1366,6 +1404,7 @@ const LotEditor = (props) => {
 
 	// get card object from redux by cardId
 	const card = cards[cardId] || null
+	const [lotNumber, setLotNumber] = useState((card && card.lotNumber !== null) ? card.lotNumber : collectionCount)
 	let lotTemplateId = selectedLotTemplatesId  // set template id to selected template from redux - set by sidebar when you pick a template
 
 	// if a template isn't provided by redux, check if card has template id
@@ -1437,14 +1476,19 @@ const LotEditor = (props) => {
 
 		Object.values(cards).forEach((currCard, currCardIndex) => {
 			const {
-				name
+				name,
+				_id: currLotId
 			} = currCard || {}
 
-			tempCardNames.push(name)
+			tempCardNames.push({name, id: currLotId})
 		})
 
 		setCardNames(tempCardNames)
 	}, [cards])
+
+	useEffect(() => {
+		setLotNumber((card && card.lotNumber !== null) ? card.lotNumber : collectionCount)
+	}, [card, collectionCount])
 
 
 	/*
@@ -1589,6 +1633,7 @@ const LotEditor = (props) => {
 									return false
 								}
 
+
 								let requestResult
 
 								const {
@@ -1603,8 +1648,8 @@ const LotEditor = (props) => {
 									[lotTemplateId]: templateValues,
 								} = values || {}
 
-								const start = values?.dates?.start || null
-								const end = values?.dates?.end || null
+
+
 
 								if(content === CONTENT.MOVE) {
 									// moving card need to update count for correct bins
@@ -1613,11 +1658,9 @@ const LotEditor = (props) => {
 										var submitItem = {
 											name,
 											bins,
-											lotNumber: (card && card.lotNumber !== null) ? card.lotNumber : collectionCount,
+											lotNumber,
 											flags: isObject(card) ? (card.flags || []) : [],
 											process_id: card.process_id,
-											start_date: start,
-											end_date: end,
 											lotTemplateId,
 											...templateValues
 										}
@@ -1699,11 +1742,9 @@ const LotEditor = (props) => {
 											bins,
 											flags: isObject(card) ? (card.flags || []) : [],
 											process_id: card.process_id,
-											start_date: start,
-											end_date: end,
 											lotTemplateId,
 											...templateValues,
-											lotNumber: collectionCount
+											lotNumber
 										}
 
 										requestResult = onPutCard(submitItem, cardId)
@@ -1717,11 +1758,9 @@ const LotEditor = (props) => {
 											bins,
 											flags: [],
 											process_id: processId ? processId : selectedProcessId,
-											start_date: start,
-											end_date: end,
 											lotTemplateId,
 											...templateValues,
-											lotNumber: collectionCount
+											lotNumber
 										}
 
 										requestResult = await onPostCard(submitItem)
@@ -1770,6 +1809,7 @@ const LotEditor = (props) => {
 
 							return (
 								<FormComponent
+									lotNumber={lotNumber}
 									cardNames={cardNames}
 									collectionCount={collectionCount}
 									onSubmit={handleSubmit}

@@ -147,11 +147,11 @@ export const getInitialValues = (lotTemplate, card) => {
 
 						if(isObject(card) && isArray(card[fieldName])) {
 							const val = card[fieldName]
-							if(val.length > 0) {
-								updatedValues = [new Date(val[0])]
+							if(val.length > 0 && val[0] !== null) {
+								updatedValues[0] = new Date(val[0])
 							}
-							if(val.length > 1) {
-								updatedValues.push(new Date(val[1]))
+							if(val.length > 1 && val[1] !== null) {
+								updatedValues[1] = new Date(val[1])
 							}
 						}
 						else if(isObject(initialValues) && isArray(initialValues[fieldName])) {
