@@ -28,8 +28,9 @@ import { deepCopy } from '../../methods/utils/utils'
 import { getCards } from "../../redux/actions/card_actions";
 import { sortBy } from "../../methods/utils/card_utils";
 import { SORT_MODES } from "../../constants/common_contants";
-import Card from "../side_bar/content/cards/lot/lot";
+import Lot from "../side_bar/content/cards/lot/lot";
 import { getRouteProcesses, getLoadStationId } from "../../methods/utils/route_utils";
+import {getLotTotalQuantity} from "../../methods/utils/lot_utils";
 
 
 /**
@@ -1028,8 +1029,12 @@ const HILModals = (props) => {
                                         cardId,
                                         start_date,
                                         end_date,
-                                        bins = {}
+                                        bins = {},
+                                        flags,
+                                        lotNumber
                                     } = currLot
+
+                                    const totalQuantity = getLotTotalQuantity({bins})
 
                                     const count = bins[stationId]?.count
 
@@ -1040,7 +1045,11 @@ const HILModals = (props) => {
 
                                     return (
                                         <styled.CardContainer>
-                                            <Card
+                                            <Lot
+                                                totalQuantity={totalQuantity}
+                                                lotNumber={lotNumber}
+                                                flags={flags || []}
+                                                enableFlagSelector={false}
                                                 name={name}
                                                 start_date={start_date}
                                                 end_date={end_date}

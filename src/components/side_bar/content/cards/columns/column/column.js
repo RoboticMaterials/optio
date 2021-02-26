@@ -14,7 +14,7 @@ import { Draggable } from 'react-smooth-dnd';
 import {Container} from "react-smooth-dnd";
 
 // components internal
-import Card from "../../lot/lot";
+import Lot from "../../lot/lot";
 
 // functions external
 import {useDispatch, useSelector} from "react-redux";
@@ -226,7 +226,8 @@ const Column = ((props) => {
 									onMouseEnter={(event) => onMouseEnter(event, cardId)}
 									onMouseLeave={onMouseLeave}
 								>
-								<Card
+								<Lot
+									enableFlagSelector={true}
 									selectable={selectable}
 									isSelected={isSelected}
 									key={cardId}

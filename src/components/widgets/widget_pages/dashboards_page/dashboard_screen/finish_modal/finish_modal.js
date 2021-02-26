@@ -18,7 +18,8 @@ import {getProcesses} from "../../../../../../redux/actions/processes_actions";
 import Textbox from "../../../../../basic/textbox/textbox";
 import {SORT_MODES} from "../../../../../../constants/common_contants";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
-import Card from "../../../../../side_bar/content/cards/lot/lot";
+import Lot from "../../../../../side_bar/content/cards/lot/lot";
+import {getLotTotalQuantity} from "../../../../../../methods/utils/lot_utils";
 
 Modal.setAppElement('body');
 
@@ -146,13 +147,20 @@ const FinishModal = (props) => {
                     name,
                     start_date,
                     end_date,
-                    bins = {}
+                    bins = {},
+                    flags,
+                    lotNumber
                 } = currCard
 
                 const count = bins[stationId]?.count
+                const totalQuantity = getLotTotalQuantity({bins})
 
                 return(
-                    <Card
+                    <Lot
+                        totalQuantity={totalQuantity}
+                        flags={flags || []}
+                        lotNumber={lotNumber}
+                        enableFlagSelector={false}
                         name={name}
                         start_date={start_date}
                         end_date={end_date}
