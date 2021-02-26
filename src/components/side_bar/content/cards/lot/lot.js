@@ -193,20 +193,20 @@ const Lot = (props) => {
                     }
 
 
-                    <styled.Row>
-                        <styled.Label>Dates</styled.Label>
-                    <styled.DatesContainer>
-                        <styled.DateItem>
-                            <styled.DateText>{startDateText}</styled.DateText>
-                        </styled.DateItem>
-
-                        <styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
-
-                        <styled.DateItem>
-                            <styled.DateText>{endDateText}</styled.DateText>
-                        </styled.DateItem>
-                    </styled.DatesContainer>
-                </styled.Row>
+                {/*    <styled.Row>*/}
+                {/*        <styled.Label>Dates</styled.Label>*/}
+                {/*    <styled.DatesContainer>*/}
+                {/*        <styled.DateItem>*/}
+                {/*            <styled.DateText>{startDateText}</styled.DateText>*/}
+                {/*        </styled.DateItem>*/}
+                
+                {/*        <styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>*/}
+                
+                {/*        <styled.DateItem>*/}
+                {/*            <styled.DateText>{endDateText}</styled.DateText>*/}
+                {/*        </styled.DateItem>*/}
+                {/*    </styled.DatesContainer>*/}
+                {/*</styled.Row>*/}
 
                 <styled.Row style={{border: "none"}}>
                     <styled.Label>Quantity</styled.Label>

@@ -21,6 +21,7 @@ import {useDispatch, useSelector} from "react-redux";
 
 // styles
 import * as styled from "./column.style";
+import {getLotTemplateData} from "../../../../../../methods/utils/lot_utils";
 
 
 // const animationDuration = 500
@@ -208,13 +209,16 @@ const Column = ((props) => {
 								name,
 								object_id,
 								cardId,
-								start_date,
-								end_date,
 								flags,
 								lotNumber,
 								totalQuantity,
 								processName,
+								lotTemplateId,
+								...rest
 							} = card
+							console.log("card",card)
+
+							const templateValues = getLotTemplateData(lotTemplateId, card)
 
 							// const lotName = lots[lot_id] ? lots[lot_id].name : null
 							const objectName = objects[object_id] ? objects[object_id].name : null
@@ -237,8 +241,6 @@ const Column = ((props) => {
 									totalQuantity={totalQuantity}
 									lotNumber={lotNumber}
 									name={name}
-									start_date={start_date}
-									end_date={end_date}
 									objectName={objectName}
 									count={count}
 									id={cardId}

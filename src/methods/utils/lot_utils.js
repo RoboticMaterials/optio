@@ -162,6 +162,25 @@ export const getAllTemplateFields = () => {
 	return templateFields
 }
 
+export const getLotTemplateData = (lotTemplateId, lot) => {
+	const lotTemplates = store.getState().lotTemplatesReducer.lotTemplates || {}
+	const lotTemplate = lotTemplates[lotTemplateId] || {}
+
+	console.log("lotTemplate",lotTemplate)
+	if(isArray(lotTemplate.fields)) {
+		lotTemplate.fields.forEach((currRow) => {
+
+			if(isArray(currRow)) {
+				currRow.forEach((currItem) => {
+					console.log("template data currItem",currItem)
+				})
+			}
+
+		})
+	}
+
+}
+
 export const convertDataTypeContantToDisplay = (dataTypeContant) => {
 	switch(dataTypeContant) {
 		case FIELD_DATA_TYPES.INTEGER: {
