@@ -104,6 +104,18 @@ export const HandleIcon = styled.div`
      border-radius: .25rem;
 `
 
+export const ButtonContainer = styled.div`
+	diplay: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+`
+
+export const ButtonExistsText = styled.span`
+	font-size: ${props => props.theme.fontSize.sz3};
+  	color: white;
+  text-align: center;
+`
+
 // NEW SIDEBAR STUFF
 export const SidebarWrapper = styled.div`
     height: 100%;
@@ -113,7 +125,6 @@ export const SidebarWrapper = styled.div`
     align-items: stretch;
     flex-flow: row nowrap;
     flex-direction: row;
-    width: 100%;
     flex-grow: 0;
     z-index: 1;
 

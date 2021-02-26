@@ -266,6 +266,21 @@ Yup.addMethod(Yup.string, "notIn", function (message, arr) {
     });
 });
 
+// returns error if value is in arr
+Yup.addMethod(Yup.string, "uniqueByPath", function(message, arrPath) {
+    return this.test("uniqueByPath", message, function(value) {
+        const { path, createError, parent } = this;
+
+        const parentValues = parent[arrPath]
+
+        if(parentValues.includes(value)) {
+            return createError({ path, message })
+        }
+
+        return true
+    });
+});
+
 export const signUpSchema = Yup.object().shape({
     email: Yup.string()
         .email()
@@ -294,6 +309,13 @@ export const signInSchema = Yup.object().shape({
 })
 
 
+export const quantityOneSchema = Yup.object().shape({
+    quantity: Yup.number()
+        .min(1, "Must be at least 1.")
+        .required('This field is required.'),
+})
+
+
 const binsSchema = lazy(obj => object(
     mapValues(obj, (value, key) => {
         return Yup.object().shape({
@@ -313,7 +335,8 @@ export const editLotSchema = Yup.object().shape({
     name: Yup.string()
         .min(1, '1 character minimum.')
         .max(50, '50 character maximum.')
-        .required('Please enter a name.'),
+        .required('Please enter a name.')
+        .uniqueByPath("A lot with this name already exists.", "cardNames"),
     description: Yup.string()
         .min(1, '1 character minimum.')
         .max(250, '250 character maximum.'),

@@ -1,19 +1,25 @@
-import React, {useContext, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import * as styled from "./lot.style";
-import { Draggable } from 'react-smooth-dnd';
+import React, {useContext} from "react";
+
+// external functions
+import {useDispatch} from "react-redux";
 import PropTypes from "prop-types";
-import TextField from "../../../../basic/form/text_field/text_field";
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import {ThemeContext} from "styled-components";
-import theme from "../../../../../theme";
+
+// constants
 import {FLAG_OPTIONS} from "../../../../../constants/lot_contants";
-import {putCard, putCardAttributes} from "../../../../../redux/actions/card_actions";
-import {immutableDelete, immutableReplace, isArray} from "../../../../../methods/utils/array_utils";
 
+// actions
+import {putCardAttributes} from "../../../../../redux/actions/card_actions";
 
-const Card = (props) => {
+// utils
+import {immutableDelete, isArray} from "../../../../../methods/utils/array_utils";
+
+// styles
+import * as styled from "./lot.style";
+
+const Lot = (props) => {
     const {
         name,
         index,
@@ -25,7 +31,8 @@ const Card = (props) => {
         containerStyle,
         selectable,
         isSelected,
-        flags
+        flags,
+        processName
     } = props
 
     const themeContext = useContext(ThemeContext)
@@ -147,6 +154,14 @@ const Card = (props) => {
                 </styled.HeaderBar>
                 <styled.ContentContainer>
 
+                    {processName &&
+                    <styled.Row>
+                        <styled.Label>Process</styled.Label>
+                        <styled.Count>{processName}</styled.Count>
+                    </styled.Row>
+                    }
+
+
                     <styled.Row>
                         <styled.Label>Dates</styled.Label>
                     <styled.DatesContainer>
@@ -174,16 +189,16 @@ const Card = (props) => {
 }
 
 // Specifies propTypes
-Card.propTypes = {
+Lot.propTypes = {
     isSelected: PropTypes.bool,
     selectable: PropTypes.bool
 };
 
 // Specifies the default values for props:
-Card.defaultProps = {
+Lot.defaultProps = {
     isSelected: false,
     selectable: false,
     flags: []
 };
 
-export default Card
+export default Lot

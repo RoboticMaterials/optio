@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Route, IndexRoute, Link, Switch, useHistory } from 'react-router-dom';
 import { connect, useSelector, useDispatch } from 'react-redux'
-import ls from 'local-storage'
 
 import { ThemeProvider } from "styled-components";
 import theme from './theme';

@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {putCard} from "../../../../../../redux/actions/card_actions";
 import * as styled from "./lot_queue.style";
 import {Container} from "react-smooth-dnd";
-import Card from "../../lot/lot";
+import Lot from "../../lot/lot";
 import React, {useState} from "react";
 import {setCardDragging, setColumnHovering} from "../../../../../../redux/actions/card_page_actions";
 import Button from "../../../../../basic/button/button";
