@@ -1,13 +1,12 @@
 import React, {useEffect, useState} from "react";
 
 import * as styled from "./lot_form_creator.style"
-import {isArray} from "../../../../../../methods/utils/array_utils";
+import {immutableDelete, immutableInsert, immutableReplace, isArray} from "../../../../../../methods/utils/array_utils";
 import {arraysEqual, uuidv4} from "../../../../../../methods/utils/utils";
 import DropContainer from "../drop_container/drop_container";
 import Textbox from "../../../../../basic/textbox/textbox";
 import {Container} from "react-smooth-dnd";
 import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
-import { fromJS } from "immutable";
 import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
 import {FIELD_COMPONENT_NAMES, LOT_EDITOR_SIDEBAR_OPTIONS} from "../lot_sidebars/field_editor_sidebar/field_editor_sidebar";
 import TextField from "../../../../../basic/form/text_field/text_field";
@@ -68,17 +67,7 @@ const LotFormCreator = (props) => {
 
 
 
-	const immutableInsert = (arr, ele, index) => {
-		return [...arr.slice(0, index), ele, ...arr.slice(index, arr.length)]
-	}
 
-	const immutableDelete = (arr, index) => {
-		return [...arr.slice(0, index), ...arr.slice(index+1, arr.length)]
-	}
-
-	const immutableReplace = (arr, ele, index) => {
-		return [...arr.slice(0, index), ele, ...arr.slice(index+1, arr.length)]
-	}
 
 	const handleVerticalDrop = (dropResult, currRowIndex) => {
 		const {

@@ -37,6 +37,15 @@ import * as style from './dashboard_screen.style'
 
 // import logging
 import log from "../../../../../logger";
+import { OPERATION_TYPES, TYPES } from "../dashboards_sidebar/dashboards_sidebar";
+import ReportModal from "./report_modal/report_modal";
+import KickOffModal from "./kick_off_modal/kick_off_modal";
+import FinishModal from "./finish_modal/finish_modal";
+import { getProcesses } from "../../../../../redux/actions/processes_actions";
+import { isEmpty } from "../../../../../methods/utils/object_utils";
+import {isRouteInQueue} from "../../../../../methods/utils/task_queue_utils";
+
+
 
 const logger = log.getLogger("DashboardsPage");
 
@@ -191,11 +200,7 @@ const DashboardScreen = (props) => {
             return handleHilSuccess(custom)
         }
 
-        let inQueue = false
-        Object.values(taskQueue).map((item) => {
-            // If its in the Q and not a handoff, then alert the user saying its already there
-            if (item.task_id === Id && !tasks[item.task_id].handoff) inQueue = true
-        })
+        let inQueue = isRouteInQueue(Id, deviceType)
 
         // add alert to notify task has been added
         if (inQueue) {
@@ -338,12 +343,12 @@ const DashboardScreen = (props) => {
                     title={"Kick Off"}
                     close={() => setReportModal(null)}
                     dashboard={currentDashboard}
-                    onSubmit={(name, success) => {
+                    onSubmit={(name, success, quantity, message) => {
                         // set alert
                         setAddTaskAlert({
                             type: success ? ADD_TASK_ALERT_TYPE.KICK_OFF_SUCCESS : ADD_TASK_ALERT_TYPE.KICK_OFF_FAILURE,
                             label: success ? "Lot Kick Off Successful" : "Lot Kick Off Failed",
-                            message: name ? `"` + name + `"` : null
+                            message: message
                         })
 
                         // clear alert
@@ -358,12 +363,12 @@ const DashboardScreen = (props) => {
                     title={"Finish"}
                     close={() => setReportModal(null)}
                     dashboard={currentDashboard}
-                    onSubmit={(name, success) => {
+                    onSubmit={(name, success, quantity, message) => {
                         // set alert
                         setAddTaskAlert({
                             type: success ? ADD_TASK_ALERT_TYPE.FINISH_SUCCESS : ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
                             label: success ? "Finish Successful" : "Finish Failed",
-                            message: name ? `"` + name + `"` : null
+                            message: message
                         })
 
                         // clear alert

@@ -27,6 +27,19 @@ function arraysEqual(a, b) {
 	return true;
 }
 
+<<<<<<< HEAD
 export const isNonEmptyArray = (arr) => {
 	return isArray(arr) && arr.length > 0
+=======
+export const immutableInsert = (arr, ele, index) => {
+	return [...arr.slice(0, index), ele, ...arr.slice(index, arr.length)]
+}
+
+export const immutableDelete = (arr, index) => {
+	return [...arr.slice(0, index), ...arr.slice(index+1, arr.length)]
+}
+
+export const immutableReplace = (arr, ele, index) => {
+	return [...arr.slice(0, index), ele, ...arr.slice(index+1, arr.length)]
+>>>>>>> development
 }

@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom'
 import {useDispatch, useSelector} from "react-redux";
 
 // internal components
-import CardEditor from "./card_editor/card_editor";
+import LotEditor from "./card_editor/lot_editor";
 import CardMenu from "./card_menu/card_menu";
 import CardZone from "./card_zone/card_zone";
 import SummaryZone from "./summary_zone/summary_zone";
@@ -20,8 +20,9 @@ import {ThemeContext} from "styled-components";
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
 import ZoneHeader from "./zone_header/zone_header";
 import {SORT_MODES} from "../../../../constants/common_contants";
-import LotCreatorForm from "./card_editor/form_editor";
+import LotCreatorForm from "./card_editor/template_form";
 import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
+import {LOT_FILTER_OPTIONS} from "../../../../constants/lot_contants";
 
 const Cards = (props) => {
 
@@ -61,6 +62,7 @@ const Cards = (props) => {
         offsetTop: undefined,
     })
     const [lotFilterValue, setLotFilterValue] = useState('')
+    const [ selectedFilterOption, setSelectedFilterOption ] = useState(LOT_FILTER_OPTIONS.name)
     const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
     // internal component state
     const [selectedProcesses, setSelectedProcesses] = useState(Object.values(processes)) // array of {process} objects - the list of selected processes
@@ -155,9 +157,9 @@ const Cards = (props) => {
    * Clicking a lot should open the lot editor for the clicked lot
    * In order to do this, the function sets showCardEditor to true and sets selectedCard to the values passed in as arguments to this function
    *
-   * @param {cardId} string - id of card clicked
-   * @param {processId} string - id of clicked card's process
-   * @param {binId)} string - id of clicked card's bin
+   * @param {cardId} string - id of lot clicked
+   * @param {processId} string - id of clicked lot's process
+   * @param {binId)} string - id of clicked lot's bin
    *
    * */
     const handleCardClick = (cardId, processId, binId) => {
@@ -168,7 +170,7 @@ const Cards = (props) => {
     return(
         <styled.Container>
             {showCardEditor &&
-            <CardEditor
+            <LotEditor
                 isOpen={showCardEditor}
                 onAfterOpen={null}
                 cardId={selectedCard ? selectedCard.cardId : null}
@@ -204,6 +206,8 @@ const Cards = (props) => {
                 sortMode={sortMode}
                 setSortMode={setSortMode}
                 setLotFilterValue={setLotFilterValue}
+                selectedFilterOption={selectedFilterOption}
+                setSelectedFilterOption={setSelectedFilterOption}
                 selectedProcesses={selectedProcesses}
                 setSelectedProcesses={setSelectedProcesses}
                 zone={id}
@@ -224,6 +228,7 @@ const Cards = (props) => {
                                 sortMode={sortMode}
                                 selectedProcesses={selectedProcesses}
                                 lotFilterValue={lotFilterValue}
+                                selectedFilterOption={selectedFilterOption}
                                 handleCardClick={handleCardClick}
                                 setShowCardEditor={onShowCardEditor}
                                 showCardEditor={showCardEditor}
@@ -242,6 +247,7 @@ const Cards = (props) => {
                             handleCardClick={handleCardClick}
                             processId={id}
                             lotFilterValue={lotFilterValue}
+                            selectedFilterOption={selectedFilterOption}
                             sortMode={sortMode}
                         />
                     </styled.CardZoneContainer>

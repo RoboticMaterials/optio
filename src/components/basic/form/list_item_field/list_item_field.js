@@ -16,6 +16,7 @@ const ListItemField = (props) => {
 		onIconClick,
 		onEditClick,
 		onTitleClick,
+		playDisabled,
 		...rest
 	} = props
 
@@ -43,7 +44,7 @@ const ListItemField = (props) => {
 
 	const edited = changed
 
-	const disabled = hasError || isNew || edited || unsaved
+	const disabled = hasError || isNew || edited || unsaved || playDisabled
 
 
 	return (
