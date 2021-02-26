@@ -33,7 +33,6 @@ import { ThemeContext } from "styled-components";
 // logging
 import log from '../../../../../logger'
 import PropTypes from "prop-types";
-import CardEditor from "../../../../side_bar/content/cards/card_editor/card_editor";
 const logger = log.getLogger("Dashboards")
 
 export const OPERATION_TYPES = {

@@ -37,11 +37,6 @@ import * as style from './dashboard_screen.style'
 
 // import logging
 import log from "../../../../../logger";
-import { OPERATION_TYPES, TYPES } from "../dashboards_sidebar/dashboards_sidebar";
-import ReportModal from "./report_modal/report_modal";
-import KickOffModal from "./kick_off_modal/kick_off_modal";
-import FinishModal from "./finish_modal/finish_modal";
-import { getProcesses } from "../../../../../redux/actions/processes_actions";
 import { isEmpty } from "../../../../../methods/utils/object_utils";
 import {isRouteInQueue} from "../../../../../methods/utils/task_queue_utils";
 
