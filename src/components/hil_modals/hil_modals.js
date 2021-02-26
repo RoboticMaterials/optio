@@ -28,7 +28,7 @@ import { deepCopy } from '../../methods/utils/utils'
 import { getCards } from "../../redux/actions/card_actions";
 import { sortBy } from "../../methods/utils/card_utils";
 import { SORT_MODES } from "../../constants/common_contants";
-import Card from "../side_bar/content/cards/card/card";
+import Lot from "../side_bar/content/cards/lot/lot";
 import { getRouteProcesses, getLoadStationId } from "../../methods/utils/route_utils";
 
 
@@ -59,6 +59,7 @@ const HILModals = (props) => {
     const dispatchSetShowModalId = (id) => dispatch(setShowModalId(id))
 
     const hilTimers = useSelector(state => { return state.taskQueueReducer.hilTimers })
+    const processes = useSelector(state => { return state.processesReducer.processes }) || {}
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
@@ -137,7 +138,7 @@ const HILModals = (props) => {
         }
     }, [availableLots.length])
 
-    // load card data on load for selecting lot
+    // load lot data on load for selecting lot
     useEffect(() => {
         // get dashboard info from item
         const dashboard = dashboards[dashboardId]
@@ -174,7 +175,7 @@ const HILModals = (props) => {
     * Get dropdownsearch options for cards
     *
     * Filter out cards that don't belong to the same station
-    * Each option only needs to contain the card's id and a label to display, the extaneous information can be left out
+    * Each option only needs to contain the lot's id and a label to display, the extaneous information can be left out
     *
     * */
     useEffect(() => {
@@ -1028,8 +1029,14 @@ const HILModals = (props) => {
                                         cardId,
                                         start_date,
                                         end_date,
-                                        bins = {}
+                                        bins = {},
+                                        process_id: processId = ""
                                     } = currLot
+
+                                    const process = processes[processId]
+                                    const {
+                                        name: processName
+                                    } = process || {}
 
                                     const count = bins[stationId]?.count
 
@@ -1040,7 +1047,8 @@ const HILModals = (props) => {
 
                                     return (
                                         <styled.CardContainer>
-                                            <Card
+                                            <Lot
+                                                processName={processName}
                                                 name={name}
                                                 start_date={start_date}
                                                 end_date={end_date}

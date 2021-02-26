@@ -32,7 +32,6 @@ const DashboardsHeader = (props) => {
         showEditButton,
         showSaveButton,
         showSidebar,
-        setShowSidebar,
         setEditingDashboard,
         page,
 

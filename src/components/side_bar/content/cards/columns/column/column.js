@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {deleteCard, putCard} from "../../../../../../redux/actions/card_actions";
 import * as styled from "./column.style";
 import {Container} from "react-smooth-dnd";
-import Card from "../../card/card";
+import Lot from "../../lot/lot";
 import React, {useState} from "react";
 import {setCardDragging, setColumnHovering} from "../../../../../../redux/actions/card_page_actions";
 import {generateBinId, sortBy} from "../../../../../../methods/utils/card_utils";
@@ -156,20 +156,26 @@ const Column = ((props) => {
 								object_id,
 								cardId,
 								start_date,
-								end_date
+								end_date,
+								flags,
+								processName
 							} = card
+
 
 							// const lotName = lots[lot_id] ? lots[lot_id].name : null
 							const objectName = objects[object_id] ? objects[object_id].name : null
 
 							return(
-								<Card
+								<Lot
+									key={cardId}
+									processName={processName}
 									name={name}
 									start_date={start_date}
 									end_date={end_date}
 									objectName={objectName}
 									count={count}
-									id={index}
+									id={cardId}
+									flags={flags || []}
 									index={index}
 									onClick={()=>handleCardClick(cardId, processId, station_id)}
 									containerStyle={{marginBottom: "0.5rem"}}

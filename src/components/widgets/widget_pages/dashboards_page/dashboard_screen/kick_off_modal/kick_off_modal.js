@@ -20,7 +20,11 @@ import LotEditor from "../../../../../side_bar/content/cards/card_editor/lot_edi
 import Textbox from "../../../../../basic/textbox/textbox";
 import {SORT_MODES} from "../../../../../../constants/common_contants";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
-import Card from "../../../../../side_bar/content/cards/card/card";
+import Lot from "../../../../../side_bar/content/cards/lot/lot";
+import Card from "../../../../../side_bar/content/cards/lot/lot";
+import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
+import SimpleModal from "../../../../../basic/modals/simple_modal/simple_modal";
+import {quantityOneSchema} from "../../../../../../methods/utils/form_schemas";
 
 Modal.setAppElement('body');
 
@@ -55,22 +59,47 @@ const KickOffModal = (props) => {
     const [submitting, setSubmitting] = useState(false)
     const [showLotEditor, setShowLotEditor] = useState(false)
     const [didLoadData, setDidLoadData] = useState(false)
+    const [selectedLot, setSelectedLot] = useState(null)
+    const [lotCount, setLotCount] = useState(null)
+    const [showQuantitySelector, setShowQuantitySelector] = useState(false)
     const [availableKickOffCards, setAvailableKickOffCards] = useState([])
     const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
     const isButtons = availableKickOffCards.length > 0
     const stationId = dashboard.station
 
+    const onButtonClick = async (lot) => {
+        setShowQuantitySelector(true)
+
+        // extract card attributes
+        const {
+            bins,
+        } = lot
+
+        // extract first station's bin and queue bin from bins
+        const {
+            ["QUEUE"]: queueBin,
+        } = bins || {}
+
+        const queueBinCount = queueBin?.count ? queueBin.count : 0
+
+        setLotCount(queueBinCount)
+        setSelectedLot(lot)
+    }
+
     /*
     * handles the logic for when a kick-off button is pressed
     *
-    * When a kick-off button is pressed, the card is to be moved from the queue of the current process it resides in
+    * When a kick-off button is pressed, the lot is to be moved from the queue of the current process it resides in
     * to the first station in the process
     *
     * This is done by updating the cards station_id and route_id to those of the first station in the first route
     * */
-    const onButtonClick = async (card) => {
+    const moveLot = async (card, quantity) => {
 
-        // extract card attributes
+        let requestSuccessStatus = false
+        let message
+
+        // extract lot attributes
         const {
             bins,
             name: cardName,
@@ -78,65 +107,87 @@ const KickOffModal = (props) => {
             _id: cardId,
         } = card
 
-        // get process of card
-        const cardProcess = processes[process_id]
+        if(quantity && quantity > 0) {
 
-        // get routes of process
-        const processRoutes = cardProcess.routes
+            // get process of card
+            const cardProcess = processes[process_id]
 
-        // get id of first route
-        var firstRouteId = null
-        if(processRoutes && Array.isArray(processRoutes)) firstRouteId = processRoutes[0]
+            // get routes of process
+            const processRoutes = cardProcess.routes
 
-        // get first route
-        const firstRoute = routes[firstRouteId]
+            // get id of first route
+            var firstRouteId = null
+            if(processRoutes && Array.isArray(processRoutes)) firstRouteId = processRoutes[0]
 
-        // extract route attributes
-        const {
-            load: {
-                station: loadStation
-            }
-        } = firstRoute || {}
+            // get first route
+            const firstRoute = routes[firstRouteId]
 
-        // update card
-        if(firstRouteId && firstRoute && loadStation) {
-
-            // extract first station's bin and queue bin from bins
+            // extract route attributes
             const {
-                [loadStation]: firstStationBin,
-                ["QUEUE"]: queueBin,
-               ...unalteredBins
-            } = bins || {}
+                load: {
+                    station: loadStation
+                }
+            } = firstRoute || {}
 
-            const queueBinCount = queueBin?.count ? queueBin.count : 0
-            const firstStationCount = firstStationBin?.count ? firstStationBin.count : 0
+            // update card
+            if(firstRouteId && firstRoute && loadStation) {
 
-            // udpated card will maintain all of the cards previous attributes with the station_id and route_id updated
-            const updatedCard = {
-                ...card,                                // spread unaltered attributes
-                bins: {
-                    ...unalteredBins,                   // spread unaltered bins
-                    [loadStation]: {
-                        ...firstStationBin,              // spread unaltered attributes of station bin if it exists
-                        count: parseInt(queueBinCount) + parseInt(firstStationCount)    // increment first station's count by the count of the queue
+                // extract first station's bin and queue bin from bins
+                const {
+                    [loadStation]: firstStationBin,
+                    ["QUEUE"]: queueBin,
+                    ...unalteredBins
+                } = bins || {}
+
+                const queueBinCount = queueBin?.count ? queueBin.count : 0
+                const firstStationCount = firstStationBin?.count ? firstStationBin.count : 0
+
+
+                // updated card will maintain all of the cards previous attributes with the station_id and route_id updated
+                let updatedCard = {
+                    ...card,                                // spread unaltered attributes
+                    bins: {
+                        ...unalteredBins,                   // spread unaltered bins
+                        [loadStation]: {
+                            ...firstStationBin,              // spread unaltered attributes of station bin if it exists
+                            count: parseInt(quantity) + parseInt(firstStationCount)    // increment first station's count by the count of the queue
+                        }
+                    },
+                }
+
+                // need to add queue bin back, but subtract moved quantity
+                if(quantity < queueBinCount) {
+                    updatedCard = {
+                        ...updatedCard,
+                        bins: {
+                            ...updatedCard.bins,
+                            QUEUE:  {
+                                ...queueBin,
+                                count: parseInt(queueBinCount) - parseInt(quantity)
+                            }
+                        }
                     }
-                },
-            }
+                }
 
-            // send update action
-            const result = await onPutCard(updatedCard, cardId)
+                // send update action
+                const result = await onPutCard(updatedCard, cardId)
 
-            var requestSuccessStatus = false
 
-            // check if request was successful
-            if(!(result instanceof Error)) {
-                requestSuccessStatus = true
-            }
 
-            onSubmit(cardName, requestSuccessStatus)
-            setSubmitting(false)
-            close()
+                // check if request was successful
+                if(!(result instanceof Error)) {
+                    requestSuccessStatus = true
+                    message = cardName ? `Kicked off ${quantity} ${quantity > 1 ? "items" : "item"} from '${cardName}'` : `Kicked off ${quantity} ${quantity > 1 ? "items" : "item"}`
+                }
         }
+        }
+        else {
+           message = "Quantity must be greater than 0"
+        }
+
+        onSubmit(cardName, requestSuccessStatus, quantity, message)
+        setSubmitting(false)
+        close()
     }
 
 
@@ -167,13 +218,20 @@ const KickOffModal = (props) => {
                     name,
                     start_date,
                     end_date,
-                    bins = {}
+                    bins = {},
+                    process_id: processId
                 } = currCard
+
+                const process = processes[processId]
+                const {
+                    name: processName
+                } = process || {}
 
                 const count = bins["QUEUE"]?.count || 0
 
                 return(
-                        <Card
+                        <Lot
+                            processName={processName}
                             name={name}
                             start_date={start_date}
                             end_date={end_date}
@@ -211,14 +269,14 @@ const KickOffModal = (props) => {
     /**
      * Get the cards actually available for kick off
      *
-     * For a card to be available for kick off, it must have at least 1 item in the 'queue' bin
+     * For a lot to be available for kick off, it must have at least 1 item in the 'queue' bin
      *
-     * This function creates a temporary array for storing kick off cards as it checks each card of each process associated with the station
+     * This function creates a temporary array for storing kick off cards as it checks each lot of each process associated with the station
      *
-     * This function loops through every card belonging to a process that the current station is the first station of
-     * Each card's bins attribute is checked to see if it contains any items in the "QUEUE" bin
+     * This function loops through every lot belonging to a process that the current station is the first station of
+     * Each lot's bins attribute is checked to see if it contains any items in the "QUEUE" bin
      *
-     * if a card is found to have items in the "QUEUE" bin, it is added to the list of kick off cards
+     * if a lot is found to have items in the "QUEUE" bin, it is added to the list of kick off cards
      *
      * finally, local state variable availableKickOffCards is set to the list of kick off cards for later use
      *
@@ -251,6 +309,30 @@ const KickOffModal = (props) => {
             setShouldFocusLotFilter(true)
         }
     }, [availableKickOffCards.length])
+
+    if(showQuantitySelector) {
+        return(
+            <QuantityModal
+                validationSchema={quantityOneSchema}
+                maxValue={lotCount}
+                minValue={0}
+                infoText={`${lotCount} items available.`}
+                isOpen={true}
+                title={"Select Quantity"}
+                onRequestClose={() => setShowQuantitySelector(false)}
+                onCloseButtonClick={() => setShowQuantitySelector(false)}
+                handleOnClick1={(quantity) => {
+                    setShowQuantitySelector(false)
+                    moveLot(selectedLot, quantity)
+                }}
+                handleOnClick2={() => {
+                    setShowQuantitySelector(false)
+                }}
+                button_1_text={"Confirm"}
+                button_2_text={"Cancel"}
+            />
+        )
+    }
 
     return (
         <styled.Container

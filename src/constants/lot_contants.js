@@ -125,3 +125,35 @@ export const defaultBins = {
 		count: 0
 	},
 }
+
+export const FLAG_OPTIONS = {
+	0: {
+		color: "#db2100",
+		id: 0
+	},
+	1:{
+		color: "#1a00c2",
+		id: 1
+	},
+	2: {
+		color: "#13a600",
+		id: 2
+	},
+	3: {
+		color: "#d800db",
+		id: 3
+	},
+	4: {
+		color: "#e3a600",
+		id: 4
+	},
+}
+
+export const LOT_FILTER_OPTIONS = {
+	name: {
+		label: "Name"
+	},
+	flags: {
+		label: "Flags"
+	},
+}

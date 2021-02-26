@@ -1,25 +1,41 @@
-import React, { useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Draggable } from 'react-smooth-dnd';
 
+// external functions
+import uuid from 'uuid'
+
+// external components
+import ReactTooltip from "react-tooltip";
+
+// internal components
 import DashboardButton from "../../dashboard_buttons/dashboard_button/dashboard_button";
 
+// styles
 import * as style from "./dashboard_sidebar_button.style"
 
+// logging
 import log from '../../../../../../logger'
-import { randomHash } from "../../../../../../methods/utils/utils";
-
 const logger = log.getLogger("Dashboards")
 
 const DashboardSidebarButton = (props) => {
-    const { name, color, id, task_id, clickable, onTaskClick, disabled  } = props;
+    const {
+        name,
+        color,
+        id,
+        task_id,
+        clickable,
+        dragDisabled,
+        onTaskClick,
+        disabled
+    } = props;
 
+    const [toolTipId, ] = useState(`tooltip-${uuid.v4()}`)
 
-    logger.log("DashboardSidebarButton: name: ", name)
-    logger.log("DashboardSidebarButton: props: ", props)
-
-    if (!clickable) {
+    if (!dragDisabled) {
         return(
-            <Draggable key={id}>
+            <Draggable
+                key={id}
+            >
                 <style.Container>
                         <DashboardButton
                             title={name}
@@ -34,19 +50,26 @@ const DashboardSidebarButton = (props) => {
         )
     } else {
         return(
-            <style.Container>
-                    <DashboardButton
-                        title={name}
-                        width={"80%"}
-                        clickable={clickable}
-                        color={color}
-                        onClick={() => onTaskClick(task_id, name)}
-                        disabled={disabled}
-                    />
+            <style.Container
+                key={id}
+                data-tip
+                data-for={toolTipId}
+            >
+                <DashboardButton
+                    title={name}
+                    width={"80%"}
+                    clickable={clickable}
+                    color={color}
+                    onClick={() => onTaskClick(task_id, name)}
+                    disabled={disabled}
+                />
+
+                    <ReactTooltip eventOff={'mouseout'} id={toolTipId}>
+                        <span>This button has already been added to the dashboard.</span>
+                    </ReactTooltip>
             </style.Container>
         )
     }
-    
 }
 
 export default DashboardSidebarButton

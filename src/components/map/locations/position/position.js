@@ -239,11 +239,18 @@ function Position(props) {
     // ======================================== //
 
     useEffect(() => {
-        window.addEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
+        window.addEventListener("mouseup", onSetListener)
         return () => {
-            window.removeEventListener("mouseup", () => { setRotating(false); setTranslating(false) })
+            window.removeEventListener("mouseup", onSetListener)
         }
+
     }, [])
+
+    const onSetListener = () => {
+        setRotating(false)
+        setTranslating(false)
+    }
+
 
     // Automatically opens widget pages and sets hovering to true in the position is a temp right click
     useEffect(() => {

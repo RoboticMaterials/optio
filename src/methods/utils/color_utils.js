@@ -6,6 +6,14 @@ export const hexToRGBA = (hex, alpha) => {
   return `rgba(${RR}, ${GG}, ${BB}${alpha && `, ${alpha}`})`;
 };
 
+export const intToRGB = (i) => {
+    var c = (i & 0x00FFFFFF)
+        .toString(16)
+        .toUpperCase();
+
+    return "00000".substring(0, 6 - c.length) + c;
+}
+
 export function LightenDarkenColor(col,amt) {
     var usePound = false;
     if ( col[0] === "#" ) {
