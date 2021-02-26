@@ -206,7 +206,7 @@ const LineThroughputChart = (props) => {
                 // Add the start of the break y value to the end of the break
                 // Ideally this is the next output after the start of the break
                 if (startOfBreaks.includes(output.x)) {
-                    expectedOutput[ind+1].y = expectedOutput[ind].y
+                    expectedOutput[ind + 1].y = expectedOutput[ind].y
                 }
             })
 
@@ -320,6 +320,7 @@ const LineThroughputChart = (props) => {
         return numberOfBreaks.map((bk, ind) => {
             const adjustedInd = ind + 1
 
+            const breakToggle = `breakToggle${adjustedInd}`
             const breakName = `Break ${adjustedInd}`
             const breakVar = `break${adjustedInd}`
             const breakStart = `startOfBreak${adjustedInd}`
@@ -330,6 +331,7 @@ const LineThroughputChart = (props) => {
                     <styled.RowContainer style={{ width: '100%', marginTop: '.25rem' }}>
                         <styled.Label>{breakName}</styled.Label>
                         <Switch
+                            name={breakToggle}
                             onColor='red'
                             checked={compareExpectedOutput.breaks[breakVar].enabled}
                             onChange={() => {
@@ -579,6 +581,8 @@ const LineThroughputChart = (props) => {
     }
 
     const onSubmitShift = (values) => {
+
+        console.log('QQQQ values', values)
         let {
             startOfShift,
             endOfShift,
