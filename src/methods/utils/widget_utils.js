@@ -22,7 +22,6 @@ import * as deviceActions from '../../redux/actions/devices_actions'
  */
 
 export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
-
     let widgetInfo = {}
     widgetInfo.id = location._id
 
@@ -70,8 +69,8 @@ export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
 
     // Else its a postion/station
     else {
-        // Gets the element based on whether its a station or not
-        const el = location.schema === 'station' ? document.getElementById(`${rd3tClassName}-station`) : document.getElementById(`${rd3tClassName}-position`)
+        // Gets the element based on whether its a station, position or temp position
+        const el = location.schema === 'station' ? document.getElementById(`${rd3tClassName}-station`) : location.schema === 'temporary_position' ? document.getElementById(`${rd3tClassName}-temporary_position`) : document.getElementById(`${rd3tClassName}-position`)
         let bBox = null
 
         // Try catch for when page refreshses when in a widget. When refreshing in a widget, the elements is unmounted and cant get the bounding because of an unmounted element
@@ -97,7 +96,6 @@ export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
             widgetInfo.scale = 1.3
             widgetInfo.yPosition = location.y + bBox.height / 2 - 75
             widgetInfo.xPosition = location.schema === 'station' ? location.x + 45 : location.x + 12
-
         }
     }
 

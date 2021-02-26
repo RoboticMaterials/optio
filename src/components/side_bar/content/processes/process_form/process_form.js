@@ -12,7 +12,7 @@ import {
 	setSelectedTask
 } from "../../../../../redux/actions/tasks_actions";
 import {
-	deleteProcesses,
+	deleteProcess, deleteProcessClean,
 	postProcesses,
 	putProcesses,
 	setSelectedProcess
@@ -39,7 +39,7 @@ const ProcessForm = (props) => {
 	const dispatchPutRouteClean = (task, ID) => dispatch(putRouteClean(task, ID))
 
 	const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
-	const dispatchDeleteProcess = async (ID) => await dispatch(deleteProcesses(ID))
+	const dispatchDeleteProcessClean = async (ID) => await dispatch(deleteProcessClean(ID))
 	const dispatchDeleteRouteClean = (routeId) => dispatch(deleteRouteClean(routeId))
 	const dispatchSaveFormRoute = async (formRoute) => await dispatch(saveFormRoute(formRoute))
 
@@ -138,7 +138,7 @@ const ProcessForm = (props) => {
 			})
 		}
 
-		await dispatchDeleteProcess(selectedProcess._id)
+		await dispatchDeleteProcessClean(selectedProcess._id)
 
 		dispatchSetSelectedTask(null)
 		dispatchSetSelectedProcess(null)
@@ -147,7 +147,7 @@ const ProcessForm = (props) => {
 
 	const handleDeleteWithoutRoutes = async () => {
 
-		await dispatchDeleteProcess(selectedProcess._id)
+		await dispatchDeleteProcessClean(selectedProcess._id)
 
 		dispatchSetSelectedTask(null)
 		dispatchSetSelectedProcess(null)
