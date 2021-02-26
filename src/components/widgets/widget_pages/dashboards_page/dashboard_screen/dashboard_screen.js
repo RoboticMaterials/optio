@@ -39,6 +39,8 @@ import * as style from './dashboard_screen.style'
 import log from "../../../../../logger";
 import { isEmpty } from "../../../../../methods/utils/object_utils";
 import {isRouteInQueue} from "../../../../../methods/utils/task_queue_utils";
+import {isDeviceConnected} from "../../../../../methods/utils/device_utils";
+import {DEVICE_CONSTANTS} from "../../../../../constants/device_constants";
 
 
 
@@ -177,6 +179,20 @@ const DashboardScreen = (props) => {
     }
 
     const handleRouteClick = async (Id, name, custom, deviceType) => {
+
+        const connectedDeviceExists = isDeviceConnected()
+
+        if(!connectedDeviceExists && deviceType !== DEVICE_CONSTANTS.HUMAN) {
+            // display alert notifying user that task is already in queue
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
+                label: "Alert! No device is currently connected to run this route",
+                message: `'${name}' not added`,
+            })
+
+            // clear alert after timeout
+            return setTimeout(() => setAddTaskAlert(null), 1800)
+        }
 
         // If a custom task then add custom task key to task q
         if (Id === 'custom_task') {
