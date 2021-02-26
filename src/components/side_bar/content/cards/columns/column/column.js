@@ -234,6 +234,7 @@ const Column = ((props) => {
 								>
 								<Lot
 									enableFlagSelector={true}
+									templateValues={templateValues}
 									selectable={selectable}
 									isSelected={isSelected}
 									key={cardId}

@@ -13,7 +13,7 @@ import Popup from 'reactjs-popup'
 import 'reactjs-popup/dist/index.css'
 
 // constants
-import {FLAG_OPTIONS} from "../../../../../constants/lot_contants"
+import {FIELD_DATA_TYPES, FLAG_OPTIONS} from "../../../../../constants/lot_contants"
 
 // utils
 import {immutableDelete, immutableReplace, isArray} from "../../../../../methods/utils/array_utils"
@@ -21,6 +21,8 @@ import {formatLotNumber} from "../../../../../methods/utils/lot_utils"
 
 // styles
 import * as styled from "./lot.style"
+import LotDateRangeRow from "./lot_date_row/lot_date_row";
+import LotSimpleRow from "./lot_simple_row/lot_simple_row";
 
 const Lot = (props) => {
     const {
@@ -29,6 +31,7 @@ const Lot = (props) => {
         index,
         totalQuantity,
         lotNumber,
+        templateValues,
         id,
         enableFlagSelector,
         onClick,
@@ -57,6 +60,80 @@ const Lot = (props) => {
 
     const startDateText = ((start_date?.month + 1) && start_date?.day && start_date?.year) ?  (start_date.month + 1) + "/" + start_date.day + "/" + start_date.year : "Start"
     const endDateText = ((end_date?.month + 1) && end_date?.day && end_date?.year) ?  (end_date.month + 1) + "/" + end_date.day + "/" +end_date.year : "End"
+
+    const renderTemplateValues = () => {
+        return templateValues
+            .filter((currItem) => {
+                const {
+                    dataType,
+                } = currItem
+
+                return Object.values(FIELD_DATA_TYPES).includes(dataType)
+            })
+            .map((currItem, currIndex, arr) => {
+            const {
+                dataType,
+                fieldName,
+                value
+            } = currItem
+
+            const isLast = currIndex === arr.length - 1
+
+
+            switch(dataType) {
+                case FIELD_DATA_TYPES.STRING: {
+                    return(
+                    <LotSimpleRow
+                        label={fieldName}
+                        value={value}
+                        isLast={isLast}
+                    />
+                    )
+                }
+                case FIELD_DATA_TYPES.EMAIL: {
+                    return(
+                        <LotSimpleRow
+                            label={fieldName}
+                            value={value}
+                            isLast={isLast}
+                        />
+                    )
+                }
+                case FIELD_DATA_TYPES.DATE: {
+                    return(
+                        <div>nope</div>
+                    )
+                }
+                case FIELD_DATA_TYPES.DATE_RANGE: {
+                    return(
+                        <LotDateRangeRow
+                            label={fieldName}
+                            isLast={isLast}
+                            dateRange={value}
+                        />
+                    )
+                }
+                case FIELD_DATA_TYPES.URL: {
+                    return(
+                        <LotSimpleRow
+                            label={fieldName}
+                            value={value}
+                            isLast={isLast}
+                        />
+                    )
+                }
+                case FIELD_DATA_TYPES.INTEGER: {
+                    return(
+                        <LotSimpleRow
+                            label={fieldName}
+                            isLast={isLast}
+                            value={value}
+                        />
+                    )
+                }
+            }
+        })
+    }
 
     const renderFlags = () => {
         return(
@@ -186,32 +263,18 @@ const Lot = (props) => {
             <styled.ContentContainer>
 
                     {processName &&
-                    <styled.Row>
-                        <styled.Label>Process</styled.Label>
-                        <styled.Count>{processName}</styled.Count>
-                    </styled.Row>
+                        <LotSimpleRow
+                            label={"Process"}
+                            value={processName}
+                        />
                     }
 
+                <LotSimpleRow
+                    label={"Quantity"}
+                    value={`${count}/${totalQuantity}`}
+                />
 
-                {/*    <styled.Row>*/}
-                {/*        <styled.Label>Dates</styled.Label>*/}
-                {/*    <styled.DatesContainer>*/}
-                {/*        <styled.DateItem>*/}
-                {/*            <styled.DateText>{startDateText}</styled.DateText>*/}
-                {/*        </styled.DateItem>*/}
-                
-                {/*        <styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>*/}
-                
-                {/*        <styled.DateItem>*/}
-                {/*            <styled.DateText>{endDateText}</styled.DateText>*/}
-                {/*        </styled.DateItem>*/}
-                {/*    </styled.DatesContainer>*/}
-                {/*</styled.Row>*/}
-
-                <styled.Row style={{border: "none"}}>
-                    <styled.Label>Quantity</styled.Label>
-                    <styled.Count>{count}/{totalQuantity}</styled.Count>
-                </styled.Row>
+                {renderTemplateValues()}
             </styled.ContentContainer>
 
         </styled.Container>

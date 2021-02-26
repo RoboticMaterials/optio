@@ -13,7 +13,7 @@ const EVENT_NAMES = {
 export const jsDateToObjDate = (jsDate) => {
 	if(!jsDate) return null
 
-	let trimmed = new Date(jsDate.toDateString());
+	let trimmed = new Date(new Date(jsDate).toDateString());
 
 	let month = trimmed.getUTCMonth()
 	let day = trimmed.getUTCDate();
@@ -344,4 +344,31 @@ export const sortBy = (arr, sortMode) => {
 	}
 
 	return arr
+}
+
+export const jsDateToString = (jsDate) => {
+	const objDate = jsDateToObjDate(jsDate)
+
+	const {
+		year: startYear,
+		month: startMonth,
+		day: startDay
+	} = objDate || {}
+
+	return (startDay && startMonth && startYear) ? `${startMonth}/${startDay}/${startYear}` : null
+}
+
+export const dateRangeToStrings = (dateRange) => {
+
+	let startDateText
+	let endDateText
+	if(isArray(dateRange) && dateRange.length > 0) {
+		startDateText = jsDateToString(dateRange[0])
+
+		if(dateRange.length > 1) {
+			endDateText = jsDateToString(dateRange[1])
+		}
+	}
+
+	return [startDateText, endDateText]
 }

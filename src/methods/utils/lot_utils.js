@@ -1,6 +1,11 @@
 import {isObject} from "./object_utils";
 import {capitalizeFirstLetter, isEqualCI, isString} from "./string_utils";
-import {FIELD_DATA_TYPES, LOT_FILTER_OPTIONS} from "../../constants/lot_contants";
+import {
+	BASIC_LOT_TEMPLATE,
+	BASIC_LOT_TEMPLATE_ID,
+	FIELD_DATA_TYPES,
+	LOT_FILTER_OPTIONS
+} from "../../constants/lot_contants";
 import {isArray} from "./array_utils";
 import store from '../../redux/store/index'
 import lotTemplatesReducer from "../../redux/reducers/lot_templates_reducer";
@@ -164,21 +169,35 @@ export const getAllTemplateFields = () => {
 
 export const getLotTemplateData = (lotTemplateId, lot) => {
 	const lotTemplates = store.getState().lotTemplatesReducer.lotTemplates || {}
-	const lotTemplate = lotTemplates[lotTemplateId] || {}
+	const lotTemplate = lotTemplateId === BASIC_LOT_TEMPLATE_ID ? BASIC_LOT_TEMPLATE : (lotTemplates[lotTemplateId] || {})
 
-	console.log("lotTemplate",lotTemplate)
+	let templateValues = []
+
 	if(isArray(lotTemplate.fields)) {
 		lotTemplate.fields.forEach((currRow) => {
 
 			if(isArray(currRow)) {
 				currRow.forEach((currItem) => {
-					console.log("template data currItem",currItem)
+					// console.log("template data currItem",currItem)
+					const {
+						dataType,
+						fieldName
+					} = currItem
+
+					const lotValue = lot[fieldName]
+					// console.log("lotValue",lotValue)
+					templateValues.push({
+						dataType,
+						fieldName,
+						value: lotValue
+					})
 				})
 			}
 
 		})
 	}
 
+	return templateValues
 }
 
 export const convertDataTypeContantToDisplay = (dataTypeContant) => {
