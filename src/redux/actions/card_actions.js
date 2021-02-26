@@ -151,8 +151,6 @@ export const postCard = (card) =>  async dispatch => {
     const payload = await api_action(actionName, callback, dispatch, card);
 
     return payload.card
-    // return Object.values(payload.createdCards)[0];
-
 };
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -176,6 +174,22 @@ export const deleteCard = (cardId, processId) => async (dispatch) => {
 };
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// delete
+// ******************************
+export const deleteProcessCards = (processId) => async (dispatch, getState) => {
+
+    // current state
+    const state = getState()
+
+    const processCards = state.cardsReducer.processCards || {}
+    const currentProcessCards = processCards[processId] || {}
+
+    Object.keys(currentProcessCards).forEach( async (currCardId) => {
+        await dispatch(deleteCard(currCardId, processId))
+    })
+};
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 // update
 // ******************************
 export const putCard = (card, cardID) => async dispatch => {
@@ -193,6 +207,37 @@ export const putCard = (card, cardID) => async dispatch => {
     const actionName = PUT + CARD;
     const payload = await api_action(actionName, callback, dispatch, { card});
     return card;
+};
+
+// update
+// ******************************
+export const putCardAttributes = (attributes, cardId) => async (dispatch, getState) => {
+
+    // current state
+    const state = getState()
+    const card = state.cardsReducer.cards[cardId]
+
+    if(card) {
+        const callback = async () => {
+            const response = await api.putCard({
+                ...card,
+                ...attributes
+            }, cardId);
+
+            return {
+                card: response,
+                processId: response.process_id
+            };
+        }
+
+        const actionName = PUT + CARD;
+        const payload = await api_action(actionName, callback, dispatch, {attributes, cardId});
+        return card;
+    }
+
+    return null
+
+
 };
 
 export const showEditor = (bool) => {

@@ -1,6 +1,7 @@
 import styled, {css} from "styled-components";
 import Modal from "react-modal";
 import {Form} from "formik";
+import {commonClickableIcon, iconButtonCss} from "../../../../../common_css/common_css";
 
 export const rowCss = css`
 	margin-bottom: 1rem;
@@ -237,30 +238,42 @@ export const ProcessOption = styled.div`
 	text-overflow: ellipsis;
 `
 
+export const SimpleModalText = styled.span`
+  font-size: ${props => props.theme.fontSize.sz3};
+`
+
+export const SimpleModalTextContainer = styled.div`
+`
+
+const mainCss = css`
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	width: 100%;
+	max-width: 100%;
+	overflow: hidden;
+	max-height: 100%;
+	height: 100%;
+	// max-height: 100%;
+	// overflow-x: hidden;
+	border-radius: .5rem;
+	position: relative;
+	
+	overflow: hidden;
+	background: ${props => props.theme.bg.quaternary};
+	flex: 1;
+	justify-content: space-between;
+`
+
 export const StyledForm = styled(Form)`
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    width: 100%;
-    max-width: 100%;
-  overflow: hidden;
-  max-height: 100%;
-  height: 100%;
-    // max-height: 100%;
-    // overflow-x: hidden;
-    border-radius: .5rem;
-    position: relative;
-    
-    overflow: hidden;
-  background: ${props => props.theme.bg.quaternary};
-    
-   
-    flex: 1;
-    
-    justify-content: space-between;
-  
-  
+    ${mainCss};
 `;
+
+export const SubContainer = styled.div`
+  ${mainCss};
+`
+
+
 
 export const ContentContainer = styled.div`
 	display: flex;
@@ -350,6 +363,29 @@ export const ObjectName = styled.span`
 export const InputContainer = styled.div`
 	flex: 1;
 `
+export const PageSelector = styled.div`
+	display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: .5rem;
+`
+
+export const PageSelectorButton = styled.div`
+	${iconButtonCss};
+  ${commonClickableIcon};
+  
+`
+export const PageSelectorText = styled.span`
+	margin: 0 1rem;
+  	font-size: ${props => props.theme.fontSize.sz3};
+  //background: pink;
+`
+
+export const Footer = styled.div`
+  background: ${props => props.theme.bg.quinary};
+  display: flex;
+  flex-direction: column;
+`
 
 export const ButtonContainer = styled.div`
 	display: flex;
@@ -361,7 +397,7 @@ export const ButtonContainer = styled.div`
 	padding: 1rem;
 	margin: 0;
   	margin: 0 .5rem;
-  background: ${props => props.theme.bg.quinary};
+  
   border-top: 1px solid black;
 `
 

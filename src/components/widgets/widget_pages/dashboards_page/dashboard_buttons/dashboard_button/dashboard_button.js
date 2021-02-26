@@ -39,7 +39,6 @@ const DashboardButton = (props => {
         iconClassName
     } = props
 
-
     return (
         <style.Container
             type={"button"}

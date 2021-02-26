@@ -8,7 +8,7 @@ export const Container = styled.div`
     width: 100%;
     display: flex;
     justify-content: center;
-    
+    position: relative;
     margin-bottom: 0.4rem;
     
     &:focus {
@@ -16,6 +16,15 @@ export const Container = styled.div`
     }
     
     border: 0;
+`
+
+export const InvisibleItem = styled.div`
+  position: absolute;
+  background: red;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 `
 
 export const Button = styled.button`
