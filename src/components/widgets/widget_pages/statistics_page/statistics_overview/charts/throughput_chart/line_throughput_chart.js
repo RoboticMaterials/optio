@@ -100,7 +100,6 @@ const LineThroughputChart = (props) => {
                 startIndex = i
                 break
             }
-
         }
 
         // Convert to epoch
@@ -129,10 +128,11 @@ const LineThroughputChart = (props) => {
         for (let point of convertedData) {
             if (point.x > endEpoch) {
                 const ind = convertedData.indexOf(data => data.x === point.x)
+                console.log('QQQQ Index', ind)
                 pointsAfterShiftEnd.push(ind)
             }
         }
-        // console.log('QQQQ Should be deleting these points', pointsAfterShiftEnd)
+        console.log('QQQQ Should be deleting these points', pointsAfterShiftEnd)
         pointsAfterShiftEnd.forEach((point) => {
             convertedData.splice(point, 1)
         })
