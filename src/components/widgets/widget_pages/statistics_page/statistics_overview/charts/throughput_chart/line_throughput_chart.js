@@ -535,8 +535,8 @@ const LineThroughputChart = (props) => {
                     }}
 
                     // validation control
-                    validationSchema={throughputSchema(!!ref.current ? ref.current.values : null)}
-                    validateOnChange={false}
+                    validationSchema={throughputSchema}
+                    validateOnChange={true}
                     validateOnMount={true}
                     validateOnBlur={false}
 
@@ -550,11 +550,10 @@ const LineThroughputChart = (props) => {
                         const {
                             submitForm,
                             setValidationSchema,
-                            value,
+                            values,
                             errors,
+                            touched
                         } = formikProps
-
-
 
                         return (
                             <Form

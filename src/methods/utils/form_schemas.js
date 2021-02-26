@@ -480,8 +480,11 @@ export const locationSchema = (stations, selectedLocation) => {
 
 
 // Sees if input1 is greater than input2. If so then through error
-Yup.addMethod(Yup.string, 'greaterThan', function (input2, message) {
+Yup.addMethod(Yup.string, 'greaterThan', function (input2Path, message) {
     return this.test('greaterThan', message, function (input1) {
+        const { parent, path, createError } = this
+
+        const input2 = parent[input2Path]
 
         // Take the Hour and minute 
         const [beg1, end1] = input1.split(':')
@@ -503,8 +506,10 @@ Yup.addMethod(Yup.string, 'greaterThan', function (input2, message) {
 })
 
 // Sees if input1 is less than input2. If so then through error
-Yup.addMethod(Yup.string, 'lessThan', function (input2, message) {
-    return this.test('lessThan', message, function (input1) {
+Yup.addMethod(Yup.string, 'lessThanAYO', function (input2Path, message) {
+    return this.test('lessThanAYO', message, function (input1) {
+        const { parent, path, createError } = this
+        const input2 = parent[input2Path]
 
         // Take the Hour and minute 
         const [beg1, end1] = input1.split(':')
@@ -525,26 +530,10 @@ Yup.addMethod(Yup.string, 'lessThan', function (input2, message) {
     })
 })
 
-export const throughputSchema = (ref) => {
-    if (ref === null) return
-    const {
-        startOfShift,
-        endOfShift,
-        startOfBreak1,
-        endOfBreak1,
-        switch1,
-        startOfBreak2,
-        endOfBreak2,
-        switch2,
-        startOfBreak3,
-        endOfBreak3,
-        switch3,
-    } = ref
-
-    return (
-        Yup.object().shape({
+export const throughputSchema =  Yup.object().shape({
             expectedOutput: Yup.number()
                 .required('Required'),
+            switch1: Yup.bool(),
             startOfShift: Yup.string()
                 .required('Required'),
             endOfShift: Yup.string()
@@ -556,10 +545,10 @@ export const throughputSchema = (ref) => {
                     then: Yup.string()
                         .required('Required')
                         // Make sure it starts after the start of shift and before the end of the shift
-                        .lessThan(startOfShift, 'The first break cannot be before the start of the shift')
-                        .greaterThan(endOfShift, 'The end of the last break must be before the end of the shift')
+                        .lessThanAYO("startOfShift", 'The first break cannot be before the start of the shift')
+                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
                         // Make sure it starts before the end of the break
-                        .greaterThan(endOfBreak1, 'The start of the break must be before the end of the break'),
+                        .greaterThan("endOfBreak1", 'The start of the break must be before the end of the break'),
                 }),
 
             endOfBreak1: Yup.string()
@@ -569,10 +558,10 @@ export const throughputSchema = (ref) => {
                     then: Yup.string()
                         .required('Required')
                         // Make sure it starts after the start of shift and before the end of the shift
-                        .lessThan(startOfShift, 'The first break cannot be before the start of the shift')
-                        .greaterThan(endOfShift, 'The end of the last break must be before the end of the shift')
-                        .lessThan(startOfBreak1, 'The end of break cannot be before the start of the break')
-                        .greaterThan(startOfBreak2, 'The end of the break must be before the start of the next break break'),
+                        .lessThanAYO("startOfShift", 'The first break cannot be before the start of the shift')
+                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
+                        .lessThanAYO("startOfBreak1", 'The end of break cannot be before the start of the break')
+                        .greaterThan("startOfBreak2", 'The end of the break must be before the start of the next break break'),
                 }),
 
 
@@ -583,10 +572,10 @@ export const throughputSchema = (ref) => {
                     then: Yup.string()
                         .required('Required')
                         // Make sure it starts after the start of shift and before the end of the shift
-                        .lessThan(startOfShift, 'The first break cannot be before the start of the shift')
-                        .greaterThan(endOfShift, 'The end of the last break must be before the end of the shift')
-                        .lessThan(endOfBreak1, 'The start of break cannot be before the end of the previous break')
-                        .greaterThan(endOfBreak2, 'The start of the break must be before the end of the break'),
+                        .lessThanAYO("startOfShift", 'The first break cannot be before the start of the shift')
+                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
+                        .lessThanAYO("endOfBreak1", 'The start of break cannot be before the end of the previous break')
+                        .greaterThan("endOfBreak2", 'The start of the break must be before the end of the break'),
                 }),
 
             endOfBreak2: Yup.string()
@@ -596,10 +585,10 @@ export const throughputSchema = (ref) => {
                     then: Yup.string()
                         .required('Required')
                         // Make sure it starts after the start of shift and before the end of the shift
-                        .lessThan(startOfShift, 'The first break cannot be before the start of the shift')
-                        .greaterThan(endOfShift, 'The end of the last break must be before the end of the shift')
-                        .lessThan(startOfBreak2, 'The end of break cannot be before the start of the break')
-                        .greaterThan(startOfBreak3, 'The end of the break must be before the start of the next break break'),
+                        .lessThanAYO("startOfShift", 'The first break cannot be before the start of the shift')
+                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
+                        .lessThanAYO("startOfBreak2", 'The end of break cannot be before the start of the break')
+                        .greaterThan("startOfBreak3", 'The end of the break must be before the start of the next break break'),
                 }),
 
             startOfBreak3: Yup.string()
@@ -609,10 +598,10 @@ export const throughputSchema = (ref) => {
                     then: Yup.string()
                         .required('Required')
                         // Make sure it starts after the start of shift and before the end of the shift
-                        .lessThan(startOfShift, 'The first break cannot be before the start of the shift')
-                        .greaterThan(endOfShift, 'The end of the last break must be before the end of the shift')
-                        .lessThan(endOfBreak2, 'The start of break cannot be before the end of the previous break')
-                        .greaterThan(endOfBreak3, 'The start of the break must be before the end of the break'),
+                        .lessThanAYO("startOfShift", 'The first break cannot be before the start of the shift')
+                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
+                        .lessThanAYO("endOfBreak2", 'The start of break cannot be before the end of the previous break')
+                        .greaterThan("endOfBreak3", 'The start of the break must be before the end of the break'),
                 }),
 
             endOfBreak3: Yup.string()
@@ -622,12 +611,10 @@ export const throughputSchema = (ref) => {
                     then: Yup.string()
                         .required('Required')
                         // Make sure it starts after the start of shift and before the end of the shift
-                        .lessThan(startOfShift, 'The first break cannot be before the start of the shift')
-                        .greaterThan(endOfShift, 'The end of the last break must be before the end of the shift')
-                        .lessThan(startOfBreak3, 'The end of break cannot be before the start of the break')
-                        .greaterThan(endOfShift, 'The end of the last break must be before the end of the shift'),
+                        .lessThanAYO("startOfShift", 'The first break cannot be before the start of the shift')
+                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
+                        .lessThanAYO("startOfBreak3", 'The end of break cannot be before the start of the break')
+                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift'),
                 }),
 
         })
-    )
-}
