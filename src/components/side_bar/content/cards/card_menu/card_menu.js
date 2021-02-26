@@ -53,8 +53,8 @@ const CardMenu = (props) => {
 				onChange={values => {
 					const processId = values[0]?._id
 					const currentPath = history.location.pathname
-					// if(processId) history.push(currentPath + '/' + processId + "/card")
-					// history.push ('./../' + processId + "/card")
+					// if(processId) history.push(currentPath + '/' + processId + "/lot")
+					// history.push ('./../' + processId + "/lot")
 					history.replace ('/processes/' + processId + "/lots")
 
 				}}

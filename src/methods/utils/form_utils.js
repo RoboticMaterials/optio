@@ -23,3 +23,9 @@ export const getMessageFromError = (err) => {
     // default message
     return "Error."
 }
+
+export const getSubmitDisabled = ({errors, touched, isSubmitting, submitCount}) => {
+    const errorCount = Object.keys(errors).length > 0 // get number of field errors
+    const touchedCount = Object.values(touched).length // number of touched fields
+    return ((errorCount > 0)  )
+}
