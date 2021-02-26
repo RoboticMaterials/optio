@@ -177,6 +177,22 @@ export const deleteCard = (cardId, processId) => async (dispatch) => {
 };
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+// delete
+// ******************************
+export const deleteProcessCards = (processId) => async (dispatch, getState) => {
+
+    // current state
+    const state = getState()
+
+    const processCards = state.cardsReducer.processCards || {}
+    const currentProcessCards = processCards[processId] || {}
+
+    Object.keys(currentProcessCards).forEach( async (currCardId) => {
+        await dispatch(deleteCard(currCardId, processId))
+    })
+};
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 // update
 // ******************************
 export const putCard = (card, cardID) => async dispatch => {

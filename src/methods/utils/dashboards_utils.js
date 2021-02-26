@@ -1,4 +1,11 @@
 import store from '../../redux/store/index'
+import {
+    OPERATION_TYPES,
+    TYPES
+} from "../../components/widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
+import {isArray, isNonEmptyArray} from "./array_utils";
+import {DASHBOARD_BUTTON_COLORS} from "../../constants/dashboard_contants";
+import uuid from 'uuid'
 
 export const postToDashboards = (dashboardName) => {
     // Requires: buttonID, param, type, buttonName, dashboardName
@@ -16,6 +23,50 @@ export const findDashboardByID = (availableDashboards, ID) => {
         return d._id.$oid === ID;
     })
     return dashboardNameIndex
+}
+
+export const getContainsKickoffButton = ({buttons}) => {
+    for(const currButton of buttons) {
+        const {
+            type
+        } = currButton
+
+        if(type === OPERATION_TYPES.KICK_OFF.key) return true
+    }
+
+    return false
+}
+
+export const getContainsFinishButton = ({buttons}) => {
+    for(const currButton of buttons) {
+        const {
+            type
+        } = currButton
+
+        if(type === OPERATION_TYPES.FINISH.key) return true
+    }
+
+    return false
+}
+
+export const getOperationButton = (key) => {
+
+    let index = 0
+    for(const entry of Object.entries(OPERATION_TYPES)) {
+        const currValue = entry[1]
+        const currKey = entry[0]
+
+        if(currKey === key) {
+            return {
+                name: currValue.name,
+                color: DASHBOARD_BUTTON_COLORS[index % DASHBOARD_BUTTON_COLORS.length].hex,
+                id: uuid.v4(),
+                type: currKey,
+            }
+        }
+
+        index = index + 1
+    }
 }
 
 export const handleAvailableTasks = (tasks, station) => {
@@ -86,4 +137,64 @@ export const handleCurrentDashboard = (dashboards, dashboardID) => {
     })
 
     return availableDash[dashboardNameIndex]
+}
+
+
+/*
+* returns whether or not the current button type should be allowed to be deleted from a dashboard
+*
+* currently none of them should be able to, but still use this function so if things change it can all be managed here
+*
+* args: needs button type passed in as object key, this way you can pass the entire button or just a simple object containing this key
+* */
+export const getCanDeleteDashboardButton = ({type: buttonType}) => {
+    switch (buttonType) {
+        case TYPES.ROUTES.key:
+        case OPERATION_TYPES.FINISH.key:
+        case OPERATION_TYPES.KICK_OFF.key:
+            return false
+
+        case OPERATION_TYPES.REPORT.key:
+            return true
+
+        default:
+            return false
+    }
+}
+
+export const getIsKickoffEnabled = (availableProcessIds) => {
+    return isNonEmptyArray(availableProcessIds)
+}
+
+export const getIsFinishEnabled = (availableProcessIds) => {
+    return isNonEmptyArray(availableProcessIds)
+}
+
+export const getDashboardContainsRouteButton = ({buttons: existingDashboardButtons}, {task_id: currButtonTaskId}) => {
+    for(const existingDashboardButton of existingDashboardButtons) {
+        const {
+            task_id: existingButtonTaskId = ""
+        } = existingDashboardButton || {}
+
+        if(existingButtonTaskId === currButtonTaskId) {
+            return true // quit looping
+        }
+    }
+
+    return false
+}
+
+export const getDashboardContainsOperationButton = ({buttons: existingDashboardButtons}, {type: currButtonType}) => {
+
+    for(const existingDashboardButton of existingDashboardButtons) {
+        const {
+            type: existingButtonType = ""
+        } = existingDashboardButton || {}
+
+        if(existingButtonType === currButtonType) {
+            return true // quit looping
+        }
+    }
+
+    return false
 }

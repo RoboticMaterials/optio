@@ -60,6 +60,7 @@ const HILModals = (props) => {
     const dispatchSetShowModalId = (id) => dispatch(setShowModalId(id))
 
     const hilTimers = useSelector(state => { return state.taskQueueReducer.hilTimers })
+    const processes = useSelector(state => { return state.processesReducer.processes }) || {}
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
@@ -1031,8 +1032,14 @@ const HILModals = (props) => {
                                         end_date,
                                         bins = {},
                                         flags,
-                                        lotNumber
+                                        lotNumber,
+                                        process_id: processId = ""
                                     } = currLot
+
+                                    const process = processes[processId]
+                                    const {
+                                        name: processName
+                                    } = process || {}
 
                                     const totalQuantity = getLotTotalQuantity({bins})
 
@@ -1048,6 +1055,7 @@ const HILModals = (props) => {
                                             <Lot
                                                 totalQuantity={totalQuantity}
                                                 lotNumber={lotNumber}
+                                                processName={processName}
                                                 flags={flags || []}
                                                 enableFlagSelector={false}
                                                 name={name}

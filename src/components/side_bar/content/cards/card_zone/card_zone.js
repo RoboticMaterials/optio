@@ -50,6 +50,13 @@ const CardZone = ((props) => {
 	const [queue, setQueue] = useState([])
 	const [finished, setFinished] = useState([])
 	const [cards, setCards] = useState({})
+	const {
+		name: processName = ""
+	} = currentProcess || {}
+
+	// const [cardsSorted, setCardsSorted] = useState({})
+	// const [queue, setQueue] = useState([])
+	// const [finished, setFinished] = useState([])
 
 	useEffect(() => {
 		setCards(processCards[processId] || {})
@@ -135,7 +142,8 @@ const CardZone = ((props) => {
 						totalQuantity,
 						binId,
 						count,
-						cardId: _id
+						cardId: _id,
+						processName
 					}
 
 					// if there is an entry in tempCardsSorted with key matching {binId}, add the lot to this bin

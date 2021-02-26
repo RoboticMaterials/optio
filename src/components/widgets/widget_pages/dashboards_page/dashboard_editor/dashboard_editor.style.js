@@ -26,12 +26,23 @@ export const FooterContainer = styled.div`
     padding: 1rem;
 `
 
+export const Container = styled.div`
+	display: flex;
+	width: 100%;
+	height: 100%;
+	max-height: 100%;
+  overflow: hidden;
+  max-width: 100%;
+  flex: 1;
+`
+
 export const StyledForm = styled(Form)`
 
     display: flex;
     flex-direction: column;
     
-    width: 100%;
+    //width: 100%;
+  flex: 1;
     height: 100%;
     max-height: 100%;
 

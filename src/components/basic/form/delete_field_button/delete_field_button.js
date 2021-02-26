@@ -24,8 +24,6 @@ const DeleteFieldButton = ({
 		<ButtonComponent
 			{...props}
 			onClick={()=>{
-				console.log("DeleteFieldButton: values before",values)
-				console.log("DeleteFieldButton: values[field.name]",values[field.name])
 				values[field.name].splice(index, 1)
 				validateForm()
 			}}

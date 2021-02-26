@@ -4,9 +4,9 @@ import React, {useContext, useEffect, useState} from "react"
 import {putCard, putCardAttributes} from "../../../../../redux/actions/card_actions"
 
 // functions external
-import {useDispatch, useSelector} from "react-redux"
-import PropTypes from "prop-types"
-import {ThemeContext} from "styled-components"
+import {useDispatch} from "react-redux";
+import PropTypes from "prop-types";
+import {ThemeContext} from "styled-components";
 
 // components external
 import Popup from 'reactjs-popup'
@@ -38,7 +38,8 @@ const Lot = (props) => {
         containerStyle,
         selectable,
         isSelected,
-        flags
+        flags,
+        processName
     } = props
 
     const themeContext = useContext(ThemeContext)
@@ -184,8 +185,17 @@ const Lot = (props) => {
             </styled.HeaderBar>
             <styled.ContentContainer>
 
-                <styled.Row>
                     <styled.Label>Dates</styled.Label>
+                    {processName &&
+                    <styled.Row>
+                        <styled.Label>Process</styled.Label>
+                        <styled.Count>{processName}</styled.Count>
+                    </styled.Row>
+                    }
+
+
+                    <styled.Row>
+                        <styled.Label>Dates</styled.Label>
                     <styled.DatesContainer>
                         <styled.DateItem>
                             <styled.DateText>{startDateText}</styled.DateText>

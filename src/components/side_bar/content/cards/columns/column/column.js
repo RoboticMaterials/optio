@@ -22,6 +22,7 @@ import {useDispatch, useSelector} from "react-redux";
 // styles
 import * as styled from "./column.style";
 
+
 // const animationDuration = 500
 const Column = ((props) => {
 
@@ -211,7 +212,8 @@ const Column = ((props) => {
 								end_date,
 								flags,
 								lotNumber,
-								totalQuantity
+								totalQuantity,
+								processName,
 							} = card
 
 							// const lotName = lots[lot_id] ? lots[lot_id].name : null
@@ -231,6 +233,7 @@ const Column = ((props) => {
 									selectable={selectable}
 									isSelected={isSelected}
 									key={cardId}
+									processName={processName}
 									totalQuantity={totalQuantity}
 									lotNumber={lotNumber}
 									name={name}
