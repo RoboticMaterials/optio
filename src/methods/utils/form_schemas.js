@@ -492,6 +492,7 @@ Yup.addMethod(Yup.string, 'greaterThan', function (input2, message) {
 
         if (input1Int < input2Int) return true
         else {
+            console.log('QQQQ error', input1Int, input2Int)
             return this.createError({
                 path: this.path,
                 message: message,
@@ -514,6 +515,7 @@ Yup.addMethod(Yup.string, 'lessThan', function (input2, message) {
 
         if (input1Int > input2Int) return true
         else {
+            console.log('QQQQ error', input1Int, input2Int)
             return this.createError({
                 path: this.path,
                 message: message,
