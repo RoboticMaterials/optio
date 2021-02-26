@@ -18,6 +18,7 @@ import {getProcesses} from "../../../../../../redux/actions/processes_actions";
 import Textbox from "../../../../../basic/textbox/textbox";
 import {SORT_MODES} from "../../../../../../constants/common_contants";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
+import Lot from "../../../../../side_bar/content/cards/lot/lot";
 import Card from "../../../../../side_bar/content/cards/lot/lot";
 import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
 import {quantityOneSchema} from "../../../../../../methods/utils/form_schemas";
