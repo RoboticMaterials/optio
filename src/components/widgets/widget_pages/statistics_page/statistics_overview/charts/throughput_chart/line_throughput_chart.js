@@ -34,10 +34,10 @@ const LineThroughputChart = (props) => {
         date,
     } = props
 
-    // This ref is used for formik values.
-    // The issue it solves is that the values the formik is comparing might have changed, and formik does not have the latest vlaues
-    // IE: Change the end of the first break to be after the start of the second break; causes error. Fix error by adjusting second break, but the second break updated time is not availabel in formik so it still throughs an error
-    const ref = useRef(null)
+    // // This ref is used for formik values.
+    // // The issue it solves is that the values the formik is comparing might have changed, and formik does not have the latest vlaues
+    // // IE: Change the end of the first break to be after the start of the second break; causes error. Fix error by adjusting second break, but the second break updated time is not availabel in formik so it still throughs an error
+    // const ref = useRef(null)
 
     const dispatch = useDispatch()
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
@@ -47,14 +47,9 @@ const LineThroughputChart = (props) => {
     const [breaksEnabled, setBreaksEnabled] = useState({})
 
     const shiftDetails = settings.shiftDetails;
-    console.log('QQQQ shift dets', shiftDetails)
 
     // Used for colors in line chart below
     const colors = { Actual: 'hsl(53, 84%, 50%)', Expected: 'hsl(120, 60%, 50%)' }
-
-    useEffect(() => {
-        console.log('QQQQ ref', ref.current.values)
-    }, [ref])
 
     // Settings local state here because enabled breaks needs to access breaks outside of formik
     // See the Switch below forme details
@@ -130,12 +125,17 @@ const LineThroughputChart = (props) => {
         }
 
         // Delete all points after the end of the shift if there are any
+        let pointsAfterShiftEnd = []
         for (let point of convertedData) {
             if (point.x > endEpoch) {
                 const ind = convertedData.indexOf(data => data.x === point.x)
-                convertedData.splice(ind, 1)
+                pointsAfterShiftEnd.push(ind)
             }
         }
+        // console.log('QQQQ Should be deleting these points', pointsAfterShiftEnd)
+        pointsAfterShiftEnd.forEach((point) => {
+            convertedData.splice(point, 1)
+        })
 
         // Add 0 for the start of the shift
         convertedData.unshift({ x: startEpoch, y: 0 })
@@ -162,83 +162,79 @@ const LineThroughputChart = (props) => {
             slopeValues.push(i)
         }
 
-        try {
-            // Add Expected output
-            if (!!shiftDetails.expectedOutput) {
+        // Add Expected output
+        if (!!shiftDetails.expectedOutput) {
 
-                // Add the beginning and end of each shift
-                expectedOutput.push({ x: startEpoch, y: 0 })
-                expectedOutput.push({ x: endEpoch, y: shiftDetails.expectedOutput })
+            // Add the beginning and end of each shift
+            expectedOutput.push({ x: startEpoch, y: 0 })
+            expectedOutput.push({ x: endEpoch, y: shiftDetails.expectedOutput })
 
-                /**
-                 * This handles breaks
-                 * 1b) Finds where the start and end of the break belong inside of the expected output array and adds
-                 * 2b) Subtracts the breaks corresponding minutes from the slopeValues
-                 * 3b) Adds the start of the break to the start of breaks array to be used to find the y value of the end of the break
-                 */
-                let startOfBreaks = []
-                const breaks = Object.values(shiftDetails.breaks)
-                breaks.forEach((br, ind) => {
-                    if (!br.enabled) return
-                    const start = convert24htoEpoch(br.startOfBreak, date)
-                    const end = convert24htoEpoch(br.endOfBreak, date)
+            /**
+             * This handles breaks
+             * 1b) Finds where the start and end of the break belong inside of the expected output array and adds
+             * 2b) Subtracts the breaks corresponding minutes from the slopeValues
+             * 3b) Adds the start of the break to the start of breaks array to be used to find the y value of the end of the break
+             */
+            let startOfBreaks = []
+            const breaks = Object.values(shiftDetails.breaks)
+            breaks.forEach((br, ind) => {
+                if (!br.enabled) return
+                const start = convert24htoEpoch(br.startOfBreak, date)
+                const end = convert24htoEpoch(br.endOfBreak, date)
 
-                    // Find the value of y at startof the break using y = mx + b
-                    // const m = (shiftDetails.expectedOutput - 0) / (endEpoch - startEpoch)
-                    // const b = shiftDetails.expectedOutput - m * endEpoch
-                    // const yStart = m * start + b
+                // Find the value of y at startof the break using y = mx + b
+                // const m = (shiftDetails.expectedOutput - 0) / (endEpoch - startEpoch)
+                // const b = shiftDetails.expectedOutput - m * endEpoch
+                // const yStart = m * start + b
 
 
-                    // 1b) Find where the x value fits
-                    for (let i = 0; i < expectedOutput.length; i++) {
-                        const output = expectedOutput[i]
-                        const nextOutput = expectedOutput[i + 1]
+                // 1b) Find where the x value fits
+                for (let i = 0; i < expectedOutput.length; i++) {
+                    const output = expectedOutput[i]
+                    const nextOutput = expectedOutput[i + 1]
 
-                        // If the output x is less or equal to the start and the next output is greater or equal to the start, then this is where the break belongs in the expectedOutput
-                        if (output.x <= start && nextOutput.x >= start) {
-                            expectedOutput.splice(i + 1, 0, { x: start, y: 0 })
-                            expectedOutput.splice(i + 2, 0, { x: end, y: 0 })
-                            break
-                        }
+                    // If the output x is less or equal to the start and the next output is greater or equal to the start, then this is where the break belongs in the expectedOutput
+                    if (output.x <= start && nextOutput.x >= start) {
+                        expectedOutput.splice(i + 1, 0, { x: start, y: 0 })
+                        expectedOutput.splice(i + 2, 0, { x: end, y: 0 })
+                        break
                     }
+                }
 
-                    // 2s/2b) Subtract time that belongs to breaks (start at the next minut after the break starts)
-                    for (let i = start + 60000; i <= end; i = i + 60000) {
-                        slopeValues = slopeValues.filter(item => item !== i)
+                // 2s/2b) Subtract time that belongs to breaks (start at the next minut after the break starts)
+                for (let i = start + 60000; i <= end; i = i + 60000) {
+                    slopeValues = slopeValues.filter(item => item !== i)
+                }
+
+                // 3b) Add the start of the break
+                startOfBreaks.push(start)
+
+            })
+
+            // 3s/4s)
+            // Add slope y points to matching points in expected output
+            slopeValues.forEach((val, ind) => {
+                expectedOutput.forEach((output, ind2) => {
+                    if (output.x !== val) {
+                        return
                     }
-
-                    // 3b) Add the start of the break
-                    startOfBreaks.push(start)
-
-                })
-
-                // 3s/4s)
-                // Add slope y points to matching points in expected output
-                slopeValues.forEach((val, ind) => {
-                    expectedOutput.forEach((output, ind2) => {
-                        if (output.x !== val) {
-                            return
-                        }
-                        else {
-                            expectedOutput[ind2].y = (ind / (slopeValues.length - 1)) * shiftDetails.expectedOutput
-                        }
-                    })
-                })
-
-                // 4s)
-                // Add stagnent y points for each break
-                expectedOutput.forEach((output, ind) => {
-
-                    // Add the start of the break y value to the end of the break
-                    // Ideally this is the next output after the start of the break
-                    if (startOfBreaks.includes(output.x)) {
-                        expectedOutput[ind + 1].y = expectedOutput[ind].y
+                    else {
+                        expectedOutput[ind2].y = (ind / (slopeValues.length - 1)) * shiftDetails.expectedOutput
                     }
                 })
+            })
 
-            }
-        } catch (error) {
-            console.log('QQQQ error', error)
+            // 4s)
+            // Add stagnent y points for each break
+            expectedOutput.forEach((output, ind) => {
+
+                // Add the start of the break y value to the end of the break
+                // Ideally this is the next output after the start of the break
+                if (startOfBreaks.includes(output.x)) {
+                    expectedOutput[ind + 1].y = expectedOutput[ind].y
+                }
+            })
+
         }
 
 
@@ -262,15 +258,10 @@ const LineThroughputChart = (props) => {
 
             // If not in expected, add it
             if (!inExpected) {
-                console.log('QQQQ output', expectedOutput)
-                console.log('QQQQ sungle', output)
                 // Find where it belongs
                 for (let i = 0; i < expectedOutput.length; i++) {
                     const expOutput = expectedOutput[i]
                     const nextExpOutput = expectedOutput[i + 1]
-
-                    console.log('QQQQ expected', expOutput)
-                    console.log('QQQQ next', nextExpOutput)
 
                     if (nextExpOutput === undefined) {
                         continue
@@ -352,6 +343,8 @@ const LineThroughputChart = (props) => {
 
         },
         ]
+
+        console.log('QQQQ Line Data', lineData)
         return lineData
     }, [shiftDetails])
 
@@ -518,7 +511,6 @@ const LineThroughputChart = (props) => {
         return (
             <div style={{ flexGrow: '3' }}>
                 <Formik
-                    innerRef={ref}
                     initialValues={{
                         startOfShift: shiftDetails.startOfShift,
                         endOfShift: shiftDetails.endOfShift,
@@ -536,7 +528,7 @@ const LineThroughputChart = (props) => {
 
                     // validation control
                     validationSchema={throughputSchema}
-                    validateOnChange={true}
+                    validateOnChange={false}
                     validateOnMount={true}
                     validateOnBlur={false}
 
@@ -550,10 +542,11 @@ const LineThroughputChart = (props) => {
                         const {
                             submitForm,
                             setValidationSchema,
-                            values,
+                            value,
                             errors,
-                            touched
                         } = formikProps
+
+
 
                         return (
                             <Form
