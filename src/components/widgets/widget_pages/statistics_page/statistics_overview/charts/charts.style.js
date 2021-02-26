@@ -59,7 +59,7 @@ export const PlotContainer = styled.div`
   
 	min-width: 30rem;
   
-	overflow: hidden;
+	/* overflow: hidden; */
 `
 
 export const LoadingIcon = styled.i`

@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useContext, useRef, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux'
+
 import moment from 'moment';
 import { Formik, Form } from 'formik'
 
@@ -9,7 +11,7 @@ import * as styled from '../charts.style'
 import TextField from '../../../../../../basic/form/text_field/text_field.js'
 import Textbox from '../../../../../../basic/textbox/textbox'
 import TimePickerField from '../../../../../../basic/form/time_picker_field/time_picker_field'
-import Switch from 'react-ios-switch'
+import Switch from '../../../../../../basic/form/switch_field/switch_field'
 
 // Import Charts
 import { ResponsiveLine, Line } from '@nivo/line'
@@ -19,29 +21,8 @@ import { throughputSchema } from '../../../../../../../methods/utils/form_schema
 import { convert12hto24h, convert24hto12h, convertTimeStringto24h, convert24htoInt, convertIntto24h, convert24htoEpoch } from '../../../../../../../methods/utils/time_utils'
 import { deepCopy } from '../../../../../../../methods/utils/utils';
 
-
-const testExpectedOutput = {
-    startOfShift: '07:00',
-    endOfShift: '15:00',
-    expectedOutput: null,
-    breaks: {
-        break1: {
-            enabled: false,
-            startOfBreak: '08:30',
-            endOfBreak: '9:00',
-        },
-        break2: {
-            enabled: false,
-            startOfBreak: '11:00',
-            endOfBreak: '12:00',
-        },
-        break3: {
-            enabled: false,
-            startOfBreak: '13:00',
-            endOfBreak: '14:00',
-        },
-    },
-}
+// Import actions
+import { postSettings } from '../../../../../../../redux/actions/settings_actions'
 
 const LineThroughputChart = (props) => {
 
@@ -51,9 +32,38 @@ const LineThroughputChart = (props) => {
         isData,
         date,
     } = props
+    const dispatch = useDispatch()
+    const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
 
-    const [compareExpectedOutput, setCompareExpectedOutput] = useState(testExpectedOutput)
-    const [convertedData, setConvertedData] = useState(null)
+    const settings = useSelector(state => state.settingsReducer.settings)
+
+    const [breaksEnabled, setBreaksEnabled] = useState({})
+
+    const shiftDetails = settings.shiftDetails;
+
+    // Used for colors in line chart below
+    const colors = { Actual: 'hsl(53, 84%, 50%)', Expected: 'hsl(120, 60%, 50%)' }
+
+    // Settings local state here because enabled breaks needs to access breaks outside of formik
+    // See the Switch below forme details
+    useEffect(() => {
+
+        // If there's shift details
+        if (!!settings.shiftDetails) {
+            let enabledBreaks = {}
+            Object.keys(settings.shiftDetails.breaks).forEach((br, ind) => {
+                const enabled = settings.shiftDetails.breaks[br].enabled
+                const breakString = `break${ind}`
+                enabledBreaks[ind] = enabled
+            })
+            setBreaksEnabled(enabledBreaks)
+        }
+        else {
+            setBreaksEnabled(null)
+        }
+        return () => {
+        }
+    }, [settings])
 
     // This ref is used for formik values.
     // The issue it solves is that the values the formik is comparing might have changed, and formik does not have the latest vlaues
@@ -77,7 +87,7 @@ const LineThroughputChart = (props) => {
         let dataCopy = deepCopy(data)
 
         // Convert to epoch
-        const startEpoch = convert24htoEpoch(compareExpectedOutput.startOfShift, date)
+        const startEpoch = convert24htoEpoch(shiftDetails.startOfShift, date)
         let startIndex
 
         // Find Start of Shift in the data based on selected input
@@ -92,7 +102,7 @@ const LineThroughputChart = (props) => {
         }
 
         // Convert to epoch
-        const endEpoch = convert24htoEpoch(compareExpectedOutput.endOfShift, date)
+        const endEpoch = convert24htoEpoch(shiftDetails.endOfShift, date)
         let endIndex = dataCopy.length
         // Find end of Shift in the data based on selected input
         for (let i = 0; i < dataCopy.length; i++) {
@@ -138,11 +148,11 @@ const LineThroughputChart = (props) => {
         }
 
         // Add Expected output
-        if (!!compareExpectedOutput.expectedOutput) {
+        if (!!shiftDetails.expectedOutput) {
 
             // Add the beginning and end of each shift
             expectedOutput.push({ x: startEpoch, y: 0 })
-            expectedOutput.push({ x: endEpoch, y: compareExpectedOutput.expectedOutput })
+            expectedOutput.push({ x: endEpoch, y: shiftDetails.expectedOutput })
 
             /**
              * This handles breaks
@@ -151,15 +161,15 @@ const LineThroughputChart = (props) => {
              * 3b) Adds the start of the break to the start of breaks array to be used to find the y value of the end of the break
              */
             let startOfBreaks = []
-            const breaks = Object.values(compareExpectedOutput.breaks)
+            const breaks = Object.values(shiftDetails.breaks)
             breaks.forEach((br, ind) => {
                 if (!br.enabled) return
                 const start = convert24htoEpoch(br.startOfBreak, date)
                 const end = convert24htoEpoch(br.endOfBreak, date)
 
                 // Find the value of y at startof the break using y = mx + b
-                // const m = (compareExpectedOutput.expectedOutput - 0) / (endEpoch - startEpoch)
-                // const b = compareExpectedOutput.expectedOutput - m * endEpoch
+                // const m = (shiftDetails.expectedOutput - 0) / (endEpoch - startEpoch)
+                // const b = shiftDetails.expectedOutput - m * endEpoch
                 // const yStart = m * start + b
 
 
@@ -194,7 +204,7 @@ const LineThroughputChart = (props) => {
                         return
                     }
                     else {
-                        expectedOutput[ind2].y = (ind / (slopeValues.length - 1)) * compareExpectedOutput.expectedOutput
+                        expectedOutput[ind2].y = (ind / (slopeValues.length - 1)) * shiftDetails.expectedOutput
                     }
                 })
             })
@@ -298,20 +308,73 @@ const LineThroughputChart = (props) => {
         })
 
         const lineData = [{
-            'id': 'actualData',
+            "id": 'Actual',
             "color": "hsl(182, 70%, 50%)",
-            'data': convertedData
+            "data": convertedData
 
         },
         {
-            'id': 'expectedOutput',
+            "id": 'Expected',
             "color": "hsl(120, 60%, 50%)",
-            'data': expectedOutput
+            "data": expectedOutput
 
         },
         ]
         return lineData
-    }, [compareExpectedOutput])
+    }, [shiftDetails])
+
+    // Submits the shift details to the backend via settings
+    const onSubmitShift = (values) => {
+
+        let {
+            startOfShift,
+            endOfShift,
+            expectedOutput,
+            startOfBreak1,
+            endOfBreak1,
+            switch1,
+            startOfBreak2,
+            endOfBreak2,
+            switch2,
+            startOfBreak3,
+            endOfBreak3,
+            switch3,
+        } = values
+
+
+
+        const shiftSettings = {
+            startOfShift: startOfShift,
+            endOfShift: endOfShift,
+            expectedOutput: expectedOutput,
+            breaks: {
+                break1: {
+                    enabled: switch1,
+                    startOfBreak: startOfBreak1,
+                    endOfBreak: endOfBreak1,
+                },
+                break2: {
+                    ...shiftDetails.breaks.break2,
+                    enabled: switch2,
+                    startOfBreak: startOfBreak2,
+                    endOfBreak: endOfBreak2,
+                },
+                break3: {
+                    enabled: switch3,
+                    startOfBreak: startOfBreak3,
+                    endOfBreak: endOfBreak3,
+                },
+            },
+        }
+
+        dispatchPostSettings({
+            ...settings,
+            shiftDetails: shiftSettings,
+        })
+
+
+    }
+
 
     const renderBreaks = useMemo(() => {
 
@@ -320,9 +383,13 @@ const LineThroughputChart = (props) => {
         return numberOfBreaks.map((bk, ind) => {
             const adjustedInd = ind + 1
 
-            const breakToggle = `breakToggle${adjustedInd}`
+            // This uses useState
+            // The reasoning behind this, is to be able to enable/disable switches without going through formik submit
+            // This also allows to enable a break, but not effect the graph until submitted
+            const breakEnabled = breaksEnabled[ind]
+
             const breakName = `Break ${adjustedInd}`
-            const breakVar = `break${adjustedInd}`
+            const switchName = `switch${adjustedInd}`
             const breakStart = `startOfBreak${adjustedInd}`
             const breakEnd = `endOfBreak${adjustedInd}`
             return (
@@ -331,19 +398,13 @@ const LineThroughputChart = (props) => {
                     <styled.RowContainer style={{ width: '100%', marginTop: '.25rem' }}>
                         <styled.Label>{breakName}</styled.Label>
                         <Switch
-                            name={breakToggle}
+                            name={switchName}
                             onColor='red'
-                            checked={compareExpectedOutput.breaks[breakVar].enabled}
+                            checked={breaksEnabled[ind]}
                             onChange={() => {
-                                setCompareExpectedOutput({
-                                    ...compareExpectedOutput,
-                                    breaks: {
-                                        ...compareExpectedOutput.breaks,
-                                        [breakVar]: {
-                                            ...compareExpectedOutput.breaks[breakVar],
-                                            enabled: !compareExpectedOutput.breaks[breakVar].enabled,
-                                        }
-                                    }
+                                setBreaksEnabled({
+                                    ...breaksEnabled,
+                                    [ind]: !breakEnabled
                                 })
                             }}
                         />
@@ -354,7 +415,7 @@ const LineThroughputChart = (props) => {
                                 Start of Break
                         </styled.BreakLabel>
                             <TimePickerField
-                                disabled={!compareExpectedOutput.breaks[breakVar].enabled}
+                                disabled={!breakEnabled}
                                 mapInput={
                                     (value) => {
                                         if (value) {
@@ -371,7 +432,7 @@ const LineThroughputChart = (props) => {
                                 style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
                                 containerStyle={{ width: '6rem' }}
                                 showHour={true}
-                                showMinute={false}
+                                showMinute={true}
                                 showSecond={false}
                                 className="xxx"
                                 use12Hours
@@ -387,8 +448,7 @@ const LineThroughputChart = (props) => {
                                 End of Break
                             </styled.BreakLabel>
                             <TimePickerField
-                                disabled={!compareExpectedOutput.breaks[breakVar].enabled}
-
+                                disabled={!breakEnabled}
                                 mapInput={
                                     (value) => {
                                         if (value) {
@@ -405,7 +465,7 @@ const LineThroughputChart = (props) => {
                                 style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
                                 containerStyle={{ width: '6rem' }}
                                 showHour={true}
-                                showMinute={false}
+                                showMinute={true}
                                 showSecond={false}
                                 className="xxx"
                                 use12Hours
@@ -420,7 +480,7 @@ const LineThroughputChart = (props) => {
                 </styled.RowContainer>
             )
         })
-    }, [compareExpectedOutput])
+    }, [shiftDetails, breaksEnabled])
 
     const renderForm = () => {
         return (
@@ -428,15 +488,18 @@ const LineThroughputChart = (props) => {
                 <Formik
                     innerRef={ref}
                     initialValues={{
-                        startOfShift: compareExpectedOutput.startOfShift,
-                        endOfShift: compareExpectedOutput.endOfShift,
-                        startOfBreak1: compareExpectedOutput.breaks.break1.startOfBreak,
-                        endOfBreak1: compareExpectedOutput.breaks.break1.endOfBreak,
-                        startOfBreak2: compareExpectedOutput.breaks.break2.startOfBreak,
-                        endOfBreak2: compareExpectedOutput.breaks.break2.endOfBreak,
-                        startOfBreak3: compareExpectedOutput.breaks.break3.startOfBreak,
-                        endOfBreak3: compareExpectedOutput.breaks.break3.endOfBreak,
-                        expectedOutput: compareExpectedOutput.expectedOutput,
+                        startOfShift: shiftDetails.startOfShift,
+                        endOfShift: shiftDetails.endOfShift,
+                        startOfBreak1: shiftDetails.breaks.break1.startOfBreak,
+                        endOfBreak1: shiftDetails.breaks.break1.endOfBreak,
+                        switch1: shiftDetails.breaks.break1.enabled,
+                        startOfBreak2: shiftDetails.breaks.break2.startOfBreak,
+                        endOfBreak2: shiftDetails.breaks.break2.endOfBreak,
+                        switch2: shiftDetails.breaks.break2.enabled,
+                        startOfBreak3: shiftDetails.breaks.break3.startOfBreak,
+                        endOfBreak3: shiftDetails.breaks.break3.endOfBreak,
+                        switch3: shiftDetails.breaks.break3.enabled,
+                        expectedOutput: shiftDetails.expectedOutput,
                     }}
 
                     // validation control
@@ -447,7 +510,6 @@ const LineThroughputChart = (props) => {
 
                     onSubmit={async (values, { setSubmitting, setTouched, }) => {
                         setSubmitting(true)
-                        console.log('QQQQ values', values)
                         onSubmitShift(values)
                         setSubmitting(false)
                     }}
@@ -464,12 +526,6 @@ const LineThroughputChart = (props) => {
 
                         return (
                             <Form
-                                onMouseDown={() => {
-                                    // console.log('QQQQ Submitting form', errors)
-                                    // if (Object.keys(errors).length === 0) {
-                                    //     submitForm(errors)
-                                    // }
-                                }}
                                 style={{
                                     backgroundColor: '#6c6e78',
                                     padding: '.5rem',
@@ -580,121 +636,113 @@ const LineThroughputChart = (props) => {
         )
     }
 
-    const onSubmitShift = (values) => {
-
-        console.log('QQQQ values', values)
-        let {
-            startOfShift,
-            endOfShift,
-            expectedOutput,
-            startOfBreak1,
-            endOfBreak1,
-            startOfBreak2,
-            endOfBreak2,
-            startOfBreak3,
-            endOfBreak3
-        } = values
-
-        setCompareExpectedOutput({
-            startOfShift: startOfShift,
-            endOfShift: endOfShift,
-            expectedOutput: expectedOutput,
-            breaks: {
-                break1: {
-                    ...compareExpectedOutput.breaks.break1,
-                    startOfBreak: startOfBreak1,
-                    endOfBreak: endOfBreak1,
-                },
-                break2: {
-                    ...compareExpectedOutput.breaks.break2,
-                    startOfBreak: startOfBreak2,
-                    endOfBreak: endOfBreak2,
-                },
-                break3: {
-                    ...compareExpectedOutput.breaks.break3,
-                    startOfBreak: startOfBreak3,
-                    endOfBreak: endOfBreak3,
-                },
-            },
-        })
-    }
-
     return (
         <styled.RowContainer>
-            {renderForm()}
-            <styled.PlotContainer style={{ flexGrow: '7' }} minHeight={27}>
-                <ResponsiveLine
-                    data={lineDataConverter}
-                    // data={!!convertedData ? convertedData : []}
+            {breaksEnabled !== null &&
+                <>
+                    {renderForm()}
+                    < styled.PlotContainer style={{ flexGrow: '7' }} minHeight={27}>
+                        <ResponsiveLine
+                            data={lineDataConverter}
+                            // data={!!convertedData ? convertedData : []}
+                            colors={line => colors[line.id]}
 
-                    xScale={{ type: "time" }}
-                    xFormat="time:%H:%M"
-                    yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
+                            xScale={{ type: "time" }}
+                            xFormat="time:%H:%M"
+                            yFormat={value => Math.round(value)}
+                            yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
 
-                    axisTop={null}
-                    axisRight={null}
-                    axisBottom={{ format: "%H:%M", tickRotation: 45 }}
-                    axisLeft={{
-                        orient: 'left',
-                        tickSize: 5,
-                        tickPadding: 5,
-                        tickOffset: 10,
-                        tickValues: 4
-                    }}
-                    axisLeft={{
-                        enable: true,
-                    }}
+                            axisTop={null}
+                            axisRight={null}
+                            axisBottom={{ format: "%H:%M", tickRotation: 45 }}
+                            axisLeft={{
+                                orient: 'left',
+                                tickSize: 5,
+                                tickPadding: 5,
+                                tickOffset: 10,
+                                tickValues: 4
+                            }}
+                            axisLeft={{
+                                enable: true,
+                            }}
 
-                    animate={true}
-                    useMesh={true}
+                            animate={true}
+                            useMesh={true}
 
-                    enablePoints={true}
-                    pointSize={5}
-                    pointBorderWidth={1}
-                    pointBorderColor={{ from: 'white' }}
-                    pointLabel="y"
-                    pointLabelYOffset={-12}
+                            enablePoints={true}
+                            pointSize={5}
+                            pointBorderWidth={1}
+                            pointBorderColor={{ from: 'white' }}
+                            pointLabel="y"
+                            pointLabelYOffset={-12}
 
-                    margin={{ top: 22, left: 70, right: 70, bottom: 30 }}
-                    enableGridY={isData ? true : false}
+                            margin={{ top: 22, left: 70, right: 70, bottom: 30 }}
+                            enableGridY={isData ? true : false}
 
-                    // curve="monotoneX"
-                    mainTheme={themeContext}
-
-                    theme={{
-                        textColor: '#ffffff',
-                        axis: {
-                            ticks: {
-                                line: {
-                                    stroke: "fff",
+                            // curve="monotoneX"
+                            // mainTheme={themeContext}
+                            legends={[
+                                {
+                                    anchor: 'top-left',
+                                    direction: 'column',
+                                    justify: false,
+                                    translateX: 10,
+                                    translateY: 0,
+                                    itemsSpacing: 0,
+                                    itemDirection: 'left-to-right',
+                                    itemWidth: 80,
+                                    itemHeight: 20,
+                                    itemOpacity: 0.75,
+                                    symbolSize: 12,
+                                    symbolShape: 'circle',
+                                    symbolBorderColor: 'rgba(0, 0, 0, .5)',
+                                    effects: [
+                                        {
+                                            on: 'hover',
+                                            style: {
+                                                itemBackground: 'rgba(0, 0, 0, .03)',
+                                                itemOpacity: 1
+                                            }
+                                        }
+                                    ]
+                                }]}
+                            theme={{
+                                textColor: '#ffffff',
+                                axis: {
+                                    ticks: {
+                                        line: {
+                                            stroke: "fff",
+                                        },
+                                        // text: {
+                                        //     fill: "fff",
+                                        //     textColor: '#ffffff',
+                                        //     // fontFamily: 'Montserrat',
+                                        //     fontSize: "0.8rem"
+                                        // },
+                                    }
                                 },
-                                // text: {
-                                //     fill: "fff",
-                                //     textColor: '#ffffff',
-                                //     // fontFamily: 'Montserrat',
-                                //     fontSize: "0.8rem"
-                                // },
-                            }
-                        },
-                        grid: {
-                            line: {
-                                stroke: '#55575e',
-                                strokeWidth: 1,
-                            }
-                        },
-                        crosshair: {
-                            line: {
-                                stroke: "#fff",
-                                strokeDasharray: "0"
-                            }
-                        }
-                    }}
+                                grid: {
+                                    line: {
+                                        stroke: '#55575e',
+                                        strokeWidth: 1,
+                                    }
+                                },
+                                crosshair: {
+                                    line: {
+                                        stroke: "#fff",
+                                        strokeDasharray: "0"
+                                    }
+                                }
+                            }}
 
-                />
+                        />
 
 
-            </styled.PlotContainer>
-        </styled.RowContainer>
+                    </styled.PlotContainer>
+                </>
+
+            }
+        </styled.RowContainer >
     )
 
 
