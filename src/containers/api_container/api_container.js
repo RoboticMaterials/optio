@@ -30,9 +30,6 @@ import { postLocalSettings } from '../../redux/actions/local_actions'
 import * as localActions from '../../redux/actions/local_actions'
 
 // Import components
-import Textbox from '../../components/basic/textbox/textbox'
-import Button from '../../components/basic/button/button'
-import Switch from 'react-ios-switch'
 import SplashScreen from "../../components/misc/splash_screen/splash_screen";
 
 // import utils
@@ -42,7 +39,6 @@ import { isEquivalent, deepCopy } from '../../methods/utils/utils'
 // import logger
 import logger from '../../logger.js';
 import { getMap } from '../../api/map_api';
-import SideBar from '../side_bar/side_bar';
 import localReducer from "../../redux/reducers/local_reducer";
 import { getCards, getProcessCards } from "../../redux/actions/card_actions";
 import apiReducer from "../../redux/reducers/api_reducer";
@@ -123,7 +119,10 @@ const ApiContainer = (props) => {
         // this interval is always on
         // loads essential info used on every page such as status and taskQueue
         setCriticalDataInterval(setInterval(() => loadCriticalData(), 500));
-        setMapDataInterval(setInterval(() => loadMapData(), 1000000));
+
+        if(!!mapViewEnabled){
+            setMapDataInterval(setInterval(() => loadMapData(), 10000));
+        }
 
 
         return () => {
@@ -240,7 +239,7 @@ const ApiContainer = (props) => {
         switch (pageName) {
 
             case 'objects':
-                setPageDataInterval(setInterval(() => loadObjectsData(), 100000))
+                setPageDataInterval(setInterval(() => loadObjectsData(), 10000))
                 break;
 
             case 'scheduler':
