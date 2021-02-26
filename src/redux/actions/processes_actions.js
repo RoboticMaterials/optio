@@ -29,7 +29,10 @@ import { deepCopy } from '../../methods/utils/utils'
 import {putDashboard} from "./dashboards_actions";
 import {getRouteProcesses} from "../../methods/utils/route_utils";
 import {willRouteDeleteBreakProcess} from "../../methods/utils/processes_utils";
+import * as dashboardsActions from "./dashboards_actions";
+import {deleteTask} from "./tasks_actions";
 
+import * as cardActions from "./card_actions";
 
 export const getProcesses = () => {
     return async dispatch => {
@@ -119,7 +122,9 @@ export const putProcesses = (process) => {
         }
     }
 }
-export const deleteProcesses = (ID) => {
+
+
+export const deleteProcess = (ID) => {
     return async dispatch => {
         function onStart() {
             dispatch({ type: DELETE_PROCESSES_STARTED });
@@ -135,13 +140,26 @@ export const deleteProcesses = (ID) => {
 
         try {
             onStart();
-            const removeProcesses = await api.deleteProcesses(ID);
+            const removeProcesses = await api.deleteProcess(ID);
             return onSuccess(ID)
         } catch (error) {
             return onError(error)
         }
     }
 }
+
+// delete CLEAN
+// ******************************
+export const deleteProcessClean = (processId) => {
+    return async (dispatch, getState) => {
+
+        // remove route from all dashboards
+        await dispatch(cardActions.deleteProcessCards(processId))
+
+        await dispatch(deleteProcess(processId))
+    }
+}
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // deletes all buttons with routeId from all dashboards
 // ******************************

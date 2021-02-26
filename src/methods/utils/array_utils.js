@@ -26,3 +26,15 @@ function arraysEqual(a, b) {
 	}
 	return true;
 }
+
+export const immutableInsert = (arr, ele, index) => {
+	return [...arr.slice(0, index), ele, ...arr.slice(index, arr.length)]
+}
+
+export const immutableDelete = (arr, index) => {
+	return [...arr.slice(0, index), ...arr.slice(index+1, arr.length)]
+}
+
+export const immutableReplace = (arr, ele, index) => {
+	return [...arr.slice(0, index), ele, ...arr.slice(index+1, arr.length)]
+}
