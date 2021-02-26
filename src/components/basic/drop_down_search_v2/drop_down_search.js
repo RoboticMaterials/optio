@@ -590,8 +590,8 @@ export const DefaultReactDropdownSelect = styled.div`
     border-bottom: 2px solid transparent;
     border-radius: 0.2rem;
 
-    :focus,
-    :focus-within {
+     :focus,
+     :focus-within {
         color: ${props => props.theme.bg.octonary};
         background-color: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};
         box-shadow: none;
@@ -655,6 +655,8 @@ DropDownSearch.defaultProps = {
   Container: DefaultContainer,
   fillable: true,
   schema: null,
+  onMouseEnter: () => {},
+  onMouseLeave: () => {},
 };
 
 

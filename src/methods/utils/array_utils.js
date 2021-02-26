@@ -15,3 +15,26 @@ export const removeArrayIndices = (arr, indices) => {
 
 	return arrCopy
 }
+
+function arraysEqual(a, b) {
+	if (a === b) return true;
+	if (a == null || b == null) return false;
+	if (a.length !== b.length) return false;
+
+	for (var i = 0; i < a.length; ++i) {
+		if (a[i] !== b[i]) return false;
+	}
+	return true;
+}
+
+export const immutableInsert = (arr, ele, index) => {
+	return [...arr.slice(0, index), ele, ...arr.slice(index, arr.length)]
+}
+
+export const immutableDelete = (arr, index) => {
+	return [...arr.slice(0, index), ...arr.slice(index+1, arr.length)]
+}
+
+export const immutableReplace = (arr, ele, index) => {
+	return [...arr.slice(0, index), ele, ...arr.slice(index+1, arr.length)]
+}

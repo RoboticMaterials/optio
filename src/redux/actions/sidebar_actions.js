@@ -3,6 +3,7 @@ import {
     SET_ACTION,
     SET_WIDTH,
     SET_OPEN,
+    PAGE_DATA_CHANGED,
 } from '../types/sidebar_types'
 
 export const setMode = (mode) => {
@@ -19,4 +20,8 @@ export const setWidth = (width) => {
 
 export const setOpen = (state) => {
     return { type: SET_OPEN, payload: state}
+}
+
+export const pageDataChanged = (state) => {
+    return { type: PAGE_DATA_CHANGED, payload: state}
 }

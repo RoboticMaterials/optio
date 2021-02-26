@@ -23,6 +23,8 @@ import {
 } from '../../../../../redux/actions/tasks_actions'
 import { setSelectedProcess, setFixingProcess } from '../../../../../redux/actions/processes_actions'
 import {handlePostTaskQueue, postTaskQueue} from '../../../../../redux/actions/task_queue_actions'
+import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
+
 
 // Import Utils
 import {
@@ -77,6 +79,9 @@ export const ProcessField = (props) => {
     const dispatchSetFixingProcess = async (bool) => await dispatch(setFixingProcess(bool))
     const dispatchDeleteRouteClean = async (routeId) => await dispatch(deleteRouteClean(routeId))
     const dispatchSetSelectedHoveringTask = (task) => dispatch(setSelectedHoveringTask(task))
+    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
+
+
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const stations = useSelector(state => state.stationsReducer.stations)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -131,7 +136,9 @@ export const ProcessField = (props) => {
       }
     })
 
-
+    useEffect(() => {
+      dispatchPageDataChanged(values.changed)
+    }, [values.changed])
     const handleAddTask = async () => {
 
         // contains new route

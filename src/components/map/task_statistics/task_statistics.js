@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import * as styled from './task_statistics.style'
 import taskAnalysisReducer from "../../../redux/reducers/task_analysis_reducer";
 import IconButton from '../../basic/icon_button/icon_button'
+import {getTasksAnalysis} from "../../../redux/actions/task_analysis_actions";
 
 const TaskStatistics = (props) => {
 
@@ -14,6 +15,9 @@ const TaskStatistics = (props) => {
         // positions,
         d3,
     } = props
+
+    const dispatch = useDispatch()
+    const onGetTasksAnalysis = () => dispatch(getTasksAnalysis())
 
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
@@ -30,8 +34,8 @@ const TaskStatistics = (props) => {
     const location = useLocation()
 
     useEffect(() => {
+        onGetTasksAnalysis()
     }, [])
-
 
     const handleSingleTask = (task) => {
 
@@ -85,15 +89,15 @@ const TaskStatistics = (props) => {
         // const xPosition = (midX - height() * Math.sin(theta)) - 80 + 'px'
         // const yPosition = (midY + height() * Math.cos(theta)) - 40 + 'px'
 
-        const xPosition = midX -120 + 'px'
+        const xPosition = midX -40 + 'px'
         const yPosition = midY +20 + 'px'
           return (
               <styled.TaskStatisticsContainer xPosition={xPosition} yPosition={yPosition}>
-              <styled.RowContainer style = {{borderBottom: '1px solid black', paddingBottom: '.2rem', paddingTop: '.2rem'}}>
+              <styled.RowContainer style = {{borderBottom: '1px solid black', padding: '.2rem .2rem .2rem .2rem', width: '100%'}}>
 
-                <styled.TaskText style = {{paddingRight: '.7rem'}}>Route Type: </styled.TaskText>
+                <styled.TaskText style = {{paddingRight: '.7rem'}}>{task.name} </styled.TaskText>
 
-                  <IconButton color={'red'} style = {{paddingRight: '0.2rem'}}>
+                  <IconButton color={'red'} style = {{paddingRight: '.2rem'}}>
                       {task.device_types[0] === 'human' ?
                           <i className="fas fa-user"></i>
                           :
@@ -101,28 +105,14 @@ const TaskStatistics = (props) => {
                       }
                   </IconButton>
 
-                  {task.device_types[0]==='human' ?
-                    <styled.TaskText>Human</styled.TaskText>
-                    :
-                    <styled.TaskText>Robot</styled.TaskText>
-                  }
               </styled.RowContainer>
 
               <styled.RowContainer style = {{paddingTop: '.2rem'}}>
 
-                {task.processes.length === 1 ?
+                  <styled.TaskText style = {{paddingRight: '.7rem'}}>{task.processes.length}</styled.TaskText>
 
-                  <styled.TaskText style = {{paddingRight: '.7rem'}}>Used in 1 process </styled.TaskText>
-                  :
-                  <styled.TaskText style = {{paddingRight: '.7rem'}}>Used in {task.processes.length} processes </styled.TaskText>
-                }
-
-                  <IconButton color={task.processes.length>0 ?'green': 'red'}>
-                  {task.processes.length>0 ?
-                    <i className="fas fa-check-circle"></i>
-                    :
-                    <i className="fas fa-times-circle"></i>
-                  }
+                  <IconButton color= '#ffb62e'>
+                    <i className="fas fa-route"></i>
                   </IconButton>
 
               </styled.RowContainer>

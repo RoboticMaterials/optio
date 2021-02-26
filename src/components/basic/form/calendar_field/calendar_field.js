@@ -23,16 +23,6 @@ const CalendarField = ({
 
 	const errorMessage = getMessageFromError(meta.error);
 
-	const startYearVal = value?.start?.year || 0
-	const startMonthVal = value?.start?.month || 0
-	const startDayVal = value?.start?.day || 0
-
-	const endYearVal = value?.end?.year || 0
-	const endMonthVal = value?.end?.month || 0
-	const endDayVal = value?.end?.day || 0
-
-	const startDate = (startYearVal && (startMonthVal + 1) && startDayVal) ? new Date(startYearVal, startMonthVal, startDayVal, 0, 0, 0, 0) : new Date()
-	const endDate = (endYearVal && (endMonthVal + 1) && endDayVal) ? new Date(endYearVal, endMonthVal, endDayVal, 0, 0, 0, 0) : null
 
 	return (
 		<Container>
@@ -46,7 +36,7 @@ const CalendarField = ({
 					{...field}
 					selectRange={true}
 					// defaultValue={[initialStartDate, initialEndDate]}
-					value={[startDate, endDate]}
+					value={value}
 					allowPartialRange
 					// defaultActiveStartDate={initialStartDate}
 					// defaultValue={value}
@@ -57,26 +47,7 @@ const CalendarField = ({
 							setFieldTouched(true)
 						}
 
-						const startDate = value[0]
-
-
-						let month = startDate.getUTCMonth()
-						let day = startDate.getUTCDate();
-						let year = startDate.getUTCFullYear();
-
-						let newValue = {
-							start: {year, month, day}
-						}
-
-						if(Array.isArray(value) && value.length > 1) {
-							const endDate = value[1]
-							let month = endDate.getUTCMonth()
-							let day = endDate.getUTCDate() - 1
-							let year = endDate.getUTCFullYear()
-							newValue["end"] = {year, month, day}
-						}
-
-						setFieldValue(field.name, newValue);
+						setFieldValue(field.name, value);
 						onChange && onChange(value)
 					}}
 				/>
