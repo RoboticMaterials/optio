@@ -21,14 +21,16 @@ const DashboardRouteField = props => {
 
 	// extract props
 	const {
-		button,
 		ind,
+		taskId,
+		color,
+		deletable
 	} = props
 
 	const themeContext = useContext(ThemeContext);
 
 	const tasks = useSelector(state => state.tasksReducer.tasks)
-	const taskName = tasks[button.task_id]?.name || "TASK NOT FOUND"
+	const taskName = tasks[taskId]?.name || "TASK NOT FOUND"
 
 	const schema = themeContext.schema.routes
 	const iconClassName = schema.iconName
@@ -37,7 +39,7 @@ const DashboardRouteField = props => {
 	return(
 		// set zindex to make sure the dropdown from buttons above display on top of the buttons below it
 		<buttonFieldStyles.Container style={{position: 'relative', zIndex: `${100-ind}`}}>
-			<buttonFieldStyles.DashboardEditButton color={button.color} >
+			<buttonFieldStyles.DashboardEditButton color={color} >
 
 				<ColorField
 					name={`buttons[${ind}].color`}
@@ -62,6 +64,7 @@ const DashboardRouteField = props => {
 			<buttonFieldStyles.RightContentContainer>
 				<buttonFieldStyles.SchemaIcon className={iconClassName} color={schema.solid}></buttonFieldStyles.SchemaIcon>
 
+				{deletable &&
 				<DeleteFieldButton
 					name={`buttons`}
 					index={ind}
@@ -70,6 +73,7 @@ const DashboardRouteField = props => {
 					ViewComponent={buttonFieldStyles.DeleteButtonIcon}
 					fontSize={"large"}
 				/>
+				}
 			</buttonFieldStyles.RightContentContainer>
 		</buttonFieldStyles.Container>
 

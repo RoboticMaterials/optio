@@ -1,32 +1,39 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
+// external functions
 import { useDispatch, useSelector } from 'react-redux';
 import { DraggableCore } from "react-draggable";
 import { Container } from 'react-smooth-dnd'
-
-import * as style from "./dashboards_sidebar.style"
-import { ThemeContext } from "styled-components";
+import uuid from 'uuid'
 
 // components
 import DashboardSidebarButton from "./dashboard_sidebar_button/dashboard_sidebar_button";
 import TaskAddedAlert from "../dashboard_screen/task_added_alert/task_added_alert";
+import WidgetButton from "../../../../basic/widget_button/widget_button";
 
-// Helpers
-import { handleAvailableTasks } from "../../../../../methods/utils/dashboards_utils";
-
-// Import Utils
+// constants
 import { ADD_TASK_ALERT_TYPE, DASHBOARD_BUTTON_COLORS } from "../../../../../constants/dashboard_contants";
-import uuid from 'uuid'
+
+// utils
+import {
+    getDashboardContainsOperationButton,
+    getDashboardContainsRouteButton,
+    getIsFinishEnabled,
+    getIsKickoffEnabled, getOperationButton,
+    handleAvailableTasks
+} from "../../../../../methods/utils/dashboards_utils";
 
 // Import Actions
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 
+// styles
+import * as style from "./dashboards_sidebar.style"
+import { ThemeContext } from "styled-components";
+
+// logging
 import log from '../../../../../logger'
-import WidgetButton from "../../../../basic/widget_button/widget_button";
-
+import PropTypes from "prop-types";
 const logger = log.getLogger("Dashboards")
-
-
 
 export const OPERATION_TYPES = {
     REPORT: {
@@ -72,12 +79,11 @@ const DashboardsSidebar = (props) => {
         width,
         setWidth,
         minWidth,
-        showSideBar,
         stationID,
         clickable,
-        dashboardId
+        dashboardId,
+        existingButtons
     } = props
-
 
     /*
     * Tests sidebar width to  determine if styling should be for small or large width
@@ -86,11 +92,6 @@ const DashboardsSidebar = (props) => {
     const testSize = (width) => {
         return width < 500
     }
-
-    /*
-    * ref for scrollable list containing buttons
-    * */
-    const listRef = useRef(null);
 
     // theme
     const themeContext = useContext(ThemeContext);
@@ -109,12 +110,25 @@ const DashboardsSidebar = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
     const code409 = useSelector(state => { return state.taskQueueReducer.error })
     const devices = useSelector(state => state.devicesReducer.devices)
+    const dashboard = useSelector(state => { return state.dashboardsReducer.dashboards[dashboardId] }) || {}
 
-    const kickOffEnabledInfo = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] })
-    const kickOffEnabled = kickOffEnabledInfo && Array.isArray(kickOffEnabledInfo) && kickOffEnabledInfo.length > 0
+    const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] })
+    const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] })
 
-    const finishEnabledProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] })
-    const finsihedEnabled = finishEnabledProcesses && Array.isArray(finishEnabledProcesses) && finishEnabledProcesses.length > 0
+    const [finishEnabled, setFinishEnabled] = useState(getIsFinishEnabled(availableFinishProcesses))
+    const [kickOffEnabled, setKickOffEnabled] = useState(getIsKickoffEnabled(availableKickOffProcesses))
+
+    const [availableTasks, setAvailableTasks] = useState([])
+    const [availableButtons, setAvailableButtons] = useState([])
+    const [availableReportButtons, setAvailableReportButtons] = useState([])
+
+    useEffect(() => {
+        setFinishEnabled(getIsFinishEnabled(availableFinishProcesses))
+    }, [availableFinishProcesses])
+
+    useEffect(() => {
+        setKickOffEnabled(getIsKickoffEnabled(availableKickOffProcesses))
+    }, [availableKickOffProcesses])
 
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null)
@@ -155,24 +169,26 @@ const DashboardsSidebar = (props) => {
             // clear alert after timeout
             setTimeout(() => setAddTaskAlert(null), 1800)
         })
-
-
     }
 
     const handleReportClick = (Id) => {
 
     }
 
-    const station = !!stations[stationID] ? stations[stationID] : devices[stationID]
+    useEffect(() => {
+        const station = !!stations[stationID] ? stations[stationID] : devices[stationID]
 
-    var availableTasks = []
-    try {
-        availableTasks = handleAvailableTasks(tasks, station)
-    }
-    catch (e) {
-        logger.log("availableTasks availableTasks", availableTasks)
-        logger.log("availableTasks e", e)
-    }
+        var availableTasks = []
+        try {
+            availableTasks = handleAvailableTasks(tasks, station)
+        }
+        catch (e) {
+            logger.error("availableTasks availableTasks", availableTasks)
+            logger.error("availableTasks e", e)
+        }
+        setAvailableTasks(availableTasks)
+
+    }, [stationID, stations, devices, tasks])
 
     const getRouteButtons = () => {
         return availableTasks
@@ -209,48 +225,33 @@ const DashboardsSidebar = (props) => {
 
             if (currKey === null) return true // allows old routes that were created without a type to still be rendered
 
-            if (currKey === null) return true // allows old routes that were created without a type to still be rendered
-
             if (currKey === OPERATION_TYPES.REPORT.key) return true
 
             if ((currKey === OPERATION_TYPES.KICK_OFF.key) && kickOffEnabled) return true
 
-            if ((currKey === OPERATION_TYPES.FINISH.key) && finsihedEnabled) return true
+            if ((currKey === OPERATION_TYPES.FINISH.key) && finishEnabled) return true
 
         }).map((currEntry, ind) => {
 
             const currValue = currEntry[1]
             const currKey = currEntry[0]
 
+            const button = getOperationButton(currKey)
             return {
-                name: currValue.name,
-                color: DASHBOARD_BUTTON_COLORS[ind % DASHBOARD_BUTTON_COLORS.length].hex,
-                // themeContext.schema[currValue.schema].solid,
+                ...button,
                 id: currValue._id,
-                type: currKey,
             }
         })
     }
 
-    var availableButtons = []
-    var availableReportButtons = []
+    useEffect(() => {
+        setAvailableButtons(getRouteButtons())
+    }, [availableTasks])
 
-    switch (type) {
-        case TYPES.ROUTES.key:
-            availableButtons = getRouteButtons()
-            break
-        case TYPES.OPERATIONS.key:
-            availableReportButtons = getReportButtons()
-            break
+    useEffect(() => {
+        setAvailableReportButtons(getReportButtons())
+    }, [OPERATION_TYPES])
 
-        // case TYPES.ALL.name:
-        //     availableButtons = getRouteButtons()
-        //     availableReportButtons = getReportButtons()
-        //     break
-
-        default:
-            break
-    }
 
     function handleDrag(e, ui) {
         setWidth(Math.max(minWidth, width + ui.deltaX))
@@ -279,35 +280,52 @@ const DashboardsSidebar = (props) => {
     }
 
     return (
-        <style.SidebarWrapper onClick={() => setAddTaskAlert(null)}>
+        <style.SidebarWrapper
+            onClick={() => setAddTaskAlert(null)}
+        >
             <style.SidebarContent
                 key="sidebar-content"
                 style={{ width: width }}
             >
                 <style.Container>
                     <style.ListContainer>
+                        {(type === TYPES.ROUTES.key) &&
+
                         <Container
                             groupName="dashboard-buttons"
                             getChildPayload={index =>
                                 availableButtons[index]
                             }
                         >
-                            {availableButtons.map((button, index) => {
+                            {availableButtons.map((currButton, index) => {
 
+                                const {
+                                    name: currButtonName,
+                                    color: currButtonColor,
+                                    task_id: currButtonTaskId,
+                                    id: currButtonId,
+                                    type: currButtonType
+                                } = currButton || {}
+
+                                const dashboardContainsTask = getDashboardContainsRouteButton({buttons: existingButtons}, {task_id: currButtonTaskId})
                                 return (
                                     <DashboardSidebarButton
-                                        key={`dashboard-sidebar-button-${button.id}`}
-                                        name={button.name}
-                                        color={button.color}
-                                        task_id={button.task_id}
-                                        id={button.id}
+                                        key={`dashboard-sidebar-button-${currButtonId}`}
+                                        name={currButtonName}
+                                        color={currButtonColor}
+                                        task_id={currButtonTaskId}
+                                        id={currButtonId}
                                         clickable={clickable}
                                         onTaskClick={handleTaskClick}
-                                        disabled={!!addTaskAlert}
+                                        disabled={(!!addTaskAlert) || dashboardContainsTask}
+                                        dragDisabled={dashboardContainsTask}
                                     />
                                 )
                             })}
                         </Container>
+                        }
+
+                        {(type === TYPES.OPERATIONS.key) &&
                         <Container
                             groupName="dashboard-buttons"
                             getChildPayload={index =>
@@ -315,19 +333,30 @@ const DashboardsSidebar = (props) => {
                             }
                         >
                             {availableReportButtons.map((button, index) => {
+                                const {
+                                    name: currButtonName,
+                                    color: currButtonColor,
+                                    id: currButtonId,
+                                    type: currButtonType
+                                } = button || {}
+
+                                const dashboardContainsButton = getDashboardContainsOperationButton({buttons: existingButtons}, {type: currButtonType})
+
                                 return (
                                     <DashboardSidebarButton
-                                        key={`dashboard-sidebar-button-${button.id}`}
-                                        name={button.name}
-                                        color={button.color}
-                                        id={button.id}
+                                        key={`dashboard-sidebar-button-${currButtonId}`}
+                                        name={currButtonName}
+                                        color={currButtonColor}
+                                        id={currButtonId}
                                         clickable={clickable}
                                         onTaskClick={handleReportClick}
-                                        disabled={!!addTaskAlert}
+                                        disabled={!!addTaskAlert || dashboardContainsButton}
+                                        dragDisabled={dashboardContainsButton}
                                     />
                                 )
                             })}
                         </Container>
+                        }
                     </style.ListContainer>
 
                     <style.FooterContainer>
@@ -348,6 +377,18 @@ const DashboardsSidebar = (props) => {
             />
         </style.SidebarWrapper>
     )
+}
+
+// Specifies propTypes
+DashboardsSidebar.propTypes = {
+    existingButtons: PropTypes.arrayOf(
+        PropTypes.object
+    )
+}
+
+// Specifies the default values for props:
+DashboardsSidebar.defaultProps = {
+    existingButtons: []
 }
 
 export default DashboardsSidebar

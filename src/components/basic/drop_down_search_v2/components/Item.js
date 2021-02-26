@@ -18,7 +18,7 @@ class Item extends Component {
 
   render() {
     // console.log('Item render this.props',this.props)
-    const { props, state, methods, item, itemIndex, ItemComponent, ContentContainer, ButtonComponent, TextComponent, onMouseEnter } = this.props;
+    const { props, state, methods, item, itemIndex, ItemComponent, ContentContainer, ButtonComponent, TextComponent, onMouseEnter, onMouseLeave } = this.props;
 
     if (props.itemRenderer) {
       return props.itemRenderer({ item, itemIndex, props, state, methods });
@@ -50,9 +50,16 @@ class Item extends Component {
         onKeyPress={item.disabled ? undefined : () => methods.addItem(item)}
         color={props.color}
         schema={props.schema}
-        onMouseEnter = {() => props.onMouseEnter(item)}
-        onMouseLeave = {() => props.onMouseLeave(item)}
-        >
+        onMouseEnter = {() => {
+          if(!!props.onMouseEnter){
+          props.onMouseEnter(item)
+        }
+        }}
+        onMouseLeave = {() => {
+          if(!!props.onMouseLeave){
+          props.onMouseLeave(item)
+        }
+        }}        >
 
             <TextComponent>
               {getByPath(item, props.labelField)} {item.disabled && <ins>{props.disabledLabel}</ins>}
@@ -173,6 +180,8 @@ Item.defaultProps = {
     ContentContainer: DefaultContentContainer,
     ButtonComponent: DefaultButtonComponent,
     TextComponent: DefaultTextComponent,
+    onMouseEnter: () => {},
+    onMouseLeave: () => {}
 };
 
 export default Item;

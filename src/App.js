@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Route, IndexRoute, Link, Switch, useHistory } from 'react-router-dom';
 import { connect, useSelector, useDispatch } from 'react-redux'
 
@@ -49,13 +49,10 @@ const App = (props) => {
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
     const getFailureCount = useSelector(state => state.taskQueueReducer.getFailureCount)
-
     const dispatch = useDispatch()
     const dispatchStopAPICalls = (bool) => dispatch(stopAPICalls(bool))
-
     // Set to true for the time being, authentication is not 100% complete as of 09/14/2020
     const [authenticated, setAuthenticated] = useState(true)
-
     const [loaded, setLoaded] = useState(false)
     const [apiLoaded, setApiLoaded] = useState(false)
     const [stateTheme, setStateTheme] = useState('main')
@@ -68,6 +65,7 @@ const App = (props) => {
     const history = useHistory()
 
     const mobileMode = windowWidth < widthBreakPoint;
+
 
     /**
      * This handles Map view in mobile mode

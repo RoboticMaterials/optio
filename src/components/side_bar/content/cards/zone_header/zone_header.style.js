@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import {commonClickableIcon, iconButtonCss} from "../../../../../common_css/common_css";
 
 export const Container = styled.div`
 	display: flex;
@@ -19,4 +20,17 @@ export const ColumnContainer = styled.div`
 export const Description = styled.span`
   color: white;
   margin-bottom: .25rem;
+`
+
+export const ItemContainer = styled.div`
+	display: flex;
+`
+
+export const FlagsContainer = styled.div`
+	display: flex;
+`
+export const FlagButton = styled.button`
+	${iconButtonCss};
+  	${commonClickableIcon};
+  	margin: 0 .25rem;
 `

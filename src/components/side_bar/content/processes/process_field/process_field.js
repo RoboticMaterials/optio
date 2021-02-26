@@ -23,6 +23,8 @@ import {
 } from '../../../../../redux/actions/tasks_actions'
 import { setSelectedProcess, setFixingProcess } from '../../../../../redux/actions/processes_actions'
 import {handlePostTaskQueue, postTaskQueue} from '../../../../../redux/actions/task_queue_actions'
+import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
+
 
 // Import Utils
 import {
@@ -39,6 +41,10 @@ import useChange from "../../../../basic/form/useChange";
 import * as styled from './process_field.style'
 import {DEVICE_CONSTANTS} from "../../../../../constants/device_constants";
 import {throttle} from "../../../../../methods/utils/function_utils";
+import {ADD_TASK_ALERT_TYPE} from "../../../../../constants/dashboard_contants";
+import TaskAddedAlert
+    from "../../../../widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
+import {getSidebarDeviceType, isRouteInQueue} from "../../../../../methods/utils/task_queue_utils";
 
 export const ProcessField = (props) => {
     const {
@@ -77,6 +83,9 @@ export const ProcessField = (props) => {
     const dispatchSetFixingProcess = async (bool) => await dispatch(setFixingProcess(bool))
     const dispatchDeleteRouteClean = async (routeId) => await dispatch(deleteRouteClean(routeId))
     const dispatchSetSelectedHoveringTask = (task) => dispatch(setSelectedHoveringTask(task))
+    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
+
+
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const stations = useSelector(state => state.stationsReducer.stations)
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -91,6 +100,8 @@ export const ProcessField = (props) => {
     const [editingTask, setEditingTask] = useState(false) // Used to tell if a task is being edited
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [showExistingTaskWarning, setShowExistingTaskWarning] = useState(false);
+    const [addTaskAlert, setAddTaskAlert] = useState(null);
+
     const valuesRef = useRef(values);
 
     // throttled func
@@ -131,7 +142,9 @@ export const ProcessField = (props) => {
       }
     })
 
-
+    useEffect(() => {
+      dispatchPageDataChanged(values.changed)
+    }, [values.changed])
     const handleAddTask = async () => {
 
         // contains new route
@@ -310,20 +323,43 @@ export const ProcessField = (props) => {
         if(!isObject(task)) return
 
         const routeName = task.name
+        const deviceType = getSidebarDeviceType(selectedTask)
 
-        let deviceType
-        if(isMiRTask(task)) {
-            // if MiR is available, default to MiR
-            deviceType = DEVICE_CONSTANTS.MIR_100
+        const inQueue = isRouteInQueue(routeId, deviceType)
+
+        // add alert to notify task has been added
+        // If in Q, then tell them it's already there
+        if (inQueue) {
+            // display alert notifying user that task is already in queue
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
+                label: "Alert! Task Already in Queue",
+                message: `'${routeName}' not added`,
+            })
+
+            // clear alert after timeout
+            return setTimeout(() => setAddTaskAlert(null), 1800)
         }
-        else if(isHumanTask(task)){
-            // otherwise if human is available, submit human
-            deviceType = DEVICE_CONSTANTS.HUMAN
+
+        // Else see what type of task it is and add accordingly
+        else {
+            const dashboardID = getLoadStationDashboard(selectedTask)
+
+
+
+            // Handle Add
+            if (deviceType !== 'human') {
+                setAddTaskAlert({
+                    type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+                    label: "Task Added to Queue",
+                    message: routeName
+                })
+
+                // clear alert after timeout
+                setTimeout(() => setAddTaskAlert(null), 1800)
+            }
+            onHandlePostTaskQueue({dashboardID, tasks, deviceType, taskQueue, Id: routeId, name: routeName, custom: false, fromSideBar: true})
         }
-
-        const dashboardID = getLoadStationDashboard(selectedTask)
-
-        onHandlePostTaskQueue({dashboardID, tasks, deviceType, taskQueue, Id: routeId, name: routeName, custom: false, fromSideBar: true})
     }
 
     // Maps through the list of existing routes
@@ -345,9 +381,13 @@ export const ProcessField = (props) => {
             const isLast = currIndex === routes.length - 1
             const fieldName = `routes[${currIndex}]`
 
+            const deviceType = getSidebarDeviceType(currRoute)
+            const inQueue = isRouteInQueue(currRouteId, deviceType)
+
             return (
                 <div key={`li-${currIndex}`}>
                     <ListItemField
+                        playDisabled={inQueue}
                         containerStyle={{marginBottom: isLast ? 0 : "1rem"}}
                         name={fieldName}
                         onMouseEnter={() => {
@@ -494,6 +534,13 @@ export const ProcessField = (props) => {
     }
     return(
         <>
+            <TaskAddedAlert
+                containerStyle={{
+                    'position': 'absolute'
+                }}
+                {...addTaskAlert}
+                visible={!!addTaskAlert}
+            />
           {selectedProcess.routes.length !==0 ?
             <ConfirmDeleteModal
                 isOpen={!!confirmDeleteModal}
