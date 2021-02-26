@@ -55,6 +55,7 @@ export default function TaskContent(props) {
     const editing = useSelector(state => state.tasksReducer.editingTask) //Moved to redux so the variable can be accesed in the sideBar files for confirmation modal
     const objects = useSelector(state => state.objectsReducer.objects)
 
+
     /**
     * @param {*} Id
     */
@@ -105,6 +106,8 @@ export default function TaskContent(props) {
             return null
         }
     }
+
+
 
     const onExecuteTask = () => {
 
@@ -197,7 +200,10 @@ export default function TaskContent(props) {
                     onMouseEnter={(task) => {
                         dispatchSetSelectedTask(task)
                     }}
-                    onMouseLeave={(task) => dispatchSetSelectedTask(null)}
+                    onMouseLeave={() => {
+                      dispatchSetSelectedTask(null)
+
+                    }}
                     onClick={(task) => {
                         setIsNew(false)
                         // If task button is clicked, start editing it

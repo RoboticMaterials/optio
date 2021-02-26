@@ -241,7 +241,7 @@ const App = (props) => {
                                       So they need to be here. */}
                                       {hoveringInfo !== null && mobileMode &&
                                           <Route
-                                              path={["/locations/:stationID?/:widgetPage?", '/']}
+                                              path={["/locations/:stationID?/:widgetPage?", '/', "/locations/:deviceID?/:widgetPage?"]}
                                               component={Widgets}
                                           />
                                       }

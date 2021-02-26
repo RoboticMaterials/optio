@@ -22,7 +22,6 @@ import { postSettings, getSettings } from '../../../../redux/actions/settings_ac
 import { postLocalSettings } from '../../../../redux/actions/local_actions'
 import { deviceEnabled } from '../../../../redux/actions/settings_actions'
 import { getStatus } from '../../../../redux/actions/status_actions'
-import { postStatus } from '../../../../api/status_api'
 import { setCurrentMap } from '../../../../redux/actions/map_actions'
 
 // Import Utils
@@ -33,18 +32,16 @@ import * as taskActions from "../../../../redux/actions/tasks_actions";
 const Settings = () => {
 
     const dispatch = useDispatch()
-    const onPostSettings = (settings) => dispatch(postSettings(settings))
-    const onGetSettings = () => dispatch(getSettings())
-    const onPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
-    const onSetCurrentMap = (map) => dispatch(setCurrentMap(map))
-    const onGetStatus = () => dispatch(getStatus())
-    const onDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
+    const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
+    const dispatchGetSettings = () => dispatch(getSettings())
+    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const dispatchSetCurrentMap = (map) => dispatch(setCurrentMap(map))
+    const dispatchGetStatus = () => dispatch(getStatus())
+    const dispatchDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
 
     const mapReducer = useSelector(state => state.mapReducer)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
     const localSettings = useSelector(state => state.localReducer.localSettings)
-    const status = useSelector(state => state.statusReducer.status)
-    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const devices = useSelector(state =>state.devicesReducer.devices)
     const deviceEnabledSetting = serverSettings.deviceEnabled
     const {
@@ -106,18 +103,7 @@ const Settings = () => {
 
     }
 
-    // Submits the Mir Connection to the backend
-    const handleMirConnection = async () => {
-        // Tells the backend that a new mir ip has been entered
-        const mir = { mir_connection: 'connecting' }
 
-        // post both settiings and status because the IP address is in settings but the backend knows it was updated from the status
-        await onPostSettings(serverSettingsState)
-        await postStatus(mir)
-
-        setMirUpdated(false)
-
-    }
 
     // Submits settings to the backend
     const handleSumbitSettings = async () => {
@@ -128,7 +114,7 @@ const Settings = () => {
         const deviceChange = isEquivalent(deviceEnabled, deviceEnabledSetting)
 
         if (!localChange) {
-            await onPostLocalSettings(localSettingsState)
+            await dispatchPostLocalSettings(localSettingsState)
             if(localSettingsState.mapViewEnabled){
               //const hamburger = document.querySelector('.hamburger')
               //hamburger.classList.toggle('is-active')
@@ -138,21 +124,21 @@ const Settings = () => {
 
         if (!serverChange) {
             delete serverSettingsState._id
-            await onPostSettings(serverSettingsState)
+            await dispatchPostSettings(serverSettingsState)
         }
 
         if (mapChange) {
-            // await onPostLocalSettings(localSettingsState)
-            await onSetCurrentMap(mapSettingsState)
+            // await dispatchPostLocalSettings(localSettingsState)
+            await dispatchSetCurrentMap(mapSettingsState)
         }
 
         if(!deviceChange) {
-          await onDeviceEnabled(devicesEnabled)
-          await onPostSettings(serverSettingsState)
+          await dispatchDeviceEnabled(devicesEnabled)
+          await dispatchPostSettings(serverSettingsState)
         }
 
-        await onGetSettings()
-        await onGetStatus()
+        await dispatchGetSettings()
+        await dispatchGetStatus()
 
     }
 
@@ -180,67 +166,7 @@ const Settings = () => {
         )
     }
 
-    // Handles the MIR IP connectiong
-    const MirIp = () => {
 
-        let connectionIcon = ''
-        let connectionText = ''
-
-        // Sets the connection variables according to the state of
-        if (mirUpdated) {
-            connectionIcon = 'fas fa-question'
-            connectionText = 'Not Connected'
-        }
-        else if (status.mir_connection === 'connected') {
-            connectionIcon = 'fas fa-check'
-            connectionText = 'Connected'
-        }
-        else if (status.mir_connection === 'connecting') {
-            connectionIcon = 'fas fa-circle-notch fa-spin'
-            connectionText = 'Connecting'
-        }
-        else if (status.mir_connection === 'failed') {
-            connectionIcon = 'fas fa-times'
-            connectionText = 'Failed'
-        }
-        else {
-            connectionIcon = 'fas fa-question'
-            connectionText = 'Not Connected'
-
-        }
-
-        if (MiRMapEnabled) {
-            return (
-                <styled.SettingContainer style={{ marginTop: '1rem' }}>
-
-
-
-                    <styled.RowContainer style={{ position: 'relative', justifyContent: 'space-between' }}>
-                        <styled.Header>MIR IP</styled.Header>
-                        <styled.ConnectionButton onClick={() => handleMirConnection()} disabled={(connectionText === 'Connected' || connectionText === 'Connecting')}>
-                            {connectionText}
-                            <styled.ConnectionIcon className={connectionIcon} />
-                        </styled.ConnectionButton>
-
-                    </styled.RowContainer>
-
-                    <Textbox
-                        placeholder="MiR IP Address"
-                        value={serverSettingsState.mir_ip}
-                        onChange={(event) => {
-                            setServerSettingsState({
-                                ...serverSettingsState,
-                                mir_ip: event.target.value
-                            })
-                        }}
-                        style={{ width: '100%' }}
-
-                    />
-
-                </styled.SettingContainer>
-            )
-        }
-    }
 
     const APIAddress = () => {
         //  if(MiRMapEnabled){
@@ -410,7 +336,6 @@ const Settings = () => {
     return (
         <styled.SettingsContainer>
             <ContentHeader content={'settings'} mode={'title'} saveEnabled={true} onClickSave={handleSumbitSettings} />
-            {MirIp()}
             {MapViewEnabled()}
             {CurrentMap()}
             {SignOut()}

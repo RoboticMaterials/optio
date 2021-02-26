@@ -18,6 +18,7 @@ import Button from "../basic/button/button";
 import { postTaskQueue, putTaskQueue, deleteTaskQueueItem } from '../../redux/actions/task_queue_actions'
 import { postEvents } from '../../redux/actions/events_actions'
 import { getTasks } from '../../redux/actions/tasks_actions'
+import {setShowModalId} from '../../redux/actions/task_queue_actions'
 
 // Import API
 import { putTaskQueueItem } from '../../api/task_queue_api'
@@ -55,6 +56,7 @@ const HILModals = (props) => {
     const disptachPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
     const dispatchSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
     const dispatchLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
+    const dispatchSetShowModalId = (id) => dispatch(setShowModalId(id))
 
     const hilTimers = useSelector(state => { return state.taskQueueReducer.hilTimers })
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
@@ -65,6 +67,7 @@ const HILModals = (props) => {
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards) || {}
     const objects = useSelector(state => state.objectsReducer.objects)
     const cards = useSelector(state => state.cardsReducer.cards)
+    const showModalId = useSelector(state => state.taskQueueReducer.showModalID)
 
     const [quantity, setQuantity] = useState(taskQuantity)
     const [selectedTask, setSelectedTask] = useState(null)
@@ -86,7 +89,7 @@ const HILModals = (props) => {
     const [lotsAtStation, setLotsAtStation] = useState(false)
     const [taskHasProcess, setTaskHasProcess] = useState(false)
     const [noLotsSelected, setNoLotsSelected] = useState(false)
-
+    const [modalClosed, setModalClosed] = useState(false)
     const size = useWindowSize()
     const windowWidth = size.width
 
@@ -428,7 +431,6 @@ const HILModals = (props) => {
             ...item,
             hil_response: false
         }
-
         delete newItem._id
 
         await putTaskQueueItem(newItem, taskQueueID)
@@ -579,6 +581,9 @@ const HILModals = (props) => {
                         <styled.HilButton color={'#90eaa8'}
                             onClick={() => {
                                 onHilSuccess()
+                                dispatchSetShowModalId(null)
+                                setModalClosed(true)
+
                             }}
                         >
                             <styled.HilIcon
@@ -632,6 +637,7 @@ const HILModals = (props) => {
                                     filter={Math.cbrt(eval(value))}
                                     onClick={() => {
                                         onHilSuccess(eval(value))
+                                        dispatchSetShowModalId(null)
                                     }}
                                 >
                                     {/* <styled.HilIcon
@@ -656,7 +662,12 @@ const HILModals = (props) => {
 
                             {renderSelectedLot()}
 
-                            <styled.FooterButton style={{ marginBottom: '1rem', marginTop: "1rem", marginLeft: '1rem' }} color={'#ff9898'} onClick={onHilFailure}>
+                            <styled.FooterButton style={{ marginBottom: '1rem', marginTop: "1rem", marginLeft: '1rem' }} color={'#ff9898'}
+                                  onClick={()=> {
+                                    onHilFailure()
+                                    dispatchSetShowModalId(null)
+                                    setModalClosed(true)
+                                  }}>
                                 <styled.HilIcon
                                     style={{ marginBottom: 0, marginRight: "1rem", fontSize: "2.5rem" }}
                                     className='fas fa-times'
@@ -897,6 +908,7 @@ const HILModals = (props) => {
                                 color={'#90eaa8'}
                                 onClick={() => {
                                     onHilSuccess()
+                                    dispatchSetShowModalId(null)
                                 }}
                             >
                                 <styled.HilIcon
@@ -917,28 +929,34 @@ const HILModals = (props) => {
                             </styled.HilButton>
 
                             {((hilType === 'pull' && hilLoadUnload === 'load') || hilType === 'check') &&
-                                <styled.HilButton color={'#f7cd89'} onClick={onHilPostpone}>
-                                    <styled.HilIcon
-                                        style={{}}
+                                  <></>
+                                //<styled.HilButton color={'#f7cd89'} onClick={onHilPostpone}>
+                                //    <styled.HilIcon
+                                //        style={{}}
                                         // onClick={onHilPostpone}
-                                        className='icon-postpone'
-                                        color={'#ff7700'}
-                                        styled={{ marginTop: '.5rem' }}
-                                    />
-                                    <styled.HilButtonText
-                                        color={'#ff7700'}
-                                        style={{ margin: 0, padding: 0 }}
-                                    >
-                                        Postpone
-                                </styled.HilButtonText>
-                                </styled.HilButton>
+                                //        className='icon-postpone'
+                                  //      color={'#ff7700'}
+                                  //      styled={{ marginTop: '.5rem' }}
+                                  //  />
+                                  //  <styled.HilButtonText
+                                  //      color={'#ff7700'}
+                                  //      style={{ margin: 0, padding: 0 }}
+                                  //  >
+                                  //      Postpone
+                              //  </styled.HilButtonText>
+                              //  </styled.HilButton>
                             }
 
                             {(hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
 
-                                <styled.HilButton color={'#ff9898'} onClick={onHilFailure}>
+                                <styled.HilButton
+                                color={'#ff9898'}
+                                onClick={()=> {
+                                        onHilFailure()
+                                        dispatchSetShowModalId(null)
+                                        setModalClosed(true)
+                                      }}>
                                     <styled.HilIcon
-                                        // onClick={onHilFailure}
                                         className='fas fa-times'
                                         color={'#ff1818'}
                                     />
@@ -1070,7 +1088,11 @@ const HILModals = (props) => {
 
                         <styled.FooterButton
                             color={'#ff9898'}
-                            onClick={onHilFailure}
+                            onClick={()=> {
+                              onHilFailure()
+                              dispatchSetShowModalId(null)
+                              setModalClosed(true)
+                            }}
                         >
                             <styled.HilIcon
                                 className='fas fa-times'
@@ -1122,7 +1144,7 @@ const HILModals = (props) => {
      * HIL Check will only show on a pull request
      */
 
-    if (dataLoaded) {
+    if (dataLoaded && modalClosed!==true) {
         return (
             <styled.HilContainer >
 
