@@ -9,7 +9,7 @@ import {useDispatch, useSelector} from "react-redux";
 import FadeLoader from "react-spinners/FadeLoader"
 
 // internal components
-import CalendarField from "../../../../basic/form/calendar_field/calendar_field";
+import CalendarField, {CALENDAR_FIELD_MODES} from "../../../../basic/form/calendar_field/calendar_field";
 import TextField from "../../../../basic/form/text_field/text_field";
 import Textbox from "../../../../basic/textbox/textbox";
 import DropDownSearchField from "../../../../basic/form/drop_down_search_field/drop_down_search_field";
@@ -115,11 +115,11 @@ const FormComponent = (props) => {
 	const formMode = cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE
 
 	// just for console logging
-	// useEffect(() => {
-	// 	console.log("lot_editor values",values)
-	// 	console.log("lot_editor errors",errors)
-	// 	console.log("lot_editor touched",touched)
-	// }, [values, errors,touched])
+	useEffect(() => {
+		console.log("lot_editor values",values)
+		console.log("lot_editor errors",errors)
+		console.log("lot_editor touched",touched)
+	}, [values, errors,touched])
 
 	// actions
 	const dispatch = useDispatch()
@@ -136,6 +136,7 @@ const FormComponent = (props) => {
 	const processesArray = Object.values(processes)
 
 	const [calendarFieldName, setCalendarFieldName] = useState(null)
+	const [calendarFieldMode, setCalendarFieldMode] = useState(null)
 	const [showTemplateSelector, setShowTemplateSelector] = useState(formMode === FORM_MODES.CREATE)
 	const [fieldNameArr, setFieldNameArr] = useState([]) // if cardId was passed, update existing. Otherwise create new
 	const [pasteTable, setPasteTable] = useState([])
@@ -631,7 +632,8 @@ const FormComponent = (props) => {
 
 				<styled.CalendarContainer>
 					<CalendarField
-						name={calendarFieldName}
+						selectRange={false}
+						name={`${calendarFieldName}[${calendarFieldMode === CALENDAR_FIELD_MODES.START ? 0 : 1}]`}
 					/>
 				</styled.CalendarContainer>
 			</styled.BodyContainer>
@@ -832,9 +834,10 @@ const FormComponent = (props) => {
 								>
 									<FieldComponentMapper
 										value={fieldValue}
-										onCalendarClick={() => {
-											setContent(CONTENT.CALENDAR_START)
+										onCalendarClick={(mode) => {
+											setContent(CONTENT.CALENDAR)
 											setCalendarFieldName(fullFieldName)
+											setCalendarFieldMode(mode)
 										}}
 										displayName={fieldName}
 										preview={false}
@@ -887,7 +890,7 @@ const FormComponent = (props) => {
 		return(
 			<styled.StyledForm>
 				<styled.Header>
-					{((content === CONTENT.CALENDAR_START) || (content === CONTENT.CALENDAR_END) || (content === CONTENT.HISTORY) || (content === CONTENT.MOVE))  &&
+					{((content === CONTENT.CALENDAR) || (content === CONTENT.HISTORY) || (content === CONTENT.MOVE))  &&
 					<Button
 						onClick={()=>setContent(null)}
 						schema={'error'}
@@ -960,7 +963,7 @@ const FormComponent = (props) => {
 						{(content === null) &&
 						renderMainContent()
 						}
-						{(((content === CONTENT.CALENDAR_END) || (content === CONTENT.CALENDAR_START))) &&
+						{(content === CONTENT.CALENDAR) &&
 						renderCalendarContent()
 						}
 						{(content === CONTENT.HISTORY) &&
@@ -978,7 +981,7 @@ const FormComponent = (props) => {
 					<styled.ButtonContainer>
 						{
 							{
-								"CALENDAR_START":
+								[CONTENT.CALENDAR]:
 									<>
 
 										<Button
@@ -998,7 +1001,7 @@ const FormComponent = (props) => {
 										</Button>
 									</>,
 
-								"HISTORY":
+								[CONTENT.HISTORY]:
 									<>
 										<Button
 											style={{...buttonStyle}}
@@ -1009,7 +1012,7 @@ const FormComponent = (props) => {
 											Go Back
 										</Button>
 									</>,
-								"MOVE":
+								[CONTENT.MOVE]:
 									<>
 										<Button
 											disabled={submitDisabled}

@@ -8,21 +8,30 @@ import { getMessageFromError } from "../../../../methods/utils/form_utils";
 import * as styled from './calendar_field.style'
 import ErrorTooltip from "../error_tooltip/error_tooltip";
 import {isEmpty} from "ramda";
+import {isArray} from "../../../../methods/utils/array_utils";
 
+export const CALENDAR_FIELD_MODES = {
+	START: "START",
+	END: "END",
+	RANGE: "RANGE"
+}
 
 const CalendarField = ({
-								 onChange,
-								 Container,
-						   onDropdownClose,
-								 ...props
-							 }) => {
+	onChange,
+	Container,
+	onDropdownClose,
+	mode,
+	mapInput,
+	mapOutput,
+   selectRange,
+	...props
+}) => {
 
 	const { setFieldValue, setFieldTouched, ...formikContext } = useFormikContext();
-	const [{value, ...field}, {initialValue, ...meta}] = useField(props);
+	const [{value: fieldValue, ...field}, {initialValue, ...meta}] = useField(props);
 	const hasError = meta.touched && meta.error;
 
 	const errorMessage = getMessageFromError(meta.error);
-
 
 	return (
 		<Container>
@@ -34,9 +43,9 @@ const CalendarField = ({
 						onDropdownClose && onDropdownClose();
 					}}
 					{...field}
-					selectRange={true}
+					selectRange={selectRange}
 					// defaultValue={[initialStartDate, initialEndDate]}
-					value={value}
+					value={mapInput(fieldValue)}
 					allowPartialRange
 					// defaultActiveStartDate={initialStartDate}
 					// defaultValue={value}
@@ -47,7 +56,8 @@ const CalendarField = ({
 							setFieldTouched(true)
 						}
 
-						setFieldValue(field.name, value);
+						setFieldValue(field.name, mapOutput(value))
+
 						onChange && onChange(value)
 					}}
 				/>
@@ -70,6 +80,9 @@ CalendarField.propTypes = {
 CalendarField.defaultProps = {
 	Container: styled.DefaultContainer,
 	onChange: null,
+	mapInput: (val) => val,
+	mapOutput: (val) => val,
+	selectRange: false
 };
 
 export default CalendarField;

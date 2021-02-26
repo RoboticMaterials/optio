@@ -5,6 +5,8 @@ import * as styled from "./calendar_placeholder.style"
 const CalendarPlaceholder = (props) => {
 	const {
 		onClick,
+		onStartClick,
+		onEndClick,
 		text,
 		selectRange,
 		endText,
@@ -14,13 +16,13 @@ const CalendarPlaceholder = (props) => {
 
 	if(selectRange) return (
 		<styled.DatesContainer style={containerStyle}>
-			<styled.DateItem onClick={onClick}>
+			<styled.DateItem onClick={onStartClick}>
 				<styled.DateText>{startText}</styled.DateText>
 			</styled.DateItem>
 
 			<styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
 
-			<styled.DateItem onClick={onClick}>
+			<styled.DateItem onClick={onEndClick}>
 				<styled.DateText>{endText}</styled.DateText>
 			</styled.DateItem>
 		</styled.DatesContainer>

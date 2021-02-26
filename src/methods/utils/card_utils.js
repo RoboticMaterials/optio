@@ -11,6 +11,8 @@ const EVENT_NAMES = {
 }
 
 export const jsDateToObjDate = (jsDate) => {
+	if(!jsDate) return null
+
 	let trimmed = new Date(jsDate.toDateString());
 
 	let month = trimmed.getUTCMonth()
@@ -141,7 +143,7 @@ export const getInitialValues = (lotTemplate, card) => {
 					}
 
 					case FIELD_COMPONENT_NAMES.CALENDAR_START_END: {
-						let updatedValues = BASIC_FIELD_DEFAULTS.CALENDAR_FIELD
+						let updatedValues = BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE
 
 						if(isObject(card) && isArray(card[fieldName])) {
 							const val = card[fieldName]

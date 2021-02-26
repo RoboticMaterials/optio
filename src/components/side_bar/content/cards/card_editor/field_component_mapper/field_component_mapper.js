@@ -9,6 +9,7 @@ import NumberField from "../../../../../basic/form/number_field/number_field";
 import {isArray} from "../../../../../../methods/utils/array_utils";
 import {jsDateToObjDate} from "../../../../../../methods/utils/card_utils";
 import {FIELD_COMPONENT_NAMES} from "../../../../../../constants/lot_contants";
+import {CALENDAR_FIELD_MODES} from "../../../../../basic/form/calendar_field/calendar_field";
 
 const FieldComponentMapper = (props) => {
 	const {
@@ -179,7 +180,8 @@ const FieldComponentMapper = (props) => {
 							selectRange={true}
 							startText={(startDay && startMonth && startYear) ? `${startMonth}/${startDay}/${startYear}` : "Start"}
 							endText={(endDay && endMonth && endYear) ? `${endMonth}/${endDay}/${endYear}` : "End"}
-							onClick={onCalendarClick}
+							onEndClick={() => onCalendarClick(CALENDAR_FIELD_MODES.END)}
+							onStartClick={() => onCalendarClick(CALENDAR_FIELD_MODES.START)}
 						/>
 
 				</styled.Container>
