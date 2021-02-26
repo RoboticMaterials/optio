@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
+import ls from 'local-storage'
 import * as styled from './settings.style'
 
 import ContentHeader from '../content_header/content_header'
@@ -51,12 +51,22 @@ const Settings = () => {
     const [mirUpdated, setMirUpdated] = useState(false)
     const [devicesEnabled, setDevicesEnabled] = useState(!!deviceEnabledSetting)
 
+    const [mapViewEnabled, setMapViewEnabled] = useState({})
+    const [developerSettingsEnabled, setDeveloperSettingsEnabled] = useState({})
+    const [nonLocalAPIEnabled, setNonLocalAPIEnabled] = useState({})
+    const [nonLocalAPIAddress, setNonLocalAPIAddress] = useState({})
+
     /**
      *  Sets current settings to state so that changes can be discarded or saved
      * */
     useEffect(() => {
         setServerSettingsState(serverSettings)
         setLocalSettingsState(localSettings)
+
+        setMapViewEnabled(ls.get('MapViewEnabled') || false)
+        setDeveloperSettingsEnabled(ls.get('DeveloperSettingsEnabled') || false)
+        setNonLocalAPIEnabled(ls.get('NonLocalAPIAddressEnabled') || false)
+        setNonLocalAPIAddress(ls.get('NonLocalAPIAddress') || null)
     }, [])
 
 
@@ -93,7 +103,6 @@ const Settings = () => {
             [key]: value,
         }
         setLocalSettingsState(updatedSettings)
-
     }
 
 
@@ -101,6 +110,11 @@ const Settings = () => {
     // Submits settings to the backend
     const handleSumbitSettings = async () => {
         // Sees if either settings have changed. If the state settigns and redux settings are different, then they've changed
+        ls.set('MapViewEnabled', mapViewEnabled)
+        ls.set('DeveloperSettingsEnabled', developerSettingsEnabled)
+        ls.set('NonLocalAPIAddressEnabled', nonLocalAPIEnabled)
+        ls.set('NonLocalAPIAddress', nonLocalAPIAddress)
+
         const localChange = isEquivalent(localSettingsState, localSettings)
         const serverChange = isEquivalent(serverSettingsState, serverSettings)
         const mapChange = !isEquivalent(mapSettingsState, currentMap)
@@ -171,9 +185,10 @@ const Settings = () => {
                 <styled.RowContainer>
                     <styled.Header>Show Developer Settings</styled.Header>
 `                  <Switch
-                        checked={localSettingsState.toggleDevOptions}
+                        checked={!!developerSettingsEnabled}
                         onChange={() => {
                             handleUpdateLocalSettings({ toggleDevOptions: !localSettingsState.toggleDevOptions })
+                            setDeveloperSettingsEnabled(!developerSettingsEnabled)
                         }}
                         onColor='red'
                         style={{ marginRight: '1rem' }}
@@ -181,29 +196,34 @@ const Settings = () => {
 
                 </styled.RowContainer>
 
-                {localSettingsState.toggleDevOptions ?
+                {!!developerSettingsEnabled ?
                     <>
 
                         <styled.Header style = {{fontSize: '1.2rem'}}>Non Local API IP Address</styled.Header>
 
                         <styled.RowContainer>
                             <Switch
-                                checked={localSettingsState.non_local_api}
+                                checked={!!nonLocalAPIEnabled}
                                 onChange={() => {
-                                    handleUpdateLocalSettings({ non_local_api: !localSettings.non_local_api })
+                                    handleUpdateLocalSettings({ non_local_api: !localSettingsState.non_local_api })
+                                    setNonLocalAPIEnabled(!nonLocalAPIEnabled)
                                 }}
                                 onColor='red'
                                 style={{ marginRight: '1rem' }}
                             />
-                            <Textbox
-                                placeholder="API IP Address"
-                                value={localSettingsState.non_local_api_ip}
-                                onChange={(event) => {
-                                    handleUpdateLocalSettings({ non_local_api_ip: event.target.value })
-                                }}
-                                style={{ width: '100%' }}
-                            // type = 'number'
-                            />
+                            {!!nonLocalAPIEnabled &&
+                              <Textbox
+                                  placeholder="API IP Address"
+                                  value={!!nonLocalAPIAddress ? nonLocalAPIAddress:""}
+                                  onChange={(event) => {
+                                      setNonLocalAPIAddress(event.target.value)
+                                      handleUpdateLocalSettings({ non_local_api_ip: event.target.value })
+                                  }}
+                                  style={{ width: '100%' }}
+                              // type = 'number'
+                              />
+                            }
+
                         </styled.RowContainer>
 
                         <styled.Header style = {{fontSize: '1.2rem', paddingTop: '2rem'}}>Devices Enabled</styled.Header>
@@ -247,9 +267,10 @@ const Settings = () => {
                     <styled.SwitchContainerLabel>Show List View</styled.SwitchContainerLabel>
                     <Switch
                         onColor='red'
-                        checked={localSettingsState.mapViewEnabled}
+                        checked={!!mapViewEnabled}
                         onChange={() => {
                             handleUpdateLocalSettings({ mapViewEnabled: !localSettingsState.mapViewEnabled })
+                            setMapViewEnabled(!mapViewEnabled)
                         }}
                         style={{ margin: "0 2rem 0 2rem" }}
                     />

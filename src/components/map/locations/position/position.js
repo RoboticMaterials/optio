@@ -15,6 +15,7 @@ import { PositionTypes } from '../../../../constants/position_constants'
 import { setTaskAttributes } from '../../../../redux/actions/tasks_actions'
 import { setSelectedPosition, setPositionAttributes } from '../../../../redux/actions/positions_actions'
 import { hoverStationInfo } from '../../../../redux/actions/widget_actions'
+import { pageDataChanged } from '../../../../redux/actions/sidebar_actions'
 
 // Import Components
 import LocationSvg from '../location_svg/location_svg'
@@ -50,6 +51,7 @@ function Position(props) {
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
     const dispatchSetPositionAttributes = (id, attr) => dispatch(setPositionAttributes(id, attr))
+    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(true))
 
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
@@ -315,7 +317,7 @@ function Position(props) {
 
         const parent = ((!!selectedStationChildrenCopy && positionId in selectedStationChildrenCopy) && !!selectedStation) ? selectedStation : stations[position.parent]
         // TODO: Temp fix
-        if (!parent) return 
+        if (!parent) return
         return (
             <line x1={`${position.x}`} y1={`${position.y}`}
                 x2={`${parent.x}`} y2={`${parent.y}`}
@@ -326,6 +328,7 @@ function Position(props) {
 
     const onMouseDown = () => {
         if (!disabled) onSetPositionTask()
+        dispatchPageDataChanged(true)
     }
 
     const onTranslating = (bool) => {

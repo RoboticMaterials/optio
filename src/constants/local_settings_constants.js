@@ -1,9 +1,9 @@
-import {isBrowser} from "react-device-detect";
+import ls from 'local-storage'
 
 export const defaultLocalSettings = {
 	non_local_api_ip: '',
 	non_local_api: false,
-	mapViewEnabled: isBrowser,
+	mapViewEnabled: ls.get('MapViewEnabled'),
 	toggleDevOptions:false,
 	currentMapId: null,
 }
