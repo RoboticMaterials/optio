@@ -54,7 +54,8 @@ export default function TaskContent(props) {
     const stations = useSelector(state => state.stationsReducer.stations)
     const editing = useSelector(state => state.tasksReducer.editingTask) //Moved to redux so the variable can be accesed in the sideBar files for confirmation modal
     const objects = useSelector(state => state.objectsReducer.objects)
-
+    const selectedObject = useSelector(state => state.objectsReducer.selectedObject)
+    const routeObject = useSelector(state => state.objectsReducer.routeObject)
 
     /**
     * @param {*} Id
@@ -168,7 +169,7 @@ export default function TaskContent(props) {
                 isNew={isNew}
                 initialValues={{
                     ...selectedTask,
-                    obj: handleDefaultObj(selectedTask.obj)
+                    obj: selectedObject,
                 }}
                 shift={shift}
                 toggleEditing={props => onEditing(props)}

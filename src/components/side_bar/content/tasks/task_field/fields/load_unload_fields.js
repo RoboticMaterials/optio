@@ -100,7 +100,7 @@ const LoadUnloadFields = (props) => {
 
             <styled.RowContainer style={{ marginTop: '2rem' }}>
 
-                <styled.Header style={{ marginTop: '0rem',marginRight: ".5rem" }}>Load</styled.Header>
+                <styled.Header style={{ marginTop: '0rem',marginRight: ".5rem", fontSize: '1.2rem' }}>Load</styled.Header>
 
                 {!humanLocation &&
 
