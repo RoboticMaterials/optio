@@ -181,10 +181,13 @@ const LoadUnloadFields = (props) => {
             {/* If its a human task, then the task can also be defined as a handoff.
                     A handoff does not require unload confirmation.
                 */}
-            {!isMiRTask(selectedTask) &&
+            {isHumanTask(selectedTask) &&
                 <styled.ContentContainer style={{ paddingBottom: '0rem' }}>
                     <styled.RowContainer>
-                        <styled.Label style={{ marginBottom: '0rem' }}>Confirm Unload?</styled.Label>
+                        <styled.Label style={{ marginBottom: '0rem' }}>
+                            {"Confirm Unload?"}
+                        </styled.Label>
+
                         <SwitchField
                             mapInput={(val)=>!val}
                             mapOutput={(val)=>!val}
@@ -193,12 +196,21 @@ const LoadUnloadFields = (props) => {
                             containerStyle={{ marginRight: '1rem' }}
                         />
                     </styled.RowContainer>
-                    <styled.HelpText>Do you want to track transit time? This will display a Unload Button at the Unload Station</styled.HelpText>
+                    <styled.HelpText>
+                        Do you want to track transit time? This will display an Unload Button at the Unload Station.
+                    </styled.HelpText>
+
+                    {isMiRTask(selectedTask) &&
+                    <styled.HelpText>
+                        This setting will only apply when the task is executed by a human.
+                    </styled.HelpText>
+                    }
+
                 </styled.ContentContainer>
             }
 
             {/* Hides the unload field if its a handoff task */}
-            {!values.handoff &&
+            {(!values.handoff || isMiRTask(selectedTask)) &&
 
                 <>
                     <styled.Header>Unload</styled.Header>

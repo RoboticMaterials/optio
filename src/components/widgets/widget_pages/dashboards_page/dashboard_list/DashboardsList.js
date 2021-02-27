@@ -41,7 +41,6 @@ const DashboardsList = (props) => {
         setSelectedDashboard,
         setEditingDashboard,
         showSidebar,
-        setShowSidebar,
         stationID
     } = props
 

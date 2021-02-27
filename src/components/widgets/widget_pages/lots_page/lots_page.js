@@ -4,7 +4,7 @@ import { useParams, useHistory } from 'react-router-dom'
 
 
 import ReactList from 'react-list';
-import CardEditor from "../../../side_bar/content/cards/card_editor/card_editor";
+import LotEditor from "../../../side_bar/content/cards/card_editor/lot_editor";
 
 // Import styles
 import * as styled from './lots_page.style'
@@ -75,7 +75,7 @@ const LotsPage = (props) => {
       <styled.LotsContainer>
 
         {showCardEditor &&
-        <CardEditor
+        <LotEditor
             isOpen={showCardEditor}
             onAfterOpen={null}
             cardId={selectedCard ? selectedCard.cardId : null}

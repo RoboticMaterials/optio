@@ -32,6 +32,7 @@ const DashboardSplitButton = (props => {
         containerCss,
         error,
         iconColor,
+        type
     } = props
 
     return (

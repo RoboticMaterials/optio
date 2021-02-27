@@ -59,10 +59,11 @@ const RightClickMenu = (props) => {
     const showSideBar = useSelector(state => state.sidebarReducer.open)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
+    const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const history = useHistory()
 
 
-    const disbaleStation = !!selectedStation ? true : false
+    const disbaleStation = !!selectedStation ? true : !!selectedPosition ? true : false
 
     const onSendCartToPosition = async () => {
         const pos = convertD3ToReal([coords.x, coords.y], d3)
@@ -127,7 +128,7 @@ const RightClickMenu = (props) => {
             {MiRMapEnabled ?
                 <>
                     <styled.MenuButton disabled={disbaleStation} onClick={() => !disbaleStation && onAddStation()}>Add Station</styled.MenuButton>
-                    <styled.MenuButton onClick={onSendCartToPosition}>Send Cart to Position</styled.MenuButton>
+                    <styled.MenuButton disabled={disbaleStation} onClick={onSendCartToPosition}>Send Cart to Position</styled.MenuButton>
                 </>
                 :
                 <styled.MenuButton onClick={onAddStation}>Add Station</styled.MenuButton>
