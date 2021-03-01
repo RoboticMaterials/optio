@@ -9,7 +9,7 @@ import {useDispatch, useSelector} from "react-redux";
 import FadeLoader from "react-spinners/FadeLoader"
 
 // internal components
-import CalendarField from "../../../../basic/form/calendar_field/calendar_field";
+import CalendarField, {CALENDAR_FIELD_MODES} from "../../../../basic/form/calendar_field/calendar_field";
 import TextField from "../../../../basic/form/text_field/text_field";
 import Textbox from "../../../../basic/textbox/textbox";
 import DropDownSearchField from "../../../../basic/form/drop_down_search_field/drop_down_search_field";
@@ -58,7 +58,7 @@ import {getProcessStations} from "../../../../../methods/utils/processes_utils";
 import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
 import {arraysEqual} from "../../../../../methods/utils/utils";
 import {immutableReplace, isArray} from "../../../../../methods/utils/array_utils";
-import {getDisplayName} from "../../../../../methods/utils/lot_utils";
+import {formatLotNumber, getDisplayName} from "../../../../../methods/utils/lot_utils";
 
 // import styles
 import * as styled from "./lot_editor.style"
@@ -69,6 +69,7 @@ import usePrevious from "../../../../../hooks/usePrevious";
 
 // logger
 import log from '../../../../../logger'
+import {getCardsCount} from "../../../../../api/cards_api";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
@@ -77,6 +78,9 @@ const FormComponent = (props) => {
 
 	const {
 		// formMode,
+		lotNumber,
+		collectionCount,
+		cardNames,
 		card,
 		setShowLotTemplateEditor,
 		showLotTemplateEditor,
@@ -112,11 +116,11 @@ const FormComponent = (props) => {
 	const formMode = cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE
 
 	// just for console logging
-	// useEffect(() => {
-	// 	console.log("lot_editor values",values)
-	// 	console.log("lot_editor errors",errors)
-	// 	console.log("lot_editor touched",touched)
-	// }, [values, errors,touched])
+	useEffect(() => {
+		console.log("lot_editor values",values)
+		console.log("lot_editor errors",errors)
+		console.log("lot_editor touched",touched)
+	}, [values, errors,touched])
 
 	// actions
 	const dispatch = useDispatch()
@@ -133,6 +137,7 @@ const FormComponent = (props) => {
 	const processesArray = Object.values(processes)
 
 	const [calendarFieldName, setCalendarFieldName] = useState(null)
+	const [calendarFieldMode, setCalendarFieldMode] = useState(null)
 	const [showTemplateSelector, setShowTemplateSelector] = useState(formMode === FORM_MODES.CREATE)
 	const [fieldNameArr, setFieldNameArr] = useState([]) // if cardId was passed, update existing. Otherwise create new
 	const [pasteTable, setPasteTable] = useState([])
@@ -233,9 +238,12 @@ const FormComponent = (props) => {
 
 	const superSubmit = (values, index, lotStatus) => {
 		let updatedItem = {...values}
+		console.log("superSubmit values", values)
 
-		// let lotStatus = processedValues[index]
-		editLotSchema.validate(values, {abortEarly: false})
+		editLotSchema.validate({
+			...values,
+			cardNames
+		}, {abortEarly: false})
 			.then((ayo) => {
 				lotStatus.validationStatus = {
 					message: `Successfully validated lot!`,
@@ -259,7 +267,8 @@ const FormComponent = (props) => {
 					bins: newBins,
 					process_id: newProcessId,
 					lotTemplateId: lotTemplateId,
-					...templateValues
+					...templateValues,
+					lotNumber: collectionCount + index
 				}
 
 				onPostCard(submitItem).then((result) => {
@@ -268,8 +277,6 @@ const FormComponent = (props) => {
 						const {
 							_id = null
 						} = result || {}
-
-						console.log("post result", result)
 
 						const currMappedLot = convertLotToExcel(values, lotTemplateId)
 						mappedValuesRef.current = immutableReplace(mappedValuesRef.current, {
@@ -617,16 +624,37 @@ const FormComponent = (props) => {
 	* renders calender for selected dates
 	* */
 	const renderCalendarContent = () => {
+
+		const {
+			fullFieldName,
+			fieldName
+		} = calendarFieldName || {}
+
+		// get templateValues
+		const {
+			[lotTemplateId]: templateValues
+		} = values || {}
+
+		// get field value
+		const {
+			[fieldName]: fieldValue
+		} = templateValues || {}
+
+		console.log("here fieldValue",fieldValue)
+
+
 		return(
 			<styled.BodyContainer>
 				<styled.ContentHeader style={{}}>
 					<styled.ContentTitle>Select Start and End Date</styled.ContentTitle>
-					<div></div>
 				</styled.ContentHeader>
 
 				<styled.CalendarContainer>
 					<CalendarField
-						name={calendarFieldName}
+						minDate={calendarFieldMode === CALENDAR_FIELD_MODES.END && fieldValue[0]}
+						maxDate={calendarFieldMode === CALENDAR_FIELD_MODES.START && fieldValue[1]}
+						selectRange={false}
+						name={`${fullFieldName}[${calendarFieldMode === CALENDAR_FIELD_MODES.START ? 0 : 1}]`}
 					/>
 				</styled.CalendarContainer>
 			</styled.BodyContainer>
@@ -816,18 +844,29 @@ const FormComponent = (props) => {
 								const {
 									[lotTemplateId]: templateValues
 								} = values || {}
-
 								// get field value
 								const {
 									[fieldName]: fieldValue
 								} = templateValues || {}
 
-								return <styled.FieldContainer>
+								// get template error
+								const {
+									[lotTemplateId]: templateErrors
+								} = errors || {}
+								// get field error
+								const {
+									[fieldName]: fieldError
+								} = templateErrors || {}
+
+								return <styled.FieldContainer
+									key={dropContainerId}
+								>
 									<FieldComponentMapper
 										value={fieldValue}
-										onCalendarClick={() => {
-											setContent(CONTENT.CALENDAR_START)
-											setCalendarFieldName(fullFieldName)
+										onCalendarClick={(mode) => {
+											setContent(CONTENT.CALENDAR)
+											setCalendarFieldName({fullFieldName, fieldName})
+											setCalendarFieldMode(mode)
 										}}
 										displayName={fieldName}
 										preview={false}
@@ -880,7 +919,7 @@ const FormComponent = (props) => {
 		return(
 			<styled.StyledForm>
 				<styled.Header>
-					{((content === CONTENT.CALENDAR_START) || (content === CONTENT.CALENDAR_END) || (content === CONTENT.HISTORY) || (content === CONTENT.MOVE))  &&
+					{((content === CONTENT.CALENDAR) || (content === CONTENT.HISTORY) || (content === CONTENT.MOVE))  &&
 					<Button
 						onClick={()=>setContent(null)}
 						schema={'error'}
@@ -924,22 +963,36 @@ const FormComponent = (props) => {
 						<styled.FieldsHeader>
 
 							{(showProcessSelector || !values.processId) && renderProcessSelector()}
-							<styled.NameContainer>
 
-								<styled.LotName>{getDisplayName(lotTemplate, "name", DEFAULT_NAME_DISPLAY_NAME)}</styled.LotName>
-								<TextField
-									name="name"
-									type="text"
-									placeholder="Enter name..."
-									InputComponent={Textbox}
-								/>
-							</styled.NameContainer>
+							<styled.RowContainer>
+								<styled.NameContainer style={{flex: 0}}>
+									<styled.LotName>Lot Number</styled.LotName>
+										<Textbox
+											value={formatLotNumber(lotNumber)}
+											style={{
+												cursor: "not-allowed"
+											}}
+										/>
+								</styled.NameContainer>
+
+								<styled.NameContainer>
+
+
+									<styled.LotName>{getDisplayName(lotTemplate, "name", DEFAULT_NAME_DISPLAY_NAME)}</styled.LotName>
+									<TextField
+										name={"name"}
+										type={"text"}
+										placeholder={"Enter name..."}
+										InputComponent={Textbox}
+									/>
+								</styled.NameContainer>
+							</styled.RowContainer>
 						</styled.FieldsHeader>
 
 						{(content === null) &&
 						renderMainContent()
 						}
-						{(((content === CONTENT.CALENDAR_END) || (content === CONTENT.CALENDAR_START))) &&
+						{(content === CONTENT.CALENDAR) &&
 						renderCalendarContent()
 						}
 						{(content === CONTENT.HISTORY) &&
@@ -957,7 +1010,7 @@ const FormComponent = (props) => {
 					<styled.ButtonContainer>
 						{
 							{
-								"CALENDAR_START":
+								[CONTENT.CALENDAR]:
 									<>
 
 										<Button
@@ -969,6 +1022,14 @@ const FormComponent = (props) => {
 											Ok
 										</Button>
 										<Button
+											style={{...buttonStyle}}
+											onClick={() => setFieldValue(`${calendarFieldName.fullFieldName}[${calendarFieldMode === CALENDAR_FIELD_MODES.START ? 0 : 1}]`, null)}
+											// secondary={"error"}
+											schema={"error"}
+										>
+											Clear Date
+										</Button>
+										<Button
 											style={buttonStyle}
 											onClick={() => setContent(null)}
 											schema={"error"}
@@ -977,7 +1038,7 @@ const FormComponent = (props) => {
 										</Button>
 									</>,
 
-								"HISTORY":
+								[CONTENT.HISTORY]:
 									<>
 										<Button
 											style={{...buttonStyle}}
@@ -988,7 +1049,7 @@ const FormComponent = (props) => {
 											Go Back
 										</Button>
 									</>,
-								"MOVE":
+								[CONTENT.MOVE]:
 									<>
 										<Button
 											disabled={submitDisabled}
@@ -1328,9 +1389,22 @@ const LotEditor = (props) => {
 	const [formMode, setFormMode] = useState(props.cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
 	const [showLotTemplateEditor, setShowLotTemplateEditor] = useState(false)
 	const [cardNames, setCardNames] = useState([])
+	const [collectionCount, setCollectionCount] = useState(null)
+
+
+	const getCount =  async () => {
+		const count = await getCardsCount()
+		setCollectionCount(count)
+	}
+
+	useEffect(() => {
+		getCount()
+
+	}, [])
 
 	// get card object from redux by cardId
 	const card = cards[cardId] || null
+	const [lotNumber, setLotNumber] = useState((card && card.lotNumber !== null) ? card.lotNumber : collectionCount)
 	let lotTemplateId = selectedLotTemplatesId  // set template id to selected template from redux - set by sidebar when you pick a template
 
 	// if a template isn't provided by redux, check if card has template id
@@ -1402,14 +1476,19 @@ const LotEditor = (props) => {
 
 		Object.values(cards).forEach((currCard, currCardIndex) => {
 			const {
-				name
+				name,
+				_id: currLotId
 			} = currCard || {}
 
-			tempCardNames.push(name)
+			tempCardNames.push({name, id: currLotId})
 		})
 
 		setCardNames(tempCardNames)
 	}, [cards])
+
+	useEffect(() => {
+		setLotNumber((card && card.lotNumber !== null) ? card.lotNumber : collectionCount)
+	}, [card, collectionCount])
 
 
 	/*
@@ -1433,31 +1512,33 @@ const LotEditor = (props) => {
 	* */
 	useEffect( () => {
 
-		// editing existing card
-		if(cardId) {
-			if(card) {
+		if(collectionCount !== null) {
+			// editing existing card
+			if(cardId) {
+				if(card) {
 
-				// if card has template, template and card must be loaded
-				if(card?.lotTemplateId) {
-					if(lotTemplate && !loaded) {
-						setLoaded(true)
+					// if card has template, template and card must be loaded
+					if(card?.lotTemplateId) {
+						if(lotTemplate && !loaded) {
+							setLoaded(true)
+						}
+					}
+
+					// No template, only need card to set loaded
+					else if(!loaded) {
+						setLoaded(true) // if card already exists, set loaded to true
 					}
 				}
 
-				// No template, only need card to set loaded
-				else if(!loaded) {
-					setLoaded(true) // if card already exists, set loaded to true
-				}
 			}
 
+			// creating new, set loaded to true
+			else {
+				if(!loaded) setLoaded(true)
+			}
 		}
 
-		// creating new, set loaded to true
-		else {
-			if(!loaded) setLoaded(true)
-		}
-
-	}, [card, lotTemplate, lotTemplateId])
+	}, [card, lotTemplate, lotTemplateId, collectionCount])
 
 	useEffect( () => {
 		dispatchGetLotTemplates()
@@ -1506,7 +1587,7 @@ const LotEditor = (props) => {
 							processId: processId,
 							moveCount: 0,
 							moveLocation: [],
-							name: card ? card.name : "",
+							name: card ? card.name : ``,
 							bins: card && card.bins ?
 								card.bins
 								:
@@ -1552,6 +1633,7 @@ const LotEditor = (props) => {
 									return false
 								}
 
+
 								let requestResult
 
 								const {
@@ -1566,8 +1648,8 @@ const LotEditor = (props) => {
 									[lotTemplateId]: templateValues,
 								} = values || {}
 
-								const start = values?.dates?.start || null
-								const end = values?.dates?.end || null
+
+
 
 								if(content === CONTENT.MOVE) {
 									// moving card need to update count for correct bins
@@ -1576,10 +1658,9 @@ const LotEditor = (props) => {
 										var submitItem = {
 											name,
 											bins,
+											lotNumber,
 											flags: isObject(card) ? (card.flags || []) : [],
 											process_id: card.process_id,
-											start_date: start,
-											end_date: end,
 											lotTemplateId,
 											...templateValues
 										}
@@ -1661,10 +1742,9 @@ const LotEditor = (props) => {
 											bins,
 											flags: isObject(card) ? (card.flags || []) : [],
 											process_id: card.process_id,
-											start_date: start,
-											end_date: end,
 											lotTemplateId,
-											...templateValues
+											...templateValues,
+											lotNumber
 										}
 
 										requestResult = onPutCard(submitItem, cardId)
@@ -1678,10 +1758,9 @@ const LotEditor = (props) => {
 											bins,
 											flags: [],
 											process_id: processId ? processId : selectedProcessId,
-											start_date: start,
-											end_date: end,
 											lotTemplateId,
-											...templateValues
+											...templateValues,
+											lotNumber
 										}
 
 										requestResult = await onPostCard(submitItem)
@@ -1730,6 +1809,9 @@ const LotEditor = (props) => {
 
 							return (
 								<FormComponent
+									lotNumber={lotNumber}
+									cardNames={cardNames}
+									collectionCount={collectionCount}
 									onSubmit={handleSubmit}
 									setShowLotTemplateEditor={setShowLotTemplateEditor}
 									showLotTemplateEditor={showLotTemplateEditor}

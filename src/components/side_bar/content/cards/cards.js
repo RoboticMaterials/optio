@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef, useContext} from 'react';
+import React, {useEffect, useState, useRef, useContext, memo} from 'react';
 
 // external functions
 import { useHistory } from 'react-router-dom'
@@ -34,16 +34,11 @@ const Cards = (props) => {
     // history
     const history = useHistory()
 
-    // theme
-    const themeContext = useContext(ThemeContext)
-
     const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
 
     //redux state
     const processes = useSelector(state => { return state.processesReducer.processes })
     const showCardEditor = useSelector(state=> {return state.cardsReducer.showEditor})
-    const selectedLotTemplatesId = useSelector(state => {return state.lotTemplatesReducer.selectedLotTemplatesId})
-    const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
 
     // actions
     const dispatch = useDispatch()
@@ -257,4 +252,4 @@ const Cards = (props) => {
     )
 }
 
-export default Cards
+export default memo(Cards)

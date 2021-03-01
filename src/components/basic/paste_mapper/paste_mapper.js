@@ -530,6 +530,7 @@ const PasteMapper = (props) => {
 					<styled.FieldNamesContainer>
 						<styled.SectionTitle>Available Fields</styled.SectionTitle>
 
+						<div style={{ overflowX: "auto",  display: "flex", alignSelf: "stretch", background: "red"}}>
 						<Container
 							groupName="field_names"
 							onDragStart={(dragStartParams, b, c)=>{
@@ -572,7 +573,7 @@ const PasteMapper = (props) => {
 								return document.body
 							}}
 							behaviour={"drop-zone"}
-							style={{display: "flex"}}
+							style={{display: "table", overflow: "hidden"}}
 						>
 							{availableFieldNames.map((currField, currIndex) => {
 
@@ -588,6 +589,10 @@ const PasteMapper = (props) => {
 										<styled.FieldName disabled={isUsed}>{currDisplayName ? currDisplayName : currFieldName}</styled.FieldName>
 										:
 										<Draggable
+											style={{
+												display: "table-cell",
+												verticalAlign: "middle",
+											}}
 											disabled={isUsed}
 											key={currIndex}
 										>
@@ -596,6 +601,7 @@ const PasteMapper = (props) => {
 								)
 							})}
 						</Container>
+						</div>
 
 						<styled.SectionDescription>Drag one of the available fields onto a tab to map the values in that column to the field name.</styled.SectionDescription>
 					</styled.FieldNamesContainer>
