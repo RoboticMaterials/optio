@@ -724,7 +724,7 @@ export class MapView extends Component {
 
                                 <>{
                                     //// Render mobile devices
-                                    (devices === undefined || deviceEnabled) ?
+                                    (devices === undefined || !deviceEnabled) ?
                                         <></>
                                         :
                                         Object.values(devices).filter(device => device.device_model == 'MiR100').map((device, ind) =>
