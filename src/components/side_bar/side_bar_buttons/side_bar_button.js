@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import * as style from './side_bar_button.style'
 
 import * as locationActions from '../../../redux/actions/locations_actions'
@@ -24,7 +24,6 @@ const SideBarButton = (props) => {
     const editingStation = useSelector(state => state.stationsReducer.editingStation)
     const editingPosition = useSelector(state => state.positionsReducer.editingPosition)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
-    console.log(pageInfoChanged)
     const taskEditing = useSelector(state => state.tasksReducer.editingTask)
     const processEditing = useSelector(state => state.processesReducer.editingProcess)
 
