@@ -24,6 +24,8 @@ import {getAllTemplateFields} from "../../../../../methods/utils/lot_utils";
 
 // styles
 import * as styled from './zone_header.style'
+import LotSortBar from "../lot_sort_bar/lot_sort_bar";
+import LotFilterBar from "../lot_filter_bar/lot_filter_bar";
 
 const ZoneHeader = (props) => {
 
@@ -127,150 +129,18 @@ const ZoneHeader = (props) => {
 			</styled.ColumnContainer>
 			}
 
+			<LotSortBar
+				sortMode={sortMode}
+				setSortMode={setSortMode}
+				sortDirection={sortDirection}
+				setSortDirection={setSortDirection}
+			/>
 
-
-			<styled.ColumnContainer>
-				<styled.Description>Filter lots:</styled.Description>
-
-				<styled.ItemContainer>
-					<DropDownSearch
-						options={lotFilterOptions}
-						onChange={(values) => {
-							setSelectedFilterOption(values[0])
-							setLotFilterValue(null)
-						}}
-						values={[selectedFilterOption]}
-						labelField={"label"}
-						valueField={"label"}
-						schema={"lots"}
-						style={{
-							background: themeContext.bg.tertiary,
-							borderTopRightRadius: 0,
-							borderBottomRightRadius: 0,
-							borderTopLeftRadius: "1rem",
-							borderBottomLeftRadius: "1rem",
-							minWidth: "10rem",
-							borderBottom: `1px solid ${themeContext.bg.quinary}`,
-						}}
-					/>
-					{selectedFilterOption.label === LOT_FILTER_OPTIONS.flags.label ?
-						<DropDownSearch
-							clearable={true}
-							multi={true}
-							options={Object.values(FLAG_OPTIONS)}
-							onChange={(values) => {
-								setLotFilterValue(values)
-							}}
-							onRemoveItem={(values) => {
-								setLotFilterValue(values)
-							}}
-							onClearAll={() => {
-								setLotFilterValue([])
-							}}
-							labelField={"id"}
-							valueField={"id"}
-							schema={"lots"}
-							contentRenderer={({ props, state, methods }) => {
-
-								const {
-									values = []
-								} = state || {}
-								const value = state.values[0]
-
-								if(isArray(values) && values.length > 0) {
-									return (
-										<styled.FlagsContainer>
-											{values.map((currVal) => {
-												const {
-													color: currColor,
-													id: currColorId
-												} = currVal || {}
-
-												return (
-													<styled.FlagButton
-														style={{
-															margin: "0 .5rem",
-														}}
-														key={currColorId}
-														type={"button"}
-														color={currColor}
-														onClick={(event) => {
-															event.stopPropagation();
-															methods.dropDown('open');
-														}}
-														schema={props.schema}
-														className="fas fa-flag"
-													/>
-												)
-											})}
-										</styled.FlagsContainer>
-									)
-								}
-
-								return(
-									null
-								)
-							}}
-							itemRenderer={({ item, itemIndex, props, state, methods }) => {
-								const {
-									color: currColor,
-									id: currColorId
-								} = item
-
-								const isSelected = methods.isSelected(item)
-
-								return(
-									<styled.FlagButton
-										style={{
-											paddingTop: ".5rem",
-											paddingBottom: ".5rem",
-										}}
-										selected={isSelected}
-										key={currColorId}
-										type={"button"}
-										color={currColor}
-										role="option"
-										tabIndex="-1"
-										onClick={item.disabled ? undefined : () => methods.addItem(item)}
-										onKeyPress={item.disabled ? undefined : () => methods.addItem(item)}
-										schema={props.schema}
-										className="fas fa-flag"
-									/>
-								)
-							}}
-
-							style={{
-								background: themeContext.bg.tertiary,
-								width: "15rem",
-								borderTopLeftRadius: 0,
-								borderBottomLeftRadius: 0,
-								borderTopRightRadius: "1rem",
-								borderBottomRightRadius: "1rem",
-								borderLeft: `1px solid ${themeContext.bg.quaternary}`,
-								borderBottom: `1px solid ${themeContext.bg.quinary}`,
-							}}
-						/>
-						:
-						<Textbox
-							placeholder='Filter lots...'
-							onChange={(e) => {
-								setLotFilterValue(e.target.value)
-							}}
-							style={{
-								background: themeContext.bg.tertiary,
-								height: "100%", width: "15rem",
-								borderTopLeftRadius: 0,
-								borderBottomLeftRadius: 0,
-								borderTopRightRadius: "1rem",
-								borderBottomRightRadius: "1rem",
-								borderLeft: `1px solid ${themeContext.bg.quaternary}`
-							}}
-							textboxContainerStyle={{flex: 1, height: "100%" }}
-							schema={"lots"}
-						/>
-					}
-				</styled.ItemContainer>
-			</styled.ColumnContainer>
+			<LotFilterBar
+				setLotFilterValue={setLotFilterValue}
+				selectedFilterOption={selectedFilterOption}
+				setSelectedFilterOption={setSelectedFilterOption}
+			/>
 		</styled.Container>
 	)
 }
