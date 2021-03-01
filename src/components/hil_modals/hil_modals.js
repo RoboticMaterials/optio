@@ -1022,7 +1022,14 @@ const HILModals = (props) => {
                     <div style={{display: "flex",  justifyContent: "center", width: "40rem", minWidth: "10rem", maxWidth: "50%"}}>
                         <LotSortBar
                             descriptionStyle={{
-                                color: "black"
+                                color: "black",
+                                margin: "0 1rem 0 0",
+                            }}
+                            containerStyle={{
+                                display: "flex",
+                                flexDirection: "row",
+                                minWidth: "fit-content",
+                                alignItems: "center"
                             }}
                             sortMode={sortMode}
                             setSortMode={setSortMode}
@@ -1032,7 +1039,14 @@ const HILModals = (props) => {
                         <LotFilterBar
                             shouldFocusLotFilter={shouldFocusLotFilter}
                             descriptionStyle={{
-                                color: "black"
+                                color: "black",
+                                margin: "0 1rem 0 0",
+                            }}
+                            containerStyle={{
+                                display: "flex",
+                                flexDirection: "row",
+                                minWidth: "fit-content",
+                                alignItems: "center"
                             }}
                             setLotFilterValue={setLotFilterValue}
                             selectedFilterOption={selectedFilterOption}

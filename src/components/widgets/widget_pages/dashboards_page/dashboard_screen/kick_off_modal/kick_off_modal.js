@@ -400,12 +400,30 @@ const KickOffModal = (props) => {
                             setSortMode={setSortMode}
                             sortDirection={sortDirection}
                             setSortDirection={setSortDirection}
+                            descriptionStyle={{
+                                margin: "0 1rem 0 0",
+                            }}
+                            containerStyle={{
+                                display: "flex",
+                                flexDirection: "row",
+                                minWidth: "fit-content",
+                                alignItems: "center"
+                            }}
                         />
                         <LotFilterBar
                             shouldFocusLotFilter={shouldFocusLotFilter}
                             setLotFilterValue={setLotFilterValue}
                             selectedFilterOption={selectedFilterOption}
                             setSelectedFilterOption={setSelectedFilterOption}
+                            descriptionStyle={{
+                                margin: "0 1rem 0 0",
+                            }}
+                            containerStyle={{
+                                display: "flex",
+                                flexDirection: "row",
+                                minWidth: "fit-content",
+                                alignItems: "center"
+                            }}
                         />
                     </div>
                 </styled.HeaderMainContentContainer>

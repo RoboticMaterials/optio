@@ -23,6 +23,7 @@ export const Description = styled.span`
 `
 
 export const ItemContainer = styled.div`
+// background: red;
 	display: flex;
 `
 

@@ -20,7 +20,8 @@ const LotSortBar = (props) => {
         setSortMode,
         sortDirection,
         setSortDirection,
-        descriptionStyle
+        descriptionStyle,
+        containerStyle,
     } = props
 
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
@@ -67,7 +68,9 @@ const LotSortBar = (props) => {
     const themeContext = useContext(ThemeContext)
 
     return (
-        <styled.ColumnContainer>
+        <styled.ColumnContainer
+            style={containerStyle}
+        >
             <styled.Description
                 style={descriptionStyle}
             >

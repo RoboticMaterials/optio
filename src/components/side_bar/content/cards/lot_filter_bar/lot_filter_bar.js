@@ -21,6 +21,7 @@ const LotFilterBar = (props) => {
         selectedFilterOption,
         setSelectedFilterOption,
         descriptionStyle,
+        containerStyle,
         shouldFocusLotFilter
     } = props
 
@@ -52,7 +53,9 @@ const LotFilterBar = (props) => {
     const themeContext = useContext(ThemeContext)
 
     return (
-        <styled.ColumnContainer>
+        <styled.ColumnContainer
+            style={containerStyle}
+        >
             <styled.Description
                 style={descriptionStyle}
             >
@@ -191,9 +194,17 @@ const LotFilterBar = (props) => {
                             borderBottomLeftRadius: 0,
                             borderTopRightRadius: "1rem",
                             borderBottomRightRadius: "1rem",
-                            borderLeft: `1px solid ${themeContext.bg.quaternary}`
+                            borderLeft: `1px solid ${themeContext.bg.quaternary}`,
+
                         }}
-                        textboxContainerStyle={{flex: 1, height: "100%" }}
+                        textboxContainerStyle={{
+                            flex: 1,
+                            // height: "100%",
+                            alignSelf: "stretch",
+                            // background: "blue",
+                            margin: 0,
+                            padding: 0
+                        }}
                         schema={"lots"}
                     />
                 }
