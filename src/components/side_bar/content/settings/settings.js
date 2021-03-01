@@ -7,8 +7,6 @@ import ContentHeader from '../content_header/content_header'
 
 // Import Components
 import Textbox from '../../../basic/textbox/textbox'
-import Header from '../../../basic/header/header'
-import SmallButton from '../../../basic/small_button/small_button'
 import Switch from 'react-ios-switch';
 
 import TimezonePicker, { timezones } from 'react-timezone';
@@ -23,7 +21,6 @@ import { setCurrentMap } from '../../../../redux/actions/map_actions'
 // Import Utils
 import { isEquivalent } from '../../../../methods/utils/utils'
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
-import * as taskActions from "../../../../redux/actions/tasks_actions";
 
 const Settings = () => {
 
