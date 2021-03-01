@@ -60,6 +60,7 @@ const StatisticsOverview = (props) => {
     const [defaultTicks, setDefaultTicks] = useState([])
     const [isThroughputLoading, setIsThroughputLoading] = useState(false)
     const [isReportsLoading, setIsReportsLoading] = useState(false)
+    const [timespanDisabled, setTimespanDisabled] = useState(false)
 
     const [isDevice, setIsDevice] = useState(false)
     const [reportButtons, setReportButtons] = useState([])
@@ -255,7 +256,7 @@ const StatisticsOverview = (props) => {
             <div style={{ marginBottom: '1rem', alignItems: "center", display: "flex", flexDirection: "column" }}>
                 {
                     <>
-                        <TimeSpans color={colors[selector]} setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
+                        <TimeSpans timespanDisabled={timespanDisabled} color={colors[selector]} setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
 
                         {/* Commented out for now, only need through put bar chart */}
                         {/* {handleGaugeCharts()} */}
@@ -388,6 +389,9 @@ const StatisticsOverview = (props) => {
                     timeSpan={timeSpan}
                     loadLineChartData={(bool) => {
                         onTimeSpan('line', dateIndex)
+                    }}
+                    disableTimeSpan={(bool) => {
+                        setTimespanDisabled(bool)
                     }}
                 />
                 <ReportChart

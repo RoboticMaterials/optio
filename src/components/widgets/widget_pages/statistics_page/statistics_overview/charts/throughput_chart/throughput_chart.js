@@ -22,6 +22,7 @@ const ThroughputChart = (props) => {
         isThroughputLoading,
         timeSpan,
         loadLineChartData,
+        disableTimeSpan,
     } = props
 
     const [showBar, setShowBar] = useState(true)
@@ -31,6 +32,15 @@ const ThroughputChart = (props) => {
     const minHeight = 0
 
     const isData = (filteredData && Array.isArray(filteredData) && filteredData.length > 0)
+
+    useEffect(() => {
+        if(showBar){
+            disableTimeSpan(false)
+        } else {
+            disableTimeSpan(true)
+        }
+
+    }, [showBar])
 
     return (
         <styled.SinglePlotContainer

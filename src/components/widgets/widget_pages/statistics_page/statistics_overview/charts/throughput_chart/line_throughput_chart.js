@@ -87,7 +87,6 @@ const LineThroughputChart = (props) => {
         let convertedData = []
 
         let dataCopy = deepCopy(data)
-
         // Convert to epoch
         const startEpoch = convert24htoEpoch(shiftDetails.startOfShift, date)
         let startIndex
@@ -102,7 +101,7 @@ const LineThroughputChart = (props) => {
             }
         }
 
-        // Convert to epoch
+        // Convert end of shift to epoch
         const endEpoch = convert24htoEpoch(shiftDetails.endOfShift, date)
         let endIndex = dataCopy.length
         // Find end of Shift in the data based on selected input
@@ -110,7 +109,7 @@ const LineThroughputChart = (props) => {
             const dataDate = dataCopy[i].x
             // Go through the data until the time is  after the end of shift input and take the vlaue before that one
             if (dataDate > endEpoch) {
-                startIndex = i - 1
+                endIndex = i
                 break
             }
         }
@@ -128,11 +127,9 @@ const LineThroughputChart = (props) => {
         for (let point of convertedData) {
             if (point.x > endEpoch) {
                 const ind = convertedData.indexOf(data => data.x === point.x)
-                console.log('QQQQ Index', ind)
                 pointsAfterShiftEnd.push(ind)
             }
         }
-        console.log('QQQQ Should be deleting these points', pointsAfterShiftEnd)
         pointsAfterShiftEnd.forEach((point) => {
             convertedData.splice(point, 1)
         })
@@ -344,7 +341,6 @@ const LineThroughputChart = (props) => {
         },
         ]
 
-        console.log('QQQQ Line Data', lineData)
         return lineData
     }, [shiftDetails])
 
