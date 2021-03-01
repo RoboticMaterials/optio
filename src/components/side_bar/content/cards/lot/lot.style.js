@@ -136,8 +136,8 @@ export const FooterBar = styled.div`
 `
 
 const notSelectedFlagCss = css`
-    filter: contrast(20%);
-    filter: brightness(50%);
+    filter: contrast(40%);
+    //filter: brightness(50%);
 `
 
 export const FlagButton = styled.button`
