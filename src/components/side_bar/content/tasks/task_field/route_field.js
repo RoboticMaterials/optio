@@ -664,6 +664,7 @@ const TaskField = (props) => {
                                 }}
                                 onSelectObject = {()=>onSelectObject()}
                                 deleteDisabled = {!!selectedObject?.new}
+                                saveDisabled = {submitDisabled}
                                 onChangeQuantity={(e) => {
                                     const value = parseInt(e.target.value)
                                     if(isNaN(value)){
