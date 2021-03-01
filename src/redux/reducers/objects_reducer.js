@@ -33,6 +33,8 @@ import {
     SELECT_OBJECT,
     SET_SELECTED_OBJECT,
     DESELECT_OBJECT,
+    SET_ROUTE_OBJECT,
+    SET_EDITING_OBJECT,
 } from '../types/objects_types'
 
 import { deepCopy } from '../../methods/utils/utils';
@@ -41,6 +43,8 @@ import { deepCopy } from '../../methods/utils/utils';
 const defaultState = {
     objects: {},
     selectedObject: null,
+    editingObject: false,
+
 
     error: {},
     pending: false
@@ -253,6 +257,24 @@ export default function objectsReducer(state = defaultState, action) {
                 ...state,
                 selectedObject: null,
             }
+
+        case SET_SELECTED_OBJECT:
+            return {
+                ...state,
+                selectedObject: action.payload.object
+            }
+
+            case SET_ROUTE_OBJECT:
+                return {
+                    ...state,
+                    routeObject: action.payload.object
+                }
+
+            case SET_EDITING_OBJECT:
+                return {
+                    ...state,
+                    editingObject: action.payload.bool
+                }
 
         default:
             return state;

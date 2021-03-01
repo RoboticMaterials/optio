@@ -30,6 +30,7 @@ import { sortBy } from "../../methods/utils/card_utils";
 import { SORT_MODES } from "../../constants/common_contants";
 import Lot from "../side_bar/content/cards/lot/lot";
 import { getRouteProcesses, getLoadStationId } from "../../methods/utils/route_utils";
+import {getLotTotalQuantity} from "../../methods/utils/lot_utils";
 
 
 /**
@@ -1030,6 +1031,8 @@ const HILModals = (props) => {
                                         start_date,
                                         end_date,
                                         bins = {},
+                                        flags,
+                                        lotNumber,
                                         process_id: processId = ""
                                     } = currLot
 
@@ -1037,6 +1040,8 @@ const HILModals = (props) => {
                                     const {
                                         name: processName
                                     } = process || {}
+
+                                    const totalQuantity = getLotTotalQuantity({bins})
 
                                     const count = bins[stationId]?.count
 
@@ -1048,7 +1053,11 @@ const HILModals = (props) => {
                                     return (
                                         <styled.CardContainer>
                                             <Lot
+                                                totalQuantity={totalQuantity}
+                                                lotNumber={lotNumber}
                                                 processName={processName}
+                                                flags={flags || []}
+                                                enableFlagSelector={false}
                                                 name={name}
                                                 start_date={start_date}
                                                 end_date={end_date}
