@@ -14,7 +14,6 @@ const TaskForm = (props) => {
 		isNew,
 		...remainingProps
 	} = props
-
 	const dispatch = useDispatch()
 	const dispatchSaveFormRoute = async (formRoute) => await dispatch(saveFormRoute(formRoute))
 	const dispatchSetSelectedTask = (task) => dispatch(setSelectedTask(task))
@@ -76,7 +75,6 @@ const TaskForm = (props) => {
 				// const {
 				// 	buttonType
 				// } = values
-
 				setSubmitting(true)
 				await handleSubmit(values)
 				setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save

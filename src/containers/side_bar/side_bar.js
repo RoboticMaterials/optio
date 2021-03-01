@@ -69,7 +69,6 @@ const SideBar = (props) => {
     const editingStation = useSelector(state => state.stationsReducer.editingStation)
     const editingPosition = useSelector(state => state.positionsReducer.editingPosition)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
-
     const taskEditing = useSelector(state => state.tasksReducer.editingTask)
     const processEditing = useSelector(state => state.processesReducer.editingProcess)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)

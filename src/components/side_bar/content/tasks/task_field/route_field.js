@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import * as styled from '../tasks_content.style'
 import { useSelector, useDispatch } from 'react-redux'
+import { useLocation, useParams } from 'react-router-dom'
 
 
 /*
@@ -19,10 +20,13 @@ import ContentHeader from '../../content_header/content_header'
 import Textbox from '../../../../basic/textbox/textbox.js'
 import Button from '../../../../basic/button/button'
 import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
+import IconButton from '../../../../basic/icon_button/icon_button'
+
 
 // Import Components
 import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 import LoadUnloadFields from './fields/load_unload_fields'
+import ObjectEditor from '../object_editor/object_editor'
 
 // Import utils
 import uuid from 'uuid'
@@ -38,6 +42,8 @@ import { setSelectedStation } from '../../../../../redux/actions/stations_action
 import { setSelectedPosition } from '../../../../../redux/actions/positions_actions'
 import { setSelectedHoveringTask, editingTask } from '../../../../../redux/actions/tasks_actions'
 import { processHover } from '../../../../../redux/actions/widget_actions'
+import { putObject, postObject, deleteObject, setSelectedObject, setRouteObject, setEditingObject} from '../../../../../redux/actions/objects_actions'
+
 import {
     buildDefaultRouteName,
     getLoadStationId,
@@ -93,7 +99,6 @@ const TaskField = (props) => {
         changed,
         temp
     } = values || {}
-
     const {
         insertIndex
     } = temp || {}
@@ -115,9 +120,18 @@ const TaskField = (props) => {
     const dispatchSetEditing = async (props) => await dispatch(editingTask(props))
     const dispatchSetSelectedHoveringTask = async (task) => await dispatch(setSelectedHoveringTask(task))
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
+    const dispatchPutObject = (object, id) => dispatch(putObject(object,id))
+    const dispatchPostObject = (object, id) => dispatch(postObject(object,id))
+    const dispatchSetSelectedObject = (object) => dispatch(setSelectedObject(object))
+    const dispatchDeleteObject = (id) => dispatch(deleteObject(id))
+    const dispatchSetRouteObject = (object)=> dispatch(setRouteObject(object))
+    const dispatchSetEditingObject = (bool)=>dispatch(setEditingObject(bool))
+
+
 
     let routes = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
+    const selectedObject = useSelector(state => state.objectsReducer.selectedObject)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const objects = useSelector(state => state.objectsReducer.objects)
@@ -125,26 +139,33 @@ const TaskField = (props) => {
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
     const hoveringTask = useSelector(state => state.tasksReducer.selectedHoveringTask)
     const stations = useSelector(state => state.stationsReducer.stations)
-
+    const routeObject = useSelector(state=>state.objectsReducer.routeObject)
+    const editingObject = useSelector(state=> state.objectsReducer.editingObject)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [needsValidate, setNeedsValidate] = useState(false);
     const [didSetHandoff, setDidSetHandoff] = useState(false);
-
+    const [showObjectSelector, setShowObjectSelector] = useState(false);
+    const [objectQuantity, setObjectQuantity] = useState(null);
     const previousLoadStationId = usePrevious(getLoadStationId(values))
     const previousUnloadStationId = usePrevious(getUnloadStationId(values))
-
+    const url = useLocation().pathname
     useEffect(() => {
         const loadStationId = getLoadStationId(selectedTask)
         const unloadStationId = getUnloadStationId(selectedTask)
 
         // update load & unload from selectedTask - currently have to do it this way since selectedTask is used in so many places
         if (selectedTask && selectedTask.load) {
+
             setFieldValue(fieldParent ? `${fieldParent}.load.station` : "load.station", selectedTask.load.station, false)
             setFieldValue(fieldParent ? `${fieldParent}.load.position` : "load.position", selectedTask.load.position, false)
         }
         if (selectedTask && selectedTask.unload) {
             setFieldValue(fieldParent ? `${fieldParent}.unload.station` : "unload.station", selectedTask.unload.station, false)
             setFieldValue(fieldParent ? `${fieldParent}.unload.position` : "unload.position", selectedTask.unload.position, false)
+        }
+
+        if (selectedObject) {
+            setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", selectedObject, false)
         }
 
         if (selectedTask && selectedTask.type) {
@@ -186,16 +207,17 @@ const TaskField = (props) => {
 
         const prevName = buildDefaultRouteName(prevLoadName, prevUnloadName)
         const newName = buildDefaultRouteName(loadName, unloadName)
+        const newObj = ""
 
         if((name === prevName) || !name) {
             setFieldValue(fieldParent ? `${fieldParent}.name` : "name", newName, false)
         }
 
+
         setNeedsValidate(true)
 
         // set touched if changes
         return () => {
-
 
             if (selectedTask && selectedTask.load) {
                 setFieldTouched(fieldParent ? `${fieldParent}.load` : "load", true)
@@ -203,12 +225,16 @@ const TaskField = (props) => {
             if (selectedTask && selectedTask.unload) {
                 setFieldTouched(fieldParent ? `${fieldParent}.unload` : "unload", true)
             }
+
         }
-    }, [selectedTask])
+    }, [selectedTask, selectedObject, objectQuantity])
 
     useEffect(() => {
 
         dispatchSetEditing(true) // set editing to true
+        dispatchSetRouteObject(selectedTask.route_object)
+        dispatchSetSelectedObject(selectedTask.route_object)
+    const dispatchPutObject = (object, id) => dispatch(putObject(object,id))
 
         return () => {
             // When unmounting edit task, always set fixing process to false
@@ -237,6 +263,13 @@ const TaskField = (props) => {
     useEffect(() => {
       dispatchPageDataChanged(changed)
     }, [changed])
+
+    useEffect(() => {
+      if(!!selectedObject && !!selectedObject.quantity){
+        setObjectQuantity(selectedObject.quantity)
+
+      }
+    }, [editingObject])
 
 
     const renderLoadUnloadParameters = () => {
@@ -271,6 +304,7 @@ const TaskField = (props) => {
 
             }
         }
+
     }
 
     const createObject = async () => {
@@ -281,6 +315,7 @@ const TaskField = (props) => {
                 const newObject = {
                     name: obj.name,
                     description: "",
+                    quantity: obj.quantity,
                     modelName: "",
                     dimensions: null,
                     map_id: currentMap._id,
@@ -302,7 +337,62 @@ const TaskField = (props) => {
         return objectId
     }
 
+    const onSaveObject = async() =>{
+        const object = {
+          name: obj.name,
+          description: obj.description,
+          quantity: objectQuantity,
+          modelName: "",
+          dimensions: null,
+          map_id: currentMap._id,
+          _id: !!selectedObject.new ? uuid.v4() : obj._id,
+        }
 
+      if(!selectedObject.new){
+        await dispatchPutObject(object, obj._id)
+      }
+      else{
+        await dispatchPostObject(object)
+      }
+
+      setObjectQuantity(null)
+      dispatchSetEditingObject(false)
+
+
+    }
+
+    const onAddObject = async() =>{
+        const object = {
+          name: "",
+          description: "",
+          quantity: "",
+          modelName: "",
+          dimensions: null,
+          map_id: currentMap._id,
+          _id: uuid.v4(),
+          new: true,
+        }
+
+        dispatchSetSelectedObject(object)
+        setObjectQuantity(null)
+    }
+
+    const onSelectObject = () => {
+      dispatchSetRouteObject(selectedObject)
+      setShowObjectSelector(false)
+      setFieldValue(fieldParent ? `${fieldParent}.route_object` : "route_object", selectedObject, false)
+    }
+
+    const onObjectBackClick = () => {
+      if(!!editingObject){
+        dispatchSetEditingObject(false)
+        dispatchSetSelectedObject(routeObject)
+      }
+      else{
+        setShowObjectSelector(false)
+        dispatchSetSelectedObject(selectedTask.route_object)
+      }
+    }
 
     const updateDashboard = () => {
         // Add the task automatically to the associated load station dashboard
@@ -384,7 +474,6 @@ const TaskField = (props) => {
                         />
                     }
 
-
                     <div style={{ marginBottom: '1rem' }}>
                         {selectedTask &&
                             <ContentHeader
@@ -394,12 +483,12 @@ const TaskField = (props) => {
                                 // disabled={selectedTask !== null && (!selectedTask.load.position || selectedTask.unload.position === null)}
                                 disabled={submitDisabled}
                                 onClickSave={async () => {
-                                    await createObject()
-                                    // await onSave()
+                                     await onSave()
                                 }}
 
                                 onClickBack={() => {
                                     onBackClick(routeId)
+                                    dispatchSetEditingObject(false)
                                 }}
                             />
                         }
@@ -509,6 +598,8 @@ const TaskField = (props) => {
                     }
 
                     {/* Task Title */}
+                    <styled.Header style={{ marginTop: '0rem',marginRight: ".5rem", fontSize: '1.2rem' }}>Route Name</styled.Header>
+
                     <TextField
                         InputComponent={Textbox}
                         name={fieldParent ? `${fieldParent}.name` : "name"}
@@ -520,40 +611,81 @@ const TaskField = (props) => {
 
                     {isTransportTask &&
                         <>
-                            <TextboxSearchField
-                                mapInput={(val) => {
-                                    if (!val) return []
+                        <styled.Header style={{ marginTop: '1.5rem',marginRight: ".5rem", fontSize: '1.2rem' }}>Object</styled.Header>
 
-                                    if (Array.isArray(val)) return val
+                        {!showObjectSelector &&
+                          <>
+                          {(!!selectedTask.route_object || !!routeObject) && (!!objects[selectedTask.route_object?._id] || !!objects[routeObject?._id]) ?
+                            <>
+                              <styled.ListItem style = {{height: url==='/tasks' ? '4rem': '2.5rem'}}>
+                                <styled.ListItemIcon
+                                    className='fas fa-box'
+                                />
+                                  <styled.ListItemTitle>{routeObject ? objects[routeObject._id].name: ""}</styled.ListItemTitle>
+                                </styled.ListItem>
 
-                                    return [val]
+                                <Button
+                                  style = {{marginTop: '1rem', marginBottom: '.3rem', height:'2.5rem', background: '#6c6e78'}}
+                                  // disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
+                                  quaternary
+                                  onClick={() => setShowObjectSelector(!showObjectSelector)}
+                                  >
+                                  <styled.RowContainer style = {{justifyContent: 'center'}}>
+                                      <styled.HelpText style = {{fontSize: '1.2rem', paddingTop: '0.4rem'}}>Change Object</styled.HelpText>
+                                  </styled.RowContainer>
+                                  </Button>
+                                </>
+                              :
+                              <Button
+                                style = {{marginTop: '.2rem', marginBottom: '.3rem', height:'2.5rem', background: '#6c6e78'}}
+                                schema={'tasks'}
+                                // disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
+                                quaternary
+                                onClick={() => setShowObjectSelector(!showObjectSelector)}
+                                >
+                                <styled.RowContainer style = {{justifyContent: 'center'}}>
+                                  <styled.HelpText style = {{fontSize: '1.2rem', paddingTop: '0.4rem'}}>Choose an Object...</styled.HelpText>
+                                </styled.RowContainer>
+                                </Button>
+                          }
+                            </>
+                          }
+
+                            {!!showObjectSelector &&
+                              <ObjectEditor
+                                onBackClick = {()=>onObjectBackClick()}
+                                name = {fieldParent ? `${fieldParent}.obj.name` : "obj.name"}
+                                description = {fieldParent ? `${fieldParent}.obj.description` : "obj.description"}
+                                focus = {!obj}
+                                onSaveObject = {()=>onSaveObject()}
+                                onAddObject = {()=>onAddObject()}
+                                onDeleteObject = {()=> {
+                                  dispatchDeleteObject(selectedObject._id)
                                 }}
-                                name={fieldParent ? `${fieldParent}.obj` : "obj"}
-                                placeholder="Object"
-                                label={!values.obj?._id ? "New object will be created" : null}
-                                labelField="name"
-                                onChange={(val) => {
+                                onSelectObject = {()=>onSelectObject()}
+                                deleteDisabled = {!!selectedObject?.new}
+                                saveDisabled = {submitDisabled}
+                                onChangeQuantity={(e) => {
+                                    const value = parseInt(e.target.value)
+                                    if(isNaN(value)){
+                                      setObjectQuantity("")
+                                    }
+                                    else{setObjectQuantity(value)}
+
                                 }}
+                                quantity = {objectQuantity}
+                              />
+                            }
 
-                                valueField="name"
-                                options={Object.values(objects).filter((obj) => obj.map_id === currentMap._id)}
-                                defaultValue={obj}
-                                textboxGap={0}
-                                closeOnSelect="true"
-                                className="w-100"
-                                schema="tasks"
-                                disbaled={!isTransportTask}
-                                containerStyle={{ marginTop: '1rem', marginBottom: "1rem" }}
-                            />
-
-                            <styled.HelpText>
-                                Select the object that will be transported. Either search & select an existing object, or type the
-                                name of a new object to create one.
-                    </styled.HelpText>
+                            {!showObjectSelector &&
+                              <styled.HelpText style = {{fontSize: '.8rem', marginBottom: '1rem'}}>
+                                  Select or create an object to be transported
+                              </styled.HelpText>
+                            }
 
                             {isProcessRoute &&
                             <>
-                                <styled.Label>Track Using Quantity or Fractions</styled.Label>
+                                <styled.Label style = {{fontSize:'1.2rem',alignSelf: 'center'}}>Quantity or Fraction Tracking</styled.Label>
                                 <styled.RowContainer style={{justifyContent: 'center'}}>
                                     <styled.DualSelectionButton
                                         style={{borderRadius: '.5rem 0rem 0rem .5rem'}}
