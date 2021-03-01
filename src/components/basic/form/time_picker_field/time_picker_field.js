@@ -46,9 +46,9 @@ const TimePickerField = (props) => {
 	const errorMessage = getMessageFromError(error);
 
 	return (
-			// <Container
-			// 	style={containerStyle}
-			// >
+			<Container
+				style={containerStyle}
+			>
 				<styled.TimePickerComponent
 					{...style}
 					{...field}
@@ -65,12 +65,12 @@ const TimePickerField = (props) => {
 						onChange && onChange(val)
 					}}
 				/>
-			// 	<ErrorTooltip
-			// 		visible={hasError}
-			// 		text={errorMessage}
-			// 		ContainerComponent={ErrorContainerComponent}
-			// 	/>
-			// </Container>
+				<ErrorTooltip
+					visible={hasError}
+					text={errorMessage}
+					ContainerComponent={ErrorContainerComponent}
+				/>
+			</Container>
 	)
 }
 
@@ -92,8 +92,8 @@ TimePickerField.defaultProps = {
 	containerStyle: {},
 	style: {},
 	onChange: () => {},
-	mapOutput: () => {},
-	mapInput: () => {},
+	mapOutput: val => val,
+	mapInput: val => val,
 };
 
 export default TimePickerField;
