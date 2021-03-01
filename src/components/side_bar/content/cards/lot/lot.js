@@ -1,29 +1,39 @@
-import React, {useContext} from "react";
-
-// external functions
-import {useDispatch} from "react-redux";
-import PropTypes from "prop-types";
-import Popup from 'reactjs-popup';
-import 'reactjs-popup/dist/index.css';
-import {ThemeContext} from "styled-components";
-
-// constants
-import {FLAG_OPTIONS} from "../../../../../constants/lot_contants";
+import React, {useContext, useEffect, useState} from "react"
 
 // actions
-import {putCardAttributes} from "../../../../../redux/actions/card_actions";
+import {putCard, putCardAttributes} from "../../../../../redux/actions/card_actions"
+
+// functions external
+import {useDispatch} from "react-redux";
+import PropTypes from "prop-types";
+import {ThemeContext} from "styled-components";
+
+// components external
+import Popup from 'reactjs-popup'
+import 'reactjs-popup/dist/index.css'
+
+// constants
+import {FIELD_DATA_TYPES, FLAG_OPTIONS} from "../../../../../constants/lot_contants"
 
 // utils
-import {immutableDelete, isArray} from "../../../../../methods/utils/array_utils";
+import {immutableDelete, immutableReplace, isArray} from "../../../../../methods/utils/array_utils"
+import {formatLotNumber} from "../../../../../methods/utils/lot_utils"
 
 // styles
-import * as styled from "./lot.style";
+import * as styled from "./lot.style"
+import LotDateRangeRow from "./lot_date_row/lot_date_row";
+import LotSimpleRow from "./lot_simple_row/lot_simple_row";
 
 const Lot = (props) => {
     const {
         name,
+        highlight,
         index,
+        totalQuantity,
+        lotNumber,
+        templateValues,
         id,
+        enableFlagSelector,
         onClick,
         count,
         start_date,
@@ -41,20 +51,155 @@ const Lot = (props) => {
     const dispatch = useDispatch()
     const dispatchPutCardAttributes = async (card, ID) => await dispatch(putCardAttributes(card, ID))
 
+    // component state
+    const [formattedLotNumber, setFormattedLotNumber] = useState(formatLotNumber(lotNumber))
+
+    useEffect(() => {
+        setFormattedLotNumber(formatLotNumber(lotNumber))
+    }, [lotNumber])
+
     const startDateText = ((start_date?.month + 1) && start_date?.day && start_date?.year) ?  (start_date.month + 1) + "/" + start_date.day + "/" + start_date.year : "Start"
     const endDateText = ((end_date?.month + 1) && end_date?.day && end_date?.year) ?  (end_date.month + 1) + "/" + end_date.day + "/" +end_date.year : "End"
 
-    return(
-        <styled.StyledDraggable key={id} index={index}>
-            <styled.Container
-                selectable={selectable}
-                isSelected={isSelected}
-                onClick={onClick}
-                containerStyle={containerStyle}
-            >
-                <styled.HeaderBar>
-                    <styled.CardName>{name}</styled.CardName>
+    const renderTemplateValues = () => {
+        return templateValues
+            .filter((currItem) => {
+                const {
+                    dataType,
+                } = currItem
 
+                return Object.values(FIELD_DATA_TYPES).includes(dataType)
+            })
+            .map((currItem, currIndex, arr) => {
+            const {
+                dataType,
+                fieldName,
+                value
+            } = currItem
+
+            const isLast = currIndex === arr.length - 1
+
+
+            switch(dataType) {
+                case FIELD_DATA_TYPES.STRING: {
+                    return(
+                    <LotSimpleRow
+                        label={fieldName}
+                        value={value}
+                        isLast={isLast}
+                    />
+                    )
+                }
+                case FIELD_DATA_TYPES.EMAIL: {
+                    return(
+                        <LotSimpleRow
+                            label={fieldName}
+                            value={value}
+                            isLast={isLast}
+                        />
+                    )
+                }
+                case FIELD_DATA_TYPES.DATE: {
+                    return(
+                        <div>nope</div>
+                    )
+                }
+                case FIELD_DATA_TYPES.DATE_RANGE: {
+                    return(
+                        <LotDateRangeRow
+                            label={fieldName}
+                            isLast={isLast}
+                            dateRange={value}
+                        />
+                    )
+                }
+                case FIELD_DATA_TYPES.URL: {
+                    return(
+                        <LotSimpleRow
+                            label={fieldName}
+                            value={value}
+                            isLast={isLast}
+                        />
+                    )
+                }
+                case FIELD_DATA_TYPES.INTEGER: {
+                    return(
+                        <LotSimpleRow
+                            label={fieldName}
+                            isLast={isLast}
+                            value={value}
+                        />
+                    )
+                }
+            }
+        })
+    }
+
+    const renderFlags = () => {
+        return(
+            <styled.FlagsContainer
+                style={{
+                    margin: 0,
+                    padding: 0
+                }}
+            >
+                {flags.length > 0 ?
+                    <>
+                        {flags.map((currFlagId) => {
+                            const flagOption = FLAG_OPTIONS[currFlagId]
+                            const {
+                                color: currColor
+                            } = flagOption
+
+                            return(
+                                <styled.FlagButton
+                                    key={currFlagId}
+                                    type={"button"}
+                                    selected={true}
+                                    color={currColor}
+                                    className="fas fa-flag"
+                                    style={{
+                                        margin: "0 .25rem",
+                                        padding: 0,
+                                        fontSize: "1rem"
+                                    }}
+                                />
+                            )
+                        })
+
+                        }
+
+                    </>
+                    :
+                    <styled.FlagButton
+                        type={"button"}
+                        color={"rgb(25,25,25,0.5)"}
+                        selected={true}
+                        className="fas fa-flag"
+                    />
+                }
+            </styled.FlagsContainer>
+        )
+    }
+    return(
+        <styled.Container
+            highlight={highlight}
+            selectable={selectable}
+            isSelected={isSelected}
+            onClick={onClick}
+            containerStyle={containerStyle}
+        >
+
+            <styled.HeaderBar>
+                <styled.NameContainer>
+                    <styled.CardName>{name ? name : formattedLotNumber}</styled.CardName>
+
+                    {name &&
+                    <styled.LotNumber>{formattedLotNumber}</styled.LotNumber>
+                    }
+                </styled.NameContainer>
+
+                {enableFlagSelector ?
                     <Popup
                         contentStyle={{
                             background: themeContext.bg.octonary,
@@ -65,49 +210,7 @@ const Lot = (props) => {
                         }}
 
                         trigger={open => (
-                            <styled.FlagsContainer
-                                style={{
-                                    margin: 0,
-                                    padding: 0
-                                }}
-                            >
-                                {flags.length > 0 ?
-                                    <>
-                                        {flags.map((currFlagId) => {
-                                            const flagOption = FLAG_OPTIONS[currFlagId]
-                                            const {
-                                                color: currColor
-                                            } = flagOption
-
-                                            return(
-                                                <styled.FlagButton
-                                                    key={currFlagId}
-                                                    type={"button"}
-                                                    selected={true}
-                                                    color={currColor}
-                                                    className="fas fa-flag"
-                                                    style={{
-                                                        margin: "0 .25rem",
-                                                        padding: 0,
-                                                        fontSize: "1rem"
-                                                    }}
-                                                />
-                                            )
-                                        })
-
-                                        }
-
-                                    </>
-                                    :
-                                    <styled.FlagButton
-                                        type={"button"}
-                                        color={"rgb(25,25,25,0.5)"}
-                                        selected={true}
-                                        className="fas fa-flag"
-                                    />
-                                }
-                            </styled.FlagsContainer>
-
+                            renderFlags()
                         )}
                         position="right center"
                         closeOnDocumentClick
@@ -150,41 +253,31 @@ const Lot = (props) => {
                             })}
                         </styled.FlagsContainer>
                     </Popup>
+                    :
+                    renderFlags()
+                }
 
-                </styled.HeaderBar>
-                <styled.ContentContainer>
+
+
+            </styled.HeaderBar>
+            <styled.ContentContainer>
 
                     {processName &&
-                    <styled.Row>
-                        <styled.Label>Process</styled.Label>
-                        <styled.Count>{processName}</styled.Count>
-                    </styled.Row>
+                        <LotSimpleRow
+                            label={"Process"}
+                            value={processName}
+                        />
                     }
 
+                <LotSimpleRow
+                    label={"Quantity"}
+                    value={`${count}/${totalQuantity}`}
+                />
 
-                    <styled.Row>
-                        <styled.Label>Dates</styled.Label>
-                    <styled.DatesContainer>
-                        <styled.DateItem>
-                            <styled.DateText>{startDateText}</styled.DateText>
-                        </styled.DateItem>
+                {renderTemplateValues()}
+            </styled.ContentContainer>
 
-                        <styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
-
-                        <styled.DateItem>
-                            <styled.DateText>{endDateText}</styled.DateText>
-                        </styled.DateItem>
-                    </styled.DatesContainer>
-                    </styled.Row>
-
-                    <styled.Row style={{border: "none"}}>
-                        <styled.Label>Quantity</styled.Label>
-                        <styled.Count>{count}</styled.Count>
-                    </styled.Row>
-                </styled.ContentContainer>
-
-            </styled.Container>
-        </styled.StyledDraggable>
+        </styled.Container>
     )
 }
 
@@ -192,13 +285,15 @@ const Lot = (props) => {
 Lot.propTypes = {
     isSelected: PropTypes.bool,
     selectable: PropTypes.bool
-};
+}
 
 // Specifies the default values for props:
 Lot.defaultProps = {
     isSelected: false,
     selectable: false,
-    flags: []
-};
+    flags: [],
+    highlight: false,
+    enableFlagSelector: true,
+}
 
 export default Lot

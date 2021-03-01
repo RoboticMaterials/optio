@@ -1,9 +1,18 @@
 import { SET } from "../types/prefixes"
-import {CARD_DRAGGING, COLUMN_HOVERING, FIELD_DRAGGING, SET_SIZE} from "../types/ui_types"
+import {LOT_DRAGGING, LOT_DROPPING, COLUMN_HOVERING, FIELD_DRAGGING, SET_SIZE, LOT_HOVERING} from "../types/ui_types"
 
-export const setCardDragging = (lotId, binId) => async dispatch => {
-	dispatch({ type: SET + CARD_DRAGGING, payload: {lotId, binId} });
+export const setDroppingLotId = (lotId, binId) => async dispatch => {
+	dispatch({ type: SET + LOT_DROPPING, payload: {lotId, binId} });
 }
+
+export const setDraggingLotId = (lotId) => async dispatch => {
+	dispatch({ type: SET + LOT_DRAGGING, payload: {lotId} });
+}
+
+export const setLotHovering = (lotId) => async dispatch => {
+	dispatch({ type: SET + LOT_HOVERING, payload: {lotId} });
+}
+
 
 export const setFieldDragging = (bool) => async dispatch => {
 	dispatch({ type: SET + FIELD_DRAGGING, payload: bool });

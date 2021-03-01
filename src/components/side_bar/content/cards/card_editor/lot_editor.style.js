@@ -44,6 +44,10 @@ export const Header = styled.div`
   	border-bottom: 1px solid black;
 `
 
+export const LotNumberContainer = styled.div`
+  background: ${props => props.theme.bg.quinary};
+`
+
 export const NameContainer = styled.div`
   align-self: stretch;
   padding: 1rem;

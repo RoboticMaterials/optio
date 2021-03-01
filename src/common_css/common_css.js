@@ -5,6 +5,11 @@ export const glow = (color) => css`
 	border: 1px solid ${color};
 `
 
+export const glow2 = (color) => css`
+	box-shadow: 0 0 5px ${color} ;
+	border: 1px solid ${color};
+`
+
 export const errorGlow = css`
   ${props => glow(props.theme.bad)};
 `;
@@ -49,7 +54,11 @@ export const commonIcon = css`
         filter: brightness(85 %);
     }
 `
-export const iconButtonCss = css`
+export const whiteGlow = css`
+  ${props => glow2("#00aaff")};
+`;
+
+export const iconButtonCss = `
   border: none;
   background: transparent;
   outline: none !important;

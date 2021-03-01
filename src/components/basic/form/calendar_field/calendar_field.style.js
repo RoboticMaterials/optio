@@ -31,7 +31,6 @@ export const IconContainerComponent = styled.div`
     transform: translateY(-50%);
     margin: 0;
     padding: 0;
-    background; cyan;
 `;
 
 export const StyledCalendar = styled(Calendar)`
@@ -82,13 +81,14 @@ export const StyledCalendar = styled(Calendar)`
     background: none;
     background: ${props => props.theme.bg.quinary};
     color: ${props => props.theme.bg.octonary};
+  
+};
 }
 .react-calendar__navigation button:enabled:hover,
 .react-calendar__navigation button:enabled:focus {
     background-color: #e6e6e6;
 }
 .react-calendar__navigation button[disabled] {
-    background-color: #f0f0f0;
 }
 .react-calendar__month-view__weekdays {
     text-align: center;
@@ -132,7 +132,7 @@ export const StyledCalendar = styled(Calendar)`
     
 }
 .react-calendar__tile:disabled {
-    background-color: #f0f0f0;
+  filter: contrast(50%);
 }
 .react-calendar__tile:enabled:hover,
 .react-calendar__tile:enabled:focus {
