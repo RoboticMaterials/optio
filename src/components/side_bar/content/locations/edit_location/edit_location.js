@@ -347,7 +347,7 @@ const EditLocation = () => {
                 <Formik
 
                     initialValues={{
-                        locationName: !!selectedLocation ? selectedLocation.name : null,
+                        locationName: !!selectedLocation ? selectedLocation.name : '',
 
                     }}
                     initialTouched={{
