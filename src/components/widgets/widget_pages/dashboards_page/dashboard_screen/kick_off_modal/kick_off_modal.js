@@ -21,7 +21,7 @@ import Textbox from "../../../../../basic/textbox/textbox";
 import {SORT_MODES} from "../../../../../../constants/common_contants";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
 import Lot from "../../../../../side_bar/content/cards/lot/lot";
-import {getLotTotalQuantity} from "../../../../../../methods/utils/lot_utils";
+import {getLotTemplateData, getLotTotalQuantity} from "../../../../../../methods/utils/lot_utils";
 import Card from "../../../../../side_bar/content/cards/lot/lot";
 import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
 import SimpleModal from "../../../../../basic/modals/simple_modal/simple_modal";
@@ -222,7 +222,8 @@ const KickOffModal = (props) => {
                     bins = {},
                     flags,
                     lotNumber,
-                    process_id: processId
+                    process_id: processId,
+                    lotTemplateId
                 } = currCard
 
                 const process = processes[processId]
@@ -232,9 +233,11 @@ const KickOffModal = (props) => {
 
                 const count = bins["QUEUE"]?.count || 0
                 const totalQuantity = getLotTotalQuantity({bins})
+                const templateValues = getLotTemplateData(lotTemplateId, currCard)
 
                 return(
                         <Lot
+                            templateValues={templateValues}
                             totalQuantity={totalQuantity}
                             enableFlagSelector={false}
                             lotNumber={lotNumber}
@@ -303,9 +306,9 @@ const KickOffModal = (props) => {
         })
 
 
-        if(sortMode) {
-            sortBy(tempAvailableCards, sortMode)
-        }
+        // if(sortMode) {
+        //     sortBy(tempAvailableCards, sortMode)
+        // }
         setAvailableKickOffCards(tempAvailableCards)
 
     }, [processCards])

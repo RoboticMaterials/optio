@@ -30,7 +30,8 @@ const CardZone = ((props) => {
 		maxHeight,
 		lotFilterValue,
 		selectedFilterOption,
-		sortMode
+		sortMode,
+		sortDirection
 	} = props
 
 	// redux state
@@ -205,6 +206,7 @@ const CardZone = ((props) => {
 			return (
 				<StationsColumn
 					sortMode={sortMode}
+					sortDirection={sortDirection}
 					maxHeight={maxHeight}
 					key={station_id + index}
 					id={route_id+"+"+station_id}
@@ -224,6 +226,7 @@ const CardZone = ((props) => {
 			<LotQueue
 				key={"QUEUE"}
 				sortMode={sortMode}
+				sortDirection={sortDirection}
 				maxHeight={maxHeight}
 				station_id={"QUEUE"}
 				setShowCardEditor={setShowCardEditor}
@@ -239,6 +242,7 @@ const CardZone = ((props) => {
 			<FinishColumn
 				key={"FINISH"}
 				sortMode={sortMode}
+				sortDirection={sortDirection}
 				maxHeight={maxHeight}
 				station_id={"FINISH"}
 				setShowCardEditor={setShowCardEditor}

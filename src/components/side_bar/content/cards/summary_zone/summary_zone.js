@@ -22,7 +22,8 @@ const SummaryZone = ((props) => {
 		lotFilterValue,
 		selectedFilterOption,
 		selectedProcesses,
-		sortMode
+		sortMode,
+		sortDirection
 	} = props
 
 	/*
@@ -53,6 +54,7 @@ const SummaryZone = ((props) => {
 
 						<CardZone
 							sortMode={sortMode}
+							sortDirection={sortDirection}
 							lotFilterValue={lotFilterValue}
 							selectedFilterOption={selectedFilterOption}
 							setShowCardEditor={setShowCardEditor}

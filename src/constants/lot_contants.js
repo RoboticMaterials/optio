@@ -101,8 +101,8 @@ export const DEFAULT_DISPLAY_NAMES = {
 	count: DEFAULT_COUNT_DISPLAY_NAME
 }
 
-export const NAME_FIELD = {fieldName: "name", dataType: FIELD_DATA_TYPES.STRING, displayName: DEFAULT_NAME_DISPLAY_NAME}
-export const COUNT_FIELD = {fieldName: "count", fieldPath: ["bins", "QUEUE"], dataType: FIELD_DATA_TYPES.INTEGER, displayName: DEFAULT_COUNT_DISPLAY_NAME}
+export const NAME_FIELD = {fieldName: "name", dataType: FIELD_DATA_TYPES.STRING, displayName: DEFAULT_NAME_DISPLAY_NAME, label: "Name"}
+export const COUNT_FIELD = {fieldName: "count", fieldPath: ["bins", "QUEUE"], dataType: FIELD_DATA_TYPES.INTEGER, displayName: DEFAULT_COUNT_DISPLAY_NAME, label: "Quantity"}
 
 export const REQUIRED_FIELDS = [NAME_FIELD, COUNT_FIELD]
 
@@ -147,11 +147,29 @@ export const FLAG_OPTIONS = {
 	},
 }
 
-export const LOT_FILTER_OPTIONS = {
-	name: {
-		label: "Name"
+export const SORT_DIRECTIONS = {
+	ASCENDING: {
+		color: "#db2100",
+		id: 0,
+		iconClassName: "fas fa-arrow-up"
 	},
+	DESCENDING:{
+		color: "#1a00c2",
+		id: 1,
+		iconClassName: "fas fa-arrow-down"
+	}
+}
+
+
+
+export const LOT_FILTER_OPTIONS = {
+	name: {...NAME_FIELD},
 	flags: {
 		label: "Flags"
 	},
+}
+
+export const LOT_SORT_OPTIONS = {
+	name: {...NAME_FIELD},
+	quantity: {...COUNT_FIELD}
 }

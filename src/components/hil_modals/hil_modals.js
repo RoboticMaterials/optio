@@ -30,7 +30,7 @@ import { sortBy } from "../../methods/utils/card_utils";
 import { SORT_MODES } from "../../constants/common_contants";
 import Lot from "../side_bar/content/cards/lot/lot";
 import { getRouteProcesses, getLoadStationId } from "../../methods/utils/route_utils";
-import {getLotTotalQuantity} from "../../methods/utils/lot_utils";
+import {getLotTemplateData, getLotTotalQuantity} from "../../methods/utils/lot_utils";
 
 
 /**
@@ -197,9 +197,9 @@ const HILModals = (props) => {
                 }
             })
 
-            if (sortMode) {
-                sortBy(stationCards, sortMode)
-            }
+            // if (sortMode) {
+            //     sortBy(stationCards, sortMode)
+            // }
 
             if (stationCards && Array.isArray(stationCards) && stationCards.length > 0) {
                 if ((stationCards.length === 1) && !selectedLot && !didSelectInitialLot) {
@@ -1033,7 +1033,8 @@ const HILModals = (props) => {
                                         bins = {},
                                         flags,
                                         lotNumber,
-                                        process_id: processId = ""
+                                        process_id: processId = "",
+                                        lotTemplateId
                                     } = currLot
 
                                     const process = processes[processId]
@@ -1046,6 +1047,7 @@ const HILModals = (props) => {
                                     const count = bins[stationId]?.count
 
                                     const isSelected = selectedLotId === lotId
+                                    const templateValues = getLotTemplateData(lotTemplateId, currLot)
 
                                     // const lotName = lots[lot_id] ? lots[lot_id].name : null
                                     const objectName = objects[object_id] ? objects[object_id].name : null
@@ -1053,6 +1055,7 @@ const HILModals = (props) => {
                                     return (
                                         <styled.CardContainer>
                                             <Lot
+                                                templateValues={templateValues}
                                                 totalQuantity={totalQuantity}
                                                 lotNumber={lotNumber}
                                                 processName={processName}

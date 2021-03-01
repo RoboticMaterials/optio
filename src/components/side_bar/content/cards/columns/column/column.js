@@ -22,6 +22,7 @@ import {useDispatch, useSelector} from "react-redux";
 // styles
 import * as styled from "./column.style";
 import {getLotTemplateData} from "../../../../../../methods/utils/lot_utils";
+import {sortBy} from "../../../../../../methods/utils/card_utils";
 
 
 // const animationDuration = 500
@@ -31,18 +32,20 @@ const Column = ((props) => {
 		station_id,
 		stationName = "Unnamed",
 		handleCardClick,
-		cards,
+		// cards,
 		processId,
 		HeaderContent,
 		isCollapsed,
 		maxWidth,
 		maxHeight,
-		sortMode
+		sortMode,
+		sortDirection
 	} = props
 
-	// if(sortMode) {
-	// 	sortBy(cards, sortMode)
-	// }
+	let cards = [...props.cards]
+	if(sortMode) {
+		sortBy(cards, sortMode, sortDirection)
+	}
 
 	// redux state
 	const objects = useSelector(state => { return state.objectsReducer.objects })

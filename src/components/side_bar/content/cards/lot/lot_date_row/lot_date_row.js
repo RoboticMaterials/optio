@@ -11,11 +11,13 @@ const LotDateRangeRow = (props) => {
 	const {
 		dateRange,
 		label,
-		isLast
+		isLast,
+		defaultStartText,
+		defaultEndText,
 	} = props
 
-	const [startDateText, setStartDateText] = useState()
-	const [endDateText, setEndDateText] = useState()
+	const [startDateText, setStartDateText] = useState("Start")
+	const [endDateText, setEndDateText] = useState("End")
 
 	useEffect(() => {
 		const [tempStartDateText, tempEndDateText] = dateRangeToStrings(dateRange)
@@ -28,13 +30,13 @@ const LotDateRangeRow = (props) => {
 			<styled.Label>{label}</styled.Label>
 			<styled.DatesContainer>
 				<styled.DateItem>
-					<styled.DateText>{startDateText}</styled.DateText>
+					<styled.DateText>{startDateText ? startDateText : defaultStartText}</styled.DateText>
 				</styled.DateItem>
 
 				<styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
 
 				<styled.DateItem>
-					<styled.DateText>{endDateText}</styled.DateText>
+					<styled.DateText>{endDateText ? endDateText : defaultEndText}</styled.DateText>
 				</styled.DateItem>
 			</styled.DatesContainer>
 		</styled.Row>
@@ -44,5 +46,12 @@ const LotDateRangeRow = (props) => {
 LotDateRangeRow.propTypes = {
 
 };
+
+LotDateRangeRow.defaultProps = {
+	defaultStartText: "Start",
+	defaultEndText: "End",
+};
+
+
 
 export default LotDateRangeRow;
