@@ -19,7 +19,9 @@ const LotFilterBar = (props) => {
     const {
         setLotFilterValue,
         selectedFilterOption,
-        setSelectedFilterOption
+        setSelectedFilterOption,
+        descriptionStyle,
+        shouldFocusLotFilter
     } = props
 
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
@@ -31,8 +33,17 @@ const LotFilterBar = (props) => {
 
         let tempLotFilterOptions = [...Object.values(LOT_FILTER_OPTIONS)]
 
-        templateFields.map((currTemplateField) => {
-            tempLotFilterOptions.push(currTemplateField)
+        templateFields.forEach((currTemplateField) => {
+            const {
+                dataType,
+                label
+            } = currTemplateField
+
+            // currently don't have filter for dates implemented, so skip em
+            if(dataType !== FIELD_DATA_TYPES.DATE_RANGE && dataType !== FIELD_DATA_TYPES.DATE) {
+                tempLotFilterOptions.push(currTemplateField)
+            }
+
         })
 
         setLotFilterOptions(tempLotFilterOptions)
@@ -42,7 +53,11 @@ const LotFilterBar = (props) => {
 
     return (
         <styled.ColumnContainer>
-            <styled.Description>Filter lots:</styled.Description>
+            <styled.Description
+                style={descriptionStyle}
+            >
+                Filter lots:
+            </styled.Description>
 
             <styled.ItemContainer>
                 <DropDownSearch
@@ -168,6 +183,7 @@ const LotFilterBar = (props) => {
                         onChange={(e) => {
                             setLotFilterValue(e.target.value)
                         }}
+                        focus={shouldFocusLotFilter}
                         style={{
                             background: themeContext.bg.tertiary,
                             height: "100%", width: "15rem",

@@ -19,10 +19,14 @@ import Textbox from "../../../../../basic/textbox/textbox";
 import {SORT_MODES} from "../../../../../../constants/common_contants";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
 import Lot from "../../../../../side_bar/content/cards/lot/lot";
-import {getLotTemplateData, getLotTotalQuantity} from "../../../../../../methods/utils/lot_utils";
+import {getLotTemplateData, getLotTotalQuantity, getMatchesFilter} from "../../../../../../methods/utils/lot_utils";
 import Card from "../../../../../side_bar/content/cards/lot/lot";
 import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
 import {quantityOneSchema} from "../../../../../../methods/utils/form_schemas";
+import {getLotTemplates} from "../../../../../../redux/actions/lot_template_actions";
+import LotSortBar from "../../../../../side_bar/content/cards/lot_sort_bar/lot_sort_bar";
+import LotFilterBar from "../../../../../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
+import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../../../constants/lot_contants";
 
 Modal.setAppElement('body');
 
@@ -45,6 +49,7 @@ const FinishModal = (props) => {
     // const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
     const dispatchGetCards = () => dispatch(getCards())
     const dispatchGetProcesses = () => dispatch(getProcesses())
+    const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
     const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 
     const finishEnabledDashboard = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] })
@@ -52,14 +57,18 @@ const FinishModal = (props) => {
     const processes = useSelector(state => { return state.processesReducer.processes }) || {}
     const routes = useSelector(state => { return state.tasksReducer.tasks }) || {}
 
-    const [lotFilterValue, setLotFilterValue] = useState('')
+
     const [selectedLot, setSelectedLot] = useState(null)
     const [lotCount, setLotCount] = useState(null)
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
     const [showQuantitySelector, setShowQuantitySelector] = useState(false)
     const [submitting, setSubmitting] = useState(false)
     const [availableKickOffCards, setAvailableKickOffCards] = useState([])
-    const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
+
+    const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
+    const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
+    const [lotFilterValue, setLotFilterValue] = useState('')
+    const [ selectedFilterOption, setSelectedFilterOption ] = useState(LOT_FILTER_OPTIONS.name)
 
     const isButtons = availableKickOffCards.length > 0
 
@@ -171,16 +180,7 @@ const FinishModal = (props) => {
                     name: currLotName,
                 } = currLot || {}
 
-                if(
-                    currLotName
-                        .toLowerCase()
-                        .includes(lotFilterValue.toLowerCase())
-                ) {
-                    return true
-                }
-                else {
-                    return false
-                }
+                return getMatchesFilter(currLot, lotFilterValue, selectedFilterOption)
             })
             .map((currCard, cardIndex) => {
                 const {
@@ -237,6 +237,7 @@ const FinishModal = (props) => {
     useEffect(() => {
         dispatchGetCards()
         dispatchGetProcesses()
+        dispatchGetLotTemplates()
     }, [])
 
     /**
@@ -262,18 +263,24 @@ const FinishModal = (props) => {
 
             var filteredCards = []
             if(currProcessCards) filteredCards = Object.values(currProcessCards).filter((currCard) => {
-                // currCard.station_id === "QUEUE"
                 if(currCard.bins && currCard.bins[stationId]) return true
+            })
+            .map((currCard) => {
+                return{
+                    ...currCard,
+                    count: currCard.bins[stationId].count
+                }
             })
             tempAvailableCards = tempAvailableCards.concat(filteredCards)
         })
 
-        // if(sortMode) {
-        //     sortBy(tempAvailableCards, sortMode)
-        // }
+        if(sortMode) {
+            sortBy(tempAvailableCards, sortMode, sortDirection)
+        }
+
         setAvailableKickOffCards(tempAvailableCards)
 
-    }, [processCards])
+    }, [processCards, sortMode, sortDirection])
 
     // if number of available lots >= 5, auto focus lot filter text box
     useEffect(() => {
@@ -324,14 +331,18 @@ const FinishModal = (props) => {
                 <styled.HeaderMainContentContainer>
                 <styled.Title>{title}</styled.Title>
 
-                    <div style={{display: "flex", alignItems: "center", justifyContent: "center", width: "40rem", minWidth: "10rem", maxWidth: "50%"}}>
-                        <Textbox
-                            focus={shouldFocusLotFilter}
-                            placeholder='Filter lots...'
-                            onChange={(e) => {
-                                setLotFilterValue(e.target.value)
-                            }}
-                            style={{flex: 1, background: theme.bg.quaternary }}
+                    <div style={{display: "flex",  justifyContent: "center", width: "40rem", minWidth: "10rem", maxWidth: "50%"}}>
+                        <LotSortBar
+                            sortMode={sortMode}
+                            setSortMode={setSortMode}
+                            sortDirection={sortDirection}
+                            setSortDirection={setSortDirection}
+                        />
+                        <LotFilterBar
+                            shouldFocusLotFilter={shouldFocusLotFilter}
+                            setLotFilterValue={setLotFilterValue}
+                            selectedFilterOption={selectedFilterOption}
+                            setSelectedFilterOption={setSelectedFilterOption}
                         />
                     </div>
                 </styled.HeaderMainContentContainer>

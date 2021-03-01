@@ -30,7 +30,11 @@ import { sortBy } from "../../methods/utils/card_utils";
 import { SORT_MODES } from "../../constants/common_contants";
 import Lot from "../side_bar/content/cards/lot/lot";
 import { getRouteProcesses, getLoadStationId } from "../../methods/utils/route_utils";
-import {getLotTemplateData, getLotTotalQuantity} from "../../methods/utils/lot_utils";
+import {getLotTemplateData, getLotTotalQuantity, getMatchesFilter} from "../../methods/utils/lot_utils";
+import {getLotTemplates} from "../../redux/actions/lot_template_actions";
+import LotSortBar from "../side_bar/content/cards/lot_sort_bar/lot_sort_bar";
+import LotFilterBar from "../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
+import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../constants/lot_contants";
 
 
 /**
@@ -52,6 +56,7 @@ const HILModals = (props) => {
 
     const dispatch = useDispatch()
     const dispatchGetCards = () => dispatch(getCards())
+    const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
     const dispatchTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
     const disptachHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
     const disptachPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
@@ -84,14 +89,18 @@ const HILModals = (props) => {
     const [didSelectInitialLot, setDidSelectInitialLot] = useState(false)
     const [hilLoadUnload, setHilLoadUnload] = useState('')
     const [dataLoaded, setDataLoaded] = useState(false)
-    const [lotFilterValue, setLotFilterValue] = useState('')
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState('')
     const [changeQtyMouseHold, setChangeQtyMouseHold] = useState('')
-    const [sortMode, setSortMode] = useState(SORT_MODES.END_ASCENDING)
+
     const [lotsAtStation, setLotsAtStation] = useState(false)
     const [taskHasProcess, setTaskHasProcess] = useState(false)
     const [noLotsSelected, setNoLotsSelected] = useState(false)
     const [modalClosed, setModalClosed] = useState(false)
+
+    const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
+    const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
+    const [lotFilterValue, setLotFilterValue] = useState('')
+    const [ selectedFilterOption, setSelectedFilterOption ] = useState(LOT_FILTER_OPTIONS.name)
     const size = useWindowSize()
     const windowWidth = size.width
 
@@ -186,20 +195,33 @@ const HILModals = (props) => {
         if ((taskProcesses && Array.isArray(taskProcesses) && (taskProcesses.length > 0))) {
             setIsProcessTask(true)
 
-            let stationCards = Object.values(cards).filter((currCard) => {
-                const {
-                    bins,
-                    process_id: currCardProcessId
-                } = currCard || {}
+            let stationCards = Object.values(cards)
+                .filter((currCard) => {
+                    const {
+                        bins,
+                        process_id: currCardProcessId
+                    } = currCard || {}
 
-                if (bins) {
-                    if (bins[loadStationId] && bins[loadStationId].count > 0 && (taskProcesses.includes(currCardProcessId))) return true
-                }
-            })
+                    if (bins) {
+                        if (bins[loadStationId] && bins[loadStationId].count > 0 && (taskProcesses.includes(currCardProcessId))) return true
+                    }
+                })
+                .map((currCard) => {
+                    const {
+                        bins
+                    } = currCard || {}
 
-            // if (sortMode) {
-            //     sortBy(stationCards, sortMode)
-            // }
+                    return {
+                        ...currCard,
+                        count: bins[loadStationId].count
+                    }
+                })
+
+            console.log("hil modal stationCards",stationCards)
+
+            if (sortMode) {
+                sortBy(stationCards, sortMode, sortDirection)
+            }
 
             if (stationCards && Array.isArray(stationCards) && stationCards.length > 0) {
                 if ((stationCards.length === 1) && !selectedLot && !didSelectInitialLot) {
@@ -217,7 +239,7 @@ const HILModals = (props) => {
 
 
 
-    }, [cards, selectedTask])
+    }, [cards, selectedTask, sortMode, sortDirection])
 
     useEffect(() => {
         if (count && quantity && (quantity > count)) setQuantity(parseInt(count))
@@ -312,6 +334,7 @@ const HILModals = (props) => {
     // Use Effect for when page loads, handles wether the HIL is a load or unload
     useEffect(() => {
         dispatchGetCards()
+        dispatchGetLotTemplates()
 
         const currentTask = tasks[item.task_id]
         setSelectedTask(currentTask)
@@ -986,14 +1009,34 @@ const HILModals = (props) => {
 
                     </styled.HeaderMainContent>
 
-                    <div style={{ display: "flex", maxWidth: "50rem", minWidth: "1rem", width: "50%" }}>
-                        <Textbox
-                            focus={shouldFocusLotFilter}
-                            placeholder='Filter lots...'
-                            onChange={(e) => {
-                                setLotFilterValue(e.target.value)
+                    {/*<div style={{ display: "flex", maxWidth: "50rem", minWidth: "1rem", width: "50%" }}>*/}
+                    {/*    <Textbox*/}
+                    {/*        focus={shouldFocusLotFilter}*/}
+                    {/*        placeholder='Filter lots...'*/}
+                    {/*        onChange={(e) => {*/}
+                    {/*            setLotFilterValue(e.target.value)*/}
+                    {/*        }}*/}
+                    {/*        textboxContainerStyle={{ flex: 1 }}*/}
+                    {/*    />*/}
+                    {/*</div>*/}
+                    <div style={{display: "flex",  justifyContent: "center", width: "40rem", minWidth: "10rem", maxWidth: "50%"}}>
+                        <LotSortBar
+                            descriptionStyle={{
+                                color: "black"
                             }}
-                            textboxContainerStyle={{ flex: 1 }}
+                            sortMode={sortMode}
+                            setSortMode={setSortMode}
+                            sortDirection={sortDirection}
+                            setSortDirection={setSortDirection}
+                        />
+                        <LotFilterBar
+                            shouldFocusLotFilter={shouldFocusLotFilter}
+                            descriptionStyle={{
+                                color: "black"
+                            }}
+                            setLotFilterValue={setLotFilterValue}
+                            selectedFilterOption={selectedFilterOption}
+                            setSelectedFilterOption={setSelectedFilterOption}
                         />
                     </div>
                 </styled.Header>
@@ -1004,23 +1047,7 @@ const HILModals = (props) => {
 
                             {availableLots
                                 .filter((currLot) => {
-
-                                    const {
-                                        name: currLotName,
-                                        _id: currLotId,
-                                        bins: currLotBins
-                                    } = currLot || {}
-
-                                    if (
-                                        currLotName
-                                            .toLowerCase()
-                                            .includes(lotFilterValue.toLowerCase())
-                                    ) {
-                                        return true
-                                    }
-                                    else {
-                                        return false
-                                    }
+                                    return getMatchesFilter(currLot, lotFilterValue, selectedFilterOption)
                                 })
                                 .map((currLot, lotIndex) => {
                                     const {

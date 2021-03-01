@@ -19,7 +19,8 @@ const LotSortBar = (props) => {
         sortMode,
         setSortMode,
         sortDirection,
-        setSortDirection
+        setSortDirection,
+        descriptionStyle
     } = props
 
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
@@ -31,7 +32,7 @@ const LotSortBar = (props) => {
 
         let tempLotSortOptions = [...Object.values(LOT_SORT_OPTIONS)]
 
-        templateFields.map((currTemplateField) => {
+        templateFields.forEach((currTemplateField) => {
 
             const {
                 dataType,
@@ -67,7 +68,11 @@ const LotSortBar = (props) => {
 
     return (
         <styled.ColumnContainer>
-            <styled.Description>Sort By:</styled.Description>
+            <styled.Description
+                style={descriptionStyle}
+            >
+                Sort By:
+            </styled.Description>
 
             <styled.ItemContainer>
                 <DropDownSearch

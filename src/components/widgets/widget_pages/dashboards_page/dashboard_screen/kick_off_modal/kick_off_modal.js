@@ -21,7 +21,7 @@ import Textbox from "../../../../../basic/textbox/textbox";
 import {SORT_MODES} from "../../../../../../constants/common_contants";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
 import Lot from "../../../../../side_bar/content/cards/lot/lot";
-import {getLotTemplateData, getLotTotalQuantity} from "../../../../../../methods/utils/lot_utils";
+import {getLotTemplateData, getLotTotalQuantity, getMatchesFilter} from "../../../../../../methods/utils/lot_utils";
 import Card from "../../../../../side_bar/content/cards/lot/lot";
 import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
 import SimpleModal from "../../../../../basic/modals/simple_modal/simple_modal";
@@ -30,6 +30,7 @@ import ZoneHeader from "../../../../../side_bar/content/cards/zone_header/zone_h
 import LotSortBar from "../../../../../side_bar/content/cards/lot_sort_bar/lot_sort_bar";
 import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../../../constants/lot_contants";
 import LotFilterBar from "../../../../../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
+import {getLotTemplates} from "../../../../../../redux/actions/lot_template_actions";
 
 Modal.setAppElement('body');
 
@@ -51,6 +52,7 @@ const KickOffModal = (props) => {
     const dispatch = useDispatch()
     // const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
     const dispatchGetCards = () => dispatch(getCards())
+    const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
     const dispatchGetProcesses = () => dispatch(getProcesses());
     const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 
@@ -212,16 +214,7 @@ const KickOffModal = (props) => {
                     name: currLotName,
                 } = currLot || {}
 
-                if(
-                    currLotName
-                        .toLowerCase()
-                        .includes(lotFilterValue.toLowerCase())
-                ) {
-                    return true
-                }
-                else {
-                    return false
-                }
+                return getMatchesFilter(currLot, lotFilterValue, selectedFilterOption)
             })
             .map((currCard, cardIndex) => {
                 const {
@@ -235,6 +228,8 @@ const KickOffModal = (props) => {
                     process_id: processId,
                     lotTemplateId
                 } = currCard
+
+                console.log("currCard",currCard)
 
                 const process = processes[processId]
                 const {
@@ -271,6 +266,7 @@ const KickOffModal = (props) => {
     const loadData = async () => {
         const cardsResult = await dispatchGetCards()
         const processesResult = await dispatchGetProcesses()
+        dispatchGetLotTemplates()
 
         if(!(cardsResult instanceof Error) && !(processesResult instanceof Error)) {
             setDidLoadData(true)
@@ -311,6 +307,11 @@ const KickOffModal = (props) => {
             if(currProcessCards) filteredCards = Object.values(currProcessCards).filter((currCard) => {
                 // currCard.station_id === "QUEUE"
                 if(currCard.bins && currCard.bins["QUEUE"]) return true
+            }).map((currCard) => {
+                return{
+                    ...currCard,
+                    count: currCard.bins["QUEUE"].count
+                }
             })
             tempAvailableCards = tempAvailableCards.concat(filteredCards)
         })
@@ -394,16 +395,6 @@ const KickOffModal = (props) => {
                     <styled.Title>{title}</styled.Title>
 
                     <div style={{display: "flex",  justifyContent: "center", width: "40rem", minWidth: "10rem", maxWidth: "50%"}}>
-                        {/*<Textbox*/}
-                        {/*    focus={shouldFocusLotFilter}*/}
-                        {/*    placeholder='Filter lots...'*/}
-                        {/*    onChange={(e) => {*/}
-                        {/*        setLotFilterValue(e.target.value)*/}
-                        {/*    }}*/}
-                        {/*    style={{background: theme.bg.quaternary }}*/}
-                        {/*    textboxContainerStyle={{flex: 1}}*/}
-                        {/*/>*/}
-
                         <LotSortBar
                             sortMode={sortMode}
                             setSortMode={setSortMode}
@@ -411,12 +402,11 @@ const KickOffModal = (props) => {
                             setSortDirection={setSortDirection}
                         />
                         <LotFilterBar
-                            lotFilterValue={lotFilterValue}
+                            shouldFocusLotFilter={shouldFocusLotFilter}
                             setLotFilterValue={setLotFilterValue}
                             selectedFilterOption={selectedFilterOption}
                             setSelectedFilterOption={setSelectedFilterOption}
                         />
-
                     </div>
                 </styled.HeaderMainContentContainer>
 
