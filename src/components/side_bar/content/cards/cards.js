@@ -203,9 +203,11 @@ const Cards = (props) => {
                 setSortDirection={setSortDirection}
                 sortMode={sortMode}
                 setSortMode={setSortMode}
+
                 setLotFilterValue={setLotFilterValue}
                 selectedFilterOption={selectedFilterOption}
                 setSelectedFilterOption={setSelectedFilterOption}
+
                 selectedProcesses={selectedProcesses}
                 setSelectedProcesses={setSelectedProcesses}
                 zone={id}

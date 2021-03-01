@@ -26,6 +26,7 @@ import Card from "../../../../../side_bar/content/cards/lot/lot";
 import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
 import SimpleModal from "../../../../../basic/modals/simple_modal/simple_modal";
 import {quantityOneSchema} from "../../../../../../methods/utils/form_schemas";
+import ZoneHeader from "../../../../../side_bar/content/cards/zone_header/zone_header";
 
 Modal.setAppElement('body');
 
@@ -378,15 +379,19 @@ const KickOffModal = (props) => {
                     <styled.Title>{title}</styled.Title>
 
                     <div style={{display: "flex", alignItems: "center", justifyContent: "center", width: "40rem", minWidth: "10rem", maxWidth: "50%"}}>
-                        <Textbox
-                            focus={shouldFocusLotFilter}
-                            placeholder='Filter lots...'
-                            onChange={(e) => {
-                                setLotFilterValue(e.target.value)
-                            }}
-                            style={{background: theme.bg.quaternary }}
-                            textboxContainerStyle={{flex: 1}}
+                        {/*<Textbox*/}
+                        {/*    focus={shouldFocusLotFilter}*/}
+                        {/*    placeholder='Filter lots...'*/}
+                        {/*    onChange={(e) => {*/}
+                        {/*        setLotFilterValue(e.target.value)*/}
+                        {/*    }}*/}
+                        {/*    style={{background: theme.bg.quaternary }}*/}
+                        {/*    textboxContainerStyle={{flex: 1}}*/}
+                        {/*/>*/}
+                        <ZoneHeader
+
                         />
+
                     </div>
                 </styled.HeaderMainContentContainer>
 
