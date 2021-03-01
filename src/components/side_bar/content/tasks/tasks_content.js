@@ -34,6 +34,7 @@ import { isObject } from "../../../../methods/utils/object_utils";
 import { DEVICE_CONSTANTS } from "../../../../constants/device_constants";
 import { ADD_TASK_ALERT_TYPE } from '../../../../constants/dashboard_contants'
 import {getSidebarDeviceType, isRouteInQueue} from "../../../../methods/utils/task_queue_utils";
+import {isDeviceConnected} from "../../../../methods/utils/device_utils";
 
 export default function TaskContent(props) {
 
@@ -116,6 +117,20 @@ export default function TaskContent(props) {
 
         const inQueue = isRouteInQueue(Id, deviceType)
 
+        const connectedDeviceExists = isDeviceConnected()
+
+        if(!connectedDeviceExists && deviceType !== DEVICE_CONSTANTS.HUMAN) {
+            // display alert notifying user that task is already in queue
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
+                label: "Alert! No device is currently connected to run this route",
+                message: `'${name}' not added`,
+            })
+
+            // clear alert after timeout
+            return setTimeout(() => setAddTaskAlert(null), 1800)
+        }
+
         // add alert to notify task has been added
         // If in Q, then tell them it's already there
         if (inQueue) {
@@ -132,8 +147,6 @@ export default function TaskContent(props) {
 
         // Else see what type of task it is and add accordingly
         else {
-
-
 
             // Handle Add
             if (deviceType !== 'human') {
