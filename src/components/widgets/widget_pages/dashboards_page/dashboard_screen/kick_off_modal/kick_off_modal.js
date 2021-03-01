@@ -27,6 +27,9 @@ import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_m
 import SimpleModal from "../../../../../basic/modals/simple_modal/simple_modal";
 import {quantityOneSchema} from "../../../../../../methods/utils/form_schemas";
 import ZoneHeader from "../../../../../side_bar/content/cards/zone_header/zone_header";
+import LotSortBar from "../../../../../side_bar/content/cards/lot_sort_bar/lot_sort_bar";
+import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../../../constants/lot_contants";
+import LotFilterBar from "../../../../../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
 
 Modal.setAppElement('body');
 
@@ -56,7 +59,8 @@ const KickOffModal = (props) => {
     const processes = useSelector(state => { return state.processesReducer.processes }) || {}
     const routes = useSelector(state => { return state.tasksReducer.tasks }) || {}
 
-    const [lotFilterValue, setLotFilterValue] = useState('')
+
+
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
     const [submitting, setSubmitting] = useState(false)
     const [showLotEditor, setShowLotEditor] = useState(false)
@@ -65,7 +69,12 @@ const KickOffModal = (props) => {
     const [lotCount, setLotCount] = useState(null)
     const [showQuantitySelector, setShowQuantitySelector] = useState(false)
     const [availableKickOffCards, setAvailableKickOffCards] = useState([])
-    const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
+
+    const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
+    const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
+    const [lotFilterValue, setLotFilterValue] = useState('')
+    const [ selectedFilterOption, setSelectedFilterOption ] = useState(LOT_FILTER_OPTIONS.name)
+
     const isButtons = availableKickOffCards.length > 0
     const stationId = dashboard.station
 
@@ -293,12 +302,12 @@ const KickOffModal = (props) => {
      *
      */
     useEffect(() => {
-        var tempAvailableCards = []
+        let tempAvailableCards = []
 
         if(kickOffEnabledInfo && Array.isArray(kickOffEnabledInfo)) kickOffEnabledInfo.forEach((currProcessId) => {
             const currProcessCards = processCards[currProcessId]
 
-            var filteredCards = []
+            let filteredCards = []
             if(currProcessCards) filteredCards = Object.values(currProcessCards).filter((currCard) => {
                 // currCard.station_id === "QUEUE"
                 if(currCard.bins && currCard.bins["QUEUE"]) return true
@@ -307,12 +316,18 @@ const KickOffModal = (props) => {
         })
 
 
-        // if(sortMode) {
-        //     sortBy(tempAvailableCards, sortMode)
-        // }
+        if(sortMode) {
+            sortBy(tempAvailableCards, sortMode, sortDirection)
+        }
         setAvailableKickOffCards(tempAvailableCards)
 
-    }, [processCards])
+    }, [processCards, sortMode, sortDirection])
+
+    // useEffect(() => {
+    //     let tempAvailableCards = [...availableKickOffCards]
+    //     sortBy(tempAvailableCards, sortMode, sortDirection)
+    //     setAvailableKickOffCards(tempAvailableCards)
+    // }, [, processCards])
 
     // if number of available lots >= 5, auto focus lot filter text box
     useEffect(() => {
@@ -378,7 +393,7 @@ const KickOffModal = (props) => {
                 <styled.HeaderMainContentContainer>
                     <styled.Title>{title}</styled.Title>
 
-                    <div style={{display: "flex", alignItems: "center", justifyContent: "center", width: "40rem", minWidth: "10rem", maxWidth: "50%"}}>
+                    <div style={{display: "flex",  justifyContent: "center", width: "40rem", minWidth: "10rem", maxWidth: "50%"}}>
                         {/*<Textbox*/}
                         {/*    focus={shouldFocusLotFilter}*/}
                         {/*    placeholder='Filter lots...'*/}
@@ -388,8 +403,18 @@ const KickOffModal = (props) => {
                         {/*    style={{background: theme.bg.quaternary }}*/}
                         {/*    textboxContainerStyle={{flex: 1}}*/}
                         {/*/>*/}
-                        <ZoneHeader
 
+                        <LotSortBar
+                            sortMode={sortMode}
+                            setSortMode={setSortMode}
+                            sortDirection={sortDirection}
+                            setSortDirection={setSortDirection}
+                        />
+                        <LotFilterBar
+                            lotFilterValue={lotFilterValue}
+                            setLotFilterValue={setLotFilterValue}
+                            selectedFilterOption={selectedFilterOption}
+                            setSelectedFilterOption={setSelectedFilterOption}
                         />
 
                     </div>

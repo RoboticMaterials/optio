@@ -1,16 +1,69 @@
-import React from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import * as styled from "../zone_header/zone_header.style";
 import DropDownSearch from "../../../../basic/drop_down_search_v2/drop_down_search";
-import {SORT_DIRECTIONS} from "../../../../../constants/lot_contants";
+import {
+    FIELD_DATA_TYPES,
+    LOT_FILTER_OPTIONS,
+    LOT_SORT_OPTIONS,
+    SORT_DIRECTIONS
+} from "../../../../../constants/lot_contants";
 import {isArray} from "../../../../../methods/utils/array_utils";
+import {ThemeContext} from "styled-components";
+import {useSelector} from "react-redux";
+import {getAllTemplateFields} from "../../../../../methods/utils/lot_utils";
 
-const MyComponent = (props) => {
+const LotSortBar = (props) => {
+
     const {
         sortMode,
         setSortMode,
-        lotSortOptions
+        sortDirection,
+        setSortDirection
     } = props
+
+    const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
+
+    const [lotSortOptions, setLotSortOptions] = useState([...Object.values(LOT_SORT_OPTIONS)])
+
+    useEffect(() => {
+        const templateFields = getAllTemplateFields()
+
+        let tempLotSortOptions = [...Object.values(LOT_SORT_OPTIONS)]
+
+        templateFields.map((currTemplateField) => {
+
+            const {
+                dataType,
+                label
+            } = currTemplateField
+
+            if(dataType === FIELD_DATA_TYPES.DATE_RANGE) {
+                tempLotSortOptions.push({
+                    ...currTemplateField,
+                    label: `${label} (start)`,
+                    index: 0,
+                    fieldName: label
+                })
+                tempLotSortOptions.push({
+                    ...currTemplateField,
+                    label: `${label} (end)`,
+                    index: 1,
+                    fieldName: label
+                })
+            }
+            else {
+                tempLotSortOptions.push({
+                    ...currTemplateField,
+                    fieldName: label
+                })
+            }
+        })
+
+        setLotSortOptions(tempLotSortOptions)
+    }, [lotTemplates])
+
+    const themeContext = useContext(ThemeContext)
 
     return (
         <styled.ColumnContainer>
@@ -149,8 +202,18 @@ const MyComponent = (props) => {
     );
 };
 
-MyComponent.propTypes = {
+LotSortBar.propTypes = {
 
 };
 
-export default MyComponent;
+LotSortBar.defaultProps = {
+    sortMode: {},
+    setSortMode: () => {},
+    lotSortOptions: [],
+    sortDirection: {},
+    setSortDirection: () => {}
+};
+
+
+
+export default LotSortBar;
