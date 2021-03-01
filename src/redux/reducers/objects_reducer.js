@@ -4,11 +4,6 @@ import {
     GET_OBJECTS_SUCCESS,
     GET_OBJECTS_FAILURE,
 
-    GET_OBJECT,
-    GET_OBJECT_STARTED,
-    GET_OBJECT_SUCCESS,
-    GET_OBJECT_FAILURE,
-
     POST_OBJECT,
     POST_OBJECT_STARTED,
     POST_OBJECT_SUCCESS,
@@ -29,9 +24,7 @@ import {
     UPDATE_OBJECTS,
     REMOVE_OBJECT,
     SET_OBJECT_ATTRIBUTES,
-    VALIDATE_OBJECT,
     SELECT_OBJECT,
-    SET_SELECTED_OBJECT,
     DESELECT_OBJECT,
 } from '../types/objects_types'
 
@@ -47,8 +40,6 @@ const defaultState = {
 };
 
 export default function objectsReducer(state = defaultState, action) {
-    let index = ''
-    let objectID = ''
     let objectsCopy = {}
 
     switch (action.type) {

@@ -1,11 +1,7 @@
-import { ADD_TASKS, ADD_SCHEDULES, DELETE_SCHEDULES } from '../types/tasks_types';
-
 import {
   ON_BLUR,
   ON_FOCUS
 } from '../types/keyboard_types';
-
-import { clone_object } from '../../methods/utils/utils';
 
 const defaultState = {
 
@@ -15,8 +11,6 @@ const defaultState = {
 };
 
 export default function keyboardReducer(state = defaultState, action) {
-  var schedules = {}
-
   switch (action.type) {
 
     case ON_FOCUS:

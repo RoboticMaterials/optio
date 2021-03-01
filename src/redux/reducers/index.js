@@ -30,8 +30,8 @@ import processesReducer from './processes_reducer'
 import reportEventsReducer from './report_events_reducer'
 import cardsReducer from './cards_reducer'
 import lotsReducer from './lots_reducer'
-import testReducer from './test_reducer'
 import cardPageReducer from "./card_page_reducer"
+
 // TEST
 
 export default combineReducers({

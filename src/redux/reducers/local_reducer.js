@@ -199,6 +199,10 @@ const localReducer = (state = defaultState, action) => {
 
 
         // ~~~~~~~~~~~~~~~
+        default:
+            return {
+                ...state
+            }
     }
 
     return state

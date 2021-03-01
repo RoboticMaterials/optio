@@ -1,30 +1,10 @@
-import { normalize, schema } from 'normalizr';
-import { useDispatch, useSelector } from 'react-redux'
+import { normalize } from 'normalizr';
+
 import {
     TASK_QUEUE,
     TASK_QUEUE_ALL,
     TASK_QUEUE_ITEM,
-    GET_TASK_QUEUE,
-    GET_TASK_QUEUE_STARTED,
-    GET_TASK_QUEUE_SUCCESS,
-    GET_TASK_QUEUE_FAILURE,
 
-    GET_TASK_QUEUE_ITEM,
-    GET_TASK_QUEUE_ITEM_STARTED,
-    GET_TASK_QUEUE_ITEM_SUCCESS,
-    GET_TASK_QUEUE_ITEM_FAILURE,
-
-    POST_TASK_QUEUE,
-    POST_TASK_QUEUE_STARTED,
-    POST_TASK_QUEUE_SUCCESS,
-    POST_TASK_QUEUE_FAILURE,
-
-    DELETE_TASK_QUEUE,
-    DELETE_TASK_QUEUE_STARTED,
-    DELETE_TASK_QUEUE_SUCCESS,
-    DELETE_TASK_QUEUE_FAILURE,
-
-    HANDLE_POST_TASK_QUEUE,
     TASK_QUEUE_OPEN,
     INCREMENT_GET_DATA_FAILURE_COUNT,
     SET_SHOW_MODAL_ID
@@ -206,7 +186,7 @@ export const handlePostTaskQueue = (props) => {
         tasks,
         taskQueue,
         Id,
-        name,
+        // name,
         custom,
         fromSideBar,
         deviceType

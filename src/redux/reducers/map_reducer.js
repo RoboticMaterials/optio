@@ -13,9 +13,7 @@ import {
     SET_CURRENT_MAP,
 } from '../types/map_types'
 
-import { object } from 'yup';
 import { deepCopy } from '../../methods/utils/utils'
-
 
 const defaultState = {
     maps: [],
@@ -115,6 +113,5 @@ export default function mapReducer(state=defaultState, action) {
 
         default:
             return state;
-            break;
     }
 }
