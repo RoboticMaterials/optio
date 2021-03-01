@@ -26,7 +26,7 @@ import {
 } from '../types/stations_types'
 
 // Import Utils
-import { deepCopy, isEquivalent } from '../../methods/utils/utils';
+import { deepCopy } from '../../methods/utils/utils';
 import { compareExistingVsIncomingLocations } from '../../methods/utils/locations_utils'
 
 const defaultState = {

@@ -30,8 +30,6 @@ import ConfirmDeleteModal from './components/basic/modals/confirm_delete_modal/c
 
 const widthBreakPoint = 1000;
 
-// class App extends Component {
-
 const App = () => {
 
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })

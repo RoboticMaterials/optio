@@ -1,16 +1,12 @@
 import {
-    GET_STATUS,
     GET_STATUS_STARTED,
     GET_STATUS_SUCCESS,
     GET_STATUS_FAILURE,
 
-    POST_STATUS,
     POST_STATUS_STARTED,
     POST_STATUS_SUCCESS,
     POST_STATUS_FAILURE,
 } from '../types/status_types';
-
-import { clone_object } from '../../methods/utils/utils';
 
 const defaultState = {
     status: {},

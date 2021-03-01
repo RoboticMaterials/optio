@@ -4,11 +4,6 @@ import {
     GET_TASKS_SUCCESS,
     GET_TASKS_FAILURE,
 
-    GET_TASK,
-    GET_TASK_STARTED,
-    GET_TASK_SUCCESS,
-    GET_TASK_FAILURE,
-
     POST_TASK,
     POST_TASK_STARTED,
     POST_TASK_SUCCESS,
@@ -30,7 +25,6 @@ import {
     UPDATE_TASKS,
     REMOVE_TASK,
     SET_TASK_ATTRIBUTES,
-    VALIDATE_TASK,
     SELECT_TASK,
     SET_SELECTED_TASK,
     DESELECT_TASK,
@@ -51,8 +45,6 @@ const defaultState = {
 };
 
 export default function tasksReducer(state = defaultState, action) {
-    let index = ''
-    let taskID = ''
     let tasksCopy = {};
 
     switch (action.type) {

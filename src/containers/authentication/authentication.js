@@ -60,7 +60,6 @@ const Authentication = (props) => {
                     alert(err.message || JSON.stringify(err));
                     return;
                 }
-                console.log('session validity: ' + session.isValid());
 
                 if(session.isValid()){
                     dispatchPostLocalSettings({
