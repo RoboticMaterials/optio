@@ -238,153 +238,106 @@ export const sortBy = (arr, sortMode, sortDirection) => {
 	const {
 		dataType,
 		label,
-		index
+		index,
+		fieldName
 	} = sortMode
+
+	console.log("sortby dataType",dataType)
+	console.log("sortby isAscending",isAscending)
 
 	switch(dataType) {
 		case FIELD_DATA_TYPES.URL: {
-
+			// not yet implemented
+			break
 		}
 		case FIELD_DATA_TYPES.EMAIL: {
-
+			// not yet implemented
+			break
 		}
 		case FIELD_DATA_TYPES.DATE: {
+			// not yet implemented
+			break
 
 		}
 		case FIELD_DATA_TYPES.DATE_RANGE: {
-
 			arr.sort((itemA, itemB) => {
 				const {
-					[label]: rangeA
+					[fieldName]: rangeA
 				} = itemA
 				const {
-					[label]: rangeB
+					[fieldName]: rangeB
 				} = itemB
 
-				if(!rangeA) return -1
-				if(!rangeB) return 1
+				if(!rangeA) return 1
+				if(!rangeB) return -1
 
 				const valA = rangeA[index]
 				const valB = rangeB[index]
 
-
-				if(!valA) return 1
-				if(valA > valB) return -1
-				return 1
+				if(isAscending) {
+					if(!valA) return -1
+					if(valA > valB) return 1
+					return -1
+					return 1
+				}
+				else {
+					if(!valA) return 1
+					if(valA > valB) return -1
+					return 1
+				}
 			})
+			break
 		}
 		case FIELD_DATA_TYPES.STRING: {
-			// return lot[label].toLowerCase().includes((filterValue || "").toLowerCase())
+			arr.sort((itemA, itemB) => {
+				const {
+					[fieldName]: stringA
+				} = itemA
+				const {
+					[fieldName]: stringB
+				} = itemB
+
+				if(!stringA) return 1
+
+				if(isAscending) {
+					if(stringA >= stringB) return 1
+					return -1
+				}
+				else {
+					if(stringA >= stringB) return -1
+					return 1
+				}
+
+			})
+			break
 		}
 		case FIELD_DATA_TYPES.INTEGER: {
-			// return toIntegerOrZero(lot[label]) === toIntegerOrZero(filterValue)
+
+			arr.sort((itemA, itemB) => {
+				const {
+					[fieldName]: stringA
+				} = itemA
+				const {
+					[fieldName]: stringB
+				} = itemB
+
+				if(stringA === null) return 1
+
+				if(isAscending) {
+					if(stringA >= stringB) return 1
+					return -1
+				}
+				else {
+					if(stringA >= stringB) return -1
+					return 1
+				}
+			})
+			break
 		}
 		default: {
-			// unknown dateType, return true
-			// return true
+			break
 		}
 	}
-
-	// switch(sortMode) {
-	// 	case SORT_MODES.QUANTITY_ASCENDING: {
-	// 		arr.sort((itemA, itemB) => {
-	// 			const { count: countA } = itemA
-	//
-	// 			const { count: countB } = itemB
-	//
-	// 			if(parseInt(countA) >= parseInt(countB)) return 1
-	// 			return -1
-	// 		})
-	//
-	// 		break
-	// 	}
-	// 	case SORT_MODES.QUANTITY_DESCENDING: {
-	// 		arr.sort((itemA, itemB) => {
-	// 			const { count: countA } = itemA
-	//
-	// 			const { count: countB } = itemB
-	//
-	// 			if(parseInt(countA) < parseInt(countB)) return 1
-	// 			return -1
-	// 		})
-	//
-	// 		break
-	// 	}
-	//
-	// 	case SORT_MODES.NAME_ASCENDING: {
-	// 		arr.sort((itemA, itemB) => {
-	// 			const { name: nameA } = itemA
-	//
-	// 			const { name: nameB } = itemB
-	//
-	// 			if(nameA >= nameB) return 1
-	// 			return -1
-	// 		})
-	// 		break
-	// 	}
-	//
-	// 	case SORT_MODES.NAME_DESCENDING: {
-	// 		arr.sort((itemA, itemB) => {
-	// 			const { name: nameA } = itemA
-	//
-	// 			const { name: nameB } = itemB
-	//
-	// 			if(nameA < nameB) return 1
-	// 			return -1
-	// 		})
-	// 		break
-	// 	}
-	//
-	// 	case SORT_MODES.END_DESCENDING: {
-	//
-	//
-	// 		break
-	// 	}
-	// 	case SORT_MODES.END_ASCENDING: {
-	// 		arr.sort((itemA, itemB) => {
-	// 			const { end_date: endDateA } = itemA
-	// 			const convertedA = convertCardDate(endDateA)
-	//
-	// 			const { end_date: endDateB } = itemB
-	// 			const convertedB = convertCardDate(endDateB)
-	//
-	// 			if(!convertedA) return 1
-	// 			if(convertedA >= convertedB) return 1
-	// 			return -1
-	// 		})
-	//
-	// 		break
-	// 	}
-	// 	case SORT_MODES.START_DESCENDING: {
-	// 		arr.sort((itemA, itemB) => {
-	// 			const { start_date: startDateA } = itemA
-	// 			const convertedA = convertCardDate(startDateA)
-	//
-	// 			const { start_date: startDateB } = itemB
-	// 			const convertedB = convertCardDate(startDateB)
-	//
-	// 			if(!convertedA) return 1
-	// 			if(convertedA > convertedB) return -1
-	// 			return 1
-	// 		})
-	// 		break
-	// 	}
-	// 	case SORT_MODES.START_ASCENDING: {
-	// 		arr.sort((itemA, itemB) => {
-	// 			const { start_date: startDateA } = itemA
-	// 			const convertedA = convertCardDate(startDateA)
-	//
-	// 			const { start_date: startDateB } = itemB
-	// 			const convertedB = convertCardDate(startDateB)
-	//
-	// 			if(!convertedA) return 1
-	// 			if(convertedA >= convertedB) return 1
-	// 			return -1
-	// 		})
-	// 		break
-	// 	}
-	//
-	// }
 
 	return arr
 }

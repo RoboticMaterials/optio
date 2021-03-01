@@ -65,15 +65,20 @@ const ZoneHeader = (props) => {
 					...currTemplateField,
 					label: `${label} (start)`,
 					index: 0,
+					fieldName: label
 				})
 				tempLotSortOptions.push({
 					...currTemplateField,
 					label: `${label} (end)`,
-					index: 1
+					index: 1,
+					fieldName: label
 				})
 			}
 			else {
-				tempLotSortOptions.push(currTemplateField)
+				tempLotSortOptions.push({
+					...currTemplateField,
+					fieldName: label
+				})
 			}
 
 
