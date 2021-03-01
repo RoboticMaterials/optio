@@ -29,10 +29,16 @@ import { isEquivalent } from '../../../../methods/utils/utils'
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
 import * as taskActions from "../../../../redux/actions/tasks_actions";
 
+import config from '../../../../settings/config'
+
 const Settings = () => {
 
     const dispatch = useDispatch()
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
+
+    // onPostLocalSettings
+    const onPostLocalSettings = (settings) => dispatch(postSettings(settings))
+    
     const dispatchGetSettings = () => dispatch(getSettings())
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchSetCurrentMap = (map) => dispatch(setCurrentMap(map))
@@ -308,8 +314,8 @@ const Settings = () => {
         const signOut = async () => {
 
             var poolData = {
-                UserPoolId: 'us-east-2_YFnCIb6qJ',
-                ClientId: '5bkenhii8f4mqv36k0trq6hgc7',
+                UserPoolId: config.UserPoolId,
+                ClientId: config.ClientId,
             };
     
             var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);

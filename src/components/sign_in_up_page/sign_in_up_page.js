@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -13,18 +13,12 @@ import { signInSchema, signUpSchema } from '../../methods/utils/form_schemas'
 import TextField from '../basic/form/text_field/text_field'
 import Textbox from '../basic/textbox/textbox'
 
-// Import actions
-import { postRefreshToken } from '../../redux/actions/authentication_actions'
-
 import * as styled from './sign_in_up_page.style'
 
 // Import actions
 import { postLocalSettings } from '../../redux/actions/local_actions'
-import { getLocalSettings } from '../../redux/actions/local_actions'
 
-
-// Import API DELETE THIS ONCE FINISHED
-// import { getRefreshToken } from '../../api/authentication_api'
+import configData from '../../settings/config'
 
 /**
  * This page handles both sign in and sign up for RMStudio
@@ -32,20 +26,24 @@ import { getLocalSettings } from '../../redux/actions/local_actions'
  */
 const SignInUpPage = (props) => {
 
-    // signIn prop is passed from authentication container to tell this page to show sign in or sign up components
-    const {
-        signIn
-    } = props
-
     const dispatch = useDispatch()
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const localReducer = useSelector(state => state.localReducer.localSettings)
 
-    // refresh token
-    // const onRefreshToken = (token, expiration) => dispatch(postRefreshToken(token, expiration))
-    // const refreshToken = useSelector(state => state.authenticationReducer.refreshToken)
+    // Check to see if we want authentication *** Dev ONLY ***
+    if (!configData.authenticationNeeded){
+        dispatchPostLocalSettings({
+            ...localReducer,
+            authenticated: 'no',
+            non_local_api_ip: window.location.hostname,
+            non_local_api: true,
+        })
+    }
 
-    // const onGetLocalSettings = () => dispatch(getLocalSettings())
+    // signIn prop is passed from authentication container to tell this page to show sign in or sign up components
+    const {
+        signIn
+    } = props
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -64,12 +62,10 @@ const SignInUpPage = (props) => {
             confirmPassword
         } = values
 
-        console.log(email, password)
-
         // User pool data for AWS Cognito
         const poolData = {
-            UserPoolId: 'us-east-2_YFnCIb6qJ',
-            ClientId: '5bkenhii8f4mqv36k0trq6hgc7',
+            UserPoolId: configData.UserPoolId,
+            ClientId: configData.ClientId,
         }
 
         const userPool = new CognitoUserPool(poolData)
@@ -92,27 +88,23 @@ const SignInUpPage = (props) => {
 
             const cognitoUser = new CognitoUser(userData);
 
-            let serverIP = '18.223.113.55'
-
             cognitoUser.authenticateUser(authenticationDetails, {
 
                 onSuccess: function (result) {
                     dispatchPostLocalSettings({
                         ...localReducer,
                         authenticated: result.accessToken.payload.username,
-                        non_local_api_ip: serverIP,
+                        non_local_api_ip: window.location.hostname,
                         non_local_api: true,
                         refreshToken: result.getRefreshToken().getToken()
                     })
 
-                    // onRefreshToken(result.getRefreshToken().getToken())
-
-                    console.log('QQQQ Success', typeof(result), result.accessToken.payload, localReducer)
+                    // console.log('QQQQ Success', typeof(result), result.accessToken.payload, localReducer)
 
                 },
 
                 onFailure: function (err) {
-                    console.log('QQQQ Error', err)
+                    // console.log('QQQQ Error', err)
                     alert(err.message)
                 },
 
@@ -121,11 +113,11 @@ const SignInUpPage = (props) => {
             if(password === confirmPassword){
                 userPool.signUp(email, password, [], null, (err, data) => {
                     if (err){
-                        console.log('QQQQ Error', err)
+                        // console.log('QQQQ Error', err)
                         alert(err.message)
                     }else {
-                        console.log('QQQQ Success', data)
-                        alert('You have sucessfully signed up. Please check your email for a verification link.')
+                        // console.log('QQQQ Success', data)
+                        alert('You have sucessfully signed up! Please check you email for a verification link.')
                         handleSignInChange(true)
                     }
                 });
@@ -155,12 +147,11 @@ const SignInUpPage = (props) => {
             validateOnChange={false}
 
             // Chooses what schema to use based on whether it's a sign in or sign up
-            // TODO: The schemas are not 100% working as of 9/14/2020. Need to figure out regex for passwords
             validationSchema={signIn ? signInSchema : signUpSchema}
 
             onSubmit={async (values, { setSubmitting }) => {
 
-                console.log('QQQQ Submiting', values)
+                // console.log('QQQQ Submiting', values)
                 
                 setSubmitting(true)
 
@@ -209,9 +200,18 @@ const SignInUpPage = (props) => {
                                     height:'3rem'
                                 }}
                             />
-
-
                         }
+
+                        {!signIn &&
+                            <h6
+                                style={{
+                                    margin: '1.5rem',
+                                    height:'3rem'
+                                }}
+                            > Note: Your password must be 8 charaters long and contain 1 upper case letter, 1 lower case letter, 1 number and 1 special character </h6>
+                        } 
+                        
+                        
 
                         <styled.Container>
                             <styled.Button type="submit">{signIn ? 'Sign In' : 'Sign Up'}</styled.Button>

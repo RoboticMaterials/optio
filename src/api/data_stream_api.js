@@ -3,17 +3,7 @@ import * as log from 'loglevel';
 
 import { apiIPAddress } from '../settings/settings'
 
-import https from 'https'
-
 const operator = 'data_stream'
-
-const logger = log.getLogger('Positions_Api', "Position");
-
-// https.globalAgent.options.rejectUnauthorized = false;
-
-const httpsAgent = new https.Agent({
-    rejectUnauthorized: false
-  })
 
 export async function getDataStream() {
     try {
@@ -24,16 +14,14 @@ export async function getDataStream() {
                 'X-API-Key': '123456',
                 'Access-Control-Allow-Origin': '*'
             },
-            httpsAgent: httpsAgent
+            timeout: 3000
         });
+
         // Success 🎉
         const data = response.data;
         const dataJson = JSON.parse(data)
         return dataJson;
-
-
     } catch (error) {
-
         // Error 😨
         if (error.response) {
             /*

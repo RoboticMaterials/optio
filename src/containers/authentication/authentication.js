@@ -1,23 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
-import { CognitoUser, CognitoUserPool, CognitoRefreshToken, CognitoUserSession } from 'amazon-cognito-identity-js'
-
 import * as styled from './authentication.style'
 
 // Import components
 import SignInUpPage from '../../components/sign_in_up_page/sign_in_up_page'
 
-import { postCognitoUserSession } from '../../redux/actions/authentication_actions'
+import configData from '../../settings/config'
 
 // import 'cross-fetch/polyfill';
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 
-import * as AWS from 'aws-sdk/global';
-
 // Import actions
 import { postLocalSettings } from '../../redux/actions/local_actions'
-import { getLocalSettings } from '../../redux/actions/local_actions'
 
 /**
  * After the APIs have been loaded in the api_container this container is loaded
@@ -34,16 +29,11 @@ import { getLocalSettings } from '../../redux/actions/local_actions'
  * @param {authenticated} props 
  */
 const Authentication = (props) => {
-
     const {
         authenticated
     } = props
 
     const dispatch = useDispatch()
-    const onCognitoUserSession = (JWT) => dispatch(postCognitoUserSession(JWT))
-
-    const refreshToken = useSelector(state => state.authenticationReducer.refreshToken)
-    const cognitoUserSession = useSelector(state => state.authenticationReducer.cognitoUserSession)
 
     const [signIn, setSignIn] = useState(true)
 
@@ -57,8 +47,8 @@ const Authentication = (props) => {
     const handleInitialLoad = () => {
 
         var poolData = {
-            UserPoolId: 'us-east-2_YFnCIb6qJ',
-            ClientId: '5bkenhii8f4mqv36k0trq6hgc7',
+            UserPoolId: configData.UserPoolId,
+            ClientId: configData.ClientId,
         };
 
         var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
@@ -76,7 +66,7 @@ const Authentication = (props) => {
                     dispatchPostLocalSettings({
                         ...localReducer,
                         authenticated: true,
-                        non_local_api_ip: '18.223.113.55',
+                        non_local_api_ip: window.location.hostname,
                         non_local_api: true,
                     })
                 }

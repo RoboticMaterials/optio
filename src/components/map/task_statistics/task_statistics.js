@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 
 // Import Styles
 import * as styled from './task_statistics.style'
-import taskAnalysisReducer from "../../../redux/reducers/task_analysis_reducer";
+import { getTasksAnalysis } from "../../../redux/actions/task_analysis_actions";
 import IconButton from '../../basic/icon_button/icon_button'
 
 const TaskStatistics = (props) => {
