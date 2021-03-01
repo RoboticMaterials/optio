@@ -247,7 +247,7 @@ const ApiContainer = (props) => {
                 break;
 
             case 'dashboards':
-                setPageDataInterval(setInterval(() => loadDashboardsData(), 300000))
+                setPageDataInterval(setInterval(() => loadDashboardsData(), 3000))
                 break;
 
             case 'tasks':
@@ -259,7 +259,7 @@ const ApiContainer = (props) => {
                 break;
 
             case 'lots':
-                setPageDataInterval(setInterval(loadCardsData, 10000))
+                setPageDataInterval(setInterval(() => loadCardsData(), 10000))
                 break
 
             case 'processes':
