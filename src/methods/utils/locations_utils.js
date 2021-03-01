@@ -1,7 +1,3 @@
-import React from 'react'
-
-import { useDispatch, useSelector } from 'react-redux'
-
 // Import utils
 import { deepCopy } from './utils'
 import { convertRealToD3 } from './map_utils'
