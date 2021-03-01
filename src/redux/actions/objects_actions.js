@@ -32,7 +32,9 @@ import {
     VALIDATE_OBJECT,
     SELECT_OBJECT,
     SET_SELECTED_OBJECT,
+    SET_ROUTE_OBJECT,
     DESELECT_OBJECT,
+    SET_EDITING_OBJECT,
 } from '../types/objects_types'
 
 import { mapArrayToObjById, deepCopy } from '../../methods/utils/utils';
@@ -213,4 +215,16 @@ export const selectObject = (id) => {
 
 export const deselectObject = () => {
     return { type: DESELECT_OBJECT }
+}
+
+export const setSelectedObject = (object) => {
+    return { type: SET_SELECTED_OBJECT, payload: { object }}
+}
+
+export const setRouteObject = (object) => {
+    return { type: SET_ROUTE_OBJECT, payload: { object }}
+}
+
+export const setEditingObject = (bool) => {
+    return { type: SET_EDITING_OBJECT, payload: { bool }}
 }

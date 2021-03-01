@@ -55,7 +55,7 @@ const Textbox = ({ ItemComponent, props, TextBoxComponent, state, methods, TextC
               {props.createNewLabel.replace('{search}', `"${state.search}"`)}
             </AddNew>
           )}
-          {state.currentValue.length > 0 && 
+          {state.currentValue.length > 0 &&
             <Label LabelComponent={props.LabelComponent} label={props.label} schema={props.schema}></Label>
           }
           {methods.searchResults().length > 0 && (
@@ -98,9 +98,8 @@ export const DefaultTextBoxComponent = styled.div`
   padding: 0;
   display: flex;
   flex-direction: column;
-  background: ${props => props.theme.bg.quinary};
+  background: '#26ab76';
   border-radius: 2px;
-  box-shadow: 0 0 10px 0 ${() => hexToRGBA('#000000', 0.2)};
   max-height: ${({ textboxHeight }) => textboxHeight};
   overflow: auto;
   z-index: 1;
@@ -117,7 +116,7 @@ export const DefaultTextBoxComponent = styled.div`
   }
   /* Track */
   ::-webkit-scrollbar-track {
-      -webkit-background: rgba(0,0,0,0.1); 
+      -webkit-background: rgba(0,0,0,0.1);
       -webkit-border-radius: 10px;
       border-radius: 10px;
   }
@@ -125,11 +124,11 @@ export const DefaultTextBoxComponent = styled.div`
   ::-webkit-scrollbar-thumb {
       -webkit-border-radius: 10px;
       border-radius: 10px;
-      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
-      background: rgba(255,255,255,0.4); 
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+      background: rgba(255,255,255,0.4);
   }
   ::-webkit-scrollbar-thumb:window-inactive {
-    background: rgba(255,255,255,0.2); 
+    background: rgba(255,255,255,0.2);
   }
 
 }
