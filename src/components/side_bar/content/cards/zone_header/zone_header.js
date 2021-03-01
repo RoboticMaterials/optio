@@ -47,7 +47,6 @@ const ZoneHeader = (props) => {
 	const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])
 	const [lotSortOptions, setLotSortOptions] = useState([...Object.values(LOT_SORT_OPTIONS)])
 
-	console.log("lotFilterOptions",lotFilterOptions)
 	useEffect(() => {
 		const templateFields = getAllTemplateFields()
 

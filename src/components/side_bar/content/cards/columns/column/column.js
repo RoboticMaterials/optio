@@ -219,7 +219,6 @@ const Column = ((props) => {
 								lotTemplateId,
 								...rest
 							} = card
-							console.log("card",card)
 
 							const templateValues = getLotTemplateData(lotTemplateId, card)
 

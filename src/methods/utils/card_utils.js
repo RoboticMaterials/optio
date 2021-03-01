@@ -144,8 +144,7 @@ export const getInitialValues = (lotTemplate, card) => {
 					}
 
 					case FIELD_COMPONENT_NAMES.CALENDAR_START_END: {
-						let updatedValues = BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE
-
+						let updatedValues = [...BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE]
 						if(isObject(card) && isArray(card[fieldName])) {
 							const val = card[fieldName]
 							if(val.length > 0 && val[0] !== null) {
@@ -153,15 +152,6 @@ export const getInitialValues = (lotTemplate, card) => {
 							}
 							if(val.length > 1 && val[1] !== null) {
 								updatedValues[1] = new Date(val[1])
-							}
-						}
-						else if(isObject(initialValues) && isArray(initialValues[fieldName])) {
-							const val = initialValues[fieldName]
-							if(val.length > 0) {
-								updatedValues = [new Date(val[0])]
-							}
-							if(val.length > 1) {
-								updatedValues.push(new Date(val[1]))
 							}
 						}
 
@@ -234,16 +224,13 @@ export const convertExcelToLot = (excel, lotTemplate, processId) => {
 export const sortBy = (arr, sortMode, sortDirection) => {
 
 	const isAscending = sortDirection.id === SORT_DIRECTIONS.ASCENDING.id
-	console.log("sortby sortMode",sortMode)
+
 	const {
 		dataType,
 		label,
 		index,
 		fieldName
 	} = sortMode
-
-	console.log("sortby dataType",dataType)
-	console.log("sortby isAscending",isAscending)
 
 	switch(dataType) {
 		case FIELD_DATA_TYPES.URL: {

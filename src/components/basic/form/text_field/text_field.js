@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useContext} from "react";
 import PropTypes from 'prop-types';
 import { useField, useFormikContext } from "formik";
 import { useSelector, useDispatch } from 'react-redux'
@@ -9,6 +9,7 @@ import * as styled from './text_field.style'
 import { getMessageFromError } from "../../../../methods/utils/form_utils";
 
 import { pageDataChanged } from '../../../../redux/actions/sidebar_actions'
+import {ThemeContext} from "styled-components";
 
 
 const TextField = ({
@@ -35,20 +36,35 @@ const TextField = ({
     style,
     ...props }) => {
 
-    const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext();
+    const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, status, validateForm, ...context } = useFormikContext();
     const [field, meta] = useField(props);
     const { touched, error } = meta
+    const {
+        name: fieldName
+    } = field
+
+    const {
+        warnings
+    } = status || {}
+
+    const {
+        [fieldName]: warning
+    } = warnings || {}
+
+    const themeContext = useContext(ThemeContext)
 
     const dispatch = useDispatch()
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
     const hasError = touched && error
+    const hasWarning = touched && warning
 
 	useChange(setFieldValue)
 
 	const inputStyle = inputStyleFunc(hasError, showErrorStyle);
 
 	const errorMessage = getMessageFromError(error)
+	const warningMessage = getMessageFromError(warning)
     useChange(setFieldValue)
 
     return (
@@ -72,11 +88,11 @@ const TextField = ({
                         onChange={(event) => {
                             // update touched if necessary
                             if (!touched) {
-                                setFieldTouched(field.name, true)
+                                setFieldTouched(fieldName, true)
                                 dispatchPageDataChanged(true)
                             }
 
-                            setFieldValue(field.name, mapOutput(event.target.value)) // update field value
+                            setFieldValue(fieldName, mapOutput(event.target.value)) // update field value
 
                             onChange(event) // call additional onChange prop if necessary
                         }}
@@ -84,7 +100,7 @@ const TextField = ({
                         onBlur={(event) => {
                             // update touched if necessary
                             if (!touched) {
-                                setFieldTouched(field.name, true)
+                                setFieldTouched(fieldName, true)
                             }
 
                             // validateOnBlur && validateField(field.name) // validate if necessary
@@ -94,8 +110,9 @@ const TextField = ({
                         }}
                     />
                     <ErrorTooltip
-                        visible={hasError}
-                        text={errorMessage}
+                        visible={hasError || hasWarning}
+                        text={hasError ? errorMessage : hasWarning ? warningMessage : null}
+                        color={hasWarning && !hasError && themeContext.warn}
                         ContainerComponent={IconContainerComponent}
                         containerStyle={errorTooltipContainerStyle}
                     />

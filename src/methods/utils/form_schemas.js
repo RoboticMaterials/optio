@@ -367,11 +367,15 @@ export const CARD_SCHEMA_MODES = {
     MOVE_LOT: "MOVE_LOT"
 }
 
+export const uniqueNameSchema = Yup.object().shape({
+    name: Yup.string()
+        .uniqueByPath("A lot with this name already exists.", "cardNames"),
+})
+
 export const editLotSchema = Yup.object().shape({
     name: Yup.string()
         // .min(1, '1 character minimum.')
-        .max(50, '50 character maximum.')
-        .uniqueByPath("A lot with this name already exists.", "cardNames"),
+        .max(50, '50 character maximum.'),
     description: Yup.string()
         .min(1, '1 character minimum.')
         .max(250, '250 character maximum.'),
