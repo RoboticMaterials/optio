@@ -13,4 +13,5 @@ export const BASIC_FIELD_DEFAULTS = {
 	TEXT_FIELD: "",
 	NUMBER_FIELD: 0,
 	CALENDAR_FIELD: null,
+	CALENDAR_FIELD_RANGE: [null, null]
 }

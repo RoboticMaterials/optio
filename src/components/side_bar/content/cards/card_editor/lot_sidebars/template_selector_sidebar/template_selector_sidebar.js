@@ -101,6 +101,7 @@ const TemplateSelectorSidebar = (props) => {
                         const isSelected = selectedLotTemplatesId === currTemplateId
 
                         return <style.LotTemplateButton
+                            key={currTemplateId}
                             isSelected={isSelected}
                             onClick={() => {
                                 dispatchSetSelectedLotTemplate(currTemplateId)

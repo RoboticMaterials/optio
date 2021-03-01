@@ -230,6 +230,8 @@ export const FieldName = styled.div`
     background: ${props => props.disabled ? "pink" : props.theme.bg.tertiary};
     padding: 1rem;
     border-radius: 1rem;
+    min-width: fit-content;
+    display: inline-block;
     
     ${props => props.disabled && disabledButtonCss};
 `

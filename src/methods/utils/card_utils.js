@@ -11,7 +11,9 @@ const EVENT_NAMES = {
 }
 
 export const jsDateToObjDate = (jsDate) => {
-	let trimmed = new Date(jsDate.toDateString());
+	if(!jsDate) return null
+
+	let trimmed = new Date(new Date(jsDate).toDateString());
 
 	let month = trimmed.getUTCMonth()
 	let day = trimmed.getUTCDate();
@@ -141,15 +143,15 @@ export const getInitialValues = (lotTemplate, card) => {
 					}
 
 					case FIELD_COMPONENT_NAMES.CALENDAR_START_END: {
-						let updatedValues = BASIC_FIELD_DEFAULTS.CALENDAR_FIELD
+						let updatedValues = BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE
 
 						if(isObject(card) && isArray(card[fieldName])) {
 							const val = card[fieldName]
-							if(val.length > 0) {
-								updatedValues = [new Date(val[0])]
+							if(val.length > 0 && val[0] !== null) {
+								updatedValues[0] = new Date(val[0])
 							}
-							if(val.length > 1) {
-								updatedValues.push(new Date(val[1]))
+							if(val.length > 1 && val[1] !== null) {
+								updatedValues[1] = new Date(val[1])
 							}
 						}
 						else if(isObject(initialValues) && isArray(initialValues[fieldName])) {
@@ -342,4 +344,31 @@ export const sortBy = (arr, sortMode) => {
 	}
 
 	return arr
+}
+
+export const jsDateToString = (jsDate) => {
+	const objDate = jsDateToObjDate(jsDate)
+
+	const {
+		year: startYear,
+		month: startMonth,
+		day: startDay
+	} = objDate || {}
+
+	return (startDay && startMonth && startYear) ? `${startMonth}/${startDay}/${startYear}` : null
+}
+
+export const dateRangeToStrings = (dateRange) => {
+
+	let startDateText
+	let endDateText
+	if(isArray(dateRange) && dateRange.length > 0) {
+		startDateText = jsDateToString(dateRange[0])
+
+		if(dateRange.length > 1) {
+			endDateText = jsDateToString(dateRange[1])
+		}
+	}
+
+	return [startDateText, endDateText]
 }
