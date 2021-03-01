@@ -292,23 +292,23 @@ Yup.addMethod(Yup.string, "notIn", function (message, arr) {
 });
 
 // returns error if value is in arr
-Yup.addMethod(Yup.string, "uniqueByPath", function(message, arrPath) {
-    return this.test("uniqueByPath", message, function(value) {
+Yup.addMethod(Yup.string, "uniqueByPath", function (message, arrPath) {
+    return this.test("uniqueByPath", message, function (value) {
         const { path, createError, parent } = this;
 
-        if(value) {
+        if (value) {
             const parentValues = parent[arrPath]
 
 
-            if(isArray(parentValues)) {
-                for(const currParentValue of parentValues) {
+            if (isArray(parentValues)) {
+                for (const currParentValue of parentValues) {
 
                     const {
                         name,
                         id
                     } = currParentValue
 
-                    if(name === value && parent._id !== id) return createError({ path, message })
+                    if (name === value && parent._id !== id) return createError({ path, message })
                 }
             }
         }
@@ -587,91 +587,108 @@ Yup.addMethod(Yup.string, 'lessThan', function (input2Path, message) {
     })
 })
 
-export const throughputSchema =  Yup.object().shape({
-            expectedOutput: Yup.number()
-                .required('Required'),
-            switch1: Yup.bool(),
-            startOfShift: Yup.string()
-                .required('Required'),
-            endOfShift: Yup.string()
-                .required('Required'),
-            startOfBreak1: Yup.string()
-                // Only validate when true
-                .when('switch1', {
-                    is: true,
-                    then: Yup.string()
-                        .required('Required')
-                        // Make sure it starts after the start of shift and before the end of the shift
-                        .lessThan("startOfShift", 'The first break cannot be before the start of the shift')
-                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
-                        // Make sure it starts before the end of the break
-                        .greaterThan("endOfBreak1", 'The start of the break must be before the end of the break'),
-                }),
+export const throughputSchema = Yup.object().shape({
+    expectedOutput: Yup.number()
+        .required('Required')
+        .nullable(),
+    switch1: Yup.bool(),
+    startOfShift: Yup.string()
+        .required('Required'),
+    endOfShift: Yup.string()
+        .required('Required'),
+    startOfBreak1: Yup.string()
+        // Only validate when true
+        .when('switch1', {
+            is: true,
+            then: Yup.string()
+                .required('Required')
+                // Make sure it starts after the start of shift and before the end of the shift
+                .lessThan("startOfShift", 'The first break cannot be before the start of the shift')
+                .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
+                // Make sure it starts before the end of the break
+                .greaterThan("endOfBreak1", 'The start of the break must be before the end of the break'),
+        }),
 
-            endOfBreak1: Yup.string()
-                // Only validate when true
-                .when('switch1', {
+    endOfBreak1: Yup.string()
+        // Only validate when true
+        .when('switch1', {
+            is: true,
+            then: Yup.string()
+                .required('Required')
+                // Make sure it starts after the start of shift and before the end of the shift
+                .lessThan("startOfShift", 'The first break cannot be before the start of the shift')
+                .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
+                .lessThan("startOfBreak1", 'The end of break cannot be before the start of the break')
+                .when('switch2', {
                     is: true,
                     then: Yup.string()
-                        .required('Required')
-                        // Make sure it starts after the start of shift and before the end of the shift
-                        .lessThan("startOfShift", 'The first break cannot be before the start of the shift')
-                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
-                        .lessThan("startOfBreak1", 'The end of break cannot be before the start of the break')
                         .greaterThan("startOfBreak2", 'The end of the break must be before the start of the next break break'),
-                }),
+                })
+        }),
 
 
-            startOfBreak2: Yup.string()
-                // Only validate when true
-                .when('switch2', {
+    startOfBreak2: Yup.string()
+        // Only validate when true
+        .when('switch2', {
+            is: true,
+            then: Yup.string()
+                .required('Required')
+                // Make sure it starts after the start of shift and before the end of the shift
+                .lessThan("startOfShift", 'The first break cannot be before the start of the shift')
+                .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
+                .greaterThan("endOfBreak2", 'The start of the break must be before the end of the break')
+                .when('switch1', {
                     is: true,
                     then: Yup.string()
-                        .required('Required')
-                        // Make sure it starts after the start of shift and before the end of the shift
-                        .lessThan("startOfShift", 'The first break cannot be before the start of the shift')
-                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
-                        .lessThan("endOfBreak1", 'The start of break cannot be before the end of the previous break')
-                        .greaterThan("endOfBreak2", 'The start of the break must be before the end of the break'),
+                        .lessThan("endOfBreak1", 'The start of break cannot be before the end of the previous break'),
                 }),
+        }),
 
-            endOfBreak2: Yup.string()
-                // Only validate when true
-                .when('switch2', {
+    endOfBreak2: Yup.string()
+        // Only validate when true
+        .when('switch2', {
+            is: true,
+            then: Yup.string()
+                .required('Required')
+                // Make sure it starts after the start of shift and before the end of the shift
+                .lessThan("startOfShift", 'The first break cannot be before the start of the shift')
+                .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
+                .lessThan("startOfBreak2", 'The end of break cannot be before the start of the break')
+
+                .when('switch3', {
                     is: true,
                     then: Yup.string()
-                        .required('Required')
-                        // Make sure it starts after the start of shift and before the end of the shift
-                        .lessThan("startOfShift", 'The first break cannot be before the start of the shift')
-                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
-                        .lessThan("startOfBreak2", 'The end of break cannot be before the start of the break')
                         .greaterThan("startOfBreak3", 'The end of the break must be before the start of the next break break'),
                 }),
+        }),
 
-            startOfBreak3: Yup.string()
-                // Only validate when true
-                .when('switch3', {
+    startOfBreak3: Yup.string()
+        // Only validate when true
+        .when('switch3', {
+            is: true,
+            then: Yup.string()
+                .required('Required')
+                // Make sure it starts after the start of shift and before the end of the shift
+                .lessThan("startOfShift", 'The first break cannot be before the start of the shift')
+                .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
+                .greaterThan("endOfBreak3", 'The start of the break must be before the end of the break')
+                .when('switch2', {
                     is: true,
                     then: Yup.string()
-                        .required('Required')
-                        // Make sure it starts after the start of shift and before the end of the shift
-                        .lessThan("startOfShift", 'The first break cannot be before the start of the shift')
-                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
-                        .lessThan("endOfBreak2", 'The start of break cannot be before the end of the previous break')
-                        .greaterThan("endOfBreak3", 'The start of the break must be before the end of the break'),
+                        .lessThan("endOfBreak2", 'The start of break cannot be before the end of the previous break'),
                 }),
+        }),
 
-            endOfBreak3: Yup.string()
-                // Only validate when true
-                .when('switch3', {
-                    is: true,
-                    then: Yup.string()
-                        .required('Required')
-                        // Make sure it starts after the start of shift and before the end of the shift
-                        .lessThan("startOfShift", 'The first break cannot be before the start of the shift')
-                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
-                        .lessThan("startOfBreak3", 'The end of break cannot be before the start of the break')
-                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift'),
-                }),
+    endOfBreak3: Yup.string()
+        // Only validate when true
+        .when('switch3', {
+            is: true,
+            then: Yup.string()
+                .required('Required')
+                // Make sure it starts after the start of shift and before the end of the shift
+                .lessThan("startOfShift", 'The first break cannot be before the start of the shift')
+                .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
+                .lessThan("startOfBreak3", 'The end of break cannot be before the start of the break')
+        }),
 
-        })
+})
