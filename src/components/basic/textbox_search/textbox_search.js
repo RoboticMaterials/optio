@@ -116,7 +116,7 @@ export class TextBoxSearch extends Component {
     window.addEventListener('resize', debounce(this.updateSelectBounds), {passive:true});
     window.addEventListener('scroll', debounce(this.onScroll), {passive:true});
 
-    this.dropDown('close');
+    this.dropDown('open');
 
     if (this.select) {
       this.updateSelectBounds();
@@ -252,7 +252,7 @@ export class TextBoxSearch extends Component {
 
   addItem = (item) => {
     if (this.props.multi) {
-      if (
+      if (this.state.textbox && !this.props.disabled &&
         valueExistInSelected(getByPath(item, this.props.valueField), this.state.values, this.props)
       ) {
         return this.removeItem(null, item, false);
@@ -505,7 +505,7 @@ export class TextBoxSearch extends Component {
 
 export const DefaultReactTextboxSelect = styled.div`
 
-    background-color: ${props => props.theme.bg.quinary};
+    background-color: white;
     color: ${props => props.theme.bg.octonary};
 
     font-family: ${props => props.theme.font.primary};
@@ -528,7 +528,7 @@ export const DefaultReactTextboxSelect = styled.div`
     border-bottom: 2px solid transparent;
     border-radius: 0.2rem;
 
-    :focus,
+    :focus
     :focus-within {
         color: ${props => props.theme.bg.octonary};
         background-color: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};

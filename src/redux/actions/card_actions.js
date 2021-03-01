@@ -27,6 +27,9 @@ import {convertArrayToObject} from "../../methods/utils/utils";
 
 const logger = log.getLogger("Cards", "Redux")
 logger.setLevel("debug")
+
+
+
 // get
 // ******************************
 export const getCard = (cardId) =>  async (dispatch) => {

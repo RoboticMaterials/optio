@@ -19,6 +19,7 @@ import Textbox from "../../../../../basic/textbox/textbox";
 import {SORT_MODES} from "../../../../../../constants/common_contants";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
 import Lot from "../../../../../side_bar/content/cards/lot/lot";
+import {getLotTotalQuantity} from "../../../../../../methods/utils/lot_utils";
 import Card from "../../../../../side_bar/content/cards/lot/lot";
 import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
 import {quantityOneSchema} from "../../../../../../methods/utils/form_schemas";
@@ -188,6 +189,8 @@ const FinishModal = (props) => {
                     name,
                     start_date,
                     end_date,
+                    flags,
+                    lotNumber,
                     bins = {},
                     process_id: processId = ""
                 } = currCard
@@ -198,10 +201,15 @@ const FinishModal = (props) => {
                 } = process || {}
 
                 const count = bins[stationId]?.count
+                const totalQuantity = getLotTotalQuantity({bins})
 
                 return(
                     <Lot
+                        totalQuantity={totalQuantity}
+                        flags={flags || []}
                         processName={processName}
+                        lotNumber={lotNumber}
+                        enableFlagSelector={false}
                         name={name}
                         start_date={start_date}
                         end_date={end_date}

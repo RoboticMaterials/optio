@@ -189,6 +189,7 @@ const LotEditorSidebar = (props) => {
                         const isSelected = selectedLotTemplatesId === currTemplateId
 
                         return <style.LotTemplateButton
+                            id={currTemplateId}
                             isSelected={isSelected}
                             onClick={() => dispatchSetSelectedLotTemplate(currTemplateId)}
                         >

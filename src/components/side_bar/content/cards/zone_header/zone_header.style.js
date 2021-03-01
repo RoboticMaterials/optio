@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import {commonClickableIcon, iconButtonCss} from "../../../../../common_css/common_css";
 
 export const Container = styled.div`
@@ -29,8 +29,18 @@ export const ItemContainer = styled.div`
 export const FlagsContainer = styled.div`
 	display: flex;
 `
+
+const selectedCss = css`
+	background: ${props => props.theme.bg.tertiary};
+`
+
 export const FlagButton = styled.button`
 	${iconButtonCss};
   	${commonClickableIcon};
-  	margin: 0 .25rem;
+  	
+  
+  ${props => props.selected && selectedCss};
+  
+  
 `
+

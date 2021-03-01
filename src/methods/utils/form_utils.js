@@ -21,7 +21,7 @@ export const getMessageFromError = (err) => {
     }
 
     // default message
-    return "Error."
+    return null
 }
 
 export const getSubmitDisabled = ({errors, touched, isSubmitting, submitCount}) => {

@@ -9,11 +9,62 @@ export const ContentContainer = styled.div`
     flex-direction: column;
 
 `
+export const ObjectContainerBackground = styled.div`
+    width: 100%
+    padding: 1rem;
+    padding-top: 1.5rem;
 
+    display: flex;
+    flex-direction: column;
+    background-color: #26ab76
+
+`
+export const ListItemIcon = styled.i`
+    font-size: 1.3rem;
+    color: white;
+    padding-left: 0.8rem;
+    flex:1;
+
+`
+export const ListItem = styled.div`
+    display: flex;
+    align-items: center;
+    width: auto;
+    height: 2.5rem;
+    text-overflow: ellipsis;
+    background: #26ab76;
+    margin-left: .5rem;
+    margin-right: .5rem;
+    margin-top: 0rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem;
+    border: 0.1rem solid;
+
+    border-color: ${props => props.error ? 'red' : '#26ab76'};
+
+    // border-color: ${props => props.isNew ? 'blue' : '#26ab76'};
+
+
+`
+export const ListItemTitle = styled.h1`
+
+    font-family: ${props => props.theme.font.primary};
+    /* font-size: ${props => props.theme.fontSize.sz3}; */
+    font-size: 1.2rem;
+    font-weight: 500;
+    flex:5;
+    color: ${props => props.theme.bg.octonary};
+    user-select: none;
+    width: 10rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0rem;
+`
 export const RowContainer = styled.div`
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
 `
 

@@ -273,7 +273,6 @@ export const saveFormRoute = (formRoute) => {
             obj = {},
             ...remainingRoute
         } = formRoute
-
         // get objectId
         const {
             _id: objectId

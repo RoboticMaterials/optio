@@ -63,6 +63,31 @@ export const objectSchema = Yup.object().shape({
     //     .required("Please select a model."),
 });
 
+// Yup.addMethod(Yup.array, 'startEndDate', function (startPath, endPath, message) {
+//     return this.test('startEndDate', message, function (value) {
+//
+//         if(!value) return true
+//
+//         const {
+//             path,
+//             createError
+//         } = this
+//
+//         const startDate = convertCardDate(value[startPath])
+//         const endDate = convertCardDate(value[endPath])
+//
+//         if(startDate && endDate) {
+//             if(endDate < startDate) {
+//                 return this.createError({
+//                     path: `${path}`,
+//                     message,
+//                 });
+//             }
+//         }
+//         return true;
+//     });
+// });
+
 
 export const hilSchema = Yup.object().shape({
     instruction: Yup.string()
@@ -271,10 +296,21 @@ Yup.addMethod(Yup.string, "uniqueByPath", function(message, arrPath) {
     return this.test("uniqueByPath", message, function(value) {
         const { path, createError, parent } = this;
 
-        const parentValues = parent[arrPath]
+        if(value) {
+            const parentValues = parent[arrPath]
 
-        if(parentValues.includes(value)) {
-            return createError({ path, message })
+
+            if(isArray(parentValues)) {
+                for(const currParentValue of parentValues) {
+
+                    const {
+                        name,
+                        id
+                    } = currParentValue
+
+                    if(name === value && parent._id !== id) return createError({ path, message })
+                }
+            }
         }
 
         return true
@@ -333,9 +369,8 @@ export const CARD_SCHEMA_MODES = {
 
 export const editLotSchema = Yup.object().shape({
     name: Yup.string()
-        .min(1, '1 character minimum.')
+        // .min(1, '1 character minimum.')
         .max(50, '50 character maximum.')
-        .required('Please enter a name.')
         .uniqueByPath("A lot with this name already exists.", "cardNames"),
     description: Yup.string()
         .min(1, '1 character minimum.')
@@ -346,6 +381,7 @@ export const editLotSchema = Yup.object().shape({
         .max(100, '50 character maximum.')
         .required('Please select a process.')
         .nullable(),
+    // dates: Yup.object().nullable().startEndDate("start", "end", "End date must be after start date.")
 })
 
 export const getMoveLotSchema = (maxCount) => Yup.object().shape({

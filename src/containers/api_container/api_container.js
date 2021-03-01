@@ -122,7 +122,7 @@ const ApiContainer = (props) => {
 
         // this interval is always on
         // loads essential info used on every page such as status and taskQueue
-        setCriticalDataInterval(setInterval(() => loadCriticalData(), 500));
+        setCriticalDataInterval(setInterval(() => loadCriticalData(), 50000));
         setMapDataInterval(setInterval(() => loadMapData(), 1000000));
 
 

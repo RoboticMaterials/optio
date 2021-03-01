@@ -45,6 +45,7 @@ import {ADD_TASK_ALERT_TYPE} from "../../../../../constants/dashboard_contants";
 import TaskAddedAlert
     from "../../../../widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
 import {getSidebarDeviceType, isRouteInQueue} from "../../../../../methods/utils/task_queue_utils";
+import {isDeviceConnected} from "../../../../../methods/utils/device_utils";
 
 export const ProcessField = (props) => {
     const {
@@ -323,9 +324,23 @@ export const ProcessField = (props) => {
         if(!isObject(task)) return
 
         const routeName = task.name
-        const deviceType = getSidebarDeviceType(selectedTask)
+        const deviceType = getSidebarDeviceType(task)
 
         const inQueue = isRouteInQueue(routeId, deviceType)
+
+        const connectedDeviceExists = isDeviceConnected()
+
+        if(!connectedDeviceExists && deviceType !== DEVICE_CONSTANTS.HUMAN) {
+            // display alert notifying user that task is already in queue
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
+                label: "Alert! No device is currently connected to run this route",
+                message: `'${routeName}' not added`,
+            })
+
+            // clear alert after timeout
+            return setTimeout(() => setAddTaskAlert(null), 1800)
+        }
 
         // add alert to notify task has been added
         // If in Q, then tell them it's already there
@@ -387,7 +402,7 @@ export const ProcessField = (props) => {
             return (
                 <div key={`li-${currIndex}`}>
                     <ListItemField
-                        playDisabled={inQueue}
+                        playDisabled={inQueue || addTaskAlert}
                         containerStyle={{marginBottom: isLast ? 0 : "1rem"}}
                         name={fieldName}
                         onMouseEnter={() => {
