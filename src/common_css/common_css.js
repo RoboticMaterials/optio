@@ -1,4 +1,4 @@
-import styled, {css} from 'styled-components'
+import styled, { css } from 'styled-components'
 
 export const glow = (color) => css`
 	box-shadow: 0 0 5px ${color} ;
@@ -22,6 +22,38 @@ export const goodGlow = css`
   ${props => glow(props.theme.good)};
 `;
 
+export const rowContainer = css`
+    display: flex;
+    flex-direction: row;
+`
+
+export const columnContainer = css`
+    display: flex;
+    flex-direction: column;
+`
+export const commonIcon = css`
+    //border: none;
+    //font-size: 2rem;
+    transition: all 0.25s ease;
+    color: ${props => props.color};
+
+
+    filter: brightness(${props => props.filter});
+
+    &: focus{
+        //outline: 0 !important
+    }
+    
+    &: hover {
+        cursor: pointer;
+        filter: brightness(110 %);
+    }
+
+    &: active{
+        //box-shadow: none;
+        filter: brightness(85 %);
+    }
+`
 export const whiteGlow = css`
   ${props => glow2("#00aaff")};
 `;
@@ -35,16 +67,6 @@ export const iconButtonCss = `
 export const disabledButtonCss = css`
   cursor: not-allowed;
   background: ${props => props.theme.disabled}
-`
-
-export const commonIcon = css`
-  transition: all 0.25s ease;
-  padding: 0;
-  margin: 0;
-  color: ${props => props.color};
-
-
-  filter: brightness(${props => props.filter});
 `
 
 export const commonClickableIcon = css`

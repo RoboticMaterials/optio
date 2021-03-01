@@ -32,8 +32,6 @@ const ObjectEditor = (props) => {
     disabled,
     saveDisabled,
     deleteDisabled,
-    onChangeQuantity,
-    quantity,
   } = props
 
     const dispatch = useDispatch()
@@ -131,18 +129,6 @@ const ObjectEditor = (props) => {
                     />
                   </styled.RowContainer>
 
-                  <styled.RowContainer style = {{justifyContent: 'flex-start', marginBottom: '2rem'}}>
-                  <styled.ListItemTitle style = {{marginBottom: '0.2rem', marginTop: '1.3rem', width: '6rem'}}>Quantity:</styled.ListItemTitle>
-
-                    <styled.QuantityInput
-                      placeholder={'Qty'}
-                      onChange={onChangeQuantity}
-                      value = {quantity}
-                     >
-
-                    </styled.QuantityInput>
-
-                  </styled.RowContainer>
                   <styled.RowContainer style = {{marginTop: '0.5rem'}}>
                     <Button
                         schema={'tasks'}

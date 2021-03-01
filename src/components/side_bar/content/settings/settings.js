@@ -52,6 +52,7 @@ const Settings = () => {
     const [developerSettingsEnabled, setDeveloperSettingsEnabled] = useState({})
     const [nonLocalAPIEnabled, setNonLocalAPIEnabled] = useState({})
     const [nonLocalAPIAddress, setNonLocalAPIAddress] = useState({})
+    const [mapID, setMapID] = useState({})
 
     /**
      *  Sets current settings to state so that changes can be discarded or saved
@@ -64,6 +65,7 @@ const Settings = () => {
         setDeveloperSettingsEnabled(ls.get('DeveloperSettingsEnabled') || false)
         setNonLocalAPIEnabled(ls.get('NonLocalAPIAddressEnabled') || false)
         setNonLocalAPIAddress(ls.get('NonLocalAPIAddress') || null)
+        setMapID(ls.get('MapID') || null)
     }, [])
 
 
@@ -111,6 +113,7 @@ const Settings = () => {
         ls.set('DeveloperSettingsEnabled', developerSettingsEnabled)
         ls.set('NonLocalAPIAddressEnabled', nonLocalAPIEnabled)
         ls.set('NonLocalAPIAddress', nonLocalAPIAddress)
+        ls.set('MapID', mapID)
 
         const localChange = isEquivalent(localSettingsState, localSettings)
         const serverChange = isEquivalent(serverSettingsState, serverSettings)
@@ -279,7 +282,7 @@ const Settings = () => {
     }
 
     const CurrentMap = () => {
-        const selectedMap = maps.find((map) => map._id === localSettings.currentMapId)
+        const selectedMap = maps.find((map) => map._id === mapID)
         return (
             <styled.SettingContainer>
 
@@ -301,8 +304,10 @@ const Settings = () => {
                         onChange={values => {
                             // update current map
                             setMapSettingsState(values[0])
+                            console.log(values[0])
                             // update current map in local storage
                             handleUpdateLocalSettings({ currentMapId: values[0]._id })
+                            setMapID(values[0]._id)
                         }}
                         className="w-100"
                     />
