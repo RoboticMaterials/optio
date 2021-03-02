@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, {useState, useEffect, useRef, useCallback} from "react";
 
 // external functions
 import PropTypes from "prop-types";
@@ -43,7 +43,7 @@ import {
 	FIELD_DATA_TYPES,
 	FORM_BUTTON_TYPES, FORM_STATUS,
 	NAME_FIELD,
-	REQUIRED_FIELDS
+	REQUIRED_FIELDS, SIDE_BAR_MODES
 } from "../../../../../constants/lot_contants";
 
 // utils
@@ -57,7 +57,7 @@ import {CARD_SCHEMA_MODES, uniqueNameSchema, editLotSchema, getCardSchema} from 
 import {getProcessStations} from "../../../../../methods/utils/processes_utils";
 import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
 import {arraysEqual} from "../../../../../methods/utils/utils";
-import {immutableReplace, isArray} from "../../../../../methods/utils/array_utils";
+import {immutableReplace, isArray, isNonEmptyArray} from "../../../../../methods/utils/array_utils";
 import {formatLotNumber, getDisplayName} from "../../../../../methods/utils/lot_utils";
 
 // import styles
@@ -140,9 +140,10 @@ const FormComponent = (props) => {
 
 	const [calendarFieldName, setCalendarFieldName] = useState(null)
 	const [calendarFieldMode, setCalendarFieldMode] = useState(null)
-	const [showTemplateSelector, setShowTemplateSelector] = useState(formMode === FORM_MODES.CREATE)
+	const [showTemplateSelector, setShowTemplateSelector] = useState(false)
 	const [fieldNameArr, setFieldNameArr] = useState([]) // if cardId was passed, update existing. Otherwise create new
 	const [pasteTable, setPasteTable] = useState([])
+	const [clickedNoPaste, setClickedNoPaste] = useState(false)
 	const [resetPasteTable, setResetPasteTable] = useState(false)
 	const [showPasteMapper, setShowPasteMapper] = useState(false)
 	const [showSimpleModal, setShowSimpleModal] = useState(false)
@@ -468,46 +469,85 @@ const FormComponent = (props) => {
 
 	const [buttonGroupNames, buttonGroupIds] = getButtonGroupOptions()
 
+	const pasteListener = useCallback((e) => {
+		const plainText = e.clipboardData.getData('text/plain')
+
+		var rows = plainText.split("\n");
+		let table = []
+
+		for(var y in rows) {
+			// let row = []
+
+			var cells = rows[y].split("\t")
+
+			for(const x in cells) {
+
+				if(table[x]) {
+					table[x].push(cells[x])
+				}
+				else {
+					table.push([cells[x]])
+				}
+			}
+		}
+
+		setPasteTable(table)
+
+		// need to call setShowSimpleModal with tiny delay in order to allow normal pasting
+		if(!clickedNoPaste) {
+			setTimeout(() => {
+				setShowSimpleModal(true)
+			}, 0)
+		}
+
+		return true
+	}, [clickedNoPaste]);
+
+	const enterListener = useCallback((event) => {
+
+		// check if event code corresponds to enter
+		if (event.code === "Enter" || event.code === "NumpadEnter" || event.code === 13 || event.key === "Enter") {
+			// prevent default actions
+			event.preventDefault()
+			event.stopPropagation()
+
+
+			if(formMode === FORM_MODES.UPDATE) {
+				// if the form mode is set to UPDATE, the default action of enter should be to save the lot
+				// this is done by setting buttonType to SAVE and submitting the form
+
+				switch(content){
+					case CONTENT.MOVE:
+						onSubmit(values, FORM_BUTTON_TYPES.MOVE_OK)
+						break
+					default:
+						onSubmit(values, FORM_BUTTON_TYPES.SAVE)
+						break
+				}
+			}
+			else {
+				// if the form mode is set to CREATE (the only option other than UPDATE), the default action of the enter key should be to add the lot
+				onSubmit(values, FORM_BUTTON_TYPES.ADD)
+			}
+
+		}
+	}, [values])
+
+
 	/*
 	* listen for paste event to migrate excel data
 	* */
 	useEffect(() => {
-		// paste event listener
-		const listener = e => {
 
-			const plainText = e.clipboardData.getData('text/plain')
-
-			var rows = plainText.split("\n");
-			let table = []
-
-			for(var y in rows) {
-				// let row = []
-
-				var cells = rows[y].split("\t")
-
-				for(const x in cells) {
-
-					if(table[x]) {
-						table[x].push(cells[x])
-					}
-					else {
-						table.push([cells[x]])
-					}
-				}
-			}
-
-			setPasteTable(table)
-			setShowSimpleModal(true)
-		};
 
 		// add event listener to 'paste'
-		document.addEventListener("paste", listener);
+		document.addEventListener("paste", pasteListener);
 
-		// on dismount remove the event listener
+		// on dismount remove the event pasteListener
 		return () => {
-			document.removeEventListener("paste", listener);
+			document.removeEventListener("paste", pasteListener);
 		};
-	}, [])
+	}, [clickedNoPaste])
 
 	/*
 	* handles when enter key is pressed
@@ -518,44 +558,15 @@ const FormComponent = (props) => {
 	* */
 	useEffect(() => {
 		// keydown event listener
-		const listener = event => {
-
-			// check if event code corresponds to enter
-			if (event.code === "Enter" || event.code === "NumpadEnter" || event.code === 13 || event.key === "Enter") {
-				// prevent default actions
-				event.preventDefault()
-				event.stopPropagation()
-
-
-				if(formMode === FORM_MODES.UPDATE) {
-					// if the form mode is set to UPDATE, the default action of enter should be to save the lot
-					// this is done by setting buttonType to SAVE and submitting the form
-
-					switch(content){
-						case CONTENT.MOVE:
-							onSubmit(values, FORM_BUTTON_TYPES.MOVE_OK)
-							break
-						default:
-							onSubmit(values, FORM_BUTTON_TYPES.SAVE)
-							break
-					}
-				}
-				else {
-					// if the form mode is set to CREATE (the only option other than UPDATE), the default action of the enter key should be to add the lot
-					onSubmit(values, FORM_BUTTON_TYPES.ADD)
-				}
-
-			}
-		};
 
 		// add event listener to 'keydown'
-		document.addEventListener("keydown", listener);
+		document.addEventListener("keydown", enterListener);
 
 		// on dismount remove the event listener
 		return () => {
-			document.removeEventListener("keydown", listener);
+			document.removeEventListener("keydown", enterListener);
 		};
-	}, [])
+	}, [values])
 
 	useEffect(() => {
 
@@ -960,6 +971,39 @@ const FormComponent = (props) => {
 
 						<styled.FieldsHeader>
 
+							<styled.RowContainer
+								style={{
+									justifyContent: "flex-end",
+									padding: "1rem 1rem 0 0"
+								}}
+							>
+								{isNonEmptyArray(pasteTable) &&
+								<styled.PasteIcon
+									className="fas fa-paste"
+									color={"#ffc20a"}
+									onClick={() => {
+										setShowPasteMapper(true)
+										setPasteMapperHidden(false)
+										setResetPasteTable(true)
+										setTimeout(() => {
+											setResetPasteTable(false)
+										}, 250)
+										setClickedNoPaste(false)
+									}}
+								/>
+								}
+
+								<styled.TemplateButton
+									className={SIDE_BAR_MODES.TEMPLATES.iconName}
+									color={SIDE_BAR_MODES.TEMPLATES.color}
+									onClick={() => {
+										setShowTemplateSelector(!showTemplateSelector)
+										dispatchSetSelectedLotTemplate(lotTemplateId)
+									}}
+								/>
+
+							</styled.RowContainer>
+
 							{(showProcessSelector || !values.processId) && renderProcessSelector()}
 
 							<styled.RowContainer>
@@ -1075,17 +1119,17 @@ const FormComponent = (props) => {
 									</>
 							}[content] ||
 							<>
-								<Button
-									schema={'lots'}
-									type={"button"}
-									style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
-									onClick={async () => {
-										setShowTemplateSelector(!showTemplateSelector)
-										dispatchSetSelectedLotTemplate(lotTemplateId)
-									}}
-								>
-									{showTemplateSelector ? "Hide Templates" : "Show Templates"}
-								</Button>
+								{/*<Button*/}
+								{/*	schema={'lots'}*/}
+								{/*	type={"button"}*/}
+								{/*	style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}*/}
+								{/*	onClick={async () => {*/}
+								{/*		setShowTemplateSelector(!showTemplateSelector)*/}
+								{/*		dispatchSetSelectedLotTemplate(lotTemplateId)*/}
+								{/*	}}*/}
+								{/*>*/}
+								{/*	{showTemplateSelector ? "Hide Templates" : "Show Templates"}*/}
+								{/*</Button>*/}
 
 								{(isArray(mappedValues) && mappedValues.length > 0) &&
 									null
@@ -1309,6 +1353,7 @@ const FormComponent = (props) => {
 						setTimeout(() => {
 							setResetPasteTable(false)
 						}, 250)
+						setClickedNoPaste(false)
 
 						// setPasteTable([])
 						// setPasteTable([])
@@ -1317,6 +1362,7 @@ const FormComponent = (props) => {
 					}}
 					handleOnClick2={() => {
 						setShowSimpleModal(false)
+						setClickedNoPaste(true)
 					}}
 					button_1_text={"Yes"}
 					button_2_text={"No"}

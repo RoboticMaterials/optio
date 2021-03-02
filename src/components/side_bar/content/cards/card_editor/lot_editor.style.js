@@ -489,6 +489,38 @@ export const LotName = styled.span`
   margin-bottom: .5rem;
 `
 
+export const TemplateButton = styled.button`
+  ${iconButtonCss};
+  ${commonClickableIcon};
+  font-size: 2rem;
+`
+
+export const PasteIcon = styled.button`
+
+	${iconButtonCss};
+  	${commonClickableIcon};
+	font-size: 2rem;
+
+    animation: blinker 1s linear infinite;
+
+  @keyframes blinker {
+	0% {
+	  opacity: 0.5;
+	}
+    50% {
+      //opacity: .2;
+	  opacity: 1;
+      filter: brightness(120%);
+    }
+	
+	100% {
+      opacity: 0.5;
+	}
+	
+  }
+  
+`
+
 
 
 export const CalendarContainer = styled.div`
