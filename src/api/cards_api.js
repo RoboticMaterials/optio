@@ -56,6 +56,10 @@ export async function getCardsCount() {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator + "/count",
+            headers: {
+                'X-API-Key': '123456',
+                'Access-Control-Allow-Origin': '*'
+            }
         });
 
         // Success 🎉
