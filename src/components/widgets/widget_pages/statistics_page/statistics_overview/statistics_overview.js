@@ -119,13 +119,6 @@ const StatisticsOverview = (props) => {
         getReportData(body)
     }, [])
 
-    useEffect(() => {
-        console.log('QQQQ report effect', reportData)
-        return () => {
-            
-        }
-    }, [reportData])
-
     const getReportData = async (body) => {
         const reportAnalyticsResponse = await getReportAnalytics(stationID, body)
 

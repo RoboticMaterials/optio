@@ -21,8 +21,6 @@ const ReportChart = (props) => {
         throughputData,
     } = props
 
-    console.log('QQQQ report chart', props)
-
     // get array of report buttons for current station
     const reportButtonsArr = Object.values(reportButtons)
 
