@@ -26,7 +26,7 @@ import {
 } from '../types/stations_types'
 
 // Import Utils
-import { deepCopy, isEquivalent } from '../../methods/utils/utils';
+import { deepCopy } from '../../methods/utils/utils';
 import { compareExistingVsIncomingLocations } from '../../methods/utils/locations_utils'
 
 const defaultState = {
@@ -135,7 +135,6 @@ export default function stationsReducer(state = defaultState, action) {
 
         case GET_STATIONS_SUCCESS:
             const parsedStations = compareExistingVsIncomingLocations(deepCopy(action.payload), deepCopy(state.stations), state.d3)
-
             return {
                 ...state,
                 stations: parsedStations,

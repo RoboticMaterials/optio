@@ -2,6 +2,7 @@ import axios from 'axios';
 import * as log from 'loglevel';
 
 import { apiIPAddress } from '../settings/settings'
+
 const operator = 'status'
 
 export async function getStatus() {
@@ -9,6 +10,11 @@ export async function getStatus() {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator,
+            headers: {
+                'X-API-Key': '123456',
+                'Access-Control-Allow-Origin': '*'
+            }
+            // token: token.username
         });
         // Success 🎉
         //  log.debug('THE STATE OF PLAY IS!!! on get status',response);
@@ -54,6 +60,7 @@ export async function postStatus(status) {
             url: apiIPAddress() + operator,
             headers: {
                 'Content-Type': 'application/json',
+                'X-API-Key': '123456',
                 'Accept': 'application/json'
             },
             data: status

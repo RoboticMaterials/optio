@@ -2,7 +2,7 @@ import React, {useEffect, useState, useRef, useContext, memo} from 'react';
 
 // external functions
 import { useHistory } from 'react-router-dom'
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 // internal components
 import LotEditor from "./card_editor/lot_editor";
@@ -11,18 +11,18 @@ import CardZone from "./card_zone/card_zone";
 import SummaryZone from "./summary_zone/summary_zone";
 
 // actions
-import {showEditor} from '../../../../redux/actions/card_actions'
+import { showEditor } from '../../../../redux/actions/card_actions'
 
 // styles
 import * as styled from './cards.style'
 import Textbox from "../../../basic/textbox/textbox";
-import {ThemeContext} from "styled-components";
+import { ThemeContext } from "styled-components";
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
 import ZoneHeader from "./zone_header/zone_header";
 import {SORT_MODES} from "../../../../constants/common_contants";
 import LotCreatorForm from "./card_editor/template_form";
 import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
-import {LOT_FILTER_OPTIONS} from "../../../../constants/lot_contants";
+import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../constants/lot_contants";
 
 const Cards = (props) => {
 
@@ -38,7 +38,7 @@ const Cards = (props) => {
 
     //redux state
     const processes = useSelector(state => { return state.processesReducer.processes })
-    const showCardEditor = useSelector(state=> {return state.cardsReducer.showEditor})
+    const showCardEditor = useSelector(state => { return state.cardsReducer.showEditor })
 
     // actions
     const dispatch = useDispatch()
@@ -58,7 +58,8 @@ const Cards = (props) => {
     })
     const [lotFilterValue, setLotFilterValue] = useState('')
     const [ selectedFilterOption, setSelectedFilterOption ] = useState(LOT_FILTER_OPTIONS.name)
-    const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
+    const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
+    const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
     // internal component state
     const [selectedProcesses, setSelectedProcesses] = useState(Object.values(processes)) // array of {process} objects - the list of selected processes
 
@@ -82,16 +83,16 @@ const Cards = (props) => {
     * @param {int} window.innerHeight - window height
     *
     * */
-    useEffect( () => {
+    useEffect(() => {
 
         // if zoneRef is assigned
-        if(zoneRef.current){
+        if (zoneRef.current) {
 
             // extract dimensions of zoneRef
             let height = zoneRef.current.offsetHeight;
-            let width  = zoneRef.current.offsetWidth;
-            let offsetTop  = zoneRef.current.offsetTop;
-            let offsetLeft  = zoneRef.current.offsetLeft;
+            let width = zoneRef.current.offsetWidth;
+            let offsetTop = zoneRef.current.offsetTop;
+            let offsetLeft = zoneRef.current.offsetLeft;
 
             // set zoneSize
             setZoneSize({
@@ -119,10 +120,10 @@ const Cards = (props) => {
     * @param {id} string - id of content to display
     *
     * */
-    useEffect( () => {
+    useEffect(() => {
 
         // update internal state based on id
-        switch(id) {
+        switch (id) {
 
             // summary zone
             case "summary":
@@ -159,10 +160,10 @@ const Cards = (props) => {
    * */
     const handleCardClick = (cardId, processId, binId) => {
         onShowCardEditor(true)
-        setSelectedCard({cardId, processId, binId})
+        setSelectedCard({ cardId, processId, binId })
     }
 
-    return(
+    return (
         <styled.Container>
             {showCardEditor &&
             <LotEditor
@@ -180,29 +181,34 @@ const Cards = (props) => {
             <styled.Header>
                 {isProcessView ?
                     <styled.MenuButton
-                        style={{marginRight: "auto"}}
+                        style={{ marginRight: "auto" }}
                         className="fas fa-chevron-left"
                         aria-hidden="true"
-                        onClick={()=>{
-                            history.replace ('/processes')}
+                        onClick={() => {
+                            history.replace('/processes')
+                        }
                         }
                     />
                     :
-                    <styled.InvisibleItem style={{marginRight: "auto"}}/> // used for spacing
+                    <styled.InvisibleItem style={{ marginRight: "auto" }} /> // used for spacing
                 }
-                <div style={{flex: 1, flexDirection:"column", display: "flex", alignItems: "center", justifyContent: "center"}}>
-                <styled.Title>{title ? title : "untitled"}</styled.Title>
+                <div style={{ flex: 1, flexDirection: "column", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <styled.Title>{title ? title : "untitled"}</styled.Title>
                 </div>
                 <styled.InvisibleItem
-                    style={{marginLeft: "auto"}}
+                    style={{ marginLeft: "auto" }}
                 />
             </styled.Header>
             <ZoneHeader
+                sortDirection={sortDirection}
+                setSortDirection={setSortDirection}
                 sortMode={sortMode}
                 setSortMode={setSortMode}
+
                 setLotFilterValue={setLotFilterValue}
                 selectedFilterOption={selectedFilterOption}
                 setSelectedFilterOption={setSelectedFilterOption}
+
                 selectedProcesses={selectedProcesses}
                 setSelectedProcesses={setSelectedProcesses}
                 zone={id}
@@ -210,10 +216,10 @@ const Cards = (props) => {
 
             <styled.Body id={"cards-body"}>
                 {showMenu &&
-                <CardMenu
-                    currentProcess={currentProcess}
-                    close={()=>setShowMenu(false)}
-                />
+                    <CardMenu
+                        currentProcess={currentProcess}
+                        close={() => setShowMenu(false)}
+                    />
                 }
 
                 {
@@ -221,6 +227,7 @@ const Cards = (props) => {
                         'summary':
                             <SummaryZone
                                 sortMode={sortMode}
+                                sortDirection={sortDirection}
                                 selectedProcesses={selectedProcesses}
                                 lotFilterValue={lotFilterValue}
                                 selectedFilterOption={selectedFilterOption}
@@ -244,6 +251,7 @@ const Cards = (props) => {
                             lotFilterValue={lotFilterValue}
                             selectedFilterOption={selectedFilterOption}
                             sortMode={sortMode}
+                            sortDirection={sortDirection}
                         />
                     </styled.CardZoneContainer>
                 }

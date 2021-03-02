@@ -14,13 +14,15 @@ const StationsColumn = ((props) => {
 		cards = [],
 		processId,
 		maxHeight,
-		sortMode
+		sortMode,
+		sortDirection
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
 
 	return(
 		<Column
+			sortDirection={sortDirection}
 			maxWidth={"20rem"}
 			sortMode={sortMode}
 			maxHeight={maxHeight}

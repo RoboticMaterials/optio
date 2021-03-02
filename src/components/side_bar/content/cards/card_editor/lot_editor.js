@@ -53,7 +53,7 @@ import {
 	getInitialValues,
 	parseMessageFromEvent
 } from "../../../../../methods/utils/card_utils";
-import {CARD_SCHEMA_MODES, cardSchema, editLotSchema, getCardSchema} from "../../../../../methods/utils/form_schemas";
+import {CARD_SCHEMA_MODES, uniqueNameSchema, editLotSchema, getCardSchema} from "../../../../../methods/utils/form_schemas";
 import {getProcessStations} from "../../../../../methods/utils/processes_utils";
 import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
 import {arraysEqual} from "../../../../../methods/utils/utils";
@@ -70,6 +70,7 @@ import usePrevious from "../../../../../hooks/usePrevious";
 // logger
 import log from '../../../../../logger'
 import {getCardsCount} from "../../../../../api/cards_api";
+import useWarn from "../../../../basic/form/useWarn";
 
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
@@ -115,6 +116,7 @@ const FormComponent = (props) => {
 
 	const formMode = cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE
 
+	useWarn(uniqueNameSchema, formikProps)
 	// just for console logging
 	useEffect(() => {
 		console.log("lot_editor values",values)
@@ -238,7 +240,6 @@ const FormComponent = (props) => {
 
 	const superSubmit = (values, index, lotStatus) => {
 		let updatedItem = {...values}
-		console.log("superSubmit values", values)
 
 		editLotSchema.validate({
 			...values,
@@ -308,12 +309,12 @@ const FormComponent = (props) => {
 					}
 				})
 					.catch((err) => {
-						console.log("post it err",err)
+						console.error("post it err",err)
 					})
 
 			})
 			.catch((err) => {
-				console.log("ERRRRRORRRR", err)
+				console.error("ERRRRRORRRR", err)
 
 				const {
 					inner = [],
@@ -639,9 +640,6 @@ const FormComponent = (props) => {
 		const {
 			[fieldName]: fieldValue
 		} = templateValues || {}
-
-		console.log("here fieldValue",fieldValue)
-
 
 		return(
 			<styled.BodyContainer>
@@ -972,6 +970,7 @@ const FormComponent = (props) => {
 											style={{
 												cursor: "not-allowed"
 											}}
+											schema={"lots"}
 										/>
 								</styled.NameContainer>
 
@@ -984,6 +983,7 @@ const FormComponent = (props) => {
 										type={"text"}
 										placeholder={"Enter name..."}
 										InputComponent={Textbox}
+										schema={"lots"}
 									/>
 								</styled.NameContainer>
 							</styled.RowContainer>
@@ -1601,6 +1601,7 @@ const LotEditor = (props) => {
 						// validation control
 						validationSchema={getCardSchema((content === CONTENT.MOVE) ? CARD_SCHEMA_MODES.MOVE_LOT : CARD_SCHEMA_MODES.EDIT_LOT, bins[binId]?.count ? bins[binId].count : 0)}
 						validateOnChange={true}
+
 						validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
 						validateOnBlur={true}
 						onSubmit={()=>{}} // this is necessary
@@ -1618,8 +1619,6 @@ const LotEditor = (props) => {
 								submitForm
 
 							} = formikProps
-
-
 
 							const handleSubmit = async (values, buttonType) => {
 								setSubmitting(true)

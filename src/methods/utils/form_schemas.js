@@ -5,8 +5,35 @@ import { isObject } from "./object_utils";
 import { get } from "lodash"
 import { isArray } from "./array_utils";
 import { LOT_TEMPLATES_RESERVED_FIELD_NAMES } from "../../constants/form_constants";
+import {convertCardDate} from "./card_utils";
+
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
+
+Yup.addMethod(Yup.object, 'startEndDate', function (startPath, endPath, message) {
+    return this.test('startEndDate', message, function (value) {
+
+        if(!value) return true
+
+        const {
+            path,
+            createError
+        } = this
+
+        const startDate = convertCardDate(value[startPath])
+        const endDate = convertCardDate(value[endPath])
+
+        if(startDate && endDate) {
+            if(endDate < startDate) {
+                return this.createError({
+                    path: `${path}`,
+                    message,
+                });
+            }
+        }
+        return true;
+    });
+});
 
 export const scheduleSchema = Yup.object().shape({
     name: Yup.string()
@@ -322,13 +349,11 @@ export const signUpSchema = Yup.object().shape({
         .email()
         .required('Please enter an email'),
     password: Yup.string()
-        // .min(8, '8 character minimum')
-        // .matches(
-        //     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-        //     'Password must contain atleast 8 characters, One Uppercase, One Lowercase, and one specail character',
-        // )
-
-        .required('Please enter a password'),
+        .required('Please enter a password')
+        .matches(
+            /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+            "Must Contain 8 characters, one uppercase, one lowercase, one number and one special character"
+        ),
 
     confirmPassword: Yup.string()
         .oneOf([Yup.ref('password'), null], 'Passwords must match')
@@ -367,11 +392,15 @@ export const CARD_SCHEMA_MODES = {
     MOVE_LOT: "MOVE_LOT"
 }
 
+export const uniqueNameSchema = Yup.object().shape({
+    name: Yup.string()
+        .uniqueByPath("A lot with this name already exists.", "cardNames"),
+})
+
 export const editLotSchema = Yup.object().shape({
     name: Yup.string()
         // .min(1, '1 character minimum.')
-        .max(50, '50 character maximum.')
-        .uniqueByPath("A lot with this name already exists.", "cardNames"),
+        .max(50, '50 character maximum.'),
     description: Yup.string()
         .min(1, '1 character minimum.')
         .max(250, '250 character maximum.'),

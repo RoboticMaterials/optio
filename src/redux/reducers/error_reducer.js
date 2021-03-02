@@ -1,20 +1,16 @@
 import {
   CLEAR_ERROR
 } from '../types/error_types';
-import { clone_object } from '../../methods/utils/utils';
 
-const defaultState = {
-
-};
+const defaultState = {};
 
 export default function errorReducer(state = defaultState, action) {
 
   const { type, payload } = action;
   const matches = /(.*)_(STARTED|FAILURE)/.exec(type);
 
-  if(type == CLEAR_ERROR) {
+  if(type === CLEAR_ERROR) {
     console.log('clearing error')
-    var stateClone = clone_object(state);
     //delete stateClone[]
     return {
       ...state,

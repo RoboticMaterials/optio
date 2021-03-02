@@ -2,8 +2,9 @@ import {deepCopy} from "./utils";
 import {SORT_MODES} from "../../constants/common_contants";
 import {isObject} from "./object_utils";
 import {isArray} from "./array_utils";
-import {defaultBins, FIELD_COMPONENT_NAMES} from "../../constants/lot_contants";
+import {defaultBins, FIELD_COMPONENT_NAMES, FIELD_DATA_TYPES, SORT_DIRECTIONS} from "../../constants/lot_contants";
 import {BASIC_FIELD_DEFAULTS} from "../../constants/form_constants";
+import {toIntegerOrZero} from "./number_utils";
 
 const EVENT_NAMES = {
 	CREATE: "create",
@@ -143,8 +144,7 @@ export const getInitialValues = (lotTemplate, card) => {
 					}
 
 					case FIELD_COMPONENT_NAMES.CALENDAR_START_END: {
-						let updatedValues = BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE
-
+						let updatedValues = [...BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE]
 						if(isObject(card) && isArray(card[fieldName])) {
 							const val = card[fieldName]
 							if(val.length > 0 && val[0] !== null) {
@@ -152,15 +152,6 @@ export const getInitialValues = (lotTemplate, card) => {
 							}
 							if(val.length > 1 && val[1] !== null) {
 								updatedValues[1] = new Date(val[1])
-							}
-						}
-						else if(isObject(initialValues) && isArray(initialValues[fieldName])) {
-							const val = initialValues[fieldName]
-							if(val.length > 0) {
-								updatedValues = [new Date(val[0])]
-							}
-							if(val.length > 1) {
-								updatedValues.push(new Date(val[1]))
 							}
 						}
 
@@ -230,117 +221,109 @@ export const convertExcelToLot = (excel, lotTemplate, processId) => {
 * @param {array} arr - array of cards
 * @param {string} sortMode - string identifier of mode to sort by
 * */
-export const sortBy = (arr, sortMode) => {
+export const sortBy = (arr, sortMode, sortDirection) => {
 
-	switch(sortMode) {
-		case SORT_MODES.QUANTITY_ASCENDING: {
-			arr.sort((itemA, itemB) => {
-				const { count: countA } = itemA
+	const isAscending = sortDirection.id === SORT_DIRECTIONS.ASCENDING.id
 
-				const { count: countB } = itemB
+	const {
+		dataType,
+		label,
+		index,
+		fieldName
+	} = sortMode
 
-				if(parseInt(countA) >= parseInt(countB)) return 1
-				return -1
-			})
-
+	switch(dataType) {
+		case FIELD_DATA_TYPES.URL: {
+			// not yet implemented
 			break
 		}
-		case SORT_MODES.QUANTITY_DESCENDING: {
-			arr.sort((itemA, itemB) => {
-				const { count: countA } = itemA
-
-				const { count: countB } = itemB
-
-				if(parseInt(countA) < parseInt(countB)) return 1
-				return -1
-			})
-
+		case FIELD_DATA_TYPES.EMAIL: {
+			// not yet implemented
 			break
 		}
-
-		case SORT_MODES.NAME_ASCENDING: {
-			arr.sort((itemA, itemB) => {
-				const { name: nameA } = itemA
-
-				const { name: nameB } = itemB
-
-				if(nameA >= nameB) return 1
-				return -1
-			})
+		case FIELD_DATA_TYPES.DATE: {
+			// not yet implemented
 			break
+
 		}
-
-		case SORT_MODES.NAME_DESCENDING: {
+		case FIELD_DATA_TYPES.DATE_RANGE: {
 			arr.sort((itemA, itemB) => {
-				const { name: nameA } = itemA
+				const {
+					[fieldName]: rangeA
+				} = itemA
+				const {
+					[fieldName]: rangeB
+				} = itemB
 
-				const { name: nameB } = itemB
+				if(!rangeA) return 1
+				if(!rangeB) return -1
 
-				if(nameA < nameB) return 1
-				return -1
-			})
-			break
-		}
+				const valA = rangeA[index]
+				const valB = rangeB[index]
 
-		case SORT_MODES.END_DESCENDING: {
-			arr.sort((itemA, itemB) => {
-				const { end_date: endDateA } = itemA
-				const convertedA = convertCardDate(endDateA)
-
-				const { end_date: endDateB } = itemB
-				const convertedB = convertCardDate(endDateB)
-
-				if(!convertedA) return 1
-				if(convertedA > convertedB) return -1
-				return 1
-			})
-
-			break
-		}
-		case SORT_MODES.END_ASCENDING: {
-			arr.sort((itemA, itemB) => {
-				const { end_date: endDateA } = itemA
-				const convertedA = convertCardDate(endDateA)
-
-				const { end_date: endDateB } = itemB
-				const convertedB = convertCardDate(endDateB)
-
-				if(!convertedA) return 1
-				if(convertedA >= convertedB) return 1
-				return -1
-			})
-
-			break
-		}
-		case SORT_MODES.START_DESCENDING: {
-			arr.sort((itemA, itemB) => {
-				const { start_date: startDateA } = itemA
-				const convertedA = convertCardDate(startDateA)
-
-				const { start_date: startDateB } = itemB
-				const convertedB = convertCardDate(startDateB)
-
-				if(!convertedA) return 1
-				if(convertedA > convertedB) return -1
-				return 1
+				if(isAscending) {
+					if(!valA) return 1
+					if(valA > valB) return 1
+					return -1
+					return 1
+				}
+				else {
+					if(!valA) return 1
+					if(valA > valB) return -1
+					return 1
+				}
 			})
 			break
 		}
-		case SORT_MODES.START_ASCENDING: {
+		case FIELD_DATA_TYPES.STRING: {
 			arr.sort((itemA, itemB) => {
-				const { start_date: startDateA } = itemA
-				const convertedA = convertCardDate(startDateA)
+				const {
+					[fieldName]: stringA
+				} = itemA
+				const {
+					[fieldName]: stringB
+				} = itemB
 
-				const { start_date: startDateB } = itemB
-				const convertedB = convertCardDate(startDateB)
+				if(!stringA) return 1
 
-				if(!convertedA) return 1
-				if(convertedA >= convertedB) return 1
-				return -1
+				if(isAscending) {
+					if(stringA >= stringB) return 1
+					return -1
+				}
+				else {
+					if(stringA >= stringB) return -1
+					return 1
+				}
+
 			})
 			break
 		}
+		case FIELD_DATA_TYPES.INTEGER: {
 
+			arr.sort((itemA, itemB) => {
+				const {
+					[fieldName]: stringA
+				} = itemA
+				const {
+					[fieldName]: stringB
+				} = itemB
+
+				if(stringA === null) return 1
+
+				if(isAscending) {
+					if(stringA >= stringB) return 1
+					return -1
+				}
+				else {
+					if(stringA >= stringB) return -1
+					return 1
+				}
+			})
+			break
+		}
+		default: {
+			break
+		}
 	}
 
 	return arr

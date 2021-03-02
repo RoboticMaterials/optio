@@ -21,11 +21,16 @@ import Textbox from "../../../../../basic/textbox/textbox";
 import {SORT_MODES} from "../../../../../../constants/common_contants";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
 import Lot from "../../../../../side_bar/content/cards/lot/lot";
-import {getLotTotalQuantity} from "../../../../../../methods/utils/lot_utils";
+import {getLotTemplateData, getLotTotalQuantity, getMatchesFilter} from "../../../../../../methods/utils/lot_utils";
 import Card from "../../../../../side_bar/content/cards/lot/lot";
 import QuantityModal from "../../../../../basic/modals/quantity_modal/quantity_modal";
 import SimpleModal from "../../../../../basic/modals/simple_modal/simple_modal";
 import {quantityOneSchema} from "../../../../../../methods/utils/form_schemas";
+import ZoneHeader from "../../../../../side_bar/content/cards/zone_header/zone_header";
+import LotSortBar from "../../../../../side_bar/content/cards/lot_sort_bar/lot_sort_bar";
+import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../../../constants/lot_contants";
+import LotFilterBar from "../../../../../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
+import {getLotTemplates} from "../../../../../../redux/actions/lot_template_actions";
 
 Modal.setAppElement('body');
 
@@ -47,6 +52,7 @@ const KickOffModal = (props) => {
     const dispatch = useDispatch()
     // const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
     const dispatchGetCards = () => dispatch(getCards())
+    const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
     const dispatchGetProcesses = () => dispatch(getProcesses());
     const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 
@@ -55,7 +61,8 @@ const KickOffModal = (props) => {
     const processes = useSelector(state => { return state.processesReducer.processes }) || {}
     const routes = useSelector(state => { return state.tasksReducer.tasks }) || {}
 
-    const [lotFilterValue, setLotFilterValue] = useState('')
+
+
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState(false)
     const [submitting, setSubmitting] = useState(false)
     const [showLotEditor, setShowLotEditor] = useState(false)
@@ -64,7 +71,12 @@ const KickOffModal = (props) => {
     const [lotCount, setLotCount] = useState(null)
     const [showQuantitySelector, setShowQuantitySelector] = useState(false)
     const [availableKickOffCards, setAvailableKickOffCards] = useState([])
-    const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
+
+    const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
+    const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
+    const [lotFilterValue, setLotFilterValue] = useState('')
+    const [ selectedFilterOption, setSelectedFilterOption ] = useState(LOT_FILTER_OPTIONS.name)
+
     const isButtons = availableKickOffCards.length > 0
     const stationId = dashboard.station
 
@@ -202,16 +214,7 @@ const KickOffModal = (props) => {
                     name: currLotName,
                 } = currLot || {}
 
-                if(
-                    currLotName
-                        .toLowerCase()
-                        .includes(lotFilterValue.toLowerCase())
-                ) {
-                    return true
-                }
-                else {
-                    return false
-                }
+                return getMatchesFilter(currLot, lotFilterValue, selectedFilterOption)
             })
             .map((currCard, cardIndex) => {
                 const {
@@ -222,8 +225,11 @@ const KickOffModal = (props) => {
                     bins = {},
                     flags,
                     lotNumber,
-                    process_id: processId
+                    process_id: processId,
+                    lotTemplateId
                 } = currCard
+
+                console.log("currCard",currCard)
 
                 const process = processes[processId]
                 const {
@@ -232,9 +238,11 @@ const KickOffModal = (props) => {
 
                 const count = bins["QUEUE"]?.count || 0
                 const totalQuantity = getLotTotalQuantity({bins})
+                const templateValues = getLotTemplateData(lotTemplateId, currCard)
 
                 return(
                         <Lot
+                            templateValues={templateValues}
                             totalQuantity={totalQuantity}
                             enableFlagSelector={false}
                             lotNumber={lotNumber}
@@ -258,6 +266,7 @@ const KickOffModal = (props) => {
     const loadData = async () => {
         const cardsResult = await dispatchGetCards()
         const processesResult = await dispatchGetProcesses()
+        dispatchGetLotTemplates()
 
         if(!(cardsResult instanceof Error) && !(processesResult instanceof Error)) {
             setDidLoadData(true)
@@ -289,26 +298,37 @@ const KickOffModal = (props) => {
      *
      */
     useEffect(() => {
-        var tempAvailableCards = []
+        let tempAvailableCards = []
 
         if(kickOffEnabledInfo && Array.isArray(kickOffEnabledInfo)) kickOffEnabledInfo.forEach((currProcessId) => {
             const currProcessCards = processCards[currProcessId]
 
-            var filteredCards = []
+            let filteredCards = []
             if(currProcessCards) filteredCards = Object.values(currProcessCards).filter((currCard) => {
                 // currCard.station_id === "QUEUE"
                 if(currCard.bins && currCard.bins["QUEUE"]) return true
+            }).map((currCard) => {
+                return{
+                    ...currCard,
+                    count: currCard.bins["QUEUE"].count
+                }
             })
             tempAvailableCards = tempAvailableCards.concat(filteredCards)
         })
 
 
         if(sortMode) {
-            sortBy(tempAvailableCards, sortMode)
+            sortBy(tempAvailableCards, sortMode, sortDirection)
         }
         setAvailableKickOffCards(tempAvailableCards)
 
-    }, [processCards])
+    }, [processCards, sortMode, sortDirection])
+
+    // useEffect(() => {
+    //     let tempAvailableCards = [...availableKickOffCards]
+    //     sortBy(tempAvailableCards, sortMode, sortDirection)
+    //     setAvailableKickOffCards(tempAvailableCards)
+    // }, [, processCards])
 
     // if number of available lots >= 5, auto focus lot filter text box
     useEffect(() => {
@@ -374,15 +394,36 @@ const KickOffModal = (props) => {
                 <styled.HeaderMainContentContainer>
                     <styled.Title>{title}</styled.Title>
 
-                    <div style={{display: "flex", alignItems: "center", justifyContent: "center", width: "40rem", minWidth: "10rem", maxWidth: "50%"}}>
-                        <Textbox
-                            focus={shouldFocusLotFilter}
-                            placeholder='Filter lots...'
-                            onChange={(e) => {
-                                setLotFilterValue(e.target.value)
+                    <div style={{display: "flex",  justifyContent: "center", width: "40rem", minWidth: "10rem", maxWidth: "50%"}}>
+                        <LotSortBar
+                            sortMode={sortMode}
+                            setSortMode={setSortMode}
+                            sortDirection={sortDirection}
+                            setSortDirection={setSortDirection}
+                            descriptionStyle={{
+                                margin: "0 1rem 0 0",
                             }}
-                            style={{background: theme.bg.quaternary }}
-                            textboxContainerStyle={{flex: 1}}
+                            containerStyle={{
+                                display: "flex",
+                                flexDirection: "row",
+                                minWidth: "fit-content",
+                                alignItems: "center"
+                            }}
+                        />
+                        <LotFilterBar
+                            shouldFocusLotFilter={shouldFocusLotFilter}
+                            setLotFilterValue={setLotFilterValue}
+                            selectedFilterOption={selectedFilterOption}
+                            setSelectedFilterOption={setSelectedFilterOption}
+                            descriptionStyle={{
+                                margin: "0 1rem 0 0",
+                            }}
+                            containerStyle={{
+                                display: "flex",
+                                flexDirection: "row",
+                                minWidth: "fit-content",
+                                alignItems: "center"
+                            }}
                         />
                     </div>
                 </styled.HeaderMainContentContainer>

@@ -1,6 +1,36 @@
 import styled, {css} from "styled-components"
 import {commonClickableIcon, disabledButtonCss, iconButtonCss, newGlow, trapezoidCss} from "../../../common_css/common_css";
 
+const scrollCss = css`
+::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+        margin: 1rem;
+        background: transparent;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+        background: rgba(175,175,175,0.75);
+    }
+
+    ::-webkit-scrollbar-track:hover {
+        background: rgba(175,175,175,0.6);
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: #27272b;
+        border-radius: .5rem;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+
+    }
+`
+
 export const Container = styled.div`
     display: flex;
     
@@ -33,7 +63,7 @@ export const Body = styled.div`
     flex-direction: column;
     flex: 1;
     overflow: hidden;
-    padding: 1rem;
+    // padding: 1rem;
 `
 
 export const Footer = styled.div`
@@ -71,37 +101,14 @@ export const SectionBreak = styled.hr`
 `
 
 
+
+
 export const TableContainer = styled.div`
     padding: 1rem;
     overflow: auto;
 
-    ::-webkit-scrollbar {
-        width: 10px;
-        height: 10px;
-        margin: 1rem;
-        background: transparent;
-    }
-
-    /* Track */
-    ::-webkit-scrollbar-track {
-        background: rgba(175,175,175,0.75);
-    }
-
-    ::-webkit-scrollbar-track:hover {
-        background: rgba(175,175,175,0.6);
-    }
-
-    /* Handle */
-    ::-webkit-scrollbar-thumb {
-        background: #27272b;
-        border-radius: .5rem;
-    }
-
-    /* Handle on hover */
-    ::-webkit-scrollbar-thumb:hover {
-        background: #555;
-
-    }
+    ${scrollCss};
+    
 `
 export const Table = styled.div`
     width: fit-content;
@@ -189,12 +196,22 @@ export const Cell = styled.div`
     justify-content: center;
 `
 
-export const FieldNamesContainer = styled.div`
-    padding: 1rem;
-    width: fit-content;
+export const ContentContainer = styled.div`
     display: flex;
-    align-self: center;
     flex-direction: column;
+    overflow: hidden;
+    align-self: stretch;
+    padding: 1rem 0;
+    
+`
+
+export const FieldNamesContainer = styled.div`
+    overflow-x: auto;
+    min-height: fit-content;
+    padding: 1rem;
+    align-self: stretch;
+    ${scrollCss};
+    margin-bottom: 1rem;
 `
 
 export const SectionTitle = styled.span`
@@ -223,6 +240,7 @@ export const SectionDescription = styled.span`
     font-size: ${props => props.theme.fontSize.sz4};
     //margin-bottom: 1rem;
     margin-top: 1rem;
+    margin: 0 1rem;
 `
 
 export const FieldName = styled.div`

@@ -12,6 +12,10 @@ export async function getCardHistory(ID) {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator + '/' + ID + '/card_history',
+            headers: {
+                'X-API-Key': '123456',
+                'Access-Control-Allow-Origin': '*'
+            }
         });
         // Success 🎉
         const data = response.data;

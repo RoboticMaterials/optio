@@ -294,6 +294,7 @@ Lot.defaultProps = {
     flags: [],
     highlight: false,
     enableFlagSelector: true,
+    templateValues: []
 }
 
 export default Lot

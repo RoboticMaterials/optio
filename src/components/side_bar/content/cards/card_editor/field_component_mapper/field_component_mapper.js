@@ -43,6 +43,7 @@ const FieldComponentMapper = (props) => {
 							// style={{width: "15rem"}}
 							placeholder="Enter text..."
 							textboxContainerStyle={{display: "flex", flex: 1}}
+							schema={"lots"}
 						/>
 						</styled.TextContainer>
 						:
@@ -51,6 +52,7 @@ const FieldComponentMapper = (props) => {
 							type="text"
 							placeholder="Enter text..."
 							InputComponent={Textbox}
+							schema={"lots"}
 						/>
 					}
 
@@ -79,6 +81,7 @@ const FieldComponentMapper = (props) => {
 							lines={5}
 							// style={{display: "flex", flex: 1}}
 							textboxContainerStyle={{display: "flex", flex: 1}}
+							schema={"lots"}
 						/>
 						</styled.TextContainer>
 						:
@@ -88,8 +91,7 @@ const FieldComponentMapper = (props) => {
 							placeholder="Enter text..."
 							InputComponent={Textbox}
 							lines={5}
-
-							// style={{width: "15rem"}}
+							schema={"lots"}
 						/>
 					}
 				</styled.Container>

@@ -173,8 +173,6 @@ export const removeRouteFromAllProcesses = (routeId) => {
         // get all processes that contain routeId
         const routeProcesses = getRouteProcesses(routeId)
 
-        console.log("removeRouteFromAllProcesses routeProcesses",routeProcesses)
-
         // loop through each of these processes, check if removing the route will break the process, then remove the route
         for (const currProcess of routeProcesses) {
 
