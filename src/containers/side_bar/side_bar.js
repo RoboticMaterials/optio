@@ -49,8 +49,8 @@ const SideBar = (props) => {
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchEditingStation = (bool) => dispatch(setEditingStation(bool))
     const dispatchEditingPosition = (bool) => dispatch(setEditingPosition(bool))
-    const onSetOpen = (sideBarOpen) => dispatch(setOpen(sideBarOpen))
-    const onSetWidth = (width) => dispatch(setWidth(width))
+    const dispatchSetOpen = (sideBarOpen) => dispatch(setOpen(sideBarOpen))
+    const dispatchSetWidth = (width) => dispatch(setWidth(width))
     const onDeselectTask = () => dispatch(taskActions.deselectTask())
     const dispatchEditingTask = (bool) => dispatch(editingTask(bool))
     const dispatchEditingProcess = (bool) => dispatch(editingProcess(bool))
@@ -81,7 +81,7 @@ const SideBar = (props) => {
     const boundToWindowSize = () => {
         const newWidth = Math.min(window.innerWidth, Math.max(360, pageWidth))
         setPageWidth(newWidth)
-        onSetWidth(newWidth)
+        dispatchSetWidth(newWidth)
     }
     useEffect(() => {
         window.addEventListener('resize', boundToWindowSize, { passive: true })
@@ -91,9 +91,17 @@ const SideBar = (props) => {
         }
     }, [])
 
+    // Useeffect for open close button, if the button is not active but there is an id in the URL, then the button should be active 
+    useEffect(() => {
+        const hamburger = document.querySelector('.hamburger')
+        const active = hamburger.classList.contains('is-active')
+        if (!active && id !== undefined) {
+            hamburger.classList.toggle('is-active')
+        }
+    }, [params])
 
     useEffect(() => {
-        onSetOpen(sideBarOpen)
+        dispatchSetOpen(sideBarOpen)
     })
 
 
@@ -113,12 +121,12 @@ const SideBar = (props) => {
 
             if (!prevWidth) setPrevWidth(pageWidth) // store previous width to restore when card page is left
             setPageWidth(window.innerWidth)
-            onSetWidth(window.innerWidth)
+            dispatchSetWidth(window.innerWidth)
 
         }
         else if ((((prevSubpage === "lots") || (prevId === "timeline") || (prevId === "summary")) && (prevPage === "processes" || prevPage === "lots")) && ((subpage !== "lots") || (id === "timeline") || (id === "summary"))) {
             setPageWidth(prevWidth)
-            onSetWidth(prevWidth)
+            dispatchSetWidth(prevWidth)
             setPrevWidth(null)
         }
 
@@ -126,7 +134,7 @@ const SideBar = (props) => {
 
         if (!showSideBar) {
             setPageWidth(450)
-            onSetWidth(450)
+            dispatchSetWidth(450)
         }
 
         return () => { }
@@ -138,7 +146,7 @@ const SideBar = (props) => {
      */
     const handleSideBarOpenCloseButtonClick = () => {
 
-        if(!!showSideBar){
+        if (!!showSideBar) {
             dispatchSetSelectedStation(null)
             dispatchSetSelectedPosition(null)
             dispatchEditingTask(false)
@@ -163,7 +171,7 @@ const SideBar = (props) => {
         } else {
             const newSideBarState = !showSideBar
             setShowSideBar(newSideBarState)
-            onSetOpen(newSideBarState)
+            dispatchSetOpen(newSideBarState)
         }
 
     }
@@ -195,7 +203,7 @@ const SideBar = (props) => {
     function handleDrag(e, ui) {
         const newWidth = Math.min(window.innerWidth, Math.max(360, pageWidth + ui.deltaX))
         setPageWidth(newWidth)
-        onSetWidth(newWidth)
+        dispatchSetWidth(newWidth)
     }
 
     let content
@@ -310,7 +318,7 @@ const SideBar = (props) => {
             }
 
 
-            {handleActiveButton()}
+            {/* {handleActiveButton()} */}
         </>
     )
 
