@@ -262,7 +262,7 @@ export const sortBy = (arr, sortMode, sortDirection) => {
 				const valB = rangeB[index]
 
 				if(isAscending) {
-					if(!valA) return -1
+					if(!valA) return 1
 					if(valA > valB) return 1
 					return -1
 					return 1
