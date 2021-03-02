@@ -3,8 +3,8 @@ import * as Yup from 'yup';
 import { notBrokenRegex, notTaskDeletedRegex } from "./regex_utils";
 import { isObject } from "./object_utils";
 import { get } from "lodash"
-import {isArray} from "./array_utils";
-import {LOT_TEMPLATES_RESERVED_FIELD_NAMES} from "../../constants/form_constants";
+import { isArray } from "./array_utils";
+import { LOT_TEMPLATES_RESERVED_FIELD_NAMES } from "../../constants/form_constants";
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
 
@@ -198,11 +198,11 @@ export const dashboardSchema = Yup.object().shape({
 });
 
 // returns error if any item in nested array is duplicate
-Yup.addMethod(Yup.object, "unique", function(message, fieldPath) {
+Yup.addMethod(Yup.object, "unique", function (message, fieldPath) {
     let mapper
-    if(fieldPath) mapper = x => get(x, fieldPath)
+    if (fieldPath) mapper = x => get(x, fieldPath)
 
-    return this.test("unique", message, function(item) {
+    return this.test("unique", message, function (item) {
         const { path, createError, parent } = this
         var index = path.match(/\[(.*?)\]/);
 
@@ -211,24 +211,24 @@ Yup.addMethod(Yup.object, "unique", function(message, fieldPath) {
         }
 
         let compareItem
-        if(mapper) compareItem = mapper(item)
+        if (mapper) compareItem = mapper(item)
 
 
         let isUnique = true
 
         let currIndex = 0
-        for(const currString of parent) {
+        for (const currString of parent) {
             const mapped = mapper(currString)
-            if(parseInt(currIndex) !== parseInt(index)) {
+            if (parseInt(currIndex) !== parseInt(index)) {
 
-                if(mapper){
-                    if(compareItem === mapper(currString)) {
+                if (mapper) {
+                    if (compareItem === mapper(currString)) {
                         isUnique = false
                         return createError({ path: `${path}.${fieldPath}`, message })
                     }
                 }
                 else {
-                    if(item === currString) {
+                    if (item === currString) {
                         isUnique = false
                         return createError({ path: `${path}.${fieldPath}`, message })
                     }
@@ -244,9 +244,9 @@ Yup.addMethod(Yup.object, "unique", function(message, fieldPath) {
 });
 
 // returns error if any item in nested array is duplicate
-Yup.addMethod(Yup.array, "nestedUnique", function(message, path) {
+Yup.addMethod(Yup.array, "nestedUnique", function (message, path) {
     const mapper = x => get(x, path);
-    return this.test("nestedUnique", message, function(list) {
+    return this.test("nestedUnique", message, function (list) {
         let set
         let totalList = []
         list.forEach((currList, currListIndex) => {
@@ -264,11 +264,11 @@ Yup.addMethod(Yup.array, "nestedUnique", function(message, path) {
         let i = 0
         let err
 
-        for(const sublist of list) {
+        for (const sublist of list) {
             idx = 0
 
-            for(const item of sublist) {
-                if(!err && mapper(item) !== set[i]) {
+            for (const item of sublist) {
+                if (!err && mapper(item) !== set[i]) {
                     err = this.createError({ path: `fields[${rowIdx}][${idx}].${path}`, message })
                 }
 
@@ -283,10 +283,10 @@ Yup.addMethod(Yup.array, "nestedUnique", function(message, path) {
 });
 
 // returns error if value is in arr
-Yup.addMethod(Yup.string, "notIn", function(message, arr) {
-    return this.test("notIn", message, function(value) {
+Yup.addMethod(Yup.string, "notIn", function (message, arr) {
+    return this.test("notIn", message, function (value) {
         const { path, createError } = this;
-        if(arr.includes(value)) return createError({ path, message })
+        if (arr.includes(value)) return createError({ path, message })
         return true
     });
 });
@@ -524,8 +524,8 @@ export const locationSchema = (stations, selectedLocation) => {
 
     let stationNames = []
     Object.values(stations).forEach(station => {
-        if(!!selectedLocation && station._id === selectedLocation._id) {
-            
+        if (!!selectedLocation && station._id === selectedLocation._id) {
+
         }
         else {
             stationNames.push(station.name)
@@ -540,3 +540,142 @@ export const locationSchema = (stations, selectedLocation) => {
         })
     )
 }
+
+
+// Sees if input1 is greater than input2. If so then through error
+Yup.addMethod(Yup.string, 'greaterThan', function (input2Path, message) {
+    return this.test('greaterThan', message, function (input1) {
+        const { parent, path, createError } = this
+
+        const input2 = parent[input2Path]
+
+        // Take the Hour and minute 
+        const [beg1, end1] = input1.split(':')
+        const [beg2, end2] = input2.split(':')
+
+        const input1Int = parseInt(`${beg1}${end1}`)
+        const input2Int = parseInt(`${beg2}${end2}`)
+
+        if (input1Int < input2Int) return true
+        else {
+            return this.createError({
+                path: this.path,
+                message: message,
+            })
+        }
+
+    })
+})
+
+// Sees if input1 is less than input2. If so then through error
+Yup.addMethod(Yup.string, 'lessThan', function (input2Path, message) {
+    return this.test('lessThan', message, function (input1) {
+        const { parent, path, createError } = this
+        const input2 = parent[input2Path]
+
+        // Take the Hour and minute 
+        const [beg1, end1] = input1.split(':')
+        const [beg2, end2] = input2.split(':')
+
+        const input1Int = parseInt(`${beg1}${end1}`)
+        const input2Int = parseInt(`${beg2}${end2}`)
+
+        if (input1Int > input2Int) return true
+        else {
+            return this.createError({
+                path: this.path,
+                message: message,
+            })
+        }
+
+    })
+})
+
+export const throughputSchema =  Yup.object().shape({
+            expectedOutput: Yup.number()
+                .required('Required'),
+            switch1: Yup.bool(),
+            startOfShift: Yup.string()
+                .required('Required'),
+            endOfShift: Yup.string()
+                .required('Required'),
+            startOfBreak1: Yup.string()
+                // Only validate when true
+                .when('switch1', {
+                    is: true,
+                    then: Yup.string()
+                        .required('Required')
+                        // Make sure it starts after the start of shift and before the end of the shift
+                        .lessThan("startOfShift", 'The first break cannot be before the start of the shift')
+                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
+                        // Make sure it starts before the end of the break
+                        .greaterThan("endOfBreak1", 'The start of the break must be before the end of the break'),
+                }),
+
+            endOfBreak1: Yup.string()
+                // Only validate when true
+                .when('switch1', {
+                    is: true,
+                    then: Yup.string()
+                        .required('Required')
+                        // Make sure it starts after the start of shift and before the end of the shift
+                        .lessThan("startOfShift", 'The first break cannot be before the start of the shift')
+                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
+                        .lessThan("startOfBreak1", 'The end of break cannot be before the start of the break')
+                        .greaterThan("startOfBreak2", 'The end of the break must be before the start of the next break break'),
+                }),
+
+
+            startOfBreak2: Yup.string()
+                // Only validate when true
+                .when('switch2', {
+                    is: true,
+                    then: Yup.string()
+                        .required('Required')
+                        // Make sure it starts after the start of shift and before the end of the shift
+                        .lessThan("startOfShift", 'The first break cannot be before the start of the shift')
+                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
+                        .lessThan("endOfBreak1", 'The start of break cannot be before the end of the previous break')
+                        .greaterThan("endOfBreak2", 'The start of the break must be before the end of the break'),
+                }),
+
+            endOfBreak2: Yup.string()
+                // Only validate when true
+                .when('switch2', {
+                    is: true,
+                    then: Yup.string()
+                        .required('Required')
+                        // Make sure it starts after the start of shift and before the end of the shift
+                        .lessThan("startOfShift", 'The first break cannot be before the start of the shift')
+                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
+                        .lessThan("startOfBreak2", 'The end of break cannot be before the start of the break')
+                        .greaterThan("startOfBreak3", 'The end of the break must be before the start of the next break break'),
+                }),
+
+            startOfBreak3: Yup.string()
+                // Only validate when true
+                .when('switch3', {
+                    is: true,
+                    then: Yup.string()
+                        .required('Required')
+                        // Make sure it starts after the start of shift and before the end of the shift
+                        .lessThan("startOfShift", 'The first break cannot be before the start of the shift')
+                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
+                        .lessThan("endOfBreak2", 'The start of break cannot be before the end of the previous break')
+                        .greaterThan("endOfBreak3", 'The start of the break must be before the end of the break'),
+                }),
+
+            endOfBreak3: Yup.string()
+                // Only validate when true
+                .when('switch3', {
+                    is: true,
+                    then: Yup.string()
+                        .required('Required')
+                        // Make sure it starts after the start of shift and before the end of the shift
+                        .lessThan("startOfShift", 'The first break cannot be before the start of the shift')
+                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift')
+                        .lessThan("startOfBreak3", 'The end of break cannot be before the start of the break')
+                        .greaterThan("endOfShift", 'The end of the last break must be before the end of the shift'),
+                }),
+
+        })

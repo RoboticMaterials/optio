@@ -28,6 +28,7 @@ import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/co
 import LoadUnloadFields from './fields/load_unload_fields'
 import ObjectEditor from '../object_editor/object_editor'
 
+
 // Import utils
 import uuid from 'uuid'
 import { deepCopy } from '../../../../../methods/utils/utils'
@@ -142,12 +143,14 @@ const TaskField = (props) => {
     const routeObject = useSelector(state=>state.objectsReducer.routeObject)
     const editingObject = useSelector(state=> state.objectsReducer.editingObject)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
+    const [confirmDeleteObjectModal, setConfirmDeleteObjectModal] = useState(false);
     const [needsValidate, setNeedsValidate] = useState(false);
     const [didSetHandoff, setDidSetHandoff] = useState(false);
     const [showObjectSelector, setShowObjectSelector] = useState(false);
     const [objectQuantity, setObjectQuantity] = useState(null);
     const previousLoadStationId = usePrevious(getLoadStationId(values))
     const previousUnloadStationId = usePrevious(getUnloadStationId(values))
+
     const url = useLocation().pathname
     useEffect(() => {
         const loadStationId = getLoadStationId(selectedTask)
@@ -394,6 +397,7 @@ const TaskField = (props) => {
       }
     }
 
+
     const updateDashboard = () => {
         // Add the task automatically to the associated load station dashboard
         // Since as of now the only type of task we are doing is push, only need to add it to the load location
@@ -435,6 +439,21 @@ const TaskField = (props) => {
             {!!selectedTask &&
 
                 <styled.ContentContainer>
+                    <ConfirmDeleteModal
+                        isOpen={!!confirmDeleteObjectModal}
+                        title={"Are you sure you want to delete This Object?"}
+                        button_1_text={"Yes"}
+                        button_2_text={"No"}
+                        handleClose={() => setConfirmDeleteObjectModal(null)}
+                        handleOnClick1={() => {
+                          dispatchDeleteObject(selectedObject._id)
+                          setConfirmDeleteObjectModal(null)
+
+                        }}
+                        handleOnClick2={() => {
+                            setConfirmDeleteObjectModal(null)
+                        }}
+                    />
 
                     {confirmDeleteModal &&
                         <ConfirmDeleteModal
@@ -660,7 +679,7 @@ const TaskField = (props) => {
                                 onSaveObject = {()=>onSaveObject()}
                                 onAddObject = {()=>onAddObject()}
                                 onDeleteObject = {()=> {
-                                  dispatchDeleteObject(selectedObject._id)
+                                  setConfirmDeleteObjectModal(true)
                                 }}
                                 onSelectObject = {()=>onSelectObject()}
                                 deleteDisabled = {!!selectedObject?.new}
