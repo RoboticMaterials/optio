@@ -80,6 +80,7 @@
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
+    "pre-start": "node ./scripts/pre-start.js",
     "start": "PORT=80 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
