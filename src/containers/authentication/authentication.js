@@ -46,14 +46,14 @@ const Authentication = (props) => {
 
     const handleInitialLoad = () => {
         // Check to see if we want authentication *** Dev ONLY ***
-        if (!configData.authenticationNeeded){
+        if (!configData.authenticationNeeded) {
             dispatchPostLocalSettings({
                 ...localReducer,
                 authenticated: 'no',
                 non_local_api_ip: window.location.hostname,
                 non_local_api: true,
             })
-        }else{
+        } else {
 
             var poolData = {
                 UserPoolId: configData.UserPoolId,
@@ -62,15 +62,15 @@ const Authentication = (props) => {
 
             var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
             var cognitoUser = userPool.getCurrentUser();
-            
+
             if (cognitoUser != null) {
-                cognitoUser.getSession(function(err, session) {
+                cognitoUser.getSession(function (err, session) {
                     if (err) {
                         alert(err.message || JSON.stringify(err));
                         return;
                     }
 
-                    if(session.isValid()){
+                    if (session.isValid()) {
                         dispatchPostLocalSettings({
                             ...localReducer,
                             authenticated: true,
@@ -93,18 +93,26 @@ const Authentication = (props) => {
                 <styled.LogoWelcome> Wecome Back </styled.LogoWelcome>
 
                 <styled.CheckBoxWrapper>
-                    <styled.Button onClick={() => setSignIn(true)} style={{
-                        backgroundColor: signIn ? '#FF4B4B' : 'black'
-                    }}>Sign In</styled.Button>
+                    <styled.Button
+                        onClick={() => setSignIn(true)}
+                        selected={signIn}
+                        style={{borderRadius: '.5rem 0  0 .5rem'}}
+                    >
+                        Sign In
+                    </styled.Button>
 
-                    <styled.Button onClick={() => setSignIn(false)} style={{
-                        backgroundColor: !signIn ? '#FF4B4B' : 'black'
-                    }}>Sign Up</styled.Button>
+                    <styled.Button
+                        onClick={() => setSignIn(false)}
+                        selected={!signIn}
+                        style={{borderRadius: '0 .5rem .5rem 0'}}
+                    >
+                        Sign Up
+                    </styled.Button>
                 </styled.CheckBoxWrapper>
 
                 <styled.SignInUpContainer>
 
-                    <SignInUpPage 
+                    <SignInUpPage
                         signIn={signIn}
                         onChange={handleSignInChange} />
 

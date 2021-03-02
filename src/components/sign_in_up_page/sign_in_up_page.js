@@ -31,7 +31,7 @@ const SignInUpPage = (props) => {
     const localReducer = useSelector(state => state.localReducer.localSettings)
 
     // Check to see if we want authentication *** Dev ONLY ***
-    if (!configData.authenticationNeeded){
+    if (!configData.authenticationNeeded) {
         dispatchPostLocalSettings({
             ...localReducer,
             authenticated: 'no',
@@ -99,33 +99,29 @@ const SignInUpPage = (props) => {
                         refreshToken: result.getRefreshToken().getToken()
                     })
 
-                    // console.log('QQQQ Success', typeof(result), result.accessToken.payload, localReducer)
 
                 },
 
                 onFailure: function (err) {
-                    // console.log('QQQQ Error', err)
                     alert(err.message)
                 },
 
             });
-        }else{
-            if(password === confirmPassword){
+        } else {
+            if (password === confirmPassword) {
                 userPool.signUp(email, password, [], null, (err, data) => {
-                    if (err){
-                        // console.log('QQQQ Error', err)
+                    if (err) {
                         alert(err.message)
-                    }else {
-                        // console.log('QQQQ Success', data)
+                    } else {
                         alert('You have sucessfully signed up! Please check you email for a verification link.')
                         handleSignInChange(true)
                     }
                 });
-            }else{
+            } else {
                 alert('Passwords must match!')
             }
 
-            
+
         }
     }
 
@@ -151,8 +147,6 @@ const SignInUpPage = (props) => {
 
             onSubmit={async (values, { setSubmitting }) => {
 
-                // console.log('QQQQ Submiting', values)
-                
                 setSubmitting(true)
 
                 await handleSubmit(values)
@@ -172,8 +166,8 @@ const SignInUpPage = (props) => {
                             type='text'
                             InputComponent={Textbox}
                             style={{
-                                margin: '1rem',
-                                height:'3rem'
+                                marginBottom: '.5em',
+                                height: '3rem'
                             }}
                         />
 
@@ -183,8 +177,8 @@ const SignInUpPage = (props) => {
                             type='password'
                             InputComponent={Textbox}
                             style={{
-                                margin: '1rem',
-                                height:'3rem'
+                                marginBottom: '.5rem',
+                                height: '3rem'
                             }}
                         />
 
@@ -196,22 +190,19 @@ const SignInUpPage = (props) => {
                                 type='password'
                                 InputComponent={Textbox}
                                 style={{
-                                    margin: '1rem',
-                                    height:'3rem'
+                                    marginBottom: '.5rem',
+                                    height: '3rem'
                                 }}
                             />
                         }
 
                         {!signIn &&
-                            <h6
-                                style={{
-                                    margin: '1.5rem',
-                                    height:'3rem'
-                                }}
-                            > Note: Your password must be 8 charaters long and contain 1 upper case letter, 1 lower case letter, 1 number and 1 special character </h6>
-                        } 
-                        
-                        
+                                <styled.NoteText>
+                                    Note: Your password must be 8 charaters long and contain 1 upper case letter, 1 lower case letter, 1 number and 1 special character
+                                </styled.NoteText>
+                        }
+
+
 
                         <styled.Container>
                             <styled.Button type="submit">{signIn ? 'Sign In' : 'Sign Up'}</styled.Button>

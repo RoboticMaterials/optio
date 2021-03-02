@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-    height: 40%;
     width: 35%;
+    min-width: 20rem;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -63,12 +63,13 @@ export const CheckBoxWrapper = styled.div`
     position: relative;
     display: flex;
     justify-content: center;
+    width: 100%;
+    margin: .5rem 0rem;
 `;
 
 export const Button = styled.button`
     cursor: 'pointer';
     width: 10rem;
-    border-radius: 0.5rem;
     display: flex;
     background-color: #FF4B4B;
     color: white;
@@ -76,5 +77,8 @@ export const Button = styled.button`
     align-self: center;
     justify-content: center;
     padding: 0.5rem;
-    margin: 0.5rem;
+    border: none;
+
+    box-shadow: ${props => !!props.selected ? 'none' : '0 0.05rem 0.1rem 0rem #303030'};
+    background-color: ${props => !!props.selected ? props.theme.bg.tertiary : props.theme.bg.senary}
 `

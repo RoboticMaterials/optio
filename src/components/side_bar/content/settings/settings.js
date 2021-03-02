@@ -35,7 +35,7 @@ const Settings = () => {
 
     // onPostLocalSettings
     const onPostLocalSettings = (settings) => dispatch(postSettings(settings))
-    
+
     const dispatchGetSettings = () => dispatch(getSettings())
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchSetCurrentMap = (map) => dispatch(setCurrentMap(map))
@@ -45,8 +45,10 @@ const Settings = () => {
     const mapReducer = useSelector(state => state.mapReducer)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
     const localSettings = useSelector(state => state.localReducer.localSettings)
-    const devices = useSelector(state =>state.devicesReducer.devices)
+    const devices = useSelector(state => state.devicesReducer.devices)
     const deviceEnabledSetting = serverSettings.deviceEnabled
+    const localReducer = useSelector(state => state.localReducer.localSettings)
+
     const {
         currentMap,
         maps
@@ -133,9 +135,9 @@ const Settings = () => {
 
         if (!localChange) {
             await dispatchPostLocalSettings(localSettingsState)
-            if(localSettingsState.mapViewEnabled){
-              //const hamburger = document.querySelector('.hamburger')
-              //hamburger.classList.toggle('is-active')
+            if (localSettingsState.mapViewEnabled) {
+                //const hamburger = document.querySelector('.hamburger')
+                //hamburger.classList.toggle('is-active')
             }
 
         }
@@ -150,9 +152,9 @@ const Settings = () => {
             await dispatchSetCurrentMap(mapSettingsState)
         }
 
-        if(!deviceChange) {
-          await dispatchDeviceEnabled(devicesEnabled)
-          await dispatchPostSettings(serverSettingsState)
+        if (!deviceChange) {
+            await dispatchDeviceEnabled(devicesEnabled)
+            await dispatchPostSettings(serverSettingsState)
         }
 
         await dispatchGetSettings()
@@ -171,7 +173,7 @@ const Settings = () => {
 
                 <TimezonePicker
                     value='Pacific/Honolulu'
-                    onChange={() => {}}
+                    onChange={() => { }}
                     inputProps={{
                         placeholder: 'Select Timezone ...',
                         name: 'timezone',
@@ -210,7 +212,7 @@ const Settings = () => {
                 {!!developerSettingsEnabled ?
                     <>
 
-                        <styled.Header style = {{fontSize: '1.2rem'}}>Non Local API IP Address</styled.Header>
+                        <styled.Header style={{ fontSize: '1.2rem' }}>Non Local API IP Address</styled.Header>
 
                         <styled.RowContainer>
                             <Switch
@@ -223,24 +225,24 @@ const Settings = () => {
                                 style={{ marginRight: '1rem' }}
                             />
                             {!!nonLocalAPIEnabled &&
-                              <Textbox
-                                  placeholder="API IP Address"
-                                  value={!!nonLocalAPIAddress ? nonLocalAPIAddress:""}
-                                  onChange={(event) => {
-                                      setNonLocalAPIAddress(event.target.value)
-                                      handleUpdateLocalSettings({ non_local_api_ip: event.target.value })
-                                  }}
-                                  style={{ width: '100%' }}
-                              // type = 'number'
-                              />
+                                <Textbox
+                                    placeholder="API IP Address"
+                                    value={!!nonLocalAPIAddress ? nonLocalAPIAddress : ""}
+                                    onChange={(event) => {
+                                        setNonLocalAPIAddress(event.target.value)
+                                        handleUpdateLocalSettings({ non_local_api_ip: event.target.value })
+                                    }}
+                                    style={{ width: '100%' }}
+                                // type = 'number'
+                                />
                             }
 
                         </styled.RowContainer>
 
-                        <styled.Header style = {{fontSize: '1.2rem', paddingTop: '2rem'}}>Devices Enabled</styled.Header>
+                        <styled.Header style={{ fontSize: '1.2rem', paddingTop: '2rem' }}>Devices Enabled</styled.Header>
 
                         <styled.RowContainer>
-                            <styled.Header style = {{fontSize: '.8rem', paddingTop: '1rem', paddingRight: '1rem'}}>Disabled</styled.Header>
+                            <styled.Header style={{ fontSize: '.8rem', paddingTop: '1rem', paddingRight: '1rem' }}>Disabled</styled.Header>
                             <Switch
                                 checked={serverSettingsState.deviceEnabled}
                                 onChange={() => {
@@ -253,7 +255,7 @@ const Settings = () => {
                                 onColor='red'
                                 style={{ marginRight: '1rem' }}
                             />
-                            <styled.Header style = {{fontSize: '.8rem', paddingTop: '1rem'}}>Enabled</styled.Header>
+                            <styled.Header style={{ fontSize: '.8rem', paddingTop: '1rem' }}>Enabled</styled.Header>
                         </styled.RowContainer>
                     </>
                     :
@@ -329,15 +331,13 @@ const Settings = () => {
 
     const SignOut = () => {
 
-        const localReducer = useSelector(state => state.localReducer.localSettings)
-
         const signOut = async () => {
 
             var poolData = {
                 UserPoolId: config.UserPoolId,
                 ClientId: config.ClientId,
             };
-    
+
             var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
             var cognitoUser = userPool.getCurrentUser();
             cognitoUser.signOut();
@@ -349,9 +349,9 @@ const Settings = () => {
 
             window.location.reload();
 
-         }
+        }
         return (
-            <styled.SettingContainer>
+            <styled.SettingContainer style={{display: 'flex', justifyContent: 'center'}}>
 
                 <Button onClick={signOut}> Sign Out </Button>
 
