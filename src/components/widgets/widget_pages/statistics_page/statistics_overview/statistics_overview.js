@@ -121,6 +121,7 @@ const StatisticsOverview = (props) => {
 
     const getReportData = async (body) => {
         const reportAnalyticsResponse = await getReportAnalytics(stationID, body)
+        console.log('QQQQ report analystics', reportAnalyticsResponse)
 
         if (reportAnalyticsResponse && !(reportAnalyticsResponse instanceof Error)) {
             setReportData(reportAnalyticsResponse)
@@ -215,8 +216,7 @@ const StatisticsOverview = (props) => {
                     ...response,
                     throughPut: convertedThroughput
                 }
-                setTimeSpan('day')
-
+                setTimeSpan('line')
             }
 
             setThroughputData(response)

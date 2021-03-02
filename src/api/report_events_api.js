@@ -95,15 +95,16 @@ export async function deleteReportEvent(ID) {
 }
 
 export async function postReportEvent(reportEvent) {
-    console.log("postReportEvent reportEvent",reportEvent)
+    console.log("QQQQ postReportEvent reportEvent",reportEvent)
     try {
         const response = await axios({
             method: 'POST',
             url: apiIPAddress() + operator,
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 'X-API-Key': '123456',
-                'Accept': 'application/json'
+                'Access-Control-Allow-Origin': '*'
             },
             data: reportEvent
         });
@@ -146,6 +147,7 @@ export async function postReportEvent(reportEvent) {
 }
 
 export async function putReportEvent(reportEvent, ID) {
+    console.log('QQQQ putting report', reportEvent, ID)
     try {
         const response = await axios({
             method: 'PUT',
@@ -192,6 +194,7 @@ export async function putReportEvent(reportEvent, ID) {
 }
 
 export async function getReportAnalytics(stationId, timeSpan) {
+    console.log('QQQQ report analytics', stationId, timeSpan)
     try {
         const response = await axios({
             method: 'PUT',
