@@ -634,13 +634,19 @@ const TaskField = (props) => {
 
                         {!showObjectSelector &&
                           <>
-                          {(!!selectedTask.route_object || !!routeObject) && (!!objects[selectedTask.route_object?._id] || !!objects[routeObject?._id]) ?
+                          {!!routeObject && !!objects[routeObject?._id] ?
                             <>
                               <styled.ListItem style = {{height: url==='/tasks' ? '4rem': '2.5rem'}}>
                                 <styled.ListItemIcon
                                     className='fas fa-box'
                                 />
                                   <styled.ListItemTitle>{routeObject ? objects[routeObject._id].name: ""}</styled.ListItemTitle>
+                                  <styled.MinusIcon
+                                      className='fas fa-minus-circle'
+                                      onClick = {()=>{
+                                        dispatchSetRouteObject(null)
+                                      }}
+                                  />
                                 </styled.ListItem>
 
                                 <Button
@@ -663,7 +669,7 @@ const TaskField = (props) => {
                                 onClick={() => setShowObjectSelector(!showObjectSelector)}
                                 >
                                 <styled.RowContainer style = {{justifyContent: 'center'}}>
-                                  <styled.HelpText style = {{fontSize: '1.2rem', paddingTop: '0.4rem'}}>Choose an Object...</styled.HelpText>
+                                  <styled.ObjectEditorText>Choose an Object...</styled.ObjectEditorText>
                                 </styled.RowContainer>
                                 </Button>
                           }
@@ -759,6 +765,7 @@ const TaskField = (props) => {
                                     schema={'tasks'}
                                     disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
                                     primary
+                                    style = {{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}
                                     onClick={() => {
                                         onRemove(routeId)
                                     }}
