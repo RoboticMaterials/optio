@@ -57,7 +57,7 @@ import {CARD_SCHEMA_MODES, uniqueNameSchema, editLotSchema, getCardSchema} from 
 import {getProcessStations} from "../../../../../methods/utils/processes_utils";
 import {isEmpty, isObject, pathStringToObject} from "../../../../../methods/utils/object_utils";
 import {arraysEqual} from "../../../../../methods/utils/utils";
-import {immutableReplace, isArray, isNonEmptyArray} from "../../../../../methods/utils/array_utils";
+import {immutableReplace, immutableSet, isArray, isNonEmptyArray} from "../../../../../methods/utils/array_utils";
 import {formatLotNumber, getDisplayName} from "../../../../../methods/utils/lot_utils";
 
 // import styles
@@ -120,12 +120,7 @@ const FormComponent = (props) => {
 	const formMode = cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE
 
 	useWarn(uniqueNameSchema, formikProps)
-	// just for console logging
-	useEffect(() => {
-		console.log("lot_editor values",values)
-		console.log("lot_editor errors",errors)
-		console.log("lot_editor touched",touched)
-	}, [values, errors,touched])
+
 
 	// actions
 	const dispatch = useDispatch()
@@ -163,7 +158,18 @@ const FormComponent = (props) => {
 
 	const previousProvidedIndex = usePrevious(mappedValuesIndex)
 
+	// just for console logging
+	useEffect(() => {
+		console.log("lot_editor values",values)
+		console.log("lot_editor errors",errors)
+		console.log("lot_editor touched",touched)
+		console.log("lot_editor mappedTouched",mappedTouched)
+		console.log("lot_editor mappedErrors",mappedErrors)
+	}, [values, errors,touched, mappedTouched, mappedErrors])
+
 	const mappedValuesRef = useRef(null)
+	const mappedErrorsRef = useRef(null)
+	const mappedTouchedRef = useRef(null)
 
 	// derived state
 	const selectedBinName = stations[binId] ?
@@ -178,7 +184,7 @@ const FormComponent = (props) => {
 	const submitDisabled = ((errorCount > 0) || (touchedCount === 0) || isSubmitting) && (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
 
 	useEffect(() => {
-		if(isArray(mappedValues) && mappedValues.length > 0 && mappedValues[mappedValuesIndex] && mappedValuesIndex !== previousProvidedIndex) {
+		if(isArray(mappedValues) && mappedValues.length > 0 && mappedValues[mappedValuesIndex] && mappedValuesIndex !== previousProvidedIndex && previousProvidedIndex !== null) {
 			const newValue = convertLotToExcel(values, lotTemplateId)
 			setMappedValues(immutableReplace(mappedValues, newValue, previousProvidedIndex))
 			setMappedErrors(immutableReplace(mappedErrors, errors, previousProvidedIndex))
@@ -259,6 +265,16 @@ const FormComponent = (props) => {
 			cardNames
 		}, {abortEarly: false})
 			.then((ayo) => {
+				setMappedErrors((previous) => {
+					console.log("setMappedErrors previous",previous)
+					return immutableSet(previous, {}, index)
+				})
+				setMappedTouched((previous) => {
+					console.log("setMappedTouched previous",previous)
+					console.log("setMappedTouched index",index)
+					return immutableSet(previous, {}, index)
+				})
+
 				lotStatus.validationStatus = {
 					message: `Successfully validated lot!`,
 					code: FORM_STATUS.VALIDATION_SUCCESS
@@ -295,7 +311,7 @@ const FormComponent = (props) => {
 				// 		} = result || {}
 				//
 				// 		const currMappedLot = convertLotToExcel(values, lotTemplateId)
-				// 		mappedValuesRef.current = immutableReplace(mappedValuesRef.current, {
+				// 		mappedValuesRef.current = immutableSet(mappedValuesRef.current, {
 				// 			...currMappedLot,
 				// 			_id
 				// 		}, index)
@@ -370,8 +386,17 @@ const FormComponent = (props) => {
 				const thing = setNestedObjectValues(lotErrors, true)
 
 				console.log("thing",thing)
-				setMappedErrors(immutableReplace(mappedErrors, lotErrors, index))
-				setMappedTouched(immutableReplace(mappedTouched, thing, index))
+				setMappedErrors((previous) => {
+					console.log("setMappedErrors previous",previous)
+					return immutableSet(previous, lotErrors, index)
+				})
+				setMappedTouched((previous) => {
+					console.log("setMappedTouched previous",previous)
+					console.log("setMappedTouched index",index)
+					return immutableSet(previous, thing, index)
+				})
+				// mappedErrorsRef = useRef(null)
+				// const mappedTouchedRef
 
 			});
 
@@ -1364,7 +1389,7 @@ const FormComponent = (props) => {
 						onCreateClick={(payload) => {
 							// setShowPasteMapper(false)
 							setMappedValues(payload)
-							setMappedValuesIndex(0)
+
 							setCreateMappedValues(true)
 							setPasteMapperHidden(true)
 						}}
