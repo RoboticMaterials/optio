@@ -28,7 +28,6 @@ import { editingTask } from '../../redux/actions/tasks_actions'
 import { editingProcess } from '../../redux/actions/processes_actions'
 import { setWidth, setMode, pageDataChanged, setOpen } from "../../redux/actions/sidebar_actions";
 
-import * as sidebarActions from "../../redux/actions/sidebar_actions"
 import * as taskActions from '../../redux/actions/tasks_actions'
 
 const SideBar = (props) => {
