@@ -4,6 +4,7 @@ import axios from 'axios';
 import logger from '../logger'
 
 import { apiIPAddress } from '../settings/settings'
+
 const operator = 'devices'
 const log = logger.getLogger('Api')
 
@@ -12,6 +13,11 @@ export async function getDevices() {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator,
+            headers: {
+                'X-API-Key': '123456',
+                'Access-Control-Allow-Origin': '*'
+            }
+            // token: token.username
         });
         // Success 🎉
         const data = response.data;
@@ -54,6 +60,7 @@ export async function deleteDevices(ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Accept': 'application/json',
+                'X-API-Key': '123456',
             },
         });
 
@@ -97,7 +104,8 @@ export async function postDevices(devices) {
             url: apiIPAddress() + operator,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'X-API-Key': '123456',
             },
             data: devices
         });
@@ -145,7 +153,8 @@ export async function putDevices(device, ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'text/html'
+                'Accept': 'text/html',
+                'X-API-Key': '123456',
             },
             data: device
         });

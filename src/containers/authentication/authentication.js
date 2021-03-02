@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
-import { CognitoUser, CognitoUserPool, CognitoRefreshToken, CognitoUserSession } from 'amazon-cognito-identity-js'
-
 import * as styled from './authentication.style'
 
 // Import components
 import SignInUpPage from '../../components/sign_in_up_page/sign_in_up_page'
 
-import { postCognitoUserSession } from '../../redux/actions/authentication_actions'
+import configData from '../../settings/config'
+
+// import 'cross-fetch/polyfill';
+import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
+
+// Import actions
+import { postLocalSettings } from '../../redux/actions/local_actions'
 
 /**
  * After the APIs have been loaded in the api_container this container is loaded
@@ -25,52 +29,59 @@ import { postCognitoUserSession } from '../../redux/actions/authentication_actio
  * @param {authenticated} props 
  */
 const Authentication = (props) => {
-
     const {
         authenticated
     } = props
 
     const dispatch = useDispatch()
-    const onCognitoUserSession = (JWT) => dispatch(postCognitoUserSession(JWT))
-
-    const refreshToken = useSelector(state => state.authenticationReducer.refreshToken)
-    const cognitoUserSession = useSelector(state => state.authenticationReducer.cognitoUserSession)
 
     const [signIn, setSignIn] = useState(true)
 
+    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const localReducer = useSelector(state => state.localReducer.localSettings)
+
+    const handleSignInChange = (value) => {
+        setSignIn(value)
+    }
+
     const handleInitialLoad = () => {
+        // Check to see if we want authentication *** Dev ONLY ***
+        if (!configData.authenticationNeeded) {
+            dispatchPostLocalSettings({
+                ...localReducer,
+                authenticated: 'no',
+                non_local_api_ip: window.location.hostname,
+                non_local_api: true,
+            })
+        } else {
 
-        // Information assembled for the request
-        const poolData = {
-            UserPoolId: 'us-east-2_YFnCIb6qJ',
-            ClientId: '4dghjc830130pdnr9aecshpc13',
-        }
-        const userPool = new CognitoUserPool(poolData)
-        const userData = {
-            Username: 'kalervo@roboticmaterials.com',
-            Pool: userPool,
-        }
-        const cognitoUser = new CognitoUser(userData);
+            var poolData = {
+                UserPoolId: configData.UserPoolId,
+                ClientId: configData.ClientId,
+            };
 
+            var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+            var cognitoUser = userPool.getCurrentUser();
 
+            if (cognitoUser != null) {
+                cognitoUser.getSession(function (err, session) {
+                    if (err) {
+                        alert(err.message || JSON.stringify(err));
+                        return;
+                    }
 
-        // Gets new tokens if access token is not valid
-        // .refreshSession requies an instance of the CognitioRefreshToken class not just the refresh token sting
-        const token = new CognitoRefreshToken({ RefreshToken: refreshToken })
-        cognitoUser.refreshSession(token, (err, session) => {
-            console.log('QQQQ', err, session)
-
-            // If the session has succesfully been refreshed then verrify
-            if (!!session) {
-                console.log('QQQQ Valid session ', session.isValid())
-                const verrified = onCognitoUserSession(session)
-
-                // If verrified, then no need to sign in or sign up
-                if (verrified) {
-                    authenticated()
-                }
+                    if (session.isValid()) {
+                        dispatchPostLocalSettings({
+                            ...localReducer,
+                            authenticated: true,
+                            non_local_api_ip: window.location.hostname,
+                            non_local_api: true,
+                        })
+                    }
+                });
             }
-        })
+        }
+
         return (
             <styled.Container>
 
@@ -79,14 +90,31 @@ const Authentication = (props) => {
                     <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
                 </styled.LogoContainer>
 
-                <styled.SignInUpToggleContainer>
-                    <styled.SignInToggleButton onClick={() => setSignIn(true)}>Sign In</styled.SignInToggleButton>
-                    <styled.SignUpToggleButton onClick={() => setSignIn(false)}>Sign Up</styled.SignUpToggleButton>
-                </styled.SignInUpToggleContainer>
+                <styled.LogoWelcome> Wecome Back </styled.LogoWelcome>
+
+                <styled.CheckBoxWrapper>
+                    <styled.Button
+                        onClick={() => setSignIn(true)}
+                        selected={signIn}
+                        style={{borderRadius: '.5rem 0  0 .5rem'}}
+                    >
+                        Sign In
+                    </styled.Button>
+
+                    <styled.Button
+                        onClick={() => setSignIn(false)}
+                        selected={!signIn}
+                        style={{borderRadius: '0 .5rem .5rem 0'}}
+                    >
+                        Sign Up
+                    </styled.Button>
+                </styled.CheckBoxWrapper>
 
                 <styled.SignInUpContainer>
 
-                    <SignInUpPage signIn={signIn} />
+                    <SignInUpPage
+                        signIn={signIn}
+                        onChange={handleSignInChange} />
 
                 </styled.SignInUpContainer>
             </styled.Container>

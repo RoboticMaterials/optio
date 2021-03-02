@@ -11,7 +11,6 @@ import { useDispatch, useSelector } from "react-redux";
 import log from "../../../logger"
 import IconButton from "../../basic/icon_button/icon_button";
 import { ThemeContext } from "styled-components";
-import { type } from 'jquery';
 
 import * as taskActions from '../../../redux/actions/tasks_actions'
 

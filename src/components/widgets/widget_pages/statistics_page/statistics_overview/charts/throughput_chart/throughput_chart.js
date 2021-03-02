@@ -22,6 +22,7 @@ const ThroughputChart = (props) => {
         isThroughputLoading,
         timeSpan,
         loadLineChartData,
+        loadBarChartData,
         disableTimeSpan,
     } = props
 
@@ -34,12 +35,11 @@ const ThroughputChart = (props) => {
     const isData = (filteredData && Array.isArray(filteredData) && filteredData.length > 0)
 
     useEffect(() => {
-        if(showBar){
+        if (showBar) {
             disableTimeSpan(false)
         } else {
             disableTimeSpan(true)
         }
-
     }, [showBar])
 
     return (
@@ -49,25 +49,31 @@ const ThroughputChart = (props) => {
             <styled.PlotHeader>
                 <styled.PlotTitle>Throughput</styled.PlotTitle>
                 {/* <styled.ChartButton onClick={() => setShowBar(!showBar)} >Compare Expected output</styled.ChartButton> */}
-                <styled.ChartTypeButton
-                    style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
-                    onClick={() => {
-                        setShowBar(true)
-                    }}
-                    selected={showBar}
-                >
-                    Bar
+
+                {(timeSpan === 'day' || timeSpan === 'line') &&
+                    <>
+                        <styled.ChartTypeButton
+                            style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                            onClick={() => {
+                                setShowBar(true)
+                                loadBarChartData()
+                            }}
+                            selected={showBar}
+                        >
+                            Bar
                 </styled.ChartTypeButton>
-                <styled.ChartTypeButton
-                    style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
-                    onClick={() => {
-                        setShowBar(false)
-                        loadLineChartData(true)
-                    }}
-                    selected={!showBar}
-                >
-                    Line
+                        <styled.ChartTypeButton
+                            style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                            onClick={() => {
+                                setShowBar(false)
+                                loadLineChartData()
+                            }}
+                            selected={!showBar}
+                        >
+                            Line
                 </styled.ChartTypeButton>
+                    </>
+                }
             </styled.PlotHeader>
 
 

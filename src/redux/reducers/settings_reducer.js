@@ -56,8 +56,6 @@ const defaultState = {
     apiSim: false,
 }
 
-// import { deepCoppy } from '../../methods/utils/utils'
-
 export const mirUrl = (state = defaultState) => {
     return state.settings
 }
@@ -134,6 +132,11 @@ const settingsReducer = (state = defaultState, action) => {
                 pending: true
             });
         // ~~~~~~~~~~~~~~~
+
+        default:
+            return {
+                ...state
+            }
     }
     return state
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import ReactApexChart from 'react-apexcharts'
+// import ReactApexChart from 'react-apexcharts'
 
 import { ThemeContext } from 'styled-components'
 import { LightenDarkenColor } from '../../../../../methods/utils/color_utils'
@@ -118,14 +118,14 @@ const ApexGaugeChart = (props) => {
 
     return (
         <div id="chart" style={{flex: '1', height: '12rem', overflow: 'visible',...containerStyle}}>
-            <ReactApexChart options={options} series={series} type="radialBar" height="100%"
+            {/* <ReactApexChart options={options} series={series} type="radialBar" height="100%"
                 style={{
                     pointerEvents: 'none', 
                     transform: 'translateY(0rem)', 
                     overflow: 'visible',
                     ...style
                 }} 
-            />
+            /> */}
 
             {/* OKAY so let me tell you about this little bit of BS. This freakin apex library
             hates developers and so theres some rendering issues with the 'hollow' element that is

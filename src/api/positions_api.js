@@ -2,6 +2,7 @@ import axios from 'axios';
 import * as log from 'loglevel';
 
 import { apiIPAddress } from '../settings/settings'
+
 const operator = 'positions'
 
 const logger = log.getLogger('Positions_Api', "Position");
@@ -11,6 +12,10 @@ export async function getPositions() {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator,
+            headers: {
+                'X-API-Key': '123456',
+                'Access-Control-Allow-Origin': '*'
+            }
         });
         // Success 🎉
         const data = response.data;
@@ -53,6 +58,8 @@ export async function deletePosition(ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Accept': 'application/json',
+                'X-API-Key': '123456',
+                'Access-Control-Allow-Origin': '*'
             },
         });
 
@@ -94,7 +101,9 @@ export async function postPosition(position) {
             url: apiIPAddress() + operator,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'X-API-Key': '123456',
+                'Accept': 'application/json',
+                'Access-Control-Allow-Origin': '*'
             },
             data: JSON.stringify(position)
         });
@@ -140,7 +149,9 @@ export async function putPosition(position, ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'text/html'
+                'X-API-Key': '123456',
+                'Accept': 'text/html',
+                'Access-Control-Allow-Origin': '*'
             },
             data: position
         });
