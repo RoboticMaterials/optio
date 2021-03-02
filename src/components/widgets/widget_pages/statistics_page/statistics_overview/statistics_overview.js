@@ -119,9 +119,15 @@ const StatisticsOverview = (props) => {
         getReportData(body)
     }, [])
 
+    useEffect(() => {
+        console.log('QQQQ report effect', reportData)
+        return () => {
+            
+        }
+    }, [reportData])
+
     const getReportData = async (body) => {
         const reportAnalyticsResponse = await getReportAnalytics(stationID, body)
-        console.log('QQQQ report analystics', reportAnalyticsResponse)
 
         if (reportAnalyticsResponse && !(reportAnalyticsResponse instanceof Error)) {
             setReportData(reportAnalyticsResponse)
@@ -405,7 +411,7 @@ const StatisticsOverview = (props) => {
                     reportDate={reportData}
                     isThroughputLoading={isThroughputLoading}
                     timeSpan={timeSpan}
-                    throughputData={throughputData}
+                    reportData={reportData}
                 />
             </styled.PlotsContainer>
 

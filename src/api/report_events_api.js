@@ -95,7 +95,6 @@ export async function deleteReportEvent(ID) {
 }
 
 export async function postReportEvent(reportEvent) {
-    console.log("QQQQ postReportEvent reportEvent",reportEvent)
     try {
         const response = await axios({
             method: 'POST',
@@ -147,7 +146,6 @@ export async function postReportEvent(reportEvent) {
 }
 
 export async function putReportEvent(reportEvent, ID) {
-    console.log('QQQQ putting report', reportEvent, ID)
     try {
         const response = await axios({
             method: 'PUT',
@@ -194,7 +192,6 @@ export async function putReportEvent(reportEvent, ID) {
 }
 
 export async function getReportAnalytics(stationId, timeSpan) {
-    console.log('QQQQ report analytics', stationId, timeSpan)
     try {
         const response = await axios({
             method: 'PUT',
