@@ -38,19 +38,15 @@ export const InfoText = styled.span`
 `
 
 export const SectionContainer = styled.div`
-    border-bottom: 0.1rem solid ${props => props.theme.bg.septenary};
-    margin-bottom: 1rem;
-  	border-top: ${props => props.showTopBorder && `0.1rem solid ${props.theme.bg.septenary}`};
-  	margin-top: ${props => props.showTopBorder && `1rem`};
-  
-  	width: 100%;
-  flex: 1;
-  
-  	padding: 1rem .5rem;
-  	//flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  	
+	border-bottom: 0.1rem solid ${props => props.theme.bg.septenary};
+	margin-bottom: 1rem;
+	border-top: ${props => props.showTopBorder && `0.1rem solid ${props.theme.bg.septenary}`};
+	margin-top: ${props => props.showTopBorder && `1rem`};
+	width: 100%;
+	flex: 1;
+	padding: 1rem .5rem;
+	overflow-y: auto;
+	overflow-x: hidden;
 `
 
 export const TaskContainer = styled.div`
