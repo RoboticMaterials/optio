@@ -1,14 +1,6 @@
 import  store  from "../redux/store/index";
 import ls from 'local-storage'
 
-// import logger
-import log from "../logger.js";
-
-const logger = log.getLogger("Configuration");
-
-// disable defaut logging
-//console.log = () => {};
-
 export const mirURL = (url) => {
     // const mirURL = url
     const mirURL = "10.1.10.35";
@@ -37,7 +29,7 @@ export const apiIPAddress = () => {
 
         }
     } else {
-        return apiIPAddress = 'http://' + window.location.hostname + ':5000/api/'
+        return 'http://' + window.location.hostname + ':5000/api/'
     }
 };
 

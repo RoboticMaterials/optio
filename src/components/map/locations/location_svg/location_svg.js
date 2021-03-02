@@ -105,7 +105,7 @@ const LocationSvg = (props) => {
                 onMouseDown={() => handleTranslating(true)}
                 onMouseUp={() => handleTranslating(false)}
 
-                transform={location.type === 'device' && 'scale(.07) translate(-180,-140)'}
+                transform={location.type === 'device' ? 'scale(.07) translate(-180,-140)' : ''}
             >
 
                 <svg id={`${rd3tClassName}-${schema}`} x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400" style={{ filter: shouldGlow ? 'url(#glow2)' : 'none' }}>

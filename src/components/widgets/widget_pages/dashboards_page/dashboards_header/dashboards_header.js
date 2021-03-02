@@ -1,25 +1,17 @@
-import React, { useContext, useEffect, useState, useMemo } from "react";
-import { useDispatch, useSelector } from 'react-redux'
-import { useParams, useHistory } from 'react-router-dom'
+import React, { useMemo } from 'react';
+import { useSelector } from 'react-redux';
 
 // import components
-import BounceButton from "../../../../basic/bounce_button/bounce_button";
-import BackButton from '../../../../basic/back_button/back_button'
-import Button from '../../../../basic/button/button'
+import BackButton from '../../../../basic/back_button/back_button';
+import Button from '../../../../basic/button/button';
 
 // Import hooks
-import useWindowSize from '../../../../../hooks/useWindowSize'
+import useWindowSize from '../../../../../hooks/useWindowSize';
 
-// import external funcations
-import { ThemeContext } from "styled-components";
-import { withRouter } from "react-router-dom";
-import { getCards } from "../../../../../redux/actions/card_actions";
+// import external functions
+import { withRouter } from 'react-router-dom';
 
-
-// import constants
-import { PAGES } from "../../../../../constants/dashboard_contants";
-
-import * as style from "./dashboards_header.style";
+import * as style from './dashboards_header.style';
 
 const widthBreakPoint = 1000;
 
@@ -34,18 +26,12 @@ const DashboardsHeader = (props) => {
         showSidebar,
         setEditingDashboard,
         page,
-
         saveDisabled,
         onBack,
-        onDelete
     } = props
 
-    const themeContext = useContext(ThemeContext);
-
     // extract url params
-    const { stationID, dashboardID, editing } = props.match.params
-    const dispatch = useDispatch()
-    const onGetCards = () => dispatch(getCards())
+    const { stationID } = props.match.params
 
     const cards = useSelector(state => state.cardsReducer.cards)
     const stations = useSelector(state => state.stationsReducer.stations)
@@ -57,17 +43,9 @@ const DashboardsHeader = (props) => {
     }
 
     const location = locations[stationID]
-
-    const [slice, setSlice] = useState(null)
     const size = useWindowSize()
     const windowWidth = size.width
     const mobileMode = windowWidth < widthBreakPoint;
-
-
-    // goes to main dashboards page
-    const goToMainPage = () => {
-        props.history.push(`/locations/${stationID}/dashboards`)
-    }
 
     /**
      * Renders Lots that are are the station
@@ -140,7 +118,7 @@ const DashboardsHeader = (props) => {
                 {showSaveButton &&
                     <>
                         <Button style={{ order: '3', marginTop: '1.8rem' }}
-                            type="submit"
+                            type='submit'
                             disabled={saveDisabled}
                         >
                             Save

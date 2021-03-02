@@ -11,7 +11,8 @@ export async function getPlan(condition) {
       url: apiIPAddress() + operator,
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'X-API-Key': '123456',
       },
       data : condition
   });

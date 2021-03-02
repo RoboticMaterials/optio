@@ -3,6 +3,7 @@ import axios from 'axios';
 import {apiIPAddress} from '../settings/settings';
 
 import log from '../logger';
+
 const logger = log.getLogger('Map_Api', "Map");
 
 const operator = 'site_maps';
@@ -12,6 +13,10 @@ export async function getMaps() {
     const response = await axios({
       method: 'GET',
       url: apiIPAddress() + operator,
+      headers: {
+        'X-API-Key': '123456',
+        'Access-Control-Allow-Origin': '*'
+    }
     });
 
     // Success 🎉
@@ -60,6 +65,7 @@ export async function getMap(map_id) {
       url: apiIPAddress() + operator + '/' + map_id,
       headers: {
         'Accept': 'application/json',
+        'X-API-Key': '123456',
       },
   });
 

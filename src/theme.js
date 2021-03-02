@@ -1,7 +1,4 @@
-import React from "react";
-import { ThemeProvider } from "styled-components";
-import { hexToRGBA, LightenDarkenColor, RGB_Linear_Blend, RGB_Linear_Shade, RGB_Log_Blend, RGB_Log_Shade } from './methods/utils/color_utils';
-import objectsReducer from "./redux/reducers/objects_reducer";
+import { hexToRGBA,  RGB_Linear_Shade } from './methods/utils/color_utils';
 
 export const size = {
     tiny: '0px',

@@ -2,15 +2,18 @@ import axios from 'axios';
 import * as log from 'loglevel';
 
 import { apiIPAddress } from '../settings/settings'
-const operator = 'stations'
 
-const logger = log.getLogger('Stations_Api', "Station");
+const operator = 'stations'
 
 export async function getStations() {
     try {
         const response = await axios({
-            method: 'get',
+            method: 'GET',
             url: apiIPAddress() + operator,
+            headers: {
+                'X-API-Key': '123456',
+                'Access-Control-Allow-Origin': '*'
+            }
         });
         // Success 🎉
         const data = response.data;
@@ -53,7 +56,9 @@ export async function deleteStation(ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Content-Type': 'application/json',
+                'X-API-Key': '123456',
                 'Accept': 'application/json',
+                'Access-Control-Allow-Origin': '*'
             },
         });
 
@@ -99,7 +104,9 @@ export async function postStation(station) {
             url: apiIPAddress() + operator,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'X-API-Key': '123456',
+                'Accept': 'application/json',
+                'Access-Control-Allow-Origin': '*'
             },
             data: JSON.stringify(station)
         });
@@ -145,7 +152,9 @@ export async function putStation(station, ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'text/html'
+                'X-API-Key': '123456',
+                'Accept': 'text/html',
+                'Access-Control-Allow-Origin': '*'
             },
             data: station
         });
@@ -190,7 +199,9 @@ export async function getStationAnalytics(id, timeSpan) {
             url: apiIPAddress() + operator + '/' + id + '/analysis',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'text/html'
+                'X-API-Key': '123456',
+                'Accept': 'text/html',
+                'Access-Control-Allow-Origin': '*'
             },
             // A timespan is {time_span: 'day', index: 0}
             data: timeSpan

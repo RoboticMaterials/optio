@@ -10,6 +10,10 @@ export async function getSchedules() {
     const response = await axios({
       method: 'get',
       url: apiIPAddress() + operator,
+      headers: {
+        'X-API-Key': '123456',
+        'Access-Control-Allow-Origin': '*'
+    }
     });
     // Success 🎉
     // log.debug('res',response);
@@ -54,6 +58,9 @@ export async function getSchedule(scheduleId) {
     const response = await axios({
       method: 'get',
       url: apiIPAddress() + operator + '/' + scheduleId,
+      headers:{
+        'X-API-Key': '123456',
+      }
     });
     // Success 🎉
     // log.debug('res',response);
@@ -101,6 +108,7 @@ export async function postSchedule(schedule) {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'X-API-Key': '123456',
       },
       url: apiIPAddress() + operator,
       data: schedule
@@ -152,6 +160,7 @@ export async function deleteSchedule(scheduleId) {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'X-API-Key': '123456',
       },
       url: apiIPAddress() + operator + '/' + scheduleId
     });
@@ -199,7 +208,7 @@ export async function putSchedule(scheduleId, schedule) {
       method: 'put',
       headers: {
         'Content-Type': 'application/json',
-
+        'X-API-Key': '123456',
       },
       url: apiIPAddress() + operator + '/' + scheduleId,
       data: JSON.stringify(schedule)

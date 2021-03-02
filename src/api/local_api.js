@@ -9,8 +9,6 @@ import {
 } from "react-device-detect";
 import {defaultLocalSettings} from "../constants/local_settings_constants";
 
-
-
 const log = logger.getLogger('LocalStorage')
 
 export async function getLoggers() {
@@ -46,13 +44,16 @@ export const deleteLocalSettings = async () => {
 
 export const getLocalSettings = async () => {
     let localSettings = localStorage.getItem("local-settings-config");
-    if (localSettings) {
+
+    if (localSettings !== null) {
+
         localSettings = JSON.parse(localSettings);
+
         return localSettings;
     }
     // Posts settigns to the backend if there's nothing there
     else {
-        const settings = await postLocalSettings(defaultLocalSettings)
+        await postLocalSettings(defaultLocalSettings)
         return defaultLocalSettings
     }
 }

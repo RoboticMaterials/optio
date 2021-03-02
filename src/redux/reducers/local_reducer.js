@@ -172,7 +172,10 @@ const localReducer = (state = defaultState, action) => {
         case POST_LOCAL_SETTINGS_SUCCESS:
             return{
                 ...state,
-                localSettings: action.payload,
+                localSettings: {
+                    ...state.localSettings, 
+                    ...action.payload
+                },
                 pending: false
             }
 
@@ -195,6 +198,10 @@ const localReducer = (state = defaultState, action) => {
 
 
         // ~~~~~~~~~~~~~~~
+        default:
+            return {
+                ...state
+            }
     }
 
     return state

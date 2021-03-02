@@ -40,9 +40,6 @@ const defaultState = {
 
 const processesReducer = (state = defaultState, action) => {
     let processesClone = {}
-    let currentProcesse = ''
-    let updatedProcesseIndex = ''
-    let index = ''
 
     switch (action.type) {
 

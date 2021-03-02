@@ -20,18 +20,16 @@ import {
     DELETE_EVENTS_FAILURE,
 } from '../types/events_types'
 
-import { clone_object, deepCopy } from '../../methods/utils/utils';
+import { deepCopy } from '../../methods/utils/utils';
 
 const defaultState = {
     events: {},
 }
 
 const eventsReducer = (state = defaultState, action) => {
+    
     let eventsClone = {}
     let currentEvent = ''
-    let updatedEventIndex = ''
-    let index = ''
-
 
     switch (action.type) {
 

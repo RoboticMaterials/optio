@@ -17,8 +17,6 @@ import {
   FAILURE
 } from '../types/suffixes';
 
-import { clone_object } from '../../methods/utils/utils';
-
 const defaultState = {
   reportEvents: {},
   id: {},
