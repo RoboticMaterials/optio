@@ -19,13 +19,15 @@ const LotQueue = ((props) => {
 		setShowCardEditor,
 		showCardEditor,
 		maxHeight,
-		sortMode
+		sortMode,
+		sortDirection
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
 
 	return(
 		<Column
+			sortDirection={sortDirection}
 			sortMode={sortMode}
 			maxHeight={maxHeight}
 			maxWidth={"20rem"}

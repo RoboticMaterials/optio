@@ -22,7 +22,7 @@ import ZoneHeader from "./zone_header/zone_header";
 import {SORT_MODES} from "../../../../constants/common_contants";
 import LotCreatorForm from "./card_editor/template_form";
 import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
-import {LOT_FILTER_OPTIONS} from "../../../../constants/lot_contants";
+import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../constants/lot_contants";
 
 const Cards = (props) => {
 
@@ -58,7 +58,8 @@ const Cards = (props) => {
     })
     const [lotFilterValue, setLotFilterValue] = useState('')
     const [ selectedFilterOption, setSelectedFilterOption ] = useState(LOT_FILTER_OPTIONS.name)
-    const [sortMode, setSortMode] = useState(SORT_MODES.END_DESCENDING)
+    const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
+    const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
     // internal component state
     const [selectedProcesses, setSelectedProcesses] = useState(Object.values(processes)) // array of {process} objects - the list of selected processes
 
@@ -198,11 +199,15 @@ const Cards = (props) => {
                 />
             </styled.Header>
             <ZoneHeader
+                sortDirection={sortDirection}
+                setSortDirection={setSortDirection}
                 sortMode={sortMode}
                 setSortMode={setSortMode}
+
                 setLotFilterValue={setLotFilterValue}
                 selectedFilterOption={selectedFilterOption}
                 setSelectedFilterOption={setSelectedFilterOption}
+
                 selectedProcesses={selectedProcesses}
                 setSelectedProcesses={setSelectedProcesses}
                 zone={id}
@@ -221,6 +226,7 @@ const Cards = (props) => {
                         'summary':
                             <SummaryZone
                                 sortMode={sortMode}
+                                sortDirection={sortDirection}
                                 selectedProcesses={selectedProcesses}
                                 lotFilterValue={lotFilterValue}
                                 selectedFilterOption={selectedFilterOption}
@@ -244,6 +250,7 @@ const Cards = (props) => {
                             lotFilterValue={lotFilterValue}
                             selectedFilterOption={selectedFilterOption}
                             sortMode={sortMode}
+                            sortDirection={sortDirection}
                         />
                     </styled.CardZoneContainer>
                 }

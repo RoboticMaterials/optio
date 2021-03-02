@@ -683,7 +683,7 @@ export const ProcessField = (props) => {
 
                         {/* Delete Task Button */}
                         <Button
-                            schema={'processes'}
+                            schema={'delete'}
                             disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
                             style={{ marginBottom: '0rem', borderColor: 'red' }}
                             secondary

@@ -58,16 +58,20 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
 
 					switch(dataType) {
 						case FIELD_DATA_TYPES.URL: {
-
+							// not implemented yet
+							return true
 						}
 						case FIELD_DATA_TYPES.EMAIL: {
-
+							// not implemented yet
+							return true
 						}
 						case FIELD_DATA_TYPES.DATE: {
-
+							// not implemented yet
+							return true
 						}
 						case FIELD_DATA_TYPES.DATE_RANGE: {
-
+							// not implemented yet
+							return true
 						}
 						case FIELD_DATA_TYPES.STRING: {
 							return lot[label].toLowerCase().includes((filterValue || "").toLowerCase())
