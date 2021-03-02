@@ -44,6 +44,7 @@ export const SectionContainer = styled.div`
   	margin-top: ${props => props.showTopBorder && `1rem`};
   
   	width: 100%;
+  flex: 1;
   
   	padding: 1rem .5rem;
   	//flex: 1;
