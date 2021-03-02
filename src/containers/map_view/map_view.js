@@ -83,7 +83,6 @@ export class MapView extends Component {
         // maps, but componentDidUpdate will catch that and set the current map to the first map
         // in the returned list (which will be the active map)
         // this.refreshMap()
-
         this.checkForMapLoad()
         window.addEventListener('mousedown', () => this.mouseDown = true, { passive: false })
         window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, { passive: false })
@@ -118,7 +117,6 @@ export class MapView extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-
         // If new maps are available, refresh current map
         // NOTE: will be useless once we have a method to select map
         // if (prevProps.maps.length != this.props.maps.length) {
@@ -651,7 +649,11 @@ export class MapView extends Component {
                             </foreignObject>
                         </styled.MapGroup>
 
-                        {!!this.props.selectedTask &&
+                        {!!this.props.selectedTask  &&
+                            <TaskPaths d3={this.d3} />
+                        }
+
+                        {!!this.props.selectedHoveringTask  &&
                             <TaskPaths d3={this.d3} />
                         }
 
@@ -722,14 +724,19 @@ export class MapView extends Component {
 
                                 <>{
                                     //// Render mobile devices
-                                    (devices === undefined || deviceEnabled) ?
+                                    (devices === undefined || !deviceEnabled) ?
                                         <></>
                                         :
                                         Object.values(devices).filter(device => device.device_model == 'MiR100').map((device, ind) =>
+                                        <>
+                                          {device.connected==true &&
                                             <MiR100 key={device._id}
                                                 device={device}
                                                 d3={this.d3}
                                             />
+                                          }
+                                        </>
+
                                         )
                                 }</>
                             </>
@@ -781,6 +788,7 @@ const mapStateToProps = function (state) {
         editingPosition: state.positionsReducer.editingPosition,
 
         selectedTask: state.tasksReducer.selectedTask,
+        selectedHoveringTask: state.tasksReducer.selectedHoveringTask,
         selectedProcess: state.processesReducer.selectedProcess,
         fixingProcess: state.processesReducer.fixingProcess,
 

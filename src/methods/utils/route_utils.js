@@ -20,7 +20,7 @@ export const generateDefaultRoute = (obj) => {
         map_id: currentMap._id,
         load: {...defaultTask.load},
         unload: {...defaultTask.unload},
-        obj: obj ? obj : null,
+        obj: obj ? currentMap._id : currentMap._id,
         _id: uuid.v4(), // NOTE - ID IS GENERATED HERE INSTEAD OF IN defaultTask SO THE ID IS GENERATED EACH TIME THE FUNCTION IS CALLED
     }
 }

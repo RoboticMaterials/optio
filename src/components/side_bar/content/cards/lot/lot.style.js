@@ -1,10 +1,11 @@
 import styled, {css} from "styled-components";
-import { Draggable } from 'react-smooth-dnd';
-import {rowCss} from "../card_editor/card_editor.style";
+
+import {rowCss} from "../card_editor/lot_editor.style";
 import * as commonCss from "../../../../../common_css/common_css";
+import {commonClickableIcon, commonIcon, iconButtonCss} from "../../../../../common_css/common_css";
 
 export const Container = styled.div`
- 
+ 	margin: 6px; // prevents glow from being cut off
      height: fit-content;
   
 
@@ -15,7 +16,7 @@ export const Container = styled.div`
         
     background: white;
     border-radius: 0.6rem;
-  	border: 3px solid ${props => props.color};
+  	border: 1px solid ${props => props.color};
   
     outline: none;
     &:focus {
@@ -47,26 +48,27 @@ export const Container = styled.div`
   
   ${props => props.selectable && (props.isSelected ? selectedCss : notSelectedCss)};
   ${props => props.containerStyle};
+  
 `
 
 const selectedCss = css`
-	${commonCss.goodGlow};
+	${commonCss.whiteGlow};
 
   &:active {
-    ${commonCss.goodGlow};
+    ${commonCss.whiteGlow};
     transform: translateY(-2px);
     cursor: grabbing;
   }
 
   &:hover {
-    ${commonCss.goodGlow};
+    ${commonCss.whiteGlow};
     transform: translateY(-2px);
     cursor: grabbing;
   }
 `
 
 const notSelectedCss = css`
-  filter: contrast(70%);
+  filter: contrast(50%);
 `
 
 export const Row = styled.div`
@@ -82,6 +84,14 @@ export const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
+  
+  max-height: 10rem;
+  overflow-y: scroll;
+`
+
+export const NameContainer = styled.div`
+	display: flex;
+  flex-direction: column;
 `
 
 export const CardName = styled.span`
@@ -89,7 +99,19 @@ export const CardName = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: 600;
+  font-size: ${props => props.theme.fontSize.sz3};
 `
+
+export const LotNumber = styled.span`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: ${props => props.theme.fontSize.sz4};
+  font-weight: 300;
+`
+
+
+
 
 export const Count = styled.span`
 	font-size: ${props => props.theme.fontSize.sz4};
@@ -113,55 +135,49 @@ export const FooterBar = styled.div`
   font-size: ${props => props.theme.fontSize.sz4};
 `
 
+const notSelectedFlagCss = css`
+    filter: contrast(40%);
+    //filter: brightness(50%);
+`
+
+export const FlagButton = styled.button`
+	${iconButtonCss};
+  	${commonClickableIcon};
+  	margin: 0 1rem;
+  	
+  	${props => !props.selected && notSelectedFlagCss};
+`
+
+
+
+
+export const FlagsContainer = styled.div`
+    display: flex;
+    padding: 1rem 2rem;
+    align-items: center;
+    justify-content: center;
+    
+`
+
 export const HeaderBar = styled.div`
 	height: fit-content;
 	background: ${props => props.theme.bg.septenary};
   	//background: ${props => props.color};
 	display: flex;
-	justify-content: flex-start;
+	justify-content: space-between;
 	padding: 0 0rem 0 1rem;
+  align-items: center;
   font-size: ${props => props.theme.fontSize.sz3};
 `
 
-export const StyledDraggable = styled(Draggable)`
-	.smooth-dnd-ghost .vertical .smooth-dnd-draggable-wrapper {
-		background: blue;
-		padding: 2rem;
-	}
-`
 
-export const DatesContainer = styled.span`
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-    width: fit-content;
-    
-`
 
-export const DateItem = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
 
-	
-	&:hover {
-		cursor: pointer;
-	}
-	
-`
 
-export const DateArrow = styled.i`
-	margin-left: .35rem;
-	margin-right: .35rem;
-	color: ${props => props.theme.bg.secondary};
-`
 
-export const DateText = styled.span`
 
-font-size: ${props => props.theme.fontSize.sz4};
 
-`
+
 
 export const Label = styled.span`
     font-size: ${props => props.theme.fontSize.sz4};

@@ -14,7 +14,7 @@ import {
   CARDS,
   CARD_HISTORY,
   PROCESS_CARDS,
-  SHOW_EDITOR
+  SHOW_EDITOR, SHOW_FORM_EDITOR
 } from '../types/data_types'
 
 const defaultState = {
@@ -24,7 +24,8 @@ const defaultState = {
   cardHistories: {},
   error: {},
   pending: false,
-  showEditor:false
+  showEditor:false,
+  showFormEditor:false
 
 };
 
@@ -88,13 +89,13 @@ export default function cardsReducer(state = defaultState, action) {
       }
 
     case DELETE + CARD + SUCCESS:
-      const { [action.payload.cardId]: value, ...rest } = state.cards; // extracts payload card from rest
+      const { [action.payload.cardId]: value, ...rest } = state.cards; // extracts payload lot from rest
       const {
 
         [action.payload.processId]: {[action.payload.cardId]: removedCard, ...remaining} ,
         ...unchangedProcessGroups
 
-      } = state.processCards; // extracts payload card from rest
+      } = state.processCards; // extracts payload lot from rest
 
       return {
         ...state,
@@ -129,6 +130,12 @@ export default function cardsReducer(state = defaultState, action) {
               ...state,
               showEditor: action.payload,
           }
+
+    case SHOW_FORM_EDITOR:
+      return {
+        ...state,
+        showFormEditor: action.payload,
+      }
 
     default:
       return state

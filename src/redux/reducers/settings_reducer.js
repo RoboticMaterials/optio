@@ -10,7 +10,7 @@ import {
     POST_SETTINGS_FAILURE,
     DEVICE_ENABLED,
 
-  } from '../types/setting_types'
+} from '../types/setting_types'
 
 const defaultState = {
     settings: {
@@ -23,7 +23,29 @@ const defaultState = {
             Api: false,
             ReduxLogger: false,
             All: false,
-        }
+        },
+        shiftDetails: {
+            startOfShift: '07:00',
+            endOfShift: '15:00',
+            expectedOutput: null,
+            breaks: {
+                break1: {
+                    enabled: false,
+                    startOfBreak: '08:30',
+                    endOfBreak: '9:00',
+                },
+                break2: {
+                    enabled: false,
+                    startOfBreak: '11:00',
+                    endOfBreak: '12:00',
+                },
+                break3: {
+                    enabled: false,
+                    startOfBreak: '13:00',
+                    endOfBreak: '14:00',
+                },
+            },
+        },
     },
 
     error: {},
@@ -39,7 +61,7 @@ export const mirUrl = (state = defaultState) => {
 }
 
 const settingsReducer = (state = defaultState, action) => {
-    switch(action.type) {
+    switch (action.type) {
 
         case 'apiSim':
             return {
@@ -53,62 +75,62 @@ const settingsReducer = (state = defaultState, action) => {
                 deviceEnabled: action.payload,
             };
 
-    // ======================================== //
-    //                                          //
-    //              Get SETTINGS                //
-    //                                          //
-    // ======================================== //
+        // ======================================== //
+        //                                          //
+        //              Get SETTINGS                //
+        //                                          //
+        // ======================================== //
         case GET_SETTINGS:
             break;
 
         case GET_SETTINGS_SUCCESS:
-            return  {
+            return {
                 ...state,
                 settings: {
-                  ...state.settings,
-                  ...action.payload,
-                  loggers: {...state.settings.loggers, ...action.payload.loggers},
+                    ...state.settings,
+                    ...action.payload,
+                    loggers: { ...state.settings.loggers, ...action.payload.loggers },
                 },
                 pending: false,
             }
 
         case GET_SETTINGS_FAILURE:
-            return  Object.assign({}, state, {
+            return Object.assign({}, state, {
                 error: action.payload,
                 pending: false
             });
 
         case GET_SETTINGS_STARTED:
-            return  Object.assign({}, state, {
+            return Object.assign({}, state, {
                 pending: true
             });
 
-    // ======================================== //
-    //                                          //
-    //             Post SETTINGS                //
-    //                                          //
-    // ======================================== //
+        // ======================================== //
+        //                                          //
+        //             Post SETTINGS                //
+        //                                          //
+        // ======================================== //
         case POST_SETTINGS:
             break;
 
         case POST_SETTINGS_SUCCESS:
-            return{
+            return {
                 ...state,
-                settings: {...state.settings, ...action.payload},
+                settings: { ...state.settings, ...action.payload },
                 pending: false,
 
             }
 
         case POST_SETTINGS_FAILURE:
-        return Object.assign({}, state, {
-            error: action.payload,
-            pending: false
-        });
+            return Object.assign({}, state, {
+                error: action.payload,
+                pending: false
+            });
 
         case POST_SETTINGS_STARTED:
-        return  Object.assign({}, state, {
-            pending: true
-        });
+            return Object.assign({}, state, {
+                pending: true
+            });
         // ~~~~~~~~~~~~~~~
 
         default:

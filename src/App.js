@@ -38,7 +38,6 @@ const App = () => {
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
     const getFailureCount = useSelector(state => state.taskQueueReducer.getFailureCount)
-
     const dispatch = useDispatch()
     const dispatchStopAPICalls = (bool) => dispatch(stopAPICalls(bool))
 
@@ -47,11 +46,13 @@ const App = () => {
     const [loaded, setLoaded] = useState(false)
     const [apiLoaded, setApiLoaded] = useState(false)
 
+    const [showSideBar, setShowSideBar] = useState(false)
     const [showStopAPIModal, setShowStopAPIModal] = useState(true)
     const size = useWindowSize()
     const windowWidth = size.width
 
     const mobileMode = windowWidth < widthBreakPoint;
+
 
     /**
      * This handles Map view in mobile mode
@@ -76,42 +77,42 @@ const App = () => {
 
 
     // Used to clear local settings just in case the page cant be loaded anymore
-    const handleClearLocalSettings = () => {
-        deleteLocalSettings()
-        return (
-            <>
-            </>
-        )
-    }
+    // const handleClearLocalSettings = () => {
+    //     deleteLocalSettings()
+    //     return (
+    //         <>
+    //         </>
+    //     )
+    // }
 
     return (
-          <>
-              <Logger />
+        <>
+            <Logger />
 
-              {/*<TestsContainer/>*/}
+            {/*<TestsContainer/>*/}
 
               {/* <ThemeProvider theme={theme[this.state.theme]}> */}
               <ThemeProvider theme={theme['main']}>
 
-                  <styled.Container>
+                <styled.Container>
                     <ConfirmDeleteModal
-                          isOpen={getFailureCount<10 || showStopAPIModal===false ? false: true}
-                          title={"Oops! It looks like the server is diconnected. Would you like to turn off updates from the backend?"}
-                          button_1_text={"Yes"}
-                          handleOnClick1={() => {
+                        isOpen={getFailureCount < 10 || showStopAPIModal === false ? false : true}
+                        title={"Oops! It looks like the server is diconnected. Would you like to turn off updates from the backend?"}
+                        button_1_text={"Yes"}
+                        handleOnClick1={() => {
                             dispatchStopAPICalls(true)
                             setShowStopAPIModal(false)
-                          }}
-                          button_2_text={"No"}
-                          handleOnClick2={() => {
+                        }}
+                        button_2_text={"No"}
+                        handleOnClick2={() => {
                             setShowStopAPIModal(false)
-                          }}
-                          handleClose={() => {
+                        }}
+                        handleClose={() => {
                             setShowStopAPIModal(false)
-                          }}
-                      />
-                      <BrowserRouter>
-                          {/* <Route
+                        }}
+                    />
+                    <BrowserRouter>
+                        {/* <Route
                               exact path="/clear_local"
                           >
                               {
@@ -161,7 +162,8 @@ const App = () => {
                                           >
                                               <SideBar
                                                 showSideBar={sideBarOpen}
-                                              />
+                                                setShowSideBar={setShowSideBar}
+                                            />
                                           </Route>
                                           // :
                                           //     <Route
@@ -184,40 +186,41 @@ const App = () => {
                                       {/* If there are no maps, then dont render mapview (Could cause an issue when there is no MIR map)
                                           And if the device is mobile, then unmount if widgets are open
                                       */}
-                                      {maps.length > 0 &&
-                                          <>
-                                              {mapViewEnabled ?
+                                    {maps.length > 0 &&
+                                        <>
+                                            {mapViewEnabled ?
 
-                                                  (mobileMode ?
-                                                      <Route
-                                                          path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                      >
-                                                          {handleMobileMapView()}
-                                                      </Route>
-                                                      :
-                                                      <Route
-                                                          path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                          component={MapView}
-                                                      />)
+                                                (mobileMode ?
+                                                    <Route
+                                                        path={["/locations/:stationID?/:widgetPage?", '/']}
+                                                    >
+                                                        {handleMobileMapView()}
+                                                    </Route>
+                                                    :
+                                                    <Route
+                                                        path={["/locations/:stationID?/:widgetPage?", '/']}
+                                                        component={MapView}
+                                                    />
+                                                )
 
-                                                  :
+                                                :
 
-                                                  <Route
-                                                      path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                      component={ListView}
-                                                  />
+                                                <Route
+                                                    path={["/locations/:stationID?/:widgetPage?", '/']}
+                                                    component={ListView}
+                                                />
 
 
-                                              }
-                                          </>
-                                      }
+                                            }
+                                        </>
+                                    }
 
-                                      {/* <Route
+                                    {/* <Route
                                           path="/locations/:locationID?/:widgetPage?"
                                           component={WidgetPages}
                                       /> */}
 
-                                      {/* Widgets are here in mobile mode. If not in mobile mode, then they are in map_view.
+                                    {/* Widgets are here in mobile mode. If not in mobile mode, then they are in map_view.
                                       The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons).
                                       So they need to be here. */}
                                       {hoveringInfo !== null && mobileMode &&

@@ -1,13 +1,10 @@
-import React, { useState } from "react"
+import React, { useState, memo } from "react"
 
 // external functions
-import {SortableContainer} from "react-sortable-hoc"
-import { useSelector} from "react-redux"
 import PropTypes from "prop-types"
 
 // internal components
 import CardZone from "../card_zone/card_zone"
-import ZoneHeader from "../zone_header/zone_header"
 
 // styles
 import * as styled from "./summary_zone.style"
@@ -23,8 +20,10 @@ const SummaryZone = ((props) => {
 		setShowCardEditor,
 		showCardEditor,
 		lotFilterValue,
+		selectedFilterOption,
 		selectedProcesses,
-		sortMode
+		sortMode,
+		sortDirection
 	} = props
 
 	/*
@@ -48,12 +47,16 @@ const SummaryZone = ((props) => {
 
 				// return a CardZone wrapped with a styled container and any additional elements
 				return	(
-					<styled.ZoneContainer>
+					<styled.ZoneContainer
+						key={processId}
+					>
 						<styled.ProcessName>{processName}</styled.ProcessName>
 
 						<CardZone
 							sortMode={sortMode}
+							sortDirection={sortDirection}
 							lotFilterValue={lotFilterValue}
+							selectedFilterOption={selectedFilterOption}
 							setShowCardEditor={setShowCardEditor}
 							showCardEditor={showCardEditor}
 							maxHeight={"30rem"}
@@ -88,8 +91,9 @@ SummaryZone.defaultProps = {
 	handleCardClick: () => {},
 	setShowCardEditor: () => {},
 	showCardEditor: false,
-	lotFilterValue: ""
+	lotFilterValue: "",
+	selectedFilterOption: null
 }
 
-export default SummaryZone
+export default memo(SummaryZone)
 

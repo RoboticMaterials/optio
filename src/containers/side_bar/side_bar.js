@@ -26,7 +26,8 @@ import { setEditingPosition, setSelectedPosition } from '../../redux/actions/pos
 import { hoverStationInfo } from '../../redux/actions/widget_actions'
 import { editingTask } from '../../redux/actions/tasks_actions'
 import { editingProcess } from '../../redux/actions/processes_actions'
-import { setWidth, setMode } from "../../redux/actions/sidebar_actions";
+import { setWidth, setMode, pageDataChanged, setOpen } from "../../redux/actions/sidebar_actions";
+
 import * as sidebarActions from "../../redux/actions/sidebar_actions"
 import * as taskActions from '../../redux/actions/tasks_actions'
 
@@ -48,16 +49,17 @@ const SideBar = (props) => {
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchEditingStation = (bool) => dispatch(setEditingStation(bool))
     const dispatchEditingPosition = (bool) => dispatch(setEditingPosition(bool))
-    const onSetOpen = (sideBarOpen) => dispatch(sidebarActions.setOpen(sideBarOpen))
-    const onSetWidth = (width) => dispatch(sidebarActions.setWidth(width))
+    const onSetOpen = (sideBarOpen) => dispatch(setOpen(sideBarOpen))
+    const onSetWidth = (width) => dispatch(setWidth(width))
     const onDeselectTask = () => dispatch(taskActions.deselectTask())
     const dispatchEditingTask = (bool) => dispatch(editingTask(bool))
     const dispatchEditingProcess = (bool) => dispatch(editingProcess(bool))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchSetSelectedPosition = (station) => dispatch(setSelectedPosition(station))
+    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
-    const [width, setWidth] = useState(450)
-    const [prevWidth, setPrevWidth] = useState(width)
+    const [pageWidth, setPageWidth] = useState(450)
+    const [prevWidth, setPrevWidth] = useState(pageWidth)
     const [buttonActive, setButtonActive] = useState(false)
     const [prevParams, setPrevParams] = useState(params)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
@@ -66,7 +68,7 @@ const SideBar = (props) => {
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
     const editingStation = useSelector(state => state.stationsReducer.editingStation)
     const editingPosition = useSelector(state => state.positionsReducer.editingPosition)
-
+    const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
     const taskEditing = useSelector(state => state.tasksReducer.editingTask)
     const processEditing = useSelector(state => state.processesReducer.editingProcess)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
@@ -77,8 +79,8 @@ const SideBar = (props) => {
     const locationEditing = !!editingStation ? editingStation : editingPosition
 
     const boundToWindowSize = () => {
-        const newWidth = Math.min(window.innerWidth, Math.max(360, width))
-        setWidth(newWidth)
+        const newWidth = Math.min(window.innerWidth, Math.max(360, pageWidth))
+        setPageWidth(newWidth)
         onSetWidth(newWidth)
     }
     useEffect(() => {
@@ -109,13 +111,13 @@ const SideBar = (props) => {
         const time = Date.now()
         if ((page === "processes" || page === "lots") && ((subpage === "lots")) || (id === "timeline") || (id === "summary")) {
 
-            if (!prevWidth) setPrevWidth(width) // store previous width to restore when card page is left
-            setWidth(window.innerWidth)
+            if (!prevWidth) setPrevWidth(pageWidth) // store previous width to restore when card page is left
+            setPageWidth(window.innerWidth)
             onSetWidth(window.innerWidth)
 
         }
         else if ((((prevSubpage === "lots") || (prevId === "timeline") || (prevId === "summary")) && (prevPage === "processes" || prevPage === "lots")) && ((subpage !== "lots") || (id === "timeline") || (id === "summary"))) {
-            setWidth(prevWidth)
+            setPageWidth(prevWidth)
             onSetWidth(prevWidth)
             setPrevWidth(null)
         }
@@ -123,13 +125,13 @@ const SideBar = (props) => {
         setPrevParams(params)
 
         if (!showSideBar) {
-            setWidth(450)
+            setPageWidth(450)
             onSetWidth(450)
         }
 
         return () => { }
 
-    }, [page, subpage, id, width, showSideBar])
+    }, [page, subpage, id, pageWidth, showSideBar])
 
     /**
      * Handles the hamburger icon transformation
@@ -191,8 +193,8 @@ const SideBar = (props) => {
     }
 
     function handleDrag(e, ui) {
-        const newWidth = Math.min(window.innerWidth, Math.max(360, width + ui.deltaX))
-        setWidth(newWidth)
+        const newWidth = Math.min(window.innerWidth, Math.max(360, pageWidth + ui.deltaX))
+        setPageWidth(newWidth)
         onSetWidth(newWidth)
     }
 
@@ -260,6 +262,7 @@ const SideBar = (props) => {
                 handleOnClick1={() => {
                     handleSideBarOpenCloseButtonClick()
                     setConfirmDeleteModal(null)
+                    dispatchPageDataChanged(false)
                 }}
                 handleOnClick2={() => {
                     setConfirmDeleteModal(null)
@@ -271,7 +274,7 @@ const SideBar = (props) => {
                 type='button'
                 id='sideBarButton'
                 onClick={() => {
-                    if (locationEditing || taskEditing || processEditing) {
+                    if (pageInfoChanged) {
                         setConfirmDeleteModal(true)
                     }
                     else { handleSideBarOpenCloseButtonClick() }
@@ -284,7 +287,7 @@ const SideBar = (props) => {
             </styled.SideBarOpenCloseButton>
 
             {showSideBar &&
-                <styled.SidebarWrapper mode={mode} style={{ width: showSideBar == true ? width : 0, display: "flex", }} open={showSideBar}>
+                <styled.SidebarWrapper mode={mode} style={{ width: showSideBar == true ? pageWidth : 0, display: "flex", }} open={showSideBar}>
 
                     <SideBarSwitcher
                         handleClickOutside={handleSideBarOpenCloseButtonClick}

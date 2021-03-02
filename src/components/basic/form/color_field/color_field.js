@@ -19,6 +19,7 @@ const ColorField = (props) => {
 		type,
 		mode,
 		colors,
+		containerStyle,
 		...rest
 	} = props
 
@@ -29,7 +30,7 @@ const ColorField = (props) => {
 
 
 	return (
-		<Container>
+		<Container style={containerStyle}>
 
 			{mode === "twitter" ?
 				<styled.StyledTwitterPicker>

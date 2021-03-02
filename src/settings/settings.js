@@ -1,4 +1,5 @@
 import  store  from "../redux/store/index";
+import ls from 'local-storage'
 
 export const mirURL = (url) => {
     // const mirURL = url
@@ -10,21 +11,22 @@ export const mirURL = (url) => {
 
 export const apiIPAddress = () => {
     const storeState = store.getState();
-    let hostServerIpAddress = "";
-
+    let apiIPAddress = "";
+    let hostServerIpAddress = ls.get('NonLocalAPIAddress');
+    let nonLocalIp = ls.get('NonLocalAPIAddressEnabled')
     /**
      * READ ME: Do not change IP address here. Go to the settings tab in the interface, select Non Local API IP Address and type in the api ip address
      * If non local api is true, then the server is running on an IP address entered
      */
 
-    if (!!storeState.localReducer && !!storeState.localReducer.localSettings && storeState.localReducer.localSettings.non_local_api) {
+    if (!!hostServerIpAddress) {
 
         // If there is no api use the local host
-        if (storeState.localReducer.localSettings.non_local_api_ip === undefined) {
-            return 'http://localhost:5000/api/'
+        if (nonLocalIp===false) {
+            return apiIPAddress = 'http://' + 'localhost' + ':5000/api/'
         } else {
-            hostServerIpAddress = storeState.localReducer.localSettings.non_local_api_ip;
-            return 'http://' + hostServerIpAddress + ':5000/api/'
+            return apiIPAddress = 'http://' + hostServerIpAddress + ':5000/api/'
+
         }
     } else {
         return 'http://' + window.location.hostname + ':5000/api/'

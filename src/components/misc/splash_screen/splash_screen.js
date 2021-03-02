@@ -1,7 +1,7 @@
 // import external dependencies
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-
+import ls from 'local-storage'
 // components
 import Switch from 'react-ios-switch'
 import Textbox from '../../basic/textbox/textbox'
@@ -51,7 +51,9 @@ const SplashScreen = (props) => {
      */
     const handleSubmitApiIpAddress = async () => {
         console.log("submitting")
-        await onPostLocalSettings({ ...localSettings.localSettings, non_local_api: true, non_local_api_ip: apiIpAddress })
+        ls.set('NonLocalAPIAddressEnabled', true)
+        ls.set('NonLocalAPIAddress', apiIpAddress)
+
         window.location.reload(false);
     }
 

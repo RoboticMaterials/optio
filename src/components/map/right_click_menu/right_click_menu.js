@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import React from 'react'
+import { useHistory } from 'react-router-dom'
 
 
 import { useSelector, useDispatch } from 'react-redux'
@@ -9,11 +9,8 @@ import { addStation, setSelectedStation, setEditingStation } from '../../../redu
 import { addPosition, setSelectedPosition, setEditingPosition } from '../../../redux/actions/positions_actions'
 import { setOpen } from "../../../redux/actions/sidebar_actions"
 
-
-
 // Import utils
 import { convertD3ToReal } from '../../../methods/utils/map_utils'
-import { deepCopy } from '../../../methods/utils/utils'
 
 // Import Constants
 import { PositionTypes } from '../../../constants/position_constants'
@@ -47,7 +44,6 @@ const RightClickMenu = (props) => {
 
     const dispatchAddPositions = (position) => dispatch(addPosition(position))
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
-    const dispatchEditingPosition = (bool) => dispatch(setEditingPosition(bool))
 
     const dispatchAddStation = (station) => dispatch(addStation(station))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
@@ -57,12 +53,13 @@ const RightClickMenu = (props) => {
 
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const showSideBar = useSelector(state => state.sidebarReducer.open)
-    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
+    const deviceEnabled = useSelector(state => state.settingsReducer.deviceEnabled)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
+    const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const history = useHistory()
 
 
-    const disbaleStation = !!selectedStation ? true : false
+    const disbaleStation = !!selectedStation ? true : !!selectedPosition ? true : false
 
     const onSendCartToPosition = async () => {
         const pos = convertD3ToReal([coords.x, coords.y], d3)
@@ -124,10 +121,10 @@ const RightClickMenu = (props) => {
 
     return (
         <styled.MenuContainer style={{ top: coords.y, left: coords.x }}>
-            {MiRMapEnabled ?
+            {deviceEnabled ?
                 <>
                     <styled.MenuButton disabled={disbaleStation} onClick={() => !disbaleStation && onAddStation()}>Add Station</styled.MenuButton>
-                    <styled.MenuButton onClick={onSendCartToPosition}>Send Cart to Position</styled.MenuButton>
+                    <styled.MenuButton disabled={disbaleStation} onClick={onSendCartToPosition}>Send Cart to Position</styled.MenuButton>
                 </>
                 :
                 <styled.MenuButton onClick={onAddStation}>Add Station</styled.MenuButton>

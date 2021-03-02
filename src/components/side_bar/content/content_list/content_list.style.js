@@ -51,7 +51,7 @@ export const ListItem = styled.div`
     border-radius: 0.5rem;
     border: 0.1rem solid;
     border-color: ${props => props.error ? 'red' : 'white'};
-  
+
     // border-color: ${props => props.isNew ? 'blue' : 'white'};
 
   ${props => props.isNew &&  commonCss.newGlow};

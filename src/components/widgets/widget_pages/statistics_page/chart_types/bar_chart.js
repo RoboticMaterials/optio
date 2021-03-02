@@ -1,11 +1,10 @@
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 
 // Import component
 import { ResponsiveBar } from '@nivo/bar'
 
 // Import utils
-import { } from '../../../../../../methods/utils/utils'
-import {ThemeContext} from "styled-components";
+import { ThemeContext } from "styled-components";
 
 const BarChart = (props) => {
 
@@ -24,7 +23,6 @@ const BarChart = (props) => {
     } = props
 
     const themeContext = useContext(ThemeContext);
-
 
     const theme = {
         background: 'transparent',

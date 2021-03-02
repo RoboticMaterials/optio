@@ -296,7 +296,6 @@ const Widgets = (props) => {
     }, [widgetPage])
 
     const statistics = useMemo(() => {
-        // TODO: Write code that grabs the statistics for the current location
 
         return (
             <styled.WidgetStatisticsContainer>
@@ -354,19 +353,22 @@ const Widgets = (props) => {
 
         let widgetPosition = {}
 
-        // Handles the x, use location x if right click menu so it can also move
+        // Handles the x and y, use location x if right click menu so it can also move
         if (!!selectedPosition && selectedPosition.schema === 'temporary_position') {
-            widgetPosition.x = selectedPosition.x - elementWidth / 2 + 30 + 'px'
+
+            // Handles when scale gets to large
+            if (hoveringInfo.scale === .8) {
+                widgetPosition.x = selectedPosition.x - elementWidth / 2 - 25 + 'px'
+                widgetPosition.y = selectedPosition.y + elementHeight / 2 - 20 + 'px'
+            }
+            else {
+                widgetPosition.x = selectedPosition.x - elementWidth / 2 + 30 + 'px'
+                widgetPosition.y = selectedPosition.y + elementHeight / 2 + 20 + 'px'
+            }
+
         }
         else {
             widgetPosition.x = hoveringInfo.xPosition - elementWidth / 2 + 'px'
-        }
-
-        // Handles the y, use location y if right click menu so it can also move
-        if (!!selectedPosition && selectedPosition.schema === 'temporary_position') {
-            widgetPosition.y = selectedPosition.y + elementHeight / 2 + 20 + 'px'
-        }
-        else {
             widgetPosition.y = hoveringInfo.yPosition + elementHeight / 2 + 'px'
         }
 

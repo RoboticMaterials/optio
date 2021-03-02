@@ -29,6 +29,7 @@ import {
     SET_SELECTED_TASK,
     DESELECT_TASK,
     EDITING_TASK, REMOVE_TASKS,
+    SET_SELECTED_HOVERING_TASK,
 
 } from '../types/tasks_types'
 
@@ -39,6 +40,7 @@ import {isObject} from "../../methods/utils/object_utils";
 const defaultState = {
     tasks: {},
     selectedTask: null,
+    selectedHoveringTask: null,
 
     error: {},
     pending: false
@@ -300,6 +302,12 @@ export default function tasksReducer(state = defaultState, action) {
             return {
                 ...state,
                 selectedTask: action.payload.task
+            }
+
+        case SET_SELECTED_HOVERING_TASK:
+            return {
+                ...state,
+                selectedHoveringTask: action.payload.task
             }
 
         case DESELECT_TASK:

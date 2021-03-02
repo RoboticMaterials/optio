@@ -51,7 +51,7 @@ export async function getProcesses() {
 
 }
 
-export async function deleteProcesses(ID) {
+export async function deleteProcess(ID) {
     try {
         const response = await axios({
             method: 'DELETE',

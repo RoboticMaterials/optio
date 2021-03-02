@@ -482,11 +482,13 @@ export class DropDownSearch extends Component {
   renderDropdown = (ItemComponent) =>
     this.props.portal ? (
       ReactDOM.createPortal(
-        <Dropdown dropdownRef={this.dropdownRef} ItemComponent={ItemComponent} DropDownComponent={this.props.DropDownComponent} props={this.props} state={this.state} methods={this.methods} />,
+        <Dropdown dropdownRef={this.dropdownRef} ItemComponent={ItemComponent} DropDownComponent={this.props.DropDownComponent}
+        props={this.props} state={this.state} methods={this.methods} onMouseEnter = {(item) => this.props.onMouseEnter(item)} onMouseLeave = {(item) => this.props.onMouseLeave(item)} />,
         this.dropdownRoot
       )
     ) : (
-        <Dropdown dropdownRef={this.dropdownRef} ItemComponent={ItemComponent} TextComponent={this.props.TextComponent} DropDownComponent={this.props.DropDownComponent} props={this.props} state={this.state} methods={this.methods} />
+        <Dropdown dropdownRef={this.dropdownRef} ItemComponent={ItemComponent} TextComponent={this.props.TextComponent} DropDownComponent={this.props.DropDownComponent}
+         props={this.props} state={this.state} methods={this.methods} onMouseEnter = {(item) => this.props.onMouseEnter} onMouseLeave = {(item) => this.props.onMouseLeave} />
       );
 
   createNew = (item) => {
@@ -588,8 +590,8 @@ export const DefaultReactDropdownSelect = styled.div`
     border-bottom: 2px solid transparent;
     border-radius: 0.2rem;
 
-    :focus,
-    :focus-within {
+     :focus,
+     :focus-within {
         color: ${props => props.theme.bg.octonary};
         background-color: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};
         box-shadow: none;
@@ -653,6 +655,8 @@ DropDownSearch.defaultProps = {
   Container: DefaultContainer,
   fillable: true,
   schema: null,
+  onMouseEnter: () => {},
+  onMouseLeave: () => {},
 };
 
 
