@@ -4,9 +4,6 @@ import logger from '../logger'
 
 import { apiIPAddress } from '../settings/settings'
 
-import store from '../redux/store'
-const token = '123456'//store.getState().cognotoUserSession
-
 const operator = 'settings'
 
 const log = logger.getLogger('Api')
@@ -65,7 +62,6 @@ export async function getSettings() {
 }
 
 export async function postSettings(settings) {
-    console.log(settings)
     try {
         const response = await axios({
             method: 'POST',

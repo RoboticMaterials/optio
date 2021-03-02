@@ -89,7 +89,6 @@ const App = () => {
         <>
             <Logger />
 
-            {/*<TestsContainer/>*/}
 
               {/* <ThemeProvider theme={theme[this.state.theme]}> */}
               <ThemeProvider theme={theme['main']}>

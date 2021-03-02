@@ -3,10 +3,6 @@ import * as log from 'loglevel';
 
 import { apiIPAddress } from '../settings/settings'
 
-
-import store from '../redux/store'
-const token = store.getState().cognotoUserSession
-
 const operator = 'status'
 
 export async function getStatus() {

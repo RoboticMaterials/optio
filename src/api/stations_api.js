@@ -3,12 +3,7 @@ import * as log from 'loglevel';
 
 import { apiIPAddress } from '../settings/settings'
 
-//import store from '../redux/store'
-const token = '123456' //store.getState().cognotoUserSession
-
 const operator = 'stations'
-
-const logger = log.getLogger('Stations_Api', "Station");
 
 export async function getStations() {
     try {

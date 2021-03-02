@@ -3,9 +3,6 @@ import * as log from 'loglevel';
 
 import { apiIPAddress } from '../settings/settings'
 
-import store from '../redux/store'
-const token = '123456'//store.getState().cognotoUserSession
-
 const operator = 'positions'
 
 const logger = log.getLogger('Positions_Api', "Position");

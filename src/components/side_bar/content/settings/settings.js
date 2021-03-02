@@ -112,8 +112,6 @@ const Settings = () => {
             [key]: value,
         }
 
-        console.log(updatedSettings)
-        
         setLocalSettingsState(updatedSettings)
     }
 
@@ -317,7 +315,6 @@ const Settings = () => {
                         onChange={values => {
                             // update current map
                             setMapSettingsState(values[0])
-                            console.log(values[0])
                             // update current map in local storage
                             handleUpdateLocalSettings({ currentMapId: values[0]._id })
                             setMapID(values[0]._id)
