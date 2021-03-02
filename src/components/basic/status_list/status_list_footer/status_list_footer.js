@@ -8,7 +8,8 @@ const StatusListFooter = (props) => {
 
 	const {
 		onCloseClick,
-		onShowMapperClick
+		onShowMapperClick,
+		onCanceleClick
 	} = props
 
 	return (
@@ -18,12 +19,22 @@ const StatusListFooter = (props) => {
 			{/*	type={"button"}*/}
 			{/*	onClick={onShowMapperClick}*/}
 			{/*/>*/}
+			<Button
+				type={"button"}
+				label={"Create All"}
+				// onClick={onCloseClick}
+			/>
 
 			<Button
 				type={"button"}
-				label={"close"}
-				onClick={onCloseClick}
+				label={"Cancel"}
+				onClick={onCanceleClick}
 			/>
+			{/*<Button*/}
+			{/*	type={"button"}*/}
+			{/*	label={"Close"}*/}
+			{/*	onClick={onCloseClick}*/}
+			{/*/>*/}
 		</styled.Container>
 	);
 };

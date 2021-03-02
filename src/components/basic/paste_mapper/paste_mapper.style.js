@@ -243,15 +243,37 @@ export const SectionDescription = styled.span`
     margin: 0 1rem;
 `
 
-export const FieldName = styled.div`
+export const FieldButton = styled.div`
     margin: 0 1rem;
     background: ${props => props.disabled ? "pink" : props.theme.bg.tertiary};
-    padding: 1rem;
+    //padding: 1rem;
     border-radius: 1rem;
     min-width: fit-content;
-    display: inline-block;
-    
+    display: flex;
+    flex-direction: column;
+    color: white;
+    overflow: hidden;
+    align-items: stretch;
+
     ${props => props.disabled && disabledButtonCss};
+`
+
+export const FieldName = styled.div`
+    font-size: ${props => props.theme.fontSize.sz3};
+    min-width: fit-content;
+    padding: .5rem 1rem;
+`
+
+export const FieldDescription = styled.div`
+    font-size: ${props => props.theme.fontSize.sz5};
+    background: ${props => props.disabled ? "pink" : props.theme.bg.senary};
+    padding: .25rem;
+    display: inline-flex;
+    min-width: fit-content;
+    justify-content: center;
+    align-items: center;
+    color: ${props => props.theme.bg.tertiary};
+    font-style: italic;
 `
 
 

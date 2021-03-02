@@ -13,6 +13,7 @@ const StatusList = (props) => {
 		data,
 		onItemClick,
 		onCloseClick,
+		onCanceleClick,
 		onShowMapperClick
 	} = props
 
@@ -28,6 +29,7 @@ const StatusList = (props) => {
 			/>
 
 			<StatusListFooter
+				onCanceleClick={onCanceleClick}
 				onCloseClick={onCloseClick}
 				onShowMapperClick={onShowMapperClick}
 			/>

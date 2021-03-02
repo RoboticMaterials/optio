@@ -58,6 +58,8 @@ const StatusListItem = (props) => {
 
 	}, [errors])
 
+	const submitDisabled = (validationCode !== FORM_STATUS.VALIDATION_SUCCESS) || (resourceCode === FORM_STATUS.CREATE_SUCCESS)
+
 	console.log("StatusListItem errors", errors)
 
 	const renderErrorTooltip = () => {
@@ -150,6 +152,18 @@ const StatusListItem = (props) => {
 						size={10}
 					/>
 				}
+			</styled.StatusContainer>
+
+			<styled.StatusContainer>
+				<Button
+					type={"button"}
+					label={"Create"}
+					schema={"ok"}
+					disabled={submitDisabled}
+					onClick={(e) => {
+
+					}}
+				/>
 			</styled.StatusContainer>
 
 			<styled.ColumnWrapper>

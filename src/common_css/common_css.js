@@ -66,7 +66,8 @@ export const iconButtonCss = `
 
 export const disabledButtonCss = css`
   cursor: not-allowed;
-  background: ${props => props.theme.disabled}
+  background: ${props => props.theme.disabled};
+  
 `
 
 export const commonClickableIcon = css`

@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef, useCallback} from "react";
 
 // external functions
 import PropTypes from "prop-types";
-import {Formik} from "formik";
+import {Formik, setNestedObjectValues} from "formik";
 import {useDispatch, useSelector} from "react-redux";
 
 // external components
@@ -55,7 +55,7 @@ import {
 } from "../../../../../methods/utils/card_utils";
 import {CARD_SCHEMA_MODES, uniqueNameSchema, editLotSchema, getCardSchema} from "../../../../../methods/utils/form_schemas";
 import {getProcessStations} from "../../../../../methods/utils/processes_utils";
-import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
+import {isEmpty, isObject, pathStringToObject} from "../../../../../methods/utils/object_utils";
 import {arraysEqual} from "../../../../../methods/utils/utils";
 import {immutableReplace, isArray, isNonEmptyArray} from "../../../../../methods/utils/array_utils";
 import {formatLotNumber, getDisplayName} from "../../../../../methods/utils/lot_utils";
@@ -96,6 +96,7 @@ const FormComponent = (props) => {
 		onDeleteClick,
 		processId,
 		errors,
+		// setNestedObjectValues,
 		values,
 		touched,
 		isSubmitting,
@@ -107,6 +108,8 @@ const FormComponent = (props) => {
 		content,
 		setContent,
 		setValues,
+		setErrors,
+		setTouched,
 		loaded
 	} = props
 
@@ -149,6 +152,8 @@ const FormComponent = (props) => {
 	const [showSimpleModal, setShowSimpleModal] = useState(false)
 	const [pasteMapperHidden, setPasteMapperHidden] = useState(true)
 	const [mappedValues, setMappedValues] = useState([])
+	const [mappedErrors, setMappedErrors] = useState([])
+	const [mappedTouched, setMappedTouched] = useState([])
 	const [processedValues, setProcessedValues] = useState([])
 	const [createMappedValues, setCreateMappedValues] = useState(false)
 	const [showCreationStatus, setShowCreationStatus] = useState(false)
@@ -176,6 +181,8 @@ const FormComponent = (props) => {
 		if(isArray(mappedValues) && mappedValues.length > 0 && mappedValues[mappedValuesIndex] && mappedValuesIndex !== previousProvidedIndex) {
 			const newValue = convertLotToExcel(values, lotTemplateId)
 			setMappedValues(immutableReplace(mappedValues, newValue, previousProvidedIndex))
+			setMappedErrors(immutableReplace(mappedErrors, errors, previousProvidedIndex))
+			setMappedTouched(immutableReplace(mappedTouched, touched, previousProvidedIndex))
 		}
 	}, [values, mappedValuesIndex])
 
@@ -183,12 +190,17 @@ const FormComponent = (props) => {
 		if(isArray(mappedValues) && mappedValues.length > 0 && mappedValues[mappedValuesIndex] && mappedValuesIndex !== previousProvidedIndex) {
 
 			const currMappedValue = mappedValues[mappedValuesIndex]
+			const currMappedError = mappedErrors[mappedValuesIndex] || {}
+			const currMappedTouched = mappedTouched[mappedValuesIndex] || {}
 
 			const currMappedLot = convertExcelToLot(currMappedValue, lotTemplate, values.processId)
 
 			formikProps.resetForm()	// reset when switching
 
 			setValues(currMappedLot)
+			setErrors(currMappedError)
+			setTouched(currMappedTouched)
+
 		}
 
 	}, [mappedValues, mappedValuesIndex])
@@ -204,7 +216,7 @@ const FormComponent = (props) => {
 					name: payloadName,	// extract reserved fields
 				} = currMappedLot
 
-				formikProps.resetForm()	// reset when switching
+				// formikProps.resetForm()	// reset when switching
 
 				let newLot = convertExcelToLot(currMappedLot, lotTemplate, values.processId)
 
@@ -217,8 +229,8 @@ const FormComponent = (props) => {
 						code: FORM_STATUS.VALIDATION_START
 					},
 					resourceStatus: {
-						message: `Waiting.`,
-						code: FORM_STATUS.WAITING
+						message: `-`,
+						code: FORM_STATUS.NOT_STARTED
 					},
 				}
 
@@ -252,6 +264,8 @@ const FormComponent = (props) => {
 					code: FORM_STATUS.VALIDATION_SUCCESS
 				}
 
+
+
 				const {
 					name: newName,
 					bins: newBins,
@@ -259,10 +273,10 @@ const FormComponent = (props) => {
 					[lotTemplateId]: templateValues,
 				} = values || {}
 
-				lotStatus.resourceStatus = {
-					message: `Creating lot.`,
-					code: FORM_STATUS.CREATE_START
-				}
+				// lotStatus.resourceStatus = {
+				// 	message: `Creating lot.`,
+				// 	code: FORM_STATUS.CREATE_START
+				// }
 
 				const submitItem = {
 					name: newName,
@@ -273,45 +287,45 @@ const FormComponent = (props) => {
 					lotNumber: collectionCount + index
 				}
 
-				onPostCard(submitItem).then((result) => {
-
-					if(result) {
-						const {
-							_id = null
-						} = result || {}
-
-						const currMappedLot = convertLotToExcel(values, lotTemplateId)
-						mappedValuesRef.current = immutableReplace(mappedValuesRef.current, {
-							...currMappedLot,
-							_id
-						}, index)
-
-						updatedItem._id = _id
-
-						lotStatus.resourceStatus = {
-							message: `Successfully created lot!`,
-							code: FORM_STATUS.CREATE_SUCCESS
-						}
-
-						if(mappedValuesIndex === index) {
-							formikProps.resetForm()
-							setValues({
-								...values,
-								_id
-							})
-						}
-					}
-
-					else {
-						lotStatus.resourceStatus = {
-							message: `Error creating lot.`,
-							code: FORM_STATUS.CREATE_ERROR
-						}
-					}
-				})
-					.catch((err) => {
-						console.error("post it err",err)
-					})
+				// onPostCard(submitItem).then((result) => {
+				//
+				// 	if(result) {
+				// 		const {
+				// 			_id = null
+				// 		} = result || {}
+				//
+				// 		const currMappedLot = convertLotToExcel(values, lotTemplateId)
+				// 		mappedValuesRef.current = immutableReplace(mappedValuesRef.current, {
+				// 			...currMappedLot,
+				// 			_id
+				// 		}, index)
+				//
+				// 		updatedItem._id = _id
+				//
+				// 		lotStatus.resourceStatus = {
+				// 			message: `Successfully created lot!`,
+				// 			code: FORM_STATUS.CREATE_SUCCESS
+				// 		}
+				//
+				// 		if(mappedValuesIndex === index) {
+				// 			formikProps.resetForm()
+				// 			setValues({
+				// 				...values,
+				// 				_id
+				// 			})
+				// 		}
+				// 	}
+				//
+				// 	else {
+				// 		lotStatus.resourceStatus = {
+				// 			message: `Error creating lot.`,
+				// 			code: FORM_STATUS.CREATE_ERROR
+				// 		}
+				// 	}
+				// })
+				// 	.catch((err) => {
+				// 		console.error("post it err",err)
+				// 	})
 
 			})
 			.catch((err) => {
@@ -328,27 +342,36 @@ const FormComponent = (props) => {
 					const {
 						errors,			//: ["1 character minimum."]
 						path, 				//: "name"
+						message
 					} = currErr || {}
 
 					let existingErrors = lotErrors[path] || []
 
+					const errorObj = pathStringToObject(path, ".", message)
+					console.log("errorObjerrorObj",errorObj)
+
 					lotErrors = {
 						...lotErrors,
-						[path]: [...existingErrors, ...errors]
+						...errorObj
 					}
 				})
 
 				console.log("lotErrors",lotErrors)
 
-				lotStatus.resourceStatus = {
-					message: `Creation cancelled: validation failed.`,
-					code: FORM_STATUS.CANCELLED
-				}
-				lotStatus.validationStatus = {
-					message: `Error validating lot.`,
-					code: FORM_STATUS.VALIDATION_ERROR
-				}
-				lotStatus.errors = lotErrors
+				// lotStatus.resourceStatus = {
+				// 	message: `Creation cancelled: validation failed.`,
+				// 	code: FORM_STATUS.CANCELLED
+				// }
+				// lotStatus.validationStatus = {
+				// 	message: `Error validating lot.`,
+				// 	code: FORM_STATUS.VALIDATION_ERROR
+				// }
+				// lotStatus.errors = lotErrors
+				const thing = setNestedObjectValues(lotErrors, true)
+
+				console.log("thing",thing)
+				setMappedErrors(immutableReplace(mappedErrors, lotErrors, index))
+				setMappedTouched(immutableReplace(mappedTouched, thing, index))
 
 			});
 
@@ -419,8 +442,8 @@ const FormComponent = (props) => {
 					} = currItem || {}
 
 					if(component === FIELD_COMPONENT_NAMES.CALENDAR_START_END) {
-						newFieldNameArr.push({fieldName: `${fieldName}`, index: 0, dataType: dataType, displayName: fieldName})
-						newFieldNameArr.push({fieldName: `${fieldName}`, index: 1, dataType: dataType, displayName: fieldName})
+						newFieldNameArr.push({fieldName: `${fieldName}`, index: 0, dataType: dataType, displayName: `${fieldName}`, description: "Start"})
+						newFieldNameArr.push({fieldName: `${fieldName}`, index: 1, dataType: dataType, displayName: `${fieldName}`, description: "End"})
 					}
 					else {
 						newFieldNameArr.push({fieldName, dataType: component, displayName: fieldName})
@@ -1011,6 +1034,8 @@ const FormComponent = (props) => {
 									<styled.LotName>Lot Number</styled.LotName>
 										<Textbox
 											value={formatLotNumber(lotNumber)}
+											readOnly={true}
+											contentEditable={false}
 											style={{
 												cursor: "not-allowed"
 											}}
@@ -1144,14 +1169,13 @@ const FormComponent = (props) => {
 								}
 
 								{(isArray(processedValues) && processedValues.length > 0) &&
-								// <Button
-								// 	type={"button"}
-								// 	label={"Show Status"}
-								// 	onClick={() => {
-								// 		setShowCreationStatus(true)
-								// 	}}
-								// />
-									null
+								<Button
+									type={"button"}
+									label={"Back to Creation Status"}
+									onClick={() => {
+										setShowCreationStatus(true)
+									}}
+								/>
 								}
 
 								{formMode === FORM_MODES.CREATE ?
@@ -1272,9 +1296,17 @@ const FormComponent = (props) => {
 						setMappedValuesIndex(item.index)
 						setShowCreationStatus(false)
 					}}
-					onCloseClick={() => {
+					// onCloseClick={() => {
+					// 	setShowCreationStatus(false)
+					// }}
+					onCanceleClick={() => {
 						setShowCreationStatus(false)
+						setPasteTable([])
+						setMappedValuesIndex(null)
+						setProcessedValues([])
+						setMappedValues([])
 					}}
+
 					onShowMapperClick={() => {
 						setShowCreationStatus(false)
 						setShowPasteMapper(true)
@@ -1320,6 +1352,7 @@ const FormComponent = (props) => {
 							setShowPasteMapper(false)
 							setPasteMapperHidden(true)
 						}}
+
 						table={pasteTable}
 						onPreviewClick={(payload) => {
 							// setShowPasteMapper(false)

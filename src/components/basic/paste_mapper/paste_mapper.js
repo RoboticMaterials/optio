@@ -573,28 +573,37 @@ const PasteMapper = (props) => {
 								return document.body
 							}}
 							behaviour={"drop-zone"}
-							style={{display: "flex", alignItems: "center", minWidth: "fit-content", minHeight:"fit-content"}}
+							style={{display: "flex", alignItems: "center", justifyContent: "center", minWidth: "fit-content", minHeight:"fit-content"}}
 						>
 							{availableFieldNames.map((currField, currIndex) => {
 
 								const {
 									fieldName: currFieldName = "",
 									type: currType = "",
-									displayName: currDisplayName = ""
+									displayName: currDisplayName = "",
+									description,
+									dataType
 								} = currField || {}
+
+								const isDateRange = dataType === FIELD_DATA_TYPES.DATE_RANGE
+
+								console.log("mapping currField",currField)
 
 								const isUsed = usedAvailableFieldNames[currIndex]
 								return(
 									isUsed ?
-										<styled.FieldName
+										<styled.FieldButton
 											disabled={isUsed}
 											style={{
-												display: "table-cell",
+												// display: "table-cell",
 												verticalAlign: "middle",
 											}}
 										>
-											{currDisplayName ? currDisplayName : currFieldName}
-										</styled.FieldName>
+											<styled.FieldName>{currDisplayName ? currDisplayName : currFieldName}</styled.FieldName>
+											{description &&
+											<styled.FieldDescription>{description}</styled.FieldDescription>
+											}
+										</styled.FieldButton>
 										:
 										<Draggable
 											style={{
@@ -604,7 +613,14 @@ const PasteMapper = (props) => {
 											disabled={isUsed}
 											key={currIndex}
 										>
-											<styled.FieldName disabled={isUsed}>{currDisplayName ? currDisplayName : currFieldName}</styled.FieldName>
+											<styled.FieldButton
+												disabled={isUsed}
+											>
+											<styled.FieldName>{currDisplayName ? currDisplayName : currFieldName}</styled.FieldName>
+												{description &&
+												<styled.FieldDescription>{description}</styled.FieldDescription>
+												}
+											</styled.FieldButton>
 										</Draggable>
 								)
 							})}
@@ -633,15 +649,15 @@ const PasteMapper = (props) => {
 							onCreateClick(payload)
 						}}
 					/>
-					<Button
-						type={"button"}
-						schema={schema}
-						label={"Preview Lots"}
-						onClick={() => {
-							const payload = createPayload()
-							onPreviewClick(payload)
-						}}
-					/>
+					{/*<Button*/}
+					{/*	type={"button"}*/}
+					{/*	schema={schema}*/}
+					{/*	label={"Preview Lots"}*/}
+					{/*	onClick={() => {*/}
+					{/*		const payload = createPayload()*/}
+					{/*		onPreviewClick(payload)*/}
+					{/*	}}*/}
+					{/*/>*/}
 					<Button
 						schema={schema}
 						type={"button"}

@@ -40,3 +40,19 @@ export const isEmpty = (obj) => {
 export const isObject = (item) => {
     return ((typeof item === 'object') && (item !== null))
 }
+
+export const pathStringToObject = (path, delimitter, value) => {
+    const pathItems = path.split(delimitter)
+    console.log("pathItems",pathItems)
+
+    let obj = {
+        [pathItems[pathItems.length - 1]]: value
+    }
+    for(let i = pathItems.length - 2; i >= 0; i--) {
+        obj = {
+            [pathItems[i]]: {...obj}
+        }
+    }
+
+    return obj
+}
