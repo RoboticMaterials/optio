@@ -128,8 +128,6 @@ const TaskField = (props) => {
     const dispatchSetRouteObject = (object)=> dispatch(setRouteObject(object))
     const dispatchSetEditingObject = (bool)=>dispatch(setEditingObject(bool))
 
-
-
     let routes = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedObject = useSelector(state => state.objectsReducer.selectedObject)
@@ -150,8 +148,8 @@ const TaskField = (props) => {
     const [objectQuantity, setObjectQuantity] = useState(null);
     const previousLoadStationId = usePrevious(getLoadStationId(values))
     const previousUnloadStationId = usePrevious(getUnloadStationId(values))
-
     const url = useLocation().pathname
+
     useEffect(() => {
         const loadStationId = getLoadStationId(selectedTask)
         const unloadStationId = getUnloadStationId(selectedTask)
@@ -165,10 +163,6 @@ const TaskField = (props) => {
         if (selectedTask && selectedTask.unload) {
             setFieldValue(fieldParent ? `${fieldParent}.unload.station` : "unload.station", selectedTask.unload.station, false)
             setFieldValue(fieldParent ? `${fieldParent}.unload.position` : "unload.position", selectedTask.unload.position, false)
-        }
-
-        if (selectedObject) {
-            setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", selectedObject, false)
         }
 
         if (selectedTask && selectedTask.type) {
@@ -250,6 +244,19 @@ const TaskField = (props) => {
         }
     }, [])
 
+    useEffect(() => {
+      console.log(selectedObject)
+        if (selectedObject) {
+            setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", selectedObject, false)
+        }
+
+        if (!selectedObject) {
+            setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", null , false)
+        }
+
+    },[editingObject])
+
+
     // calls save function when values.needsSubmit is true - used for auto submit when selecting route from existing
     useEffect(() => {
         if (values.needsSubmit) onSave()
@@ -266,13 +273,6 @@ const TaskField = (props) => {
     useEffect(() => {
       dispatchPageDataChanged(changed)
     }, [changed])
-
-    useEffect(() => {
-      if(!!selectedObject && !!selectedObject.quantity){
-        setObjectQuantity(selectedObject.quantity)
-
-      }
-    }, [editingObject])
 
 
     const renderLoadUnloadParameters = () => {
@@ -636,7 +636,7 @@ const TaskField = (props) => {
                           <>
                           {!!routeObject && !!objects[routeObject?._id] ?
                             <>
-                              <styled.ListItem style = {{height: url==='/tasks' ? '4rem': '2.5rem'}}>
+                              <styled.ListItem style = {{height: url==='/tasks' ? '4rem': '2.5rem', marginBottom: '0rem;'}}>
                                 <styled.ListItemIcon
                                     className='fas fa-box'
                                 />
@@ -645,24 +645,27 @@ const TaskField = (props) => {
                                       className='fas fa-minus-circle'
                                       onClick = {()=>{
                                         dispatchSetRouteObject(null)
+                                        dispatchSetSelectedObject(null)
+                                        setFieldValue(fieldParent ? `${fieldParent}.route_object` : "route_object", null, false)
+
                                       }}
                                   />
                                 </styled.ListItem>
 
                                 <Button
-                                  style = {{marginTop: '1rem', marginBottom: '.3rem', height:'2.5rem', background: '#6c6e78'}}
+                                  style = {{marginTop: '0rem', marginBottom: '.3rem', height:'2rem', background: '#6c6e78'}}
                                   // disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
                                   quaternary
                                   onClick={() => setShowObjectSelector(!showObjectSelector)}
                                   >
                                   <styled.RowContainer style = {{justifyContent: 'center'}}>
-                                      <styled.HelpText style = {{fontSize: '1.2rem', paddingTop: '0.4rem'}}>Change Object</styled.HelpText>
+                                      <styled.ObjectEditorText style = {{fontSize: '1.2rem', paddingTop: '0.2rem'}}>Change Object</styled.ObjectEditorText>
                                   </styled.RowContainer>
                                   </Button>
                                 </>
                               :
                               <Button
-                                style = {{marginTop: '.2rem', marginBottom: '.3rem', height:'2.5rem', background: '#6c6e78'}}
+                                style = {{marginTop: '0.2rem', marginBottom: '.3rem', height:'2.5rem', background: '#6c6e78'}}
                                 schema={'tasks'}
                                 // disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
                                 quaternary
@@ -690,15 +693,6 @@ const TaskField = (props) => {
                                 onSelectObject = {()=>onSelectObject()}
                                 deleteDisabled = {!!selectedObject?.new}
                                 saveDisabled = {submitDisabled}
-                                onChangeQuantity={(e) => {
-                                    const value = parseInt(e.target.value)
-                                    if(isNaN(value)){
-                                      setObjectQuantity("")
-                                    }
-                                    else{setObjectQuantity(value)}
-
-                                }}
-                                quantity = {objectQuantity}
                               />
                             }
 
