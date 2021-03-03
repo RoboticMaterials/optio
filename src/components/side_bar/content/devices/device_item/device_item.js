@@ -35,7 +35,6 @@ const DeviceItem = (props) => {
     const dispatchHandlePostTaskQueue = (id) => dispatch(handlePostTaskQueue())
     const stations = useSelector(state => state.stationsReducer.stations)
     const devices = useSelector(state => state.devicesReducer.devices)
-    console.log(taskQueue)
     const [stationId, setStationId] = useState(false)
 
     // Sets the type of device
