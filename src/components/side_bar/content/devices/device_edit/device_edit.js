@@ -184,7 +184,7 @@ const DeviceEdit = (props) => {
                     placeholder="Select Location"
                     label="Idle Location for MiR Cart"
                     labelField="name"
-                    valueField="name"
+                    valueField="_id"
                     options={locationsSortedAlphabetically(Object.values(positions))}
                     values={!!selectedDevice.idle_location ? [positions[selectedDevice.idle_location]] : []}
                     dropdownGap={5}
