@@ -105,7 +105,6 @@ const SideBarSwitcher = (props) => {
                 mode={'lots'}
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
-                    history.push(`/${page}`)
                     dispatchTaskEditing(false)
                 }}
                 currentMode={url}
