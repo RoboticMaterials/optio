@@ -95,15 +95,15 @@ export async function deleteReportEvent(ID) {
 }
 
 export async function postReportEvent(reportEvent) {
-    console.log("postReportEvent reportEvent",reportEvent)
     try {
         const response = await axios({
             method: 'POST',
             url: apiIPAddress() + operator,
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 'X-API-Key': '123456',
-                'Accept': 'application/json'
+                'Access-Control-Allow-Origin': '*'
             },
             data: reportEvent
         });
