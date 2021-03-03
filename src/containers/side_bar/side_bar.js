@@ -95,7 +95,7 @@ const SideBar = (props) => {
     useEffect(() => {
         const hamburger = document.querySelector('.hamburger')
         const active = hamburger.classList.contains('is-active')
-        if (!active && id !== undefined) {
+        if (!active && id !== undefined && id !== 'summary') {
             hamburger.classList.toggle('is-active')
         }
     }, [params])
