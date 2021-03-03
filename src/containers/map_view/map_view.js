@@ -288,7 +288,6 @@ export class MapView extends Component {
                     // Disables the ability to hover over location on mouse drag when a location is selected that is not new or a right click
                     if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.schema !== 'temporary_position')) && (!this.props.editingStation || !this.props.editingPosition)) {
                         this.props.dispatchHoverStationInfo(null)
-                        console.log('QQQQ huuurrrr')
                     }
 
                     //// Saving the last event is usefull for saving d3 state when draggable is toggled (when moving locations)
