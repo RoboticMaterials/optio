@@ -6,9 +6,7 @@ import {
 } from '../types/prefixes';
 
 import {
-  STARTED,
   SUCCESS,
-  FAILURE
 } from '../types/suffixes'
 
 import {
@@ -18,9 +16,6 @@ import {
   PROCESS_CARDS,
   SHOW_EDITOR, SHOW_FORM_EDITOR
 } from '../types/data_types'
-
-import {uuidv4} from "../../methods/utils/utils";
-
 
 const defaultState = {
 

@@ -1,19 +1,3 @@
-import React from 'react'
-
-import { useDispatch, useSelector } from 'react-redux'
-
-// Import utils
-import { deepCopy } from './utils'
-
-// Import Actions
-import { putDevices, postDevices, getDevices, deleteDevices } from '../../redux/actions/devices_actions'
-import * as locationActions from '../../redux/actions/locations_actions'
-import * as positionActions from '../../redux/actions/positions_actions'
-import * as dashboardActions from '../../redux/actions/dashboards_actions'
-import * as stationActions from '../../redux/actions/stations_actions'
-import * as taskActions from '../../redux/actions/tasks_actions'
-import * as deviceActions from '../../redux/actions/devices_actions'
-
 /**
  * All of these coordinates have been calc by adjusting them on map with chrome dev tools
  * @param {*} location

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 
 import moment from 'moment';
@@ -33,11 +33,6 @@ const LineThroughputChart = (props) => {
         isData,
         date,
     } = props
-
-    // // This ref is used for formik values.
-    // // The issue it solves is that the values the formik is comparing might have changed, and formik does not have the latest vlaues
-    // // IE: Change the end of the first break to be after the start of the second break; causes error. Fix error by adjusting second break, but the second break updated time is not availabel in formik so it still throughs an error
-    // const ref = useRef(null)
 
     const dispatch = useDispatch()
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
@@ -178,12 +173,6 @@ const LineThroughputChart = (props) => {
                 if (!br.enabled) return
                 const start = convert24htoEpoch(br.startOfBreak, date)
                 const end = convert24htoEpoch(br.endOfBreak, date)
-
-                // Find the value of y at startof the break using y = mx + b
-                // const m = (shiftDetails.expectedOutput - 0) / (endEpoch - startEpoch)
-                // const b = shiftDetails.expectedOutput - m * endEpoch
-                // const yStart = m * start + b
-
 
                 // 1b) Find where the x value fits
                 for (let i = 0; i < expectedOutput.length; i++) {
@@ -440,8 +429,7 @@ const LineThroughputChart = (props) => {
                                 mapInput={
                                     (value) => {
                                         if (value) {
-                                            const time24hr = convert12hto24h(value)
-                                            const splitVal = time24hr.split(':')
+                                            const splitVal = value.split(':')
                                             return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
                                         }
                                     }
@@ -473,8 +461,7 @@ const LineThroughputChart = (props) => {
                                 mapInput={
                                     (value) => {
                                         if (value) {
-                                            const time24hr = convert12hto24h(value)
-                                            const splitVal = time24hr.split(':')
+                                            const splitVal = value.split(':')
                                             return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
                                         }
                                     }
@@ -524,25 +511,24 @@ const LineThroughputChart = (props) => {
 
                     // validation control
                     validationSchema={throughputSchema}
-                    validateOnChange={false}
-                    validateOnMount={true}
+                    validateOnChange={true}
+                    validateOnMount={false}
                     validateOnBlur={false}
 
-                    onSubmit={async (values, { setSubmitting, setTouched, }) => {
+                    onSubmit={async (values, { setSubmitting, setTouched, validateForm}) => {
                         setSubmitting(true)
                         onSubmitShift(values)
                         setSubmitting(false)
                     }}
                 >
                     {formikProps => {
+
                         const {
                             submitForm,
                             setValidationSchema,
-                            value,
+                            values,
                             errors,
                         } = formikProps
-
-
 
                         return (
                             <Form
@@ -562,8 +548,7 @@ const LineThroughputChart = (props) => {
                                             mapInput={
                                                 (value) => {
                                                     if (value) {
-                                                        const time24hr = convert12hto24h(value)
-                                                        const splitVal = time24hr.split(':')
+                                                        const splitVal = value.split(':')
                                                         return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
                                                     }
                                                 }
@@ -594,8 +579,7 @@ const LineThroughputChart = (props) => {
                                             mapInput={
                                                 (value) => {
                                                     if (value) {
-                                                        const time24hr = convert12hto24h(value)
-                                                        const splitVal = time24hr.split(':')
+                                                        const splitVal = value.split(':')
                                                         return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
                                                     }
                                                 }
@@ -627,6 +611,15 @@ const LineThroughputChart = (props) => {
                                             placeholder='Qty'
                                             InputComponent={Textbox}
                                             ContentContainer={styled.RowContainer}
+                                            mapInput={(val) => {
+                                                if (val !== null) {
+                                                    return parseInt(val)
+                                                }
+                                                else return val
+                                            }}
+                                            mapOutput={(val) => {
+                                                return parseInt(val)
+                                            }}
                                             style={{
                                                 'fontSize': '1rem',
                                                 'fontWeight': '600',
@@ -645,7 +638,7 @@ const LineThroughputChart = (props) => {
                                 {/* <styled.RowContainer>
 
                     </styled.RowContainer> */}
-                                <styled.ChartButton type='submit' >Calculate</styled.ChartButton>
+                                <styled.ChartButton type={'submit'}>Calculate</styled.ChartButton>
 
 
                             </Form>

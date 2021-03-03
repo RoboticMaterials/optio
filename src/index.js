@@ -3,13 +3,11 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import $ from "jquery";
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './methods/css/montserrat.css';
 import './methods/css/iwawa.css';
 import './methods/css/all.css';
-import * as popper from 'popper.js'
 import 'xmlrpc'
 import { Provider } from 'react-redux'
 import store from './redux/store/index.js'

@@ -26,6 +26,17 @@ export const ListItemIcon = styled.i`
     flex:1;
 
 `
+
+export const MinusIcon = styled.i`
+    font-size: 1.3rem;
+    color: white;
+    padding-left: 0.8rem;
+    flex:1;
+
+    &:hover {
+        cursor: pointer;
+    }
+`
 export const ListItem = styled.div`
     display: flex;
     align-items: center;
@@ -97,6 +108,20 @@ export const HelpText = styled.h3`
     font-family: ${props => props.theme.font.primary};
     color: white;
     text-align: center;
+`
+export const ObjectEditorText = styled.h3`
+    font-size: ${props => props.theme.fontSize.sz4};
+    font-family: ${props => props.theme.font.primary};
+    color: white;
+    text-align: center;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    font-size: 1.2rem;
+    padding-top: 0.4rem;
+
 `
 
 export const DirectionText = styled.h3`

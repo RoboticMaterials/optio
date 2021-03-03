@@ -1,4 +1,4 @@
-import React, { Component, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import * as styled from './dashboard_task_queue.style'
 
 import useOnClickOutside from '../../../../../../hooks/useOnClickOutside'

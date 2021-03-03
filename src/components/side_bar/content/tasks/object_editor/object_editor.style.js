@@ -27,7 +27,7 @@ export const ObjectContainer = styled.div`
     flex-grow: .5rem;
 
     flex-direction: column;
-    margin-top: .5rem;
+    margin-top: 1.5rem;
     margin-bottom: 1rem;
     padding-top: .2rem;
     background-color: #313236;

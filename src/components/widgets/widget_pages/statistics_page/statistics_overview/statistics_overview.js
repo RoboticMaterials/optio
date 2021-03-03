@@ -215,6 +215,7 @@ const StatisticsOverview = (props) => {
                     ...response,
                     throughPut: convertedThroughput
                 }
+                setTimeSpan('line')
             }
 
             setThroughputData(response)
@@ -387,8 +388,12 @@ const StatisticsOverview = (props) => {
                     throughputData={throughputData}
                     isThroughputLoading={isThroughputLoading}
                     timeSpan={timeSpan}
-                    loadLineChartData={(bool) => {
+                    loadLineChartData={() => {
                         onTimeSpan('line', dateIndex)
+                    }}
+                    loadBarChartData={() => {
+                        onTimeSpan('day', dateIndex)
+
                     }}
                     disableTimeSpan={(bool) => {
                         setTimespanDisabled(bool)
@@ -399,7 +404,7 @@ const StatisticsOverview = (props) => {
                     reportDate={reportData}
                     isThroughputLoading={isThroughputLoading}
                     timeSpan={timeSpan}
-                    throughputData={throughputData}
+                    reportData={reportData}
                 />
             </styled.PlotsContainer>
 

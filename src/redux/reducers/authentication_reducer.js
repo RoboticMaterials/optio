@@ -20,16 +20,27 @@ const defaultState = {
     error: {},
     pending: false,
 
+    // Authenticated?
+    authenticated: false
+
 };
 
 export default function authenticationReducer(state = defaultState, action) {
 
     switch (action.type) {
 
+        case 'AUTHENTICATE_USER':
+            return{
+                ...state,
+                cognitoUserSession: action.payload,
+                authenticated: true
+            }
+
         case 'POST_COGNITO_USER_SESSION':
             return{
                 ...state,
-                cognitoUserSession: action.payload
+                cognitoUserSession: action.payload,
+                authenticated: true
             }
 
         // ======================================== //

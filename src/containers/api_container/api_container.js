@@ -11,14 +11,13 @@ import { getTasks, deleteTask, putTask } from '../../redux/actions/tasks_actions
 import { getDashboards, deleteDashboard, postDashboard } from '../../redux/actions/dashboards_actions'
 import { getSounds } from '../../redux/actions/sounds_actions'
 import { getProcesses, putProcesses } from '../../redux/actions/processes_actions'
-import { getTasksAnalysis } from '../../redux/actions/task_analysis_actions'
 import { getDataStream } from '../../redux/actions/data_stream_actions'
 
 import { getSchedules } from '../../redux/actions/schedule_actions';
 import { getDevices, putDevices } from '../../redux/actions/devices_actions'
 import { getStatus } from '../../redux/actions/status_actions'
 
-import { getSettings, postSettings } from '../../redux/actions/settings_actions'
+import { getSettings } from '../../redux/actions/settings_actions'
 import { getLocalSettings } from '../../redux/actions/local_actions'
 import { getLoggers } from '../../redux/actions/local_actions';
 import { getRefreshToken } from '../../redux/actions/authentication_actions'
@@ -33,7 +32,6 @@ import * as localActions from '../../redux/actions/local_actions'
 import SplashScreen from "../../components/misc/splash_screen/splash_screen";
 
 // import utils
-import { getPageNameFromPath } from "../../methods/utils/router_utils";
 import { isEquivalent, deepCopy } from '../../methods/utils/utils'
 
 // import logger
@@ -41,9 +39,7 @@ import logger from '../../logger.js';
 import { getMap } from '../../api/map_api';
 import localReducer from "../../redux/reducers/local_reducer";
 import { getCards, getProcessCards } from "../../redux/actions/card_actions";
-import apiReducer from "../../redux/reducers/api_reducer";
 import { getReportEvents } from "../../redux/actions/report_event_actions";
-import { getLots } from "../../redux/actions/lot_actions";
 
 const ApiContainer = (props) => {
 
@@ -65,7 +61,6 @@ const ApiContainer = (props) => {
     const onGetCards = () => dispatch(getCards())
 
     const onGetProcesses = () => dispatch(getProcesses());
-    const onGetReportEvents = () => dispatch(getReportEvents());
 
     const onGetSchedules = () => dispatch(getSchedules())
     const onGetDevices = async () => await dispatch(getDevices())
@@ -76,7 +71,6 @@ const ApiContainer = (props) => {
     const onPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
 
     const onGetLoggers = () => dispatch(getLoggers())
-    const onGetRefreshToken = () => dispatch(getRefreshToken())
 
     const onDeleteTask = (ID) => dispatch(deleteTask(ID))
     const onDeleteDashboard = (ID) => dispatch(deleteDashboard(ID))
@@ -91,21 +85,16 @@ const ApiContainer = (props) => {
     const dispatchPutTask = async (task, ID) => await dispatch(putTask(task, ID))
 
     const onPostDashoard = (dashboard) => dispatch(postDashboard(dashboard))
-    const dispatchStopAPICalls = (bool) => dispatch(localActions.stopAPICalls(bool))
-
 
     // Selectors
-    const schedulerReducer = useSelector(state => state.schedulerReducer)
     const devices = Object.values(useSelector(state => { return state.devicesReducer })?.devices || {})
     const localReducer = useSelector(state => state.localReducer)
     const MiRMapEnabled = localReducer?.localSettings?.MiRMapEnabled
-    const apiPage = useSelector(state => state.apiReducer.page)
     const stopAPICalls = useSelector(state => state.localReducer.stopAPICalls)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
 
     // States
     const [currentPage, setCurrentPage] = useState('')
-    const [apiIpAddress, setApiIpAddress] = useState('')
     const [apiError, setApiError] = useState(false)
     const [pageDataInterval, setPageDataInterval] = useState(null)
     const [criticalDataInterval, setCriticalDataInterval] = useState(null)
@@ -328,7 +317,7 @@ const ApiContainer = (props) => {
         // Cleaner Functions
         if (!!mapViewEnabled) {
 
-            const funtion = await handleDeviceWithoutADashboard(devices, dashboards)
+            // const funtion = await handleDeviceWithoutADashboard(devices, dashboards)
             // const funtion1 = await handleTasksWithBrokenPositions(tasks, stations, positions)
             // const funtion2 = await handlePositionsWithBrokenParents(stations, positions)
             // const funtion3 = await handleDevicesWithBrokenStations(devices, stations)
@@ -501,6 +490,7 @@ const ApiContainer = (props) => {
                 const newDashboard = onPostDashoard(newDeviceDashboard)
 
                 return newDashboard.then(async (dashPromise) => {
+                    console.log(dashPromise)
                     device.dashboards = [dashPromise._id.$oid]
                     await onPutDevice(device, device._id)
                 })
@@ -522,12 +512,14 @@ const ApiContainer = (props) => {
                     const newDashboard = onPostDashoard(newDeviceDashboard)
 
                     return newDashboard.then(async (dashPromise) => {
+                        if (dashPromise._id !== undefined){
                         // Add new dashboard
                         device.dashboards.push(dashPromise._id.$oid)
 
                         // Delete old dashboard
                         const index = device.dashboards.indexOf(dashboard)
                         device.dashboards.splice(index, 1)
+                        }
 
                         await onPutDevice(device, device._id)
                     })

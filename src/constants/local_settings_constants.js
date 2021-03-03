@@ -6,4 +6,7 @@ export const defaultLocalSettings = {
 	mapViewEnabled: ls.get('MapViewEnabled'),
 	toggleDevOptions:false,
 	currentMapId: null,
+	authenticated: null,
+	refreshToken: null,
+	accessToken: null
 }

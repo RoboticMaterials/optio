@@ -65,7 +65,7 @@ const ReportChart = (props) => {
         <styled.SinglePlotContainer
             minHeight={minHeight}
             // Margin bottom is used to be able to scroll to the bottom and see the report graph
-            style={{marginBottom: '7rem'}}
+            style={{ marginBottom: '7rem' }}
         >
             <styled.PlotHeader>
                 <styled.PlotTitle>Reports</styled.PlotTitle>
@@ -97,7 +97,7 @@ const ReportChart = (props) => {
                         }}
                     />
 
-                    {!throughputData &&
+                    {!reportData &&
                         <styled.NoDataText>No Data</styled.NoDataText>
                     }
                 </styled.PlotContainer>

@@ -6,8 +6,6 @@ import { ResponsiveBar } from '@nivo/bar'
 // Import utils
 import { ThemeContext } from "styled-components";
 
-
-
 const BarChart = (props) => {
 
     const {

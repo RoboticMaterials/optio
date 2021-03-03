@@ -6,9 +6,7 @@ import {
 } from '../types/prefixes';
 
 import {
-  STARTED,
   SUCCESS,
-  FAILURE
 } from '../types/suffixes'
 
 import {

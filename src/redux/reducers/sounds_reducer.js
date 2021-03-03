@@ -33,10 +33,8 @@ export default function soundsReducer(state = defaultState, action) {
                 pending: false
             });
 
-
         default:
             return state;
-            break;
 
     }
 }

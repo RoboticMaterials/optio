@@ -2,7 +2,7 @@ import React, {useEffect, useState, useRef, useContext, memo} from 'react';
 
 // external functions
 import { useHistory } from 'react-router-dom'
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 // internal components
 import CardMenu from "./card_menu/card_menu";
@@ -10,12 +10,12 @@ import CardZone from "./card_zone/card_zone";
 import SummaryZone from "./summary_zone/summary_zone";
 
 // actions
-import {showEditor} from '../../../../redux/actions/card_actions'
+import { showEditor } from '../../../../redux/actions/card_actions'
 
 // styles
 import * as styled from './cards.style'
 import Textbox from "../../../basic/textbox/textbox";
-import {ThemeContext} from "styled-components";
+import { ThemeContext } from "styled-components";
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
 import ZoneHeader from "./zone_header/zone_header";
 import {SORT_MODES} from "../../../../constants/common_contants";
@@ -38,7 +38,7 @@ const Cards = (props) => {
 
     //redux state
     const processes = useSelector(state => { return state.processesReducer.processes })
-    const showCardEditor = useSelector(state=> {return state.cardsReducer.showEditor})
+    const showCardEditor = useSelector(state => { return state.cardsReducer.showEditor })
 
     // actions
     const dispatch = useDispatch()
@@ -83,16 +83,16 @@ const Cards = (props) => {
     * @param {int} window.innerHeight - window height
     *
     * */
-    useEffect( () => {
+    useEffect(() => {
 
         // if zoneRef is assigned
-        if(zoneRef.current){
+        if (zoneRef.current) {
 
             // extract dimensions of zoneRef
             let height = zoneRef.current.offsetHeight;
-            let width  = zoneRef.current.offsetWidth;
-            let offsetTop  = zoneRef.current.offsetTop;
-            let offsetLeft  = zoneRef.current.offsetLeft;
+            let width = zoneRef.current.offsetWidth;
+            let offsetTop = zoneRef.current.offsetTop;
+            let offsetLeft = zoneRef.current.offsetLeft;
 
             // set zoneSize
             setZoneSize({
@@ -120,10 +120,10 @@ const Cards = (props) => {
     * @param {id} string - id of content to display
     *
     * */
-    useEffect( () => {
+    useEffect(() => {
 
         // update internal state based on id
-        switch(id) {
+        switch (id) {
 
             // summary zone
             case "summary":
@@ -160,10 +160,10 @@ const Cards = (props) => {
    * */
     const handleCardClick = (cardId, processId, binId) => {
         onShowCardEditor(true)
-        setSelectedCard({cardId, processId, binId})
+        setSelectedCard({ cardId, processId, binId })
     }
 
-    return(
+    return (
         <styled.Container>
             {showCardEditor &&
             <LotEditorContainer
@@ -181,21 +181,22 @@ const Cards = (props) => {
             <styled.Header>
                 {isProcessView ?
                     <styled.MenuButton
-                        style={{marginRight: "auto"}}
+                        style={{ marginRight: "auto" }}
                         className="fas fa-chevron-left"
                         aria-hidden="true"
-                        onClick={()=>{
-                            history.replace ('/processes')}
+                        onClick={() => {
+                            history.replace('/processes')
+                        }
                         }
                     />
                     :
-                    <styled.InvisibleItem style={{marginRight: "auto"}}/> // used for spacing
+                    <styled.InvisibleItem style={{ marginRight: "auto" }} /> // used for spacing
                 }
-                <div style={{flex: 1, flexDirection:"column", display: "flex", alignItems: "center", justifyContent: "center"}}>
-                <styled.Title>{title ? title : "untitled"}</styled.Title>
+                <div style={{ flex: 1, flexDirection: "column", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <styled.Title>{title ? title : "untitled"}</styled.Title>
                 </div>
                 <styled.InvisibleItem
-                    style={{marginLeft: "auto"}}
+                    style={{ marginLeft: "auto" }}
                 />
             </styled.Header>
             <ZoneHeader
@@ -215,10 +216,10 @@ const Cards = (props) => {
 
             <styled.Body id={"cards-body"}>
                 {showMenu &&
-                <CardMenu
-                    currentProcess={currentProcess}
-                    close={()=>setShowMenu(false)}
-                />
+                    <CardMenu
+                        currentProcess={currentProcess}
+                        close={() => setShowMenu(false)}
+                    />
                 }
 
                 {

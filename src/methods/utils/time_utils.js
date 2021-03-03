@@ -1,5 +1,3 @@
-import moment from 'moment';
-
 export const getMinutesFromMoment = (m) => {
     return m.minutes() + m.hours() * 60;
 }
@@ -14,14 +12,15 @@ export const convert12hto24h = (time12h) => {
 
     let [hours, minutes] = numericTime.split(':');
 
-    if (hours === '12') {
+    if (hours === '12' && (modifier === 'AM' || modifier === 'am')) {
         hours = '00';
+    } else if (hours === '12' && (modifier === 'PM' || modifier === 'pm')) {
+        hours = '12';
     }
 
-    if (modifier === 'PM' || modifier === 'pm') {
+    if ((modifier === 'PM' || modifier === 'pm') && hours !== '12') {
         hours = parseInt(hours, 10) + 12;
     }
-
     return `${hours}:${minutes}`
 }
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import * as d3 from 'd3'
 
 
@@ -41,9 +41,9 @@ const DragEntityProto = (props) => {
         // NOTE: Im not sure why the 160 offset is neccessary. I think it might have to do with the way the menu/status bar
         // is layered.
         let angle
-        if (event.sourceEvent.type == "mousemove") {    // Computer
+        if (event.sourceEvent.type === "mousemove") {    // Computer
             angle = Math.atan2(event.sourceEvent.clientY - location.y, event.sourceEvent.clientX - location.x) * 180 / Math.PI
-        } else if (event.sourceEvent.type == "touchmove") { // Tablet
+        } else if (event.sourceEvent.type === "touchmove") { // Tablet
             angle = Math.atan2(event.sourceEvent.touches[0].clientY - location.y, event.sourceEvent.touches[0].clientX - location.x) * 180 / Math.PI
         }
 
@@ -77,9 +77,9 @@ const DragEntityProto = (props) => {
 
         // Set the translation based on the event
         let translation = []
-        if (event.sourceEvent.type == "mousemove") {    // Computer
+        if (event.sourceEvent.type === "mousemove") {    // Computer
             translation = [event.sourceEvent.clientX, event.sourceEvent.clientY]
-        } else if (event.sourceEvent.type == "touchmove") { // Tablet
+        } else if (event.sourceEvent.type === "touchmove") { // Tablet
             translation = [event.sourceEvent.touches[0].clientX, event.sourceEvent.touches[0].clientY]
         }
 
