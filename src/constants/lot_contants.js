@@ -115,6 +115,7 @@ export const FORM_STATUS = {
 	CREATE_ERROR: 6,
 	WAITING: 7,
 	CANCELLED: 8,
+	NOT_STARTED: 9,
 }
 
 

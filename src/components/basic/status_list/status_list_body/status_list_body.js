@@ -8,12 +8,12 @@ const StatusListBody = (props) => {
 
 	const {
 		data,
-		onItemClick
+		onItemClick,
+		onCreateClick,
 	} = props
 
 	const renderData = () => {
 		return data.map((currDatem, currIndex) => {
-			console.log("StatusListBody currDatem",currDatem)
 
 			const {
 				title,
@@ -37,6 +37,7 @@ const StatusListBody = (props) => {
 
 			return(
 				<StatusListItem
+					onCreateClick={onCreateClick}
 					created={created}
 					key={currIndex}
 					index={currIndex}
@@ -58,8 +59,9 @@ const StatusListBody = (props) => {
 				{/*<styled.IndexTitle></styled.IndexTitle>*/}
 				<styled.NameTitle>Lot Name</styled.NameTitle>
 				<styled.StatusMessageTitle>Validation Status</styled.StatusMessageTitle>
+				<styled.Filler/>
 				<styled.StatusMessageTitle>Creation Status</styled.StatusMessageTitle>
-				{/*<styled.Filler/>*/}
+
 
 			</styled.RowTitles>
 

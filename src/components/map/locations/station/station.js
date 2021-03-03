@@ -40,6 +40,7 @@ function Station(props) {
         d3,
         handleEnableDrag,
         handleDisableDrag,
+        mouseDown,
     } = props
 
 
@@ -319,8 +320,8 @@ function Station(props) {
     }
 
     const onMouseEnter = () => {
-        // Only allow hovering if there is no selected task
-        if (!hoveringInfo && selectedTask === null && !station.temp) {
+        // Only allow hovering if there is no selected task and mouse is not down on the map
+        if (!hoveringInfo && selectedTask === null && !station.temp && !mouseDown) {
             setHovering(true)
 
             if (!editing() && !rotating && !translating && !selectedStation && !selectedTask) {
