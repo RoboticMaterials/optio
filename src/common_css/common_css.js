@@ -1,5 +1,13 @@
 import styled, { css } from 'styled-components'
 
+
+export const overflowTextCss = css`
+  overflow: hidden;
+  //white-space: nowrap;
+  text-overflow: ellipsis;
+`
+
+
 export const glow = (color) => css`
 	box-shadow: 0 0 5px ${color} ;
 	border: 1px solid ${color};
@@ -66,7 +74,8 @@ export const iconButtonCss = `
 
 export const disabledButtonCss = css`
   cursor: not-allowed;
-  background: ${props => props.theme.disabled}
+  background: ${props => props.theme.disabled};
+  
 `
 
 export const commonClickableIcon = css`

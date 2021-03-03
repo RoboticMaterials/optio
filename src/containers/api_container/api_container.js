@@ -317,7 +317,7 @@ const ApiContainer = (props) => {
         // Cleaner Functions
         if (!!mapViewEnabled) {
 
-            // const funtion = await handleDeviceWithoutADashboard(devices, dashboards)
+            await handleDeviceWithoutADashboard(devices, dashboards)
             // const funtion1 = await handleTasksWithBrokenPositions(tasks, stations, positions)
             // const funtion2 = await handlePositionsWithBrokenParents(stations, positions)
             // const funtion3 = await handleDevicesWithBrokenStations(devices, stations)

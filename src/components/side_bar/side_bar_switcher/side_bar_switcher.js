@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom'
 
@@ -105,22 +105,21 @@ const SideBarSwitcher = (props) => {
                 mode={'lots'}
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
-                    history.push(`/${page}`)
                     dispatchTaskEditing(false)
                 }}
                 currentMode={url}
             />
 
             {!!deviceEnabled &&
-              <SideBarButton
-                  mode={'devices'}
-                  setShowSideBarPage={(page) => {
-                      dispatch(setMode(page));
-                      history.push(`/${page}`)
-                      dispatchTaskEditing(false)
-                  }}
-                  currentMode={url}
-              />
+                <SideBarButton
+                    mode={'devices'}
+                    setShowSideBarPage={(page) => {
+                        dispatch(setMode(page));
+                        history.push(`/${page}`)
+                        dispatchTaskEditing(false)
+                    }}
+                    currentMode={url}
+                />
             }
 
             <SideBarButton

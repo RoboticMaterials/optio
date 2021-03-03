@@ -86,7 +86,7 @@ export class MapView extends Component {
         this.checkForMapLoad()
         window.addEventListener('mousedown', () => this.mouseDown = true, { passive: false })
         window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, { passive: false })
-        window.addEventListener("click", () => {this.setState({showRightClickMenu:{}})});
+        window.addEventListener("click", () => { this.setState({ showRightClickMenu: {} }) });
 
         // Event listener that will recalculate the map geometry when the screen size changes
         window.addEventListener('resize', () => {
@@ -285,8 +285,7 @@ export class MapView extends Component {
                 .scaleExtent([-100, 100])
                 // .scaleExtent([scaleExtent.min, scaleExtent.max])
                 .on('zoom', () => {
-
-                    // Disables the ability to hover over location on mouse drag when a loction is selected that is not new or a right click
+                    // Disables the ability to hover over location on mouse drag when a location is selected that is not new or a right click
                     if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.schema !== 'temporary_position')) && (!this.props.editingStation || !this.props.editingPosition)) {
                         this.props.dispatchHoverStationInfo(null)
                     }
@@ -649,11 +648,11 @@ export class MapView extends Component {
                             </foreignObject>
                         </styled.MapGroup>
 
-                        {!!this.props.selectedTask  &&
+                        {!!this.props.selectedTask &&
                             <TaskPaths d3={this.d3} />
                         }
 
-                        {!!this.props.selectedHoveringTask  &&
+                        {!!this.props.selectedHoveringTask &&
                             <TaskPaths d3={this.d3} />
                         }
 
@@ -690,6 +689,8 @@ export class MapView extends Component {
                                                 d3={this.d3}
                                                 handleEnableDrag={this.onEnableDrag}
                                                 handleDisableDrag={this.onDisableDrag}
+                                                // Mouse down is used to disabling hovering when the mouse is down on the map
+                                                mouseDown={this.mouseDown}
                                             />
                                         )
                                 }</>
@@ -717,6 +718,8 @@ export class MapView extends Component {
                                                 d3={this.d3}
                                                 handleEnableDrag={this.onEnableDrag}
                                                 handleDisableDrag={this.onDisableDrag}
+                                                // Mouse down is used to disabling hovering when the mouse is down on the map
+                                                mouseDown={this.mouseDown}
                                             />
 
                                         )
@@ -728,14 +731,14 @@ export class MapView extends Component {
                                         <></>
                                         :
                                         Object.values(devices).filter(device => device.device_model == 'MiR100').map((device, ind) =>
-                                        <>
-                                          {device.connected==true &&
-                                            <MiR100 key={device._id}
-                                                device={device}
-                                                d3={this.d3}
-                                            />
-                                          }
-                                        </>
+                                            <>
+                                                {device.connected == true &&
+                                                    <MiR100 key={device._id}
+                                                        device={device}
+                                                        d3={this.d3}
+                                                    />
+                                                }
+                                            </>
 
                                         )
                                 }</>
@@ -774,7 +777,7 @@ const mapStateToProps = function (state) {
         maps: state.mapReducer.maps,
         currentMapId: state.localReducer.localSettings.currentMapId,
         currentMap: state.mapReducer.currentMap,
-        deviceEnabled: state.settingsReducer.deviceEnabled,
+        deviceEnabled: state.settingsReducer.settings.deviceEnabled,
 
         devices: state.devicesReducer.devices,
         positions: state.positionsReducer.positions,

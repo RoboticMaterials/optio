@@ -16,7 +16,6 @@ import * as styled from './kick_off_modal.style'
 import {useTheme} from "styled-components";
 import {getProcesses} from "../../../../../../redux/actions/processes_actions";
 import FadeLoader from "react-spinners/FadeLoader";
-import LotEditor from "../../../../../side_bar/content/cards/card_editor/lot_editor";
 import Textbox from "../../../../../basic/textbox/textbox";
 import {SORT_MODES} from "../../../../../../constants/common_contants";
 import {sortBy} from "../../../../../../methods/utils/card_utils";
@@ -31,6 +30,7 @@ import LotSortBar from "../../../../../side_bar/content/cards/lot_sort_bar/lot_s
 import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../../../constants/lot_contants";
 import LotFilterBar from "../../../../../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
 import {getLotTemplates} from "../../../../../../redux/actions/lot_template_actions";
+import LotEditorContainer from "../../../../../side_bar/content/cards/card_editor/lot_editor_container";
 
 Modal.setAppElement('body');
 
@@ -376,7 +376,7 @@ const KickOffModal = (props) => {
             }}
         >
             {showLotEditor &&
-            <LotEditor
+            <LotEditorContainer
                 isOpen={true}
                 onAfterOpen={null}
                 processOptions={kickOffEnabledInfo}

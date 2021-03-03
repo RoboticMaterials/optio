@@ -1,5 +1,6 @@
 import styled, {css} from "styled-components"
 import {commonClickableIcon, disabledButtonCss, iconButtonCss, newGlow, trapezoidCss} from "../../../common_css/common_css";
+import {containerLayout} from "../../../common_css/layout";
 
 const scrollCss = css`
 ::-webkit-scrollbar {
@@ -33,20 +34,15 @@ const scrollCss = css`
 
 export const Container = styled.div`
     display: flex;
-    
-    flex-direction: column;
-    //position: absolute;
-    //top:50%;
-    //left: 50%;
-    //transform: translate(-50%, -50%);
-    z-index: 5000;
-    
+    ${containerLayout};
+    align-self: center;
     overflow: hidden;
-    min-height: 100%;
-    min-width: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    
+    border-radius: 1rem;
+    flex-direction: column;
+    z-index: 5000;
+    overflow: hidden;
+    height: 90vh;
+    width: 90vw;
     background: ${props => props.theme.bg.quaternary};
 `
 
@@ -106,6 +102,7 @@ export const SectionBreak = styled.hr`
 export const TableContainer = styled.div`
     padding: 1rem;
     overflow: auto;
+    flex: 1;
 
     ${scrollCss};
     
@@ -202,6 +199,7 @@ export const ContentContainer = styled.div`
     overflow: hidden;
     align-self: stretch;
     padding: 1rem 0;
+    min-height: fit-content;
     
 `
 
@@ -243,15 +241,37 @@ export const SectionDescription = styled.span`
     margin: 0 1rem;
 `
 
-export const FieldName = styled.div`
+export const FieldButton = styled.div`
     margin: 0 1rem;
     background: ${props => props.disabled ? "pink" : props.theme.bg.tertiary};
-    padding: 1rem;
+    //padding: 1rem;
     border-radius: 1rem;
     min-width: fit-content;
-    display: inline-block;
-    
+    display: flex;
+    flex-direction: column;
+    color: white;
+    overflow: hidden;
+    align-items: stretch;
+
     ${props => props.disabled && disabledButtonCss};
+`
+
+export const FieldName = styled.div`
+    font-size: ${props => props.theme.fontSize.sz3};
+    min-width: fit-content;
+    padding: .5rem 1rem;
+`
+
+export const FieldDescription = styled.div`
+    font-size: ${props => props.theme.fontSize.sz5};
+    background: ${props => props.disabled ? "pink" : props.theme.bg.senary};
+    padding: .25rem;
+    display: inline-flex;
+    min-width: fit-content;
+    justify-content: center;
+    align-items: center;
+    color: ${props => props.theme.bg.tertiary};
+    font-style: italic;
 `
 
 

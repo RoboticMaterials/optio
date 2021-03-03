@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components"
 import {textSpanStyle} from "../../../../common_css/layout";
-import {commonClickableIcon, commonIcon, iconButtonCss} from "../../../../common_css/common_css";
+import {commonClickableIcon, commonIcon, iconButtonCss, overflowTextCss} from "../../../../common_css/common_css";
 
 export const Container = styled.div`
 	align-self: stretch;
@@ -53,15 +53,18 @@ export const ColumnWrapper = styled.div`
 flex: 1;
   display: flex;
   justify-content: space-between;
+  overflow: hidden;
 `
 
 export const StatusContainer = styled.div`
 	flex: 1;
+  overflow: hidden;
   //background: blueviolet;
   //border: 1px solid deeppink;
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  //padding-right: 1rem;
 `
 
 export const TooltipContainer = styled.div`
@@ -70,6 +73,7 @@ export const TooltipContainer = styled.div`
 
 export const StatusMessage = styled.span`
   margin-right: 2rem;
+	${overflowTextCss};
 `
 
 export const StatusIcon = styled.i`
