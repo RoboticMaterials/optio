@@ -5,7 +5,7 @@ import { useParams, useHistory } from 'react-router-dom'
 // Import Components
 import HILModals from '../../components/hil_modals/hil_modals'
 import HILSuccess from '../../components/hil_modals/hil_modals_content/hil_success'
-import {setShowModalId} from '../../redux/actions/task_queue_actions'
+import { setShowModalId } from '../../redux/actions/task_queue_actions'
 
 const HILModal = () => {
 
@@ -41,32 +41,32 @@ const HILModal = () => {
      */
     const handleHilsInTaskQueue = useMemo(() => {
         // Handles if a task queue item was clicked and displays that item
-            if (!!taskQueueItemClicked && !!taskQueue[taskQueueItemClicked]) {
+        if (!!taskQueueItemClicked && !!taskQueue[taskQueueItemClicked]) {
 
-              const item = taskQueue[taskQueueItemClicked]
-              const type = item.device_type
-              const hilType = tasks[item.task_id].type
+            const item = taskQueue[taskQueueItemClicked]
+            const type = item.device_type
+            const hilType = tasks[item.task_id].type
 
-              // Sets the HIL Message, the reason why it would undefined is that its a human load task
-              // Since a human load task needs to immediatly show, its immediatly put into the task Q vs telling the backend to put it into the task Q
-              // since it doesnt come from the backend, there's no hil message in the task Q Item
-              let hilMessage = item.hil_message
-              if (!hilMessage) {
-                  hilMessage = tasks[item.task_id].load.instructions
-              }
+            // Sets the HIL Message, the reason why it would undefined is that its a human load task
+            // Since a human load task needs to immediatly show, its immediatly put into the task Q vs telling the backend to put it into the task Q
+            // since it doesnt come from the backend, there's no hil message in the task Q Item
+            let hilMessage = item.hil_message
+            if (!hilMessage) {
+                hilMessage = tasks[item.task_id].load.instructions
+            }
 
-              if (type === 'human') {
-                  onSetShowModalId(item._id)
-                  //return <HILModals hilMessage={hilMessage} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item}/>
-              }
-
-              else if (!!taskQueue[taskQueueItemClicked].hil_station_id){
+            if (type === 'human') {
                 onSetShowModalId(item._id)
                 //return <HILModals hilMessage={hilMessage} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item}/>
-              }
+            }
 
-              //else {return null}
-          }
+            else if (!!taskQueue[taskQueueItemClicked].hil_station_id) {
+                onSetShowModalId(item._id)
+                //return <HILModals hilMessage={hilMessage} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item}/>
+            }
+
+            //else {return null}
+        }
 
         // Used to hide the HIL if success was clicked. (See HIL_Modals)
         if (hilResponse === 'load') {
@@ -126,7 +126,7 @@ const HILModal = () => {
                     hilMessage = tasks[item.task_id].load.instructions
                 }
                 if (item.hil_response !== false) {
-                  onSetShowModalId(item._id)
+                    onSetShowModalId(item._id)
                     //return <HILModals hilMessage={hilMessage} hilType={'push'} taskQuantity={item.quantity} taskQueueID={id} item={item} />
                 }
 
@@ -138,15 +138,15 @@ const HILModal = () => {
 
 
     const renderHIL = () => {
-        if(showModalId!==null && !! taskQueue){
-        const item = taskQueue[showModalId]
-        const hilType = tasks[item.task_id].type
+        if (showModalId !== null && !!taskQueue && Object.values(taskQueue).length > 0) {
+            const item = taskQueue[showModalId]
+            const hilType = tasks[item.task_id].type
 
-        return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={item._id} item={item} />
-      }
-      else {
-        return null
-      }
+            return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={item._id} item={item} />
+        }
+        else {
+            return null
+        }
 
     }
 
