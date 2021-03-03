@@ -138,9 +138,9 @@ const HILModal = () => {
 
 
     const renderHIL = () => {
-        if(showModalId!==null && !! taskQueue){
+        if(showModalId!==null && !! taskQueue && !!taskQueue[showModalId]){
         const item = taskQueue[showModalId]
-        const hilType = tasks[item.task_id].type
+        const hilType = tasks[item?.task_id]?.type
 
         return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={item._id} item={item} />
       }

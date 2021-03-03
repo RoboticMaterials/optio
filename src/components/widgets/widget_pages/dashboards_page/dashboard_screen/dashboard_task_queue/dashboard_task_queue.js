@@ -17,10 +17,10 @@ const DashboardTaskQueue = () => {
     useOnClickOutside(ref, () => setShowTaskQ(false))
 
     const path = `
-        M 1000 0 
-        Q 1000 80 910 140 
-        Q 450 500 910 860 
-        Q 1000 920 1000 1000 
+        M 1000 0
+        Q 1000 80 910 140
+        Q 450 500 910 860
+        Q 1000 920 1000 1000
     `
     return (
         <>

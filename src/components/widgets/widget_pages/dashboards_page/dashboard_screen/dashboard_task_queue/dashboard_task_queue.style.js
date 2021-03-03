@@ -1,22 +1,21 @@
 import styled from "styled-components";
 
 export const ExpandContainer = styled.div`
+    display: flex;
+    flex-direction: column;
     position: absolute;
     right: ${props => !!props.showTaskQ ? '20rem' : '0rem'};
     top: 0rem;
-    bottom: 0rem;
     margin: auto;
-    height: 15rem;
+    height: 10rem;
     width: 10rem;
     /* z-index: ${props => props.showTaskQ ? 20 : 10}; */
     z-index: 15;
     /* border-radius: 1rem 0rem 0rem 1rem; */
 
-    display: flex;
-    align-items: center;
+    justify-content: center;
 
     /* background-color: ${props => props.theme.bg.quinary}; */
-
 
 `
 
@@ -32,9 +31,10 @@ export const ExpandIcon = styled.i`
 `
 
 export const ExpandSVG = styled.svg`
+    align-items: center;
     position: absolute;
-    top: 0rem;
 
+    top: 0rem;
 
     height: 100%;
     width: 100%;
