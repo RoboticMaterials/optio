@@ -50,7 +50,6 @@ const StatusListItem = (props) => {
 		Object.entries(errors).forEach((currErr) => {
 			const [ currKey, currVal] = currErr
 			const split = currKey.split(".")
-			console.log("split",split)
 			const newKey = split[split.length - 1]
 
 			tempMappedErrors[newKey] = [getMessageFromError(currVal)]
@@ -61,8 +60,6 @@ const StatusListItem = (props) => {
 	}, [errors])
 
 	const submitDisabled = (validationCode !== FORM_STATUS.VALIDATION_SUCCESS) || (resourceCode === FORM_STATUS.CREATE_SUCCESS)
-
-	console.log("StatusListItem errors", errors)
 
 	const renderErrorTooltip = () => {
 		return(
@@ -156,7 +153,7 @@ const StatusListItem = (props) => {
 				}
 			</styled.StatusContainer>
 
-			<styled.StatusContainer>
+			<styled.StatusContainer style={{flex: 0.5}}>
 				<Button
 					type={"button"}
 					label={"Create"}

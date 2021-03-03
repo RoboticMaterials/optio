@@ -66,37 +66,16 @@ const disabledStyle = {
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
 
-const CONTENT = {
-	HISTORY: "HISTORY",
-	CALENDAR_START: "CALENDAR_START",
-	CALENDAR_END: "CALENDAR_END",
-	CALENDAR_RANGE: "CALENDAR_RANGE",
-	MOVE: "MOVE",
-	EDIT_FORM: "EDIT_FORM",
-}
-
-const FORM_BUTTON_TYPES = {
-	SAVE: "SAVE",
-	ADD: "ADD",
-	ADD_AND_NEXT: "ADD_AND_NEXT",
-	MOVE_OK: "MOVE_OK"
-}
-
-
+const buttonStyle = {marginBottom: '0rem', marginTop: 0}
 
 const FormComponent = (props) => {
 
 	const {
 		formMode,
 		lotTemplateId,
-		bins,
-		binId,
-		setBinId,
-		cardId,
 		close,
 		isOpen,
 		onDeleteClick,
-		processId,
 		errors,
 		values,
 		touched,
@@ -105,25 +84,15 @@ const FormComponent = (props) => {
 		submitCount,
 		setFieldValue,
 		submitForm,
-		setTouched,
 		formikProps,
-		processOptions,
-		showProcessSelector,
-		content,
-		setContent,
 		loaded
 
 	} = props
 
 
-	// actions
-	const dispatch = useDispatch()
-
 	const themeContext = useContext(ThemeContext)
 
 	useChange()
-
-	// redux state
 
 	// component state
 	const [preview, setPreview] = useState(false)
@@ -131,12 +100,6 @@ const FormComponent = (props) => {
 	const errorCount = Object.keys(errors).length > 0 // get number of field errors
 	const touchedCount = Object.values(touched).length // number of touched fields
 	const submitDisabled = ((((errorCount > 0)) || (touchedCount === 0) || isSubmitting) && ((submitCount > 0)) ) || !values.changed // disable if there are errors or no touched field, and form has been submitted at least once
-
-	// useEffect(() => {
-	// 	console.log("Form Editor values",values)
-	// 	console.log("Form Editor errors",errors)
-	// 	console.log("Form Editor touched",touched)
-	// }, [values, errors, touched])
 
 	/*
 	* handles when enter key is pressed
@@ -154,29 +117,7 @@ const FormComponent = (props) => {
 				// prevent default actions
 				event.preventDefault()
 				event.stopPropagation()
-
-
-				if(formMode === FORM_MODES.UPDATE) {
-					// if the form mode is set to UPDATE, the default action of enter should be to save the lot
-					// this is done by setting buttonType to SAVE and submitting the form
-
-					switch(content){
-						case CONTENT.MOVE:
-							setFieldValue("buttonType", FORM_BUTTON_TYPES.MOVE_OK)
-							submitForm()
-							break
-						default:
-							setFieldValue("buttonType", FORM_BUTTON_TYPES.SAVE)
-							submitForm()
-							break
-					}
-				}
-				else {
-					// if the form mode is set to CREATE (the only option other than UPDATE), the default action of the enter key should be to add the lot
-					// this is done by setting buttonType to ADD and submitting the form
-					setFieldValue("buttonType", FORM_BUTTON_TYPES.ADD)
-					submitForm()
-				}
+				submitForm()
 
 			}
 		}
@@ -190,13 +131,13 @@ const FormComponent = (props) => {
 		};
 	}, [])
 
-	useEffect(() => {
-
-		if(!isOpen && content) setContent(null)
-
-		return () => {
-		}
-	}, [isOpen])
+	// useEffect(() => {
+	//
+	// 	if(!isOpen && content) setContent(null)
+	//
+	// 	return () => {
+	// 	}
+	// }, [isOpen])
 
 	useEffect(() => {
 
@@ -328,70 +269,63 @@ const FormComponent = (props) => {
 			</styled.RowContainer>
 
 
-			{/* render buttons for appropriate content */}
-			{
-				{
-					"EDIT_FORM":
-						<styled.ButtonContainer style={{width: "100%"}}>
-							<Button
-								style={{...buttonStyle, width: "8rem"}}
-								onClick={async () => {
-									setFieldValue("buttonType", FORM_BUTTON_TYPES.SAVE)
+			
+		<styled.ButtonContainer style={{width: "100%"}}>
+			<Button
+				style={{...buttonStyle, width: "8rem"}}
+				onClick={async () => {
 
-									// set touched to true for all fields to show errors
-									values.fields.forEach((currRow, currRowIndex) => {
-										currRow.forEach((currField, currFieldIndex) => {
-											setFieldTouched(`fields[${currRowIndex}][${currFieldIndex}].fieldName`, true)
-										})
-									})
-									setFieldTouched("name", true)
+					// set touched to true for all fields to show errors
+					values.fields.forEach((currRow, currRowIndex) => {
+						currRow.forEach((currField, currFieldIndex) => {
+							setFieldTouched(`fields[${currRowIndex}][${currFieldIndex}].fieldName`, true)
+						})
+					})
+					setFieldTouched("name", true)
 
 
-									submitForm()
-								}}
-								schema={"ok"}
-								disabled={submitDisabled}
-								secondary
-							>
-								{formMode === FORM_MODES.UPDATE ? "Save" : "Create"}
-							</Button>
-							<Button
-								style={buttonStyle}
-								onClick={()=>close()}
-								// schema={"error"}
-							>
-								Close
-							</Button>
+					submitForm()
+				}}
+				schema={"ok"}
+				disabled={submitDisabled}
+				secondary
+			>
+				{formMode === FORM_MODES.UPDATE ? "Save" : "Create"}
+			</Button>
+			<Button
+				style={buttonStyle}
+				onClick={()=>close()}
+				// schema={"error"}
+			>
+				Close
+			</Button>
 
-							<Button
-								style={buttonStyle}
-								onClick={()=>setPreview(!preview)}
-								schema={"error"}
-							>
-								{preview ? "Show Editor" : "Show Preview"}
-							</Button>
-							{formMode === FORM_MODES.UPDATE &&
-							<Button
-								style={buttonStyle}
-								onClick={()=>onDeleteClick()}
-								schema={"error"}
-							>
-								Delete Template
-							</Button>
-							}
-
-						</styled.ButtonContainer>,
-				}[content] ||
-				null
+			<Button
+				style={buttonStyle}
+				onClick={()=>setPreview(!preview)}
+				schema={"error"}
+			>
+				{preview ? "Show Editor" : "Show Preview"}
+			</Button>
+			{formMode === FORM_MODES.UPDATE &&
+			<Button
+				style={buttonStyle}
+				onClick={()=>onDeleteClick()}
+				schema={"error"}
+			>
+				Delete Template
+			</Button>
 			}
+
+		</styled.ButtonContainer>,
+				
+			
 		</styled.StyledForm>
 	)
 
 }
 
-// overwrite default button text color since it's hard to see on the lots background color
-// const buttonStyle = {color: "black"}
-const buttonStyle = {marginBottom: '0rem', marginTop: 0}
+
 
 
 const LotCreatorForm = (props) => {
@@ -416,7 +350,6 @@ const LotCreatorForm = (props) => {
 	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
 
 
-	const [content, setContent] = useState(CONTENT.EDIT_FORM)
 	const [loaded, setLoaded] = useState(false)
 	const [formMode, setFormMode] = useState(props.lotTemplateId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
 
@@ -577,55 +510,21 @@ const LotCreatorForm = (props) => {
 					await handleSubmit(values, formMode)
 					setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
 					setSubmitting(false)
-
-					// switch(buttonType) {
-					// 	case FORM_BUTTON_TYPES.ADD:
-					// 		resetForm()
-					// 		close()
-					// 		break
-					// 	case FORM_BUTTON_TYPES.MOVE_OK:
-					// 		resetForm()
-					// 		close()
-					// 		break
-					// 	case FORM_BUTTON_TYPES.ADD_AND_NEXT:
-					// 		resetForm()
-					// 		break
-					// 	case FORM_BUTTON_TYPES.SAVE:
-					// 		close()
-					// 		break
-					// 	default:
-					// 		break
-					// }
-
 				}}
 			>
 				{formikProps => {
-
-					// extract formik props
-					const {
-						errors,
-						values,
-						touched,
-						isSubmitting,
-						submitCount,
-						setFieldValue,
-						submitForm
-					} = formikProps
 
 					return (
 						<FormComponent
 							loaded={loaded}
 							close={close}
 							formMode={formMode}
-							formikProps={formikProps}
 							isOpen={isOpen}
 							onDeleteClick={handleDeleteClick}
 							formikProps={formikProps}
 							{...formikProps}
 							processOptions={processOptions}
 							showProcessSelector={showProcessSelector}
-							content={content}
-							setContent={setContent}
 							lotTemplateId={lotTemplateId}
 						/>
 					)

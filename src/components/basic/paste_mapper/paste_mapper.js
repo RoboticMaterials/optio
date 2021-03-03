@@ -585,9 +585,7 @@ const PasteMapper = (props) => {
 									dataType
 								} = currField || {}
 
-								const isDateRange = dataType === FIELD_DATA_TYPES.DATE_RANGE
-
-								console.log("mapping currField",currField)
+								// const isDateRange = dataType === FIELD_DATA_TYPES.DATE_RANGE
 
 								const isUsed = usedAvailableFieldNames[currIndex]
 								return(

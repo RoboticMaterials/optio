@@ -1,37 +1,15 @@
 import styled, {css} from "styled-components";
-import Modal from "react-modal";
 import {Form} from "formik";
 import {commonClickableIcon, iconButtonCss} from "../../../../../common_css/common_css";
+import {containerLayout} from "../../../../../common_css/layout";
 
 export const rowCss = css`
 	margin-bottom: 1rem;
 `
 
-export const Container = styled(Modal)`
-  outline: none !important;
-  outline-offset: none !important;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  right: auto;
-  bottom: auto;
-
-  position: absolute;
-	overflow: hidden;
-  z-index: 50;
-  
-  min-width: 95%;
-  max-width: 95%;
-  max-height: 95%;
-  
-   height: ${props => props.formEditor && "95%"};
-  
-  color: ${props => props.theme.bg.octonary};
-  
-  display: flex;
-  flex-direction: column;
-  
-  color: ${props => props.theme.bg.octonary};
+export const Container = styled.div`
+  ${containerLayout};
+  overflow: hidden;
 `;
 
 export const Header = styled.div`
@@ -242,12 +220,7 @@ export const ProcessOption = styled.div`
 	text-overflow: ellipsis;
 `
 
-export const SimpleModalText = styled.span`
-  font-size: ${props => props.theme.fontSize.sz3};
-`
 
-export const SimpleModalTextContainer = styled.div`
-`
 
 const mainCss = css`
 	display: flex;
@@ -367,23 +340,7 @@ export const ObjectName = styled.span`
 export const InputContainer = styled.div`
 	flex: 1;
 `
-export const PageSelector = styled.div`
-	display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: .5rem;
-`
 
-export const PageSelectorButton = styled.div`
-	${iconButtonCss};
-  ${commonClickableIcon};
-  
-`
-export const PageSelectorText = styled.span`
-	margin: 0 1rem;
-  	font-size: ${props => props.theme.fontSize.sz3};
-  //background: pink;
-`
 
 export const Footer = styled.div`
   background: ${props => props.theme.bg.quinary};
@@ -529,9 +486,21 @@ export const CalendarContainer = styled.div`
 	${rowCss};
 `
 
-export const RowContainer = styled.div`
-	display: flex;
+const rowCss2 = css`
+  display: flex;
   align-items: center;
+`
+
+export const RowContainer = styled.div`
+	${rowCss2};
+`
+
+export const IconRow = styled.div`
+  ${rowCss2};
+  background: ${props => props.theme.bg.tertiary};
+  justify-content: flex-end;
+  align-items: center;
+  padding: .25rem;
 `
 
 export const ColumnContainer = styled.div`

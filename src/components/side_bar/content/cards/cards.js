@@ -23,6 +23,7 @@ import {SORT_MODES} from "../../../../constants/common_contants";
 import LotCreatorForm from "./card_editor/template_form";
 import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
 import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../constants/lot_contants";
+import LotEditorContainer from "./card_editor/lot_editor_container";
 
 const Cards = (props) => {
 
@@ -166,7 +167,7 @@ const Cards = (props) => {
     return(
         <styled.Container>
             {showCardEditor &&
-            <LotEditor
+            <LotEditorContainer
                 isOpen={showCardEditor}
                 onAfterOpen={null}
                 cardId={selectedCard ? selectedCard.cardId : null}

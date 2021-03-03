@@ -1,5 +1,6 @@
 import styled, {css} from "styled-components"
 import {commonClickableIcon, disabledButtonCss, iconButtonCss, newGlow, trapezoidCss} from "../../../common_css/common_css";
+import {containerLayout} from "../../../common_css/layout";
 
 const scrollCss = css`
 ::-webkit-scrollbar {
@@ -33,20 +34,15 @@ const scrollCss = css`
 
 export const Container = styled.div`
     display: flex;
-    
-    flex-direction: column;
-    //position: absolute;
-    //top:50%;
-    //left: 50%;
-    //transform: translate(-50%, -50%);
-    z-index: 5000;
-    
+    ${containerLayout};
+    align-self: center;
     overflow: hidden;
-    min-height: 100%;
-    min-width: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    
+    border-radius: 1rem;
+    flex-direction: column;
+    z-index: 5000;
+    overflow: hidden;
+    height: 90vh;
+    width: 90vw;
     background: ${props => props.theme.bg.quaternary};
 `
 
@@ -106,6 +102,7 @@ export const SectionBreak = styled.hr`
 export const TableContainer = styled.div`
     padding: 1rem;
     overflow: auto;
+    flex: 1;
 
     ${scrollCss};
     
@@ -202,6 +199,7 @@ export const ContentContainer = styled.div`
     overflow: hidden;
     align-self: stretch;
     padding: 1rem 0;
+    min-height: fit-content;
     
 `
 

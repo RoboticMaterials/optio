@@ -14,7 +14,6 @@ const StatusListBody = (props) => {
 
 	const renderData = () => {
 		return data.map((currDatem, currIndex) => {
-			console.log("StatusListBody currDatem",currDatem)
 
 			const {
 				title,
@@ -60,8 +59,9 @@ const StatusListBody = (props) => {
 				{/*<styled.IndexTitle></styled.IndexTitle>*/}
 				<styled.NameTitle>Lot Name</styled.NameTitle>
 				<styled.StatusMessageTitle>Validation Status</styled.StatusMessageTitle>
+				<styled.Filler/>
 				<styled.StatusMessageTitle>Creation Status</styled.StatusMessageTitle>
-				{/*<styled.Filler/>*/}
+
 
 			</styled.RowTitles>
 

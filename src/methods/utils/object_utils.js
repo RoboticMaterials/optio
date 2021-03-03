@@ -43,7 +43,6 @@ export const isObject = (item) => {
 
 export const pathStringToObject = (path, delimitter, value) => {
     const pathItems = path.split(delimitter)
-    console.log("pathItems",pathItems)
 
     let obj = {
         [pathItems[pathItems.length - 1]]: value
