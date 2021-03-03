@@ -201,8 +201,8 @@ const LotEditorContainer = (props) => {
 					} = currItem || {}
 
 					if(component === FIELD_COMPONENT_NAMES.CALENDAR_START_END) {
-						newFieldNameArr.push({fieldName: `${fieldName}`, index: 0, dataType: dataType, displayName: `${fieldName}`, description: "Start"})
-						newFieldNameArr.push({fieldName: `${fieldName}`, index: 1, dataType: dataType, displayName: `${fieldName}`, description: "End"})
+						newFieldNameArr.push({fieldName: `${fieldName}`, index: 0, dataType: dataType, displayName: `${fieldName} (start)`})
+						newFieldNameArr.push({fieldName: `${fieldName}`, index: 1, dataType: dataType, displayName: `${fieldName} (end)`})
 					}
 					else {
 						newFieldNameArr.push({fieldName, dataType: component, displayName: fieldName})
