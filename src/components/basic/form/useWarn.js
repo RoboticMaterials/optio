@@ -1,19 +1,12 @@
-import React, { useState } from "react";
-import { isEquivalent } from "../../../methods/utils/utils";
-import {useField, useFormikContext} from "formik";
-import {uniqueNameSchema} from "../../../methods/utils/form_schemas";
+import React  from "react";
 
 // Updates fields in parent form
 const useWarn = (validationSchema, {status, setStatus, values}) => {
 
 	React.useEffect(() => {
-		console.log("use warn")
-		console.log("validate values", values)
-
 
 		validationSchema.validate(values, {abortEarly: false})
-			.then((ayo) => {
-				console.log("validate then")
+			.then(() => {
 				setStatus({
 					...status,
 					warnings: {}
@@ -21,8 +14,6 @@ const useWarn = (validationSchema, {status, setStatus, values}) => {
 
 			})
 			.catch((err) => {
-				console.log("validate err",err)
-
 				let warnings = {}
 
 				err.inner.forEach((currErr) => {
@@ -32,7 +23,6 @@ const useWarn = (validationSchema, {status, setStatus, values}) => {
 					} = currErr
 
 					warnings[path] = message
-
 				})
 
 				setStatus({

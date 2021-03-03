@@ -13,6 +13,7 @@ import Button from "../../button/button";
 import {FORM_MODES} from "../../../../constants/scheduler_constants";
 import {isArray} from "../../../../methods/utils/array_utils";
 import {themeContext} from "@nivo/core";
+import {getMessageFromError} from "../../../../methods/utils/form_utils";
 
 const FADE_LOADER_COLORS = {
 	red: "#f01000",
@@ -36,7 +37,8 @@ const StatusListItem = (props) => {
 		index,
 		showTopBorder,
 		showBottomBorer,
-		created
+		created,
+		onCreateClick
 	} = props
 
 	const [mappedErrors, setMappedErrors] = useState({})
@@ -51,7 +53,7 @@ const StatusListItem = (props) => {
 			console.log("split",split)
 			const newKey = split[split.length - 1]
 
-			tempMappedErrors[newKey] = currVal
+			tempMappedErrors[newKey] = [getMessageFromError(currVal)]
 		})
 
 		setMappedErrors(tempMappedErrors)
@@ -161,7 +163,7 @@ const StatusListItem = (props) => {
 					schema={"ok"}
 					disabled={submitDisabled}
 					onClick={(e) => {
-
+						onCreateClick(index)
 					}}
 				/>
 			</styled.StatusContainer>
