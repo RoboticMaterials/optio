@@ -245,7 +245,6 @@ const TaskField = (props) => {
     }, [])
 
     useEffect(() => {
-      console.log(selectedObject)
         if (selectedObject) {
             setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", selectedObject, false)
         }
