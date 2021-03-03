@@ -23,7 +23,6 @@ import {Formik} from "formik";
 import TextField from "../form/text_field/text_field";
 import {Container, Draggable} from "react-smooth-dnd";
 import ContainerWrapper from "../container_wrapper/container_wrapper";
-import LotEditor from "../../side_bar/content/cards/card_editor/lot_editor";
 import {isObject} from "../../../methods/utils/object_utils";
 import {isEqualCI} from "../../../methods/utils/string_utils";
 import {BASIC_FIELD_DEFAULTS} from "../../../constants/form_constants";

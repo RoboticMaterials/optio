@@ -1360,7 +1360,7 @@ const LotEditor = (props) => {
 								// return true
 							}
 
-							if(props.hidden || showLotTemplateEditor) return null
+							if(hidden || showLotTemplateEditor) return null
 							return (
 								<FormComponent
 									footerContent={footerContent}

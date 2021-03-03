@@ -5,7 +5,6 @@ import { useHistory } from 'react-router-dom'
 import {useDispatch, useSelector} from "react-redux";
 
 // internal components
-import LotEditor from "./card_editor/lot_editor";
 import CardMenu from "./card_menu/card_menu";
 import CardZone from "./card_zone/card_zone";
 import SummaryZone from "./summary_zone/summary_zone";
