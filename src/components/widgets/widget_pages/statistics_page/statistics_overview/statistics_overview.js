@@ -215,8 +215,7 @@ const StatisticsOverview = (props) => {
                     ...response,
                     throughPut: convertedThroughput
                 }
-                setTimeSpan('day')
-
+                setTimeSpan('line')
             }
 
             setThroughputData(response)
@@ -405,7 +404,7 @@ const StatisticsOverview = (props) => {
                     reportDate={reportData}
                     isThroughputLoading={isThroughputLoading}
                     timeSpan={timeSpan}
-                    throughputData={throughputData}
+                    reportData={reportData}
                 />
             </styled.PlotsContainer>
 

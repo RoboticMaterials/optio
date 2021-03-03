@@ -505,6 +505,7 @@ export const ProcessField = (props) => {
                     schema={'processes'}
                     // disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
                     secondary
+                    style = {{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}
                     disabled={editingTask}
                     onClick={() => {
 

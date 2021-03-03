@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useParams } from 'react-router-dom'
 import { useHistory } from 'react-router-dom'
@@ -10,14 +10,12 @@ import * as styled from './side_bar.style'
 import { DraggableCore } from "react-draggable";
 import SideBarSwitcher from '../../components/side_bar/side_bar_switcher/side_bar_switcher'
 import LocationsContent from '../../components/side_bar/content/locations/locations_content'
-import ObjectsContent from '../../components/side_bar/content/objects/objects_content'
 import TasksContent from '../../components/side_bar/content/tasks/tasks_content'
 import DevicesContent from '../../components/side_bar/content/devices/devices_content'
 import SchedulerContent from '../../components/side_bar/content/scheduler/scheduler_content'
 import ProcessesContent from '../../components/side_bar/content/processes/processes_content'
 import Settings from '../../components/side_bar/content/settings/settings'
 import ConfirmDeleteModal from '../../components/basic/modals/confirm_delete_modal/confirm_delete_modal'
-import PageErrorBoundary from '../../containers/page_error_boundary/page_error_boundary'
 import Cards from "../../components/side_bar/content/cards/cards";
 
 // Import Actions
@@ -46,11 +44,8 @@ const SideBar = (props) => {
 
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
-    const dispatchEditingStation = (bool) => dispatch(setEditingStation(bool))
-    const dispatchEditingPosition = (bool) => dispatch(setEditingPosition(bool))
-    const onSetOpen = (sideBarOpen) => dispatch(setOpen(sideBarOpen))
-    const onSetWidth = (width) => dispatch(setWidth(width))
-    const onDeselectTask = () => dispatch(taskActions.deselectTask())
+    const dispatchSetOpen = (sideBarOpen) => dispatch(setOpen(sideBarOpen))
+    const dispatchSetWidth = (width) => dispatch(setWidth(width))
     const dispatchEditingTask = (bool) => dispatch(editingTask(bool))
     const dispatchEditingProcess = (bool) => dispatch(editingProcess(bool))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
@@ -59,7 +54,6 @@ const SideBar = (props) => {
 
     const [pageWidth, setPageWidth] = useState(450)
     const [prevWidth, setPrevWidth] = useState(pageWidth)
-    const [buttonActive, setButtonActive] = useState(false)
     const [prevParams, setPrevParams] = useState(params)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
@@ -68,19 +62,15 @@ const SideBar = (props) => {
     const editingStation = useSelector(state => state.stationsReducer.editingStation)
     const editingPosition = useSelector(state => state.positionsReducer.editingPosition)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
-    const taskEditing = useSelector(state => state.tasksReducer.editingTask)
-    const processEditing = useSelector(state => state.processesReducer.editingProcess)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
 
     const history = useHistory()
     const url = useLocation().pathname
 
-    const locationEditing = !!editingStation ? editingStation : editingPosition
-
     const boundToWindowSize = () => {
         const newWidth = Math.min(window.innerWidth, Math.max(360, pageWidth))
         setPageWidth(newWidth)
-        onSetWidth(newWidth)
+        dispatchSetWidth(newWidth)
     }
     useEffect(() => {
         window.addEventListener('resize', boundToWindowSize, { passive: true })
@@ -90,10 +80,33 @@ const SideBar = (props) => {
         }
     }, [])
 
-
+    // Useeffect for open close button, if the button is not active but there is an id in the URL, then the button should be active 
+    // If the side bar is not active and there is no id then toggle it off
     useEffect(() => {
-        onSetOpen(sideBarOpen)
-    })
+        const hamburger = document.querySelector('.hamburger')
+        const active = hamburger.classList.contains('is-active')
+        if (!active && id !== undefined && id !== 'summary') {
+            hamburger.classList.toggle('is-active')
+        } else if (active && id === undefined && !sideBarOpen) {
+            hamburger.classList.toggle('is-active')
+        }
+    }, [params])
+
+    // Useeffect for open close button
+    // If this button is active, there is no ID or the id is summary (means that your where previously in lot summary tab) and the side bar is closed then toggle button off
+    // Else if its not active and the side bar is open, then toggle it on
+    useEffect(() => {
+        const hamburger = document.querySelector('.hamburger')
+        const active = hamburger.classList.contains('is-active')
+        if (active && (id === undefined || id === 'summary') && !sideBarOpen) {
+            hamburger.classList.toggle('is-active')
+        } else if (!active && sideBarOpen) {
+            hamburger.classList.toggle('is-active')
+        }
+
+        dispatchSetOpen(sideBarOpen)
+
+    }, [sideBarOpen])
 
 
     // sets width to full screen if card subpage is open in processes
@@ -112,12 +125,12 @@ const SideBar = (props) => {
 
             if (!prevWidth) setPrevWidth(pageWidth) // store previous width to restore when card page is left
             setPageWidth(window.innerWidth)
-            onSetWidth(window.innerWidth)
+            dispatchSetWidth(window.innerWidth)
 
         }
         else if ((((prevSubpage === "lots") || (prevId === "timeline") || (prevId === "summary")) && (prevPage === "processes" || prevPage === "lots")) && ((subpage !== "lots") || (id === "timeline") || (id === "summary"))) {
             setPageWidth(prevWidth)
-            onSetWidth(prevWidth)
+            dispatchSetWidth(prevWidth)
             setPrevWidth(null)
         }
 
@@ -125,7 +138,7 @@ const SideBar = (props) => {
 
         if (!showSideBar) {
             setPageWidth(450)
-            onSetWidth(450)
+            dispatchSetWidth(450)
         }
 
         return () => { }
@@ -137,16 +150,11 @@ const SideBar = (props) => {
      */
     const handleSideBarOpenCloseButtonClick = () => {
 
-        if(!!showSideBar){
+        if (!!showSideBar) {
             dispatchSetSelectedStation(null)
             dispatchSetSelectedPosition(null)
             dispatchEditingTask(false)
             dispatchEditingProcess(false)
-        }
-
-        if (!widgetPageLoaded || widgetPageLoaded && !sideBarOpen) {
-            const hamburger = document.querySelector('.hamburger')
-            hamburger.classList.toggle('is-active')
         }
 
         if (!showSideBar && url == '/') {
@@ -162,31 +170,7 @@ const SideBar = (props) => {
         } else {
             const newSideBarState = !showSideBar
             setShowSideBar(newSideBarState)
-            onSetOpen(newSideBarState)
-        }
-
-    }
-
-    /**
-     * Handles when widget pages are open
-     * If open and button is not active, then activate the button
-     * Else if the button is active and widget pages aren't open and side bar isnt open then disable
-     */
-    const handleActiveButton = () => {
-
-        // Try catch is here because an error is thrown when the side bar is not mounted due to a full screen dashboard
-        // Ugly way of handling this, but it works at the moment. The error happens becasue no elements have a class hamburger when function runs
-        try {
-            if (!buttonActive && widgetPageLoaded) {
-                setButtonActive(true)
-                const hamburger = document.querySelector('.hamburger')
-                hamburger.classList.toggle('is-active')
-
-            } else if (buttonActive && !widgetPageLoaded && !showSideBar) {
-                setButtonActive(false)
-            }
-        } catch (error) {
-            setTimeout(() => handleActiveButton(), 100)
+            dispatchSetOpen(newSideBarState)
         }
 
     }
@@ -194,7 +178,7 @@ const SideBar = (props) => {
     function handleDrag(e, ui) {
         const newWidth = Math.min(window.innerWidth, Math.max(360, pageWidth + ui.deltaX))
         setPageWidth(newWidth)
-        onSetWidth(newWidth)
+        dispatchSetWidth(newWidth)
     }
 
     let content
@@ -307,9 +291,6 @@ const SideBar = (props) => {
                     </styled.SidebarContent>
                 </styled.SidebarWrapper>
             }
-
-
-            {handleActiveButton()}
         </>
     )
 
