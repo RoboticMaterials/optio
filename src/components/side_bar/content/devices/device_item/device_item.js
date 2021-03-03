@@ -82,7 +82,7 @@ const DeviceItem = (props) => {
     }
 
     const handleShowDeviceHil = (device) => {
-      if(!!device.current_task_queue_id){
+      if(!!device.current_task_queue_id && !taskQueue[device.current_task_queue_id].custom_task){
         dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: device.current_task_queue_id})
       }
     }
