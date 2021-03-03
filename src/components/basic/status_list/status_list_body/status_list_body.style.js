@@ -27,9 +27,12 @@ export const cellCss = css`
 `
 
 
+
 export const Filler = styled.div`
   //margin: auto;
   //width: 1.75rem;
+  ${cellCss};
+  flex: .5;
 `
 
 

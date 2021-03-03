@@ -2,22 +2,16 @@ import React, { useState, useEffect, useContext, useRef, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
 
-
-import ReactList from 'react-list';
-import LotEditor from "../../../side_bar/content/cards/card_editor/lot_editor";
-
 // Import styles
 import * as styled from './lots_page.style'
-import { ThemeContext } from 'styled-components';
 import Button from '../../../../components/basic/button/button'
 
 import {widgetLoaded, hoverStationInfo} from '../../../../redux/actions/widget_actions'
 import * as sidebarActions from "../../../../redux/actions/sidebar_actions"
 import {showEditor} from '../../../../redux/actions/card_actions'
-
+import LotEditorContainer from "../../../side_bar/content/cards/card_editor/lot_editor_container";
 
 // Import Actions
-
 
 // TODO: Commented out charts for the time being (See comments that start with TEMP)
 const LotsPage = (props) => {
@@ -75,7 +69,7 @@ const LotsPage = (props) => {
       <styled.LotsContainer>
 
         {showCardEditor &&
-        <LotEditor
+        <LotEditorContainer
             isOpen={showCardEditor}
             onAfterOpen={null}
             cardId={selectedCard ? selectedCard.cardId : null}

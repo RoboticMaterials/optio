@@ -1,0 +1,1 @@
+export default { authenticationNeeded: false, UserPoolId: '', ClientId: ''}

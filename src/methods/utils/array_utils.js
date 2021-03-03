@@ -41,3 +41,13 @@ export const immutableDelete = (arr, index) => {
 export const immutableReplace = (arr, ele, index) => {
     return [...arr.slice(0, index), ele, ...arr.slice(index + 1, arr.length)]
 }
+
+export const immutableSet = (arr, ele, index) => {
+    let arrCopy = [...arr]
+    for(let i = 0; i < index; i++) {
+        if(!arrCopy[i]) arrCopy[i] = null
+    }
+    arrCopy[index] = ele
+
+    return arrCopy
+}

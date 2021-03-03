@@ -13,6 +13,7 @@ import Button from "../../button/button";
 import {FORM_MODES} from "../../../../constants/scheduler_constants";
 import {isArray} from "../../../../methods/utils/array_utils";
 import {themeContext} from "@nivo/core";
+import {getMessageFromError} from "../../../../methods/utils/form_utils";
 
 const FADE_LOADER_COLORS = {
 	red: "#f01000",
@@ -36,7 +37,8 @@ const StatusListItem = (props) => {
 		index,
 		showTopBorder,
 		showBottomBorer,
-		created
+		created,
+		onCreateClick
 	} = props
 
 	const [mappedErrors, setMappedErrors] = useState({})
@@ -48,17 +50,16 @@ const StatusListItem = (props) => {
 		Object.entries(errors).forEach((currErr) => {
 			const [ currKey, currVal] = currErr
 			const split = currKey.split(".")
-			console.log("split",split)
 			const newKey = split[split.length - 1]
 
-			tempMappedErrors[newKey] = currVal
+			tempMappedErrors[newKey] = [getMessageFromError(currVal)]
 		})
 
 		setMappedErrors(tempMappedErrors)
 
 	}, [errors])
 
-	console.log("StatusListItem errors", errors)
+	const submitDisabled = (validationCode !== FORM_STATUS.VALIDATION_SUCCESS) || (resourceCode === FORM_STATUS.CREATE_SUCCESS)
 
 	const renderErrorTooltip = () => {
 		return(
@@ -150,6 +151,18 @@ const StatusListItem = (props) => {
 						size={10}
 					/>
 				}
+			</styled.StatusContainer>
+
+			<styled.StatusContainer style={{flex: 0.5}}>
+				<Button
+					type={"button"}
+					label={"Create"}
+					schema={"ok"}
+					disabled={submitDisabled}
+					onClick={(e) => {
+						onCreateClick(index)
+					}}
+				/>
 			</styled.StatusContainer>
 
 			<styled.ColumnWrapper>

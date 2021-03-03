@@ -777,7 +777,7 @@ const mapStateToProps = function (state) {
         maps: state.mapReducer.maps,
         currentMapId: state.localReducer.localSettings.currentMapId,
         currentMap: state.mapReducer.currentMap,
-        deviceEnabled: state.settingsReducer.deviceEnabled,
+        deviceEnabled: state.settingsReducer.settings.deviceEnabled,
 
         devices: state.devicesReducer.devices,
         positions: state.positionsReducer.positions,
