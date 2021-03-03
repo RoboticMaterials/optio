@@ -131,10 +131,6 @@ const Settings = () => {
 
         if (!localChange) {
             await dispatchPostLocalSettings(localSettingsState)
-            if (localSettingsState.mapViewEnabled) {
-                //const hamburger = document.querySelector('.hamburger')
-                //hamburger.classList.toggle('is-active')
-            }
 
         }
 
@@ -349,7 +345,7 @@ const Settings = () => {
         return (
             <styled.SettingContainer style={{display: 'flex', justifyContent: 'center'}}>
 
-                <Button onClick={signOut}> Sign Out </Button>
+                {config.authenticationNeeded && <Button onClick={signOut}> Sign Out </Button>}
 
             </styled.SettingContainer>
         )

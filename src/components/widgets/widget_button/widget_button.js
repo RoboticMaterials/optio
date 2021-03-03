@@ -168,10 +168,6 @@ const WidgetButton = (props) => {
     return (
         <styled.WidgetButtonButton
             onClick={() => {
-                if (showSideBar && !widgetPage) {
-                    const hamburger = document.querySelector('.hamburger')
-                    hamburger.classList.toggle('is-active')
-                }
 
                 handleOnClick()
 
