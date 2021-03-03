@@ -64,3 +64,66 @@ export const onDeleteStation = /* GraphQL */ `
     }
   }
 `;
+export const onCreateTask = /* GraphQL */ `
+  subscription OnCreateTask {
+    onCreateTask {
+      id
+      device_types
+      handoff
+      load
+      map_id
+      name
+      processes
+      quantity
+      track_quantity
+      type
+      unload
+      _id
+      obj
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateTask = /* GraphQL */ `
+  subscription OnUpdateTask {
+    onUpdateTask {
+      id
+      device_types
+      handoff
+      load
+      map_id
+      name
+      processes
+      quantity
+      track_quantity
+      type
+      unload
+      _id
+      obj
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteTask = /* GraphQL */ `
+  subscription OnDeleteTask {
+    onDeleteTask {
+      id
+      device_types
+      handoff
+      load
+      map_id
+      name
+      processes
+      quantity
+      track_quantity
+      type
+      unload
+      _id
+      obj
+      createdAt
+      updatedAt
+    }
+  }
+`;

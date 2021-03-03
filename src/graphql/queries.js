@@ -50,3 +50,52 @@ export const listStations = /* GraphQL */ `
     }
   }
 `;
+export const getTask = /* GraphQL */ `
+  query GetTask($id: ID!) {
+    getTask(id: $id) {
+      id
+      device_types
+      handoff
+      load
+      map_id
+      name
+      processes
+      quantity
+      track_quantity
+      type
+      unload
+      _id
+      obj
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listTasks = /* GraphQL */ `
+  query ListTasks(
+    $filter: ModelTaskFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listTasks(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        device_types
+        handoff
+        load
+        map_id
+        name
+        processes
+        quantity
+        track_quantity
+        type
+        unload
+        _id
+        obj
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;

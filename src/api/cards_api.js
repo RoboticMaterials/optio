@@ -20,6 +20,9 @@ export async function getCard(cardId) {
     // Success 🎉
     const data = response.data;
     const dataJson = JSON.parse(data);
+
+    console.log(dataJson)
+    
     return dataJson;
   } catch (error) {
     // Error 😨

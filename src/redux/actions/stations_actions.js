@@ -302,7 +302,7 @@ const onDeleteStation = (id) => {
           );
         })
         .forEach(async (relevantTask) => {
-          await dispatch(deleteTask(relevantTask._id));
+          await dispatch(deleteTask(relevantTask.id));
         });
     }
     return station;

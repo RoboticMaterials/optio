@@ -50,7 +50,7 @@ const Authentication = (props) => {
 
   async function checkUser() {
     const user = await Auth.currentAuthenticatedUser();
-    console.log(user);
+    
     setUser(user);
   }
 

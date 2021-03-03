@@ -7,7 +7,7 @@ import { apiIPAddress } from "../settings/settings";
 import { API } from 'aws-amplify'
 
 // import the GraphQL queries, mutations and subscriptions
-import { listStations, getStation } from '../graphql/queries'
+import { listStations } from '../graphql/queries'
 import { createStation, deleteStation, updateStation } from '../graphql/mutations'
 
 const operator = "stations";
@@ -61,9 +61,11 @@ export async function getStations() {
 export async function deleteStationByID(ID) {
   try {
 
+    const id = {id: ID}
+
     const dataJson = await API.graphql({
       query: deleteStation,
-      variables: { input: {id: ID} }
+      variables: { input: id }
     })
 
     return dataJson;
@@ -142,21 +144,6 @@ export async function postStation(station) {
 
 export async function putStation(station, ID) {
   try {
-    // const response = await axios({
-    //   method: "PUT",
-    //   url: apiIPAddress() + operator + "/" + ID,
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     "X-API-Key": "123456",
-    //     Accept: "text/html",
-    //     "Access-Control-Allow-Origin": "*",
-    //   },
-    //   data: station,
-    // });
-
-    // // Success 🎉
-    // const data = response.data;
-    // const dataJson = JSON.parse(data);
 
     const input = {
       ...station,

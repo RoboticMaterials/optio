@@ -335,7 +335,7 @@ const onDeletePosition = (id, stationDelete) => {
           );
         })
         .forEach(async (relevantTask) => {
-          await dispatch(deleteTask(relevantTask._id));
+          await dispatch(deleteTask(relevantTask.id));
         });
 
       const devices = devicesState.devices;

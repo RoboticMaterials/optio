@@ -73,3 +73,75 @@ export const deleteStation = /* GraphQL */ `
     }
   }
 `;
+export const createTask = /* GraphQL */ `
+  mutation CreateTask(
+    $input: CreateTaskInput!
+    $condition: ModelTaskConditionInput
+  ) {
+    createTask(input: $input, condition: $condition) {
+      id
+      device_types
+      handoff
+      load
+      map_id
+      name
+      processes
+      quantity
+      track_quantity
+      type
+      unload
+      _id
+      obj
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateTask = /* GraphQL */ `
+  mutation UpdateTask(
+    $input: UpdateTaskInput!
+    $condition: ModelTaskConditionInput
+  ) {
+    updateTask(input: $input, condition: $condition) {
+      id
+      device_types
+      handoff
+      load
+      map_id
+      name
+      processes
+      quantity
+      track_quantity
+      type
+      unload
+      _id
+      obj
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteTask = /* GraphQL */ `
+  mutation DeleteTask(
+    $input: DeleteTaskInput!
+    $condition: ModelTaskConditionInput
+  ) {
+    deleteTask(input: $input, condition: $condition) {
+      id
+      device_types
+      handoff
+      load
+      map_id
+      name
+      processes
+      quantity
+      track_quantity
+      type
+      unload
+      _id
+      obj
+      createdAt
+      updatedAt
+    }
+  }
+`;

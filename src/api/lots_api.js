@@ -19,6 +19,8 @@ export async function getLot(lotId) {
     // Success 🎉
     const data = response.data;
     const dataJson = JSON.parse(data);
+
+    console.log(dataJson)
     return dataJson;
   } catch (error) {
     // Error 😨
@@ -182,7 +184,9 @@ export async function postLot(lot) {
     // log.debug('response',response);
     const data = response.data;
     const dataJson = JSON.parse(data);
-    // log.debug('response data json',dataJson);
+
+
+    console.log('response data json',dataJson);
 
     return dataJson;
   } catch (error) {

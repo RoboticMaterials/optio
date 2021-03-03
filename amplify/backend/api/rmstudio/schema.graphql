@@ -13,3 +13,19 @@ type Station @model {
   children: AWSJSON!
   dashboards: AWSJSON!
 }
+
+type Task @model{
+  id: ID!
+  device_types: AWSJSON!
+  handoff: Boolean!
+  load: AWSJSON!
+  map_id: String!
+  name: String!
+  processes: AWSJSON!
+  quantity: Int!
+  track_quantity: Boolean!
+  type: String!
+  unload: AWSJSON!
+  _id: String!
+  obj: String!
+}

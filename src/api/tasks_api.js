@@ -1,27 +1,35 @@
-import axios from "axios";
-import { apiIPAddress } from "../settings/settings";
 import * as log from "loglevel";
 
-const operator = "tasks";
+// import the API category from Amplify library
+import { API } from 'aws-amplify'
+
+// import the GraphQL queries, mutations and subscriptions
+import { listTasks } from '../graphql/queries';
+import { createTask, updateTask } from '../graphql/mutations';
+import { deleteTask as deleteTaskByID } from '../graphql/mutations';
 
 export async function getTasks() {
   try {
-    const response = await axios({
-      method: "get",
-      url: apiIPAddress() + operator,
-      headers: {
-        "X-API-Key": "123456",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
 
-    // Success 🎉
-    // log.debug('getTasks :res:',response);
-    const data = response.data;
-    const dataJson = JSON.parse(data);
-    // log.debug('getTasks: dataJson: ', dataJson)
-    return dataJson;
+    const res = await API.graphql({
+      query: listTasks
+    })
+
+    let GQLdata = []
+
+    res.data.listTasks.items.forEach(task => {
+      GQLdata.push( {
+        ...task,
+        device_types: JSON.parse(task.device_types),
+        processes: JSON.parse(task.processes),
+        load: JSON.parse(task.load),
+        unload: JSON.parse(task.unload),
+      })
+    });
+    
+    return GQLdata;
   } catch (error) {
+    
     // Error 😨
     if (error.response) {
       /*
@@ -43,27 +51,19 @@ export async function getTasks() {
       console.error("error.message", error.message);
     }
     throw error;
-    console.error("error", error);
   }
 }
 
 export async function getTask(id) {
-  // log.debug('getTask: id: ', id)
   try {
-    const response = await axios({
-      method: "get",
-      url: apiIPAddress() + operator + "/" + id,
-      headers: {
-        "X-API-Key": "123456",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
-    // Success 🎉
-    // log.debug('getTask: response: ', response);
-    const data = response.data;
-    const dataJson = JSON.parse(data);
-    // log.debug('getTask: dataJson:', dataJson)
-    return dataJson;
+    const res = await API.graphql({
+      query: listTasks,
+      variables:{
+        filter: {_id: {eq: id}}
+      }
+    })
+
+    return res.data.listTasks.items[0]
   } catch (error) {
     // Error 😨
     if (error.response) {
@@ -86,32 +86,28 @@ export async function getTask(id) {
       console.error("getTask: error.message", error.message);
     }
     throw error;
-    console.error("getTask: error", error);
   }
 }
 
 export async function postTask(task) {
-  // log.debug('postTask task:',task, JSON.stringify(task));
   try {
-    const response = await axios({
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": "123456",
-        Accept: "text/html",
-        "Access-Control-Allow-Origin": "*",
-      },
-      url: apiIPAddress() + operator,
-      data: JSON.stringify(task),
-    });
+    const input = {
+      ...task,
+      device_types: JSON.stringify(task.device_types),
+      processes: JSON.stringify(task.processes),
+      load: JSON.stringify(task.load),
+      unload: JSON.stringify(task.unload),
+      obj: task.obj === undefined ? '' : task.obj.toString()
+    }
 
-    // Success 🎉
-    // log.debug('postTask: response: ', response);
-    const data = response.data;
-    const dataJson = JSON.parse(data);
-    // log.debug('postTask: dataJson: ', dataJson)
+    const dataJson = await API.graphql({
+      query: createTask,
+      variables: { input: input }
+    })
+
     return dataJson;
   } catch (error) {
+    
     // Error 😨
     if (error.response) {
       /*
@@ -133,31 +129,27 @@ export async function postTask(task) {
       console.error("postTask: error.message", error.message);
     }
     throw error;
-    console.error("postTask: error", error);
   }
 }
 
 export async function deleteTask(id) {
-  // log.debug('deleteTask: id:',id)
-
   try {
-    const response = await axios({
-      method: "delete",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": "123456",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      url: apiIPAddress() + operator + "/" + id,
-    });
 
-    // Success 🎉
-    // log.debug('deleteTask: response',response);
-    const data = response.data;
+    const res = await API.graphql({
+      query: listTasks,
+      variables:{
+        filter: {_id: {eq: id}}
+      }
+    })
 
-    return response;
+    const dataJson = await API.graphql({
+      query: deleteTaskByID,
+      variables: { input: {id: res.data.listTasks.items[0].id} }
+    })
+
+    return dataJson;
   } catch (error) {
+    
     // Error 😨
     if (error.response) {
       /*
@@ -179,31 +171,31 @@ export async function deleteTask(id) {
       log.debug("error.message", error.message);
     }
     throw error;
-    log.debug("error", error);
   }
 }
 
 export async function putTask(task, id) {
   try {
-    const response = await axios({
-      method: "put",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": "123456",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      url: apiIPAddress() + operator + "/" + id,
-      data: JSON.stringify(task),
-    });
+    const input = {
+      ...task,
+      device_types: JSON.stringify(task.device_types),
+      processes: JSON.stringify(task.processes),
+      load: JSON.stringify(task.load),
+      unload: JSON.stringify(task.unload),
+      obj: task.obj === undefined ? '' : task.obj.toString()
+    }
 
-    // Success 🎉
-    // log.debug('putTask: response: ',response);
-    const data = response.data;
-    const dataJson = JSON.parse(data);
-    // log.debug('putTask: dataJson:', dataJson)
+    delete input.createdAt
+    delete input.updatedAt
+
+    const dataJson = await API.graphql({
+      query: updateTask,
+      variables: { input: input }
+    })
+    
     return dataJson;
   } catch (error) {
+    
     // Error 😨
     if (error.response) {
       /*
@@ -225,6 +217,5 @@ export async function putTask(task, id) {
       log.debug("error.message", error.message);
     }
     throw error;
-    log.debug("error", error);
   }
 }
