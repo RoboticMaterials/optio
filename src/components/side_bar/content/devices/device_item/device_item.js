@@ -35,6 +35,7 @@ const DeviceItem = (props) => {
     const dispatchHandlePostTaskQueue = (id) => dispatch(handlePostTaskQueue())
     const stations = useSelector(state => state.stationsReducer.stations)
     const devices = useSelector(state => state.devicesReducer.devices)
+    console.log(taskQueue)
     const [stationId, setStationId] = useState(false)
 
     // Sets the type of device
@@ -82,7 +83,7 @@ const DeviceItem = (props) => {
     }
 
     const handleShowDeviceHil = (device) => {
-      if(!!device.current_task_queue_id){
+      if(!!device.current_task_queue_id && !taskQueue[device.current_task_queue_id].custom_task){
         dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: device.current_task_queue_id})
       }
     }
