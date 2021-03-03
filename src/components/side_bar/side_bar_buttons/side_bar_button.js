@@ -142,7 +142,6 @@ const SideBarButton = (props) => {
                     onClick={() => {
                         if (currentMode === 'lots') {
                             props.setShowSideBarPage(mode)
-                            // history.push('/lots/summary')
                             dispatchSetPageDataChanged(false)
                         }
 
