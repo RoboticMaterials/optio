@@ -59,6 +59,8 @@ const ListView = (props) => {
     const devices = useSelector(state => state.devicesReducer.devices)
     const status = useSelector(state => state.statusReducer.status)
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
+    const settings = useSelector(state => state.settingsReducer.settings)
+    const deviceEnabled = settings.deviceEnabled
 
     const onPostStatus = (status) => dispatch(postStatus(status))
 
@@ -131,10 +133,10 @@ const ListView = (props) => {
 
                     let locationName = ''
 
-                    if(!!item.custom_task){
+                    if (!!item.custom_task) {
                         locationName = positions[item.custom_task.position].name
                     }
-                    else if(!!item.next_position){
+                    else if (!!item.next_position) {
                         locationName = positions[item.next_position].name
                     }
 
@@ -191,13 +193,15 @@ const ListView = (props) => {
                 <styled.Title schema={CURRENT_SCREEN.schema}>{title}</styled.Title>
                 {handleTaskQueueStatus()}
 
-                <styled.PlayButton
-                    play={pause_status}
-                    windowWidth={windowWidth}
-                    widthBreakPoint={widthBreakPoint}
-                >
-                    <styled.PlayButtonIcon play={pause_status} className={playButtonClassName} onClick={handleTogglePlayPause}></styled.PlayButtonIcon>
-                </styled.PlayButton>
+                {!!deviceEnabled &&
+                    <styled.PlayButton
+                        play={pause_status}
+                        windowWidth={windowWidth}
+                        widthBreakPoint={widthBreakPoint}
+                    >
+                        <styled.PlayButtonIcon play={pause_status} className={playButtonClassName} onClick={handleTogglePlayPause}></styled.PlayButtonIcon>
+                    </styled.PlayButton>
+                }
 
             </styled.Header>
 
