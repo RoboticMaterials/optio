@@ -20,7 +20,7 @@ import { pageDataChanged } from '../../../../redux/actions/sidebar_actions'
 // Import Components
 import LocationSvg from '../location_svg/location_svg'
 import DragEntityProto from '../drag_entity_proto'
-import {getPreviousRoute} from "../../../../methods/utils/processes_utils";
+import { getPreviousRoute } from "../../../../methods/utils/processes_utils";
 import {
     getLoadStationId, getRouteEnd, getRouteIndexInRoutes, getRouteStart,
     isPositionAtLoadStation, isPositionAtUnloadStation,
@@ -36,6 +36,7 @@ function Position(props) {
         rd3tClassName,
         handleEnableDrag,
         handleDisableDrag,
+        mouseDown
     } = props
 
     const {
@@ -78,7 +79,7 @@ function Position(props) {
     // Set selected if there is a selected postion that is this position and no selected task
     else if (!!selectedPosition && selectedPosition._id === positionId && !selectedTask) isSelected = true
     // Set selected if the position is a temp right click
-    else if(position.schema === 'temporary_position') isSelected = true
+    else if (position.schema === 'temporary_position') isSelected = true
 
     // Used to disable the ability to add position as a task
     let disabled = false
@@ -97,21 +98,21 @@ function Position(props) {
         }
         else {
             // setting load (or both are set, in which case logic is the same, as click another position would be setting the load
-            if( (!routeStart) || (routeStart && routeEnd)) {
+            if ((!routeStart) || (routeStart && routeEnd)) {
                 // disable all positions except those at unload station of the route before the break
                 const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
                 disabled = !isPositionAtUnloadStation(routeBeforeBreak, positionId)
             }
 
             // setting unload
-            else if(!routeEnd) {
+            else if (!routeEnd) {
 
                 // don't allow selecting positions at stations already in process
                 disabled = isPositionInRoutes(selectedProcess.routes, positionId)
 
                 // if position is at station load station after the break, it should be enabled
                 const routeAfterBreak = selectedProcess.routes[selectedProcess.broken]
-                if(isPositionAtLoadStation(routeAfterBreak, positionId)) disabled = false
+                if (isPositionAtLoadStation(routeAfterBreak, positionId)) disabled = false
             }
         }
     }
@@ -132,21 +133,21 @@ function Position(props) {
             } = temp || {}
 
             // not first route
-            if(selectedProcess.routes.length > 0) {
+            if (selectedProcess.routes.length > 0) {
                 const routeIndex = getRouteIndexInRoutes(selectedProcess.routes.map((currProcess) => currProcess._id), selectedTask?._id)
 
                 // setting load (or both have been set)
-                if( !routeStart || (routeStart && routeEnd)) {
+                if (!routeStart || (routeStart && routeEnd)) {
 
                     // adding to beginning of process
-                    if(insertIndex === 0) {
+                    if (insertIndex === 0) {
                         // disable all positions already in the process
                         disabled = isPositionInRoutes(selectedProcess.routes, positionId)
                     }
 
-                    else if(routeIndex === 0) {
-                        if(isPositionInRoutes(selectedProcess.routes, positionId)) disabled = true
-                        if(isPositionAtLoadStation(selectedTask, positionId)) disabled = false
+                    else if (routeIndex === 0) {
+                        if (isPositionInRoutes(selectedProcess.routes, positionId)) disabled = true
+                        if (isPositionAtLoadStation(selectedTask, positionId)) disabled = false
                     }
 
                     else {
@@ -157,37 +158,37 @@ function Position(props) {
                 }
 
                 // setting unload
-                else if(!routeEnd) {
+                else if (!routeEnd) {
 
                     // adding new to beginning of process
-                    if(insertIndex === 0) {
+                    if (insertIndex === 0) {
                         // disable positions already used
                         disabled = isPositionInRoutes(selectedProcess.routes, positionId)
 
                         // enable positions at first route since inserting at beginning
                         const firstRoute = selectedProcess.routes[0]
-                        if(isPositionAtLoadStation(firstRoute, positionId)) disabled = false
+                        if (isPositionAtLoadStation(firstRoute, positionId)) disabled = false
 
                         // disable positions at load station of current route, as unload and load shouldn't be at same route
-                        if(isPositionAtLoadStation(selectedTask, positionId)) disabled = true
+                        if (isPositionAtLoadStation(selectedTask, positionId)) disabled = true
                     }
 
-                    else if(routeIndex === 0) {
-                        if(isPositionInRoutes(selectedProcess.routes, positionId)) disabled = true
+                    else if (routeIndex === 0) {
+                        if (isPositionInRoutes(selectedProcess.routes, positionId)) disabled = true
 
                         const nextRoute = selectedProcess.routes[1]
-                        if(isPositionAtLoadStation(nextRoute, positionId)) disabled = false
+                        if (isPositionAtLoadStation(nextRoute, positionId)) disabled = false
                     }
 
                     else {
                         // disable positions already used
-                        if(isPositionInRoutes(selectedProcess.routes, positionId)) disabled = true
+                        if (isPositionInRoutes(selectedProcess.routes, positionId)) disabled = true
 
                         // disable positions at load station of current route, as unload and load shouldn't be at same route
-                        if(isPositionAtLoadStation(selectedTask, positionId)) disabled = true
+                        if (isPositionAtLoadStation(selectedTask, positionId)) disabled = true
 
                         const nextRoute = selectedProcess.routes[routeIndex + 1]
-                        if(isPositionAtLoadStation(nextRoute, positionId)) disabled = false
+                        if (isPositionAtLoadStation(nextRoute, positionId)) disabled = false
                     }
                 }
             }
@@ -195,14 +196,14 @@ function Position(props) {
             // first route
             else {
                 // setting load
-                if(!routeStart || (routeStart && routeEnd)) {
+                if (!routeStart || (routeStart && routeEnd)) {
                     // all positions are available for load position of first route
                 }
 
                 // setting unload
-                else if(!routeEnd) {
+                else if (!routeEnd) {
                     // disable positions at load station of current route, as unload and load shouldn't be at same route
-                    if(isPositionAtLoadStation(selectedTask, positionId)) disabled = true
+                    if (isPositionAtLoadStation(selectedTask, positionId)) disabled = true
                 }
             }
         }
@@ -309,7 +310,7 @@ function Position(props) {
 
     const onMouseEnter = () => {
         // Only hover if there is no selected task
-        if (!hoveringInfo && selectedTask === null && !position.temp) {
+        if (!hoveringInfo && selectedTask === null && !position.temp && !mouseDown) {
             setHovering(true)
             if (!editing() && !rotating && !translating && !selectedPosition && !selectedStation && !selectedTask) {
                 dispatchHoverStationInfo(handleWidgetHover())
