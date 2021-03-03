@@ -353,7 +353,7 @@ const Settings = () => {
         return (
             <styled.SettingContainer style={{display: 'flex', justifyContent: 'center'}}>
 
-                <Button onClick={signOut}> Sign Out </Button>
+                {config.authenticationNeeded && <Button onClick={signOut}> Sign Out </Button>}
 
             </styled.SettingContainer>
         )
