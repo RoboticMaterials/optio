@@ -1,22 +1,21 @@
 import styled from "styled-components";
 
 export const ExpandContainer = styled.div`
+    display: flex;
+    flex-direction: column;
     position: absolute;
     right: ${props => !!props.showTaskQ ? '20rem' : '0rem'};
     top: 0rem;
-    bottom: 0rem;
     margin: auto;
-    height: 15rem;
+    height: 10rem;
     width: 10rem;
     /* z-index: ${props => props.showTaskQ ? 20 : 10}; */
     z-index: 15;
     /* border-radius: 1rem 0rem 0rem 1rem; */
 
-    display: flex;
-    align-items: center;
+    justify-content: center;
 
     /* background-color: ${props => props.theme.bg.quinary}; */
-
 
 `
 
@@ -24,6 +23,7 @@ export const ExpandIcon = styled.i`
     z-index: 1;
     position: absolute;
     right: .5rem;
+    top: ${props => !!props.mapViewEnabled ? '4rem' : '9rem'};
     font-size: 2rem;
 
     &:hover{
@@ -32,8 +32,10 @@ export const ExpandIcon = styled.i`
 `
 
 export const ExpandSVG = styled.svg`
+    align-items: center;
     position: absolute;
-    top: 0rem;
+    z-index: auto;
+    top: ${props => !!props.mapViewEnabled ? '0rem' : '5rem'};
 
 
     height: 100%;
