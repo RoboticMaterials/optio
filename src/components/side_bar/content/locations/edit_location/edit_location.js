@@ -30,7 +30,7 @@ import { locationSchema } from '../../../../../methods/utils/form_schemas'
 // Import actions
 import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, setEditingPosition, putPosition, postPosition, setSelectedStationChildrenCopy, removePosition } from '../../../../../redux/actions/positions_actions'
 import { setSelectedStation, setStationAttributes, addStation, deleteStation, setEditingStation, putStation, postStation, removeStation } from '../../../../../redux/actions/stations_actions'
-import {pageDataChanged} from '../../../../../redux/actions/sidebar_actions'
+import { pageDataChanged } from '../../../../../redux/actions/sidebar_actions'
 
 const EditLocation = (props) => {
     const dispatch = useDispatch()
@@ -64,6 +64,8 @@ const EditLocation = (props) => {
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
 
+    const positions = useSelector(state => state.positionsReducer.positions)
+
     const devices = useSelector(state => state.devicesReducer.devices)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
@@ -73,7 +75,7 @@ const EditLocation = (props) => {
     const [newName, setNewName] = useState('')
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
-
+    const locations = { ...stations, ...positions }
     const LocationTypes = {
         ...StationTypes,
         ...PositionTypes,
@@ -81,12 +83,7 @@ const EditLocation = (props) => {
 
     useEffect(() => {
         return () => {
-            dispatchSetEditingStation(false)
-            dispatchSetEditingPosition(false)
-
-            dispatchSetSelectedPosition(null)
-            dispatchSetSelectedStation(null)
-            dispatchSetSelectedStationChildrenCopy(null)
+            onBack()
         }
     }, [])
 
@@ -193,6 +190,20 @@ const EditLocation = (props) => {
                 dispatchRemovePosition(selectedLocation._id)
             }
         }
+        // This goes through all locations and deletes any new ones
+        else if (!selectedLocation) {
+            Object.values(locations).forEach((loc) => {
+                if (!!loc.new) {
+                    if (loc.schema === 'station') {
+                        dispatchRemoveStation(selectedLocation._id)
+                    }
+
+                    else if (loc.schema === 'position') {
+                        dispatchRemovePosition(selectedLocation._id)
+                    }
+                }
+            })
+        }
 
         dispatchSetSelectedPosition(null)
         dispatchSetSelectedStation(null)
@@ -272,7 +283,7 @@ const EditLocation = (props) => {
     }
 
     const handlePageDataChange = () => {
-      dispatchPageDataChanged(true)
+        dispatchPageDataChanged(true)
     }
 
     const handleSetChildPositionToCartCoords = (position) => {
@@ -407,7 +418,7 @@ const EditLocation = (props) => {
 
                                 <TextField
                                     name={"locationName"}
-                                    changed = {() => handlePageDataChange()}
+                                    changed={() => handlePageDataChange()}
                                     textStyle={{ fontWeight: 'Bold' }}
                                     placeholder='Enter Location Name'
                                     type='text'
@@ -446,22 +457,22 @@ const EditLocation = (props) => {
                                 </styled.LocationButtonConatiner>
 
                                 <styled.LocationButtonSubtitleContainer>
-                                  <styled.Subtitle schema={'locations'}>Workstation</styled.Subtitle>
-                                  <styled.Subtitle schema={'locations'}>Warehouse</styled.Subtitle>
+                                    <styled.Subtitle schema={'locations'}>Workstation</styled.Subtitle>
+                                    <styled.Subtitle schema={'locations'}>Warehouse</styled.Subtitle>
                                 </styled.LocationButtonSubtitleContainer>
 
                             </styled.LocationTypeContainer>
 
                             {deviceEnabled &&
                                 <styled.LocationTypeContainer>
-                                    <styled.Label schema={'locations'} style = {{marginTop: '1rem'}}>Positions</styled.Label>
+                                    <styled.Label schema={'locations'} style={{ marginTop: '1rem' }}>Positions</styled.Label>
                                     <styled.LocationButtonConatiner>
                                         {renderPositionButtons()}
                                     </styled.LocationButtonConatiner>
 
-                                    <styled.LocationButtonSubtitleContainer style = {{marginRight: '1.1rem'}}>
-                                      <styled.Subtitle schema={'locations'} style = {{marginRight: '4.5rem'}}>Cart</styled.Subtitle>
-                                      <styled.Subtitle schema={'locations'}>Shelf</styled.Subtitle>
+                                    <styled.LocationButtonSubtitleContainer style={{ marginRight: '1.1rem' }}>
+                                        <styled.Subtitle schema={'locations'} style={{ marginRight: '4.5rem' }}>Cart</styled.Subtitle>
+                                        <styled.Subtitle schema={'locations'}>Shelf</styled.Subtitle>
                                     </styled.LocationButtonSubtitleContainer>
 
                                 </styled.LocationTypeContainer>
@@ -484,19 +495,19 @@ const EditLocation = (props) => {
                     <AssociatedPositions handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
                     :
                     <>
-                      {!!deviceEnabled &&
-                        <Button
-                            schema={'locations'}
-                            secondary
-                            onClick={() => {
-                                handleSetPositionToCartCoords()
-                                dispatchPageDataChanged(true)
-                            }}
-                            style={{ marginBottom: '1rem' }}
-                        >
-                            Use Cart Location
+                        {!!deviceEnabled &&
+                            <Button
+                                schema={'locations'}
+                                secondary
+                                onClick={() => {
+                                    handleSetPositionToCartCoords()
+                                    dispatchPageDataChanged(true)
+                                }}
+                                style={{ marginBottom: '1rem' }}
+                            >
+                                Use Cart Location
                         </Button>
-                      }
+                        }
                     </>
 
                 }

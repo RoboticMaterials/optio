@@ -59,10 +59,12 @@ const SideBar = (props) => {
 
     const mode = useSelector(state => state.sidebarReducer.mode)
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
-    const editingStation = useSelector(state => state.stationsReducer.editingStation)
-    const editingPosition = useSelector(state => state.positionsReducer.editingPosition)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
+    const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
+    const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
+
+    const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
 
     const history = useHistory()
     const url = useLocation().pathname
@@ -151,8 +153,11 @@ const SideBar = (props) => {
     const handleSideBarOpenCloseButtonClick = () => {
 
         if (!!showSideBar) {
-            dispatchSetSelectedStation(null)
-            dispatchSetSelectedPosition(null)
+            if (!!selectedLocation && !selectedLocation.new) {
+                dispatchSetSelectedStation(null)
+                dispatchSetSelectedPosition(null)
+            }
+
             dispatchEditingTask(false)
             dispatchEditingProcess(false)
         }
