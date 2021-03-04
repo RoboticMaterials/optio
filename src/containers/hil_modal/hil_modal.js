@@ -57,12 +57,10 @@ const HILModal = () => {
 
             if (type === 'human') {
                 onSetShowModalId(item._id)
-                //return <HILModals hilMessage={hilMessage} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item}/>
             }
 
             else if (!!taskQueue[taskQueueItemClicked].hil_station_id) {
                 onSetShowModalId(item._id)
-                //return <HILModals hilMessage={hilMessage} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item}/>
             }
 
             //else {return null}
@@ -102,14 +100,12 @@ const HILModal = () => {
                 if (Object.keys(activeHilDashboards).includes(dashboardID)) {
                     const hilType = tasks[item.task_id].type
                     onSetShowModalId(item._id)
-                    //return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={id} item={item} key={id} />
                 }
 
                 // If a device dashboard, then show all associated HILs
                 else if (deviceDashboard) {
                     const hilType = tasks[item.task_id].type
                     onSetShowModalId(item._id)
-                    //return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={id} item={item} />
                 }
                 else {
                     //return null
@@ -127,7 +123,6 @@ const HILModal = () => {
                 }
                 if (item.hil_response !== false) {
                     onSetShowModalId(item._id)
-                    //return <HILModals hilMessage={hilMessage} hilType={'push'} taskQuantity={item.quantity} taskQueueID={id} item={item} />
                 }
 
             }
@@ -138,11 +133,17 @@ const HILModal = () => {
 
 
     const renderHIL = () => {
-        if (showModalId !== null && !!taskQueue && Object.values(taskQueue).length > 0) {
+        if (showModalId !== null && !!taskQueue && Object.values(taskQueue).length > 0 && taskQueue[showModalId] !== undefined) {
             const item = taskQueue[showModalId]
-            const hilType = tasks[item.task_id].type
+            let hilMessage = item.hil_message
 
-            return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={item._id} item={item} />
+            const task = tasks[item.task_id]
+            const hilType = task.type
+
+            if(item.device_type === 'human') {
+                hilMessage = task.load.instructions
+            }
+            return <HILModals hilMessage={hilMessage} hilType={hilType} taskQuantity={item.quantity} taskQueueID={item._id} item={item} />
         }
         else {
             return null
@@ -296,7 +297,6 @@ const HILModal = () => {
     return (
 
         <>
-            {/* <HILModals status={status.hil}/> */}
             {handleHilsInTaskQueue}
             {handleHILTimers}
             {renderHIL()}
