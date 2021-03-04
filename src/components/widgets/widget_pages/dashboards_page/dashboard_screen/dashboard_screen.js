@@ -412,7 +412,7 @@ const DashboardScreen = (props) => {
                 visible={!!addTaskAlert}
             />
 
-            {!mapViewEnabled &&
+            {!mapViewEnabled || (mapViewEnabled && mobileMode) &&
                 <DashboardTaskQueue />
             }
 
