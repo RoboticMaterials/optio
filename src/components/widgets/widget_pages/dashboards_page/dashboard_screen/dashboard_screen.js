@@ -30,6 +30,7 @@ import { handlePostTaskQueue, postTaskQueue, putTaskQueue } from '../../../../..
 import { dashboardOpen, setDashboardKickOffProcesses, putDashboard } from '../../../../../redux/actions/dashboards_actions'
 import * as localActions from '../../../../../redux/actions/local_actions'
 import { getProcesses } from "../../../../../redux/actions/processes_actions";
+import { getTasks } from '../../../../../redux/actions/tasks_actions'
 
 // Import styles
 import * as pageStyle from '../dashboards_header/dashboards_header.style'
@@ -64,7 +65,8 @@ const DashboardScreen = (props) => {
 
     //actions
     const dispatchGetProcesses = () => dispatch(getProcesses())
-    const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
+    const dispatchPutDashboard = async (dashboard, id) => await dispatch(putDashboard(dashboard, id))
+    const dispatchGetTasks = async () => await dispatch(getTasks())
 
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
@@ -150,9 +152,16 @@ const DashboardScreen = (props) => {
             // If task does not exist, delete task
             else if (task_id && !(tasks[task_id])) {
                 logger.error('Task does not exist! Hiding button from dashboard')
-                const index = buttons.findIndex((btn) => btn.id === currButton.id)
-                currentDashboard.buttons.splice(index, 1)
-                await dispatchPutDashboard(currentDashboard, currentDashboard._id.$oid)
+
+                // Doubel check to make sure it actually doesnt exist
+                const doubleCheckTasks = await dispatchGetTasks()
+                console.log('QQQQ double check task', doubleCheckTasks)
+                if (!(doubleCheckTasks[task_id])) {
+                    const index = buttons.findIndex((btn) => btn.id === currButton.id)
+                    currentDashboard.buttons.splice(index, 1)
+                    await dispatchPutDashboard(currentDashboard, currentDashboard._id.$oid)
+                }
+
                 return false
             }
 
