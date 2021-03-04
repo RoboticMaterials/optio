@@ -278,7 +278,7 @@ const TaskField = (props) => {
 
     useEffect(() => {
       if(!!obj && !!selectedObject){
-        if(obj.name!==selectedObject.name || obj.description!==selectedObject.description){
+        if((obj.name!==selectedObject.name || obj.description!==selectedObject.description) && obj.name!==""){
           console.log(obj)
           setObjectSaveDisabled(false)
         }
