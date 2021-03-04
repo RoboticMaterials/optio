@@ -213,9 +213,15 @@ const KickOffModal = (props) => {
             .filter((currLot) => {
                 const {
                     name: currLotName,
+                    bins = {},
                 } = currLot || {}
 
-                return getMatchesFilter(currLot, lotFilterValue, selectedFilterOption)
+                const count = bins["QUEUE"]?.count || 0
+
+                return getMatchesFilter({
+                    ...currLot,
+                    quantity: count
+                }, lotFilterValue, selectedFilterOption)
             })
             .map((currCard, cardIndex) => {
                 const {
