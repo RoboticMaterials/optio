@@ -23,6 +23,7 @@ export const ExpandIcon = styled.i`
     z-index: 1;
     position: absolute;
     right: .5rem;
+    top: ${props => !!props.mapViewEnabled ? '4rem' : '9rem'};
     font-size: 2rem;
 
     &:hover{
@@ -33,8 +34,9 @@ export const ExpandIcon = styled.i`
 export const ExpandSVG = styled.svg`
     align-items: center;
     position: absolute;
+    z-index: auto;
+    top: ${props => !!props.mapViewEnabled ? '0rem' : '5rem'};
 
-    top: 0rem;
 
     height: 100%;
     width: 100%;

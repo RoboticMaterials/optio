@@ -61,6 +61,7 @@ const DashboardScreen = (props) => {
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
+    const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
 
     //actions
     const dispatchGetProcesses = () => dispatch(getProcesses())
@@ -411,7 +412,7 @@ const DashboardScreen = (props) => {
                 visible={!!addTaskAlert}
             />
 
-            {mobileMode &&
+            {!mapViewEnabled &&
                 <DashboardTaskQueue />
             }
 
