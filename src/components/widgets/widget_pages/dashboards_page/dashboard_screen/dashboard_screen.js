@@ -27,9 +27,10 @@ import useWindowSize from '../../../../../hooks/useWindowSize'
 
 // Import Actions
 import { handlePostTaskQueue, postTaskQueue, putTaskQueue } from '../../../../../redux/actions/task_queue_actions'
-import { dashboardOpen, setDashboardKickOffProcesses } from '../../../../../redux/actions/dashboards_actions'
+import { dashboardOpen, setDashboardKickOffProcesses, putDashboard } from '../../../../../redux/actions/dashboards_actions'
 import * as localActions from '../../../../../redux/actions/local_actions'
 import { getProcesses } from "../../../../../redux/actions/processes_actions";
+import { getTasks } from '../../../../../redux/actions/tasks_actions'
 
 // Import styles
 import * as pageStyle from '../dashboards_header/dashboards_header.style'
@@ -38,9 +39,9 @@ import * as style from './dashboard_screen.style'
 // import logging
 import log from "../../../../../logger";
 import { isEmpty } from "../../../../../methods/utils/object_utils";
-import {isRouteInQueue} from "../../../../../methods/utils/task_queue_utils";
-import {isDeviceConnected} from "../../../../../methods/utils/device_utils";
-import {DEVICE_CONSTANTS} from "../../../../../constants/device_constants";
+import { isRouteInQueue } from "../../../../../methods/utils/task_queue_utils";
+import { isDeviceConnected } from "../../../../../methods/utils/device_utils";
+import { DEVICE_CONSTANTS } from "../../../../../constants/device_constants";
 
 
 
@@ -65,6 +66,8 @@ const DashboardScreen = (props) => {
 
     //actions
     const dispatchGetProcesses = () => dispatch(getProcesses())
+    const dispatchPutDashboard = async (dashboard, id) => await dispatch(putDashboard(dashboard, id))
+    const dispatchGetTasks = async () => await dispatch(getTasks())
 
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
@@ -129,24 +132,38 @@ const DashboardScreen = (props) => {
     const handleDashboardButtons = () => {
         let { buttons } = currentDashboard	// extract buttons from dashboard
         let taskIds = []    // array of task ids
-
         // filter out buttons with missing task
-        buttons = buttons.filter((currButton) => {
+        buttons = buttons.filter(async (currButton) => {
             const {
                 task_id,
                 type
             } = currButton
 
-            if(task_id && taskIds.includes(task_id)) {
+            // Dont add duplicate buttons, delete if they're are any
+            if (task_id && taskIds.includes(task_id)) {
                 logger.error(`Button with duplicate task_id found in dashboard. {dashboardId: ${dashboardID}, task_id:${task_id}`)
+                const index = buttons.findIndex((btn) => btn.id === currButton.id)
+                currentDashboard.buttons.splice(index, 1)
+                await dispatchPutDashboard(currentDashboard, currentDashboard._id.$oid)
                 return false // don't add duplicate tasks
             }
 
             // If the button is a custom task, then the task wont exist, so dont remove button
             if (!!currButton.custom_task) return true
 
+            // If task does not exist, delete task
             else if (task_id && !(tasks[task_id])) {
                 logger.error('Task does not exist! Hiding button from dashboard')
+
+                // Doubel check to make sure it actually doesnt exist
+                const doubleCheckTasks = await dispatchGetTasks()
+                console.log('QQQQ double check task', doubleCheckTasks)
+                if (!(doubleCheckTasks[task_id])) {
+                    const index = buttons.findIndex((btn) => btn.id === currButton.id)
+                    currentDashboard.buttons.splice(index, 1)
+                    await dispatchPutDashboard(currentDashboard, currentDashboard._id.$oid)
+                }
+
                 return false
             }
 
@@ -182,20 +199,6 @@ const DashboardScreen = (props) => {
 
     const handleRouteClick = async (Id, name, custom, deviceType) => {
 
-        const connectedDeviceExists = isDeviceConnected()
-
-        if(!connectedDeviceExists && deviceType !== DEVICE_CONSTANTS.HUMAN) {
-            // display alert notifying user that task is already in queue
-            setAddTaskAlert({
-                type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
-                label: "Alert! No device is currently connected to run this route",
-                message: `'${name}' not added`,
-            })
-
-            // clear alert after timeout
-            return setTimeout(() => setAddTaskAlert(null), 1800)
-        }
-
         // If a custom task then add custom task key to task q
         if (Id === 'custom_task') {
             setAddTaskAlert({
@@ -211,6 +214,20 @@ const DashboardScreen = (props) => {
         // Else if its a hil success, execute the HIL success function
         else if (Id === 'hil_success') {
             return handleHilSuccess(custom)
+        }
+
+        const connectedDeviceExists = isDeviceConnected()
+
+        if (!connectedDeviceExists && deviceType !== DEVICE_CONSTANTS.HUMAN) {
+            // display alert notifying user that task is already in queue
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
+                label: "Alert! No device is currently connected to run this route",
+                message: `'${name}' not added`,
+            })
+
+            // clear alert after timeout
+            return setTimeout(() => setAddTaskAlert(null), 1800)
         }
 
         let inQueue = isRouteInQueue(Id, deviceType)

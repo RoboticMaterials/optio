@@ -31,6 +31,7 @@ import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../../../constants/l
 import LotFilterBar from "../../../../../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
 import {getLotTemplates} from "../../../../../../redux/actions/lot_template_actions";
 import LotEditorContainer from "../../../../../side_bar/content/cards/card_editor/lot_editor_container";
+import SortFilterContainer from "../../../../../side_bar/content/cards/sort_filter_container/sort_filter_container";
 
 Modal.setAppElement('body');
 
@@ -392,48 +393,30 @@ const KickOffModal = (props) => {
             }
             <styled.Header>
                 <styled.HeaderMainContentContainer>
+                    <div style={{marginRight: "auto", flex: 1}}/>
                     <styled.Title>{title}</styled.Title>
-
-                    <div style={{display: "flex",  justifyContent: "center", width: "40rem", minWidth: "10rem", maxWidth: "50%"}}>
-                        <LotSortBar
-                            sortMode={sortMode}
-                            setSortMode={setSortMode}
-                            sortDirection={sortDirection}
-                            setSortDirection={setSortDirection}
-                            descriptionStyle={{
-                                margin: "0 1rem 0 0",
-                            }}
-                            containerStyle={{
-                                display: "flex",
-                                flexDirection: "row",
-                                minWidth: "fit-content",
-                                alignItems: "center"
-                            }}
-                        />
-                        <LotFilterBar
-                            shouldFocusLotFilter={shouldFocusLotFilter}
-                            setLotFilterValue={setLotFilterValue}
-                            selectedFilterOption={selectedFilterOption}
-                            setSelectedFilterOption={setSelectedFilterOption}
-                            descriptionStyle={{
-                                margin: "0 1rem 0 0",
-                            }}
-                            containerStyle={{
-                                display: "flex",
-                                flexDirection: "row",
-                                minWidth: "fit-content",
-                                alignItems: "center"
-                            }}
-                        />
+                    <div style={{flex: 1, display: "flex", justifyContent: "flex-end"}}>
+                        <Button
+                            onClick={close}
+                            schema={'dashboards'}
+                        >
+                            <i className="fa fa-times" aria-hidden="true"/>
+                        </Button>
                     </div>
-                </styled.HeaderMainContentContainer>
 
-                <Button
-                    onClick={close}
-                    schema={'dashboards'}
-                >
-                    <i className="fa fa-times" aria-hidden="true"/>
-                </Button>
+                </styled.HeaderMainContentContainer>
+                <SortFilterContainer
+                    sortMode={sortMode}
+                    setSortMode={setSortMode}
+                    sortDirection={sortDirection}
+                    setSortDirection={setSortDirection}
+                    shouldFocusLotFilter={shouldFocusLotFilter}
+                    setLotFilterValue={setLotFilterValue}
+                    selectedFilterOption={selectedFilterOption}
+                    setSelectedFilterOption={setSelectedFilterOption}
+                />
+
+
             </styled.Header>
 
             <styled.BodyContainer>

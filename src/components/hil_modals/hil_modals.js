@@ -35,6 +35,16 @@ import {getLotTemplates} from "../../redux/actions/lot_template_actions";
 import LotSortBar from "../side_bar/content/cards/lot_sort_bar/lot_sort_bar";
 import LotFilterBar from "../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
 import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../constants/lot_contants";
+import {
+    BarsContainer,
+    columnCss,
+    containerCss,
+    descriptionCss,
+    dropdownCss,
+    reactDropdownSelectCss,
+    valueCss
+} from "../side_bar/content/cards/lot_bars.style";
+import SortFilterContainer from "../side_bar/content/cards/sort_filter_container/sort_filter_container";
 
 
 /**
@@ -216,8 +226,6 @@ const HILModals = (props) => {
                         count: bins[loadStationId].count
                     }
                 })
-
-            console.log("hil modal stationCards",stationCards)
 
             if (sortMode) {
                 sortBy(stationCards, sortMode, sortDirection)
@@ -1009,50 +1017,16 @@ const HILModals = (props) => {
 
                     </styled.HeaderMainContent>
 
-                    {/*<div style={{ display: "flex", maxWidth: "50rem", minWidth: "1rem", width: "50%" }}>*/}
-                    {/*    <Textbox*/}
-                    {/*        focus={shouldFocusLotFilter}*/}
-                    {/*        placeholder='Filter lots...'*/}
-                    {/*        onChange={(e) => {*/}
-                    {/*            setLotFilterValue(e.target.value)*/}
-                    {/*        }}*/}
-                    {/*        textboxContainerStyle={{ flex: 1 }}*/}
-                    {/*    />*/}
-                    {/*</div>*/}
-                    <div style={{display: "flex",  justifyContent: "center", width: "40rem", minWidth: "10rem", maxWidth: "50%"}}>
-                        <LotSortBar
-                            descriptionStyle={{
-                                color: "black",
-                                margin: "0 1rem 0 0",
-                            }}
-                            containerStyle={{
-                                display: "flex",
-                                flexDirection: "row",
-                                minWidth: "fit-content",
-                                alignItems: "center"
-                            }}
-                            sortMode={sortMode}
-                            setSortMode={setSortMode}
-                            sortDirection={sortDirection}
-                            setSortDirection={setSortDirection}
-                        />
-                        <LotFilterBar
-                            shouldFocusLotFilter={shouldFocusLotFilter}
-                            descriptionStyle={{
-                                color: "black",
-                                margin: "0 1rem 0 0",
-                            }}
-                            containerStyle={{
-                                display: "flex",
-                                flexDirection: "row",
-                                minWidth: "fit-content",
-                                alignItems: "center"
-                            }}
-                            setLotFilterValue={setLotFilterValue}
-                            selectedFilterOption={selectedFilterOption}
-                            setSelectedFilterOption={setSelectedFilterOption}
-                        />
-                    </div>
+                    <SortFilterContainer
+                        sortMode={sortMode}
+                        setSortMode={setSortMode}
+                        sortDirection={sortDirection}
+                        setSortDirection={setSortDirection}
+                        shouldFocusLotFilter={shouldFocusLotFilter}
+                        setLotFilterValue={setLotFilterValue}
+                        selectedFilterOption={selectedFilterOption}
+                        setSelectedFilterOption={setSelectedFilterOption}
+                    />
                 </styled.Header>
                 <styled.LotSelectorContainer>
 

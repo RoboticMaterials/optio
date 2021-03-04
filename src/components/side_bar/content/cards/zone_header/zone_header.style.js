@@ -1,34 +1,106 @@
 import styled, { css } from "styled-components";
 import {commonClickableIcon, iconButtonCss} from "../../../../../common_css/common_css";
 
+const scrollCss = css`
+::-webkit-scrollbar {
+        width: 10px;
+        height: 5px;
+        margin: 1rem;
+        background: transparent;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+        background: rgba(175,175,175,0.75);
+    }
+
+    ::-webkit-scrollbar-track:hover {
+        background: rgba(175,175,175,0.6);
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: #27272b;
+        border-radius: .5rem;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+
+    }
+`
+
 export const Container = styled.div`
 	display: flex;
     flex-direction: row;
+  align-items: center;
     width: 100%;
     padding: .5rem 1rem; 
     background: ${props => props.theme.bg.quaternary};
     border-bottom: 1px solid ${props => props.theme.bg.tertiary};
     z-index: 20;
+  position: relative;
+
+  @media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
+    flex-direction: column;
+    //align-items: center;
+    //max-width: 30rem;
+  }
 `
 
 export const ColumnContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin-right: 1rem;
+  //margin-right: 1rem;
+  align-self: stretch;
+  flex: 1;
+  
+  @media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
+    flex-direction: row;
+	align-items: center;
+	margin: .5rem 0;
+  }
+  
+  ${props => props.css && props.css};
 `
 
 export const Description = styled.span`
   color: white;
   margin-bottom: .25rem;
+  white-space: nowrap;
+
+  @media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
+    margin-right: .5rem;
+  }
+  
+  ${props => props.css && props.css};
 `
 
+
+
 export const ItemContainer = styled.div`
-// background: red;
 	display: flex;
+	position: relative;
+	
+	flex: 1;
+	overflow: hidden;
+	align-items: center;
+
+	@media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
+	height: fit-content;
+	}
+	@media (min-width: ${props => props.theme.widthBreakpoint.laptop}) {
+	align-self: stretch;
+	}
 `
 
 export const FlagsContainer = styled.div`
 	display: flex;
+  overflow-x: auto;
+  flex: 1;
+  
+  ${scrollCss};
 `
 
 export const ArrowContainer = styled.div`
@@ -48,13 +120,13 @@ const selectedCss = css`
 
 export const FlagButton = styled.button`
 	${iconButtonCss};
-  	${commonClickableIcon};	
-  ${props => props.selected && selectedCss};
+	${commonClickableIcon};	
+	${props => props.selected && selectedCss};
 `
 
 export const ArrowButton = styled.button`
 	${iconButtonCss};
-  	${commonClickableIcon};	
-  ${props => props.selected && selectedCss};
+	${commonClickableIcon};	
+	${props => props.selected && selectedCss};
 `
 

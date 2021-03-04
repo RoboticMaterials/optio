@@ -29,7 +29,9 @@ const Dropdown = ({ ItemComponent, props, dropdownRef, DropDownComponent, state,
     // console.log('Dropdown ItemComponent', ItemComponent)
     return (
         <DropDownComponent
+            css={props.dropdownCss}
             ref={dropdownRef}
+            maxWidth={props.maxDropdownWidth}
             tabIndex="-1"
             aria-expanded="true"
             role="list"
@@ -114,6 +116,8 @@ export const DefaultDropDownComponent = styled.div`
   max-height: ${({ dropdownHeight }) => dropdownHeight};
   overflow: auto;
   z-index: 1;
+    
+    ${props => props.css && props.css};
 
   border-radius: 0.2rem;
 
@@ -141,6 +145,8 @@ export const DefaultDropDownComponent = styled.div`
   ::-webkit-scrollbar-thumb:window-inactive {
     background: rgba(255,255,255,0.2);
   }
+    
+    max-width: ${props => props.maxWidth && props.maxWidth};
 
 }
 `;

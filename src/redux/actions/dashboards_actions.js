@@ -113,6 +113,7 @@ export const postDashboard = (dashboard) => {
     }
 }
 export const putDashboard = (dashboard, ID) => {
+    const dashbaordCopy = deepCopy(dashboard)
     return async dispatch => {
         function onStart() {
             dispatch({ type: PUT_DASHBOARD_STARTED });
@@ -128,8 +129,8 @@ export const putDashboard = (dashboard, ID) => {
 
         try {
             onStart();
-            delete dashboard._id
-            const updateDashboard = await api.putDashboards(dashboard, ID);
+            delete dashbaordCopy._id
+            const updateDashboard = await api.putDashboards(dashbaordCopy, ID);
             return onSuccess(updateDashboard)
         } catch (error) {
             return onError(error)
