@@ -227,8 +227,6 @@ const HILModals = (props) => {
                     }
                 })
 
-            console.log("hil modal stationCards",stationCards)
-
             if (sortMode) {
                 sortBy(stationCards, sortMode, sortDirection)
             }
