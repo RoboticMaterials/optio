@@ -45,7 +45,10 @@ import ConfirmDeleteModal from "./components/basic/modals/confirm_delete_modal/c
 import Amplify, { API, graphqlOperation }  from "aws-amplify";
 import config from "./aws-exports";
 import { onCreateStation, onCreatePosition } from './graphql/subscriptions'
+import { listDevices } from './graphql/queries';
+
 Amplify.configure(config);
+
 
 const widthBreakPoint = 1000;
 
@@ -55,12 +58,18 @@ const App = (props) => {
 
   // Testing subscriptions
   // Subscribe to creation of Station
-  API.graphql(
-      graphqlOperation( onCreatePosition )
-  ).subscribe({
-      next: ({ provider, value }) => console.log({ provider, value }),
-      error: error => console.warn(error)
-  });
+  // API.graphql(
+  //     graphqlOperation( onCreatePosition )
+  // ).subscribe({
+  //     next: ({ provider, value }) => console.log({ provider, value }),
+  //     error: error => console.warn(error)
+  // });
+
+  // const res = await API.graphql({
+  //   query: listDevices
+  // })
+
+  // console.log(res)
 
   // Testing subscriptions
   // Subscribe to creation of Station

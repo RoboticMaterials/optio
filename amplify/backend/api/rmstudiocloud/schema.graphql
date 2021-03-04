@@ -51,3 +51,33 @@ type Position
   x: Int!
   y: Int!
 }
+
+# Data stream
+
+type Device
+  @model
+{
+  id: ID!
+  _id: String!
+  battery_percentage: Int!
+  current_task_queue_id: String
+  dashboards: AWSJSON!
+  device_model: String!
+  device_name: String!
+  distance_to_next_target: Int!
+  idle_location: String!
+  map_id: String!
+  position: AWSJSON!
+  shelf_attached: Int!
+  state_text: String!
+}
+
+type Status 
+  @model
+{
+  id: ID!
+  _id: String!
+  active_map: Boolean
+  mir_connection: String
+  pause_status: Boolean
+}

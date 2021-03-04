@@ -148,3 +148,85 @@ export const listPositions = /* GraphQL */ `
     }
   }
 `;
+export const getDevice = /* GraphQL */ `
+  query GetDevice($id: ID!) {
+    getDevice(id: $id) {
+      id
+      _id
+      battery_percentage
+      current_task_queue_id
+      dashboards
+      device_model
+      device_name
+      distance_to_next_target
+      idle_location
+      map_id
+      position
+      shelf_attached
+      state_text
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listDevices = /* GraphQL */ `
+  query ListDevices(
+    $filter: ModelDeviceFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listDevices(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        _id
+        battery_percentage
+        current_task_queue_id
+        dashboards
+        device_model
+        device_name
+        distance_to_next_target
+        idle_location
+        map_id
+        position
+        shelf_attached
+        state_text
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getStatus = /* GraphQL */ `
+  query GetStatus($id: ID!) {
+    getStatus(id: $id) {
+      id
+      _id
+      active_map
+      mir_connection
+      pause_status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listStatuss = /* GraphQL */ `
+  query ListStatuss(
+    $filter: ModelStatusFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listStatuss(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        _id
+        active_map
+        mir_connection
+        pause_status
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;

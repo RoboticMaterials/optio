@@ -190,3 +190,105 @@ export const onDeletePosition = /* GraphQL */ `
     }
   }
 `;
+export const onCreateDevice = /* GraphQL */ `
+  subscription OnCreateDevice {
+    onCreateDevice {
+      id
+      _id
+      battery_percentage
+      current_task_queue_id
+      dashboards
+      device_model
+      device_name
+      distance_to_next_target
+      idle_location
+      map_id
+      position
+      shelf_attached
+      state_text
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateDevice = /* GraphQL */ `
+  subscription OnUpdateDevice {
+    onUpdateDevice {
+      id
+      _id
+      battery_percentage
+      current_task_queue_id
+      dashboards
+      device_model
+      device_name
+      distance_to_next_target
+      idle_location
+      map_id
+      position
+      shelf_attached
+      state_text
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteDevice = /* GraphQL */ `
+  subscription OnDeleteDevice {
+    onDeleteDevice {
+      id
+      _id
+      battery_percentage
+      current_task_queue_id
+      dashboards
+      device_model
+      device_name
+      distance_to_next_target
+      idle_location
+      map_id
+      position
+      shelf_attached
+      state_text
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onCreateStatus = /* GraphQL */ `
+  subscription OnCreateStatus {
+    onCreateStatus {
+      id
+      _id
+      active_map
+      mir_connection
+      pause_status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateStatus = /* GraphQL */ `
+  subscription OnUpdateStatus {
+    onUpdateStatus {
+      id
+      _id
+      active_map
+      mir_connection
+      pause_status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteStatus = /* GraphQL */ `
+  subscription OnDeleteStatus {
+    onDeleteStatus {
+      id
+      _id
+      active_map
+      mir_connection
+      pause_status
+      createdAt
+      updatedAt
+    }
+  }
+`;

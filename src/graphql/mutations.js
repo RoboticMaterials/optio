@@ -217,3 +217,123 @@ export const deletePosition = /* GraphQL */ `
     }
   }
 `;
+export const createDevice = /* GraphQL */ `
+  mutation CreateDevice(
+    $input: CreateDeviceInput!
+    $condition: ModelDeviceConditionInput
+  ) {
+    createDevice(input: $input, condition: $condition) {
+      id
+      _id
+      battery_percentage
+      current_task_queue_id
+      dashboards
+      device_model
+      device_name
+      distance_to_next_target
+      idle_location
+      map_id
+      position
+      shelf_attached
+      state_text
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateDevice = /* GraphQL */ `
+  mutation UpdateDevice(
+    $input: UpdateDeviceInput!
+    $condition: ModelDeviceConditionInput
+  ) {
+    updateDevice(input: $input, condition: $condition) {
+      id
+      _id
+      battery_percentage
+      current_task_queue_id
+      dashboards
+      device_model
+      device_name
+      distance_to_next_target
+      idle_location
+      map_id
+      position
+      shelf_attached
+      state_text
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteDevice = /* GraphQL */ `
+  mutation DeleteDevice(
+    $input: DeleteDeviceInput!
+    $condition: ModelDeviceConditionInput
+  ) {
+    deleteDevice(input: $input, condition: $condition) {
+      id
+      _id
+      battery_percentage
+      current_task_queue_id
+      dashboards
+      device_model
+      device_name
+      distance_to_next_target
+      idle_location
+      map_id
+      position
+      shelf_attached
+      state_text
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const createStatus = /* GraphQL */ `
+  mutation CreateStatus(
+    $input: CreateStatusInput!
+    $condition: ModelStatusConditionInput
+  ) {
+    createStatus(input: $input, condition: $condition) {
+      id
+      _id
+      active_map
+      mir_connection
+      pause_status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateStatus = /* GraphQL */ `
+  mutation UpdateStatus(
+    $input: UpdateStatusInput!
+    $condition: ModelStatusConditionInput
+  ) {
+    updateStatus(input: $input, condition: $condition) {
+      id
+      _id
+      active_map
+      mir_connection
+      pause_status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteStatus = /* GraphQL */ `
+  mutation DeleteStatus(
+    $input: DeleteStatusInput!
+    $condition: ModelStatusConditionInput
+  ) {
+    deleteStatus(input: $input, condition: $condition) {
+      id
+      _id
+      active_map
+      mir_connection
+      pause_status
+      createdAt
+      updatedAt
+    }
+  }
+`;

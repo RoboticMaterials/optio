@@ -62,7 +62,7 @@ export async function getSettings() {
 }
 
 export async function postSettings(settings) {
-  console.log(settings);
+  // console.log(settings);
   try {
     const response = await axios({
       method: "POST",
