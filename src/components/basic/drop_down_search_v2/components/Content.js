@@ -98,6 +98,10 @@ export const OptionsContainer = styled.div`
     word-break: ${props => !props.multi && "break-all"};
     white-space: ${props => !props.multi && "nowrap"};
     text-overflow: ${props => !props.multi && "ellipsis"};
+
+    ::-webkit-scrollbar {
+        display: none;
+    }
     
 `
 

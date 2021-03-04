@@ -44,6 +44,7 @@ import {
     reactDropdownSelectCss,
     valueCss
 } from "../side_bar/content/cards/lot_bars.style";
+import SortFilterContainer from "../side_bar/content/cards/sort_filter_container/sort_filter_container";
 
 
 /**
@@ -1018,32 +1019,16 @@ const HILModals = (props) => {
 
                     </styled.HeaderMainContent>
 
-                    <BarsContainer>
-                        <LotSortBar
-                            columnCss={columnCss}
-                            containerCss={containerCss}
-                            descriptionCss={descriptionCss}
-                            dropdownCss={dropdownCss}
-                            valueCss={valueCss}
-                            reactDropdownSelectCss={reactDropdownSelectCss}
-                            sortMode={sortMode}
-                            setSortMode={setSortMode}
-                            sortDirection={sortDirection}
-                            setSortDirection={setSortDirection}
-                        />
-                        <LotFilterBar
-                            columnCss={columnCss}
-                            containerCss={containerCss}
-                            descriptionCss={descriptionCss}
-                            dropdownCss={dropdownCss}
-                            valueCss={valueCss}
-                            reactDropdownSelectCss={reactDropdownSelectCss}
-                            shouldFocusLotFilter={shouldFocusLotFilter}
-                            setLotFilterValue={setLotFilterValue}
-                            selectedFilterOption={selectedFilterOption}
-                            setSelectedFilterOption={setSelectedFilterOption}
-                        />
-                    </BarsContainer>
+                    <SortFilterContainer
+                        sortMode={sortMode}
+                        setSortMode={setSortMode}
+                        sortDirection={sortDirection}
+                        setSortDirection={setSortDirection}
+                        shouldFocusLotFilter={shouldFocusLotFilter}
+                        setLotFilterValue={setLotFilterValue}
+                        selectedFilterOption={selectedFilterOption}
+                        setSelectedFilterOption={setSelectedFilterOption}
+                    />
                 </styled.Header>
                 <styled.LotSelectorContainer>
 

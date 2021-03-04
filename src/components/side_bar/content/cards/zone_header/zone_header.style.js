@@ -34,11 +34,19 @@ const scrollCss = css`
 export const Container = styled.div`
 	display: flex;
     flex-direction: row;
+  align-items: center;
     width: 100%;
     padding: .5rem 1rem; 
     background: ${props => props.theme.bg.quaternary};
     border-bottom: 1px solid ${props => props.theme.bg.tertiary};
     z-index: 20;
+  position: relative;
+
+  @media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
+    flex-direction: column;
+    //align-items: center;
+    //max-width: 30rem;
+  }
 `
 
 export const ColumnContainer = styled.div`
@@ -48,12 +56,23 @@ export const ColumnContainer = styled.div`
   align-self: stretch;
   flex: 1;
   
+  @media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
+    flex-direction: row;
+	align-items: center;
+	margin: .5rem 0;
+  }
+  
   ${props => props.css && props.css};
 `
 
 export const Description = styled.span`
   color: white;
   margin-bottom: .25rem;
+  white-space: nowrap;
+
+  @media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
+    margin-right: .5rem;
+  }
   
   ${props => props.css && props.css};
 `
@@ -61,13 +80,19 @@ export const Description = styled.span`
 
 
 export const ItemContainer = styled.div`
-// background: red;
 	display: flex;
-  position: relative;
-  align-self: stretch;
-  flex: 1;
-  //background: mediumturquoise;
-  overflow: hidden;
+	position: relative;
+	
+	flex: 1;
+	overflow: hidden;
+	align-items: center;
+
+	@media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
+	height: fit-content;
+	}
+	@media (min-width: ${props => props.theme.widthBreakpoint.laptop}) {
+	align-self: stretch;
+	}
 `
 
 export const FlagsContainer = styled.div`
@@ -95,13 +120,13 @@ const selectedCss = css`
 
 export const FlagButton = styled.button`
 	${iconButtonCss};
-  	${commonClickableIcon};	
-  ${props => props.selected && selectedCss};
+	${commonClickableIcon};	
+	${props => props.selected && selectedCss};
 `
 
 export const ArrowButton = styled.button`
 	${iconButtonCss};
-  	${commonClickableIcon};	
-  ${props => props.selected && selectedCss};
+	${commonClickableIcon};	
+	${props => props.selected && selectedCss};
 `
 

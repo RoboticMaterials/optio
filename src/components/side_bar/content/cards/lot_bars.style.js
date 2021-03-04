@@ -36,15 +36,48 @@ export const BarsContainer = styled.div`
   @media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
     flex-direction: column;
 	align-items: center;
-    max-width: 40rem;
+    max-width: 30rem;
   }
 `
 
 export const columnCss = css`
-  //flex-direction: row;
-  //align-items: center;
-  //background: beige;
   //border: 1px solid black;
+  flex-direction: row;
+  align-items: center;
+  
+  
+  //max-width: 40%;
+  @media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
+    max-width: auto;
+    margin: .5rem 0;
+    align-self: stretch;
+  }
+
+  @media (min-width: ${props => props.theme.widthBreakpoint.laptop}) {
+    max-width: 40%;
+    margin: 0 .5rem;
+  }
+
+  
+`
+
+export const columnCss3 = css`
+  //border: 1px solid black;
+  flex-direction: row;
+  align-items: center;
+  
+  
+  //max-width: 40%;
+  @media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
+    max-width: auto;
+    margin: .5rem 0;
+    align-self: stretch;
+  }
+
+  @media (min-width: ${props => props.theme.widthBreakpoint.laptop}) {
+    max-width: 30%;
+    margin: 0 .5rem;
+  }
 
   
 `

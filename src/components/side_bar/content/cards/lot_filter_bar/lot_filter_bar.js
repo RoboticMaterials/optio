@@ -113,8 +113,6 @@ const LotFilterBar = (props) => {
 
     const themeContext = useContext(ThemeContext)
 
-    console.log("sizesizesize",size)
-
     return (
         <styled.ColumnContainer
 
@@ -166,7 +164,7 @@ const LotFilterBar = (props) => {
                 {selectedFilterOption.label === LOT_FILTER_OPTIONS.flags.label ?
                     <div
                         ref={flagsSizeRef}
-                        style={{flex: 4}}
+                        style={{flex: 3}}
                     >
                     <DropDownSearch
 
@@ -285,8 +283,6 @@ const LotFilterBar = (props) => {
                             background: themeContext.bg.tertiary,
                             height: "100%",
                             flex: 1,
-                            // width: "15rem",
-
                             borderTopLeftRadius: 0,
                             borderBottomLeftRadius: 0,
                             borderTopRightRadius: "1rem",
