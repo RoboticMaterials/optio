@@ -62,6 +62,7 @@ const DashboardScreen = (props) => {
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
+    const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
 
     //actions
     const dispatchGetProcesses = () => dispatch(getProcesses())
@@ -91,6 +92,7 @@ const DashboardScreen = (props) => {
     const windowWidth = size.width
 
     const mobileMode = windowWidth < widthBreakPoint;
+    const showTaskQueueButton = !mapViewEnabled? true: mobileMode ? true: false
 
     /**
      * When a dashboard screen is loaded, tell redux that its open
@@ -428,9 +430,13 @@ const DashboardScreen = (props) => {
                 visible={!!addTaskAlert}
             />
 
-            {mobileMode &&
+            {showTaskQueueButton &&
                 <DashboardTaskQueue />
             }
+
+
+
+
 
         </style.Container>
     )
