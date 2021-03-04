@@ -138,7 +138,7 @@ const HILModal = () => {
 
 
     const renderHIL = () => {
-        if (showModalId !== null && !!taskQueue && Object.values(taskQueue).length > 0) {
+        if (showModalId !== null && !!taskQueue && Object.values(taskQueue).length > 0 && taskQueue[showModalId] !== undefined) {
             const item = taskQueue[showModalId]
             const hilType = tasks[item.task_id].type
 
