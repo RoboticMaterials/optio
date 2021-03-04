@@ -89,6 +89,8 @@ const DashboardScreen = (props) => {
     const windowWidth = size.width
 
     const mobileMode = windowWidth < widthBreakPoint;
+    const showTaskQueueButton = !mapViewEnabled? true: mobileMode ? true: false
+    console.log(showTaskQueueButton)
 
     /**
      * When a dashboard screen is loaded, tell redux that its open
@@ -412,9 +414,13 @@ const DashboardScreen = (props) => {
                 visible={!!addTaskAlert}
             />
 
-            {!mapViewEnabled || (mapViewEnabled && mobileMode) &&
+            {showTaskQueueButton &&
                 <DashboardTaskQueue />
             }
+
+
+
+
 
         </style.Container>
     )
