@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 import * as styled from "../zone_header/zone_header.style";
 import DropDownSearch from "../../../../basic/drop_down_search_v2/drop_down_search";
@@ -22,12 +22,73 @@ const LotFilterBar = (props) => {
         setSelectedFilterOption,
         descriptionStyle,
         containerStyle,
-        shouldFocusLotFilter
+        shouldFocusLotFilter,
+        labelDropdownProps,
+        valueProps
     } = props
 
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
 
     const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])
+    const [size, setSize] = useState({
+        width: undefined,
+        height: undefined,
+        offsetLeft: undefined,
+        offsetTop: undefined,
+    })
+    const [flagsSize, setFlagsSize] = useState({
+        width: undefined,
+        height: undefined,
+        offsetLeft: undefined,
+        offsetTop: undefined,
+    })
+
+    const sizeRef = useRef(null)
+    const flagsSizeRef = useRef(null)
+
+    useEffect(() => {
+
+        // if sizeRef is assigned
+        if (sizeRef.current) {
+
+            // extract dimensions of sizeRef
+            let height = sizeRef.current.offsetHeight;
+            let width = sizeRef.current.offsetWidth;
+            let offsetTop = sizeRef.current.offsetTop;
+            let offsetLeft = sizeRef.current.offsetLeft;
+
+            // set zoneSize
+            setSize({
+                width: width,
+                height: height,
+                offsetTop: offsetTop,
+                offsetLeft: offsetLeft,
+            });
+        }
+
+    }, [sizeRef, window.innerWidth])
+
+    useEffect(() => {
+
+        // if sizeRef is assigned
+        if (flagsSizeRef.current) {
+
+            // extract dimensions of flagsSizeRef
+            let height = flagsSizeRef.current.offsetHeight;
+            let width = flagsSizeRef.current.offsetWidth;
+            let offsetTop = flagsSizeRef.current.offsetTop;
+            let offsetLeft = flagsSizeRef.current.offsetLeft;
+
+            // set zoneSize
+            setFlagsSize({
+                width: width,
+                height: height,
+                offsetTop: offsetTop,
+                offsetLeft: offsetLeft,
+            });
+        }
+
+    }, [flagsSizeRef, window.innerWidth, selectedFilterOption])
 
     useEffect(() => {
         const templateFields = getAllTemplateFields()
@@ -52,18 +113,33 @@ const LotFilterBar = (props) => {
 
     const themeContext = useContext(ThemeContext)
 
+    console.log("sizesizesize",size)
+
     return (
         <styled.ColumnContainer
+
             style={containerStyle}
+            css={props.columnCss}
         >
             <styled.Description
                 style={descriptionStyle}
+                css={props.descriptionCss}
             >
                 Filter lots:
             </styled.Description>
 
-            <styled.ItemContainer>
+            <styled.ItemContainer
+                ref={sizeRef}
+            >
+                {/*<div style={{flex: 1}}>*/}
                 <DropDownSearch
+                    maxDropdownWidth={`${size.width}px` }
+                    portal={document.getElementById("root")}
+                    containerCss={props.containerCss}
+                    reactDropdownSelectCss={props.reactDropdownSelectCss}
+                    dropdownCss={props.dropdownCss}
+                    valueCss={props.valueCss}
+                    {...labelDropdownProps}
                     options={lotFilterOptions}
                     onChange={(values) => {
                         setSelectedFilterOption(values[0])
@@ -77,14 +153,29 @@ const LotFilterBar = (props) => {
                         background: themeContext.bg.tertiary,
                         borderTopRightRadius: 0,
                         borderBottomRightRadius: 0,
+                        fontSize: "2px",
                         borderTopLeftRadius: "1rem",
                         borderBottomLeftRadius: "1rem",
-                        minWidth: "10rem",
+                        flex: 1,
+                        overflow: "hidden",
+                        // minWidth: "10rem",
                         borderBottom: `1px solid ${themeContext.bg.quinary}`,
                     }}
                 />
+                {/*</div>*/}
                 {selectedFilterOption.label === LOT_FILTER_OPTIONS.flags.label ?
+                    <div
+                        ref={flagsSizeRef}
+                        style={{flex: 4}}
+                    >
                     <DropDownSearch
+
+                        containerCss={props.containerCss}
+                        dropdownCss={props.dropdownCss}
+                        maxDropdownWidth={`${flagsSize.width}px` }
+                        reactDropdownSelectCss={props.reactDropdownSelectCss}
+                        portal={document.getElementById("root")}
+                        {...valueProps}
                         clearable={true}
                         multi={true}
                         options={Object.values(FLAG_OPTIONS)}
@@ -171,17 +262,20 @@ const LotFilterBar = (props) => {
 
                         style={{
                             background: themeContext.bg.tertiary,
-                            width: "15rem",
+                            // width: "15rem",
                             borderTopLeftRadius: 0,
                             borderBottomLeftRadius: 0,
                             borderTopRightRadius: "1rem",
                             borderBottomRightRadius: "1rem",
                             borderLeft: `1px solid ${themeContext.bg.quaternary}`,
                             borderBottom: `1px solid ${themeContext.bg.quinary}`,
+                            flex: 3,
                         }}
                     />
+                    </div>
                     :
                     <Textbox
+
                         placeholder='Filter lots...'
                         onChange={(e) => {
                             setLotFilterValue(e.target.value)
@@ -189,7 +283,10 @@ const LotFilterBar = (props) => {
                         focus={shouldFocusLotFilter}
                         style={{
                             background: themeContext.bg.tertiary,
-                            height: "100%", width: "15rem",
+                            height: "100%",
+                            flex: 1,
+                            // width: "15rem",
+
                             borderTopLeftRadius: 0,
                             borderBottomLeftRadius: 0,
                             borderTopRightRadius: "1rem",

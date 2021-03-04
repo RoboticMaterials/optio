@@ -356,6 +356,16 @@ export const HeaderMainContent = styled.div`
     margin-bottom: 1rem;
 `
 
+export const SortFilterContainer = styled.div`
+   
+    //align-self: stretch;
+    //overflow: hidden;
+    //width: 40rem;
+    //min-width: 10rem;
+    //max-width: 50%;
+
+`
+
 
 export const HilIcon = styled.i`
     display: flex;
