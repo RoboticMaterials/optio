@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 
 // components internal
 import DropDownSearch from "../../../../basic/drop_down_search_v2/drop_down_search";
@@ -26,6 +26,14 @@ import {getAllTemplateFields} from "../../../../../methods/utils/lot_utils";
 import * as styled from './zone_header.style'
 import LotSortBar from "../lot_sort_bar/lot_sort_bar";
 import LotFilterBar from "../lot_filter_bar/lot_filter_bar";
+import {
+	columnCss, columnCss3,
+	containerCss,
+	descriptionCss,
+	dropdownCss,
+	reactDropdownSelectCss,
+	valueCss
+} from "../lot_bars.style";
 
 const ZoneHeader = (props) => {
 
@@ -46,6 +54,37 @@ const ZoneHeader = (props) => {
 
 	const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])
 	const [lotSortOptions, setLotSortOptions] = useState([...Object.values(LOT_SORT_OPTIONS)])
+
+	const [size, setSize] = useState({
+		width: undefined,
+		height: undefined,
+		offsetLeft: undefined,
+		offsetTop: undefined,
+	})
+
+	const sizeRef = useRef(null)
+
+	useEffect(() => {
+
+		// if sizeRef is assigned
+		if (sizeRef.current) {
+
+			// extract dimensions of sizeRef
+			let height = sizeRef.current.offsetHeight;
+			let width = sizeRef.current.offsetWidth;
+			let offsetTop = sizeRef.current.offsetTop;
+			let offsetLeft = sizeRef.current.offsetLeft;
+
+			// set zoneSize
+			setSize({
+				width: width,
+				height: height,
+				offsetTop: offsetTop,
+				offsetLeft: offsetLeft,
+			});
+		}
+
+	}, [sizeRef, window.innerWidth])
 
 	useEffect(() => {
 		const templateFields = getAllTemplateFields()
@@ -100,12 +139,30 @@ const ZoneHeader = (props) => {
 		<styled.Container>
 
 			{zone === "summary" &&
-			<styled.ColumnContainer>
-				<styled.Description>Selected Processes:</styled.Description>
+			<styled.ColumnContainer
+				css={columnCss3}
+			>
+				<styled.Description>Processes:</styled.Description>
+				<div
+					ref={sizeRef}
+					style={{
+						flex: 1,
+						overflow: "hidden"
+					}}
+				>
 				<DropDownSearch
+					maxDropdownWidth={`${size.width}px` }
+					portal={document.getElementById("root")}
+					containerCss={containerCss}
+					dropdownCss={dropdownCss}
+					valueCss={valueCss}
 					schema={"lots"}
 					placeholder='Select processes...'
-					style={{background: themeContext.bg.tertiary, width: "30rem"}}
+					style={{
+						background: themeContext.bg.tertiary,
+						flex: 1,
+						overflow: "hidden"
+					}}
 					onClearAll={()=>{
 						setSelectedProcesses([])
 					}}
@@ -125,6 +182,7 @@ const ZoneHeader = (props) => {
 
 					}}
 				/>
+				</div>
 			</styled.ColumnContainer>
 			}
 
@@ -133,12 +191,22 @@ const ZoneHeader = (props) => {
 				setSortMode={setSortMode}
 				sortDirection={sortDirection}
 				setSortDirection={setSortDirection}
+				columnCss={columnCss3}
+				containerCss={containerCss}
+				dropdownCss={dropdownCss}
+				valueCss={valueCss}
 			/>
 
 			<LotFilterBar
 				setLotFilterValue={setLotFilterValue}
 				selectedFilterOption={selectedFilterOption}
 				setSelectedFilterOption={setSelectedFilterOption}
+				columnCss={columnCss3}
+				containerCss={containerCss}
+				// descriptionCss={descriptionCss}
+				dropdownCss={dropdownCss}
+				valueCss={valueCss}
+				reactDropdownSelectCss={reactDropdownSelectCss}
 			/>
 		</styled.Container>
 	)

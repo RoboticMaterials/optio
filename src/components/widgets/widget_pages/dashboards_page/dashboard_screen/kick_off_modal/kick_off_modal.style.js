@@ -24,8 +24,8 @@ export const Container = styled(Modal)`
 
 export const HeaderMainContentContainer = styled.div`
 	display: flex;
-  	flex-direction: column;
-	justify-content: center;
+  	flex-direction: row;
+	justify-content: space-between;
   align-items: center;
   flex: 1;
 `
@@ -33,10 +33,9 @@ export const HeaderMainContentContainer = styled.div`
 export const Header = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 0;
+  flex-direction: column;
+  align-items: stretch;
   margin: 0;
-  //height: 5rem;
   padding: .5rem 1rem;
   background: ${props => props.theme.bg.quinary};
 `

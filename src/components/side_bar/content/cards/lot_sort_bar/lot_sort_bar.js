@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 import * as styled from "../zone_header/zone_header.style";
 import DropDownSearch from "../../../../basic/drop_down_search_v2/drop_down_search";
@@ -12,6 +12,7 @@ import {isArray} from "../../../../../methods/utils/array_utils";
 import {ThemeContext} from "styled-components";
 import {useSelector} from "react-redux";
 import {getAllTemplateFields} from "../../../../../methods/utils/lot_utils";
+import Portal from "../../../../../higher_order_components/portal";
 
 const LotSortBar = (props) => {
 
@@ -20,13 +21,41 @@ const LotSortBar = (props) => {
         setSortMode,
         sortDirection,
         setSortDirection,
-        descriptionStyle,
-        containerStyle,
     } = props
 
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
 
     const [lotSortOptions, setLotSortOptions] = useState([...Object.values(LOT_SORT_OPTIONS)])
+    const [size, setSize] = useState({
+        width: undefined,
+        height: undefined,
+        offsetLeft: undefined,
+        offsetTop: undefined,
+    })
+
+    const sizeRef = useRef(null)
+
+    useEffect(() => {
+
+        // if sizeRef is assigned
+        if (sizeRef.current) {
+
+            // extract dimensions of sizeRef
+            let height = sizeRef.current.offsetHeight;
+            let width = sizeRef.current.offsetWidth;
+            let offsetTop = sizeRef.current.offsetTop;
+            let offsetLeft = sizeRef.current.offsetLeft;
+
+            // set zoneSize
+            setSize({
+                width: width,
+                height: height,
+                offsetTop: offsetTop,
+                offsetLeft: offsetLeft,
+            });
+        }
+
+    }, [sizeRef, window.innerWidth])
 
     useEffect(() => {
         const templateFields = getAllTemplateFields()
@@ -69,16 +98,24 @@ const LotSortBar = (props) => {
 
     return (
         <styled.ColumnContainer
-            style={containerStyle}
+            css={props.columnCss}
         >
             <styled.Description
-                style={descriptionStyle}
+                css={props.descriptionCss}
             >
                 Sort By:
             </styled.Description>
 
-            <styled.ItemContainer>
+            <styled.ItemContainer
+                ref={sizeRef}
+            >
                 <DropDownSearch
+                    maxDropdownWidth={`${size.width}px` }
+                    portal={document.getElementById("root")}
+                    containerCss={props.containerCss}
+                    // reactDropdownSelectCss={props.reactDropdownSelectCss}
+                    dropdownCss={props.dropdownCss}
+                    valueCss={props.valueCss}
                     options={lotSortOptions}
                     onChange={(values) => {
                         setSortMode(values[0])
@@ -93,24 +130,22 @@ const LotSortBar = (props) => {
                         borderBottomRightRadius: 0,
                         borderTopLeftRadius: "1rem",
                         borderBottomLeftRadius: "1rem",
-                        minWidth: "10rem",
+                        overflow: "hidden",
+                        // minWidth: "10rem",
+                        flex: 1,
                         borderBottom: `1px solid ${themeContext.bg.quinary}`,
                     }}
                 />
 
                 <DropDownSearch
+                    maxDropdownWidth={`3rem` }
+                    portal={document.getElementById("root")}
+                    dropdownCss={props.dropdownCss}
                     options={Object.values(SORT_DIRECTIONS)}
                     values={[sortDirection]}
                     onChange={(values) => {
-                        // setLotFilterValue(values)
                         setSortDirection(values[0])
                     }}
-                    // onRemoveItem={(values) => {
-                    // 	// setLotFilterValue(values)
-                    // }}
-                    // onClearAll={() => {
-                    // 	// setLotFilterValue([])
-                    // }}
                     labelField={"id"}
                     valueField={"id"}
                     schema={"lots"}

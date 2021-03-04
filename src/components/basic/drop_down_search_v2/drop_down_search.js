@@ -507,9 +507,10 @@ export class DropDownSearch extends Component {
     const { ItemComponent, ReactDropdownSelect, Container } = this.props;
 
     return (
-      <Container className={this.props.className} style={!this.props.fixedHeight ? {paddingBottom: this.state.dropdownSize.offsetHeight} : {}}>
+      <Container css={this.props.containerCss} className={this.props.className} style={!this.props.fixedHeight ? {paddingBottom: this.state.dropdownSize.offsetHeight} : {}}>
         <ClickOutside ClickOutsideComponent={this.props.ClickOutsideComponent} onClickOutside={(event) => this.dropDown('close', event)}>
           <ReactDropdownSelect
+            css={this.props.reactDropdownSelectCss}
             onKeyDown={this.handleKeyDown}
             onClick={(event) => this.dropDown('open', event)}
             // onFocus={(event) => this.dropDown('open', event)}
@@ -597,10 +598,14 @@ export const DefaultReactDropdownSelect = styled.div`
         box-shadow: none;
         border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.bg.octonary};
     }
+  
+  ${props => props.css && props.css};
+  
+  
 `;
 
 const DefaultContainer = styled.div`
-
+  ${props => props.css && props.css};
 `;
 
 DropDownSearch.defaultProps = {
