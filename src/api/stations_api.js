@@ -167,8 +167,6 @@ export async function putStation(station, ID) {
       variables: { input: input }
     })
 
-    console.log(dataJson)
-
     return dataJson;
   } catch (error) {
     console.log(error)

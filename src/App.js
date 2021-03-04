@@ -42,8 +42,9 @@ import HILModals from "./components/hil_modals/hil_modals";
 import ConfirmDeleteModal from "./components/basic/modals/confirm_delete_modal/confirm_delete_modal";
 
 // Amplify configuration globally
-import Amplify from "aws-amplify";
+import Amplify, { API, graphqlOperation }  from "aws-amplify";
 import config from "./aws-exports";
+import { onCreateStation, onCreatePosition } from './graphql/subscriptions'
 Amplify.configure(config);
 
 const widthBreakPoint = 1000;
@@ -51,6 +52,25 @@ const widthBreakPoint = 1000;
 // class App extends Component {
 
 const App = (props) => {
+
+  // Testing subscriptions
+  // Subscribe to creation of Station
+  API.graphql(
+      graphqlOperation( onCreatePosition )
+  ).subscribe({
+      next: ({ provider, value }) => console.log({ provider, value }),
+      error: error => console.warn(error)
+  });
+
+  // Testing subscriptions
+  // Subscribe to creation of Station
+  // API.graphql(
+  //     graphqlOperation( onCreateTask )
+  // ).subscribe({
+  //     next: ({ provider, value }) => console.log({ provider, value }),
+  //     error: error => console.warn(error)
+  // });
+
   const widgetPageLoaded = useSelector((state) => {
     return state.widgetReducer.widgetPageLoaded;
   });

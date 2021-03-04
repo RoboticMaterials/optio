@@ -1,6 +1,6 @@
 {
   "auth": {
-    "rmstudio283aa6e5": {
+    "rmstudiocloud298656c6": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
@@ -8,7 +8,7 @@
     }
   },
   "api": {
-    "rmstudio": {
+    "rmstudiocloud": {
       "service": "AppSync",
       "providerPlugin": "awscloudformation",
       "output": {
@@ -16,7 +16,7 @@
           "defaultAuthentication": {
             "authenticationType": "AMAZON_COGNITO_USER_POOLS",
             "userPoolConfig": {
-              "userPoolId": "authrmstudio283aa6e5"
+              "userPoolId": "authrmstudiocloud298656c6"
             }
           },
           "additionalAuthenticationProviders": []

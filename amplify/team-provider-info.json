@@ -1,19 +1,19 @@
 {
   "dev": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-rmstudio-dev-120312-authRole",
-      "UnauthRoleArn": "arn:aws:iam::571361296658:role/amplify-rmstudio-dev-120312-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::571361296658:role/amplify-rmstudio-dev-120312-authRole",
+      "AuthRoleName": "amplify-rmstudiocloud-dev-112632-authRole",
+      "UnauthRoleArn": "arn:aws:iam::571361296658:role/amplify-rmstudiocloud-dev-112632-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::571361296658:role/amplify-rmstudiocloud-dev-112632-authRole",
       "Region": "us-east-2",
-      "DeploymentBucketName": "amplify-rmstudio-dev-120312-deployment",
-      "UnauthRoleName": "amplify-rmstudio-dev-120312-unauthRole",
-      "StackName": "amplify-rmstudio-dev-120312",
-      "StackId": "arn:aws:cloudformation:us-east-2:571361296658:stack/amplify-rmstudio-dev-120312/c82c45e0-7609-11eb-bbdc-025c5e287830",
-      "AmplifyAppId": "d3lo9j7be200g4"
+      "DeploymentBucketName": "amplify-rmstudiocloud-dev-112632-deployment",
+      "UnauthRoleName": "amplify-rmstudiocloud-dev-112632-unauthRole",
+      "StackName": "amplify-rmstudiocloud-dev-112632",
+      "StackId": "arn:aws:cloudformation:us-east-2:571361296658:stack/amplify-rmstudiocloud-dev-112632/25dca8b0-7d17-11eb-b4f8-06982be86392",
+      "AmplifyAppId": "d2a1qaxuhr89b4"
     },
     "categories": {
       "auth": {
-        "rmstudio283aa6e5": {}
+        "rmstudiocloud298656c6": {}
       }
     }
   }

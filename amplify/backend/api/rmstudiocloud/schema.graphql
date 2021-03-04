@@ -1,4 +1,6 @@
-type Station @model {
+type Station 
+  @model
+{
   id: ID!
   _id: String!
   name: String!
@@ -14,7 +16,9 @@ type Station @model {
   dashboards: AWSJSON!
 }
 
-type Task @model{
+type Task
+  @model
+{
   id: ID!
   device_types: AWSJSON!
   handoff: Boolean!
@@ -28,4 +32,22 @@ type Task @model{
   unload: AWSJSON!
   _id: String!
   obj: String!
+}
+
+type Position
+  @model
+{
+  id: ID!
+  _id: String!
+  change_key: String!
+  map_id: String!
+  name: String!
+  parent: String
+  pos_x: Float
+  pos_y: Float
+  rotation: Int
+  schema: String!
+  type: String!
+  x: Int!
+  y: Int!
 }

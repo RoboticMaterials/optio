@@ -99,3 +99,52 @@ export const listTasks = /* GraphQL */ `
     }
   }
 `;
+export const getPosition = /* GraphQL */ `
+  query GetPosition($id: ID!) {
+    getPosition(id: $id) {
+      id
+      _id
+      change_key
+      map_id
+      name
+      parent
+      pos_x
+      pos_y
+      rotation
+      schema
+      type
+      x
+      y
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listPositions = /* GraphQL */ `
+  query ListPositions(
+    $filter: ModelPositionFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listPositions(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        _id
+        change_key
+        map_id
+        name
+        parent
+        pos_x
+        pos_y
+        rotation
+        schema
+        type
+        x
+        y
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;

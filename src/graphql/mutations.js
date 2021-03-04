@@ -145,3 +145,75 @@ export const deleteTask = /* GraphQL */ `
     }
   }
 `;
+export const createPosition = /* GraphQL */ `
+  mutation CreatePosition(
+    $input: CreatePositionInput!
+    $condition: ModelPositionConditionInput
+  ) {
+    createPosition(input: $input, condition: $condition) {
+      id
+      _id
+      change_key
+      map_id
+      name
+      parent
+      pos_x
+      pos_y
+      rotation
+      schema
+      type
+      x
+      y
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updatePosition = /* GraphQL */ `
+  mutation UpdatePosition(
+    $input: UpdatePositionInput!
+    $condition: ModelPositionConditionInput
+  ) {
+    updatePosition(input: $input, condition: $condition) {
+      id
+      _id
+      change_key
+      map_id
+      name
+      parent
+      pos_x
+      pos_y
+      rotation
+      schema
+      type
+      x
+      y
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deletePosition = /* GraphQL */ `
+  mutation DeletePosition(
+    $input: DeletePositionInput!
+    $condition: ModelPositionConditionInput
+  ) {
+    deletePosition(input: $input, condition: $condition) {
+      id
+      _id
+      change_key
+      map_id
+      name
+      parent
+      pos_x
+      pos_y
+      rotation
+      schema
+      type
+      x
+      y
+      createdAt
+      updatedAt
+    }
+  }
+`;

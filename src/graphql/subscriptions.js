@@ -127,3 +127,66 @@ export const onDeleteTask = /* GraphQL */ `
     }
   }
 `;
+export const onCreatePosition = /* GraphQL */ `
+  subscription OnCreatePosition {
+    onCreatePosition {
+      id
+      _id
+      change_key
+      map_id
+      name
+      parent
+      pos_x
+      pos_y
+      rotation
+      schema
+      type
+      x
+      y
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdatePosition = /* GraphQL */ `
+  subscription OnUpdatePosition {
+    onUpdatePosition {
+      id
+      _id
+      change_key
+      map_id
+      name
+      parent
+      pos_x
+      pos_y
+      rotation
+      schema
+      type
+      x
+      y
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeletePosition = /* GraphQL */ `
+  subscription OnDeletePosition {
+    onDeletePosition {
+      id
+      _id
+      change_key
+      map_id
+      name
+      parent
+      pos_x
+      pos_y
+      rotation
+      schema
+      type
+      x
+      y
+      createdAt
+      updatedAt
+    }
+  }
+`;
