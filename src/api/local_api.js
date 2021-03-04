@@ -1,6 +1,7 @@
 //This API is used to handle calls to the local storage
 
 import logger from '../logger'
+import ls from 'local-storage'
 import {
     BrowserView,
     MobileView,
@@ -39,7 +40,7 @@ export const postLocalSettings = async (settings) => {
 
 export const deleteLocalSettings = async () => {
     localStorage.removeItem("local-settings-config")
-    
+
 }
 
 export const getLocalSettings = async () => {

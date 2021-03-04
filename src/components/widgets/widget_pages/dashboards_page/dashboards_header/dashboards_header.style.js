@@ -69,10 +69,11 @@ export const RowContainer = styled.div`
     justify-content: flex-start;
 
     margin-left:2rem;
+    margin-right:2rem;
     padding-top:1rem;
     padding-right:2rem;
     padding-bottom: 1rem;
-    width: 100%;
+    width: 90%;
     height: 3.5rem;
     overflow:hidden;
     flex-wrap: wrap;

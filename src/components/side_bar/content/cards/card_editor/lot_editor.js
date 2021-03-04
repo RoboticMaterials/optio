@@ -1156,7 +1156,7 @@ const LotEditor = (props) => {
 						validationSchema={getCardSchema((content === CONTENT.MOVE) ? CARD_SCHEMA_MODES.MOVE_LOT : CARD_SCHEMA_MODES.EDIT_LOT, bins[binId]?.count ? bins[binId].count : 0)}
 						validateOnChange={true}
 						validate={onValidate}
-						validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
+						validateOnMount={true} // leave false, if set to true it will generate a form error when new data is fetched
 						validateOnBlur={true}
 						onSubmit={()=>{}} // this is necessary
 
