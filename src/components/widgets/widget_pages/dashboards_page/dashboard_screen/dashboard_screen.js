@@ -199,19 +199,10 @@ const DashboardScreen = (props) => {
 
     const handleRouteClick = async (Id, name, custom, deviceType) => {
 
-        const connectedDeviceExists = isDeviceConnected()
+        console.log("handleRouteClick deviceType",deviceType)
+        console.log("handleRouteClick custom",custom)
 
-        if (!connectedDeviceExists && deviceType !== DEVICE_CONSTANTS.HUMAN) {
-            // display alert notifying user that task is already in queue
-            setAddTaskAlert({
-                type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
-                label: "Alert! No device is currently connected to run this route",
-                message: `'${name}' not added`,
-            })
 
-            // clear alert after timeout
-            return setTimeout(() => setAddTaskAlert(null), 1800)
-        }
 
         // If a custom task then add custom task key to task q
         if (Id === 'custom_task') {
@@ -228,6 +219,20 @@ const DashboardScreen = (props) => {
         // Else if its a hil success, execute the HIL success function
         else if (Id === 'hil_success') {
             return handleHilSuccess(custom)
+        }
+
+        const connectedDeviceExists = isDeviceConnected()
+
+        if (!connectedDeviceExists && deviceType !== DEVICE_CONSTANTS.HUMAN) {
+            // display alert notifying user that task is already in queue
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
+                label: "Alert! No device is currently connected to run this route",
+                message: `'${name}' not added`,
+            })
+
+            // clear alert after timeout
+            return setTimeout(() => setAddTaskAlert(null), 1800)
         }
 
         let inQueue = isRouteInQueue(Id, deviceType)
