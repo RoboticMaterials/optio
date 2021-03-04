@@ -43,6 +43,15 @@ export const Container = styled.div`
     
 `
 
+export const Footer = styled.div`
+    align-self: stretch;
+    background: ${props => props.theme.bg.quinary};
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid black;
+    padding: .25rem 0;
+`
+
 
 
 export const CloseButton = styled(CloseOutlinedIcon)`
