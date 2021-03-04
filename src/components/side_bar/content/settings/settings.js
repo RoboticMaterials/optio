@@ -32,10 +32,6 @@ const Settings = () => {
 
     const dispatch = useDispatch()
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
-
-    // onPostLocalSettings
-    const onPostLocalSettings = (settings) => dispatch(postSettings(settings))
-
     const dispatchGetSettings = () => dispatch(getSettings())
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchSetCurrentMap = (map) => dispatch(setCurrentMap(map))
@@ -45,10 +41,8 @@ const Settings = () => {
     const mapReducer = useSelector(state => state.mapReducer)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
     const localSettings = useSelector(state => state.localReducer.localSettings)
-    const devices = useSelector(state => state.devicesReducer.devices)
     const deviceEnabledSetting = serverSettings.deviceEnabled
     const localReducer = useSelector(state => state.localReducer.localSettings)
-
     const {
         currentMap,
         maps
@@ -60,6 +54,7 @@ const Settings = () => {
     const [mirUpdated, setMirUpdated] = useState(false)
     const [devicesEnabled, setDevicesEnabled] = useState(!!deviceEnabledSetting)
 
+    //Local Storage variables
     const [mapViewEnabled, setMapViewEnabled] = useState({})
     const [developerSettingsEnabled, setDeveloperSettingsEnabled] = useState({})
     const [nonLocalAPIEnabled, setNonLocalAPIEnabled] = useState({})
@@ -77,7 +72,8 @@ const Settings = () => {
         setDeveloperSettingsEnabled(ls.get('DeveloperSettingsEnabled') || false)
         setNonLocalAPIEnabled(ls.get('NonLocalAPIAddressEnabled') || false)
         setNonLocalAPIAddress(ls.get('NonLocalAPIAddress') || null)
-        setMapID(ls.get('MapID') || null)
+        setMapID(currentMap._id || null)
+
     }, [])
 
 
@@ -338,7 +334,7 @@ const Settings = () => {
             var cognitoUser = userPool.getCurrentUser();
             cognitoUser.signOut();
 
-            await onPostLocalSettings({
+            await dispatchPostLocalSettings({
                 ...localReducer,
                 authenticated: false
             })

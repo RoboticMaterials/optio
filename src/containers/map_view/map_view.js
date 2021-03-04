@@ -285,8 +285,7 @@ export class MapView extends Component {
                 .scaleExtent([-100, 100])
                 // .scaleExtent([scaleExtent.min, scaleExtent.max])
                 .on('zoom', () => {
-
-                    // Disables the ability to hover over location on mouse drag when a loction is selected that is not new or a right click
+                    // Disables the ability to hover over location on mouse drag when a location is selected that is not new or a right click
                     if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.schema !== 'temporary_position')) && (!this.props.editingStation || !this.props.editingPosition)) {
                         this.props.dispatchHoverStationInfo(null)
                     }
@@ -690,6 +689,8 @@ export class MapView extends Component {
                                                 d3={this.d3}
                                                 handleEnableDrag={this.onEnableDrag}
                                                 handleDisableDrag={this.onDisableDrag}
+                                                // Mouse down is used to disabling hovering when the mouse is down on the map
+                                                mouseDown={this.mouseDown}
                                             />
                                         )
                                 }</>
@@ -717,6 +718,8 @@ export class MapView extends Component {
                                                 d3={this.d3}
                                                 handleEnableDrag={this.onEnableDrag}
                                                 handleDisableDrag={this.onDisableDrag}
+                                                // Mouse down is used to disabling hovering when the mouse is down on the map
+                                                mouseDown={this.mouseDown}
                                             />
 
                                         )
