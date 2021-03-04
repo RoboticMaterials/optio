@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import uuid from 'uuid'
 
@@ -12,11 +12,9 @@ import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/co
 import AssociatedPositions from './associated_positions/associated_positions'
 
 // Import Basic Components
-import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
 import Textbox from '../../../../basic/textbox/textbox.js'
 import TextField from '../../../../basic/form/text_field/text_field.js'
 import Button from '../../../../basic/button/button'
-import PropTypes from "prop-types";
 
 
 // Import Constants
@@ -27,12 +25,11 @@ import { LocationDefaultAttributes } from '../../../../../constants/location_con
 // Import utils
 import { deepCopy } from '../../../../../methods/utils/utils'
 import { locationSchema } from '../../../../../methods/utils/form_schemas'
-import useChange from "../../../../basic/form/useChange";
 
 
 // Import actions
-import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition, setEditingPosition, putPosition, postPosition, setSelectedStationChildrenCopy, removePosition } from '../../../../../redux/actions/positions_actions'
-import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setEditingStation, putStation, postStation, removeStation } from '../../../../../redux/actions/stations_actions'
+import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, setEditingPosition, putPosition, postPosition, setSelectedStationChildrenCopy, removePosition } from '../../../../../redux/actions/positions_actions'
+import { setSelectedStation, setStationAttributes, addStation, deleteStation, setEditingStation, putStation, postStation, removeStation } from '../../../../../redux/actions/stations_actions'
 import {pageDataChanged} from '../../../../../redux/actions/sidebar_actions'
 
 const EditLocation = (props) => {
@@ -65,16 +62,12 @@ const EditLocation = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
-    const positions = useSelector(state => state.positionsReducer.positions)
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
 
-    const tasks = useSelector(state => state.tasksReducer.tasks)
     const devices = useSelector(state => state.devicesReducer.devices)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
-    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
     const deviceEnabled = serverSettings.deviceEnabled
-    const processes = useSelector(state => state.processesReducer.processes)
 
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [newName, setNewName] = useState('')
