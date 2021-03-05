@@ -96,6 +96,7 @@ const FormComponent = (props) => {
 		processOptions,
 		content,
 		setContent,
+		onAddClick,
 		loaded
 	} = props
 
@@ -139,6 +140,10 @@ const FormComponent = (props) => {
 	const errorCount = Object.keys(errors).length > 0 // get number of field errors
 	const touchedCount = Object.values(touched).length // number of touched fields
 	const submitDisabled = ((errorCount > 0) || (touchedCount === 0) || isSubmitting) && (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
+
+	useEffect(() => {
+		formikProps.validateForm()
+	}, [])
 
 	/*
 	* handles when enter key is pressed
@@ -842,6 +847,17 @@ const FormComponent = (props) => {
 
 								{formMode === FORM_MODES.CREATE ?
 									<>
+										{disabledAddButton &&
+										<Button
+											schema={'lots'}
+											type={"button"}
+											disabled={submitDisabled}
+											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
+											onClick={onAddClick}
+										>
+											Add
+										</Button>
+										}
 										{!disabledAddButton &&
 										<Button
 											schema={'lots'}
@@ -856,6 +872,7 @@ const FormComponent = (props) => {
 										</Button>
 										}
 
+										{!disabledAddButton &&
 										<Button
 											schema={'lots'}
 											type={"button"}
@@ -871,8 +888,8 @@ const FormComponent = (props) => {
 												// 	}
 												//
 												// } else {
-													// function order matters
-													onSubmit(values, FORM_BUTTON_TYPES.ADD_AND_NEXT)
+												// function order matters
+												onSubmit(values, FORM_BUTTON_TYPES.ADD_AND_NEXT)
 												// }
 
 
@@ -880,6 +897,7 @@ const FormComponent = (props) => {
 										>
 											Add & Next
 										</Button>
+										}
 									</>
 									:
 									<>
@@ -956,6 +974,7 @@ const LotEditor = (props) => {
 
 	const {
 		isOpen,
+		onAddClick,
 		footerContent,
 		lotTemplateId,
 		lotTemplate,
@@ -968,6 +987,7 @@ const LotEditor = (props) => {
 		processOptions,
 		showProcessSelector,
 		disabledAddButton,
+		collectionCount,
 		initialValues,
 		formRef,
 		onValidate,
@@ -995,19 +1015,6 @@ const LotEditor = (props) => {
 	const [formMode, setFormMode] = useState(props.cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
 	const [showLotTemplateEditor, setShowLotTemplateEditor] = useState(false)
 	const [cardNames, setCardNames] = useState([])
-	const [collectionCount, setCollectionCount] = useState(null)
-
-	const getCount =  async () => {
-		const count = await getCardsCount()
-		setCollectionCount(count)
-	}
-
-
-
-	useEffect(() => {
-		getCount()
-
-	}, [])
 
 	// get card object from redux by cardId
 	const card = cards[cardId] || null
@@ -1161,7 +1168,7 @@ const LotEditor = (props) => {
 						validationSchema={getCardSchema((content === CONTENT.MOVE) ? CARD_SCHEMA_MODES.MOVE_LOT : CARD_SCHEMA_MODES.EDIT_LOT, bins[binId]?.count ? bins[binId].count : 0)}
 						validateOnChange={true}
 						validate={onValidate}
-						validateOnMount={true} // leave false, if set to true it will generate a form error when new data is fetched
+						// validateOnMount={true} // leave false, if set to true it will generate a form error when new data is fetched
 						validateOnBlur={true}
 						onSubmit={()=>{}} // this is necessary
 
@@ -1368,6 +1375,7 @@ const LotEditor = (props) => {
 							if(hidden || showLotTemplateEditor) return null
 							return (
 								<FormComponent
+									onAddClick={onAddClick}
 									footerContent={footerContent}
 									showCreationStatusButton={showCreationStatusButton}
 									lotNumber={lotNumber}
