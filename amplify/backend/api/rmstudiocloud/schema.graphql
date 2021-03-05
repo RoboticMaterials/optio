@@ -81,3 +81,14 @@ type Status
   mir_connection: String
   pause_status: Boolean
 }
+
+type TaskQueue 
+  @model
+{
+  id: ID!
+  _id: String!
+  device_type: String!
+  mission_status: String!
+  owner: String!
+  task_id: String!
+}

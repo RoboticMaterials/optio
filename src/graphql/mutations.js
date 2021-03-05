@@ -337,3 +337,54 @@ export const deleteStatus = /* GraphQL */ `
     }
   }
 `;
+export const createTaskQueue = /* GraphQL */ `
+  mutation CreateTaskQueue(
+    $input: CreateTaskQueueInput!
+    $condition: ModelTaskQueueConditionInput
+  ) {
+    createTaskQueue(input: $input, condition: $condition) {
+      id
+      _id
+      device_type
+      mission_status
+      owner
+      task_id
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateTaskQueue = /* GraphQL */ `
+  mutation UpdateTaskQueue(
+    $input: UpdateTaskQueueInput!
+    $condition: ModelTaskQueueConditionInput
+  ) {
+    updateTaskQueue(input: $input, condition: $condition) {
+      id
+      _id
+      device_type
+      mission_status
+      owner
+      task_id
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteTaskQueue = /* GraphQL */ `
+  mutation DeleteTaskQueue(
+    $input: DeleteTaskQueueInput!
+    $condition: ModelTaskQueueConditionInput
+  ) {
+    deleteTaskQueue(input: $input, condition: $condition) {
+      id
+      _id
+      device_type
+      mission_status
+      owner
+      task_id
+      createdAt
+      updatedAt
+    }
+  }
+`;

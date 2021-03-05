@@ -230,3 +230,38 @@ export const listStatuss = /* GraphQL */ `
     }
   }
 `;
+export const getTaskQueue = /* GraphQL */ `
+  query GetTaskQueue($id: ID!) {
+    getTaskQueue(id: $id) {
+      id
+      _id
+      device_type
+      mission_status
+      owner
+      task_id
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listTaskQueues = /* GraphQL */ `
+  query ListTaskQueues(
+    $filter: ModelTaskQueueFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listTaskQueues(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        _id
+        device_type
+        mission_status
+        owner
+        task_id
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;

@@ -4,8 +4,6 @@ import log from "../logger";
 import { apiIPAddress } from "../settings/settings";
 const operator = "task_queue";
 
-const logger = log.getLogger("TaskQueue");
-
 export async function getTaskQueue() {
   try {
     const response = await axios({

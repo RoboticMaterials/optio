@@ -1,10 +1,7 @@
-import axios from "axios";
-// import * as log from 'loglevel';
-
+// Get logger
 import logger from "../logger";
 
-import { apiIPAddress } from "../settings/settings";
-
+// import the amplify modules needed
 import { API } from 'aws-amplify'
 
 // import the GraphQL queries, mutations and subscriptions
@@ -12,18 +9,20 @@ import { listDevices } from '../graphql/queries';
 import { createDevice, updateDevice } from '../graphql/mutations';
 import { deleteDevice as deleteDeviceByID } from '../graphql/mutations';
 
-const operator = "devices";
+// Define logger
 const log = logger.getLogger("Api");
 
 export async function getDevices() {
   try {
 
+    // get the data
     const res = await API.graphql({
       query: listDevices
     })
 
     const GQLdata = []
 
+    // change the data into json
     res.data.listDevices.items.forEach(device => {
       GQLdata.push( {
         ...device,

@@ -1,29 +1,21 @@
-import axios from "axios";
 import * as log from "loglevel";
 
-import { apiIPAddress } from "../settings/settings";
+// import the amplify modules needed
+import { API } from 'aws-amplify'
 
-import store from "../redux/store";
-const token = store.getState().cognotoUserSession;
-
-const operator = "status";
+// import the GraphQL queries, mutations and subscriptions
+import { listStatuss } from '../graphql/queries';
+import { createStatus } from '../graphql/mutations';
 
 export async function getStatus() {
   try {
-    const response = await axios({
-      method: "get",
-      url: apiIPAddress() + operator,
-      headers: {
-        "X-API-Key": "123456",
-        "Access-Control-Allow-Origin": "*",
-      },
-      // token: token.username
-    });
-    // Success 🎉
-    //  log.debug('THE STATE OF PLAY IS!!! on get status',response);
-    const data = response.data;
-    const dataJson = JSON.parse(data);
-    return dataJson;
+
+    // get the data
+    const res = await API.graphql({
+      query: listStatuss
+    })
+
+    return res.data.listStatuss.items[0];
   } catch (error) {
     // Error 😨
     if (error.response) {
@@ -53,24 +45,18 @@ export async function getStatus() {
 export async function postStatus(status) {
   // log.debug("postStatus: started: status", status)
   try {
-    const response = await axios({
-      method: "POST",
-      url: apiIPAddress() + operator,
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": "123456",
-        Accept: "application/json",
-      },
-      data: status,
-    });
+    const input = {
+        ...status
+      }
 
-    // Success 🎉
-    // log.debug('postStatus: response: ',response);
-    // const data = response.data;
-    // const dataJson = JSON.parse(data)
-    // log.debug('response data json',dataJson);
+    delete input.neame
 
-    return response;
+    const dataJSON = await API.graphql({
+      query: createStatus,
+      variables: { input: input }
+    })
+
+    return dataJSON;
   } catch (error) {
     // Error 😨
     if (error.response) {

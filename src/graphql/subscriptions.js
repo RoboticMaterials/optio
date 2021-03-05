@@ -292,3 +292,45 @@ export const onDeleteStatus = /* GraphQL */ `
     }
   }
 `;
+export const onCreateTaskQueue = /* GraphQL */ `
+  subscription OnCreateTaskQueue {
+    onCreateTaskQueue {
+      id
+      _id
+      device_type
+      mission_status
+      owner
+      task_id
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateTaskQueue = /* GraphQL */ `
+  subscription OnUpdateTaskQueue {
+    onUpdateTaskQueue {
+      id
+      _id
+      device_type
+      mission_status
+      owner
+      task_id
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteTaskQueue = /* GraphQL */ `
+  subscription OnDeleteTaskQueue {
+    onDeleteTaskQueue {
+      id
+      _id
+      device_type
+      mission_status
+      owner
+      task_id
+      createdAt
+      updatedAt
+    }
+  }
+`;
