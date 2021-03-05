@@ -139,9 +139,18 @@ const HILModal = () => {
 
             const task = tasks[item.task_id]
             const hilType = task.type
-
+            // console.log('QQQQ task', task)
             if(item.device_type === 'human') {
-                hilMessage = task.load.instructions
+
+                // If its the load station then show load message
+                if(stationID === task.load.station){
+                    hilMessage = task.load.instructions
+                }
+                // Else unload messsage
+                else {
+                    hilMessage = task.unload.instructions
+
+                }
             }
             return <HILModals hilMessage={hilMessage} hilType={hilType} taskQuantity={item.quantity} taskQueueID={item._id} item={item} />
         }

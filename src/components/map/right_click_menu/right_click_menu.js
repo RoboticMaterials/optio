@@ -6,14 +6,18 @@ import { useSelector, useDispatch } from 'react-redux'
 
 // Import actions
 import { addStation, setSelectedStation, setEditingStation } from '../../../redux/actions/stations_actions'
-import { addPosition, setSelectedPosition, setEditingPosition } from '../../../redux/actions/positions_actions'
+import { addPosition, setSelectedPosition, setEditingPosition, setSelectedStationChildrenCopy } from '../../../redux/actions/positions_actions'
 import { setOpen } from "../../../redux/actions/sidebar_actions"
 
 // Import utils
 import { convertD3ToReal } from '../../../methods/utils/map_utils'
+import { deepCopy } from '../../../methods/utils/utils'
 
 // Import Constants
 import { PositionTypes } from '../../../constants/position_constants'
+import { LocationDefaultAttributes } from '../../../constants/location_constants'
+import { StationTypes } from '../../../constants/station_constants'
+
 
 // import styling
 import * as styled from './right_click_menu.style'
@@ -48,6 +52,7 @@ const RightClickMenu = (props) => {
     const dispatchAddStation = (station) => dispatch(addStation(station))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchEditingStation = (bool) => dispatch(setEditingStation(bool))
+    const dispatchSetSelectedStationChildrenCopy = (children) => dispatch(setSelectedStationChildrenCopy(children))
 
     const dispatchShowSideBar = (bool) => dispatch(setOpen(bool))
 
@@ -88,22 +93,26 @@ const RightClickMenu = (props) => {
 
         const pos = convertD3ToReal([coords.x, coords.y], d3)
 
+        const defaultAttributes = deepCopy(LocationDefaultAttributes)
+
+        defaultAttributes['map_id'] = currentMap._id
+        defaultAttributes['_id'] = uuid.v4()
+        defaultAttributes['pos_x'] = pos[0]
+        defaultAttributes['pos_y'] = pos[1]
+        defaultAttributes['x'] = coords.x
+        defaultAttributes['y'] = coords.y
+        defaultAttributes['temp'] = false
+
+
+        const attributes = deepCopy(StationTypes['human'].attributes)
+
         const tempSelectedStation = {
-            new: true,
-            name: '',
-            schema: 'station',
-            type: 'human',
-            pos_x: pos[0],
-            pos_y: pos[1],
-            rotation: 0,
-            x: coords.x,
-            y: coords.y,
-            _id: uuid.v4(),
-            map_id: currentMap._id,
-            children: [],
-            dashboards: []
+            ...defaultAttributes,
+            ...attributes
         }
+
         dispatchEditingStation(true)
+        dispatchSetSelectedStationChildrenCopy({})
         dispatchAddStation(tempSelectedStation)
         dispatchSetSelectedStation(tempSelectedStation)
 
