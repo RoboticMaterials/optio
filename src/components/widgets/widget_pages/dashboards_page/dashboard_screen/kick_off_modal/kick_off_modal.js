@@ -236,8 +236,6 @@ const KickOffModal = (props) => {
                     lotTemplateId
                 } = currCard
 
-                console.log("currCard",currCard)
-
                 const process = processes[processId]
                 const {
                     name: processName
