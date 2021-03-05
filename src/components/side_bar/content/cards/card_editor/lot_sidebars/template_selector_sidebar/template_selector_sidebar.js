@@ -2,8 +2,10 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { DraggableCore } from "react-draggable";
-import { Container } from 'react-smooth-dnd'
-import { Draggable } from 'react-smooth-dnd';
+
+import {
+    isMobile
+} from "react-device-detect";
 
 import * as style from "../lot_sidebars.style"
 import { ThemeContext } from "styled-components";
@@ -11,15 +13,10 @@ import { ThemeContext } from "styled-components";
 
 import log from '../../../../../../../logger'
 
-import FieldComponentMapper from "../../field_component_mapper/field_component_mapper";
 import {setFieldDragging} from "../../../../../../../redux/actions/card_page_actions";
-import WidgetButton from "../../../../../../basic/widget_button/widget_button";
-import {TYPES} from "../../../../../../widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
 import {setSelectedLotTemplate} from "../../../../../../../redux/actions/lot_template_actions";
-import {uuidv4} from "../../../../../../../methods/utils/utils";
-import * as styled from "../../../../../../basic/form/calendar_field/calendar_field.style";
-import CalendarField from "../../../../../../basic/form/calendar_field/calendar_field";
 import {BASIC_LOT_TEMPLATE_ID, SIDE_BAR_MODES} from "../../../../../../../constants/lot_contants";
+import Button from "../../../../../../basic/button/button";
 
 const logger = log.getLogger("TemplateSelectorSidebar")
 
@@ -28,14 +25,12 @@ const TemplateSelectorSidebar = (props) => {
 
     const {
         showFields,
-        showTemplates,
-        showNew,
-        onTemplateClick,
         onTemplateEditClick,
         selectedLotTemplatesId,
+        minWidth,
+        onCloseClick,
     } = props
 
-    const minWidth = 450
 
     /*
     * Tests sidebar width to  determine if styling should be for small or large width
@@ -56,7 +51,10 @@ const TemplateSelectorSidebar = (props) => {
 
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
 
-    const [width, setWidth] = useState(window.innerWidth < 2000 ? 450 : 450); // used for tracking sidebar dimensions
+    const [width, setWidth] = useState(
+        isMobile ? window.innerWidth :
+        window.innerWidth < 2000 ? 450 : 450
+    ); // used for tracking sidebar dimensions
     const [isSmall, setSmall] = useState(testSize(width)); // used for tracking sidebar dimensions
 
     const [type, setType] = useState(showFields ? SIDE_BAR_MODES.FIELDS.name : SIDE_BAR_MODES.TEMPLATES.name); // used for tracking sidebar dimensions
@@ -65,6 +63,7 @@ const TemplateSelectorSidebar = (props) => {
         return (
 
             <style.ListContainer>
+                {!isMobile &&
                 <style.LotTemplateButton
                     isSelected={!selectedLotTemplatesId}
                     onClick={() => {
@@ -76,6 +75,7 @@ const TemplateSelectorSidebar = (props) => {
                         isSelected={!selectedLotTemplatesId}
                         style={{margin: 0}}>New</style.TemplateName>
                 </style.LotTemplateButton>
+                }
                 <style.LotTemplateButton
                     isSelected={selectedLotTemplatesId === BASIC_LOT_TEMPLATE_ID}
                     onClick={() => dispatchSetSelectedLotTemplate(BASIC_LOT_TEMPLATE_ID)}
@@ -112,6 +112,7 @@ const TemplateSelectorSidebar = (props) => {
                                 isSelected={isSelected}
                                 className={SIDE_BAR_MODES.TEMPLATES.iconName}
                             />
+                            {!isMobile &&
                             <style.EditTemplateIcon
                                 isSelected={isSelected}
                                 onClick={()=>{
@@ -121,6 +122,8 @@ const TemplateSelectorSidebar = (props) => {
                                 type={"button"}
                                 className={"fas fa-edit"}
                             />
+                            }
+
 
                            <style.TemplateName
                                isSelected={isSelected}
@@ -144,6 +147,16 @@ const TemplateSelectorSidebar = (props) => {
             >
                 <style.Container>
                     {getTemplateButtons()}
+                    <style.FooterContainer
+                        style={{justifyContent: "center"}}
+                    >
+                        <Button
+                            onClick={onCloseClick}
+                            schema={"lots"}
+                            type={"button"}
+                            label={"Close"}
+                        />
+                    </style.FooterContainer>
                 </style.Container>
 
                 <DraggableCore key="handle" onDrag={handleDrag} >
@@ -171,7 +184,8 @@ TemplateSelectorSidebar.defaultProps = {
     showNew: true,
     onTemplateClick: () => {},
     onTemplateEditClick: () => {},
-
+    onCloseClick: () => {},
+    minWidth: 450
 };
 
 export default TemplateSelectorSidebar

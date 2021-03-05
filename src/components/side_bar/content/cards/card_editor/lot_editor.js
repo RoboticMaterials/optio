@@ -61,6 +61,7 @@ import useWarn from "../../../../basic/form/useWarn";
 // logger
 import log from '../../../../../logger'
 
+
 const logger = log.getLogger("CardEditor")
 logger.setLevel("debug")
 
@@ -680,7 +681,11 @@ const FormComponent = (props) => {
 						onTemplateEditClick={() => {
 							setShowLotTemplateEditor(true)
 						}}
+						onCloseClick={() => {
+							setShowTemplateSelector(!showTemplateSelector)
+						}}
 						selectedLotTemplatesId={lotTemplateId}
+						// minWidth={isMobile ? 1000 : 450}
 					/>
 					}
 
