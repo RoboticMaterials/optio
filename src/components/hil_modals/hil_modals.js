@@ -1035,7 +1035,16 @@ const HILModals = (props) => {
 
                             {availableLots
                                 .filter((currLot) => {
-                                    return getMatchesFilter(currLot, lotFilterValue, selectedFilterOption)
+                                    const {
+                                        bins = {},
+                                    } = currLot
+
+                                    const count = bins[stationId]?.count
+
+                                    return getMatchesFilter({
+                                        ...currLot,
+                                        quantity: count
+                                    }, lotFilterValue, selectedFilterOption)
                                 })
                                 .map((currLot, lotIndex) => {
                                     const {

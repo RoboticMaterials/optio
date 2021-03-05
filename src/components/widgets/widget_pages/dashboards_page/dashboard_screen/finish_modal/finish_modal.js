@@ -179,9 +179,14 @@ const FinishModal = (props) => {
             .filter((currLot) => {
                 const {
                     name: currLotName,
+                    bins = {},
                 } = currLot || {}
 
-                return getMatchesFilter(currLot, lotFilterValue, selectedFilterOption)
+                const count = bins[stationId]?.count
+                return getMatchesFilter({
+                    ...currLot,
+                    quantity: count
+                }, lotFilterValue, selectedFilterOption)
             })
             .map((currCard, cardIndex) => {
                 const {
