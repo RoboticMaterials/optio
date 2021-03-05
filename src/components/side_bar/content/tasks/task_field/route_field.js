@@ -367,6 +367,8 @@ const TaskField = (props) => {
       if(!!editingObject){
         dispatchSetEditingObject(false)
         dispatchSetSelectedObject(routeObject)
+        setFieldTouched(fieldParent ? `${fieldParent}.obj` : "obj", false)
+
       }
       else{
         setShowObjectSelector(false)

@@ -109,7 +109,6 @@ const Settings = () => {
             ...localSettingsState,
             [key]: value,
         }
-
         setLocalSettingsState(updatedSettings)
     }
 
@@ -123,7 +122,7 @@ const Settings = () => {
         ls.set('NonLocalAPIAddressEnabled', nonLocalAPIEnabled)
         ls.set('NonLocalAPIAddress', nonLocalAPIAddress)
         ls.set('MapID', mapID)
-
+        console.log(localSettingsState)
         const localChange = isEquivalent(localSettingsState, localSettings)
         const serverChange = isEquivalent(serverSettingsState, serverSettings)
         const mapChange = !isEquivalent(mapSettingsState, currentMap)
