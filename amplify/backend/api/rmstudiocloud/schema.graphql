@@ -52,6 +52,17 @@ type Position
   y: Int!
 }
 
+type Process
+  @model
+{
+  id: ID!
+  _id: String!
+  name: String!
+  broken: Int
+  routes: AWSJSON!
+}
+
+
 # Data stream
 
 type Device

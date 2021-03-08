@@ -148,6 +148,39 @@ export const listPositions = /* GraphQL */ `
     }
   }
 `;
+export const getProcess = /* GraphQL */ `
+  query GetProcess($id: ID!) {
+    getProcess(id: $id) {
+      id
+      _id
+      name
+      broken
+      routes
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listProcesss = /* GraphQL */ `
+  query ListProcesss(
+    $filter: ModelProcessFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listProcesss(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        _id
+        name
+        broken
+        routes
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
 export const getDevice = /* GraphQL */ `
   query GetDevice($id: ID!) {
     getDevice(id: $id) {

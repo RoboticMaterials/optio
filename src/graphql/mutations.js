@@ -217,6 +217,54 @@ export const deletePosition = /* GraphQL */ `
     }
   }
 `;
+export const createProcess = /* GraphQL */ `
+  mutation CreateProcess(
+    $input: CreateProcessInput!
+    $condition: ModelProcessConditionInput
+  ) {
+    createProcess(input: $input, condition: $condition) {
+      id
+      _id
+      name
+      broken
+      routes
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateProcess = /* GraphQL */ `
+  mutation UpdateProcess(
+    $input: UpdateProcessInput!
+    $condition: ModelProcessConditionInput
+  ) {
+    updateProcess(input: $input, condition: $condition) {
+      id
+      _id
+      name
+      broken
+      routes
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteProcess = /* GraphQL */ `
+  mutation DeleteProcess(
+    $input: DeleteProcessInput!
+    $condition: ModelProcessConditionInput
+  ) {
+    deleteProcess(input: $input, condition: $condition) {
+      id
+      _id
+      name
+      broken
+      routes
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const createDevice = /* GraphQL */ `
   mutation CreateDevice(
     $input: CreateDeviceInput!

@@ -4,26 +4,43 @@ import axios from "axios";
 import logger from "../logger";
 
 import { apiIPAddress } from "../settings/settings";
+
+
+// import the amplify modules needed
+import { API } from 'aws-amplify'
+
+// import the GraphQL queries, mutations and subscriptions
+import { listProcesss } from '../graphql/queries';
+import { createProcess, updateProcess } from '../graphql/mutations';
+import { deleteProcess as deleteProcessByID } from '../graphql/mutations';
+import { LeakAddTwoTone } from "@material-ui/icons";
+
 const operator = "processes";
 const log = logger.getLogger("Api");
 
 export async function getProcesses() {
   try {
-    const response = await axios({
-      method: "get",
-      url: apiIPAddress() + operator,
-      headers: {
-        "X-API-Key": "123456",
-        "Access-Control-Allow-Origin": "*",
-      },
+
+    // get the data
+    const res = await API.graphql({
+      query: listProcesss
+    })
+
+    const GQLdata = []
+
+    // change the data into json
+    res.data.listProcesss.items.forEach(process => {
+        GQLdata.push( {
+          ...process,
+          routes: JSON.parse(process.routes),
+        })
     });
-    // Success 🎉
-    const data = response.data;
-    const dataJson = JSON.parse(data);
-    return dataJson;
+
+    return GQLdata;
   } catch (error) {
     // Error 😨
     if (error.response) {
+      console.log(error)
       /*
        * The request was made and the server responded with a
        * status code that falls out of the range of 2xx
@@ -49,21 +66,13 @@ export async function getProcesses() {
 
 export async function deleteProcesses(ID) {
   try {
-    const response = await axios({
-      method: "DELETE",
-      url: apiIPAddress() + operator + "/" + ID,
-      headers: {
-        Accept: "application/json",
-        "X-API-Key": "123456",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
 
-    // Success 🎉
-    // log.debug('response',response);
-    // const data = response.data;
-    // const dataJson = JSON.parse(data)
-    return response;
+    await API.graphql({
+      query: deleteProcessByID,
+      variables: { input: {id: ID} }
+    })
+
+    return 'All Deleted';
   } catch (error) {
     // Error 😨
     if (error.response) {
@@ -91,26 +100,31 @@ export async function deleteProcesses(ID) {
 
 export async function postProcesses(process) {
   try {
-    const response = await axios({
-      method: "POST",
-      url: apiIPAddress() + operator,
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-API-Key": "123456",
-        "Access-Control-Allow-Origin": "*",
-      },
-      data: process,
-    });
+    let input = process
+   
+    input = {
+      ...process,
+      id: process._id,
+      routes: JSON.stringify(process.routes)
+    }
+  
+    delete input.neame
 
-    // Success 🎉
-    // log.debug('response',response);
-    const data = response.data;
-    const dataJson = JSON.parse(data);
-    // log.debug('response data json',dataJson);
+    let dataJSON = await API.graphql({
+      query: createProcess,
+      variables: { input: input }
+    })
 
-    return dataJson;
+    console.log(dataJSON.data.createProcess)
+
+    dataJSON = {
+      ...dataJSON.data.createProcess,
+      routes: JSON.parse(dataJSON.data.createProcess.routes)
+    }
+
+    return dataJSON;
   } catch (error) {
+    console.log(error)
     // Error 😨
     if (error.response) {
       /*
@@ -137,23 +151,22 @@ export async function postProcesses(process) {
 
 export async function putProcesses(process, ID) {
   try {
-    const response = await axios({
-      method: "PUT",
-      url: apiIPAddress() + operator + "/" + ID,
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": "123456",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      data: process,
-    });
+    let input = process
+   
+    input = {
+      ...process,
+      id: process._id,
+      routes: JSON.stringify(process.routes)
+    }
+  
+    console.log(input)
 
-    // Success 🎉
-    // log.debug('response',response);
-    const data = response.data;
-    const dataJson = JSON.parse(data);
-    return dataJson;
+    const dataJSON = await API.graphql({
+      query: updateProcess,
+      variables: { input: input }
+    })
+
+    return dataJSON;
   } catch (error) {
     // Error 😨
     if (error.response) {

@@ -190,6 +190,45 @@ export const onDeletePosition = /* GraphQL */ `
     }
   }
 `;
+export const onCreateProcess = /* GraphQL */ `
+  subscription OnCreateProcess {
+    onCreateProcess {
+      id
+      _id
+      name
+      broken
+      routes
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateProcess = /* GraphQL */ `
+  subscription OnUpdateProcess {
+    onUpdateProcess {
+      id
+      _id
+      name
+      broken
+      routes
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteProcess = /* GraphQL */ `
+  subscription OnDeleteProcess {
+    onDeleteProcess {
+      id
+      _id
+      name
+      broken
+      routes
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const onCreateDevice = /* GraphQL */ `
   subscription OnCreateDevice {
     onCreateDevice {

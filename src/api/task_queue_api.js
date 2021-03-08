@@ -78,8 +78,6 @@ export async function postTaskQueue(taskQueueItem) {
       variables: { input: input }
     })
 
-    console.log(dataJSON)
-
     return dataJSON;
 
   } catch (error) { 
@@ -222,13 +220,10 @@ export async function deleteTaskQueueItem(id) {
 
 export async function putTaskQueueItem(item, ID) {
   try {
-    const input = {
-        ...item
-    }
 
     const dataJson = await API.graphql({
       query: updateTaskQueue,
-      variables: { input: input }
+      variables: { input: item }
     })
 
     console.log(dataJson)
