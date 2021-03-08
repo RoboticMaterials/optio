@@ -121,7 +121,7 @@ const LotEditorContainer = (props) => {
 
 		setLotTemplateId(tempLotTemplateId)
 		setLotTemplate(tempLotTemplate)
-	}, [selectedLotTemplatesId, card])
+	}, [selectedLotTemplatesId, card, lotTemplates])
 
 
 	useEffect(() => {
