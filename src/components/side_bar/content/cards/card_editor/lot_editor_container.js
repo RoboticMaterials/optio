@@ -37,6 +37,7 @@ import {getDisplayName} from "../../../../../methods/utils/lot_utils";
 
 // styles
 import * as styled from "./lot_editor_container.style";
+import {getCardsCount} from "../../../../../api/cards_api";
 
 const LotEditorContainer = (props) => {
 
@@ -67,6 +68,8 @@ const LotEditorContainer = (props) => {
 	const [lotTemplate, setLotTemplate] = useState([])
 	const [lotTemplateId, setLotTemplateId] = useState([])
 	const [card, setCard] = useState(cards[props.cardId] || null)
+	const [collectionCount, setCollectionCount] = useState(null)
+	const [lazyCreate, setLazyCreate] = useState(false)
 
 	const previousSelectedIndex = usePrevious(selectedIndex) // needed for useEffects
 
@@ -74,6 +77,7 @@ const LotEditorContainer = (props) => {
 	const {
 		current
 	} = formRef || {}
+
 	const {
 		values = {},
 		touched = {},
@@ -82,7 +86,12 @@ const LotEditorContainer = (props) => {
 		setErrors = () => {},
 		resetForm = () => {},
 		setTouched = () => {},
+		setFieldValue = () => {},
 	} = current || {}
+
+	useEffect(() => {
+		getCount()
+	}, [])
 
 	useEffect(() => {
 		setCard(cards[props.cardId] || null)
@@ -108,6 +117,12 @@ const LotEditorContainer = (props) => {
 	}, [selectedLotTemplatesId, card])
 
 
+	useEffect(() => {
+		if(lazyCreate) {
+			setLazyCreate(false)
+			createLot(selectedIndex, onAddCallback)
+		}
+	}, [lazyCreate])
 
 	useEffect(() => {
 		if(isArray(mappedValues) && mappedValues.length > 0 && selectedIndex !== previousSelectedIndex && previousSelectedIndex !== null) {
@@ -142,6 +157,11 @@ const LotEditorContainer = (props) => {
 
 		}
 	}, [createMappedValues, mappedValues])
+
+	const getCount =  async () => {
+		const count = await getCardsCount()
+		setCollectionCount(count)
+	}
 
 	const handleThisClick = (payload) => {
 
@@ -260,7 +280,7 @@ const LotEditorContainer = (props) => {
 		}
 	}
 
-	const createLot = (index) => {
+	const createLot = (index, cb) => {
 		const values = convertExcelToLot(mappedValues[index], lotTemplate, props.processId)
 		if(values._id) return	// lot was already created
 
@@ -331,6 +351,8 @@ const LotEditorContainer = (props) => {
 										...result
 									}, index)
 								})
+
+								cb && cb(_id)
 							}
 
 							else {
@@ -475,6 +497,9 @@ const LotEditorContainer = (props) => {
 		return true
 	}, [disablePasteModal])
 
+	const onAddCallback = (id) => {
+		setFieldValue("_id", id)
+	}
 
 	return (
 		<styled.Container
@@ -612,6 +637,16 @@ const LotEditorContainer = (props) => {
 			}
 
 			<LotEditor
+				onAddClick={() => {
+					const newValue = convertLotToExcel(values, lotTemplateId)
+					setMappedValues(immutableReplace(mappedValues, newValue, selectedIndex))
+					setMappedErrors(immutableReplace(mappedErrors, errors, selectedIndex))
+					setMappedTouched(immutableReplace(mappedTouched, touched, selectedIndex))
+					setLazyCreate(true)
+
+
+				}}
+				collectionCount={collectionCount}
 				lotTemplateId={lotTemplateId}
 				lotTemplate={lotTemplate}
 				showProcessSelector={props.showProcessSelector || (isArray(mappedValues) && mappedValues.length > 0)}

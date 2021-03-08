@@ -84,6 +84,11 @@ const EditLocation = (props) => {
     useEffect(() => {
         return () => {
             onBack()
+            // dispatchSetEditingStation(false)
+            // dispatchSetEditingPosition(false)
+            // dispatchSetSelectedPosition(null)
+            // dispatchSetSelectedStation(null)
+            // dispatchSetSelectedStationChildrenCopy(null)
         }
     }, [])
 
@@ -100,8 +105,6 @@ const EditLocation = (props) => {
             // Post
             if (!!copyStation.new) {
                 await dispatchPostStation(copyStation)
-
-                // Add dashboard
             }
             // Put
             else {
@@ -131,8 +134,6 @@ const EditLocation = (props) => {
         }
 
         onBack(true)
-
-
     }
 
     /**
@@ -181,6 +182,7 @@ const EditLocation = (props) => {
         }
         dispatchSetSelectedStationChildrenCopy(null)
 
+        // If there's a selected location and its new without saving, then delete
         if (!!selectedLocation && !!selectedLocation.new && !save) {
             if (selectedLocation.schema === 'station') {
                 dispatchRemoveStation(selectedLocation._id)
@@ -189,20 +191,6 @@ const EditLocation = (props) => {
             else if (selectedLocation.schema === 'position') {
                 dispatchRemovePosition(selectedLocation._id)
             }
-        }
-        // This goes through all locations and deletes any new ones
-        else if (!selectedLocation) {
-            Object.values(locations).forEach((loc) => {
-                if (!!loc.new) {
-                    if (loc.schema === 'station') {
-                        dispatchRemoveStation(selectedLocation._id)
-                    }
-
-                    else if (loc.schema === 'position') {
-                        dispatchRemovePosition(selectedLocation._id)
-                    }
-                }
-            })
         }
 
         dispatchSetSelectedPosition(null)
