@@ -89,8 +89,15 @@ const LotEditorContainer = (props) => {
 		setFieldValue = () => {},
 	} = current || {}
 
-	useEffect(() => {
+	useEffect( () => {
 		getCount()
+		let lotNumberTimer = setInterval(()=> {
+			getCount()
+		},5000)
+
+		return () => {
+			clearInterval(lotNumberTimer)
+		}
 	}, [])
 
 	useEffect(() => {
@@ -124,57 +131,67 @@ const LotEditorContainer = (props) => {
 		}
 	}, [lazyCreate])
 
+	/*
+	* This hook is used for updating mappedValues, errors, touched state from form values when selectedIndex is changed
+	* */
 	useEffect(() => {
 		if(isArray(mappedValues) && mappedValues.length > 0 && selectedIndex !== previousSelectedIndex && previousSelectedIndex !== null) {
-			const newValue = convertLotToExcel(values, lotTemplateId)
-			setMappedValues(immutableReplace(mappedValues, newValue, previousSelectedIndex))
-			setMappedErrors(immutableReplace(mappedErrors, errors, previousSelectedIndex))
-			setMappedTouched(immutableReplace(mappedTouched, touched, previousSelectedIndex))
+			const newValue = convertLotToExcel(values, lotTemplateId)							// convert values format from form to excel
+			setMappedValues(immutableReplace(mappedValues, newValue, previousSelectedIndex))	// update mapped values
+			setMappedErrors(immutableReplace(mappedErrors, errors, previousSelectedIndex))		// update mapped errors
+			setMappedTouched(immutableReplace(mappedTouched, touched, previousSelectedIndex))	// update mapped touched
 		}
 	}, [values, selectedIndex])
 
+	/*
+	* This hook is used for updating form values from mapped state when selectedIndex is changed
+	* */
 	useEffect(() => {
 		if(isArray(mappedValues) && mappedValues.length > 0 && mappedValues[selectedIndex] && selectedIndex !== previousSelectedIndex) {
-			const currMappedValue = mappedValues[selectedIndex]
+			// get mapped state for current selectedIndex value
+			const currMappedValue = mappedValues[selectedIndex] || {}
 			const currMappedError = mappedErrors[selectedIndex] || {}
 			const currMappedTouched = mappedTouched[selectedIndex] || {}
 
+			// convert format from excel to form
 			const currMappedLot = convertExcelToLot(currMappedValue, lotTemplate, values.processId)
 
 			resetForm()	// reset when switching
 
+			// update form state
 			setValues(currMappedLot)
 			setErrors(currMappedError)
 			setTouched(currMappedTouched)
 		}
 	}, [mappedValues, selectedIndex])
 
-	useEffect(() => {
-		if(createMappedValues) {
 
-
-			// setCreateMappedValues(false)
-
-		}
-	}, [createMappedValues, mappedValues])
-
+	/*
+	* Updates collectionCount state var, used for displaying lot number
+	* */
 	const getCount =  async () => {
 		const count = await getCardsCount()
 		setCollectionCount(count)
 	}
 
-	const handleThisClick = (payload) => {
+	/*
+	* This function handles the logic for when the create button in the paste form is clicked
+	* */
+	const handlePasteFormCreateClick = (payload) => {
 
-		setMappedValues(payload)
-		setPasteMapperHidden(true)
-		setShowPasteMapper(false)
-		setPasteTable([])
-		setShowStatusList(true)
 
+		setMappedValues(payload)				// set mapped values to payload provided from paste form
+		setPasteMapperHidden(true)		// hide paste form
+		setShowPasteMapper(false)			// don't render paste form
+		setPasteTable([])					// clear pasteTable
+		setShowStatusList(true)			// display statusList
+
+		// run validation for each lot
 		payload.forEach((currMappedLot, currMappedLotIndex) => {
 
-			let newLot = convertExcelToLot(currMappedLot, lotTemplate, props.processId)
+			let newLot = convertExcelToLot(currMappedLot, lotTemplate, props.processId)		// convert to lot format
 
+			// update status
 			setMappedStatus((previous) => {
 				return immutableSet(previous, {
 					validationStatus: {
@@ -188,7 +205,8 @@ const LotEditorContainer = (props) => {
 				}, currMappedLotIndex)
 			})
 
-			validateLot(newLot, currMappedLotIndex)
+
+			validateLot(newLot, currMappedLotIndex)		// validate that bad boy
 		})
 	}
 
@@ -240,11 +258,11 @@ const LotEditorContainer = (props) => {
 	* */
 	useEffect(() => {
 		// add event listener to 'paste'
-		document.addEventListener("paste", pasteListener);
+		document.addEventListener("paste", onPasteEvent);
 
 		// on dismount remove the event pasteListener
 		return () => {
-			document.removeEventListener("paste", pasteListener);
+			document.removeEventListener("paste", onPasteEvent);
 		};
 	}, [disablePasteModal])
 
@@ -280,10 +298,14 @@ const LotEditorContainer = (props) => {
 		}
 	}
 
+	/*
+	* handles logic for creating a lot from mappedValues
+	* */
 	const createLot = (index, cb) => {
-		const values = convertExcelToLot(mappedValues[index], lotTemplate, props.processId)
-		if(values._id) return	// lot was already created
+		const values = convertExcelToLot(mappedValues[index], lotTemplate, props.processId)		// convert mappedValues at selectedIndex to form format
+		if(values._id) return	// lot was already created, don't try creating it again
 
+		// update status
 		const previousStatus = mappedStatus[index] || {}
 		setMappedStatus((previous) => {
 			return immutableSet(previous, {
@@ -295,11 +317,13 @@ const LotEditorContainer = (props) => {
 			}, index)
 		})
 
+		// re-run validation right before submitting to ensure there are no errors
 		validateLot(values, index)
 			.then((validationResult) => {
 				const hasErrors = validationResult instanceof ValidationError
 
 				if(hasErrors) {
+					// update status - found errors so create is cancelled
 					const previousStatus = mappedStatus[index] || {}
 					setMappedStatus((previous) => {
 						return immutableSet(previous, {
@@ -312,6 +336,7 @@ const LotEditorContainer = (props) => {
 					})
 				}
 				else {
+					// no errors, POST it
 					const {
 						name: newName,
 						bins: newBins,
@@ -331,10 +356,12 @@ const LotEditorContainer = (props) => {
 					dispatchPostCard(submitItem)
 						.then((result) => {
 							if(result) {
+								// successfully POSTed
 								const {
 									_id = null
 								} = result || {}
 
+								// update status, POST success
 								const previousStatus = mappedStatus[index] || {}
 								setMappedStatus((previous) => {
 									return immutableSet(previous, {
@@ -346,19 +373,21 @@ const LotEditorContainer = (props) => {
 									}, index)
 								})
 
+								// update values (only difference should be ID added and maybe lotNumber was different
 								setMappedValues((previous) => {
 									return immutableSet(previous, {
 										...result
 									}, index)
 								})
 
+								// call callback if provided
 								cb && cb(_id)
 							}
 
 							else {
+								// POST error, update status
 								const previousStatus = mappedStatus[index] || {}
 								setMappedStatus((previous) => {
-
 									return immutableSet(previous, {
 										...previousStatus,
 										resourceStatus: {
@@ -388,6 +417,9 @@ const LotEditorContainer = (props) => {
 			// })
 	}
 
+	/*
+	* runs async validation for a lot and  updates its status
+	* */
 	const validateLot = (values, index) => {
 		return editLotSchema.validate(values, {abortEarly: false})
 			.then(() => {
@@ -399,7 +431,7 @@ const LotEditorContainer = (props) => {
 					return immutableSet(previous, {}, index)
 				})
 
-				// update status
+				// update status with success
 				const previousStatus = mappedStatus[index] || {}
 				setMappedStatus((previous) => {
 					return immutableSet(previous, {
@@ -412,6 +444,8 @@ const LotEditorContainer = (props) => {
 				})
 			})
 			.catch((err) => {
+				// oh no there was an error
+
 				const {
 					inner = [],
 					// message
@@ -419,6 +453,7 @@ const LotEditorContainer = (props) => {
 
 				let lotErrors = {}
 
+				// collect errors
 				inner.forEach((currErr) => {
 					const {
 						// errors,
@@ -436,7 +471,7 @@ const LotEditorContainer = (props) => {
 					}
 				})
 
-				// update status
+				// update status with errors
 				const previousStatus = mappedStatus[index] || {}
 				setMappedStatus((previous) => {
 					return immutableSet(previous, {
@@ -463,14 +498,18 @@ const LotEditorContainer = (props) => {
 			});
 	}
 
-	const pasteListener = useCallback((e) => {
-		const plainText = e.clipboardData.getData('text/plain')
+	/*
+	* Event handler for paste events
+	*
+	* converts tabular data to an array of arrays structure (1 column X n rows)
+	* */
+	const onPasteEvent = useCallback((e) => {
+		const plainText = e.clipboardData.getData('text/plain')	// get clipboard data
 
 		var rows = plainText.split("\n");
 		let table = []
 
 		for(var y in rows) {
-			// let row = []
 
 			var cells = rows[y].split("\t")
 
@@ -485,7 +524,7 @@ const LotEditorContainer = (props) => {
 			}
 		}
 
-		setPasteTable(table)
+		setPasteTable(table)	// set paste table
 
 		// need to call setShowSimpleModal with tiny delay in order to allow normal pasting
 		if(!disablePasteModal) {
@@ -497,6 +536,11 @@ const LotEditorContainer = (props) => {
 		return true
 	}, [disablePasteModal])
 
+	/*
+	* callback function used in createLot when submit is called from inside lot editor
+	*
+	* Updates form values with id of created lot
+	* */
 	const onAddCallback = (id) => {
 		setFieldValue("_id", id)
 	}
@@ -531,9 +575,6 @@ const LotEditorContainer = (props) => {
 						createLot(i)
 					}
 				}}
-				// onCloseClick={() => {
-				// 	setShowCreationStatus(false)
-				// }}
 				onCanceleClick={() => {
 					setShowStatusList(false)
 					setPasteTable([])
@@ -559,7 +600,6 @@ const LotEditorContainer = (props) => {
 
 					const currStatus = mappedStatus[currIndex] || {}
 					return {
-						// ...currValue,
 						errors: mappedErrors[currIndex] || {},
 						title: name,
 						created: !!_id,
@@ -601,7 +641,7 @@ const LotEditorContainer = (props) => {
 				// 	setPasteMapperHidden(true)
 				// }}
 				onCreateClick={(payload) => {
-					handleThisClick(payload)
+					handlePasteFormCreateClick(payload)
 				}}
 			/>
 			}
@@ -638,15 +678,23 @@ const LotEditorContainer = (props) => {
 
 			<LotEditor
 				onAddClick={() => {
-					const newValue = convertLotToExcel(values, lotTemplateId)
-					setMappedValues(immutableReplace(mappedValues, newValue, selectedIndex))
-					setMappedErrors(immutableReplace(mappedErrors, errors, selectedIndex))
-					setMappedTouched(immutableReplace(mappedTouched, touched, selectedIndex))
-					setLazyCreate(true)
-
-
+					/*
+					* Note: createLot function uses mappedValues and the index within mappedValues to retrieve data for which lot to create
+					* Therefore, before createLot is called, mappedValues must be updated.
+					*
+					* If you call setMappedValues and then directly call createLot, createLot will run before mappedValues is updated.
+					*
+					* Therefore, instead of directly calling createLot, lazyCreate is set to true. A useEffect hook listens for changes to lazyCreate, and then calls createLot when lazyCreate is true. This ensures mappedValues is updated before createLot is called
+					*
+					*
+					* */
+					const newValue = convertLotToExcel(values, lotTemplateId)						// convert form values format to mapped excel format
+					setMappedValues(immutableReplace(mappedValues, newValue, selectedIndex))		// update mapped state
+					setMappedErrors(immutableReplace(mappedErrors, errors, selectedIndex))			// update mapped state
+					setMappedTouched(immutableReplace(mappedTouched, touched, selectedIndex))		// update mapped state
+					setLazyCreate(true)														// have to submit in round-about way in order to ensure other state variables are up-to-date first
 				}}
-				collectionCount={collectionCount}
+				collectionCount={parseInt((collectionCount + 1))}
 				lotTemplateId={lotTemplateId}
 				lotTemplate={lotTemplate}
 				showProcessSelector={props.showProcessSelector || (isArray(mappedValues) && mappedValues.length > 0)}
@@ -655,6 +703,7 @@ const LotEditorContainer = (props) => {
 					setShowStatusList(true)
 					setSelectedIndex(null)
 				}}
+
 				disabledAddButton={(isArray(mappedValues) && mappedValues.length > 0)}
 				formRef={formRef}
 				showCreationStatusButton={(isArray(mappedValues) && mappedValues.length > 0)}
@@ -669,6 +718,7 @@ const LotEditorContainer = (props) => {
 					setDisablePasteModal(false)
 				}}
 				{...props}
+				cardId={(props.cardId !== null) ? props.cardId : values._id ? values._id : null}
 				onValidate={handleValidate}
 				footerContent={() =>
 					(isArray(mappedValues) && mappedValues.length > 0) &&

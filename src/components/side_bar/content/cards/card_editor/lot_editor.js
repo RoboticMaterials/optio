@@ -1050,6 +1050,9 @@ const LotEditor = (props) => {
 		// }
 	}
 
+	useEffect(() => {
+		setCardId(props.cardId)
+	}, [props.cardId])
 
 	useEffect(() => {
 		let tempCardNames = []
