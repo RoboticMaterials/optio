@@ -35,7 +35,7 @@ export const Container = styled.div`
 	display: flex;
     flex-direction: row;
   align-items: center;
-    width: 100%;
+    width: 100vw;
     padding: .5rem 1rem; 
     background: ${props => props.theme.bg.quaternary};
     border-bottom: 1px solid ${props => props.theme.bg.tertiary};
