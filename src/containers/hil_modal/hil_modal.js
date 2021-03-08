@@ -127,6 +127,14 @@ const HILModal = () => {
 
             }
 
+            // If there is a modal ID, but the corresponding Task Q item either doesnt have a station id (the task q item is in between load and unload) or the task q item doesnt exits anymore
+            // Then remove the modal id and close the hil
+            // Keep in mind that there is a useEffect in hil_modals that has a return statement that deletes the active hil dashboard from the activeHilDashboarsd object
+            // Thats why Its not done here
+            else if (!!showModalId && ( !taskQueue[showModalId] || taskQueue[showModalId].hil_station_id === null)) {
+                onSetShowModalId(null)
+            }
+
         })
 
     }, [taskQueue, dashboardID, taskQueueItemClicked, hilResponse, localHumanTask])
