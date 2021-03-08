@@ -57,7 +57,7 @@ export default function stationsReducer(state = defaultState, action) {
                 [station._id]: station
             },
             // If the post station is the selectedStation, then update selected station
-            selectedStation: state.selectedStation !== null && state.selectedStation._id === station._id && station,
+            selectedStation: (state.selectedStation !== null && state.selectedStation._id === station._id) && station,
             pending: false,
         }
     }
