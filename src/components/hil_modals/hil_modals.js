@@ -64,6 +64,9 @@ const HILModals = (props) => {
         dashboard: dashboardId
     } = item || {}
 
+    const params = useParams()
+    const dashboardID = params.dashboardID
+
     const dispatch = useDispatch()
     const dispatchGetCards = () => dispatch(getCards())
     const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
@@ -365,13 +368,11 @@ const HILModals = (props) => {
         // On unmount, set the task q item to none
         return () => {
             dispatchTaskQueueItemClicked('')
-            // Deletes the dashboard id from active list for the hil that has been responded too
-            const {
-                [item.hil_station_id]: dashboardIdToRemove,
-                ...rest
-            } = activeHilDashboards
 
-            dispatchSetActiveHilDashboards(rest)
+            // Deletes the dashboard id from active list for the hil that has been responded too
+            const activeHilCopy = deepCopy(activeHilDashboards)
+            delete activeHilCopy[dashboardID]
+            dispatchSetActiveHilDashboards(activeHilCopy)
         }
 
     }, [])
@@ -435,7 +436,9 @@ const HILModals = (props) => {
         }
 
         // Deletes the dashboard id from active list for the hil that has been responded too
-        dispatchSetActiveHilDashboards(delete (activeHilDashboards[item.hil_station_id]))
+        const activeHilCopy = deepCopy(activeHilDashboards)
+        delete activeHilCopy[dashboardID]
+        dispatchSetActiveHilDashboards(activeHilCopy)
 
         const ID = deepCopy(taskQueueID)
 
