@@ -32,7 +32,6 @@ export async function postLoggers(settings) {
 }
 
 export const postLocalSettings = async (settings) => {
-
     // NOTE: localStorage.setItem returns undefined, so can't use this return value for anything
     const localSettings = localStorage.setItem("local-settings-config", JSON.stringify(settings))
     return localSettings

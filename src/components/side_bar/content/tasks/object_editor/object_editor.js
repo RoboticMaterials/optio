@@ -107,6 +107,7 @@ const ObjectEditor = (props) => {
 
                   <styled.RowContainer style = {{paddingLeft:'0.5rem', paddingRight: '0.5rem'}}>
                     <TextField
+                        autoFocus
                         InputComponent={Textbox}
                         name={name}
                         placeholder={"Object Name"}
@@ -124,7 +125,7 @@ const ObjectEditor = (props) => {
                         name={description}
                         placeholder={"Add a Description..."}
                         schema={'tasks'}
-                        focus={focus}
+                        //focus={focus}
                         style={{ fontSize: '0.9rem', fontWeight: '600'}}
                         lines = {2}
                     />

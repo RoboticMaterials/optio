@@ -5,6 +5,7 @@ import { useParams, useHistory } from 'react-router-dom'
 // Import Components
 import HILModals from '../../components/hil_modals/hil_modals'
 import HILSuccess from '../../components/hil_modals/hil_modals_content/hil_success'
+import { deepCopy } from '../../methods/utils/utils';
 import { setShowModalId } from '../../redux/actions/task_queue_actions'
 
 const HILModal = () => {
@@ -97,14 +98,12 @@ const HILModal = () => {
 
                 // If active hils matches the dashboard selected (found in params) then display hil
                 // if (dashboardID === item.hil_station_id && !dashboards[dashboardID].unsubcribedHILS.includes(item.hil.taskID)) {
-                if (Object.keys(activeHilDashboards).includes(dashboardID)) {
-                    const hilType = tasks[item.task_id].type
+                if (Object.keys(activeHilDashboards).includes(dashboardID) && !showModalId) {
                     onSetShowModalId(item._id)
                 }
 
                 // If a device dashboard, then show all associated HILs
                 else if (deviceDashboard) {
-                    const hilType = tasks[item.task_id].type
                     onSetShowModalId(item._id)
                 }
                 else {
@@ -125,6 +124,14 @@ const HILModal = () => {
                     onSetShowModalId(item._id)
                 }
 
+            }
+
+            // If there is a modal ID, but the corresponding Task Q item either doesnt have a station id (the task q item is in between load and unload) or the task q item doesnt exits anymore
+            // Then remove the modal id and close the hil
+            // Keep in mind that there is a useEffect in hil_modals that has a return statement that deletes the active hil dashboard from the activeHilDashboarsd object
+            // Thats why Its not done here
+            else if (!!showModalId && (!taskQueue[showModalId] || taskQueue[showModalId].hil_station_id === null)) {
+                onSetShowModalId(null)
             }
 
         })
@@ -250,27 +257,31 @@ const HILModal = () => {
 
             // If the task queue item does not have a station id but has a timer running, that means the timer should stop
             else if (!item.hil_station_id && !!statusTimerIntervals[id]) {
-                if (!!statusTimerIntervals[id]) {
 
-                    // Deletes the dashboard id from active list for the hil that has been responded too
-                    onSetActiveHilDashboards(delete (activeHilDashboards[item.hil_station_id]))
+                const activeHilCopy = deepCopy(activeHilDashboards)
 
-                    // Clear the interval which is stored in state and delete that ID from state
-                    clearInterval(statusTimerIntervals[id])
-                    delete statusTimerIntervals[id]
-                    setStatusTimerIntervals({
-                        ...statusTimerIntervals,
-                    })
+                Object.keys(activeHilDashboards).forEach((dash) => {
+                    if (activeHilDashboards[dash] === id) {
+                        delete (activeHilCopy[dash])
+                    }
+                })
 
-                    // Update redux
-                    delete hilTimers[item._id]
-                    onSetHilTimers({
-                        ...hilTimers,
-                    })
-                }
+                // Deletes the dashboard id from active list for the hil that has been responded too
+                onSetActiveHilDashboards(activeHilCopy)
 
+                // Clear the interval which is stored in state and delete that ID from state
+                clearInterval(statusTimerIntervals[id])
+                delete statusTimerIntervals[id]
+                setStatusTimerIntervals({
+                    ...statusTimerIntervals,
+                })
+
+                // Update redux
+                delete hilTimers[item._id]
+                onSetHilTimers({
+                    ...hilTimers,
+                })
             }
-
         })
 
         // If the length of intervals is greater then 0 check to make sure the ascoiated task q item is still in task q
