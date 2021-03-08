@@ -366,7 +366,12 @@ const HILModals = (props) => {
         return () => {
             dispatchTaskQueueItemClicked('')
             // Deletes the dashboard id from active list for the hil that has been responded too
-            dispatchSetActiveHilDashboards(delete (activeHilDashboards[item.hil_station_id]))
+            const {
+                [item.hil_station_id]: dashboardIdToRemove,
+                ...rest
+            } = activeHilDashboards
+
+            dispatchSetActiveHilDashboards(rest)
         }
 
     }, [])
