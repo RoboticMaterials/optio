@@ -365,7 +365,8 @@ const HILModals = (props) => {
         // On unmount, set the task q item to none
         return () => {
             dispatchTaskQueueItemClicked('')
-            // dispatchLocalHumanTask(null)
+            // Deletes the dashboard id from active list for the hil that has been responded too
+            dispatchSetActiveHilDashboards(delete (activeHilDashboards[item.hil_station_id]))
         }
 
     }, [])
