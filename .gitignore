@@ -34,3 +34,5 @@ amplify-build-config.json
 amplify-gradle-config.json
 amplifytools.xcconfig
 .secret-*
+
+amplify/backend/api/rmstudiocloud/resolvers

@@ -239,6 +239,7 @@ export const getTaskQueue = /* GraphQL */ `
       mission_status
       owner
       task_id
+      custom_task
       createdAt
       updatedAt
     }
@@ -258,6 +259,7 @@ export const listTaskQueues = /* GraphQL */ `
         mission_status
         owner
         task_id
+        custom_task
         createdAt
         updatedAt
       }

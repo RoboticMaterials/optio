@@ -1,25 +1,36 @@
-import axios from "axios";
 import log from "../logger";
 
-import { apiIPAddress } from "../settings/settings";
-const operator = "task_queue";
+// import the amplify modules needed
+import { API } from 'aws-amplify'
+
+// import the GraphQL queries, mutations and subscriptions
+import { listTaskQueues } from '../graphql/queries';
+import { createTaskQueue, updateTaskQueue } from '../graphql/mutations';
+import { deleteTaskQueue as deleteTaskQueueByID } from '../graphql/mutations';
 
 export async function getTaskQueue() {
   try {
-    const response = await axios({
-      method: "get",
-      url: apiIPAddress() + operator,
-      headers: {
-        "X-API-Key": "123456",
-        "Access-Control-Allow-Origin": "*",
-      },
+
+    // get the data
+    const res = await API.graphql({
+      query: listTaskQueues
+    })
+
+    const GQLdata = []
+
+    // change the data into json
+    res.data.listTaskQueues.items.forEach(task => {
+      if (task.custom_task){
+        GQLdata.push( {
+          ...task,
+          custom_task: JSON.parse(task.custom_task) 
+        })
+      }else{
+        GQLdata.push(task)
+      }
     });
-    // Success 🎉
-    const data = response.data;
 
-    const dataJson = JSON.parse(data);
-
-    return dataJson;
+    return GQLdata;
   } catch (error) {
     // Error 😨
     if (error.response) {
@@ -41,33 +52,37 @@ export async function getTaskQueue() {
       // Something happened in setting up the request and triggered an Error
       log.debug("error.message", error.message);
     }
-    throw error;
     log.debug("error", error);
+    throw error;
   }
 }
 
 export async function postTaskQueue(taskQueueItem) {
   try {
-    const response = await axios({
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": "123456",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      data: taskQueueItem,
-      url: apiIPAddress() + operator,
-    });
 
-    // Success 🎉
-    log.debug("postTaskQueue: response", response);
-    const data = response.data;
-    const dataJson = JSON.parse(data);
-    log.debug("dataJson", dataJson);
-    log.debug("getSchedulesdataJson", dataJson);
-    return dataJson;
-  } catch (error) {
+    let input
+
+    if (taskQueueItem.custom_task){
+      input = {
+        ...taskQueueItem,
+        custom_task: JSON.stringify(taskQueueItem.custom_task),
+      }
+    }else{
+      input = taskQueueItem
+    }
+
+    delete input.neame
+
+    const dataJSON = await API.graphql({
+      query: createTaskQueue,
+      variables: { input: input }
+    })
+
+    console.log(dataJSON)
+
+    return dataJSON;
+
+  } catch (error) { 
     // Error 😨
     if (error.response) {
       /*
@@ -94,29 +109,30 @@ export async function postTaskQueue(taskQueueItem) {
       // Something happened in setting up the request and triggered an Error
       console.error("postTaskQueue: error.message", error.message);
     }
-    throw error;
     console.error("postTaskQueue: error", error);
+    throw error;
   }
 }
 
 export async function deleteTaskQueueAll() {
   try {
-    const response = await axios({
-      method: "delete",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": "123456",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      url: apiIPAddress() + operator,
+
+    const res = await API.graphql({
+      query: listTaskQueues
+    })
+
+    await res.data.listTaskQueues.items.forEach(task => {
+
+      const id = {id: task.id}
+
+      API.graphql({
+        query: deleteTaskQueueByID,
+        variables: { input: id }
+      })
+        
     });
 
-    // Success 🎉
-    // log.debug('deleteTaskQueueAll: response',response);
-    const data = response.data;
-
-    return data;
+    return 'All Deleted';
   } catch (error) {
     // Error 😨
     if (error.response) {
@@ -147,29 +163,29 @@ export async function deleteTaskQueueAll() {
       // Something happened in setting up the request and triggered an Error
       console.error("deleteTaskQueueAll: error.message", error.message);
     }
-    throw error;
     console.error("deleteTaskQueueAll: error", error);
+    throw error;
   }
 }
 
 export async function deleteTaskQueueItem(id) {
   try {
-    const response = await axios({
-      method: "delete",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": "123456",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      url: apiIPAddress() + operator + "/" + id,
-    });
 
-    // Success 🎉
-    // log.debug('deleteTaskQueueItem: response',response);
-    const data = response.data;
+    const res = await API.graphql({
+      query: listTaskQueues,
+      variables:{
+        filter: {_id: {eq: id}}
+      }
+    })
 
-    return data;
+    console.log(res)
+
+    await API.graphql({
+      query: deleteTaskQueueByID,
+      variables: { input: {id: res.data.listTaskQueues.items[0].id} }
+    })
+
+    return 'All Deleted';
   } catch (error) {
     // Error 😨
     if (error.response) {
@@ -206,23 +222,18 @@ export async function deleteTaskQueueItem(id) {
 
 export async function putTaskQueueItem(item, ID) {
   try {
-    const response = await axios({
-      method: "PUT",
-      url: apiIPAddress() + operator + "/" + ID,
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": "123456",
-        Accept: "text/html",
-        "Access-Control-Allow-Origin": "*",
-      },
-      data: item,
-    });
+    const input = {
+        ...item
+    }
 
-    // Success 🎉
-    const data = response.data;
-    const dataJson = JSON.parse(data);
+    const dataJson = await API.graphql({
+      query: updateTaskQueue,
+      variables: { input: input }
+    })
 
-    return dataJson;
+    console.log(dataJson)
+
+  return dataJson;
   } catch (error) {
     // Error 😨
     if (error.response) {

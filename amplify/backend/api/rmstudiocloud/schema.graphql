@@ -88,7 +88,8 @@ type TaskQueue
   id: ID!
   _id: String!
   device_type: String!
-  mission_status: String!
-  owner: String!
+  mission_status: String
+  owner: String
   task_id: String!
+  custom_task: AWSJSON
 }

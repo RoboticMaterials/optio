@@ -301,6 +301,7 @@ export const onCreateTaskQueue = /* GraphQL */ `
       mission_status
       owner
       task_id
+      custom_task
       createdAt
       updatedAt
     }
@@ -315,6 +316,7 @@ export const onUpdateTaskQueue = /* GraphQL */ `
       mission_status
       owner
       task_id
+      custom_task
       createdAt
       updatedAt
     }
@@ -329,6 +331,7 @@ export const onDeleteTaskQueue = /* GraphQL */ `
       mission_status
       owner
       task_id
+      custom_task
       createdAt
       updatedAt
     }
