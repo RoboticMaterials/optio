@@ -75,10 +75,14 @@ const DashboardsPage = (props) => {
      */
     useEffect(() => {
 
-        // list of all processes that the station is the first station of the process
-        var firstStationProcesses = []
-        var lastStationProcesses = []
+        onUpdateKickoffFinishInfo()
 
+    }, [processes])
+
+    const onUpdateKickoffFinishInfo = async () => {
+        // list of all processes that the station is the first station of the process
+        let firstStationProcesses = []
+        let lastStationProcesses = []
 
         // loop through processes and check if the load station of the first route of any process matches the current dashboards station
         Object.values(processes).forEach((currProcess) => {
@@ -117,8 +121,8 @@ const DashboardsPage = (props) => {
             buttons = []
         } = dashboard || {}
 
+        await dispatchSetDashboardKickOffProcesses(dashboardID, firstStationProcesses)
         if(firstStationProcesses.length > 0 ) {
-            dispatchSetDashboardKickOffProcesses(dashboardID, firstStationProcesses)
 
             // check if kickoff button needs to be added
             const containsKickoffButton = getContainsKickoffButton({buttons})
@@ -127,14 +131,15 @@ const DashboardsPage = (props) => {
             if(!containsKickoffButton) {
                 const kickOffButton = getOperationButton(OPERATION_TYPES.KICK_OFF.key)
 
-                dispatchPutDashboardAttributes({
+                await dispatchPutDashboardAttributes({
                     buttons: [...buttons, kickOffButton]
                 }, dashboardID)
             }
         }
 
+        await dispatchSetDashboardFinishProcesses(dashboardID, lastStationProcesses)
         if(lastStationProcesses.length > 0) {
-            dispatchSetDashboardFinishProcesses(dashboardID, lastStationProcesses)
+
 
             // check if finish button needs to be added
             const containsFinishButton = getContainsFinishButton({buttons})
@@ -143,13 +148,12 @@ const DashboardsPage = (props) => {
             if(!containsFinishButton) {
                 const finishButton = getOperationButton(OPERATION_TYPES.FINISH.key)
 
-                dispatchPutDashboardAttributes({
+                await dispatchPutDashboardAttributes({
                     buttons: [...buttons, finishButton]
                 }, dashboardID)
             }
         }
-
-    }, [processes])
+    }
 
     // On page load, load the first and only dashboard with this station
     // Leaving the rest of the code in for adding dashboards and dashboard list view because we may need it in the future

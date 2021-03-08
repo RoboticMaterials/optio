@@ -27,7 +27,12 @@ import useWindowSize from '../../../../../hooks/useWindowSize'
 
 // Import Actions
 import { handlePostTaskQueue, postTaskQueue, putTaskQueue } from '../../../../../redux/actions/task_queue_actions'
-import { dashboardOpen, setDashboardKickOffProcesses, putDashboard } from '../../../../../redux/actions/dashboards_actions'
+import {
+    dashboardOpen,
+    setDashboardKickOffProcesses,
+    putDashboard,
+    putDashboardAttributes
+} from '../../../../../redux/actions/dashboards_actions'
 import * as localActions from '../../../../../redux/actions/local_actions'
 import { getProcesses } from "../../../../../redux/actions/processes_actions";
 import { getTasks } from '../../../../../redux/actions/tasks_actions'
@@ -38,10 +43,11 @@ import * as style from './dashboard_screen.style'
 
 // import logging
 import log from "../../../../../logger";
-import { isEmpty } from "../../../../../methods/utils/object_utils";
+import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
 import { isRouteInQueue } from "../../../../../methods/utils/task_queue_utils";
 import { isDeviceConnected } from "../../../../../methods/utils/device_utils";
 import { DEVICE_CONSTANTS } from "../../../../../constants/device_constants";
+import {immutableDelete, isArray, isNonEmptyArray} from "../../../../../methods/utils/array_utils";
 
 
 
@@ -63,10 +69,13 @@ const DashboardScreen = (props) => {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
+    const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] }) || []
+    const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] }) || []
 
     //actions
     const dispatchGetProcesses = () => dispatch(getProcesses())
     const dispatchPutDashboard = async (dashboard, id) => await dispatch(putDashboard(dashboard, id))
+    const dispatchPutDashboardAttributes = async (attributes, id) => await dispatch(putDashboardAttributes(attributes, id))
     const dispatchGetTasks = async () => await dispatch(getTasks())
 
     // self contained state
@@ -109,6 +118,73 @@ const DashboardScreen = (props) => {
     }, [])
 
 
+    useEffect(() => {
+        checkButtons()
+    },[currentDashboard.buttons])
+
+    const checkButtons = async () => {
+        const { buttons } = currentDashboard	// extract buttons from dashboard
+        let updatedButtons = [...buttons]
+
+        let madeUpdate = false // used to track if any changes were made. Dashboard only needs to be updated if a change was made
+
+        let taskIds = []
+
+        buttons.forEach(async (currButton) => {
+            const {
+                task_id,
+                type
+            } = currButton
+
+            if(type === OPERATION_TYPES.KICK_OFF.key) {
+                // if button type is kick off, but dashboard has no available kick off processes, remove the kick off button
+                if(!isNonEmptyArray(availableKickOffProcesses)) {
+                    const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
+                    if(index !== -1) {
+                        updatedButtons = immutableDelete(updatedButtons, index)
+                    }
+                    madeUpdate = true
+                }
+            }
+            else if(type === OPERATION_TYPES.FINISH.key) {
+                // if button type is finish, but dashboard has no available finish processes, remove the finish button
+                if(!isNonEmptyArray(availableFinishProcesses)) {
+                    const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
+                    if(index !== -1) {
+                        updatedButtons = immutableDelete(updatedButtons, index)
+                    }
+                    madeUpdate = true
+                }
+            }
+            // Dont add duplicate buttons, delete if they're are any
+            else if (task_id && taskIds.includes(task_id)) {
+                const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
+                if(index !== -1) {
+                    updatedButtons = immutableDelete(updatedButtons, index)
+                }
+                madeUpdate = true
+            }
+
+            // If task does not exist, delete task
+            else if (task_id && !(isObject(tasks[task_id]))) {
+                    const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
+                    if(index !== -1) {
+                        updatedButtons = immutableDelete(updatedButtons, index)
+                    }
+                    madeUpdate = true
+            }
+
+            taskIds.push(task_id)
+        })
+
+        if(madeUpdate) {
+            await dispatchPutDashboardAttributes({
+                buttons: updatedButtons
+            }, dashboardId)
+        }
+    }
+
+
     // If current dashboard is undefined, it probably has been deleted. So go back to locations just incase the station has been deleted too
     if (currentDashboard === undefined) {
         history.push(`/locations`)
@@ -117,6 +193,8 @@ const DashboardScreen = (props) => {
             </>
         )
     }
+
+
 
     /**
      * Handles buttons associated with selected dashboard
@@ -130,10 +208,10 @@ const DashboardScreen = (props) => {
      * and if the the tasks unload location is the dashboards station, then show a unload button
      */
     const handleDashboardButtons = () => {
-        let { buttons } = currentDashboard	// extract buttons from dashboard
+        const { buttons } = currentDashboard	// extract buttons from dashboard
         let taskIds = []    // array of task ids
         // filter out buttons with missing task
-        buttons = buttons.filter(async (currButton) => {
+        let filteredButtons = buttons.filter(async (currButton) => {
             const {
                 task_id,
                 type
@@ -142,9 +220,6 @@ const DashboardScreen = (props) => {
             // Dont add duplicate buttons, delete if they're are any
             if (task_id && taskIds.includes(task_id)) {
                 logger.error(`Button with duplicate task_id found in dashboard. {dashboardId: ${dashboardID}, task_id:${task_id}`)
-                const index = buttons.findIndex((btn) => btn.id === currButton.id)
-                currentDashboard.buttons.splice(index, 1)
-                await dispatchPutDashboard(currentDashboard, currentDashboard._id.$oid)
                 return false // don't add duplicate tasks
             }
 
@@ -154,16 +229,6 @@ const DashboardScreen = (props) => {
             // If task does not exist, delete task
             else if (task_id && !(tasks[task_id])) {
                 logger.error('Task does not exist! Hiding button from dashboard')
-
-                // Doubel check to make sure it actually doesnt exist
-                const doubleCheckTasks = await dispatchGetTasks()
-                console.log('QQQQ double check task', doubleCheckTasks)
-                if (!(doubleCheckTasks[task_id])) {
-                    const index = buttons.findIndex((btn) => btn.id === currButton.id)
-                    currentDashboard.buttons.splice(index, 1)
-                    await dispatchPutDashboard(currentDashboard, currentDashboard._id.$oid)
-                }
-
                 return false
             }
 
@@ -178,8 +243,8 @@ const DashboardScreen = (props) => {
             Object.values(taskQueue).forEach((item, ind) => {
                 // If it is matching, add a button the the dashboard for unloading
                 if (!!item.hil_station_id && item.hil_station_id === stationID && hilResponse !== item._id && item?.device_type === 'human') {
-                    buttons = [
-                        ...buttons,
+                    filteredButtons = [
+                        ...filteredButtons,
                         {
                             'name': item.hil_message,
                             'color': '#90eaa8',
@@ -194,7 +259,7 @@ const DashboardScreen = (props) => {
             })
         }
 
-        return buttons
+        return filteredButtons
     }
 
     const handleRouteClick = async (Id, name, custom, deviceType) => {
