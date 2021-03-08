@@ -145,7 +145,7 @@ const TaskField = (props) => {
     const [needsValidate, setNeedsValidate] = useState(false);
     const [didSetHandoff, setDidSetHandoff] = useState(false);
     const [showObjectSelector, setShowObjectSelector] = useState(false);
-    const [objectQuantity, setObjectQuantity] = useState(null);
+    const [objectSaveDisabled, setObjectSaveDisabled] = useState(true)
     const previousLoadStationId = usePrevious(getLoadStationId(values))
     const previousUnloadStationId = usePrevious(getUnloadStationId(values))
     const url = useLocation().pathname
@@ -218,13 +218,14 @@ const TaskField = (props) => {
 
             if (selectedTask && selectedTask.load) {
                 setFieldTouched(fieldParent ? `${fieldParent}.load` : "load", true)
+
             }
             if (selectedTask && selectedTask.unload) {
                 setFieldTouched(fieldParent ? `${fieldParent}.unload` : "unload", true)
             }
 
         }
-    }, [selectedTask, selectedObject, objectQuantity])
+    }, [selectedTask, selectedObject])
 
     useEffect(() => {
 
@@ -245,6 +246,7 @@ const TaskField = (props) => {
     }, [])
 
     useEffect(() => {
+
         if (selectedObject) {
             setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", selectedObject, false)
         }
@@ -253,7 +255,7 @@ const TaskField = (props) => {
             setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", null , false)
         }
 
-    },[editingObject])
+    },[selectedObject, selectedTask])
 
 
     // calls save function when values.needsSubmit is true - used for auto submit when selecting route from existing
@@ -273,6 +275,17 @@ const TaskField = (props) => {
       dispatchPageDataChanged(changed)
     }, [changed])
 
+
+    useEffect(() => {
+      if(!!obj && !!selectedObject){
+        if((obj.name!==selectedObject.name || obj.description!==selectedObject.description) && obj.name!==""){
+          setObjectSaveDisabled(false)
+        }
+        else{
+          setObjectSaveDisabled(true)
+          }
+      }
+    }, [obj?.description, obj?.name])
 
     const renderLoadUnloadParameters = () => {
         if (selectedTask.load.position === null) {
@@ -309,41 +322,10 @@ const TaskField = (props) => {
 
     }
 
-    const createObject = async () => {
-        // Save object
-        let objectId = null
-        if (isObject(obj) && ('name' in obj)) {
-            if (obj._id == undefined) { // If the object does not currently exist, make a new one
-                const newObject = {
-                    name: obj.name,
-                    description: "",
-                    quantity: obj.quantity,
-                    modelName: "",
-                    dimensions: null,
-                    map_id: currentMap._id,
-                    _id: uuid.v4(),
-                }
-                const response = await dispatch(objectActions.postObject(newObject))
-                setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", newObject)
-
-
-                objectId = newObject._id
-            } else { //  Otherwise just set the task obj to the existing obj
-                objectId = obj._id
-            }
-
-        }
-
-        setFieldValue(fieldParent ? `${fieldParent}.needsSubmit` : "needsSubmit", true)
-
-        return objectId
-    }
-
     const onSaveObject = async() =>{
         const object = {
           name: obj.name,
           description: obj.description,
-          quantity: objectQuantity,
           modelName: "",
           dimensions: null,
           map_id: currentMap._id,
@@ -357,17 +339,14 @@ const TaskField = (props) => {
         await dispatchPostObject(object)
       }
 
-      setObjectQuantity(null)
       dispatchSetEditingObject(false)
-
-
+      await dispatchSetSelectedObject(null)
     }
 
     const onAddObject = async() =>{
         const object = {
           name: "",
           description: "",
-          quantity: "",
           modelName: "",
           dimensions: null,
           map_id: currentMap._id,
@@ -376,7 +355,6 @@ const TaskField = (props) => {
         }
 
         dispatchSetSelectedObject(object)
-        setObjectQuantity(null)
     }
 
     const onSelectObject = () => {
@@ -389,6 +367,8 @@ const TaskField = (props) => {
       if(!!editingObject){
         dispatchSetEditingObject(false)
         dispatchSetSelectedObject(routeObject)
+        setFieldTouched(fieldParent ? `${fieldParent}.obj` : "obj", false)
+
       }
       else{
         setShowObjectSelector(false)
@@ -592,7 +572,7 @@ const TaskField = (props) => {
                                     // If this task is part of a process and not already in the array of routes, then add the task to the selected process
                                     if (!selectedProcess.routes.includes(selectedRouteId)) {
 
-                                        var selectedRoute = { ...selectedValue, needsSubmit: true, obj: selectedObj, temp: values.temp }
+                                        var selectedRoute = { ...selectedValue, needsSubmit: true, obj: selectedObject, temp: values.temp }
                                         // setFieldValue
                                         if (fieldParent) {
                                             setFieldValue(fieldParent, selectedRoute)
@@ -691,7 +671,7 @@ const TaskField = (props) => {
                                 }}
                                 onSelectObject = {()=>onSelectObject()}
                                 deleteDisabled = {!!selectedObject?.new}
-                                saveDisabled = {submitDisabled}
+                                saveDisabled = {objectSaveDisabled}
                               />
                             }
 
