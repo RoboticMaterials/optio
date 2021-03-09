@@ -15,28 +15,19 @@ const StatusListFooter = (props) => {
 
 	return (
 		<styled.Container>
-			{/*<Button*/}
-			{/*	label={"Show Mapper"}*/}
-			{/*	type={"button"}*/}
-			{/*	onClick={onShowMapperClick}*/}
-			{/*/>*/}
 			<Button
 				type={"button"}
 				label={"Create All"}
+				schema={"lots"}
 				onClick={onCreateAllClick}
-				// onClick={onCloseClick}
 			/>
 
 			<Button
 				type={"button"}
-				label={"Cancel"}
+				schema={"lots"}
+				label={"Close"}
 				onClick={onCanceleClick}
 			/>
-			{/*<Button*/}
-			{/*	type={"button"}*/}
-			{/*	label={"Close"}*/}
-			{/*	onClick={onCloseClick}*/}
-			{/*/>*/}
 		</styled.Container>
 	);
 };
