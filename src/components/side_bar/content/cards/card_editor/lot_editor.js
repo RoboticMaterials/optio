@@ -243,9 +243,9 @@ const FormComponent = (props) => {
 		} = values || {}
 
 		// if doesn't contain values for current object, set initialValues
-		if(!templateValues) setFieldValue(lotTemplateId, getInitialValues(lotTemplate, card))
+		setFieldValue(lotTemplateId, getInitialValues(lotTemplate, templateValues))
 
-	}, [lotTemplateId])
+	}, [lotTemplateId, lotTemplate])
 
 	useEffect( () => {
 		if(isArray(processOptions)) {
