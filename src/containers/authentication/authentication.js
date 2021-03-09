@@ -49,8 +49,12 @@ const Authentication = (props) => {
       }, []);
     
    const checkUser = async () => {
+       try{
         const user = await Auth.currentAuthenticatedUser();
         setUser(user);
+       }catch{
+           // USER NOT AUTHENTICATED
+       }
     }
 
     const handleInitialLoad = () => {
