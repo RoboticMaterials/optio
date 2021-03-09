@@ -77,6 +77,20 @@ type Card
   process_id: String!
 }
 
+type Object 
+  @model
+{
+  id: ID!
+  _id: String!
+  description: String!
+  map_id: String!
+  modelName: String!
+  name: String!
+  dimensions: String
+  quantity: String
+}
+
+
 # Data stream
 
 type Device

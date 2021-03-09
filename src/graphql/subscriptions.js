@@ -283,6 +283,54 @@ export const onDeleteCard = /* GraphQL */ `
     }
   }
 `;
+export const onCreateObject = /* GraphQL */ `
+  subscription OnCreateObject {
+    onCreateObject {
+      id
+      _id
+      description
+      map_id
+      modelName
+      name
+      dimensions
+      quantity
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateObject = /* GraphQL */ `
+  subscription OnUpdateObject {
+    onUpdateObject {
+      id
+      _id
+      description
+      map_id
+      modelName
+      name
+      dimensions
+      quantity
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteObject = /* GraphQL */ `
+  subscription OnDeleteObject {
+    onDeleteObject {
+      id
+      _id
+      description
+      map_id
+      modelName
+      name
+      dimensions
+      quantity
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const onCreateDevice = /* GraphQL */ `
   subscription OnCreateDevice {
     onCreateDevice {

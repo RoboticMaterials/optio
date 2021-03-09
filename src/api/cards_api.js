@@ -38,12 +38,8 @@ export async function getCards() {
             })
         });
 
-        console.log(GQLdata);
-
         return GQLdata;
-
     } catch (error) {
-        console.log(error)
         // Error 😨
         errorLog(error)
     }
@@ -85,7 +81,6 @@ export async function postCard(card) {
         return dataJson;
 
     } catch (error) {
-        console.log(error);
         // Error 😨
         errorLog(error)
     }
@@ -98,7 +93,6 @@ export async function getCardsCount() {
           })
 
         return res.data.listCards.items.length
-
 
     } catch (error) {
         // Error 😨

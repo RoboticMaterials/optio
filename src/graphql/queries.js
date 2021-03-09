@@ -224,6 +224,45 @@ export const listCards = /* GraphQL */ `
     }
   }
 `;
+export const getObject = /* GraphQL */ `
+  query GetObject($id: ID!) {
+    getObject(id: $id) {
+      id
+      _id
+      description
+      map_id
+      modelName
+      name
+      dimensions
+      quantity
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listObjects = /* GraphQL */ `
+  query ListObjects(
+    $filter: ModelObjectFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listObjects(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        _id
+        description
+        map_id
+        modelName
+        name
+        dimensions
+        quantity
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
 export const getDevice = /* GraphQL */ `
   query GetDevice($id: ID!) {
     getDevice(id: $id) {
