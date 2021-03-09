@@ -232,6 +232,57 @@ export const onDeleteProcess = /* GraphQL */ `
     }
   }
 `;
+export const onCreateCard = /* GraphQL */ `
+  subscription OnCreateCard {
+    onCreateCard {
+      id
+      bins
+      dates
+      description
+      flags
+      lotNumber
+      lotTemplateId
+      name
+      process_id
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateCard = /* GraphQL */ `
+  subscription OnUpdateCard {
+    onUpdateCard {
+      id
+      bins
+      dates
+      description
+      flags
+      lotNumber
+      lotTemplateId
+      name
+      process_id
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteCard = /* GraphQL */ `
+  subscription OnDeleteCard {
+    onDeleteCard {
+      id
+      bins
+      dates
+      description
+      flags
+      lotNumber
+      lotTemplateId
+      name
+      process_id
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const onCreateDevice = /* GraphQL */ `
   subscription OnCreateDevice {
     onCreateDevice {

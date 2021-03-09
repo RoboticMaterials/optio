@@ -1,7 +1,20 @@
+/**
+ * All of the API calls for Stations
+ * 
+ * Created: ?
+ * Created by: ?
+ * 
+ * Edited: March 9 20201
+ * Edited by: Daniel Castillo
+ * 
+ */
+
 import axios from "axios";
-import * as log from "loglevel";
 
 import { apiIPAddress } from "../settings/settings";
+
+// logging for error in API
+import errorLog from './errorLogging'
 
 // import the API category from Amplify library
 import { API } from 'aws-amplify'
@@ -32,28 +45,8 @@ export async function getStations() {
     return GQLdata
 
   } catch (error) {
-    console.log(error)
     // Error 😨
-    if (error.response) {
-      /*
-       * The request was made and the server responded with a
-       * status code that falls out of the range of 2xx
-       */
-      log.debug("error.response.data", error.response.data);
-      log.debug("error.response.status", error.response.status);
-      log.debug("error.response.headers", error.response.headers);
-    } else if (error.request) {
-      /*
-       * The request was made but no response was received, `error.request`
-       * is an instance of XMLHttpRequest in the browser and an instance
-       * of http.ClientRequest in Node.js
-       */
-      log.debug("error.request", error.request);
-    } else {
-      // Something happened in setting up the request and triggered an Error
-      log.debug("error.message", error.message);
-    }
-    throw error;
+    errorLog(error)
   }
 }
 
@@ -70,33 +63,12 @@ export async function deleteStation(ID) {
     return dataJson;
   } catch (error) {
     // Error 😨
-    if (error.response) {
-      /*
-       * The request was made and the server responded with a
-       * status code that falls out of the range of 2xx
-       */
-      log.debug("error.response.data", error.response.data);
-      log.debug("error.response.status", error.response.status);
-      log.debug("error.response.headers", error.response.headers);
-    } else if (error.request) {
-      /*
-       * The request was made but no response was received, `error.request`
-       * is an instance of XMLHttpRequest in the browser and an instance
-       * of http.ClientRequest in Node.js
-       */
-      log.debug("error.request", error.request);
-    } else {
-      // Something happened in setting up the request and triggered an Error
-      log.debug("error.message", error.message);
-    }
-    log.debug("error", error);
+    errorLog(error)
   }
 }
 
 export async function postStation(station) {
   try {
-
-    // Amplify!
 
     const input = {
       ...station,
@@ -117,28 +89,8 @@ export async function postStation(station) {
 
     return dataJson;
   } catch (error) {
-    console.log(error)
     // Error 😨
-    if (error.response) {
-      /*
-       * The request was made and the server responded with a
-       * status code that falls out of the range of 2xx
-       */
-      log.debug("error.response.data", error.response.data);
-      log.debug("error.response.status", error.response.status);
-      log.debug("error.response.headers", error.response.headers);
-    } else if (error.request) {
-      /*
-       * The request was made but no response was received, `error.request`
-       * is an instance of XMLHttpRequest in the browser and an instance
-       * of http.ClientRequest in Node.js
-       */
-      log.debug("error.request", error.request);
-    } else {
-      // Something happened in setting up the request and triggered an Error
-      log.debug("error.message", error.message);
-    }
-    log.debug("error", error);
+    errorLog(error)
   }
 }
 
@@ -169,28 +121,8 @@ export async function putStation(station, ID) {
 
     return dataJson;
   } catch (error) {
-    console.log(error)
     // Error 😨
-    if (error.response) {
-      /*
-       * The request was made and the server responded with a
-       * status code that falls out of the range of 2xx
-       */
-      log.debug("error.response.data", error.response.data);
-      log.debug("error.response.status", error.response.status);
-      log.debug("error.response.headers", error.response.headers);
-    } else if (error.request) {
-      /*
-       * The request was made but no response was received, `error.request`
-       * is an instance of XMLHttpRequest in the browser and an instance
-       * of http.ClientRequest in Node.js
-       */
-      log.debug("error.request", error.request);
-    } else {
-      // Something happened in setting up the request and triggered an Error
-      log.debug("error.message", error.message);
-    }
-    log.debug("error", error);
+    errorLog(error)
   }
 }
 
@@ -214,25 +146,6 @@ export async function getStationAnalytics(id, timeSpan) {
     return dataJson;
   } catch (error) {
     // Error 😨
-    if (error.response) {
-      /*
-       * The request was made and the server responded with a
-       * status code that falls out of the range of 2xx
-       */
-      log.debug("error.response.data", error.response.data);
-      log.debug("error.response.status", error.response.status);
-      log.debug("error.response.headers", error.response.headers);
-    } else if (error.request) {
-      /*
-       * The request was made but no response was received, `error.request`
-       * is an instance of XMLHttpRequest in the browser and an instance
-       * of http.ClientRequest in Node.js
-       */
-      log.debug("error.request", error.request);
-    } else {
-      // Something happened in setting up the request and triggered an Error
-      log.debug("error.message", error.message);
-    }
-    throw error;
+    errorLog(error)
   }
 }

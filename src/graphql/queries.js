@@ -183,6 +183,47 @@ export const listProcesss = /* GraphQL */ `
     }
   }
 `;
+export const getCard = /* GraphQL */ `
+  query GetCard($id: ID!) {
+    getCard(id: $id) {
+      id
+      bins
+      dates
+      description
+      flags
+      lotNumber
+      lotTemplateId
+      name
+      process_id
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listCards = /* GraphQL */ `
+  query ListCards(
+    $filter: ModelCardFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listCards(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        bins
+        dates
+        description
+        flags
+        lotNumber
+        lotTemplateId
+        name
+        process_id
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
 export const getDevice = /* GraphQL */ `
   query GetDevice($id: ID!) {
     getDevice(id: $id) {

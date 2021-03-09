@@ -63,6 +63,19 @@ type Process
   map_id: String
 }
 
+type Card
+  @model
+{
+  id: ID!
+  bins: AWSJSON!
+  dates: AWSJSON!
+  description: String!
+  flags: AWSJSON!
+  lotNumber: Int!
+  lotTemplateId: String!
+  name: String!
+  process_id: String!
+}
 
 # Data stream
 

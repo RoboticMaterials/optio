@@ -34,7 +34,6 @@ import config from "./aws-exports";
 
 Amplify.configure(config);
 
-
 const widthBreakPoint = 1000;
 
 const App = () => {

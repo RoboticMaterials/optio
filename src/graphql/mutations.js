@@ -268,6 +268,66 @@ export const deleteProcess = /* GraphQL */ `
     }
   }
 `;
+export const createCard = /* GraphQL */ `
+  mutation CreateCard(
+    $input: CreateCardInput!
+    $condition: ModelCardConditionInput
+  ) {
+    createCard(input: $input, condition: $condition) {
+      id
+      bins
+      dates
+      description
+      flags
+      lotNumber
+      lotTemplateId
+      name
+      process_id
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateCard = /* GraphQL */ `
+  mutation UpdateCard(
+    $input: UpdateCardInput!
+    $condition: ModelCardConditionInput
+  ) {
+    updateCard(input: $input, condition: $condition) {
+      id
+      bins
+      dates
+      description
+      flags
+      lotNumber
+      lotTemplateId
+      name
+      process_id
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteCard = /* GraphQL */ `
+  mutation DeleteCard(
+    $input: DeleteCardInput!
+    $condition: ModelCardConditionInput
+  ) {
+    deleteCard(input: $input, condition: $condition) {
+      id
+      bins
+      dates
+      description
+      flags
+      lotNumber
+      lotTemplateId
+      name
+      process_id
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const createDevice = /* GraphQL */ `
   mutation CreateDevice(
     $input: CreateDeviceInput!

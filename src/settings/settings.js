@@ -25,11 +25,15 @@ export const apiIPAddress = () => {
         if (nonLocalIp===false) {
             return apiIPAddress = 'http://' + 'localhost' + ':5000/api/'
         } else {
-            return apiIPAddress = 'http://' + hostServerIpAddress + ':5000/api/'
+            return apiIPAddress = 'http://' + 
+                                    '3.128.53.193' //hostServerIpAddress MAKE SURE TO PUT THIS BACK
+                                    + ':5000/api/'
 
         }
     } else {
-        return 'http://' + window.location.hostname + ':5000/api/'
+        return 'http://' +
+         '3.128.53.193' //window.location.hostname MAKE SURE TO PUT THIS BACK
+         + ':5000/api/'
     }
 };
 

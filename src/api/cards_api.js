@@ -1,141 +1,108 @@
-import axios from 'axios';
-// import * as log from 'loglevel';
+/** 
+ * All of the API calls for Cards
+ * 
+ * Created: ?
+ * Created by: ?
+ * 
+ * Edited: March 9 20201
+ * Edited by: Daniel Castillo
+ * 
+ **/
 
-import logger from '../logger'
+// logging for error in API
+import errorLog from './errorLogging'
 
-import { apiIPAddress } from '../settings/settings'
-const operator = 'cards'
-const log = logger.getLogger('Api')
+// import the API category from Amplify library
+import { API } from 'aws-amplify'
+
+// import the GraphQL queries, mutations and subscriptions
+import { listCards } from '../graphql/queries'
+import { createCard, updateCard } from '../graphql/mutations'
+import { getCard as getCardByID } from '../graphql/queries'
+import { deleteCard as deleteCardByID } from '../graphql/mutations'
+
+export async function getCards() {
+    try {
+        const res = await API.graphql({
+            query: listCards
+          })
+
+        let GQLdata = []
+
+        res.data.listCards.items.forEach(card => {
+            GQLdata.push( {
+                ...card,
+                bins: JSON.parse(card.bins),
+                dates: JSON.parse(card.dates),
+                flags: JSON.parse(card.flags)
+            })
+        });
+
+        console.log(GQLdata);
+
+        return GQLdata;
+
+    } catch (error) {
+        console.log(error)
+        // Error 😨
+        errorLog(error)
+    }
+}
 
 export async function getCard(cardId) {
     try {
-        const response = await axios({
-            method: 'get',
-            url: apiIPAddress() + operator + "/" + cardId,
-            headers: {
-                'X-API-Key': '123456',
-                'Access-Control-Allow-Origin': '*'
-            }
-        });
-        // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+
+        const id = {id: cardId}
+
+        const dataJson = await API.graphql({
+            query: getCardByID,
+            variables: { input: id }
+        })
+
         return dataJson;
 
+    } catch (error) {
+        // Error 😨
+        errorLog(error)
+    }
+}
+
+export async function postCard(card) {
+    try {
+
+        const input = {
+            ...card,
+            bins: JSON.stringify(card.bins),
+            dates: JSON.stringify(card.dates),
+            flags: JSON.stringify(card.flags)
+        }
+        
+        const dataJson = await API.graphql({
+            query: createCard,
+            variables: { input: input }
+        })
+
+        return dataJson;
 
     } catch (error) {
-
+        console.log(error);
         // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        errorLog(error)
     }
-
 }
 
 export async function getCardsCount() {
     try {
-        const response = await axios({
-            method: 'get',
-            url: apiIPAddress() + operator + "/count",
-            headers: {
-                'X-API-Key': '123456',
-                'Access-Control-Allow-Origin': '*'
-            }
-        });
+        const res = await API.graphql({
+            query: listCards
+          })
 
-        // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
-        return dataJson;
+        return res.data.listCards.items.length
 
 
     } catch (error) {
-
         // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
-    }
-
-}
-
-export async function getCards() {
-    try {
-        const response = await axios({
-            method: 'get',
-            url: apiIPAddress() + operator,
-            headers: {
-                'X-API-Key': '123456',
-                'Access-Control-Allow-Origin': '*'
-            }
-        });
-        // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
-        return dataJson;
-
-
-    } catch (error) {
-
-        // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        errorLog(error)
     }
 
 }
@@ -143,184 +110,68 @@ export async function getCards() {
 
 export async function getProcessCards(processId) {
     try {
-        const response = await axios({
-            method: 'get',
-            url: apiIPAddress() + "processes/" + processId + "/cards",
-            headers: {
-                'X-API-Key': '123456',
-                'Access-Control-Allow-Origin': '*'
-            }
-        });
-        // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
-        return dataJson;
 
+        const res = await API.graphql({
+            query: listCards,
+            variables:{
+              filter: {processId: {eq: processId}}
+            }
+          })
+
+        let GQLdata = []
+
+        res.data.listCards.items.forEach(card => {
+            GQLdata.push( {
+                ...card,
+                bins: JSON.parse(card.bins),
+                dates: JSON.parse(card.dates),
+                flags: JSON.parse(card.flags)
+            })
+        });
+
+        return GQLdata;
 
     } catch (error) {
-
         // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        errorLog(error)
     }
-
 }
 
 export async function deleteCard(ID) {
     try {
-        const response = await axios({
-            method: 'DELETE',
-            url: apiIPAddress() + operator + '/' + ID,
-            headers: {
-                'Accept': 'application/json',
-                'X-API-Key': '123456',
-            },
-        });
+        const id = {id: ID}
 
-        // Success 🎉
-        // log.debug('response',response);
-        // const data = response.data;
-        // const dataJson = JSON.parse(data)
-        return response;
-
-
-    } catch (error) {
-
-        // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
-    }
-}
-
-export async function postCard(card) {
-    try {
-        const response = await axios({
-            method: 'POST',
-            url: apiIPAddress() + operator,
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': '123456',
-                'Accept': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
-            data: card
-        });
-
-        // Success 🎉
-        // log.debug('response',response);
-        const data = response.data;
-        const dataJson = JSON.parse(data)
-        // log.debug('response data json',dataJson);
-
+        const dataJson = await API.graphql({
+            query: deleteCardByID,
+            variables: { input: id }
+        })
 
         return dataJson;
 
-
     } catch (error) {
-
         // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        errorLog(error)
     }
 }
 
 export async function putCard(card, ID) {
     try {
-        const response = await axios({
-            method: 'PUT',
-            url: apiIPAddress() + operator + '/' + ID,
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': '123456',
-                'Accept': 'text/html'
-            },
-            data: JSON.stringify(card)
-        });
+        const input = {
+            ...card,
+            bins: JSON.stringify(card.bins),
+            dates: JSON.stringify(card.dates),
+            flags: JSON.stringify(card.flags)
+        }
+        
+        const dataJson = await API.graphql({
+            query: updateCard,
+            variables: { input: input }
+        })
 
-        // Success 🎉
-        // log.debug('response',response);
-        const data = response.data;
-        const dataJson = JSON.parse(data)
         return dataJson;
 
-
     } catch (error) {
-
         // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        errorLog(error)
     }
 }
