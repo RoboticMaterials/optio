@@ -611,15 +611,6 @@ const LineThroughputChart = (props) => {
                                             placeholder='Qty'
                                             InputComponent={Textbox}
                                             ContentContainer={styled.RowContainer}
-                                            mapInput={(val) => {
-                                                if (val !== null) {
-                                                    return parseInt(val)
-                                                }
-                                                else return val
-                                            }}
-                                            mapOutput={(val) => {
-                                                return parseInt(val)
-                                            }}
                                             style={{
                                                 'fontSize': '1rem',
                                                 'fontWeight': '600',
