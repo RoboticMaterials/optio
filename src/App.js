@@ -28,6 +28,13 @@ import Widgets from './components/widgets/widgets'
 import ListView from "./components/list_view/list_view";
 import ConfirmDeleteModal from './components/basic/modals/confirm_delete_modal/confirm_delete_modal'
 
+// Amplify configuration globally
+import Amplify from "aws-amplify";
+import config from "./aws-exports";
+
+Amplify.configure(config);
+
+
 const widthBreakPoint = 1000;
 
 const App = () => {

@@ -1,0 +1,106 @@
+type Station 
+  @model
+{
+  id: ID!
+  _id: String!
+  name: String!
+  schema: String!
+  type:String!
+  pos_x: Float
+  pos_y: Float
+  rotation: Int!
+  x: Int!
+  y: Int!
+  map_id: String!
+  children: AWSJSON!
+  dashboards: AWSJSON!
+}
+
+type Task
+  @model
+{
+  id: ID!
+  device_types: AWSJSON!
+  handoff: Boolean!
+  load: AWSJSON!
+  map_id: String!
+  name: String!
+  processes: AWSJSON!
+  quantity: Int!
+  track_quantity: Boolean!
+  type: String!
+  unload: AWSJSON!
+  _id: String!
+  obj: String!
+}
+
+type Position
+  @model
+{
+  id: ID!
+  _id: String!
+  change_key: String!
+  map_id: String!
+  name: String!
+  parent: String
+  pos_x: Float
+  pos_y: Float
+  rotation: Int
+  schema: String!
+  type: String!
+  x: Int!
+  y: Int!
+}
+
+type Process
+  @model
+{
+  id: ID!
+  _id: String!
+  name: String!
+  broken: Int
+  routes: AWSJSON!
+}
+
+
+# Data stream
+
+type Device
+  @model
+{
+  id: ID!
+  _id: String!
+  battery_percentage: Int!
+  current_task_queue_id: String
+  dashboards: AWSJSON!
+  device_model: String!
+  device_name: String!
+  distance_to_next_target: Int!
+  idle_location: String!
+  map_id: String!
+  position: AWSJSON!
+  shelf_attached: Int!
+  state_text: String!
+}
+
+type Status 
+  @model
+{
+  id: ID!
+  _id: String!
+  active_map: Boolean
+  mir_connection: String
+  pause_status: Boolean
+}
+
+type TaskQueue 
+  @model
+{
+  id: ID!
+  _id: String!
+  device_type: String!
+  mission_status: String
+  owner: String
+  task_id: String!
+  custom_task: AWSJSON
+}

@@ -2,8 +2,6 @@ import React, { useState } from 'react'
 
 import { useDispatch, useSelector } from 'react-redux'
 
-import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js'
-
 import { Formik, Form } from 'formik'
 
 // Import Utils
@@ -18,7 +16,8 @@ import * as styled from './sign_in_up_page.style'
 // Import actions
 import { postLocalSettings } from '../../redux/actions/local_actions'
 
-import configData from '../../settings/config'
+// Get Auth from amplify
+import { Auth } from "aws-amplify";
 
 /**
  * This page handles both sign in and sign up for RMStudio
@@ -29,16 +28,6 @@ const SignInUpPage = (props) => {
     const dispatch = useDispatch()
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const localReducer = useSelector(state => state.localReducer.localSettings)
-
-    // Check to see if we want authentication *** Dev ONLY ***
-    if (!configData.authenticationNeeded) {
-        dispatchPostLocalSettings({
-            ...localReducer,
-            authenticated: 'no',
-            non_local_api_ip: window.location.hostname,
-            non_local_api: true,
-        })
-    }
 
     // signIn prop is passed from authentication container to tell this page to show sign in or sign up components
     const {
@@ -54,7 +43,7 @@ const SignInUpPage = (props) => {
         props.onChange(event);
     }
 
-    const handleSubmit = (values) => {
+    const handleSubmit = async (values) => {
 
         const {
             email,
@@ -62,66 +51,42 @@ const SignInUpPage = (props) => {
             confirmPassword
         } = values
 
-        // User pool data for AWS Cognito
-        const poolData = {
-            UserPoolId: configData.UserPoolId,
-            ClientId: configData.ClientId,
-        }
-
-        const userPool = new CognitoUserPool(poolData)
-
         // If the request is a sign in then run these functions
         if (signIn) {
-
-            // This is setting up the header for the sign in request
-            const authenticationData = {
-                Username: email,
-                Password: password,
-            };
-
-            const authenticationDetails = new AuthenticationDetails(authenticationData)
-
-            const userData = {
-                Username: email,
-                Pool: userPool,
+            try {
+                await Auth.signIn(email, password);
+            
+                dispatchPostLocalSettings({
+                    ...localReducer,
+                    authenticated: true,
+                });
+            } catch (error) {
+                console.log("error signing in", error);
             }
-
-            const cognitoUser = new CognitoUser(userData);
-
-            cognitoUser.authenticateUser(authenticationDetails, {
-
-                onSuccess: function (result) {
-                    dispatchPostLocalSettings({
-                        ...localReducer,
-                        authenticated: result.accessToken.payload.username,
-                        non_local_api_ip: window.location.hostname,
-                        non_local_api: true,
-                        refreshToken: result.getRefreshToken().getToken()
-                    })
-
-
-                },
-
-                onFailure: function (err) {
-                    alert(err.message)
-                },
-
-            });
         } else {
             if (password === confirmPassword) {
-                userPool.signUp(email, password, [], null, (err, data) => {
-                    if (err) {
-                        alert(err.message)
-                    } else {
-                        alert('You have sucessfully signed up! Please check you email for a verification link.')
-                        handleSignInChange(true)
-                    }
-                });
+
+                const username = email;
+                try {
+                    await Auth.signUp({
+                        username,
+                        password,
+                        attributes: {
+                            email
+                        }
+                    });
+
+                    alert(
+                        "You have sucessfully signed up. Please check your email for a verification link."
+                    );
+                    handleSignInChange(true);
+                } catch (error) {
+                    console.log("error signing up:", error);
+                    alert(error.message);
+                }
             } else {
                 alert('Passwords must match!')
             }
-
-
         }
     }
 

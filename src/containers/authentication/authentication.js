@@ -6,13 +6,11 @@ import * as styled from './authentication.style'
 // Import components
 import SignInUpPage from '../../components/sign_in_up_page/sign_in_up_page'
 
-import configData from '../../settings/config'
-
-// import 'cross-fetch/polyfill';
-import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
-
 // Import actions
 import { postLocalSettings } from '../../redux/actions/local_actions'
+
+// Get Auth from amplify
+import { Auth } from "aws-amplify";
 
 /**
  * After the APIs have been loaded in the api_container this container is loaded
@@ -37,6 +35,8 @@ const Authentication = (props) => {
 
     const [signIn, setSignIn] = useState(true)
 
+    const [user, setUser] = useState(null);
+
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const localReducer = useSelector(state => state.localReducer.localSettings)
 
@@ -44,42 +44,21 @@ const Authentication = (props) => {
         setSignIn(value)
     }
 
+    useEffect(() => {
+        checkUser();
+      }, []);
+    
+   const checkUser = async () => {
+        const user = await Auth.currentAuthenticatedUser();
+        setUser(user);
+    }
+
     const handleInitialLoad = () => {
-        // Check to see if we want authentication *** Dev ONLY ***
-        if (!configData.authenticationNeeded) {
+        if (user) {
             dispatchPostLocalSettings({
                 ...localReducer,
-                authenticated: 'no',
-                non_local_api_ip: window.location.hostname,
-                non_local_api: true,
-            })
-        } else {
-
-            var poolData = {
-                UserPoolId: configData.UserPoolId,
-                ClientId: configData.ClientId,
-            };
-
-            var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-            var cognitoUser = userPool.getCurrentUser();
-
-            if (cognitoUser != null) {
-                cognitoUser.getSession(function (err, session) {
-                    if (err) {
-                        alert(err.message || JSON.stringify(err));
-                        return;
-                    }
-
-                    if (session.isValid()) {
-                        dispatchPostLocalSettings({
-                            ...localReducer,
-                            authenticated: true,
-                            non_local_api_ip: window.location.hostname,
-                            non_local_api: true,
-                        })
-                    }
-                });
-            }
+                authenticated: true,
+            });
         }
 
         return (

@@ -13,7 +13,8 @@ import TimezonePicker, { timezones } from 'react-timezone';
 
 import Button from "../../../basic/button/button";
 
-import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
+// Get Auth from amplify
+import { Auth } from "aws-amplify";
 
 // Import Actions
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
@@ -25,8 +26,6 @@ import { setCurrentMap } from '../../../../redux/actions/map_actions'
 // Import Utils
 import { isEquivalent } from '../../../../methods/utils/utils'
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
-
-import config from '../../../../settings/config'
 
 const Settings = () => {
 
@@ -321,30 +320,30 @@ const Settings = () => {
     }
 
     const SignOut = () => {
-
+        const localReducer = useSelector(
+          (state) => state.localReducer.localSettings
+        );
+    
         const signOut = async () => {
+          try {
+            await Auth.signOut({ global: true });
+          } catch (error) {
+            console.log("error signing out: ", error);
+          }
+    
+          await dispatchPostLocalSettings({
+            ...localReducer,
+            authenticated: false,
+          });
+    
+          window.location.reload();
 
-            var poolData = {
-                UserPoolId: config.UserPoolId,
-                ClientId: config.ClientId,
-            };
+        };
 
-            var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-            var cognitoUser = userPool.getCurrentUser();
-            cognitoUser.signOut();
-
-            await dispatchPostLocalSettings({
-                ...localReducer,
-                authenticated: false
-            })
-
-            window.location.reload();
-
-        }
         return (
             <styled.SettingContainer style={{display: 'flex', justifyContent: 'center'}}>
 
-                {config.authenticationNeeded && <Button onClick={signOut}> Sign Out </Button>}
+                <Button onClick={signOut}> Sign Out </Button>
 
             </styled.SettingContainer>
         )
