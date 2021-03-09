@@ -156,6 +156,7 @@ export const getProcess = /* GraphQL */ `
       name
       broken
       routes
+      map_id
       createdAt
       updatedAt
     }
@@ -174,6 +175,7 @@ export const listProcesss = /* GraphQL */ `
         name
         broken
         routes
+        map_id
         createdAt
         updatedAt
       }

@@ -228,6 +228,7 @@ export const createProcess = /* GraphQL */ `
       name
       broken
       routes
+      map_id
       createdAt
       updatedAt
     }
@@ -244,6 +245,7 @@ export const updateProcess = /* GraphQL */ `
       name
       broken
       routes
+      map_id
       createdAt
       updatedAt
     }
@@ -260,6 +262,7 @@ export const deleteProcess = /* GraphQL */ `
       name
       broken
       routes
+      map_id
       createdAt
       updatedAt
     }

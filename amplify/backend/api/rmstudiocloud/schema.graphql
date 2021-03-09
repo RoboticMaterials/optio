@@ -60,6 +60,7 @@ type Process
   name: String!
   broken: Int
   routes: AWSJSON!
+  map_id: String
 }
 
 
