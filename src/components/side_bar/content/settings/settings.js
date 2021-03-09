@@ -17,7 +17,6 @@ import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 
 // Import Actions
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
-import { postDevSettings, getDevSettings } from '../../../../api/local_api'
 import { postLocalSettings, getLocalSettings } from '../../../../redux/actions/local_actions'
 
 import { deviceEnabled } from '../../../../redux/actions/settings_actions'
@@ -195,7 +194,7 @@ const Settings = () => {
 
                         <styled.RowContainer>
                             <Switch
-                                checked={!!localSettingsState.non_local_api}
+                                checked={localSettingsState.non_local_api}
                                 onChange={() => {
                                     handleUpdateLocalSettings({ non_local_api: !localSettingsState.non_local_api })
                                 }}

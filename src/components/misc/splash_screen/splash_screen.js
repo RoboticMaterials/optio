@@ -13,7 +13,6 @@ import * as styled from "./splash_screen.style"
 // import logger
 import logger from '../../../logger.js';
 import { postLocalSettings, getLocalSettings } from "../../../redux/actions/local_actions";
-import { postDevSettings, getDevSettings } from '../../../api/local_api'
 
 
 
@@ -70,7 +69,7 @@ const SplashScreen = (props) => {
           non_local_api_ip: apiIpAddress,
         }
 
-        //await postDevSettings(JSON.stringify(localSettingsState))
+        await dispatchPostLocalSettings(localSettingsState)
 
         window.location.reload(false);
     }
@@ -83,7 +82,7 @@ const SplashScreen = (props) => {
           ...localSettings.localSettings,
           mapViewEnabled: !localSettings.localSettings.mapViewEnabled,
         }
-        //await postDevSettings(JSON.stringify(updatedLocalSettings))
+        await dispatchPostLocalSettings(updatedLocalSettings)
     }
 
     return (

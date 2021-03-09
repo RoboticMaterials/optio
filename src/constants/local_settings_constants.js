@@ -7,5 +7,6 @@ export const defaultLocalSettings = {
 	currentMapId: null,
 	authenticated: null,
 	refreshToken: null,
-	accessToken: null
+	accessToken: null,
+
 }
