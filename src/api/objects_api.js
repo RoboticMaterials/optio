@@ -27,8 +27,6 @@ export async function getObjects() {
       query: listObjects
     })
 
-    console.log(res.data.listObjects.items)
-
     return res.data.listObjects.items
 } catch (error) {
     // Error 😨

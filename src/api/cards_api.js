@@ -21,6 +21,9 @@ import { createCard, updateCard } from '../graphql/mutations'
 import { getCard as getCardByID } from '../graphql/queries'
 import { deleteCard as deleteCardByID } from '../graphql/mutations'
 
+// For creating a card
+import { uuidv4 } from '../methods/utils/utils'
+
 export async function getCards() {
     try {
         const res = await API.graphql({
@@ -37,6 +40,8 @@ export async function getCards() {
                 flags: JSON.parse(card.flags)
             })
         });
+
+        console.log(GQLdata);
 
         return GQLdata;
     } catch (error) {
@@ -66,11 +71,17 @@ export async function getCard(cardId) {
 export async function postCard(card) {
     try {
 
+        console.log(card)
+
+        const fakeID = uuidv4();
+
         const input = {
             ...card,
             bins: JSON.stringify(card.bins),
             dates: JSON.stringify(card.dates),
-            flags: JSON.stringify(card.flags)
+            flags: JSON.stringify(card.flags),
+            _id: fakeID,
+            id: fakeID
         }
         
         const dataJson = await API.graphql({
@@ -156,6 +167,9 @@ export async function putCard(card, ID) {
             dates: JSON.stringify(card.dates),
             flags: JSON.stringify(card.flags)
         }
+
+        delete input.createdAt
+        delete input.updatedAt
         
         const dataJson = await API.graphql({
             query: updateCard,

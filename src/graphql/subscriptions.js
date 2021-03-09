@@ -244,6 +244,8 @@ export const onCreateCard = /* GraphQL */ `
       lotTemplateId
       name
       process_id
+      totalQuantity
+      processName
       createdAt
       updatedAt
     }
@@ -261,6 +263,8 @@ export const onUpdateCard = /* GraphQL */ `
       lotTemplateId
       name
       process_id
+      totalQuantity
+      processName
       createdAt
       updatedAt
     }
@@ -278,6 +282,8 @@ export const onDeleteCard = /* GraphQL */ `
       lotTemplateId
       name
       process_id
+      totalQuantity
+      processName
       createdAt
       updatedAt
     }
@@ -326,6 +332,81 @@ export const onDeleteObject = /* GraphQL */ `
       name
       dimensions
       quantity
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onCreateSchedule = /* GraphQL */ `
+  subscription OnCreateSchedule {
+    onCreateSchedule {
+      id
+      _id
+      days_on {
+        friday
+        monday
+        saturday
+        sunday
+        thursday
+        tuesday
+        wednesday
+      }
+      interval_on
+      name
+      schedule_on
+      start_time
+      task_id
+      time_interval
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateSchedule = /* GraphQL */ `
+  subscription OnUpdateSchedule {
+    onUpdateSchedule {
+      id
+      _id
+      days_on {
+        friday
+        monday
+        saturday
+        sunday
+        thursday
+        tuesday
+        wednesday
+      }
+      interval_on
+      name
+      schedule_on
+      start_time
+      task_id
+      time_interval
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteSchedule = /* GraphQL */ `
+  subscription OnDeleteSchedule {
+    onDeleteSchedule {
+      id
+      _id
+      days_on {
+        friday
+        monday
+        saturday
+        sunday
+        thursday
+        tuesday
+        wednesday
+      }
+      interval_on
+      name
+      schedule_on
+      start_time
+      task_id
+      time_interval
       createdAt
       updatedAt
     }

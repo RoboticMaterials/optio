@@ -195,6 +195,8 @@ export const getCard = /* GraphQL */ `
       lotTemplateId
       name
       process_id
+      totalQuantity
+      processName
       createdAt
       updatedAt
     }
@@ -217,6 +219,8 @@ export const listCards = /* GraphQL */ `
         lotTemplateId
         name
         process_id
+        totalQuantity
+        processName
         createdAt
         updatedAt
       }
@@ -256,6 +260,54 @@ export const listObjects = /* GraphQL */ `
         name
         dimensions
         quantity
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getSchedule = /* GraphQL */ `
+  query GetSchedule($id: ID!) {
+    getSchedule(id: $id) {
+      id
+      _id
+      days_on {
+        friday
+        monday
+        saturday
+        sunday
+        thursday
+        tuesday
+        wednesday
+      }
+      interval_on
+      name
+      schedule_on
+      start_time
+      task_id
+      time_interval
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listSchedules = /* GraphQL */ `
+  query ListSchedules(
+    $filter: ModelScheduleFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listSchedules(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        _id
+        interval_on
+        name
+        schedule_on
+        start_time
+        task_id
+        time_interval
         createdAt
         updatedAt
       }

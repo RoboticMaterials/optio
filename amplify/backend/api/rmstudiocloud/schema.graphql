@@ -75,6 +75,8 @@ type Card
   lotTemplateId: String!
   name: String!
   process_id: String!
+  totalQuantity: Int
+  processName: String
 }
 
 type Object 
@@ -90,6 +92,32 @@ type Object
   quantity: String
 }
 
+type Schedule 
+@model{
+  id: ID!
+  _id: String!
+  days_on: DaysOn!
+  interval_on: Boolean!
+  name: String!
+  schedule_on: Boolean!
+  start_time: String!
+  task_id: String!
+  time_interval: String!
+  
+}
+
+
+type DaysOn 
+{
+  friday: Boolean!,
+  monday: Boolean!,
+  saturday: Boolean!,
+  sunday: Boolean!,
+  thursday: Boolean!,
+  tuesday: Boolean!,
+  wednesday: Boolean!
+
+}
 
 # Data stream
 

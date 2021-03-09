@@ -283,6 +283,8 @@ export const createCard = /* GraphQL */ `
       lotTemplateId
       name
       process_id
+      totalQuantity
+      processName
       createdAt
       updatedAt
     }
@@ -303,6 +305,8 @@ export const updateCard = /* GraphQL */ `
       lotTemplateId
       name
       process_id
+      totalQuantity
+      processName
       createdAt
       updatedAt
     }
@@ -323,6 +327,8 @@ export const deleteCard = /* GraphQL */ `
       lotTemplateId
       name
       process_id
+      totalQuantity
+      processName
       createdAt
       updatedAt
     }
@@ -380,6 +386,90 @@ export const deleteObject = /* GraphQL */ `
       name
       dimensions
       quantity
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const createSchedule = /* GraphQL */ `
+  mutation CreateSchedule(
+    $input: CreateScheduleInput!
+    $condition: ModelScheduleConditionInput
+  ) {
+    createSchedule(input: $input, condition: $condition) {
+      id
+      _id
+      days_on {
+        friday
+        monday
+        saturday
+        sunday
+        thursday
+        tuesday
+        wednesday
+      }
+      interval_on
+      name
+      schedule_on
+      start_time
+      task_id
+      time_interval
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateSchedule = /* GraphQL */ `
+  mutation UpdateSchedule(
+    $input: UpdateScheduleInput!
+    $condition: ModelScheduleConditionInput
+  ) {
+    updateSchedule(input: $input, condition: $condition) {
+      id
+      _id
+      days_on {
+        friday
+        monday
+        saturday
+        sunday
+        thursday
+        tuesday
+        wednesday
+      }
+      interval_on
+      name
+      schedule_on
+      start_time
+      task_id
+      time_interval
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteSchedule = /* GraphQL */ `
+  mutation DeleteSchedule(
+    $input: DeleteScheduleInput!
+    $condition: ModelScheduleConditionInput
+  ) {
+    deleteSchedule(input: $input, condition: $condition) {
+      id
+      _id
+      days_on {
+        friday
+        monday
+        saturday
+        sunday
+        thursday
+        tuesday
+        wednesday
+      }
+      interval_on
+      name
+      schedule_on
+      start_time
+      task_id
+      time_interval
       createdAt
       updatedAt
     }
