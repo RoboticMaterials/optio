@@ -164,11 +164,11 @@ const ApiContainer = (props) => {
                 MiRMapEnabled: containsMirCart,
               }
 
-            //  postDevSettings(JSON.stringify(updatedLocalSettings))
+              onPostLocalSettings(updatedLocalSettings)
             }
         }
 
-    }, [MiRMapEnabled])
+    }, [devices,MiRMapEnabled])
 
     useEffect(() => {
 
