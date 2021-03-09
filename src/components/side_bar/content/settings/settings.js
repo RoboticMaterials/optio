@@ -17,7 +17,9 @@ import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 
 // Import Actions
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
-import { postLocalSettings } from '../../../../redux/actions/local_actions'
+import { postDevSettings, getDevSettings } from '../../../../api/local_api'
+import { postLocalSettings, getLocalSettings } from '../../../../redux/actions/local_actions'
+
 import { deviceEnabled } from '../../../../redux/actions/settings_actions'
 import { getStatus } from '../../../../redux/actions/status_actions'
 import { setCurrentMap } from '../../../../redux/actions/map_actions'
@@ -34,6 +36,8 @@ const Settings = () => {
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
     const dispatchGetSettings = () => dispatch(getSettings())
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
+
     const dispatchSetCurrentMap = (map) => dispatch(setCurrentMap(map))
     const dispatchGetStatus = () => dispatch(getStatus())
     const dispatchDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
@@ -41,6 +45,7 @@ const Settings = () => {
     const mapReducer = useSelector(state => state.mapReducer)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
     const localSettings = useSelector(state => state.localReducer.localSettings)
+    const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
     const deviceEnabledSetting = serverSettings.deviceEnabled
     const localReducer = useSelector(state => state.localReducer.localSettings)
     const {
@@ -54,29 +59,22 @@ const Settings = () => {
     const [mirUpdated, setMirUpdated] = useState(false)
     const [devicesEnabled, setDevicesEnabled] = useState(!!deviceEnabledSetting)
 
-    //Local Storage variables
-    const [mapViewEnabled, setMapViewEnabled] = useState({})
-    const [developerSettingsEnabled, setDeveloperSettingsEnabled] = useState({})
-    const [nonLocalAPIEnabled, setNonLocalAPIEnabled] = useState({})
-    const [nonLocalAPIAddress, setNonLocalAPIAddress] = useState({})
-    const [mapID, setMapID] = useState({})
-
     /**
      *  Sets current settings to state so that changes can be discarded or saved
      * */
     useEffect(() => {
         setServerSettingsState(serverSettings)
-        setLocalSettingsState(localSettings)
-
-        setMapViewEnabled(ls.get('MapViewEnabled') || false)
-        setDeveloperSettingsEnabled(ls.get('DeveloperSettingsEnabled') || false)
-        setNonLocalAPIEnabled(ls.get('NonLocalAPIAddressEnabled') || false)
-        setNonLocalAPIAddress(ls.get('NonLocalAPIAddress') || null)
-        setMapID(currentMap._id || null)
-
+        dispatchGetLocalSettings()
     }, [])
 
+    useEffect(() => {
+      setLocalSettingsState(localSettings)
+    }, [localSettings])
 
+    const handleLoadLocalData = async () => {
+      await dispatchGetLocalSettings()
+      setLocalSettingsState(localSettings)
+    }
     /**
      * Handles updating settings on the server
      * All devices that are connected to the server will have these settings
@@ -117,21 +115,11 @@ const Settings = () => {
     // Submits settings to the backend
     const handleSumbitSettings = async () => {
         // Sees if either settings have changed. If the state settigns and redux settings are different, then they've changed
-        ls.set('MapViewEnabled', mapViewEnabled)
-        ls.set('DeveloperSettingsEnabled', developerSettingsEnabled)
-        ls.set('NonLocalAPIAddressEnabled', nonLocalAPIEnabled)
-        ls.set('NonLocalAPIAddress', nonLocalAPIAddress)
-        ls.set('MapID', mapID)
-        console.log(localSettingsState)
-        const localChange = isEquivalent(localSettingsState, localSettings)
+
+        await dispatchPostLocalSettings(localSettingsState)
         const serverChange = isEquivalent(serverSettingsState, serverSettings)
         const mapChange = !isEquivalent(mapSettingsState, currentMap)
         const deviceChange = isEquivalent(deviceEnabled, deviceEnabledSetting)
-
-        if (!localChange) {
-            await dispatchPostLocalSettings(localSettingsState)
-
-        }
 
         if (!serverChange) {
             delete serverSettingsState._id
@@ -139,7 +127,6 @@ const Settings = () => {
         }
 
         if (mapChange) {
-            // await dispatchPostLocalSettings(localSettingsState)
             await dispatchSetCurrentMap(mapSettingsState)
         }
 
@@ -150,6 +137,8 @@ const Settings = () => {
 
         await dispatchGetSettings()
         await dispatchGetStatus()
+        await dispatchGetLocalSettings()
+
 
     }
 
@@ -189,10 +178,9 @@ const Settings = () => {
                 <styled.RowContainer>
                     <styled.Header>Show Developer Settings</styled.Header>
 `                  <Switch
-                        checked={!!developerSettingsEnabled}
+                        checked={!!localSettingsState.toggleDevOptions}
                         onChange={() => {
                             handleUpdateLocalSettings({ toggleDevOptions: !localSettingsState.toggleDevOptions })
-                            setDeveloperSettingsEnabled(!developerSettingsEnabled)
                         }}
                         onColor='red'
                         style={{ marginRight: '1rem' }}
@@ -200,27 +188,25 @@ const Settings = () => {
 
                 </styled.RowContainer>
 
-                {!!developerSettingsEnabled ?
+                {!!localSettingsState.toggleDevOptions ?
                     <>
 
                         <styled.Header style={{ fontSize: '1.2rem' }}>Non Local API IP Address</styled.Header>
 
                         <styled.RowContainer>
                             <Switch
-                                checked={!!nonLocalAPIEnabled}
+                                checked={!!localSettingsState.non_local_api}
                                 onChange={() => {
                                     handleUpdateLocalSettings({ non_local_api: !localSettingsState.non_local_api })
-                                    setNonLocalAPIEnabled(!nonLocalAPIEnabled)
                                 }}
                                 onColor='red'
                                 style={{ marginRight: '1rem' }}
                             />
-                            {!!nonLocalAPIEnabled &&
+                            {!!localSettingsState.non_local_api &&
                                 <Textbox
                                     placeholder="API IP Address"
-                                    value={!!nonLocalAPIAddress ? nonLocalAPIAddress : ""}
+                                    value={!!localSettingsState.non_local_api_ip? localSettingsState.non_local_api_ip: ""}
                                     onChange={(event) => {
-                                        setNonLocalAPIAddress(event.target.value)
                                         handleUpdateLocalSettings({ non_local_api_ip: event.target.value })
                                     }}
                                     style={{ width: '100%' }}
@@ -271,10 +257,9 @@ const Settings = () => {
                     <styled.SwitchContainerLabel>Show List View</styled.SwitchContainerLabel>
                     <Switch
                         onColor='red'
-                        checked={!!mapViewEnabled}
+                        checked={!!localSettingsState.mapViewEnabled}
                         onChange={() => {
                             handleUpdateLocalSettings({ mapViewEnabled: !localSettingsState.mapViewEnabled })
-                            setMapViewEnabled(!mapViewEnabled)
                         }}
                         style={{ margin: "0 2rem 0 2rem" }}
                     />
@@ -286,7 +271,7 @@ const Settings = () => {
     }
 
     const CurrentMap = () => {
-        const selectedMap = maps.find((map) => map._id === mapID)
+        const selectedMap = maps.find((map) => map._id === mapReducer.currentMap?._id)
         return (
             <styled.SettingContainer>
 
@@ -310,7 +295,6 @@ const Settings = () => {
                             setMapSettingsState(values[0])
                             // update current map in local storage
                             handleUpdateLocalSettings({ currentMapId: values[0]._id })
-                            setMapID(values[0]._id)
                         }}
                         className="w-100"
                     />
@@ -333,10 +317,12 @@ const Settings = () => {
             var cognitoUser = userPool.getCurrentUser();
             cognitoUser.signOut();
 
-            await dispatchPostLocalSettings({
-                ...localReducer,
-                authenticated: false
-            })
+            const updatedLocalSettings = {
+              ...localReducer,
+              authenticated: false,
+            }
+
+            //postDevSettings(JSON.stringify(updatedLocalSettings))
 
             window.location.reload();
 

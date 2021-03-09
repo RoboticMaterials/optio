@@ -12,7 +12,9 @@ import * as styled from "./splash_screen.style"
 
 // import logger
 import logger from '../../../logger.js';
-import { postLocalSettings } from "../../../redux/actions/local_actions";
+import { postLocalSettings, getLocalSettings } from "../../../redux/actions/local_actions";
+import { postDevSettings, getDevSettings } from '../../../api/local_api'
+
 
 
 const ToggleMapViewSwitch = (props) => {
@@ -43,16 +45,32 @@ const SplashScreen = (props) => {
 
     const dispatch = useDispatch()
     const localSettings = useSelector(state => state.localReducer)
-    const [apiIpAddress, setApiIpAddress] = useState('')
-    const onPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
 
+    const [apiIpAddress, setApiIpAddress] = useState('')
+    const [localSettingsState, setLocalSettingsState] = useState({})
+
+    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const dispatchGetLocalSettings = (settings) => dispatch(getLocalSettings(settings))
+
+
+    //gets local settings from local storage
+    useEffect(() => {
+        setLocalSettingsState(JSON.parse(ls.get('localSettings')) || null)
+
+    }, [])
     /**
      * Submit API address to local storage
      */
     const handleSubmitApiIpAddress = async () => {
         console.log("submitting")
-        ls.set('NonLocalAPIAddressEnabled', true)
-        ls.set('NonLocalAPIAddress', apiIpAddress)
+
+        const updatedLocalSettings = {
+          ...localSettingsState,
+          non_local_api: true,
+          non_local_api_ip: apiIpAddress,
+        }
+
+        //await postDevSettings(JSON.stringify(localSettingsState))
 
         window.location.reload(false);
     }
@@ -61,7 +79,11 @@ const SplashScreen = (props) => {
     * toggle mapViewEnabled
     * */
     const toggleMapViewEnabled = async () => {
-        await onPostLocalSettings({ ...localSettings.localSettings, mapViewEnabled: !localSettings.localSettings.mapViewEnabled })
+        const updatedLocalSettings = {
+          ...localSettings.localSettings,
+          mapViewEnabled: !localSettings.localSettings.mapViewEnabled,
+        }
+        //await postDevSettings(JSON.stringify(updatedLocalSettings))
     }
 
     return (
