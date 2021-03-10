@@ -29,8 +29,6 @@ const CalendarField = ({
 	...props
 }) => {
 
-	console.log("cal minDate",minDate)
-	console.log("cal maxDate",maxDate)
 	const { setFieldValue, setFieldTouched, ...formikContext } = useFormikContext();
 	const [{value: fieldValue, ...field}, {initialValue, ...meta}] = useField(props);
 	const hasError = meta.touched && meta.error;
