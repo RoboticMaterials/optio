@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
+import ls from 'local-storage'
+
 
 import { ThemeProvider } from "styled-components";
 import theme from './theme';
@@ -14,7 +16,7 @@ import * as styled from './App.style'
 // Import API
 import { deleteLocalSettings } from './api/local_api'
 import { stopAPICalls } from './redux/actions/local_actions'
-
+import { postLocalSettings, getLocalSettings } from './redux/actions/local_actions'
 
 // import containers
 import ApiContainer from './containers/api_container/api_container';
@@ -38,21 +40,33 @@ const App = () => {
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
     const getFailureCount = useSelector(state => state.taskQueueReducer.getFailureCount)
+    const localSettings = useSelector(state => state.localReducer.localSettings)
+    const authenticated = useSelector(state => state.localReducer.localSettings.authenticated)
+
+
     const dispatch = useDispatch()
     const dispatchStopAPICalls = (bool) => dispatch(stopAPICalls(bool))
-
-    const authenticated = useSelector(state => state.localReducer.localSettings.authenticated)
+    const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
+    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
 
     const [loaded, setLoaded] = useState(false)
     const [apiLoaded, setApiLoaded] = useState(false)
 
     const [showSideBar, setShowSideBar] = useState(false)
     const [showStopAPIModal, setShowStopAPIModal] = useState(true)
+
     const size = useWindowSize()
     const windowWidth = size.width
 
     const mobileMode = windowWidth < widthBreakPoint;
 
+    useEffect(() => {
+      handleLoadLocalData();
+    }, [])
+
+    const handleLoadLocalData = async () => {
+      await dispatchGetLocalSettings()
+    }
 
     /**
      * This handles Map view in mobile mode
@@ -74,7 +88,6 @@ const App = () => {
         }
 
     }
-
 
     // Used to clear local settings just in case the page cant be loaded anymore
     // const handleClearLocalSettings = () => {

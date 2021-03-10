@@ -479,7 +479,7 @@ const TaskField = (props) => {
                                 mode={(!!isProcessTask && selectedTask.new) ? 'add' : 'create'}
                                 // Disables the button if load and unloads have not been selected for a task/route in a process
                                 // disabled={selectedTask !== null && (!selectedTask.load.position || selectedTask.unload.position === null)}
-                                disabled={submitDisabled}
+                                disabled={submitDisabled || editingObject}
                                 onClickSave={async () => {
                                      await onSave()
                                 }}
