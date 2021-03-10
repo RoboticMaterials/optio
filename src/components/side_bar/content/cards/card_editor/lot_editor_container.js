@@ -64,6 +64,7 @@ const LotEditorContainer = (props) => {
     const [pasteMapperHidden, setPasteMapperHidden] = useState(true)			// bool - controls whether or not paste form is hidden (this is distinct from rendering)
     const [createMappedValues, setCreateMappedValues] = useState(false)		// bool - controls running effect to map pasteForm values to lots
     const [showStatusList, setShowStatusList] = useState(false)				// bool - controls whether or not to show statusList
+    const [createdLot, setCreatedLot] = useState(false)				// bool - controls whether or not to show statusList
     const [fieldNameArr, setFieldNameArr] = useState([])
     const [lotTemplate, setLotTemplate] = useState([])
     const [lotTemplateId, setLotTemplateId] = useState([])
@@ -302,6 +303,7 @@ const LotEditorContainer = (props) => {
     * handles logic for creating a lot from mappedValues
     * */
     const createLot = (index, cb) => {
+        if(!createdLot) setCreatedLot(true)
         const values = convertExcelToLot(mappedValues[index], lotTemplate, props.processId)		// convert mappedValues at selectedIndex to form format
         if (values._id) return	// lot was already created, don't try creating it again
 
@@ -580,6 +582,10 @@ const LotEditorContainer = (props) => {
                         setPasteTable([])
                         setSelectedIndex(null)
                         setMappedValues([])
+
+                        if(createdLot) {
+                            props.close()
+                        }
                     }}
 
                     onShowMapperClick={() => {
