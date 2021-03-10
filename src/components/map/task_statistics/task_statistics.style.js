@@ -36,7 +36,6 @@ export const TaskNameText = styled.span`
     width: 100%;
     height: 100%;
     word-break: break-word;
-
 `
 
 export const TaskNameContainer = styled.div`

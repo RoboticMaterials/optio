@@ -42,20 +42,19 @@ const SplashScreen = (props) => {
         apiError
     } = props
 
-    const dispatch = useDispatch()
-    const localSettings = useSelector(state => state.localReducer)
 
-    const [apiIpAddress, setApiIpAddress] = useState('')
+    const dispatch = useDispatch()
+    const localSettings = useSelector(state => state.localReducer.localSettings)
+    const apiAddress = localSettings.non_local_api_ip
+
+    const [apiIpAddress, setApiIpAddress] = useState(apiAddress)
     const [localSettingsState, setLocalSettingsState] = useState({})
 
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = (settings) => dispatch(getLocalSettings(settings))
 
-
-    //gets local settings from local storage
     useEffect(() => {
-        setLocalSettingsState(JSON.parse(ls.get('localSettings')) || null)
-
+      setLocalSettingsState(localSettings)
     }, [])
     /**
      * Submit API address to local storage
@@ -79,8 +78,8 @@ const SplashScreen = (props) => {
     * */
     const toggleMapViewEnabled = async () => {
         const updatedLocalSettings = {
-          ...localSettings.localSettings,
-          mapViewEnabled: !localSettings.localSettings.mapViewEnabled,
+          ...localSettingsState,
+          mapViewEnabled: !localSettingsState.mapViewEnabled,
         }
         await dispatchPostLocalSettings(updatedLocalSettings)
     }
@@ -114,7 +113,7 @@ const SplashScreen = (props) => {
                                 transform: "translateY(-50%)",
                                 position: "absolute"
                             }}
-                            checked={localSettings.localSettings.mapViewEnabled}
+                            checked={localSettingsState.mapViewEnabled}
                             onChange={toggleMapViewEnabled}
                         />
                     </div>

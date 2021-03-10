@@ -439,7 +439,6 @@ const ApiContainer = (props) => {
         const settings = await onGetSettings();
         //const localSettings = await onGetLocalSettings()
         const loggers = await onGetLoggers();
-
     }
 
     /*
