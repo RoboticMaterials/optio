@@ -85,7 +85,7 @@ const WidgetButton = (props) => {
                     coordinate: {
                         pos_x: selectedLocation.pos_x,
                         pos_y: selectedLocation.pos_y,
-                        rotation: -selectedLocation.rotation,
+                        rotation: selectedLocation.rotation,
                     },
                 },
                 deviceType: 'MiR_100',

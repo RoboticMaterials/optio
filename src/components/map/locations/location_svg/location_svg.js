@@ -35,11 +35,11 @@ const LocationSvg = (props) => {
     }
 
     useEffect(() => {
-        console.log('QQQQ locaiton', location)
+        // console.log('QQQQ locaiton', location.rotation)
         return () => {
             
         }
-    }, [])
+    }, [location])
 
     return (
         <styled.WorkstationGroup
@@ -55,7 +55,7 @@ const LocationSvg = (props) => {
             onMouseLeave={() => {
                 handleMouseLeave()
             }}
-            transform={`translate(${location.x},${location.y}) rotate(${location.rotation}) scale(${d3.scale / d3.imgResolution})`}
+            transform={`translate(${location.x},${location.y}) rotate(-${location.rotation}) scale(${d3.scale / d3.imgResolution})`}
         >
             <defs>
 
