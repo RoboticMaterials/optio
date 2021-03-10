@@ -32,6 +32,7 @@ const DragEntityProto = (props) => {
 
     /** Callback on continuous rotate event */
     const rotate = (event, element) => {
+        // console.log('QQQQ event', event)
 
         // Cant rotate if this location is not selected
         if (!isSelected) { return }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import * as styled from './location_svg.style'
 
@@ -33,6 +33,13 @@ const LocationSvg = (props) => {
         ...StationTypes,
         ...PositionTypes
     }
+
+    useEffect(() => {
+        console.log('QQQQ locaiton', location)
+        return () => {
+            
+        }
+    }, [])
 
     return (
         <styled.WorkstationGroup
@@ -105,7 +112,7 @@ const LocationSvg = (props) => {
                 onMouseDown={() => handleTranslating(true)}
                 onMouseUp={() => handleTranslating(false)}
                 // Devices and shelf positions require their own transforms
-                transform={location.type === 'device' ? 'scale(.07) translate(-180,-140)' : location.type=== 'shelf_position' ? 'rotate(90)' : ''}
+                transform={location.type === 'device' ? 'scale(.07) translate(-180,-140)' : location.type === 'shelf_position' ? 'rotate(90)' : ''}
             >
 
                 <svg id={`${rd3tClassName}-${schema}`} x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400" style={{ filter: shouldGlow ? 'url(#glow2)' : 'none' }}>
