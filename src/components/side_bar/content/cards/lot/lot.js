@@ -58,9 +58,6 @@ const Lot = (props) => {
         setFormattedLotNumber(formatLotNumber(lotNumber))
     }, [lotNumber])
 
-    const startDateText = ((start_date?.month + 1) && start_date?.day && start_date?.year) ?  (start_date.month + 1) + "/" + start_date.day + "/" + start_date.year : "Start"
-    const endDateText = ((end_date?.month + 1) && end_date?.day && end_date?.year) ?  (end_date.month + 1) + "/" + end_date.day + "/" +end_date.year : "End"
-
     const renderTemplateValues = () => {
         return templateValues
             .filter((currItem) => {
@@ -294,7 +291,8 @@ Lot.defaultProps = {
     flags: [],
     highlight: false,
     enableFlagSelector: true,
-    templateValues: []
+    templateValues: [],
+    count: 0
 }
 
 export default Lot
