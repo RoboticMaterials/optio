@@ -255,7 +255,7 @@ export default function tasksReducer(state = defaultState, action) {
 
         case SET_TASK_ATTRIBUTES: {
                 var newState
-
+                console.log(action.payload)
                 if (isObject(state.selectedTask) && state.selectedTask._id === action.payload.id) {
                     newState = {
                         ...state,
