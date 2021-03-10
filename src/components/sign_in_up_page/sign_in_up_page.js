@@ -118,7 +118,11 @@ const SignInUpPage = (props) => {
             if (password === confirmPassword) {
                 userPool.signUp(email, password, [], null, (err, data) => {
                     if (err) {
-                        alert(err.message)
+                        if(err.message === 'Invalid version. Version should be 1'){
+                            alert('Invalid email. Please use a valid email.')
+                        }else{
+                            alert(err.message)
+                        }
                     } else {
                         alert('You have sucessfully signed up! Please check you email for a verification link.')
                         handleSignInChange(true)
