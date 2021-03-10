@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 
 import * as styled from './location_svg.style'
 
@@ -33,13 +33,6 @@ const LocationSvg = (props) => {
         ...StationTypes,
         ...PositionTypes
     }
-
-    useEffect(() => {
-        // console.log('QQQQ locaiton', location.rotation)
-        return () => {
-            
-        }
-    }, [location])
 
     return (
         <styled.WorkstationGroup
