@@ -275,6 +275,7 @@ export const createCard = /* GraphQL */ `
   ) {
     createCard(input: $input, condition: $condition) {
       id
+      _id
       bins
       dates
       description
@@ -297,6 +298,7 @@ export const updateCard = /* GraphQL */ `
   ) {
     updateCard(input: $input, condition: $condition) {
       id
+      _id
       bins
       dates
       description
@@ -319,6 +321,7 @@ export const deleteCard = /* GraphQL */ `
   ) {
     deleteCard(input: $input, condition: $condition) {
       id
+      _id
       bins
       dates
       description

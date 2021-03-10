@@ -236,6 +236,7 @@ export const onCreateCard = /* GraphQL */ `
   subscription OnCreateCard {
     onCreateCard {
       id
+      _id
       bins
       dates
       description
@@ -255,6 +256,7 @@ export const onUpdateCard = /* GraphQL */ `
   subscription OnUpdateCard {
     onUpdateCard {
       id
+      _id
       bins
       dates
       description
@@ -274,6 +276,7 @@ export const onDeleteCard = /* GraphQL */ `
   subscription OnDeleteCard {
     onDeleteCard {
       id
+      _id
       bins
       dates
       description

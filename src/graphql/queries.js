@@ -187,6 +187,7 @@ export const getCard = /* GraphQL */ `
   query GetCard($id: ID!) {
     getCard(id: $id) {
       id
+      _id
       bins
       dates
       description
@@ -211,6 +212,7 @@ export const listCards = /* GraphQL */ `
     listCards(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
+        _id
         bins
         dates
         description

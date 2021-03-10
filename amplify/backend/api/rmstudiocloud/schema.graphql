@@ -67,6 +67,7 @@ type Card
   @model
 {
   id: ID!
+  _id: String
   bins: AWSJSON!
   dates: AWSJSON!
   description: String!
