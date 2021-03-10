@@ -28,19 +28,7 @@ const ThroughputChart = (props) => {
 
     const [showBar, setShowBar] = useState(true)
 
-    const filteredData = throughputData?.throughPut.map((currData) => {
-        const {
-            x,
-            y
-        } = currData
-
-        if(y !== 0) return {
-            x,y
-        }
-        return {
-            x
-        }
-    })
+    const filteredData = throughputData?.throughPut
 
     const minHeight = 0
 

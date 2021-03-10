@@ -159,18 +159,6 @@ const App = () => {
                                       }
                                   </styled.HeaderContainer>
 
-                                  <div
-                                      style={{
-                                          position: "absolute",
-                                          color: "red",
-                                          fontSize: "20rem",
-                                          left: "50%",
-                                          top: "50%",
-                                          zIndex: 50000
-                                      }}
-
-                                  >TEST</div>
-
 
 
                                   <styled.BodyContainer>

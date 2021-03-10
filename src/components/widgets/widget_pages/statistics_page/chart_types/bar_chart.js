@@ -43,11 +43,10 @@ const BarChart = (props) => {
             ticks: {
                 line: {
                     stroke: themeContext.bg.septenary,
-                    strokeWidth: 1,
-                    opacity: 1
+                    strokeWidth: 1
                 },
                 text: {
-                    opacity: 1
+
                 }
             },
             legend: {
@@ -73,9 +72,7 @@ const BarChart = (props) => {
         markers: {
             lineColor: '#000000',
             lineStrokeWidth: 1,
-            text: {
-
-            }
+            text: {}
         },
         dots: {
             text: {}
