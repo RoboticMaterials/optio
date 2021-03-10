@@ -82,7 +82,7 @@ const ObjectEditor = (props) => {
                   <>
                     <styled.ListItem
                       onMouseEnter = {()=>dispatchSetSelectedObject(object)}
-                      onMouseLeave = {()=>dispatchSetSelectedObject(null)}
+                      onMouseLeave = {editingObject ? null :()=>dispatchSetSelectedObject(null)}
 
                     >
                     <styled.HoverContainer onClick = {onSelectObject}>
