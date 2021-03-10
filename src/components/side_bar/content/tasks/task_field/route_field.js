@@ -255,7 +255,7 @@ const TaskField = (props) => {
             setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", null , false)
         }
 
-    },[selectedObject, selectedTask])
+    },[selectedObject, selectedTask, "obj.name"])
 
 
     // calls save function when values.needsSubmit is true - used for auto submit when selecting route from existing
