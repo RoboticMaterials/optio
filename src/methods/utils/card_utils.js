@@ -256,19 +256,31 @@ export const sortBy = (arr, sortMode, sortDirection) => {
 				} = itemB
 
 				if(!rangeA) return 1
-				if(!rangeB) return -1
+				// if(!rangeB) return -1
 
 				const valA = rangeA[index]
 				const valB = rangeB[index]
 
+				if(!valA) return 1
+				if(!valB) return -1
+				if(isAscending) {
+					return new Date(valA) - new Date(valB);
+				}
+				else {
+					return new Date(valB) - new Date(valA);
+				}
+
+
 				if(isAscending) {
 					if(!valA) return 1
+					// if(!valB) return -1
 					if(valA > valB) return 1
 					return -1
 					return 1
 				}
 				else {
 					if(!valA) return 1
+					if(!valB) return -1
 					if(valA > valB) return -1
 					return 1
 				}
