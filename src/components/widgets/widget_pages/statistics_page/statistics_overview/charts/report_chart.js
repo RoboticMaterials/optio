@@ -58,8 +58,6 @@ const ReportChart = (props) => {
         :
         []
 
-    console.log('QQQQ filtered data', filteredData)
-
     // set min height based on number of entries so chart won't squeeze rows too close together
     const minHeight = (filteredData && Array.isArray(filteredData)) ? filteredData.length : 0
 
