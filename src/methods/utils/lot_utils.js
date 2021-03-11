@@ -61,7 +61,6 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
 					label,			//"Skew (String)"
 					fieldName,
 				} = filterMode || {}
-				console.log("filterMode",filterMode)
 
 				if(lot[fieldName] !== undefined) {
 					if(!filterValue) return true
@@ -193,14 +192,12 @@ export const getLotTemplateData = (lotTemplateId, lot) => {
 
 			if(isArray(currRow)) {
 				currRow.forEach((currItem) => {
-					// console.log("template data currItem",currItem)
 					const {
 						dataType,
 						fieldName
 					} = currItem
 
 					const lotValue = lot[fieldName]
-					// console.log("lotValue",lotValue)
 					templateValues.push({
 						dataType,
 						fieldName,
