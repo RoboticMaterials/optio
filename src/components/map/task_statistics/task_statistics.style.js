@@ -52,14 +52,13 @@ export const TaskNameContainer = styled.div`
 
 export const TaskText = styled.p`
     align-self: center;
+    text-align: center;
     margin-left: .25rem;
     margin-top: auto;
     margin-bottom: auto;
     font-family: ${props => props.theme.font.primary};
-
-    white-space: wrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    align-text: center;
+    white-space: break-spaces;
 `
 
 export const TaskIcon = styled.i`
