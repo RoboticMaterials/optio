@@ -39,11 +39,10 @@ const SignInUpPage = (props) => {
           dispatchPostLocalSettings({
               ...response,
               authenticated: 'no',
-              non_local_api_ip: window.location.hostname,
-              non_local_api: true,
+              //non_local_api_ip: window.location.hostname,
+              //non_local_api: true,
           })
         })
-
 
     }
 
