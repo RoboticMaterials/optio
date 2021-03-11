@@ -120,6 +120,22 @@ export const getLotTotalQuantity = ({bins}) => {
 	return totalQuantity
 }
 
+export const getBinQuantity = ({bins}, binId) => {
+	const {
+		[binId]: currentBin
+	} = bins || {}
+
+	const {
+		count
+	} = currentBin || {}
+
+	return count
+}
+
+export const getIsCardAtBin = ({bins}, binId) => {
+	return !!getBinQuantity({bins}, binId)
+}
+
 export const getAllTemplateFields = () => {
 	const lotTemplates = store.getState().lotTemplatesReducer.lotTemplates
 
