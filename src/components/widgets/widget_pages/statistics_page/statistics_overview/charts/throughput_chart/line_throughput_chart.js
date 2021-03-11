@@ -670,7 +670,7 @@ const LineThroughputChart = (props) => {
                                 enable: true,
                             }}
 
-                            animate={true}
+                            animate={false}
                             useMesh={true}
 
                             enablePoints={true}

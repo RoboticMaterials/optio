@@ -88,11 +88,8 @@ const ReportChart = (props) => {
                         colorBy={"id"}
                         mainTheme={themeContext}
                         timeSpan={timeSpan}
-                        // layout={true ? "horizontal" : "vertical"}
                         layout={"vertical"}
-                        // layout={"horizontal"}
-                        enableGridX={true ? true : false}
-                        enableGridY={!true ? true : false}
+                        enableGridY={true}
                         axisBottom={{
                             legend: 'Count',
                         }}
