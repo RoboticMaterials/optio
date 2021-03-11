@@ -572,7 +572,7 @@ const TaskField = (props) => {
                                     // If this task is part of a process and not already in the array of routes, then add the task to the selected process
                                     if (!selectedProcess.routes.includes(selectedRouteId)) {
 
-                                        var selectedRoute = { ...selectedValue, needsSubmit: true, obj: selectedObject, temp: values.temp }
+                                        var selectedRoute = { ...selectedValue, needsSubmit: true, obj: selectedObject ? selectedObject : null, temp: values.temp }
                                         // setFieldValue
                                         if (fieldParent) {
                                             setFieldValue(fieldParent, selectedRoute)

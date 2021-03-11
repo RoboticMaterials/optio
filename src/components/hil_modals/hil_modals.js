@@ -1075,9 +1075,9 @@ const HILModals = (props) => {
                                         name: processName
                                     } = process || {}
 
-                                    const totalQuantity = getLotTotalQuantity({ bins })
+                                    const totalQuantity = getLotTotalQuantity({ bins }) || 0
 
-                                    const count = bins[stationId]?.count
+                                    const count = bins[stationId || loadStationId]?.count || 0
 
                                     const isSelected = selectedLotId === lotId
                                     const templateValues = getLotTemplateData(lotTemplateId, currLot)
