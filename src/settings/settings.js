@@ -16,7 +16,7 @@ export const apiIPAddress = () => {
     let localSettings = ls.get("localSettings")
     let parsedLocalSettings = JSON.parse(localSettings)
     let hostServerIpAddress = parsedLocalSettings ? parsedLocalSettings.non_local_api_ip : ""
-    let nonLocalIp = parsedLocalSettings ? parsedLocalSettings.non_local_api : true
+    let nonLocalIp = parsedLocalSettings ? parsedLocalSettings.non_local_api : false
     /**
      * READ ME: Do not change IP address here. Go to the settings tab in the interface, select Non Local API IP Address and type in the api ip address
      * If non local api is true, then the server is running on an IP address entered
