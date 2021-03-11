@@ -34,7 +34,7 @@ import {
 } from '../types/tasks_types'
 
 import { deepCopy } from '../../methods/utils/utils';
-import {isObject} from "../../methods/utils/object_utils";
+import { isObject } from "../../methods/utils/object_utils";
 
 
 const defaultState = {
@@ -228,14 +228,14 @@ export default function tasksReducer(state = defaultState, action) {
 
             return {
                 ...state,
-                tasks: {...remainingTasks},         // keep all tasks but the one to remove
+                tasks: { ...remainingTasks },         // keep all tasks but the one to remove
             }
         }
 
         case REMOVE_TASKS: {
 
 
-            let temp = {...state.tasks}
+            let temp = { ...state.tasks }
 
             action.payload.ids.forEach((currId) => {
                 const {
@@ -248,48 +248,48 @@ export default function tasksReducer(state = defaultState, action) {
 
             return {
                 ...state,
-                tasks: {...temp},         // keep all tasks but the one to remove
+                tasks: { ...temp },         // keep all tasks but the one to remove
             }
         }
 
 
         case SET_TASK_ATTRIBUTES: {
-                var newState
-                console.log(action.payload)
-                if (isObject(state.selectedTask) && state.selectedTask._id === action.payload.id) {
-                    newState = {
-                        ...state,
-                        tasks: state.tasks[action.payload.id] ?
-                            {
-                                ...state.tasks,
-                                [action.payload.id]: {...state.tasks[action.payload.id], ...action.payload.attr},
-                            }
-                        :
-                            {
-                                ...state.tasks
-                            },
-                        selectedTask: {
-                            ...state.selectedTask,
-                            ...action.payload.attr
+            var newState
+
+            if (isObject(state.selectedTask) && state.selectedTask._id === action.payload.id) {
+                newState = {
+                    ...state,
+                    tasks: state.tasks[action.payload.id] ?
+                        {
+                            ...state.tasks,
+                            [action.payload.id]: { ...state.tasks[action.payload.id], ...action.payload.attr },
                         }
-                    }
-                } else {
-                    newState = {
-                        ...state,
-                        tasks: state.tasks[action.payload.id] ? {
-                                ...state.tasks,
-                                [action.payload.id]: {...state.tasks[action.payload.id], ...action.payload.attr},
-                            }
                         :
-                            {
-                                ...state.tasks
-                            }
+                        {
+                            ...state.tasks
+                        },
+                    selectedTask: {
+                        ...state.selectedTask,
+                        ...action.payload.attr
                     }
                 }
-
-                return newState
-
+            } else {
+                newState = {
+                    ...state,
+                    tasks: state.tasks[action.payload.id] ? {
+                        ...state.tasks,
+                        [action.payload.id]: { ...state.tasks[action.payload.id], ...action.payload.attr },
+                    }
+                        :
+                        {
+                            ...state.tasks
+                        }
+                }
             }
+
+            return newState
+
+        }
 
 
         case SELECT_TASK:
@@ -316,11 +316,11 @@ export default function tasksReducer(state = defaultState, action) {
                 selectedTask: null,
             }
 
-            case EDITING_TASK:
-                return {
-                    ...state,
-                    editingTask: action.payload,
-                }
+        case EDITING_TASK:
+            return {
+                ...state,
+                editingTask: action.payload,
+            }
         default:
             return state;
     }
