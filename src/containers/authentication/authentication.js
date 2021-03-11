@@ -45,12 +45,6 @@ const Authentication = (props) => {
 
     const localReducer = useSelector(state => state.localReducer.localSettings)
 
-    useEffect(() => {
-        dispatchGetLocalSettings()
-    }, [])
-
-
-
     const handleSignInChange = (value) => {
         setSignIn(value)
     }
