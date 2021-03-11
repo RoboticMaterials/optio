@@ -27,6 +27,7 @@ import { editingProcess } from '../../redux/actions/processes_actions'
 import { setWidth, setMode, pageDataChanged, setOpen } from "../../redux/actions/sidebar_actions";
 
 import * as taskActions from '../../redux/actions/tasks_actions'
+import * as sidebarActions from "../../redux/actions/sidebar_actions";
 
 const SideBar = (props) => {
 
@@ -51,6 +52,7 @@ const SideBar = (props) => {
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchSetSelectedPosition = (station) => dispatch(setSelectedPosition(station))
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
+    const dispatchSetConfirmDelete = (show, callback) => dispatch(sidebarActions.setConfirmDelete(show, callback))
 
     const [pageWidth, setPageWidth] = useState(450)
     const [prevWidth, setPrevWidth] = useState(pageWidth)
@@ -61,6 +63,8 @@ const SideBar = (props) => {
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
+    const showConfirmDeleteModal = useSelector(state => state.sidebarReducer.showConfirmDeleteModal)
+    const confirmDeleteCallback = useSelector(state => state.sidebarReducer.confirmDeleteCallback)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
 
@@ -242,18 +246,26 @@ const SideBar = (props) => {
     return (
         <>
             <ConfirmDeleteModal
-                isOpen={!!confirmDeleteModal}
+                isOpen={!!confirmDeleteModal || showConfirmDeleteModal}
                 title={"Are you sure you want to leave this page? Any changes will not be saved"}
                 button_1_text={"Yes"}
                 button_2_text={"No"}
                 handleClose={() => setConfirmDeleteModal(null)}
                 handleOnClick1={() => {
-                    handleSideBarOpenCloseButtonClick()
+                    if(showConfirmDeleteModal) {
+                        confirmDeleteCallback()
+                    }
+                    else {
+                        handleSideBarOpenCloseButtonClick()
+                    }
+
                     setConfirmDeleteModal(null)
                     dispatchPageDataChanged(false)
+                    dispatchSetConfirmDelete(false, null)
                 }}
                 handleOnClick2={() => {
                     setConfirmDeleteModal(null)
+                    dispatchSetConfirmDelete(false, null)
                 }}
             />
 

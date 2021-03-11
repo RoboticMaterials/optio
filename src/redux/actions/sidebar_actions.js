@@ -3,7 +3,7 @@ import {
     SET_ACTION,
     SET_WIDTH,
     SET_OPEN,
-    PAGE_DATA_CHANGED,
+    PAGE_DATA_CHANGED, SET_CONFIRM_DELETE,
 } from '../types/sidebar_types'
 
 export const setMode = (mode) => {
@@ -24,4 +24,8 @@ export const setOpen = (state) => {
 
 export const pageDataChanged = (state) => {
     return { type: PAGE_DATA_CHANGED, payload: state}
+}
+
+export const setConfirmDelete = (show, callback) => {
+    return { type: SET_CONFIRM_DELETE, payload: {show, callback}}
 }
