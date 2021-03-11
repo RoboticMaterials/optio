@@ -22,7 +22,6 @@ import Button from '../../../../basic/button/button'
 import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
 import IconButton from '../../../../basic/icon_button/icon_button'
 
-
 // Import Components
 import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 import LoadUnloadFields from './fields/load_unload_fields'
@@ -149,7 +148,6 @@ const TaskField = (props) => {
     const previousLoadStationId = usePrevious(getLoadStationId(values))
     const previousUnloadStationId = usePrevious(getUnloadStationId(values))
     const url = useLocation().pathname
-
     useEffect(() => {
         const loadStationId = getLoadStationId(selectedTask)
         const unloadStationId = getUnloadStationId(selectedTask)
@@ -232,7 +230,6 @@ const TaskField = (props) => {
         dispatchSetEditing(true) // set editing to true
         dispatchSetRouteObject(selectedTask.route_object)
         dispatchSetSelectedObject(selectedTask.route_object)
-    const dispatchPutObject = (object, id) => dispatch(putObject(object,id))
 
         return () => {
             // When unmounting edit task, always set fixing process to false
@@ -255,7 +252,7 @@ const TaskField = (props) => {
             setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", null , false)
         }
 
-    },[selectedObject, selectedTask])
+    },[selectedObject])
 
 
     // calls save function when values.needsSubmit is true - used for auto submit when selecting route from existing
