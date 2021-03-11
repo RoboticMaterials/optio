@@ -269,21 +269,6 @@ export const sortBy = (arr, sortMode, sortDirection) => {
 				else {
 					return new Date(valB) - new Date(valA);
 				}
-
-
-				if(isAscending) {
-					if(!valA) return 1
-					// if(!valB) return -1
-					if(valA > valB) return 1
-					return -1
-					return 1
-				}
-				else {
-					if(!valA) return 1
-					if(!valB) return -1
-					if(valA > valB) return -1
-					return 1
-				}
 			})
 			break
 		}
