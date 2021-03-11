@@ -49,51 +49,57 @@ const Authentication = (props) => {
         dispatchGetLocalSettings()
     }, [])
 
+
+
     const handleSignInChange = (value) => {
         setSignIn(value)
     }
 
     const handleInitialLoad = () => {
         // Check to see if we want authentication *** Dev ONLY ***
-        if (!configData.authenticationNeeded) {
-          const localSettingsPromise = dispatchGetLocalSettings()
-          localSettingsPromise.then(response =>{
+        const localSettingsPromise = dispatchGetLocalSettings()
+        localSettingsPromise.then(someshit =>{
+            if (!configData.authenticationNeeded) {
+                const localSettingsPromise = dispatchGetLocalSettings()
+                localSettingsPromise.then(response =>{
 
-            dispatchPostLocalSettings({
-                ...response,
-                authenticated: 'no',
-                //non_local_api_ip: window.location.hostname,
-                //non_local_api: true,
-            })
-          })
-        } else {
+                    dispatchPostLocalSettings({
+                        ...response,
+                        authenticated: 'no',
+                        //non_local_api_ip: window.location.hostname,
+                        //non_local_api: true,
+                    })
+                })
+            } else {
 
-            var poolData = {
-                UserPoolId: configData.UserPoolId,
-                ClientId: configData.ClientId,
-            };
+                var poolData = {
+                    UserPoolId: configData.UserPoolId,
+                    ClientId: configData.ClientId,
+                };
 
-            var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-            var cognitoUser = userPool.getCurrentUser();
+                var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+                var cognitoUser = userPool.getCurrentUser();
 
-            if (cognitoUser != null) {
-                cognitoUser.getSession(function (err, session) {
-                    if (err) {
-                        alert(err.message || JSON.stringify(err));
-                        return;
-                    }
+                if (cognitoUser != null) {
+                    cognitoUser.getSession(function (err, session) {
+                        if (err) {
+                            alert(err.message || JSON.stringify(err));
+                            return;
+                        }
 
-                    if (session.isValid()) {
-                        dispatchPostLocalSettings({
-                            ...localReducer,
-                            authenticated:true,
-                            non_local_api_ip: window.location.hostname,
-                            non_local_api: true,
-                        })
-                    }
-                });
+                        if (session.isValid()) {
+                            dispatchPostLocalSettings({
+                                ...localReducer,
+                                authenticated:true,
+                                non_local_api_ip: window.location.hostname,
+                                non_local_api: true,
+                            })
+                        }
+                    });
+                }
             }
-        }
+        })
+
 
         return (
             <styled.Container>
