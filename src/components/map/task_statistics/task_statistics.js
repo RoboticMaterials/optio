@@ -39,7 +39,6 @@ const TaskStatistics = (props) => {
     }, [])
 
     const handleSingleTask = (task) => {
-      console.log()
       if(!!task){
         if (task === undefined || selectedTask === undefined) return null
 
