@@ -20,6 +20,7 @@ const TaskStatistics = (props) => {
     const onGetTasksAnalysis = () => dispatch(getTasksAnalysis())
 
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
+    const selectedHoveringTask = useSelector(state => state.tasksReducer.selectedHoveringTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const positions = useSelector(state => state.positionsReducer.positions)
@@ -38,10 +39,11 @@ const TaskStatistics = (props) => {
     }, [])
 
     const handleSingleTask = (task) => {
-
-      if(!!task && location.pathname !== '/processes'){
+      if(!!task){
         if (task === undefined || selectedTask === undefined) return null
-        if (editingStation === true || editingPosition === true || taskEditing=== true || processEditing === true) return null
+
+        if (editingStation === true || editingPosition === true ||(taskEditing && location.pathname === '/tasks')) return null
+
 
         const selectedTaskAnalysis = !!task ? tasksAnalysis[task._id]: null
         const startPos = task.device_types[0] == 'human' && task.load.position == task.load.station ? stations[task.load.position] : positions[task.load.position]
@@ -95,7 +97,7 @@ const TaskStatistics = (props) => {
               <styled.TaskStatisticsContainer xPosition={xPosition} yPosition={yPosition}>
               <styled.RowContainer style = {{borderBottom: '1px solid black', padding: '.2rem .2rem .2rem .2rem', width: '100%'}}>
 
-                <styled.TaskText style = {{paddingRight: '.7rem'}}>{task.name} </styled.TaskText>
+                <styled.TaskText style = {{paddingRight: '.3rem'}}>{task.name} </styled.TaskText>
 
                   <IconButton color={'red'} style = {{paddingRight: '.2rem'}}>
                       {task.device_types[0] === 'human' ?
@@ -146,8 +148,8 @@ const TaskStatistics = (props) => {
 
     const handleProcessTasks = () => {
 
-        if (!!selectedTask) {
-            return handleSingleTask(selectedTask)
+        if (!!selectedHoveringTask) {
+            return handleSingleTask(selectedHoveringTask)
         }
 
         // return Object.keys(selectedProcess.routes).map((station) => {

@@ -34,7 +34,7 @@ export const HilContainer = styled.div`
 export const HilInputContainer = styled.div`
     display: flex;
     flex-direction: row;
-    margin-bottom: 3rem;
+    margin-bottom: 1rem;
     margin-top: 1rem;
 `
 
@@ -399,6 +399,7 @@ export const HilButton = styled.button`
     padding: 0rem 3rem;
     align-items: center;
     justify-content: center;
+    ${props => props.disabled && "filter: grayscale(80%)"};
 
 
 `
