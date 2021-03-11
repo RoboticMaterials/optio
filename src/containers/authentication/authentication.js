@@ -58,18 +58,15 @@ const Authentication = (props) => {
     const handleInitialLoad = () => {
         // Check to see if we want authentication *** Dev ONLY ***
         const localSettingsPromise = dispatchGetLocalSettings()
-        localSettingsPromise.then(someshit =>{
-            if (!configData.authenticationNeeded) {
-                const localSettingsPromise = dispatchGetLocalSettings()
-                localSettingsPromise.then(response =>{
+        localSettingsPromise.then(response =>{
 
+            if (!configData.authenticationNeeded) {
                     dispatchPostLocalSettings({
                         ...response,
                         authenticated: 'no',
                         //non_local_api_ip: window.location.hostname,
                         //non_local_api: true,
                     })
-                })
             } else {
 
                 var poolData = {

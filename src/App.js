@@ -106,18 +106,6 @@ const App = () => {
               {/* <ThemeProvider theme={theme[this.state.theme]}> */}
               <ThemeProvider theme={theme['main']}>
 
-                  <div
-
-                      style={{background: "red",
-
-                          position: "absolute",
-                          top :"50%",
-                          left: "50%",
-                          zIndex: 50000,
-                          fontSize: "10rem"
-                      }}
-                  >TEST</div>
-
                 <styled.Container>
                     <ConfirmDeleteModal
                         isOpen={getFailureCount < 10 || showStopAPIModal === false ? false : true}
