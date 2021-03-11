@@ -29,6 +29,14 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
 			return true
 			break
 		}
+		case LOT_FILTER_OPTIONS.lotNumber.label: {
+			if(filterValue) {
+				const formattedLotNumber = formatLotNumber(lot.lotNumber)
+				return formattedLotNumber.toLowerCase().includes((filterValue || "").toLowerCase())
+			}
+			return true
+			break
+		}
 		case LOT_FILTER_OPTIONS.flags.label: {
 			if(isArray(filterValue) && filterValue.length > 0) {
 				if(isArray(lot.flags)) {
@@ -51,9 +59,10 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
 				const {
 					dataType,		//"STRING"
 					label,			//"Skew (String)"
+					fieldName,
 				} = filterMode || {}
 
-				if(lot[label] !== undefined) {
+				if(lot[fieldName] !== undefined) {
 					if(!filterValue) return true
 
 					switch(dataType) {
@@ -74,10 +83,10 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
 							return true
 						}
 						case FIELD_DATA_TYPES.STRING: {
-							return lot[label].toLowerCase().includes((filterValue || "").toLowerCase())
+							return lot[fieldName].toLowerCase().includes((filterValue || "").toLowerCase())
 						}
 						case FIELD_DATA_TYPES.INTEGER: {
-							return toIntegerOrZero(lot[label]) === toIntegerOrZero(filterValue)
+							return toIntegerOrZero(lot[fieldName]) === toIntegerOrZero(filterValue)
 						}
 						default: {
 							// unknown dateType, return true
@@ -161,7 +170,8 @@ export const getAllTemplateFields = () => {
 					// label: `${capitalizeFirstLetter(fieldName)} (${convertDataTypeContantToDisplay(dataType)})`,
 					label: fieldName,
 					dataType,
-					component
+					component,
+					fieldName
 				}
 
 				let alreadyExists = false
@@ -198,14 +208,12 @@ export const getLotTemplateData = (lotTemplateId, lot) => {
 
 			if(isArray(currRow)) {
 				currRow.forEach((currItem) => {
-					// console.log("template data currItem",currItem)
 					const {
 						dataType,
 						fieldName
 					} = currItem
 
 					const lotValue = lot[fieldName]
-					// console.log("lotValue",lotValue)
 					templateValues.push({
 						dataType,
 						fieldName,

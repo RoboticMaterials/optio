@@ -103,6 +103,8 @@ export const DEFAULT_DISPLAY_NAMES = {
 
 export const NAME_FIELD = {fieldName: "name", dataType: FIELD_DATA_TYPES.STRING, displayName: DEFAULT_NAME_DISPLAY_NAME, label: "Name"}
 export const COUNT_FIELD = {fieldName: "count", fieldPath: ["bins", "QUEUE"], dataType: FIELD_DATA_TYPES.INTEGER, displayName: DEFAULT_COUNT_DISPLAY_NAME, label: "Quantity"}
+export const LOT_NUMBER_FIELD = {fieldName: "lotNumber", dataType: FIELD_DATA_TYPES.INTEGER, label: "Lot Number"}
+
 
 export const REQUIRED_FIELDS = [NAME_FIELD, COUNT_FIELD]
 
@@ -168,9 +170,11 @@ export const LOT_FILTER_OPTIONS = {
 	flags: {
 		label: "Flags"
 	},
+	lotNumber: {...LOT_NUMBER_FIELD}
 }
 
 export const LOT_SORT_OPTIONS = {
 	name: {...NAME_FIELD},
-	quantity: {...COUNT_FIELD}
+	quantity: {...COUNT_FIELD},
+	lotNumber: {...LOT_NUMBER_FIELD}
 }
