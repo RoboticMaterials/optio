@@ -730,6 +730,8 @@ const HILModals = (props) => {
 
     const renderQuantityOptions = () => {
 
+        const disabledQty = (quantity > count || !!count && quantity === 0)
+
         return (
             <>
 
@@ -858,7 +860,7 @@ const HILModals = (props) => {
                                                 //}
                                             }}
                                             value={quantity}
-                                            style={quantity > count ? { backgroundColor: 'red' } : {}}
+                                            style={disabledQty ? { backgroundColor: 'red' } : {}}
                                             onBlur={onBlurQuantityInput}
                                         />
                                         <styled.HilInputIconContainer
@@ -933,6 +935,9 @@ const HILModals = (props) => {
                                         }
 
                                     </styled.HilInputContainer>
+                                    {disabledQty &&
+                                        <styled.HilSubText style={{ marginBottom: "1rem", color: 'red' }}>Please enter a quantity above 0</styled.HilSubText>
+                                    }
                                     {renderSelectedLot()}
                                 </>
 
@@ -940,7 +945,7 @@ const HILModals = (props) => {
 
 
                             {count &&
-                                <styled.HilSubText style={{ marginBottom: "1rem" }}>Available Lot Items: {count}</styled.HilSubText>
+                                <styled.HilSubText style={{ marginBottom: "1rem"}}>Available Lot Items: {count}</styled.HilSubText>
                             }
                         </div>
 
@@ -948,6 +953,7 @@ const HILModals = (props) => {
 
                             <styled.HilButton
                                 color={'#90eaa8'}
+                                disabled={disabledQty}
                                 onClick={() => {
                                     onHilSuccess()
                                     dispatchSetShowModalId(null)
