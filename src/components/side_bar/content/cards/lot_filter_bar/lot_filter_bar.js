@@ -101,6 +101,7 @@ const LotFilterBar = (props) => {
                 label
             } = currTemplateField
 
+
             // currently don't have filter for dates implemented, so skip em
             if(dataType !== FIELD_DATA_TYPES.DATE_RANGE && dataType !== FIELD_DATA_TYPES.DATE) {
                 tempLotFilterOptions.push(currTemplateField)
