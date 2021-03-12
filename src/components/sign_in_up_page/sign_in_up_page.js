@@ -102,7 +102,7 @@ const SignInUpPage = (props) => {
                         authenticated: result.accessToken.payload.username,
                         non_local_api_ip: window.location.hostname,
                         non_local_api: true,
-                        refreshToken: result.getRefreshToken().getToken()
+                        refreshToken: true
                     })
 
 
