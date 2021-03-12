@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import ls from 'local-storage'
-import * as styled from './settings.style'
-
-import ContentHeader from '../content_header/content_header'
+import TimezoneSelect from 'react-timezone-select'
 
 // Import Components
 import Textbox from '../../../basic/textbox/textbox'
 import Switch from 'react-ios-switch';
-
 import TimezonePicker, { timezones } from 'react-timezone';
-
 import Button from "../../../basic/button/button";
+import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
+import ContentHeader from '../content_header/content_header'
+import {Timezones} from '../../../../constants/timezone_constants'
 
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
+import * as styled from './settings.style'
 
 // Import Actions
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
@@ -25,8 +24,6 @@ import { setCurrentMap } from '../../../../redux/actions/map_actions'
 
 // Import Utils
 import { isEquivalent } from '../../../../methods/utils/utils'
-import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
-
 import config from '../../../../settings/config'
 
 const Settings = () => {
@@ -57,13 +54,14 @@ const Settings = () => {
     const [mapSettingsState, setMapSettingsState] = useState(currentMap)
     const [mirUpdated, setMirUpdated] = useState(false)
     const [devicesEnabled, setDevicesEnabled] = useState(!!deviceEnabledSetting)
-
+    const [selectedTimezone, setSelectedTimezone] = useState({})
     /**
      *  Sets current settings to state so that changes can be discarded or saved
      * */
     useEffect(() => {
         setServerSettingsState(serverSettings)
         dispatchGetLocalSettings()
+
     }, [])
 
     useEffect(() => {
@@ -114,7 +112,6 @@ const Settings = () => {
     // Submits settings to the backend
     const handleSumbitSettings = async () => {
         // Sees if either settings have changed. If the state settigns and redux settings are different, then they've changed
-
         await dispatchPostLocalSettings(localSettingsState)
         const serverChange = isEquivalent(serverSettingsState, serverSettings)
         const mapChange = !isEquivalent(mapSettingsState, currentMap)
@@ -143,29 +140,37 @@ const Settings = () => {
 
     // Handles Time zone (NOT WORKING)
     const TimeZone = () => {
-
+      const selectedMap = maps.find((map) => map._id === mapReducer.currentMap?._id)
 
         return (
-            <styled.SettingContainer>
+          <styled.SettingContainer>
 
-                <styled.Header>Time Zone (NOT WORKING)</styled.Header>
 
-                <TimezonePicker
-                    value='Pacific/Honolulu'
-                    onChange={() => { }}
-                    inputProps={{
-                        placeholder: 'Select Timezone ...',
-                        name: 'timezone',
-                    }}
-                    style={{ width: '100%' }}
+              <styled.Header>Select a Timezone</styled.Header>
 
-                />
-            </styled.SettingContainer>
 
+              <styled.RowContainer>
+                  <DropDownSearch
+                      placeholder="Select Timezone"
+                      label="Select your timezone"
+                      labelField="name"
+                      valueField="label"
+                      options={Timezones}
+                      values={!!serverSettingsState.timezone ? [serverSettingsState.timezone] : []}
+                      dropdownGap={5}
+                      noDataLabel="No matches found"
+                      closeOnSelect="true"
+                      onChange={values => {
+                        handleUpdateServerSettings({timezone: values[0]})
+                      }}
+
+                      className="w-100"
+                  />
+              </styled.RowContainer>
+
+          </styled.SettingContainer>
         )
     }
-
-
 
     const APIAddress = () => {
         //  if(MiRMapEnabled){
@@ -293,7 +298,7 @@ const Settings = () => {
                             // update current map
                             setMapSettingsState(values[0])
                             // update current map in local storage
-                            handleUpdateLocalSettings({ currentMapId: values[0]._id })
+                            handleUpdateLocalSettings({ currentMap: values[0]._id })
                         }}
                         className="w-100"
                     />
@@ -342,6 +347,7 @@ const Settings = () => {
             {CurrentMap()}
             {SignOut()}
             {APIAddress()}
+            {TimeZone()}
 
             {/* {TimeZone()} */}
         </styled.SettingsContainer>

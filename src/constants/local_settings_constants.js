@@ -8,5 +8,5 @@ export const defaultLocalSettings = {
 	authenticated: null,
 	refreshToken: null,
 	accessToken: null,
-
+	timezone: []
 }
