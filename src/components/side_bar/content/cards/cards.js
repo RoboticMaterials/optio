@@ -23,6 +23,7 @@ import LotCreatorForm from "./card_editor/template_form";
 import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
 import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../constants/lot_contants";
 import LotEditorContainer from "./card_editor/lot_editor_container";
+import SummaryHeader from "./summary_header/summary_header";
 
 const Cards = (props) => {
 
@@ -31,8 +32,7 @@ const Cards = (props) => {
         id
     } = props
 
-    // history
-    const history = useHistory()
+
 
     const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
 
@@ -178,27 +178,10 @@ const Cards = (props) => {
                 }}
             />
             }
-            <styled.Header>
-                {isProcessView ?
-                    <styled.MenuButton
-                        style={{ marginRight: "auto" }}
-                        className="fas fa-chevron-left"
-                        aria-hidden="true"
-                        onClick={() => {
-                            history.replace('/processes')
-                        }
-                        }
-                    />
-                    :
-                    <styled.InvisibleItem style={{ marginRight: "auto" }} /> // used for spacing
-                }
-                <div style={{ flex: 1, flexDirection: "column", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <styled.Title>{title ? title : "untitled"}</styled.Title>
-                </div>
-                <styled.InvisibleItem
-                    style={{ marginLeft: "auto" }}
-                />
-            </styled.Header>
+            <SummaryHeader
+                showBackButton={isProcessView}
+                title={title}
+            />
             <ZoneHeader
                 sortDirection={sortDirection}
                 setSortDirection={setSortDirection}
