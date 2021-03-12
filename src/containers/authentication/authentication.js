@@ -43,7 +43,9 @@ const Authentication = (props) => {
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
 
-    const localReducer = useSelector(state => state.localReducer.localSettings)
+    useEffect(() => {
+        handleInitialLoad()
+    }, [])
 
     const handleSignInChange = (value) => {
         setSignIn(value)
@@ -55,14 +57,15 @@ const Authentication = (props) => {
         localSettingsPromise.then(response =>{
 
             if (!configData.authenticationNeeded) {
-                    dispatchPostLocalSettings({
-                        ...response,
-                        authenticated: 'no',
-                        //non_local_api_ip: window.location.hostname,
-                        //non_local_api: true,
-                    })
-            } else {
 
+                dispatchPostLocalSettings({
+                    ...response,
+                    authenticated: 'no',
+                    //non_local_api_ip: window.location.hostname,
+                    //non_local_api: true,
+                })
+
+            } else {
                 var poolData = {
                     UserPoolId: configData.UserPoolId,
                     ClientId: configData.ClientId,
@@ -80,7 +83,7 @@ const Authentication = (props) => {
 
                         if (session.isValid()) {
                             dispatchPostLocalSettings({
-                                ...localReducer,
+                                ...response,
                                 authenticated:true,
                                 non_local_api_ip: window.location.hostname,
                                 non_local_api: true,
@@ -90,49 +93,44 @@ const Authentication = (props) => {
                 }
             }
         })
-
-
-        return (
-            <styled.Container>
-
-                <styled.LogoContainer>
-                    <styled.LogoIcon className='icon-rmLogo' />
-                    <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
-                </styled.LogoContainer>
-
-                <styled.LogoWelcome> Wecome Back </styled.LogoWelcome>
-
-                <styled.CheckBoxWrapper>
-                    <styled.Button
-                        onClick={() => setSignIn(true)}
-                        selected={signIn}
-                        style={{borderRadius: '.5rem 0  0 .5rem'}}
-                    >
-                        Sign In
-                    </styled.Button>
-
-                    <styled.Button
-                        onClick={() => setSignIn(false)}
-                        selected={!signIn}
-                        style={{borderRadius: '0 .5rem .5rem 0'}}
-                    >
-                        Sign Up
-                    </styled.Button>
-                </styled.CheckBoxWrapper>
-
-                <styled.SignInUpContainer>
-
-                    <SignInUpPage
-                        signIn={signIn}
-                        onChange={handleSignInChange} />
-
-                </styled.SignInUpContainer>
-            </styled.Container>
-        )
     }
 
     return (
-        handleInitialLoad()
+        <styled.Container>
+
+            <styled.LogoContainer>
+                <styled.LogoIcon className='icon-rmLogo' />
+                <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
+            </styled.LogoContainer>
+
+            <styled.LogoWelcome> Wecome Back </styled.LogoWelcome>
+
+            <styled.CheckBoxWrapper>
+                <styled.Button
+                    onClick={() => setSignIn(true)}
+                    selected={signIn}
+                    style={{borderRadius: '.5rem 0  0 .5rem'}}
+                >
+                    Sign In
+                </styled.Button>
+
+                <styled.Button
+                    onClick={() => setSignIn(false)}
+                    selected={!signIn}
+                    style={{borderRadius: '0 .5rem .5rem 0'}}
+                >
+                    Sign Up
+                </styled.Button>
+            </styled.CheckBoxWrapper>
+
+            <styled.SignInUpContainer>
+
+                <SignInUpPage
+                    signIn={signIn}
+                    onChange={handleSignInChange} />
+
+            </styled.SignInUpContainer>
+        </styled.Container>
     )
 
 }
