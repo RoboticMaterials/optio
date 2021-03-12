@@ -305,6 +305,11 @@ const Settings = () => {
 
     const SignOut = () => {
 
+        const dispatch = useDispatch()
+        const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+
+        const localReducer = useSelector(state => state.localReducer.localSettings)
+
         const signOut = async () => {
 
             var poolData = {
@@ -314,14 +319,16 @@ const Settings = () => {
 
             var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
             var cognitoUser = userPool.getCurrentUser();
+
             cognitoUser.signOut();
 
             const updatedLocalSettings = {
               ...localReducer,
-              authenticated: false,
+              authenticated: null,
+              refreshToken: null
             }
 
-            //postDevSettings(JSON.stringify(updatedLocalSettings))
+            dispatchPostLocalSettings(updatedLocalSettings)
 
             window.location.reload();
 
