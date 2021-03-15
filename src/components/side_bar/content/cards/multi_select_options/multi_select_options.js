@@ -1,53 +1,60 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
+
+// components internal
+import Button from "../../../../basic/button/button"
 
 // functions external
 import PropTypes from 'prop-types'
-import {useHistory} from "react-router-dom"
 
 // styles
-import * as styled from "./summary_header.style"
+import * as styled from "./multi_select_options.style"
 
-const SummaryHeader = (props) => {
+const MultiSelectOptions = (props) => {
+
 	const {
-		showBackButton,
-		title
+		selectedLots,
+		onDeleteClick,
+		onClearClick
 	} = props
 
-	const history = useHistory()
+	const [selectedLotsCount, setSelectedLotsCount] = useState(selectedLots.length)
+
+	useEffect(() => {
+		setSelectedLotsCount(selectedLots.length)
+	}, [selectedLots])
 
 	return (
-		<styled.Header>
-			{showBackButton ?
-				<styled.MenuButton
-					style={{ marginRight: "auto" }}
-					className="fas fa-chevron-left"
-					aria-hidden="true"
-					onClick={() => {
-						history.replace('/processes')
-					}
-					}
-				/>
-				:
-				<styled.InvisibleItem style={{ marginRight: "auto" }} /> // used for spacing
-			}
-			<styled.TitleContainer style={{  }}>
-				<styled.Title>{title ? title : "untitled"}</styled.Title>
-			</styled.TitleContainer>
-			<styled.InvisibleItem
-				style={{ marginLeft: "auto" }}
+		<styled.Container>
+			<Button
+				style={{margin: "0 1rem 0 0"}}
+				type={"button"}
+				schema={"delete"}
+				secondary
+				onClick={onDeleteClick}
+				label={`Delete (${selectedLotsCount})`}
 			/>
-		</styled.Header>
+			<Button
+				style={{margin: 0}}
+				type={"button"}
+				schema={"lots"}
+				onClick={onClearClick}
+				label={`Clear Selected`}
+			/>
+
+		</styled.Container>
 	)
 }
 
-SummaryHeader.propTypes = {
-	showBackButton: PropTypes.bool,
-	title: PropTypes.string
+MultiSelectOptions.propTypes = {
+	selectedLots: PropTypes.array,
+	onDeleteClick: PropTypes.func,
+	onClearClick: PropTypes.func,
 }
 
-SummaryHeader.defaultProps = {
-	showBackButton: false,
-	title: ""
+MultiSelectOptions.defaultProps = {
+	selectedLots: [],
+	onDeleteClick: () => {},
+	onClearClick: () => {},
 }
 
-export default SummaryHeader
+export default MultiSelectOptions

@@ -27,12 +27,6 @@ const ConfirmDeleteModal = (props) => {
         children
     } = props
 
-
-    const dispatch = useDispatch()
-
-
-
-
     return (
         <styled.Container
             isOpen={isOpen}
@@ -58,9 +52,7 @@ const ConfirmDeleteModal = (props) => {
                 </Button>
             </styled.Header>
             <styled.BodyContainer>
-
                         <styled.ContentContainer>
-
                             {children}
                         </styled.ContentContainer>
 

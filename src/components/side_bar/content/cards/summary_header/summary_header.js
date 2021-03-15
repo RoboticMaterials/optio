@@ -1,12 +1,11 @@
-import React from 'react';
+import React from 'react'
 
 // functions external
-import PropTypes from 'prop-types';
-import {useHistory} from "react-router-dom";
+import PropTypes from 'prop-types'
+import {useHistory} from "react-router-dom"
 
 // styles
-import * as styled from "./summary_header.style";
-
+import * as styled from "./summary_header.style"
 
 const SummaryHeader = (props) => {
 	const {
@@ -31,24 +30,24 @@ const SummaryHeader = (props) => {
 				:
 				<styled.InvisibleItem style={{ marginRight: "auto" }} /> // used for spacing
 			}
-			<div style={{ flex: 1, flexDirection: "column", display: "flex", alignItems: "center", justifyContent: "center" }}>
+			<styled.TitleContainer style={{  }}>
 				<styled.Title>{title ? title : "untitled"}</styled.Title>
-			</div>
+			</styled.TitleContainer>
 			<styled.InvisibleItem
 				style={{ marginLeft: "auto" }}
 			/>
 		</styled.Header>
-	);
-};
+	)
+}
 
 SummaryHeader.propTypes = {
 	showBackButton: PropTypes.bool,
 	title: PropTypes.string
-};
+}
 
 SummaryHeader.defaultProps = {
 	showBackButton: false,
 	title: ""
-};
+}
 
-export default SummaryHeader;
+export default SummaryHeader

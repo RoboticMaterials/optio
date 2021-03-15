@@ -1,11 +1,11 @@
-// HEADER
 import styled from "styled-components";
 import * as commonCss from "../../../../../common_css/layout";
 
 export const Header = styled.div`
 	${commonCss.headerStyle};
-	${commonCss.containerLayout};
-	padding: 1rem;
+	padding: .25rem 1rem;
+  display: flex;
+  align-items: center;
   
   
 `
@@ -48,4 +48,12 @@ export const Title = styled.span`
 	color: white;
 	font-weight: ${props => props.theme.fontWeight.bold};
   margin-bottom: .5rem;
+`
+
+export const TitleContainer = styled.div`
+  flex: 1;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `
