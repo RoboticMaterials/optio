@@ -6,6 +6,7 @@ export const getStation = /* GraphQL */ `
     getStation(id: $id) {
       id
       _id
+      organizationId
       name
       schema
       type
@@ -32,6 +33,7 @@ export const listStations = /* GraphQL */ `
       items {
         id
         _id
+        organizationId
         name
         schema
         type
@@ -54,6 +56,8 @@ export const getTask = /* GraphQL */ `
   query GetTask($id: ID!) {
     getTask(id: $id) {
       id
+      _id
+      organizationId
       device_types
       handoff
       load
@@ -64,7 +68,6 @@ export const getTask = /* GraphQL */ `
       track_quantity
       type
       unload
-      _id
       obj
       createdAt
       updatedAt
@@ -80,6 +83,8 @@ export const listTasks = /* GraphQL */ `
     listTasks(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
+        _id
+        organizationId
         device_types
         handoff
         load
@@ -90,7 +95,6 @@ export const listTasks = /* GraphQL */ `
         track_quantity
         type
         unload
-        _id
         obj
         createdAt
         updatedAt
@@ -104,6 +108,7 @@ export const getPosition = /* GraphQL */ `
     getPosition(id: $id) {
       id
       _id
+      organizationId
       change_key
       map_id
       name
@@ -130,6 +135,7 @@ export const listPositions = /* GraphQL */ `
       items {
         id
         _id
+        organizationId
         change_key
         map_id
         name
@@ -153,6 +159,7 @@ export const getProcess = /* GraphQL */ `
     getProcess(id: $id) {
       id
       _id
+      organizationId
       name
       broken
       routes
@@ -172,6 +179,7 @@ export const listProcesss = /* GraphQL */ `
       items {
         id
         _id
+        organizationId
         name
         broken
         routes
@@ -187,6 +195,7 @@ export const getCard = /* GraphQL */ `
   query GetCard($id: ID!) {
     getCard(id: $id) {
       id
+      organizationId
       bins
       dates
       description
@@ -211,6 +220,7 @@ export const listCards = /* GraphQL */ `
     listCards(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
+        organizationId
         bins
         dates
         description
@@ -233,6 +243,7 @@ export const getObject = /* GraphQL */ `
     getObject(id: $id) {
       id
       _id
+      organizationId
       description
       map_id
       modelName
@@ -254,6 +265,7 @@ export const listObjects = /* GraphQL */ `
       items {
         id
         _id
+        organizationId
         description
         map_id
         modelName
@@ -272,6 +284,7 @@ export const getSchedule = /* GraphQL */ `
     getSchedule(id: $id) {
       id
       _id
+      organizationId
       days_on {
         friday
         monday
@@ -302,6 +315,7 @@ export const listSchedules = /* GraphQL */ `
       items {
         id
         _id
+        organizationId
         interval_on
         name
         schedule_on
@@ -320,6 +334,7 @@ export const getDevice = /* GraphQL */ `
     getDevice(id: $id) {
       id
       _id
+      organizationId
       battery_percentage
       current_task_queue_id
       dashboards
@@ -346,6 +361,7 @@ export const listDevices = /* GraphQL */ `
       items {
         id
         _id
+        organizationId
         battery_percentage
         current_task_queue_id
         dashboards
@@ -369,6 +385,7 @@ export const getStatus = /* GraphQL */ `
     getStatus(id: $id) {
       id
       _id
+      organizationId
       active_map
       mir_connection
       pause_status
@@ -387,6 +404,7 @@ export const listStatuss = /* GraphQL */ `
       items {
         id
         _id
+        organizationId
         active_map
         mir_connection
         pause_status
@@ -402,6 +420,7 @@ export const getTaskQueue = /* GraphQL */ `
     getTaskQueue(id: $id) {
       id
       _id
+      organizationId
       device_type
       mission_status
       owner
@@ -422,11 +441,166 @@ export const listTaskQueues = /* GraphQL */ `
       items {
         id
         _id
+        organizationId
         device_type
         mission_status
         owner
         task_id
         custom_task
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const usersbyOrg = /* GraphQL */ `
+  query UsersbyOrg(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelUserFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    UsersbyOrg(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        organizationId
+        username
+        createdAt
+        updatedAt
+        owner
+      }
+      nextToken
+    }
+  }
+`;
+export const usersbyId = /* GraphQL */ `
+  query UsersbyId(
+    $id: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelUserFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    UsersbyId(
+      id: $id
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        organizationId
+        username
+        createdAt
+        updatedAt
+        owner
+      }
+      nextToken
+    }
+  }
+`;
+export const orgsById = /* GraphQL */ `
+  query OrgsById(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelOrganizationFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    OrgsById(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        organizationId
+        name
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const stationsByOrgId = /* GraphQL */ `
+  query StationsByOrgId(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelStationFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    StationsByOrgId(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        _id
+        organizationId
+        name
+        schema
+        type
+        pos_x
+        pos_y
+        rotation
+        x
+        y
+        map_id
+        children
+        dashboards
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const tasksByOrgId = /* GraphQL */ `
+  query TasksByOrgId(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelTaskFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    TasksByOrgId(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        _id
+        organizationId
+        device_types
+        handoff
+        load
+        map_id
+        name
+        processes
+        quantity
+        track_quantity
+        type
+        unload
+        obj
         createdAt
         updatedAt
       }

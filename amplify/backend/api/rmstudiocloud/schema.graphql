@@ -1,8 +1,48 @@
-type Station 
-  @model
+# User related
+
+type User 
+  @model(queries: null)
+  @auth(rules: [
+    # allow all authenticated users to read posts
+    { allow: owner },
+    { allow: private, operations: [read]}
+    ])
+  @key(name: "UsersbyOrg", fields: ["organizationId"], queryField: "UsersbyOrg" )
+  @key(name: "UsersbyId", fields: ["id"], queryField: "UsersbyId" )
 {
   id: ID!
+  organizationId: ID!
+  username: String!
+  organization: Organization @connection(fields: ["organizationId"])
+}
+
+type Organization 
+  @model(queries: null)
+  @key(name: "OrgsById", fields: ["organizationId"], queryField: "OrgsById" )
+  @auth(rules: [{ allow: private }]) 
+{
+  id: ID!
+  organizationId: ID!
+  name: String!
+  users: [User] @connection(keyName: "UsersbyOrg", fields: ["organizationId"])
+
+  # Organizations data
+  stations: [Station] @connection(keyName: "StationsByOrgId", fields: ["organizationId"])
+}
+
+# Data related
+
+type Station 
+  @model
+  @auth(rules: [{ allow: private }])
+  @key(name: "StationsByOrgId", fields: ["organizationId"], queryField: "StationsByOrgId" )
+{
+  # IDs
+  id: ID!
   _id: String!
+  organizationId: ID!
+
+  # Data
   name: String!
   schema: String!
   type:String!
@@ -18,8 +58,15 @@ type Station
 
 type Task
   @model
+  @auth(rules: [{ allow: private }])
+  @key(name: "TasksByOrgId", fields: ["organizationId"], queryField: "TasksByOrgId" )
 {
+  # IDs
   id: ID!
+  _id: String!
+  organizationId: ID!
+
+  # Data
   device_types: AWSJSON!
   handoff: Boolean!
   load: AWSJSON!
@@ -30,15 +77,18 @@ type Task
   track_quantity: Boolean!
   type: String!
   unload: AWSJSON!
-  _id: String!
   obj: String!
 }
 
 type Position
   @model
 {
+  # IDs
   id: ID!
   _id: String!
+  organizationId: ID!
+  
+  # Data
   change_key: String!
   map_id: String!
   name: String!
@@ -55,8 +105,12 @@ type Position
 type Process
   @model
 {
+  # IDs
   id: ID!
   _id: String!
+  organizationId: ID!
+  
+  # Data
   name: String!
   broken: Int
   routes: AWSJSON!
@@ -66,7 +120,11 @@ type Process
 type Card
   @model
 {
+  # IDs
   id: ID!
+  organizationId: ID!
+
+  # Data
   bins: AWSJSON!
   dates: AWSJSON!
   description: String!
@@ -82,8 +140,12 @@ type Card
 type Object 
   @model
 {
+  # IDs
   id: ID!
   _id: String!
+  organizationId: ID!
+  
+  # Data
   description: String!
   map_id: String!
   modelName: String!
@@ -94,8 +156,12 @@ type Object
 
 type Schedule 
 @model{
+  # IDs
   id: ID!
   _id: String!
+  organizationId: ID!
+  
+  # Data
   days_on: DaysOn!
   interval_on: Boolean!
   name: String!
@@ -124,8 +190,12 @@ type DaysOn
 type Device
   @model
 {
+  # IDs
   id: ID!
   _id: String!
+  organizationId: ID!
+  
+  # Data
   battery_percentage: Int!
   current_task_queue_id: String
   dashboards: AWSJSON!
@@ -142,8 +212,12 @@ type Device
 type Status 
   @model
 {
+  # IDs
   id: ID!
   _id: String!
+  organizationId: ID!
+  
+  # Data
   active_map: Boolean
   mir_connection: String
   pause_status: Boolean
@@ -152,8 +226,12 @@ type Status
 type TaskQueue 
   @model
 {
+  # IDs
   id: ID!
   _id: String!
+  organizationId: ID!
+  
+  # Data
   device_type: String!
   mission_status: String
   owner: String
