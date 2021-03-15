@@ -1,42 +1,26 @@
-import React, {useEffect, useRef, useState} from "react";
-import PropTypes from 'prop-types';
-import { useField, useFormikContext } from "formik";
+import React, {useEffect, useRef, useState} from "react"
 
-import ErrorTooltip from '../error_tooltip/error_tooltip';
+// components internal
+import TextField from "../text_field/text_field"
+import Textbox from "../../textbox/textbox"
+
+// functions external
+import PropTypes from 'prop-types'
+
+// styles
 import * as styled from './field_wrapper.style'
-import NumberInput from "../../number_input/number_input";
-import TextField from "../text_field/text_field";
-import Textbox from "../../textbox/textbox";
-
 
 const FieldWrapper = (props) => {
 
 	const {
 		ContainerComponent,
-		// FieldComponent,
 		children,
 		onDeleteClick,
 		containerStyle,
 		name
 	} = props
 
-
-	// const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext();
-	// const [field, meta] = useField(props);
 	const [updateColor, setUpdateColor] = useState(false)
-
-
-	// extract field data
-	// const {
-	// 	value: fieldValue,
-	// 	name: fieldName
-	// } = field
-
-	// extract meta data
-	// const { touched, error } = meta
-
-	// does the field contain an error?
-	// const hasError = touched && error
 
 	useEffect( () => {
 		const timeout = setTimeout(() => {
@@ -46,23 +30,22 @@ const FieldWrapper = (props) => {
 		return () => {
 			clearTimeout(timeout)
 		}
-	}, []);
+	}, [])
 
 	return (
 		<ContainerComponent
+			updateColor={updateColor}
 			style={containerStyle}
 		>
 			<styled.LabelContainer updateColor={updateColor}>
-				{/*<styled.GapFiller/>*/}
-				{/*<div style={{zIndex: 5}}>*/}
 				<TextField
 					placeholder={"Field name..."}
 					InputComponent={Textbox}
 					name={name}
-					style={{width: "8rem"}}
-					textboxContainerStyle={{zIndex: 5}}
+					style={{flex: 1, textOverflow: "clip"}}
+					inputStyle={{flex: 1, textOverflow: "clip"}}
+					// textboxContainerStyle={{zIndex: 5, width: "fit-content"}}
 				/>
-				{/*</div>*/}
 			</styled.LabelContainer>
 
 			<styled.FieldComponentContainer updateColor={updateColor}>
@@ -95,17 +78,17 @@ const FieldWrapper = (props) => {
 
 
 		</ContainerComponent>
-	);
-};
+	)
+}
 
 // Specifies propTypes
 FieldWrapper.propTypes = {
-
-};
+	name: PropTypes.string
+}
 
 // Specifies the default values for props:
 FieldWrapper.defaultProps = {
 	ContainerComponent: styled.DefaultContainerComponent,
-};
+}
 
-export default FieldWrapper;
+export default FieldWrapper

@@ -1,16 +1,20 @@
 import React, {useEffect, useState} from "react";
 
-import * as styled from "./lot_form_creator.style"
-import {immutableDelete, immutableInsert, immutableReplace, isArray} from "../../../../../../methods/utils/array_utils";
-import {arraysEqual, uuidv4} from "../../../../../../methods/utils/utils";
+// components external
 import DropContainer from "../drop_container/drop_container";
-import Textbox from "../../../../../basic/textbox/textbox";
-import {Container} from "react-smooth-dnd";
-import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
+
+// components internal
 import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
-import {FIELD_COMPONENT_NAMES, LOT_EDITOR_SIDEBAR_OPTIONS} from "../lot_sidebars/field_editor_sidebar/field_editor_sidebar";
-import TextField from "../../../../../basic/form/text_field/text_field";
+
+// functions external
 import {useSelector} from "react-redux";
+
+// utils
+import {immutableDelete, immutableInsert, immutableReplace, isArray} from "../../../../../../methods/utils/array_utils";
+import {arraysEqual} from "../../../../../../methods/utils/utils";
+
+// styles
+import * as styled from "./lot_form_creator.style"
 
 const LotFormCreator = (props) => {
 
@@ -63,11 +67,6 @@ const LotFormCreator = (props) => {
 
 		return [indices, found]
 	}
-
-
-
-
-
 
 	const handleVerticalDrop = (dropResult, currRowIndex) => {
 		const {

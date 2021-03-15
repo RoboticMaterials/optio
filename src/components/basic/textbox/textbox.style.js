@@ -10,6 +10,8 @@ export const TextboxContainer = styled.div`
 
     padding: 0;
     margin: 0;
+    overflow: auto;
+    width: 100%;
 `
 
 
@@ -46,6 +48,14 @@ export const TextboxInput = styled.input`
         font-family: ${props => props.theme.font.secondary};
         color: ${props => props.theme.bg.senary};
     }
+
+    text-overflow: ellipsis;
+    
+    overflow: hidden;
+    white-space: nowrap;
+    padding-right: 5rem;
+    //margin: 0;
+    width: fit-content;
 `;
 
 export const TextboxArea = styled.textarea`

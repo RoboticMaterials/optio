@@ -20,6 +20,9 @@ export const DefaultContainerComponent = styled.div`
   align-items: flex-start;
   position: relative;
   flex-direction: column;
+  border-radius: 1rem;
+
+  background: ${props => props.updateColor ? "linear-gradient(0deg, rgb(152, 152, 152) 0%, rgb(227, 227, 227) 100%)" : "transparent"};
   //background: pink;
   //flex: 1;
   //align-items
@@ -39,7 +42,7 @@ export const FieldComponentContainer = styled.div`
   padding-bottom: 1rem;
   padding-right: 2.5rem;
   
-  border-radius: 0rem 1rem 1rem 1rem;
+  //border-radius: 0rem 0rem 1rem 1rem;
   z-index: 5;
   transition: all ease 0.5s;
   align-items: center;
@@ -48,7 +51,7 @@ export const FieldComponentContainer = styled.div`
   align-items: center;
   justify-content: center;
   
-  background: ${props => props.updateColor ? "linear-gradient(0deg, rgb(152, 152, 152) 0%, rgb(227, 227, 227) 100%)" : "transparent"};
+  
 
 
 `
@@ -85,13 +88,15 @@ export const StyleContainer = styled.div`
 export const LabelContainer = styled.div`
   //left: .2rem;
   padding: .5rem;
+  flex: 1;
+  width: 100%;
   //padding: .45rem;
   //padding-right: .5rem;
-  border-top-left-radius: 1rem;
-  border-top-right-radius: 1rem;
+  //border-top-left-radius: 1rem;
+  //border-top-right-radius: 1rem;
   position: relative;
   transition: all 1s ease;
-  background: ${props => props.updateColor ? "linear-gradient(0deg, rgb(215, 215, 215) 0%, rgb(152, 152, 152) 100%)" : "transparent"};
+  // background: ${props => props.updateColor ? "linear-gradient(0deg, rgb(215, 215, 215) 0%, rgb(152, 152, 152) 100%)" : "transparent"};
 `
 
 export const GapFiller = styled.div`
