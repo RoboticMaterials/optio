@@ -21,8 +21,9 @@ import {formatLotNumber} from "../../../../../methods/utils/lot_utils"
 
 // styles
 import * as styled from "./lot.style"
-import LotDateRangeRow from "./lot_date_row/lot_date_row";
+import LotDateRangeRow from "./lot_date_range_row/lot_date_range_row";
 import LotSimpleRow from "./lot_simple_row/lot_simple_row";
+import LotDateRow from "./lot_date_row/lot_date_row";
 
 const Lot = (props) => {
     const {
@@ -98,7 +99,12 @@ const Lot = (props) => {
                 }
                 case FIELD_DATA_TYPES.DATE: {
                     return(
-                        <div>nope</div>
+                        <LotDateRow
+                            label={fieldName}
+                            isLast={isLast}
+                            date={value}
+                        />
+
                     )
                 }
                 case FIELD_DATA_TYPES.DATE_RANGE: {

@@ -7,7 +7,7 @@ import CalendarPlaceholder from "../../../../../basic/calendar_placeholder/calen
 import TextField from "../../../../../basic/form/text_field/text_field";
 import NumberField from "../../../../../basic/form/number_field/number_field";
 import {isArray} from "../../../../../../methods/utils/array_utils";
-import {jsDateToObjDate} from "../../../../../../methods/utils/card_utils";
+import {jsDateToObjDate, jsDateToString} from "../../../../../../methods/utils/card_utils";
 import {FIELD_COMPONENT_NAMES} from "../../../../../../constants/lot_contants";
 import {CALENDAR_FIELD_MODES} from "../../../../../basic/form/calendar_field/calendar_field";
 
@@ -125,9 +125,15 @@ const FieldComponentMapper = (props) => {
 			)
 		}
 		case FIELD_COMPONENT_NAMES.CALENDAR_SINGLE: {
+			const dateText = jsDateToString(value)
+
 			return(
 				<styled.Container
-					style={containerStyle}
+					style={{
+						...containerStyle,
+						justifyContent: "center",
+						alignItems: "center"
+					}}
 				>
 					{displayName ?
 						<styled.Label>{displayName}:</styled.Label>
@@ -136,8 +142,8 @@ const FieldComponentMapper = (props) => {
 					}
 						<CalendarPlaceholder
 							containerStyle={{width: "6rem"}}
-							onClick={onCalendarClick}
-							text={"Date"}
+							onClick={() => onCalendarClick(CALENDAR_FIELD_MODES.SINGLE)}
+							text={dateText ? dateText : "Date"}
 						/>
 
 				</styled.Container>

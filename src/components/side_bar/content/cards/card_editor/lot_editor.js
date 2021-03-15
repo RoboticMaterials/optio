@@ -387,7 +387,7 @@ const FormComponent = (props) => {
 						minDate={calendarFieldMode === CALENDAR_FIELD_MODES.END && fieldValue[0]}
 						maxDate={calendarFieldMode === CALENDAR_FIELD_MODES.START && fieldValue[1]}
 						selectRange={false}
-						name={`${fullFieldName}[${calendarFieldMode === CALENDAR_FIELD_MODES.START ? 0 : 1}]`}
+						name={fullFieldName}
 					/>
 				</styled.CalendarContainer>
 			</styled.BodyContainer>
@@ -597,8 +597,27 @@ const FormComponent = (props) => {
 									<FieldComponentMapper
 										value={fieldValue}
 										onCalendarClick={(mode) => {
+											let newName
+											switch(mode) {
+												case CALENDAR_FIELD_MODES.START: {
+													newName = `${fullFieldName}[0]`
+													break
+												}
+												case CALENDAR_FIELD_MODES.END: {
+													newName = `${fullFieldName}[1]`
+													break
+												}
+												case CALENDAR_FIELD_MODES.SINGLE: {
+													newName = fullFieldName
+													break
+												}
+												default: {
+													newName = fullFieldName
+												}
+											}
+
 											setContent(CONTENT.CALENDAR)
-											setCalendarFieldName({fullFieldName, fieldName})
+											setCalendarFieldName({fullFieldName: newName, fieldName})
 											setCalendarFieldMode(mode)
 										}}
 										displayName={fieldName}
@@ -776,6 +795,7 @@ const FormComponent = (props) => {
 									<>
 
 										<Button
+											type={"button"}
 											style={{...buttonStyle, width: "8rem"}}
 											onClick={() => setContent(null)}
 											schema={"ok"}
@@ -784,14 +804,18 @@ const FormComponent = (props) => {
 											Ok
 										</Button>
 										<Button
+											type={"button"}
 											style={{...buttonStyle}}
-											onClick={() => setFieldValue(`${calendarFieldName.fullFieldName}[${calendarFieldMode === CALENDAR_FIELD_MODES.START ? 0 : 1}]`, null)}
+											onClick={() => {
+												setFieldValue(calendarFieldName.fullFieldName, null)
+											}}
 											// secondary={"error"}
 											schema={"error"}
 										>
 											Clear Date
 										</Button>
 										<Button
+											type={"button"}
 											style={buttonStyle}
 											onClick={() => setContent(null)}
 											schema={"error"}
