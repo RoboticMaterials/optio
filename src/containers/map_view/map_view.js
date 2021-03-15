@@ -29,6 +29,7 @@ import Zones from '../../components/map/zones/zones'
 import RightClickMenu from '../../components/map/right_click_menu/right_click_menu'
 import TaskStatistics from '../../components/map/task_statistics/task_statistics'
 import Widgets from '../../components/widgets/widgets'
+import CartWaypoint from '../../components/map/locations/cart_waypoint/cart_waypoint'
 
 import Station from '../../components/map/locations/station/station'
 import Position from '../../components/map/locations/position/position'
@@ -747,7 +748,22 @@ export class MapView extends Component {
                     </svg>
 
                     {(!!this.props.selectedTask || !!this.props.selectedHoveringTask) &&
-                        <TaskStatistics d3={this.d3} />
+                        <TaskStatistics d3={this.d3}/>
+                    }
+
+                    {!!this.props.devices &&
+                      Object.values(this.props.devices).map((device) => {
+                        if(!!device.current_task_queue_id && this.props.taskQueue[device.current_task_queue_id]){
+                        const [x, y] = convertRealToD3([this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate.pos_x, this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate.pos_y], this.d3)
+
+                          return (
+                            <CartWaypoint
+                              x = {x}
+                              y = {y}
+                            />
+                          )
+                        }
+                      })
                     }
 
                     {/* Widgets are here when not in mobile mode. If mobile mode, then they are in App.js.
@@ -783,6 +799,8 @@ const mapStateToProps = function (state) {
         positions: state.positionsReducer.positions,
         stations: state.stationsReducer.stations,
         tasks: state.tasksReducer.tasks,
+        taskQueue: state.taskQueueReducer.taskQueue,
+
 
         selectedStation: state.stationsReducer.selectedStation,
         selectedStationChildrenCopy: state.positionsReducer.selectedStationChildrenCopy,
