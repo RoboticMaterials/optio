@@ -24,6 +24,8 @@ import FieldComponentMapper from "./field_component_mapper/field_component_mappe
 import TemplateSelectorSidebar from "./lot_sidebars/template_selector_sidebar/template_selector_sidebar";
 import SubmitErrorHandler from "../../../../basic/form/submit_error_handler/submit_error_handler";
 import LotCreatorForm from "./template_form";
+import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
+
 
 // actions
 import {deleteCard, getCard, postCard, putCard} from "../../../../../redux/actions/card_actions";
@@ -51,7 +53,8 @@ import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
 import {isArray} from "../../../../../methods/utils/array_utils";
 import {formatLotNumber, getDisplayName} from "../../../../../methods/utils/lot_utils";
 
-// import styles
+// import styles    git push --set-upstream origin deleting_new_location_crahses_page
+
 import * as styled from "./lot_editor.style"
 import * as FormStyle from "./lot_form_creator/lot_form_creator.style"
 
@@ -128,6 +131,8 @@ const FormComponent = (props) => {
 	const [showTemplateSelector, setShowTemplateSelector] = useState(false)
 	const [finalProcessOptions, setFinalProcessOptions] = useState([])
 	const [showProcessSelector, setShowProcessSelector] = useState(props.showProcessSelector)
+	const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
+
 
 	// derived state
 	const selectedBinName = stations[binId] ?
@@ -651,6 +656,22 @@ const FormComponent = (props) => {
 	const renderForm = () => {
 		return(
 			<styled.StyledForm>
+
+				<ConfirmDeleteModal
+						isOpen={!!confirmDeleteModal}
+						title={"Are you sure you want to delete this Lot Card?"}
+						button_1_text={"Yes"}
+						button_2_text={"No"}
+						handleClose={() => setConfirmDeleteModal(null)}
+						handleOnClick1={() => {
+							handleDeleteClick(binId)
+							setConfirmDeleteModal(null)
+
+						}}
+						handleOnClick2={() => {
+								setConfirmDeleteModal(null)
+						}}
+				/>
 				<styled.Header>
 					{((content === CONTENT.CALENDAR) || (content === CONTENT.HISTORY) || (content === CONTENT.MOVE))  &&
 					<Button
@@ -927,7 +948,7 @@ const FormComponent = (props) => {
 											schema={'delete'}
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
 											type={"button"}
-											onClick={() => handleDeleteClick(binId)}
+											onClick={() => setConfirmDeleteModal(true)}
 											secondary
 										>
 											<i style={{marginRight: ".5rem"}} className="fa fa-trash" aria-hidden="true"/>
