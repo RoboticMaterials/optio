@@ -113,6 +113,69 @@ const Column = ((props) => {
 		return (existingIndex !== -1)
 	}
 
+	const getLastSelectedIndex = () => {
+		let addedIndex = -1
+		for (var i = selectedCards.length - 1; i >= 0; i--) {
+			const currLot = selectedCards[i]
+			const {
+				binId: currBinId
+			} = currLot || {}
+
+			if((currBinId === station_id) && (i > addedIndex)) {
+				addedIndex = i
+			}
+		}
+
+		return addedIndex
+	}
+
+	const getLastSelected = () => {
+		const lastSelectedIndex = getLastSelectedIndex()
+		return selectedCards[lastSelectedIndex]
+	}
+
+	const getIsLastSelected = (lotId) => {
+		const lastSelected = getLastSelected() || {}
+		const {
+			cardId: currLotId,
+		} = lastSelected
+
+		return lotId === currLotId
+	}
+
+	const getBetweenSelected = (lotId) => {
+		const lastSelected = getLastSelected() || {}
+		const {
+			cardId: lastSelectedLotId,
+		} = lastSelected
+
+		const selectedIndex = cards.findIndex((currLot) => {
+			const {
+				cardId: currLotId,
+				binId: currBinId
+			} = currLot
+
+			return (lastSelectedLotId === currLotId) && (station_id === currBinId)
+		})
+
+		const existingIndex = cards.findIndex((currLot) => {
+			const {
+				cardId: currLotId,
+				binId: currBinId
+			} = currLot
+
+			return (lotId === currLotId) && (station_id === currBinId)
+		})
+
+		return cards.slice(lastSelected, existingIndex)
+
+
+
+
+
+	}
+
+
 	const handleDrop = async (dropResult) => {
 		const { removedIndex, addedIndex, payload, element } = dropResult || {}
 
@@ -281,6 +344,8 @@ const Column = ((props) => {
 							const isDragging = draggingLotId === cardId
 							const isHovering = hoveringLotId === cardId
 
+							const isLastSelected = getIsLastSelected(cardId)
+
 							// const isSelected = (draggingLotId !== null) ? () : ()
 							const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
 
@@ -295,7 +360,8 @@ const Column = ((props) => {
 								>
 									<div
 										style={{
-											transform: isSelected && "rotate(2.5deg)"
+											transform: isSelected && "rotate(2.5deg)",
+											border: isLastSelected && "3px solid red"
 										}}
 									>
 								<Lot
@@ -314,7 +380,12 @@ const Column = ((props) => {
 									id={cardId}
 									flags={flags || []}
 									index={index}
-									onClick={(e)=>handleCardClick(e, cardId, processId, station_id)}
+									onClick={(e)=> {
+										// const cardsBetweenClick =
+										const thing = getBetweenSelected(cardId)
+										console.log("thing",thing)
+										handleCardClick(e, cardId, processId, station_id)
+									}}
 									containerStyle={{
 										marginBottom: "0.5rem",
 

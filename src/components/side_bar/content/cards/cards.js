@@ -51,6 +51,7 @@ const Cards = (props) => {
     // internal state
     const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false)
     const [selectedCards, setSelectedCards] = useState([])
+    const [selectedCard, setSelectedCard] = useState(null)
     const [title, setTitle] = useState(null)
     const [currentProcess, setCurrentProcess] = useState(null)
     const [isProcessView, setIsProcessView] = useState(false)
@@ -165,6 +166,9 @@ const Cards = (props) => {
    * */
     const handleCardClick = (event, cardId, processId, binId) => {
         if (event.shiftKey) {
+
+        }
+        else if(event.metaKey) {
             const existingIndex = selectedCards.findIndex((currLot) => {
                 const {
                     cardId: currLotId,
@@ -186,7 +190,7 @@ const Cards = (props) => {
         }
         else {
             onShowCardEditor(true)
-            setSelectedCards([{ cardId, processId, binId }])
+            setSelectedCard({ cardId, processId, binId })
         }
     }
 
@@ -215,12 +219,12 @@ const Cards = (props) => {
             <LotEditorContainer
                 isOpen={showCardEditor}
                 onAfterOpen={null}
-                cardId={selectedCards[0] ? selectedCards[0].cardId : null}
-                processId={selectedCards[0] ? selectedCards[0].processId : null}
-                binId={selectedCards[0] ? selectedCards[0].binId : null}
+                cardId={selectedCard ? selectedCard.cardId : null}
+                processId={selectedCard ? selectedCard.processId : null}
+                binId={selectedCard ? selectedCard.binId : null}
                 close={()=>{
                     onShowCardEditor(false)
-                    setSelectedCards([])
+                    setSelectedCard(null)
                 }}
             />
             }
