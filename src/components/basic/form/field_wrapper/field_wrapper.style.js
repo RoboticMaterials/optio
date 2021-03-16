@@ -38,16 +38,16 @@ export const FieldComponentContainer = styled.div`
   //padding-bottom: 1.75rem;
   //padding-left: .5rem;
   padding-left: .5rem;
-  padding-top: 1rem;
+  padding-top: .5rem;
   padding-bottom: 1rem;
-  padding-right: 2.5rem;
+  //padding-right: 2.5rem;
   
   //border-radius: 0rem 0rem 1rem 1rem;
   z-index: 5;
   transition: all ease 0.5s;
   align-items: center;
   position: relative;
-  min-width: 14rem;
+  //min-width: 14rem;
   align-items: center;
   justify-content: center;
   
@@ -65,10 +65,11 @@ export const DeleteContainer = styled.div`
 
 export const DeleteIcon = styled.i`
   ${commonClickableIcon};
+  padding: 0 .5rem;
   //color: #ec0000;
-  margin-left: 1rem;
-  position: absolute;
-  right: 1rem;
+  //margin-left: 1rem;
+  //position: absolute;
+  //right: 1rem;
 `
 
 export const AlignIcon = styled.i`
@@ -85,11 +86,23 @@ export const StyleContainer = styled.div`
   
 `
 
+export const Row = styled.div`
+  display: flex;
+`
+
+export const Column = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`
+
+
+
 export const LabelContainer = styled.div`
   //left: .2rem;
-  padding: .5rem;
+  padding: .5rem 0 0 .5rem;
   flex: 1;
-  width: 100%;
+  align-self:stretch;
   //padding: .45rem;
   //padding-right: .5rem;
   //border-top-left-radius: 1rem;

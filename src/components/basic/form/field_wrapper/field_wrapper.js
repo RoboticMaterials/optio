@@ -37,46 +37,54 @@ const FieldWrapper = (props) => {
 			updateColor={updateColor}
 			style={containerStyle}
 		>
-			<styled.LabelContainer updateColor={updateColor}>
-				<TextField
-					placeholder={"Field name..."}
-					InputComponent={Textbox}
-					name={name}
-					style={{flex: 1, textOverflow: "clip"}}
-					inputStyle={{flex: 1, textOverflow: "clip"}}
-					// textboxContainerStyle={{zIndex: 5, width: "fit-content"}}
-				/>
-			</styled.LabelContainer>
-
-			<styled.FieldComponentContainer updateColor={updateColor}>
-
-				{children}
-
-				<styled.DeleteIcon
-					onClick={() => {
-						onDeleteClick()
+			<styled.Row
+				style={{alignSelf: "stretch"}}
+			>
+				<styled.Column
+					style={{
+						flex: 1
 					}}
-					color={"#EC0000"}
-					className={"fas fa-trash"}
-				/>
+				>
+					<styled.LabelContainer updateColor={updateColor}>
+						<TextField
+							placeholder={"Field name..."}
+							InputComponent={Textbox}
+							schema={"lots"}
+							name={name}
+							style={{flex: 1}}
+							inputStyle={{flex: 1}}
+							// textboxContainerStyle={{zIndex: 5, width: "fit-content"}}
+						/>
+					</styled.LabelContainer>
 
-				{/*<styled.StyleContainer>*/}
-				{/*	<styled.AlignIcon color={"black"} className="fas fa-align-left"></styled.AlignIcon>*/}
-				{/*	<styled.AlignIcon color={"black"} className="fas fa-align-justify"></styled.AlignIcon>*/}
-				{/*	<styled.AlignIcon color={"black"} className="fas fa-align-right"></styled.AlignIcon>*/}
-				{/*</styled.StyleContainer>*/}
+					<styled.FieldComponentContainer updateColor={updateColor}>
+						{children}
+					</styled.FieldComponentContainer>
+				</styled.Column>
 
+				<styled.Column
+				>
+					<styled.DeleteIcon
+						onClick={() => {
+							onDeleteClick()
+						}}
+						color={"#EC0000"}
+						className={"fas fa-trash"}
+					/>
+				</styled.Column>
 
-			</styled.FieldComponentContainer>
+			</styled.Row>
 
-
+			{/*<styled.StyleContainer>*/}
+			{/*	<styled.AlignIcon color={"black"} className="fas fa-align-left"></styled.AlignIcon>*/}
+			{/*	<styled.AlignIcon color={"black"} className="fas fa-align-justify"></styled.AlignIcon>*/}
+			{/*	<styled.AlignIcon color={"black"} className="fas fa-align-right"></styled.AlignIcon>*/}
+			{/*</styled.StyleContainer>*/}
 
 			{/*<styled.DeleteContainer updateColor={updateColor}>*/}
 
 			{/*</styled.DeleteContainer>*/}
 			{/*<i className=""></i>*/}
-
-
 		</ContainerComponent>
 	)
 }

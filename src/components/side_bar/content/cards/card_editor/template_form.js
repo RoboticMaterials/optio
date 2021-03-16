@@ -334,9 +334,7 @@ const FormComponent = (props) => {
 			</Button>
 			}
 
-		</styled.ButtonContainer>,
-
-
+		</styled.ButtonContainer>
 		</styled.StyledForm>
 	)
 

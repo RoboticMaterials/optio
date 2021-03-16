@@ -144,8 +144,7 @@ const defaultInputStyleFunc = (hasError, showErrorStyle) => {
         borderTop: (hasError && showErrorStyle) ? '1px solid red' : "1px solid transparent",
         borderRight: (hasError && showErrorStyle) ? '1px solid red' : "1px solid transparent",
         borderBottom: (hasError && showErrorStyle) && '1px solid red',
-        overflow: "hidden",
-        textOverflow: "ellipsis",
+
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
