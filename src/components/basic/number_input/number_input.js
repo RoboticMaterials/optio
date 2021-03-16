@@ -1,7 +1,16 @@
-import React from "react";
-import PropTypes from 'prop-types';
+import React from "react"
 
+// functions external
+import PropTypes from 'prop-types'
+
+// styles
 import * as styled from './number_input.style'
+
+
+export const NUMBER_INPUT_BUTTON_TYPES = {
+	PLUS: "PLUS",
+	MINUS: "MINUS"
+}
 
 const NumberInput = ({
 	maxValue,
@@ -15,6 +24,8 @@ const NumberInput = ({
 	value,
 	plusDisabled,
 						 inputCss,
+						 longPlusPressEvent,
+						 longMinusPressEvent,
 	inputChildren,
 	...props }) => {
 
@@ -29,6 +40,7 @@ const NumberInput = ({
 					e.preventDefault()
 					onMinusClick()
 				}}
+				{...longMinusPressEvent}
 				disabled={minusDisabled}
 			/>
 			<div style={{position: "relative"}}>
@@ -51,17 +63,17 @@ const NumberInput = ({
 					e.preventDefault()
 					onPlusClick()
 				}}
+				{...longPlusPressEvent}
 			/>
 		</styled.Container>
-	);
-};
+	)
+}
 
 // Specifies propTypes
 NumberInput.propTypes = {
 	plusDisabled: PropTypes.bool,
 	inputDisabled: PropTypes.bool,
-
-};
+}
 
 // Specifies the default values for props:
 NumberInput.defaultProps = {
@@ -69,6 +81,6 @@ NumberInput.defaultProps = {
 	inputDisabled: false,
 	onMinusClick: () => {},
 	onPlusClick: () => {}
-};
+}
 
-export default NumberInput;
+export default NumberInput
