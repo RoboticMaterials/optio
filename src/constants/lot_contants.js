@@ -1,4 +1,8 @@
 
+export const BIN_IDS = {
+	QUEUE: "QUEUE",
+	FINISH: "FINISH"
+}
 
 
 export const FIELD_COMPONENT_NAMES = {

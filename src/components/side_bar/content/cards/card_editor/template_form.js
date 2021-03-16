@@ -13,6 +13,7 @@ import Textbox from "../../../../basic/textbox/textbox";
 import DropDownSearchField from "../../../../basic/form/drop_down_search_field/drop_down_search_field";
 import Button from "../../../../basic/button/button";
 import ButtonGroup from "../../../../basic/button_group/button_group";
+import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 
 // actions
 import {getCardHistory} from "../../../../../redux/actions/card_history_actions";
@@ -96,6 +97,8 @@ const FormComponent = (props) => {
 
 	// component state
 	const [preview, setPreview] = useState(false)
+	const [confirmDeleteTemplateModal, setConfirmDeleteTemplateModal] = useState(false);
+
 
 	const errorCount = Object.keys(errors).length > 0 // get number of field errors
 	const touchedCount = Object.values(touched).length // number of touched fields
@@ -149,6 +152,20 @@ const FormComponent = (props) => {
 
 	return(
 		<styled.StyledForm>
+			<ConfirmDeleteModal
+					isOpen={!!confirmDeleteTemplateModal}
+					title={"Are you sure you want to delete this Lot Template?"}
+					button_1_text={"Yes"}
+					button_2_text={"No"}
+					handleClose={()=>setConfirmDeleteTemplateModal(null)}
+					handleOnClick1={() => {
+							setConfirmDeleteTemplateModal(null)
+							onDeleteClick()
+					}}
+					handleOnClick2={() => {
+							setConfirmDeleteTemplateModal(null)
+					}}
+			/>
 			<SubmitErrorHandler
 				submitCount={submitCount}
 				isValid={formikProps.isValid}
@@ -269,7 +286,7 @@ const FormComponent = (props) => {
 			</styled.RowContainer>
 
 
-			
+
 		<styled.ButtonContainer style={{width: "100%"}}>
 			<Button
 				style={{...buttonStyle, width: "8rem"}}
@@ -310,7 +327,7 @@ const FormComponent = (props) => {
 			{formMode === FORM_MODES.UPDATE &&
 			<Button
 				style={buttonStyle}
-				onClick={()=>onDeleteClick()}
+				onClick={()=>setConfirmDeleteTemplateModal(true)}
 				schema={"error"}
 			>
 				Delete Template
@@ -318,8 +335,8 @@ const FormComponent = (props) => {
 			}
 
 		</styled.ButtonContainer>,
-				
-			
+
+
 		</styled.StyledForm>
 	)
 

@@ -15,13 +15,17 @@ const FinishColumn = ((props) => {
 		processId,
 		maxHeight,
 		sortMode,
-		sortDirection
+		sortDirection,
+		selectedCards,
+		setSelectedCards
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
 
 	return(
 		<Column
+			setSelectedCards={setSelectedCards}
+			selectedCards={selectedCards}
 			sortDirection={sortDirection}
 			maxHeight={maxHeight}
 			sortMode={sortMode}

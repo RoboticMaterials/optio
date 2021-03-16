@@ -28,6 +28,7 @@ import LotDateRow from "./lot_date_row/lot_date_row";
 const Lot = (props) => {
     const {
         name,
+        isFocused,
         highlight,
         index,
         totalQuantity,
@@ -184,8 +185,10 @@ const Lot = (props) => {
             </styled.FlagsContainer>
         )
     }
+
     return(
         <styled.Container
+            isFocused={isFocused}
             highlight={highlight}
             selectable={selectable}
             isSelected={isSelected}
@@ -287,12 +290,14 @@ const Lot = (props) => {
 // Specifies propTypes
 Lot.propTypes = {
     isSelected: PropTypes.bool,
-    selectable: PropTypes.bool
+    selectable: PropTypes.bool,
+    isFocused: PropTypes.bool,
 }
 
 // Specifies the default values for props:
 Lot.defaultProps = {
     isSelected: false,
+    isFocused: false,
     selectable: false,
     flags: [],
     highlight: false,
