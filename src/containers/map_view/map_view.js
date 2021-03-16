@@ -753,7 +753,7 @@ export class MapView extends Component {
 
                     {!!this.props.devices &&
                       Object.values(this.props.devices).map((device) => {
-                        if(!!device.current_task_queue_id && this.props.taskQueue[device.current_task_queue_id]){
+                        if(!!device.current_task_queue_id && !!this.props.taskQueue[device.current_task_queue_id] && !!this.props.taskQueue[device.current_task_queue_id].custom_task && !!this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate){
                         const [x, y] = convertRealToD3([this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate.pos_x, this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate.pos_y], this.d3)
 
                           return (
