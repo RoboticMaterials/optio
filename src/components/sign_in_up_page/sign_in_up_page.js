@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 
 import { useDispatch, useSelector } from 'react-redux'
 
+import { useHistory } from 'react-router-dom'
+
 import { Formik, Form } from 'formik'
 
 // Import Utils
@@ -17,7 +19,8 @@ import * as styled from './sign_in_up_page.style'
 import { postLocalSettings } from '../../redux/actions/local_actions'
 
 // Get Auth from amplify
-import { Auth } from "aws-amplify";
+import { Auth, API } from "aws-amplify";
+import { usersbyId } from "../../graphql/queries";
 
 /**
  * This page handles both sign in and sign up for RMStudio
@@ -28,6 +31,8 @@ const SignInUpPage = (props) => {
     const dispatch = useDispatch()
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const localReducer = useSelector(state => state.localReducer.localSettings)
+
+    const history = useHistory()
 
     // signIn prop is passed from authentication container to tell this page to show sign in or sign up components
     const {
@@ -43,6 +48,28 @@ const SignInUpPage = (props) => {
         props.onChange(event);
     }
 
+    const checkForUserInDB = async (user) => {
+        
+        try{
+            const dataJson = await API.graphql({
+                query: usersbyId,
+                variables: { input: {id: user.sub} }
+            })
+            console.log(dataJson)
+
+            return 'here is your user'
+
+        }catch(err){
+            console.log(err)
+
+            // User's first time signing in
+            // Send them to first sign in page
+            history.push('/first-sign-in');
+
+            return false
+        }
+    }
+
     const handleSubmit = async (values) => {
 
         const {
@@ -54,12 +81,18 @@ const SignInUpPage = (props) => {
         // If the request is a sign in then run these functions
         if (signIn) {
             try {
-                await Auth.signIn(email, password);
-            
-                dispatchPostLocalSettings({
-                    ...localReducer,
-                    authenticated: true,
-                });
+                let user = await Auth.signIn(email, password);
+
+                let userData = await checkForUserInDB(user.attributes)
+
+                console.log(userData)
+
+                if(userData){
+                    dispatchPostLocalSettings({
+                        ...localReducer,
+                        authenticated: true,
+                    });
+                }
             } catch (error) {
                 console.log("error signing in", error);
             }

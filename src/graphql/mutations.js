@@ -1,6 +1,132 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const createUser = /* GraphQL */ `
+  mutation CreateUser(
+    $input: CreateUserInput!
+    $condition: ModelUserConditionInput
+  ) {
+    createUser(input: $input, condition: $condition) {
+      id
+      organizationId
+      username
+      organization {
+        id
+        organizationId
+        name
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const updateUser = /* GraphQL */ `
+  mutation UpdateUser(
+    $input: UpdateUserInput!
+    $condition: ModelUserConditionInput
+  ) {
+    updateUser(input: $input, condition: $condition) {
+      id
+      organizationId
+      username
+      organization {
+        id
+        organizationId
+        name
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const deleteUser = /* GraphQL */ `
+  mutation DeleteUser(
+    $input: DeleteUserInput!
+    $condition: ModelUserConditionInput
+  ) {
+    deleteUser(input: $input, condition: $condition) {
+      id
+      organizationId
+      username
+      organization {
+        id
+        organizationId
+        name
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const createOrganization = /* GraphQL */ `
+  mutation CreateOrganization(
+    $input: CreateOrganizationInput!
+    $condition: ModelOrganizationConditionInput
+  ) {
+    createOrganization(input: $input, condition: $condition) {
+      id
+      organizationId
+      name
+      users {
+        nextToken
+      }
+      stations {
+        nextToken
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateOrganization = /* GraphQL */ `
+  mutation UpdateOrganization(
+    $input: UpdateOrganizationInput!
+    $condition: ModelOrganizationConditionInput
+  ) {
+    updateOrganization(input: $input, condition: $condition) {
+      id
+      organizationId
+      name
+      users {
+        nextToken
+      }
+      stations {
+        nextToken
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteOrganization = /* GraphQL */ `
+  mutation DeleteOrganization(
+    $input: DeleteOrganizationInput!
+    $condition: ModelOrganizationConditionInput
+  ) {
+    deleteOrganization(input: $input, condition: $condition) {
+      id
+      organizationId
+      name
+      users {
+        nextToken
+      }
+      stations {
+        nextToken
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const createStation = /* GraphQL */ `
   mutation CreateStation(
     $input: CreateStationInput!
@@ -9,6 +135,7 @@ export const createStation = /* GraphQL */ `
     createStation(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       name
       schema
       type
@@ -33,6 +160,7 @@ export const updateStation = /* GraphQL */ `
     updateStation(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       name
       schema
       type
@@ -57,6 +185,7 @@ export const deleteStation = /* GraphQL */ `
     deleteStation(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       name
       schema
       type
@@ -80,6 +209,8 @@ export const createTask = /* GraphQL */ `
   ) {
     createTask(input: $input, condition: $condition) {
       id
+      _id
+      organizationId
       device_types
       handoff
       load
@@ -90,7 +221,6 @@ export const createTask = /* GraphQL */ `
       track_quantity
       type
       unload
-      _id
       obj
       createdAt
       updatedAt
@@ -104,6 +234,8 @@ export const updateTask = /* GraphQL */ `
   ) {
     updateTask(input: $input, condition: $condition) {
       id
+      _id
+      organizationId
       device_types
       handoff
       load
@@ -114,7 +246,6 @@ export const updateTask = /* GraphQL */ `
       track_quantity
       type
       unload
-      _id
       obj
       createdAt
       updatedAt
@@ -128,6 +259,8 @@ export const deleteTask = /* GraphQL */ `
   ) {
     deleteTask(input: $input, condition: $condition) {
       id
+      _id
+      organizationId
       device_types
       handoff
       load
@@ -138,7 +271,6 @@ export const deleteTask = /* GraphQL */ `
       track_quantity
       type
       unload
-      _id
       obj
       createdAt
       updatedAt
@@ -153,6 +285,7 @@ export const createPosition = /* GraphQL */ `
     createPosition(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       change_key
       map_id
       name
@@ -177,6 +310,7 @@ export const updatePosition = /* GraphQL */ `
     updatePosition(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       change_key
       map_id
       name
@@ -201,6 +335,7 @@ export const deletePosition = /* GraphQL */ `
     deletePosition(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       change_key
       map_id
       name
@@ -225,6 +360,7 @@ export const createProcess = /* GraphQL */ `
     createProcess(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       name
       broken
       routes
@@ -242,6 +378,7 @@ export const updateProcess = /* GraphQL */ `
     updateProcess(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       name
       broken
       routes
@@ -259,6 +396,7 @@ export const deleteProcess = /* GraphQL */ `
     deleteProcess(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       name
       broken
       routes
@@ -275,7 +413,7 @@ export const createCard = /* GraphQL */ `
   ) {
     createCard(input: $input, condition: $condition) {
       id
-      _id
+      organizationId
       bins
       dates
       description
@@ -298,7 +436,7 @@ export const updateCard = /* GraphQL */ `
   ) {
     updateCard(input: $input, condition: $condition) {
       id
-      _id
+      organizationId
       bins
       dates
       description
@@ -321,7 +459,7 @@ export const deleteCard = /* GraphQL */ `
   ) {
     deleteCard(input: $input, condition: $condition) {
       id
-      _id
+      organizationId
       bins
       dates
       description
@@ -345,6 +483,7 @@ export const createObject = /* GraphQL */ `
     createObject(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       description
       map_id
       modelName
@@ -364,6 +503,7 @@ export const updateObject = /* GraphQL */ `
     updateObject(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       description
       map_id
       modelName
@@ -383,6 +523,7 @@ export const deleteObject = /* GraphQL */ `
     deleteObject(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       description
       map_id
       modelName
@@ -402,6 +543,7 @@ export const createSchedule = /* GraphQL */ `
     createSchedule(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       days_on {
         friday
         monday
@@ -430,6 +572,7 @@ export const updateSchedule = /* GraphQL */ `
     updateSchedule(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       days_on {
         friday
         monday
@@ -458,6 +601,7 @@ export const deleteSchedule = /* GraphQL */ `
     deleteSchedule(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       days_on {
         friday
         monday
@@ -486,6 +630,7 @@ export const createDevice = /* GraphQL */ `
     createDevice(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       battery_percentage
       current_task_queue_id
       dashboards
@@ -510,6 +655,7 @@ export const updateDevice = /* GraphQL */ `
     updateDevice(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       battery_percentage
       current_task_queue_id
       dashboards
@@ -534,6 +680,7 @@ export const deleteDevice = /* GraphQL */ `
     deleteDevice(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       battery_percentage
       current_task_queue_id
       dashboards
@@ -558,6 +705,7 @@ export const createStatus = /* GraphQL */ `
     createStatus(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       active_map
       mir_connection
       pause_status
@@ -574,6 +722,7 @@ export const updateStatus = /* GraphQL */ `
     updateStatus(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       active_map
       mir_connection
       pause_status
@@ -590,6 +739,7 @@ export const deleteStatus = /* GraphQL */ `
     deleteStatus(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       active_map
       mir_connection
       pause_status
@@ -606,6 +756,7 @@ export const createTaskQueue = /* GraphQL */ `
     createTaskQueue(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       device_type
       mission_status
       owner
@@ -624,6 +775,7 @@ export const updateTaskQueue = /* GraphQL */ `
     updateTaskQueue(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       device_type
       mission_status
       owner
@@ -642,6 +794,7 @@ export const deleteTaskQueue = /* GraphQL */ `
     deleteTaskQueue(input: $input, condition: $condition) {
       id
       _id
+      organizationId
       device_type
       mission_status
       owner

@@ -40,9 +40,7 @@ export async function getCards() {
                 flags: JSON.parse(card.flags)
             })
         });
-
-        console.log(GQLdata);
-
+        
         return GQLdata;
     } catch (error) {
         // Error 😨

@@ -1,11 +1,120 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const onCreateUser = /* GraphQL */ `
+  subscription OnCreateUser {
+    onCreateUser {
+      id
+      organizationId
+      username
+      organization {
+        id
+        organizationId
+        name
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const onUpdateUser = /* GraphQL */ `
+  subscription OnUpdateUser {
+    onUpdateUser {
+      id
+      organizationId
+      username
+      organization {
+        id
+        organizationId
+        name
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const onDeleteUser = /* GraphQL */ `
+  subscription OnDeleteUser {
+    onDeleteUser {
+      id
+      organizationId
+      username
+      organization {
+        id
+        organizationId
+        name
+        createdAt
+        updatedAt
+      }
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const onCreateOrganization = /* GraphQL */ `
+  subscription OnCreateOrganization {
+    onCreateOrganization {
+      id
+      organizationId
+      name
+      users {
+        nextToken
+      }
+      stations {
+        nextToken
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateOrganization = /* GraphQL */ `
+  subscription OnUpdateOrganization {
+    onUpdateOrganization {
+      id
+      organizationId
+      name
+      users {
+        nextToken
+      }
+      stations {
+        nextToken
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteOrganization = /* GraphQL */ `
+  subscription OnDeleteOrganization {
+    onDeleteOrganization {
+      id
+      organizationId
+      name
+      users {
+        nextToken
+      }
+      stations {
+        nextToken
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const onCreateStation = /* GraphQL */ `
   subscription OnCreateStation {
     onCreateStation {
       id
       _id
+      organizationId
       name
       schema
       type
@@ -27,6 +136,7 @@ export const onUpdateStation = /* GraphQL */ `
     onUpdateStation {
       id
       _id
+      organizationId
       name
       schema
       type
@@ -48,6 +158,7 @@ export const onDeleteStation = /* GraphQL */ `
     onDeleteStation {
       id
       _id
+      organizationId
       name
       schema
       type
@@ -68,6 +179,8 @@ export const onCreateTask = /* GraphQL */ `
   subscription OnCreateTask {
     onCreateTask {
       id
+      _id
+      organizationId
       device_types
       handoff
       load
@@ -78,7 +191,6 @@ export const onCreateTask = /* GraphQL */ `
       track_quantity
       type
       unload
-      _id
       obj
       createdAt
       updatedAt
@@ -89,6 +201,8 @@ export const onUpdateTask = /* GraphQL */ `
   subscription OnUpdateTask {
     onUpdateTask {
       id
+      _id
+      organizationId
       device_types
       handoff
       load
@@ -99,7 +213,6 @@ export const onUpdateTask = /* GraphQL */ `
       track_quantity
       type
       unload
-      _id
       obj
       createdAt
       updatedAt
@@ -110,6 +223,8 @@ export const onDeleteTask = /* GraphQL */ `
   subscription OnDeleteTask {
     onDeleteTask {
       id
+      _id
+      organizationId
       device_types
       handoff
       load
@@ -120,7 +235,6 @@ export const onDeleteTask = /* GraphQL */ `
       track_quantity
       type
       unload
-      _id
       obj
       createdAt
       updatedAt
@@ -132,6 +246,7 @@ export const onCreatePosition = /* GraphQL */ `
     onCreatePosition {
       id
       _id
+      organizationId
       change_key
       map_id
       name
@@ -153,6 +268,7 @@ export const onUpdatePosition = /* GraphQL */ `
     onUpdatePosition {
       id
       _id
+      organizationId
       change_key
       map_id
       name
@@ -174,6 +290,7 @@ export const onDeletePosition = /* GraphQL */ `
     onDeletePosition {
       id
       _id
+      organizationId
       change_key
       map_id
       name
@@ -195,6 +312,7 @@ export const onCreateProcess = /* GraphQL */ `
     onCreateProcess {
       id
       _id
+      organizationId
       name
       broken
       routes
@@ -209,6 +327,7 @@ export const onUpdateProcess = /* GraphQL */ `
     onUpdateProcess {
       id
       _id
+      organizationId
       name
       broken
       routes
@@ -223,6 +342,7 @@ export const onDeleteProcess = /* GraphQL */ `
     onDeleteProcess {
       id
       _id
+      organizationId
       name
       broken
       routes
@@ -236,7 +356,7 @@ export const onCreateCard = /* GraphQL */ `
   subscription OnCreateCard {
     onCreateCard {
       id
-      _id
+      organizationId
       bins
       dates
       description
@@ -256,7 +376,7 @@ export const onUpdateCard = /* GraphQL */ `
   subscription OnUpdateCard {
     onUpdateCard {
       id
-      _id
+      organizationId
       bins
       dates
       description
@@ -276,7 +396,7 @@ export const onDeleteCard = /* GraphQL */ `
   subscription OnDeleteCard {
     onDeleteCard {
       id
-      _id
+      organizationId
       bins
       dates
       description
@@ -297,6 +417,7 @@ export const onCreateObject = /* GraphQL */ `
     onCreateObject {
       id
       _id
+      organizationId
       description
       map_id
       modelName
@@ -313,6 +434,7 @@ export const onUpdateObject = /* GraphQL */ `
     onUpdateObject {
       id
       _id
+      organizationId
       description
       map_id
       modelName
@@ -329,6 +451,7 @@ export const onDeleteObject = /* GraphQL */ `
     onDeleteObject {
       id
       _id
+      organizationId
       description
       map_id
       modelName
@@ -345,6 +468,7 @@ export const onCreateSchedule = /* GraphQL */ `
     onCreateSchedule {
       id
       _id
+      organizationId
       days_on {
         friday
         monday
@@ -370,6 +494,7 @@ export const onUpdateSchedule = /* GraphQL */ `
     onUpdateSchedule {
       id
       _id
+      organizationId
       days_on {
         friday
         monday
@@ -395,6 +520,7 @@ export const onDeleteSchedule = /* GraphQL */ `
     onDeleteSchedule {
       id
       _id
+      organizationId
       days_on {
         friday
         monday
@@ -420,6 +546,7 @@ export const onCreateDevice = /* GraphQL */ `
     onCreateDevice {
       id
       _id
+      organizationId
       battery_percentage
       current_task_queue_id
       dashboards
@@ -441,6 +568,7 @@ export const onUpdateDevice = /* GraphQL */ `
     onUpdateDevice {
       id
       _id
+      organizationId
       battery_percentage
       current_task_queue_id
       dashboards
@@ -462,6 +590,7 @@ export const onDeleteDevice = /* GraphQL */ `
     onDeleteDevice {
       id
       _id
+      organizationId
       battery_percentage
       current_task_queue_id
       dashboards
@@ -483,6 +612,7 @@ export const onCreateStatus = /* GraphQL */ `
     onCreateStatus {
       id
       _id
+      organizationId
       active_map
       mir_connection
       pause_status
@@ -496,6 +626,7 @@ export const onUpdateStatus = /* GraphQL */ `
     onUpdateStatus {
       id
       _id
+      organizationId
       active_map
       mir_connection
       pause_status
@@ -509,6 +640,7 @@ export const onDeleteStatus = /* GraphQL */ `
     onDeleteStatus {
       id
       _id
+      organizationId
       active_map
       mir_connection
       pause_status
@@ -522,6 +654,7 @@ export const onCreateTaskQueue = /* GraphQL */ `
     onCreateTaskQueue {
       id
       _id
+      organizationId
       device_type
       mission_status
       owner
@@ -537,6 +670,7 @@ export const onUpdateTaskQueue = /* GraphQL */ `
     onUpdateTaskQueue {
       id
       _id
+      organizationId
       device_type
       mission_status
       owner
@@ -552,6 +686,7 @@ export const onDeleteTaskQueue = /* GraphQL */ `
     onDeleteTaskQueue {
       id
       _id
+      organizationId
       device_type
       mission_status
       owner
