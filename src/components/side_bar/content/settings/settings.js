@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom'
 import ls from 'local-storage'
 import * as styled from './settings.style'
 
@@ -28,6 +29,8 @@ import { isEquivalent } from '../../../../methods/utils/utils'
 import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
 
 const Settings = () => {
+
+    const history = useHistory()
 
     const dispatch = useDispatch()
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
@@ -336,7 +339,9 @@ const Settings = () => {
             authenticated: false,
           });
     
-          window.location.reload();
+          history.push('/login')
+
+          window.location.reload()
 
         };
 

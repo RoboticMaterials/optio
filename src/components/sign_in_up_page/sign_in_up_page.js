@@ -48,27 +48,20 @@ const SignInUpPage = (props) => {
         props.onChange(event);
     }
 
-    const checkForUserInDB = async (user) => {
-
-        console.log(user)
-        
+    const checkForUserInDB = async (user) => {        
         try{
-            await API.graphql({
+            const data = await API.graphql({
                 query: usersbyId,
                 variables: { id: user.sub }
             })
 
-            return true
-
+            if(data.data.UsersbyId.items.length){
+                return true
+            }else{
+                history.push('/login/organization');
+            }
         }catch(err){
-
             console.log(err)
-
-            // User's first time signing in
-            // Send them to first sign in page
-            history.push('/first-sign-in');
-
-            return false
         }
     }
 
@@ -92,7 +85,11 @@ const SignInUpPage = (props) => {
                         ...localReducer,
                         authenticated: true,
                     });
-                }
+                
+                    history.push('/')
+                
+                ;}
+
             } catch (error) {
                 console.log("error signing in", error);
             }

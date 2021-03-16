@@ -53,8 +53,8 @@ type Station
   pos_x: Float
   pos_y: Float
   rotation: Int!
-  x: Int!
-  y: Int!
+  x: Float!
+  y: Float!
   map_id: String!
   children: AWSJSON!
   dashboards: AWSJSON!

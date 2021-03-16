@@ -16,24 +16,29 @@ import { apiIPAddress } from "../settings/settings";
 // logging for error in API
 import errorLog from './errorLogging'
 
+import getUserOrgId from './user_api'
+
 // import the API category from Amplify library
 import { API } from 'aws-amplify'
 
 // import the GraphQL queries, mutations and subscriptions
-import { listStations } from '../graphql/queries'
+import { stationsByOrgId } from '../graphql/queries'
 import { createStation, updateStation } from '../graphql/mutations'
 import { deleteStation as deleteStationByID } from '../graphql/mutations'
 
 export async function getStations() {
   try {
 
+    const userOrgId = await getUserOrgId()
+
     const res = await API.graphql({
-      query: listStations
+      query: stationsByOrgId,
+      variables: { organizationId: userOrgId }
     })
 
     let GQLdata = []
 
-    res.data.listStations.items.forEach(element => {
+    res.data.StationsByOrgId.items.forEach(element => {
       GQLdata.push( {
         ...element,
         children: JSON.parse(element.children),
@@ -70,12 +75,17 @@ export async function deleteStation(ID) {
 export async function postStation(station) {
   try {
 
+    const userOrgId = await getUserOrgId()
+
     const input = {
       ...station,
+      organizationId: userOrgId,
       children: JSON.stringify(station.children),
       dashboards: JSON.stringify(station.dashboards),
       pos_x: parseFloat(station.pos_x),
       pos_y: parseFloat(station.pos_y),
+      x: parseFloat(station.x),
+      y: parseFloat(station.y),
       _id: station._id.toString(),
       id: station._id
     }
