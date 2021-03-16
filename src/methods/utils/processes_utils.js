@@ -2,6 +2,7 @@ import { deepCopy } from './utils'
 import {isObject} from "./object_utils";
 import store from "../../redux/store";
 import {getLoadStationId, getUnloadStationId} from "./route_utils";
+import {useSelector} from "react-redux";
 
 /**
  * This function checks to see if a process is broken. 
@@ -163,6 +164,16 @@ export const getProcessStations = (process, routes) => {
 
     // return stationIds obj
     return stationIds
+}
+
+export const getProcessName = (processId) => {
+    const processes = store.getState().processesReducer.processes || {}
+    const process = processes[processId] || {}
+    const {
+        name = ""
+    } = process
+
+    return name
 }
 
 export const getPreviousRoute = (processRoutes, currentRouteId) => {
