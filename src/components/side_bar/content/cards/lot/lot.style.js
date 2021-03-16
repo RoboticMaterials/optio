@@ -5,7 +5,7 @@ import * as commonCss from "../../../../../common_css/common_css";
 import {commonClickableIcon, commonIcon, iconButtonCss} from "../../../../../common_css/common_css";
 
 export const Container = styled.div`
- 	margin: 6px; // prevents glow from being cut off
+ 	margin: 10px; // prevents glow from being cut off
      height: fit-content;
   
 
@@ -29,7 +29,7 @@ export const Container = styled.div`
     outline: none;
     user-select: none;
 
-    transition: transform 0.2s ease;
+    transition: all 0.2s ease;
 
     cursor: grab;
     &:active {
@@ -46,12 +46,17 @@ export const Container = styled.div`
     
     color: black;
   
-  ${props => props.selectable && (props.isSelected ? selectedCss : notSelectedCss)};
+  ${props => (props.selectable && !(props.isSelected || props.isFocused)) && notSelectedCss};
+  ${props => props.isFocused && focusedCss};
+  ${props => props.isSelected && selectedCss};
   ${props => props.containerStyle};
   
 `
 
 const selectedCss = css`
+`
+
+const focusedCss = css`
 	${commonCss.whiteGlow};
 
   &:active {

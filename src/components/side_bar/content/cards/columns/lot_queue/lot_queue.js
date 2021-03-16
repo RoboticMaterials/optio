@@ -20,13 +20,17 @@ const LotQueue = ((props) => {
 		showCardEditor,
 		maxHeight,
 		sortMode,
-		sortDirection
+		sortDirection,
+		selectedCards,
+		setSelectedCards
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
 
 	return(
 		<Column
+			setSelectedCards={setSelectedCards}
+			selectedCards={selectedCards}
 			sortDirection={sortDirection}
 			sortMode={sortMode}
 			maxHeight={maxHeight}
@@ -43,8 +47,8 @@ const LotQueue = ((props) => {
 						</styled.LabelContainer>
 
 						<Button
-							onClick={()=> {
-								handleCardClick(null, processId)
+							onClick={(event)=> {
+								handleCardClick(event, null, processId)
 								setShowCardEditor(!showCardEditor)
 
 							}}
