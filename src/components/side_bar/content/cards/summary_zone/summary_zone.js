@@ -23,7 +23,9 @@ const SummaryZone = ((props) => {
 		selectedFilterOption,
 		selectedProcesses,
 		sortMode,
-		sortDirection
+		sortDirection,
+		selectedCards,
+		setSelectedCards
 	} = props
 
 	/*
@@ -53,6 +55,8 @@ const SummaryZone = ((props) => {
 						<styled.ProcessName>{processName}</styled.ProcessName>
 
 						<CardZone
+							setSelectedCards={setSelectedCards}
+							selectedCards={selectedCards}
 							sortMode={sortMode}
 							sortDirection={sortDirection}
 							lotFilterValue={lotFilterValue}

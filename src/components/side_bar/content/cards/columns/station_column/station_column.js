@@ -15,13 +15,17 @@ const StationsColumn = ((props) => {
 		processId,
 		maxHeight,
 		sortMode,
-		sortDirection
+		sortDirection,
+		selectedCards,
+		setSelectedCards
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
 
 	return(
 		<Column
+			setSelectedCards={setSelectedCards}
+			selectedCards={selectedCards}
 			sortDirection={sortDirection}
 			maxWidth={"20rem"}
 			sortMode={sortMode}
@@ -36,7 +40,6 @@ const StationsColumn = ((props) => {
 						/>
 
 						<styled.LabelContainer>
-
 							<styled.StationTitle>{stationName}</styled.StationTitle>
 						</styled.LabelContainer>
 
@@ -58,8 +61,6 @@ const StationsColumn = ((props) => {
 			isCollapsed={isCollapsed}
 		/>
 	)
-
-
 })
 
 export default StationsColumn
