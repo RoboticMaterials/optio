@@ -13,7 +13,7 @@ export const Timezones = [
     label: "America/Chicago",
   },
   {
-    name: "(Eastern Time) Toronto",
-    label: "America/Toronto",
+    name: "(Eastern Time) New York",
+    label: "America/New_York",
   },
 ]
