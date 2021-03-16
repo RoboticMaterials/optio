@@ -26,10 +26,7 @@ import { Auth } from "aws-amplify";
  * TODO: Add HTTPS connection to server which allows for the use of a secure cookie. Increases security a lot 
  * @param {authenticated} props 
  */
-const Authentication = (props) => {
-    const {
-        authenticated
-    } = props
+const Authentication = () => {
 
     const dispatch = useDispatch()
 

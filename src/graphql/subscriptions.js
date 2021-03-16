@@ -11,6 +11,7 @@ export const onCreateUser = /* GraphQL */ `
         id
         organizationId
         name
+        key
         createdAt
         updatedAt
       }
@@ -30,6 +31,7 @@ export const onUpdateUser = /* GraphQL */ `
         id
         organizationId
         name
+        key
         createdAt
         updatedAt
       }
@@ -49,6 +51,7 @@ export const onDeleteUser = /* GraphQL */ `
         id
         organizationId
         name
+        key
         createdAt
         updatedAt
       }
@@ -64,6 +67,7 @@ export const onCreateOrganization = /* GraphQL */ `
       id
       organizationId
       name
+      key
       users {
         nextToken
       }
@@ -81,6 +85,7 @@ export const onUpdateOrganization = /* GraphQL */ `
       id
       organizationId
       name
+      key
       users {
         nextToken
       }
@@ -98,6 +103,7 @@ export const onDeleteOrganization = /* GraphQL */ `
       id
       organizationId
       name
+      key
       users {
         nextToken
       }

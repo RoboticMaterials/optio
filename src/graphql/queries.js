@@ -527,6 +527,34 @@ export const orgsById = /* GraphQL */ `
         id
         organizationId
         name
+        key
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const orgsByKey = /* GraphQL */ `
+  query OrgsByKey(
+    $key: String
+    $sortDirection: ModelSortDirection
+    $filter: ModelOrganizationFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    OrgsByKey(
+      key: $key
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        organizationId
+        name
+        key
         createdAt
         updatedAt
       }

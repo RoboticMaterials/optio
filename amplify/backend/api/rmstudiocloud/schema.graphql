@@ -19,14 +19,18 @@ type User
 type Organization 
   @model(queries: null)
   @key(name: "OrgsById", fields: ["organizationId"], queryField: "OrgsById" )
-  @auth(rules: [{ allow: private }]) 
+  @key(name: "OrgsByKey", fields: ["key"], queryField: "OrgsByKey" )
+  @auth(rules: [
+    { allow: private }
+    ]) 
 {
   id: ID!
   organizationId: ID!
   name: String!
+  key: String!
   users: [User] @connection(keyName: "UsersbyOrg", fields: ["organizationId"])
 
-  # Organizations data
+  # Organization's data
   stations: [Station] @connection(keyName: "StationsByOrgId", fields: ["organizationId"])
 }
 

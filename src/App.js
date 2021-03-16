@@ -27,6 +27,7 @@ import Authentication from './containers/authentication/authentication'
 import Widgets from './components/widgets/widgets'
 import ListView from "./components/list_view/list_view";
 import ConfirmDeleteModal from './components/basic/modals/confirm_delete_modal/confirm_delete_modal'
+import FirstSignIn from './components/firstSignIn/firstSignIn'
 
 // Amplify configuration globally
 import Amplify from "aws-amplify";
@@ -95,7 +96,6 @@ const App = () => {
         <>
             <Logger />
 
-
               {/* <ThemeProvider theme={theme[this.state.theme]}> */}
               <ThemeProvider theme={theme['main']}>
 
@@ -116,26 +116,30 @@ const App = () => {
                             setShowStopAPIModal(false)
                         }}
                     />
-                    <BrowserRouter>
-                        {/* <Route
-                              exact path="/clear_local"
-                          >
-                              {
-                                  handleClearLocalSettings()
-                              }
-                          </Route> */}
+                    <BrowserRouter basename="/">
 
+                        {/* Authentication */}
+                        <Route exact path="/login" >
+                            <Authentication />
+                        </Route>
 
-                          <Route
-                              path={["/locations/:stationID?/:widgetPage?", '/:sidebar?/:data1?/:data2?', '/',]}
-                          >
-                              {authenticated && <ApiContainer styleMode={null} apiMode={null} mode={null} logMode={"DEV"} onLoad={() => setLoaded(true)} apiLoaded={() => setApiLoaded(true)} isApiLoaded={apiLoaded} />}
-                          </Route>
+                        {/* If user has never signed in */}
+                        <Route exact path="/first-sign-in" >
+                            <FirstSignIn />
+                        </Route>
 
-                          {/* If all the API's have been loaded, but the user has not been authenticate then show the Authentication Screen */}
-                          {authenticated === null &&
-                              <Authentication authenticated={authenticated}/>
-                          }
+                        {authenticated &&
+                            <Route
+                                path={["/locations/:stationID?/:widgetPage?", '/:sidebar?/:data1?/:data2?', '/',]}
+                            >
+                                <ApiContainer styleMode={null} apiMode={null} mode={null} logMode={"DEV"} onLoad={() => setLoaded(true)} apiLoaded={() => setApiLoaded(true)} isApiLoaded={apiLoaded} />
+                            </Route>
+                        }
+
+                        {/* If all the API's have been loaded, but the user has not been authenticate then show the Authentication Screen
+                        {authenticated === null &&
+                            <Authentication authenticated={authenticated}/>
+                        } */}
 
 
                           {loaded && authenticated && apiLoaded &&
@@ -151,8 +155,6 @@ const App = () => {
                                           <> </>
                                       }
                                   </styled.HeaderContainer>
-
-
 
                                   <styled.BodyContainer>
                                       {/* Hides Side bar when in a dashboard in mobile mode */}

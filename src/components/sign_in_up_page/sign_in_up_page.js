@@ -49,17 +49,19 @@ const SignInUpPage = (props) => {
     }
 
     const checkForUserInDB = async (user) => {
+
+        console.log(user)
         
         try{
-            const dataJson = await API.graphql({
+            await API.graphql({
                 query: usersbyId,
-                variables: { input: {id: user.sub} }
+                variables: { id: user.sub }
             })
-            console.log(dataJson)
 
-            return 'here is your user'
+            return true
 
         }catch(err){
+
             console.log(err)
 
             // User's first time signing in
@@ -84,8 +86,6 @@ const SignInUpPage = (props) => {
                 let user = await Auth.signIn(email, password);
 
                 let userData = await checkForUserInDB(user.attributes)
-
-                console.log(userData)
 
                 if(userData){
                     dispatchPostLocalSettings({
@@ -199,7 +199,6 @@ const SignInUpPage = (props) => {
                                     Note: Your password must be 8 charaters long and contain 1 upper case letter, 1 lower case letter, 1 number and 1 special character
                                 </styled.NoteText>
                         }
-
 
 
                         <styled.Container>
