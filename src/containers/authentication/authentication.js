@@ -43,7 +43,9 @@ const Authentication = (props) => {
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
 
-    const localReducer = useSelector(state => state.localReducer.localSettings)
+    useEffect(() => {
+        handleInitialLoad()
+    }, [])
 
     const handleSignInChange = (value) => {
         setSignIn(value)
@@ -51,87 +53,84 @@ const Authentication = (props) => {
 
     const handleInitialLoad = () => {
         // Check to see if we want authentication *** Dev ONLY ***
-        if (!configData.authenticationNeeded) {
-          const localSettingsPromise = dispatchGetLocalSettings()
-          localSettingsPromise.then(response =>{
+        const localSettingsPromise = dispatchGetLocalSettings()
+        localSettingsPromise.then(response =>{
 
-            dispatchPostLocalSettings({
-                ...response,
-                authenticated: 'no',
-                //non_local_api_ip: window.location.hostname,
-                //non_local_api: true,
-            })
-          })
-        } else {
+            if (!configData.authenticationNeeded) {
 
-            var poolData = {
-                UserPoolId: configData.UserPoolId,
-                ClientId: configData.ClientId,
-            };
+                dispatchPostLocalSettings({
+                    ...response,
+                    authenticated: 'no',
+                    //non_local_api_ip: window.location.hostname,
+                    //non_local_api: true,
+                })
 
-            var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-            var cognitoUser = userPool.getCurrentUser();
+            } else {
+                var poolData = {
+                    UserPoolId: configData.UserPoolId,
+                    ClientId: configData.ClientId,
+                };
 
-            if (cognitoUser != null) {
-                cognitoUser.getSession(function (err, session) {
-                    if (err) {
-                        alert(err.message || JSON.stringify(err));
-                        return;
-                    }
+                var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+                var cognitoUser = userPool.getCurrentUser();
 
-                    if (session.isValid()) {
-                        dispatchPostLocalSettings({
-                            ...localReducer,
-                            authenticated:true,
-                            non_local_api_ip: window.location.hostname,
-                            non_local_api: true,
-                        })
-                    }
-                });
+                if (cognitoUser != null) {
+                    cognitoUser.getSession(function (err, session) {
+                        if (err) {
+                            alert(err.message || JSON.stringify(err));
+                            return;
+                        }
+
+                        if (session.isValid()) {
+                            dispatchPostLocalSettings({
+                                ...response,
+                                authenticated:true,
+                                non_local_api_ip: window.location.hostname,
+                                non_local_api: true,
+                            })
+                        }
+                    });
+                }
             }
-        }
-
-        return (
-            <styled.Container>
-
-                <styled.LogoContainer>
-                    <styled.LogoIcon className='icon-rmLogo' />
-                    <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
-                </styled.LogoContainer>
-
-                <styled.LogoWelcome> Wecome Back </styled.LogoWelcome>
-
-                <styled.CheckBoxWrapper>
-                    <styled.Button
-                        onClick={() => setSignIn(true)}
-                        selected={signIn}
-                        style={{borderRadius: '.5rem 0  0 .5rem'}}
-                    >
-                        Sign In
-                    </styled.Button>
-
-                    <styled.Button
-                        onClick={() => setSignIn(false)}
-                        selected={!signIn}
-                        style={{borderRadius: '0 .5rem .5rem 0'}}
-                    >
-                        Sign Up
-                    </styled.Button>
-                </styled.CheckBoxWrapper>
-
-                <styled.SignInUpContainer>
-
-                    <SignInUpPage
-                        signIn={signIn}
-                        onChange={handleSignInChange} />
-
-                </styled.SignInUpContainer>
-            </styled.Container>
-        )
+        })
     }
 
     return (
-        handleInitialLoad()
+        <styled.Container>
+
+            <styled.LogoContainer>
+                <styled.LogoIcon className='icon-rmLogo' />
+                <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
+            </styled.LogoContainer>
+
+            <styled.LogoWelcome> Wecome Back </styled.LogoWelcome>
+
+            <styled.CheckBoxWrapper>
+                <styled.Button
+                    onClick={() => setSignIn(true)}
+                    selected={signIn}
+                    style={{borderRadius: '.5rem 0  0 .5rem'}}
+                >
+                    Sign In
+                </styled.Button>
+
+                <styled.Button
+                    onClick={() => setSignIn(false)}
+                    selected={!signIn}
+                    style={{borderRadius: '0 .5rem .5rem 0'}}
+                >
+                    Sign Up
+                </styled.Button>
+            </styled.CheckBoxWrapper>
+
+            <styled.SignInUpContainer>
+
+                <SignInUpPage
+                    signIn={signIn}
+                    onChange={handleSignInChange} />
+
+            </styled.SignInUpContainer>
+        </styled.Container>
     )
 
 }

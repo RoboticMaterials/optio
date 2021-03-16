@@ -40,6 +40,7 @@ export const postLocalSettings = async (settings) => {
 
 export const getLocalSettings = async () => {
   const localSettings = ls.get("localSettings");
+
   if (localSettings !== null) {
       const locSettings = JSON.parse(localSettings);
       return locSettings;
