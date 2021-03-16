@@ -1,46 +1,53 @@
 import React, { Component, useState, useEffect } from 'react';
 
-import { useHistory, useParams } from 'react-router-dom'
+
 
 // import external functions
 import { connect, useDispatch, useSelector } from 'react-redux';
+import { useHistory, useParams } from 'react-router-dom'
 
 // Import components
 import DashboardButtonList from "./dashboard_button_list/dashboard_button_list";
 import TaskAddedAlert from "./task_added_alert/task_added_alert";
 import DashboardTaskQueue from './dashboard_task_queue/dashboard_task_queue'
+import DashboardsHeader from "../dashboards_header/dashboards_header";
+import ReportModal from "./report_modal/report_modal";
+import KickOffModal from "./kick_off_modal/kick_off_modal";
+import FinishModal from "./finish_modal/finish_modal";
+
+// constants
+import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../constants/dashboard_contants";
+import { OPERATION_TYPES, TYPES } from "../dashboards_sidebar/dashboards_sidebar";
 
 // Import Utils
-import { ADD_TASK_ALERT_TYPE, PAGES } from "../../../../../constants/dashboard_contants";
 import { deepCopy } from '../../../../../methods/utils/utils'
-import uuid from 'uuid';
 
 // Import Hooks
 import useWindowSize from '../../../../../hooks/useWindowSize'
 
-// Import API
-import { postStatus } from '../../../../../api/status_api'
-
 // Import Actions
 import { handlePostTaskQueue, postTaskQueue, putTaskQueue } from '../../../../../redux/actions/task_queue_actions'
-import { dashboardOpen, setDashboardKickOffProcesses } from '../../../../../redux/actions/dashboards_actions'
-
+import {
+    dashboardOpen,
+    setDashboardKickOffProcesses,
+    putDashboard,
+    putDashboardAttributes
+} from '../../../../../redux/actions/dashboards_actions'
 import * as localActions from '../../../../../redux/actions/local_actions'
+import { getProcesses } from "../../../../../redux/actions/processes_actions";
+import { getTasks } from '../../../../../redux/actions/tasks_actions'
 
 // Import styles
 import * as pageStyle from '../dashboards_header/dashboards_header.style'
 import * as style from './dashboard_screen.style'
 
-import DashboardsHeader from "../dashboards_header/dashboards_header";
-
 // import logging
 import log from "../../../../../logger";
-import { OPERATION_TYPES, TYPES } from "../dashboards_sidebar/dashboards_sidebar";
-import ReportModal from "./report_modal/report_modal";
-import KickOffModal from "./kick_off_modal/kick_off_modal";
-import FinishModal from "./finish_modal/finish_modal";
-import { getProcesses } from "../../../../../redux/actions/processes_actions";
-import { isEmpty } from "../../../../../methods/utils/object_utils";
+import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
+import { isRouteInQueue } from "../../../../../methods/utils/task_queue_utils";
+import { isDeviceConnected } from "../../../../../methods/utils/device_utils";
+import { DEVICE_CONSTANTS } from "../../../../../constants/device_constants";
+import {immutableDelete, isArray, isNonEmptyArray} from "../../../../../methods/utils/array_utils";
 
 
 
@@ -48,33 +55,32 @@ const logger = log.getLogger("DashboardsPage");
 
 const widthBreakPoint = 1026;
 
-
 const DashboardScreen = (props) => {
 
     const {
         dashboardId,
-        setShowSidebar,
         showSidebar,
         setEditingDashboard,
     } = props
 
     // redux state
-    const status = useSelector(state => { return state.statusReducer.status })
     const currentDashboard = useSelector(state => { return state.dashboardsReducer.dashboards[dashboardId] })
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
-    const devices = useSelector(state => state.devicesReducer.devices)
-    const positions = useSelector(state => state.positionsReducer.positions)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const hilResponse = useSelector(state => state.taskQueueReducer.hilResponse)
-    const stopAPICalls = useSelector(state => state.localReducer.stopAPICalls)
+    const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
+    const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] }) || []
+    const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] }) || []
 
     //actions
     const dispatchGetProcesses = () => dispatch(getProcesses())
+    const dispatchPutDashboard = async (dashboard, id) => await dispatch(putDashboard(dashboard, id))
+    const dispatchPutDashboardAttributes = async (attributes, id) => await dispatch(putDashboardAttributes(attributes, id))
+    const dispatchGetTasks = async () => await dispatch(getTasks())
 
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
     const [reportModal, setReportModal] = useState(null);
-    const [allowKickOff, setAllowKickOff] = useState(false);
 
     // actions
     const dispatch = useDispatch()
@@ -95,7 +101,7 @@ const DashboardScreen = (props) => {
     const windowWidth = size.width
 
     const mobileMode = windowWidth < widthBreakPoint;
-
+    const showTaskQueueButton = !mapViewEnabled? true: mobileMode ? true: false
 
     /**
      * When a dashboard screen is loaded, tell redux that its open
@@ -112,6 +118,73 @@ const DashboardScreen = (props) => {
     }, [])
 
 
+    useEffect(() => {
+        checkButtons()
+    },[currentDashboard.buttons])
+
+    const checkButtons = async () => {
+        const { buttons } = currentDashboard	// extract buttons from dashboard
+        let updatedButtons = [...buttons]
+
+        let madeUpdate = false // used to track if any changes were made. Dashboard only needs to be updated if a change was made
+
+        let taskIds = []
+
+        buttons.forEach(async (currButton) => {
+            const {
+                task_id,
+                type
+            } = currButton
+
+            if(type === OPERATION_TYPES.KICK_OFF.key) {
+                // if button type is kick off, but dashboard has no available kick off processes, remove the kick off button
+                if(!isNonEmptyArray(availableKickOffProcesses)) {
+                    const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
+                    if(index !== -1) {
+                        updatedButtons = immutableDelete(updatedButtons, index)
+                    }
+                    madeUpdate = true
+                }
+            }
+            else if(type === OPERATION_TYPES.FINISH.key) {
+                // if button type is finish, but dashboard has no available finish processes, remove the finish button
+                if(!isNonEmptyArray(availableFinishProcesses)) {
+                    const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
+                    if(index !== -1) {
+                        updatedButtons = immutableDelete(updatedButtons, index)
+                    }
+                    madeUpdate = true
+                }
+            }
+            // Dont add duplicate buttons, delete if they're are any
+            else if (task_id && taskIds.includes(task_id)) {
+                const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
+                if(index !== -1) {
+                    updatedButtons = immutableDelete(updatedButtons, index)
+                }
+                madeUpdate = true
+            }
+
+            // If task does not exist, delete task
+            else if (task_id && !(isObject(tasks[task_id]))) {
+                    const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
+                    if(index !== -1) {
+                        updatedButtons = immutableDelete(updatedButtons, index)
+                    }
+                    madeUpdate = true
+            }
+
+            taskIds.push(task_id)
+        })
+
+        if(madeUpdate) {
+            await dispatchPutDashboardAttributes({
+                buttons: updatedButtons
+            }, dashboardId)
+        }
+    }
+
+
     // If current dashboard is undefined, it probably has been deleted. So go back to locations just incase the station has been deleted too
     if (currentDashboard === undefined) {
         history.push(`/locations`)
@@ -120,6 +193,8 @@ const DashboardScreen = (props) => {
             </>
         )
     }
+
+
 
     /**
      * Handles buttons associated with selected dashboard
@@ -133,76 +208,43 @@ const DashboardScreen = (props) => {
      * and if the the tasks unload location is the dashboards station, then show a unload button
      */
     const handleDashboardButtons = () => {
-        let { buttons } = currentDashboard	// extract buttons from dashboard
-
+        const { buttons } = currentDashboard	// extract buttons from dashboard
+        let taskIds = []    // array of task ids
         // filter out buttons with missing task
-        buttons = buttons.filter((currButton) => {
+        let filteredButtons = buttons.filter(async (currButton) => {
             const {
                 task_id,
                 type
             } = currButton
 
-            if (task_id && !(tasks[task_id])) {
-                // console.error('Task does not exist! Hiding button from dashboard')
+            // Dont add duplicate buttons, delete if they're are any
+            if (task_id && taskIds.includes(task_id)) {
+                logger.error(`Button with duplicate task_id found in dashboard. {dashboardId: ${dashboardID}, task_id:${task_id}`)
+                return false // don't add duplicate tasks
+            }
+
+            // If the button is a custom task, then the task wont exist, so dont remove button
+            if (!!currButton.custom_task) return true
+
+            // If task does not exist, delete task
+            else if (task_id && !(tasks[task_id])) {
+                logger.error('Task does not exist! Hiding button from dashboard')
                 return false
             }
+
+            taskIds.push(task_id)
             return true
         })
 
-        // If this dashboard belongs to a device and the device is a cart, add some unique buttons
-        if (!!devices[stationID] && devices[stationID].device_model === 'MiR100') {
-            const device = devices[stationID]
-
-            // If the device has an idle location, add a button for it
-            if (!!device.idle_location) {
-                buttons = [
-                    ...buttons,
-                    {
-                        'name': 'Send to Idle Location',
-                        'color': '#FF4B4B',
-                        'task_id': 'custom_task',
-                        'custom_task': {
-                            'type': 'position_move',
-                            'position': device.idle_location,
-                            'device_type': 'MiR_100',
-                        },
-                        'deviceType': 'MiR_100',
-                        'id': 'custom_task_idle'
-                    }
-                ]
-            }
-
-            // Map through positions and add a button if it's a charge position
-            Object.values(positions).map((position, ind) => {
-                if (position.type === 'charger_position') {
-                    buttons = [
-                        ...buttons,
-                        {
-                            'name': position.name,
-                            'color': '#FFFF4B',
-                            'task_id': 'custom_task',
-                            'custom_task': {
-                                'type': 'position_move',
-                                'position': position._id,
-                                'device_type': 'MiR_100',
-                            },
-                            'deviceType': 'MiR_100',
-                            'id': `custom_task_charge_${ind}`
-                        }
-                    ]
-                }
-            })
-
-        }
-        // Else if the task q contains a human task that is unloading, show an unload button
-        else if (Object.values(taskQueue).length > 0) {
+        // if the task q contains a human task that is unloading, show an unload button
+        if (Object.values(taskQueue).length > 0) {
 
             // Map through each item and see if it's showing a station, station Id is matching the current station and a human task
-            Object.values(taskQueue).map((item, ind) => {
+            Object.values(taskQueue).forEach((item, ind) => {
                 // If it is matching, add a button the the dashboard for unloading
                 if (!!item.hil_station_id && item.hil_station_id === stationID && hilResponse !== item._id && item?.device_type === 'human') {
-                    buttons = [
-                        ...buttons,
+                    filteredButtons = [
+                        ...filteredButtons,
                         {
                             'name': item.hil_message,
                             'color': '#90eaa8',
@@ -217,7 +259,7 @@ const DashboardScreen = (props) => {
             })
         }
 
-        return buttons
+        return filteredButtons
     }
 
     const handleRouteClick = async (Id, name, custom, deviceType) => {
@@ -239,11 +281,21 @@ const DashboardScreen = (props) => {
             return handleHilSuccess(custom)
         }
 
-        let inQueue = false
-        Object.values(taskQueue).map((item) => {
-            // If its in the Q and not a handoff, then alert the user saying its already there
-            if (item.task_id === Id && !tasks[item.task_id].handoff) inQueue = true
-        })
+        const connectedDeviceExists = isDeviceConnected()
+
+        if (!connectedDeviceExists && deviceType !== DEVICE_CONSTANTS.HUMAN) {
+            // display alert notifying user that task is already in queue
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
+                label: "Alert! No device is currently connected to run this route",
+                message: `'${name}' not added`,
+            })
+
+            // clear alert after timeout
+            return setTimeout(() => setAddTaskAlert(null), 1800)
+        }
+
+        let inQueue = isRouteInQueue(Id, deviceType)
 
         // add alert to notify task has been added
         if (inQueue) {
@@ -386,12 +438,12 @@ const DashboardScreen = (props) => {
                     title={"Kick Off"}
                     close={() => setReportModal(null)}
                     dashboard={currentDashboard}
-                    onSubmit={(name, success) => {
+                    onSubmit={(name, success, quantity, message) => {
                         // set alert
                         setAddTaskAlert({
                             type: success ? ADD_TASK_ALERT_TYPE.KICK_OFF_SUCCESS : ADD_TASK_ALERT_TYPE.KICK_OFF_FAILURE,
                             label: success ? "Lot Kick Off Successful" : "Lot Kick Off Failed",
-                            message: name ? `"` + name + `"` : null
+                            message: message
                         })
 
                         // clear alert
@@ -406,12 +458,12 @@ const DashboardScreen = (props) => {
                     title={"Finish"}
                     close={() => setReportModal(null)}
                     dashboard={currentDashboard}
-                    onSubmit={(name, success) => {
+                    onSubmit={(name, success, quantity, message) => {
                         // set alert
                         setAddTaskAlert({
                             type: success ? ADD_TASK_ALERT_TYPE.FINISH_SUCCESS : ADD_TASK_ALERT_TYPE.FINISH_FAILURE,
                             label: success ? "Finish Successful" : "Finish Failed",
-                            message: name ? `"` + name + `"` : null
+                            message: message
                         })
 
                         // clear alert
@@ -424,7 +476,6 @@ const DashboardScreen = (props) => {
                 showBackButton={false}
                 showEditButton={true}
                 showSidebar={showSidebar}
-                setShowSidebar={setShowSidebar}
                 page={PAGES.DASHBOARD}
                 setEditingDashboard={() => setEditingDashboard(dashboardId)}
 
@@ -444,9 +495,13 @@ const DashboardScreen = (props) => {
                 visible={!!addTaskAlert}
             />
 
-            {mobileMode &&
+            {showTaskQueueButton &&
                 <DashboardTaskQueue />
             }
+
+
+
+
 
         </style.Container>
     )

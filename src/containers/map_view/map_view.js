@@ -38,7 +38,6 @@ import log from "../../logger"
 import { setCurrentMap } from "../../redux/actions/map_actions";
 import { getPreviousRoute } from "../../methods/utils/processes_utils";
 import { isObject } from "../../methods/utils/object_utils";
-
 const logger = log.getLogger("MapView")
 
 export class MapView extends Component {
@@ -84,11 +83,10 @@ export class MapView extends Component {
         // maps, but componentDidUpdate will catch that and set the current map to the first map
         // in the returned list (which will be the active map)
         // this.refreshMap()
-
         this.checkForMapLoad()
         window.addEventListener('mousedown', () => this.mouseDown = true, { passive: false })
         window.addEventListener('mouseup', () => { this.mouseDown = false; this.validateNewEntity() }, { passive: false })
-        window.addEventListener("click", () => {this.setState({showRightClickMenu:{}})});
+        window.addEventListener("click", () => { this.setState({ showRightClickMenu: {} }) });
 
         // Event listener that will recalculate the map geometry when the screen size changes
         window.addEventListener('resize', () => {
@@ -119,7 +117,6 @@ export class MapView extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-
         // If new maps are available, refresh current map
         // NOTE: will be useless once we have a method to select map
         // if (prevProps.maps.length != this.props.maps.length) {
@@ -288,8 +285,7 @@ export class MapView extends Component {
                 .scaleExtent([-100, 100])
                 // .scaleExtent([scaleExtent.min, scaleExtent.max])
                 .on('zoom', () => {
-
-                    // Disables the ability to hover over location on mouse drag when a loction is selected that is not new or a right click
+                    // Disables the ability to hover over location on mouse drag when a location is selected that is not new or a right click
                     if ((!!this.props.selectedStation || (!!this.props.selectedPosition && this.props.selectedPosition.schema !== 'temporary_position')) && (!this.props.editingStation || !this.props.editingPosition)) {
                         this.props.dispatchHoverStationInfo(null)
                     }
@@ -565,7 +561,7 @@ export class MapView extends Component {
 
 
     render() {
-        let { stations, positions, devices, selectedStation, selectedPosition, selectedStationChildrenCopy } = this.props
+        let { stations, positions, devices, selectedStation, selectedPosition, selectedStationChildrenCopy, deviceEnabled } = this.props
         if (this.props.currentMap == null) { return (<></>) }
         const { translate, scale } = this.d3;
 
@@ -656,6 +652,10 @@ export class MapView extends Component {
                             <TaskPaths d3={this.d3} />
                         }
 
+                        {!!this.props.selectedHoveringTask &&
+                            <TaskPaths d3={this.d3} />
+                        }
+
                         {!!this.props.selectedProcess &&
                             <ProcessPaths d3={this.d3} />
                         }
@@ -689,6 +689,8 @@ export class MapView extends Component {
                                                 d3={this.d3}
                                                 handleEnableDrag={this.onEnableDrag}
                                                 handleDisableDrag={this.onDisableDrag}
+                                                // Mouse down is used to disabling hovering when the mouse is down on the map
+                                                mouseDown={this.mouseDown}
                                             />
                                         )
                                 }</>
@@ -716,6 +718,8 @@ export class MapView extends Component {
                                                 d3={this.d3}
                                                 handleEnableDrag={this.onEnableDrag}
                                                 handleDisableDrag={this.onDisableDrag}
+                                                // Mouse down is used to disabling hovering when the mouse is down on the map
+                                                mouseDown={this.mouseDown}
                                             />
 
                                         )
@@ -723,21 +727,26 @@ export class MapView extends Component {
 
                                 <>{
                                     //// Render mobile devices
-                                    devices === undefined ?
+                                    (devices === undefined || !deviceEnabled) ?
                                         <></>
                                         :
                                         Object.values(devices).filter(device => device.device_model == 'MiR100').map((device, ind) =>
-                                            <MiR100 key={device._id}
-                                                device={device}
-                                                d3={this.d3}
-                                            />
+                                            <>
+                                                {device.connected == true &&
+                                                    <MiR100 key={device._id}
+                                                        device={device}
+                                                        d3={this.d3}
+                                                    />
+                                                }
+                                            </>
+
                                         )
                                 }</>
                             </>
                         }
                     </svg>
 
-                    {(!!this.props.selectedProcess || !!this.props.selectedTask) &&
+                    {(!!this.props.selectedTask || !!this.props.selectedHoveringTask) &&
                         <TaskStatistics d3={this.d3} />
                     }
 
@@ -768,6 +777,7 @@ const mapStateToProps = function (state) {
         maps: state.mapReducer.maps,
         currentMapId: state.localReducer.localSettings.currentMapId,
         currentMap: state.mapReducer.currentMap,
+        deviceEnabled: state.settingsReducer.settings.deviceEnabled,
 
         devices: state.devicesReducer.devices,
         positions: state.positionsReducer.positions,
@@ -781,6 +791,7 @@ const mapStateToProps = function (state) {
         editingPosition: state.positionsReducer.editingPosition,
 
         selectedTask: state.tasksReducer.selectedTask,
+        selectedHoveringTask: state.tasksReducer.selectedHoveringTask,
         selectedProcess: state.processesReducer.selectedProcess,
         fixingProcess: state.processesReducer.fixingProcess,
 

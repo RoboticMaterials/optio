@@ -12,6 +12,9 @@ export async function getPoses() {
     const response = await axios({
       method: 'get',
       url: apiIPAddress() + operator,
+      headers:{
+        'X-API-Key': '123456',
+      }
     });
 
     // Success

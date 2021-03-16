@@ -11,6 +11,10 @@ export async function getTaskQueue() {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator,
+            headers: {
+                'X-API-Key': '123456',
+                'Access-Control-Allow-Origin': '*'
+            }
         });
         // Success 🎉
         const data = response.data;
@@ -54,7 +58,9 @@ export async function postTaskQueue(taskQueueItem) {
             method: 'post',
             headers: {
                 'Content-Type': 'application/json',
+                'X-API-Key': '123456',
                 'Accept': 'application/json',
+                'Access-Control-Allow-Origin': '*'
             },
             data: taskQueueItem,
             url: apiIPAddress() + operator,
@@ -103,7 +109,9 @@ export async function deleteTaskQueueAll() {
             method: 'delete',
             headers: {
                 'Content-Type': 'application/json',
+                'X-API-Key': '123456',
                 'Accept': 'application/json',
+                'Access-Control-Allow-Origin': '*'
             },
             url: apiIPAddress() + operator,
         });
@@ -150,7 +158,9 @@ export async function deleteTaskQueueItem(id) {
             method: 'delete',
             headers: {
                 'Content-Type': 'application/json',
+                'X-API-Key': '123456',
                 'Accept': 'application/json',
+                'Access-Control-Allow-Origin': '*'
             },
             url: apiIPAddress() + operator + '/' + id,
         });
@@ -196,7 +206,9 @@ export async function putTaskQueueItem(item, ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'text/html'
+                'X-API-Key': '123456',
+                'Accept': 'text/html',
+                'Access-Control-Allow-Origin': '*'
             },
             data: item
         });

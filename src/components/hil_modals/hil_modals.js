@@ -18,6 +18,7 @@ import Button from "../basic/button/button";
 import { postTaskQueue, putTaskQueue, deleteTaskQueueItem } from '../../redux/actions/task_queue_actions'
 import { postEvents } from '../../redux/actions/events_actions'
 import { getTasks } from '../../redux/actions/tasks_actions'
+import { setShowModalId } from '../../redux/actions/task_queue_actions'
 
 // Import API
 import { putTaskQueueItem } from '../../api/task_queue_api'
@@ -27,8 +28,23 @@ import { deepCopy } from '../../methods/utils/utils'
 import { getCards } from "../../redux/actions/card_actions";
 import { sortBy } from "../../methods/utils/card_utils";
 import { SORT_MODES } from "../../constants/common_contants";
-import Card from "../side_bar/content/cards/card/card";
+import Lot from "../side_bar/content/cards/lot/lot";
 import { getRouteProcesses, getLoadStationId } from "../../methods/utils/route_utils";
+import { getLotTemplateData, getLotTotalQuantity, getMatchesFilter } from "../../methods/utils/lot_utils";
+import { getLotTemplates } from "../../redux/actions/lot_template_actions";
+import LotSortBar from "../side_bar/content/cards/lot_sort_bar/lot_sort_bar";
+import LotFilterBar from "../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
+import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from "../../constants/lot_contants";
+import {
+    BarsContainer,
+    columnCss,
+    containerCss,
+    descriptionCss,
+    dropdownCss,
+    reactDropdownSelectCss,
+    valueCss
+} from "../side_bar/content/cards/lot_bars.style";
+import SortFilterContainer from "../side_bar/content/cards/sort_filter_container/sort_filter_container";
 
 
 /**
@@ -48,15 +64,21 @@ const HILModals = (props) => {
         dashboard: dashboardId
     } = item || {}
 
+    const params = useParams()
+    const dashboardID = params.dashboardID
+
     const dispatch = useDispatch()
     const dispatchGetCards = () => dispatch(getCards())
+    const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
     const dispatchTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
     const disptachHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
     const disptachPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
     const dispatchSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
     const dispatchLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
+    const dispatchSetShowModalId = (id) => dispatch(setShowModalId(id))
 
     const hilTimers = useSelector(state => { return state.taskQueueReducer.hilTimers })
+    const processes = useSelector(state => { return state.processesReducer.processes }) || {}
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const activeHilDashboards = useSelector(state => state.taskQueueReducer.activeHilDashboards)
@@ -65,6 +87,7 @@ const HILModals = (props) => {
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards) || {}
     const objects = useSelector(state => state.objectsReducer.objects)
     const cards = useSelector(state => state.cardsReducer.cards)
+    const showModalId = useSelector(state => state.taskQueueReducer.showModalID)
 
     const [quantity, setQuantity] = useState(taskQuantity)
     const [selectedTask, setSelectedTask] = useState(null)
@@ -79,14 +102,18 @@ const HILModals = (props) => {
     const [didSelectInitialLot, setDidSelectInitialLot] = useState(false)
     const [hilLoadUnload, setHilLoadUnload] = useState('')
     const [dataLoaded, setDataLoaded] = useState(false)
-    const [lotFilterValue, setLotFilterValue] = useState('')
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState('')
     const [changeQtyMouseHold, setChangeQtyMouseHold] = useState('')
-    const [sortMode, setSortMode] = useState(SORT_MODES.END_ASCENDING)
+
     const [lotsAtStation, setLotsAtStation] = useState(false)
     const [taskHasProcess, setTaskHasProcess] = useState(false)
     const [noLotsSelected, setNoLotsSelected] = useState(false)
+    const [modalClosed, setModalClosed] = useState(false)
 
+    const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
+    const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
+    const [lotFilterValue, setLotFilterValue] = useState('')
+    const [selectedFilterOption, setSelectedFilterOption] = useState(LOT_FILTER_OPTIONS.name)
     const size = useWindowSize()
     const windowWidth = size.width
 
@@ -134,7 +161,7 @@ const HILModals = (props) => {
         }
     }, [availableLots.length])
 
-    // load card data on load for selecting lot
+    // load lot data on load for selecting lot
     useEffect(() => {
         // get dashboard info from item
         const dashboard = dashboards[dashboardId]
@@ -171,7 +198,7 @@ const HILModals = (props) => {
     * Get dropdownsearch options for cards
     *
     * Filter out cards that don't belong to the same station
-    * Each option only needs to contain the card's id and a label to display, the extaneous information can be left out
+    * Each option only needs to contain the lot's id and a label to display, the extaneous information can be left out
     *
     * */
     useEffect(() => {
@@ -181,19 +208,30 @@ const HILModals = (props) => {
         if ((taskProcesses && Array.isArray(taskProcesses) && (taskProcesses.length > 0))) {
             setIsProcessTask(true)
 
-            let stationCards = Object.values(cards).filter((currCard) => {
-                const {
-                    bins,
-                    process_id: currCardProcessId
-                } = currCard || {}
+            let stationCards = Object.values(cards)
+                .filter((currCard) => {
+                    const {
+                        bins,
+                        process_id: currCardProcessId
+                    } = currCard || {}
 
-                if (bins) {
-                    if (bins[loadStationId] && bins[loadStationId].count > 0 && (taskProcesses.includes(currCardProcessId))) return true
-                }
-            })
+                    if (bins) {
+                        if (bins[loadStationId] && bins[loadStationId].count > 0 && (taskProcesses.includes(currCardProcessId))) return true
+                    }
+                })
+                .map((currCard) => {
+                    const {
+                        bins
+                    } = currCard || {}
+
+                    return {
+                        ...currCard,
+                        count: bins[loadStationId].count
+                    }
+                })
 
             if (sortMode) {
-                sortBy(stationCards, sortMode)
+                sortBy(stationCards, sortMode, sortDirection)
             }
 
             if (stationCards && Array.isArray(stationCards) && stationCards.length > 0) {
@@ -212,7 +250,7 @@ const HILModals = (props) => {
 
 
 
-    }, [cards, selectedTask])
+    }, [cards, selectedTask, sortMode, sortDirection])
 
     useEffect(() => {
         if (count && quantity && (quantity > count)) setQuantity(parseInt(count))
@@ -307,6 +345,7 @@ const HILModals = (props) => {
     // Use Effect for when page loads, handles wether the HIL is a load or unload
     useEffect(() => {
         dispatchGetCards()
+        dispatchGetLotTemplates()
 
         const currentTask = tasks[item.task_id]
         setSelectedTask(currentTask)
@@ -329,7 +368,11 @@ const HILModals = (props) => {
         // On unmount, set the task q item to none
         return () => {
             dispatchTaskQueueItemClicked('')
-            // dispatchLocalHumanTask(null)
+
+            // Deletes the dashboard id from active list for the hil that has been responded too
+            const activeHilCopy = deepCopy(activeHilDashboards)
+            delete activeHilCopy[dashboardID]
+            dispatchSetActiveHilDashboards(activeHilCopy)
         }
 
     }, [])
@@ -393,7 +436,9 @@ const HILModals = (props) => {
         }
 
         // Deletes the dashboard id from active list for the hil that has been responded too
-        dispatchSetActiveHilDashboards(delete (activeHilDashboards[item.hil_station_id]))
+        const activeHilCopy = deepCopy(activeHilDashboards)
+        delete activeHilCopy[dashboardID]
+        dispatchSetActiveHilDashboards(activeHilCopy)
 
         const ID = deepCopy(taskQueueID)
 
@@ -428,7 +473,6 @@ const HILModals = (props) => {
             ...item,
             hil_response: false
         }
-
         delete newItem._id
 
         await putTaskQueueItem(newItem, taskQueueID)
@@ -579,6 +623,9 @@ const HILModals = (props) => {
                         <styled.HilButton color={'#90eaa8'}
                             onClick={() => {
                                 onHilSuccess()
+                                dispatchSetShowModalId(null)
+                                setModalClosed(true)
+
                             }}
                         >
                             <styled.HilIcon
@@ -632,6 +679,7 @@ const HILModals = (props) => {
                                     filter={Math.cbrt(eval(value))}
                                     onClick={() => {
                                         onHilSuccess(eval(value))
+                                        dispatchSetShowModalId(null)
                                     }}
                                 >
                                     {/* <styled.HilIcon
@@ -656,7 +704,12 @@ const HILModals = (props) => {
 
                             {renderSelectedLot()}
 
-                            <styled.FooterButton style={{ marginBottom: '1rem', marginTop: "1rem", marginLeft: '1rem' }} color={'#ff9898'} onClick={onHilFailure}>
+                            <styled.FooterButton style={{ marginBottom: '1rem', marginTop: "1rem", marginLeft: '1rem' }} color={'#ff9898'}
+                                onClick={() => {
+                                    onHilFailure()
+                                    dispatchSetShowModalId(null)
+                                    setModalClosed(true)
+                                }}>
                                 <styled.HilIcon
                                     style={{ marginBottom: 0, marginRight: "1rem", fontSize: "2.5rem" }}
                                     className='fas fa-times'
@@ -676,6 +729,8 @@ const HILModals = (props) => {
     }
 
     const renderQuantityOptions = () => {
+
+        const disabledQty = (quantity > count || !!count && quantity === 0)
 
         return (
             <>
@@ -805,7 +860,7 @@ const HILModals = (props) => {
                                                 //}
                                             }}
                                             value={quantity}
-                                            style={quantity > count ? { backgroundColor: 'red' } : {}}
+                                            style={disabledQty ? { backgroundColor: 'red' } : {}}
                                             onBlur={onBlurQuantityInput}
                                         />
                                         <styled.HilInputIconContainer
@@ -880,6 +935,9 @@ const HILModals = (props) => {
                                         }
 
                                     </styled.HilInputContainer>
+                                    {disabledQty &&
+                                        <styled.HilSubText style={{ marginBottom: "1rem", color: 'red' }}>Please enter a quantity above 0</styled.HilSubText>
+                                    }
                                     {renderSelectedLot()}
                                 </>
 
@@ -887,7 +945,7 @@ const HILModals = (props) => {
 
 
                             {count &&
-                                <styled.HilSubText style={{ marginBottom: "1rem" }}>Available Lot Items: {count}</styled.HilSubText>
+                                <styled.HilSubText style={{ marginBottom: "1rem"}}>Available Lot Items: {count}</styled.HilSubText>
                             }
                         </div>
 
@@ -895,8 +953,10 @@ const HILModals = (props) => {
 
                             <styled.HilButton
                                 color={'#90eaa8'}
+                                disabled={disabledQty}
                                 onClick={() => {
                                     onHilSuccess()
+                                    dispatchSetShowModalId(null)
                                 }}
                             >
                                 <styled.HilIcon
@@ -917,28 +977,34 @@ const HILModals = (props) => {
                             </styled.HilButton>
 
                             {((hilType === 'pull' && hilLoadUnload === 'load') || hilType === 'check') &&
-                                <styled.HilButton color={'#f7cd89'} onClick={onHilPostpone}>
-                                    <styled.HilIcon
-                                        style={{}}
-                                        // onClick={onHilPostpone}
-                                        className='icon-postpone'
-                                        color={'#ff7700'}
-                                        styled={{ marginTop: '.5rem' }}
-                                    />
-                                    <styled.HilButtonText
-                                        color={'#ff7700'}
-                                        style={{ margin: 0, padding: 0 }}
-                                    >
-                                        Postpone
-                                </styled.HilButtonText>
-                                </styled.HilButton>
+                                <></>
+                                //<styled.HilButton color={'#f7cd89'} onClick={onHilPostpone}>
+                                //    <styled.HilIcon
+                                //        style={{}}
+                                // onClick={onHilPostpone}
+                                //        className='icon-postpone'
+                                //      color={'#ff7700'}
+                                //      styled={{ marginTop: '.5rem' }}
+                                //  />
+                                //  <styled.HilButtonText
+                                //      color={'#ff7700'}
+                                //      style={{ margin: 0, padding: 0 }}
+                                //  >
+                                //      Postpone
+                                //  </styled.HilButtonText>
+                                //  </styled.HilButton>
                             }
 
                             {(hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
 
-                                <styled.HilButton color={'#ff9898'} onClick={onHilFailure}>
+                                <styled.HilButton
+                                    color={'#ff9898'}
+                                    onClick={() => {
+                                        onHilFailure()
+                                        dispatchSetShowModalId(null)
+                                        setModalClosed(true)
+                                    }}>
                                     <styled.HilIcon
-                                        // onClick={onHilFailure}
                                         className='fas fa-times'
                                         color={'#ff1818'}
                                     />
@@ -966,16 +1032,16 @@ const HILModals = (props) => {
 
                     </styled.HeaderMainContent>
 
-                    <div style={{ display: "flex", maxWidth: "50rem", minWidth: "1rem", width: "50%" }}>
-                        <Textbox
-                            focus={shouldFocusLotFilter}
-                            placeholder='Filter lots...'
-                            onChange={(e) => {
-                                setLotFilterValue(e.target.value)
-                            }}
-                            textboxContainerStyle={{ flex: 1 }}
-                        />
-                    </div>
+                    <SortFilterContainer
+                        sortMode={sortMode}
+                        setSortMode={setSortMode}
+                        sortDirection={sortDirection}
+                        setSortDirection={setSortDirection}
+                        shouldFocusLotFilter={shouldFocusLotFilter}
+                        setLotFilterValue={setLotFilterValue}
+                        selectedFilterOption={selectedFilterOption}
+                        setSelectedFilterOption={setSelectedFilterOption}
+                    />
                 </styled.Header>
                 <styled.LotSelectorContainer>
 
@@ -984,23 +1050,16 @@ const HILModals = (props) => {
 
                             {availableLots
                                 .filter((currLot) => {
-
                                     const {
-                                        name: currLotName,
-                                        _id: currLotId,
-                                        bins: currLotBins
-                                    } = currLot || {}
+                                        bins = {},
+                                    } = currLot
 
-                                    if (
-                                        currLotName
-                                            .toLowerCase()
-                                            .includes(lotFilterValue.toLowerCase())
-                                    ) {
-                                        return true
-                                    }
-                                    else {
-                                        return false
-                                    }
+                                    const count = bins[stationId]?.count
+
+                                    return getMatchesFilter({
+                                        ...currLot,
+                                        quantity: count
+                                    }, lotFilterValue, selectedFilterOption)
                                 })
                                 .map((currLot, lotIndex) => {
                                     const {
@@ -1010,19 +1069,37 @@ const HILModals = (props) => {
                                         cardId,
                                         start_date,
                                         end_date,
-                                        bins = {}
+                                        bins = {},
+                                        flags,
+                                        lotNumber,
+                                        process_id: processId = "",
+                                        lotTemplateId
                                     } = currLot
 
-                                    const count = bins[stationId]?.count
+                                    const process = processes[processId]
+                                    const {
+                                        name: processName
+                                    } = process || {}
+
+                                    const totalQuantity = getLotTotalQuantity({ bins }) || 0
+
+                                    const count = bins[stationId || loadStationId]?.count || 0
 
                                     const isSelected = selectedLotId === lotId
+                                    const templateValues = getLotTemplateData(lotTemplateId, currLot)
 
                                     // const lotName = lots[lot_id] ? lots[lot_id].name : null
                                     const objectName = objects[object_id] ? objects[object_id].name : null
 
                                     return (
                                         <styled.CardContainer>
-                                            <Card
+                                            <Lot
+                                                templateValues={templateValues}
+                                                totalQuantity={totalQuantity}
+                                                lotNumber={lotNumber}
+                                                processName={processName}
+                                                flags={flags || []}
+                                                enableFlagSelector={false}
                                                 name={name}
                                                 start_date={start_date}
                                                 end_date={end_date}
@@ -1070,7 +1147,11 @@ const HILModals = (props) => {
 
                         <styled.FooterButton
                             color={'#ff9898'}
-                            onClick={onHilFailure}
+                            onClick={() => {
+                                onHilFailure()
+                                dispatchSetShowModalId(null)
+                                setModalClosed(true)
+                            }}
                         >
                             <styled.HilIcon
                                 className='fas fa-times'
@@ -1122,7 +1203,7 @@ const HILModals = (props) => {
      * HIL Check will only show on a pull request
      */
 
-    if (dataLoaded) {
+    if (dataLoaded && modalClosed !== true) {
         return (
             <styled.HilContainer >
 

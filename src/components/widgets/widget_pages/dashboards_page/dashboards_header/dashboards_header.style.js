@@ -44,7 +44,7 @@ export const Title = styled.h2`
 export const LotsTitle = styled.h2`
     color: ${props => props.theme.bg.octonary};
     font-family: ${props => props.theme.font.primary};
-    font-size: 1rem;
+    font-size: 1.5rem;
     padding-right:1rem;
     padding-top:0.4rem;
 
@@ -69,11 +69,12 @@ export const RowContainer = styled.div`
     justify-content: flex-start;
 
     margin-left:2rem;
+    margin-right:2rem;
     padding-top:1rem;
     padding-right:2rem;
     padding-bottom: 1rem;
-    width: 100%;
-    height: 3rem;
+    width: 90%;
+    height: 3.5rem;
     overflow:hidden;
     flex-wrap: wrap;
 
@@ -106,24 +107,4 @@ export const Dots = styled.div`
 
 `
 
-export const LotItem = styled.div`
-    align-items: center;
-    justify-content: center;
-    height: 1.7rem;
-    color: white;
 
-    white-space: nowrap;
-
-    width: auto;
-    background: transparent;
-
-    padding-right:.5rem;
-    padding-left:.5rem;
-    margin-right:.5rem;
-
-    border-radius: 0.5rem;
-    border: 0.1rem solid;
-    border-color: ${props => props.error ? 'red' : 'white'};
-
-
-`

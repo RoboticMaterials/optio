@@ -128,14 +128,14 @@ const CardEditor = (props) => {
 		let unloadStationId = matchingRoute?.unload?.station
 
 		loadStationId && dropdownOptions.push({
-			name: "Route: " + matchingRoute.name + " - Station: " + stations[loadStationId]?.name,
+			name: "Route: " + matchingRoute.name + " - Draggable: " + stations[loadStationId]?.name,
 			route_id: matchingRoute._id,
 			station_id: loadStationId,
 			_id: currRouteId + "+" + loadStationId
 		})
 
 		unloadStationId && dropdownOptions.push({
-			name: "Route: " + matchingRoute.name + " - Station: " + stations[unloadStationId]?.name,
+			name: "Route: " + matchingRoute.name + " - Draggable: " + stations[unloadStationId]?.name,
 			route_id: matchingRoute._id,
 			station_id: unloadStationId,
 			_id: currRouteId + "+" + unloadStationId
@@ -218,10 +218,10 @@ const CardEditor = (props) => {
 				var destinationCardId = null
 				Object.values(cards).forEach((currCard, cardIndex) => {
 
-					// card is in same lot
+					// lot is in same lot
 					if(currCard.lot_id === card.lot_id) {
 
-						// card exists at the station / route combo. update instead of create
+						// lot exists at the station / route combo. update instead of create
 						if((currCard.route_id === moveRouteId) && (currCard.station_id === moveStationId)) {
 							destinationCardId = currCard._id
 						}
@@ -230,7 +230,7 @@ const CardEditor = (props) => {
 
 				submitItem.count = submitItem.count - moveCountVal
 
-				// PUT destination card
+				// PUT destination lot
 				if(destinationCardId) {
 					const destinationItem = {
 						...cards[destinationCardId],
@@ -241,7 +241,7 @@ const CardEditor = (props) => {
 
 				}
 
-			 	// post destination card
+			 	// post destination lot
 				else {
 					onPostCard({
 						name,
@@ -267,8 +267,8 @@ const CardEditor = (props) => {
 			// 	route_id: bin[0]?.route_id,
 			// 	description,
 			// 	object_id: objectId,
-			// 	process_id: card.process_id,
-			// 	lot_id: card.lot_id,
+			// 	process_id: lot.process_id,
+			// 	lot_id: lot.lot_id,
 			// 	start_date: start,
 			// 	end_date: end,
 			// 	count,

@@ -16,6 +16,7 @@ import { postDashboard, dashboardOpen } from '../../../redux/actions/dashboards_
 
 import { deepCopy } from '../../../methods/utils/utils'
 import { handlePostTaskQueue } from "../../../redux/actions/task_queue_actions";
+import * as sidebarActions from "../../../redux/actions/sidebar_actions";
 
 
 
@@ -43,10 +44,12 @@ const WidgetButton = (props) => {
     const dispatchPutStation = (station, ID) => dispatch(putStation(station, ID))
     const dispatchRemovePosition = (id) => dispatch(removePosition(id))
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
+    const dispatchSetConfirmDelete = (show, callback) => dispatch(sidebarActions.setConfirmDelete(show, callback))
 
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const showSideBar = useSelector(state => state.sidebarReducer.open)
+    const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
     const stations = useSelector(state => state.stationsReducer.stations)
 
     const dashboardID = params.dashboardID
@@ -64,13 +67,28 @@ const WidgetButton = (props) => {
                 break;
 
             case 'dashboards':
-                onDashboardClick()
+                if(pageInfoChanged) {
+                    dispatchSetConfirmDelete(true, onDashboardClick)
+                }
+                else {
+                    onDashboardClick()
+                }
                 break;
 
             default:
-                history.push('/locations/' + id + '/' + type)
+                if(pageInfoChanged) {
+                    dispatchSetConfirmDelete(true, onDefaultClick)
+                }
+                else {
+                    onDefaultClick()
+                }
+
                 break;
         }
+    }
+
+    const onDefaultClick = () => {
+        history.push('/locations/' + id + '/' + type)
     }
 
     // Handles  if the widget button clicked was a cart
@@ -168,10 +186,6 @@ const WidgetButton = (props) => {
     return (
         <styled.WidgetButtonButton
             onClick={() => {
-                if (showSideBar && !widgetPage) {
-                    const hamburger = document.querySelector('.hamburger')
-                    hamburger.classList.toggle('is-active')
-                }
 
                 handleOnClick()
 

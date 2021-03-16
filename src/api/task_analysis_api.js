@@ -9,6 +9,10 @@ export async function getTasksAnalysis() {
     const response = await axios({
       method: 'GET',
       url: apiIPAddress() + operator,
+      headers: {
+        'X-API-Key': '123456',
+        'Access-Control-Allow-Origin': '*'
+    }
     });
 
     // Success 🎉
@@ -54,6 +58,10 @@ export async function getTaskAnalysis(id) {
     const response = await axios({
       method: 'GET',
       url: apiIPAddress() + operator + '/' + id,
+      headers: {
+        'X-API-Key': '123456',
+        'Access-Control-Allow-Origin': '*'
+    }
     });
     // Success 🎉
     // log.debug('getTask: response: ', response);

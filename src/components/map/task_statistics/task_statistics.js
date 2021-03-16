@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { useLocation } from "react-router-dom";
 
 // Import Styles
 import * as styled from './task_statistics.style'
 import taskAnalysisReducer from "../../../redux/reducers/task_analysis_reducer";
+import IconButton from '../../basic/icon_button/icon_button'
 import {getTasksAnalysis} from "../../../redux/actions/task_analysis_actions";
 
 const TaskStatistics = (props) => {
@@ -18,22 +20,34 @@ const TaskStatistics = (props) => {
     const onGetTasksAnalysis = () => dispatch(getTasksAnalysis())
 
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
+    const selectedHoveringTask = useSelector(state => state.tasksReducer.selectedHoveringTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const positions = useSelector(state => state.positionsReducer.positions)
+    const stations = useSelector(state => state.stationsReducer.stations)
     const tasksAnalysis = useSelector(state => state.taskAnalysisReducer.tasksAnalysis) || {}
+
+    const editingStation = useSelector(state => state.stationsReducer.editingStation)
+    const editingPosition = useSelector(state => state.positionsReducer.editingPosition)
+    const taskEditing = useSelector(state => state.tasksReducer.editingTask)
+    const processEditing = useSelector(state => state.processesReducer.editingProcess)
+
+    const location = useLocation()
 
     useEffect(() => {
         onGetTasksAnalysis()
     }, [])
 
     const handleSingleTask = (task) => {
-        if (task === undefined) return null
-        const selectedTaskAnalysis = tasksAnalysis[task._id]
-        if (selectedTaskAnalysis === undefined) return null
+      if(!!task){
+        if (task === undefined || selectedTask === undefined) return null
 
-        const startPos = positions[task.load.position]
-        const endPos = positions[task.unload.position]
+        if (editingStation === true || editingPosition === true ||(taskEditing && location.pathname === '/tasks')) return null
+
+
+        const selectedTaskAnalysis = !!task ? tasksAnalysis[task._id]: null
+        const startPos = task.device_types[0] == 'human' && task.load.position == task.load.station ? stations[task.load.position] : positions[task.load.position]
+        const endPos = task.device_types[0] == 'human' && task.unload.position == task.unload.station ? stations[task.unload.position] : positions[task.unload.position]
 
         if (task === null || positions === null || startPos === undefined || endPos === undefined) return null
 
@@ -45,7 +59,6 @@ const TaskStatistics = (props) => {
 
         // Some fancy calculation to find a common offset from a task path
         // Doesnt work because it doesnt
-
         const x1 = startPos.x
         const y1 = startPos.y
         const x2 = endPos.x
@@ -78,41 +91,65 @@ const TaskStatistics = (props) => {
         // const xPosition = (midX - height() * Math.sin(theta)) - 80 + 'px'
         // const yPosition = (midY + height() * Math.cos(theta)) - 40 + 'px'
 
-        const xPosition = midX -80 + 'px'
-        const yPosition = midY + 'px'
+        const xPosition = midX -40 + 'px'
+        const yPosition = midY +20 + 'px'
+          return (
+              <styled.TaskStatisticsContainer xPosition={xPosition} yPosition={yPosition}>
+              <styled.RowContainer style = {{borderBottom: '1px solid black', padding: '.2rem .2rem .2rem .2rem', width: '100%'}}>
 
-        return (
-            <styled.TaskStatisticsContainer xPosition={xPosition} yPosition={yPosition}>
+                <styled.TaskText style = {{paddingRight: '.3rem'}}>{task.name} </styled.TaskText>
 
-                <styled.TaskNameContainer>
-                    <styled.TaskNameText>{task.name}</styled.TaskNameText>
-                </styled.TaskNameContainer>
+                  <IconButton color={'red'} style = {{paddingRight: '.2rem'}}>
+                      {task.device_types[0] === 'human' ?
+                          <i className="fas fa-user"></i>
+                          :
+                          <i className="fas fa-robot"></i>
+                      }
+                  </IconButton>
 
-                <styled.RowContainer style={{ justifyContent: 'space-between', width: '100%', marginTop: '.25rem' }}>
-                    <styled.RowContainer>
-                        <styled.TaskIcon className='far fa-clock' />
-                        <styled.TaskText>{`${selectedTaskAnalysis.avg_run_time}s`}</styled.TaskText>
-                    </styled.RowContainer>
+              </styled.RowContainer>
 
-                    <styled.RowContainer>
-                        <styled.TaskIcon className='far fa-check-circle' />
-                        <styled.TaskText>{selectedTaskAnalysis.successes}</styled.TaskText>
-                    </styled.RowContainer>
+              <styled.RowContainer style = {{paddingTop: '.2rem'}}>
 
-                    <styled.RowContainer>
-                        <styled.TaskIcon className='far fa-times-circle' />
-                        <styled.TaskText>{selectedTaskAnalysis.failures}</styled.TaskText>
-                    </styled.RowContainer>
+                  <styled.TaskText style = {{paddingRight: '.7rem'}}>{task.processes.length}</styled.TaskText>
 
-                </styled.RowContainer>
-            </styled.TaskStatisticsContainer>
-        )
-    }
+                  <IconButton color= '#ffb62e'>
+                    <i className="fas fa-route"></i>
+                  </IconButton>
+
+              </styled.RowContainer>
+
+              {task.device_types[0] !== 'human' && !!selectedTaskAnalysis &&
+                  <styled.RowContainer style={{ justifyContent: 'space-between', width: '82%', marginTop: '.25rem', borderTop: '1px solid black', paddingTop: '.3rem'}}>
+                      <styled.RowContainer>
+                          <styled.TaskIcon className='far fa-clock' />
+                          <styled.TaskText>{`${selectedTaskAnalysis.avg_run_time}s`}</styled.TaskText>
+                      </styled.RowContainer>
+
+                      <styled.RowContainer>
+                          <styled.TaskIcon className='far fa-check-circle' />
+                          <styled.TaskText>{selectedTaskAnalysis.successes}</styled.TaskText>
+                      </styled.RowContainer>
+
+                      <styled.RowContainer>
+                          <styled.TaskIcon className='far fa-times-circle' />
+                          <styled.TaskText>{selectedTaskAnalysis.failures}</styled.TaskText>
+                      </styled.RowContainer>
+
+                  </styled.RowContainer>
+            }
+              </styled.TaskStatisticsContainer>
+          )
+        }
+        else {return null}
+
+      }
+
 
     const handleProcessTasks = () => {
 
-        if (!!selectedTask) {
-            return handleSingleTask(selectedTask)
+        if (!!selectedHoveringTask) {
+            return handleSingleTask(selectedHoveringTask)
         }
 
         // return Object.keys(selectedProcess.routes).map((station) => {
@@ -130,6 +167,7 @@ const TaskStatistics = (props) => {
             handleProcessTasks()
             :
             handleSingleTask(selectedTask)
+
 
 
     )

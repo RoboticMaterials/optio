@@ -34,7 +34,7 @@ export const HilContainer = styled.div`
 export const HilInputContainer = styled.div`
     display: flex;
     flex-direction: row;
-    margin-bottom: 3rem;
+    margin-bottom: 1rem;
     margin-top: 1rem;
 `
 
@@ -356,6 +356,16 @@ export const HeaderMainContent = styled.div`
     margin-bottom: 1rem;
 `
 
+export const SortFilterContainer = styled.div`
+   
+    //align-self: stretch;
+    //overflow: hidden;
+    //width: 40rem;
+    //min-width: 10rem;
+    //max-width: 50%;
+
+`
+
 
 export const HilIcon = styled.i`
     display: flex;
@@ -389,6 +399,7 @@ export const HilButton = styled.button`
     padding: 0rem 3rem;
     align-items: center;
     justify-content: center;
+    ${props => props.disabled && "filter: grayscale(80%)"};
 
 
 `

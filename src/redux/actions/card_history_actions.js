@@ -28,7 +28,7 @@ export const getCardHistory = (cardId) =>  async (dispatch) => {
 
         // make request
         const card = await api.getCardHistory(cardId);
-        console.log("getCardHistory card",card)
+        console.log("getCardHistory lot",card)
 
         // const cardsObj = convertArrayToObject(cards, "_id")
         // console.log("getCards cardsObj",cardsObj)

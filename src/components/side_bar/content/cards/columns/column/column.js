@@ -1,12 +1,28 @@
-import {SortableContainer} from "react-sortable-hoc";
-import {useDispatch, useSelector} from "react-redux";
-import {deleteCard, putCard} from "../../../../../../redux/actions/card_actions";
-import * as styled from "./column.style";
-import {Container} from "react-smooth-dnd";
-import Card from "../../card/card";
 import React, {useState} from "react";
-import {setCardDragging, setColumnHovering} from "../../../../../../redux/actions/card_page_actions";
-import {generateBinId, sortBy} from "../../../../../../methods/utils/card_utils";
+
+// actions
+import {deleteCard, putCard} from "../../../../../../redux/actions/card_actions";
+import {
+	setDroppingLotId,
+	setColumnHovering,
+	setLotHovering,
+	setDraggingLotId
+} from "../../../../../../redux/actions/card_page_actions";
+
+// components external
+import { Draggable } from 'react-smooth-dnd';
+import {Container} from "react-smooth-dnd";
+
+// components internal
+import Lot from "../../lot/lot";
+
+// functions external
+import {useDispatch, useSelector} from "react-redux";
+
+// styles
+import * as styled from "./column.style";
+import {getLotTemplateData} from "../../../../../../methods/utils/lot_utils";
+import {sortBy} from "../../../../../../methods/utils/card_utils";
 
 
 // const animationDuration = 500
@@ -16,27 +32,36 @@ const Column = ((props) => {
 		station_id,
 		stationName = "Unnamed",
 		handleCardClick,
-		cards,
+		// cards,
 		processId,
 		HeaderContent,
 		isCollapsed,
 		maxWidth,
 		maxHeight,
-		sortMode
+		sortMode,
+		sortDirection
 	} = props
 
+	let cards = [...props.cards]
 	if(sortMode) {
-		sortBy(cards, sortMode)
+		sortBy(cards, sortMode, sortDirection)
 	}
 
+	// redux state
 	const objects = useSelector(state => { return state.objectsReducer.objects })
 	const reduxCards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || {}
+	const hoveringLotId = useSelector(state => { return state.cardPageReducer.hoveringLotId }) || null
+	const draggingLotId = useSelector(state => { return state.cardPageReducer.draggingLotId }) || null
 
-	const [dragEnter, setDragEnter] = useState(false)
-
+	// actions
 	const dispatch = useDispatch()
-	const onPutCard = async (card, ID) => await dispatch(putCard(card, ID))
-	const dispatchSetCardDragging = async (lotId, binId) => await dispatch(setCardDragging(lotId, binId))
+	const dispatchPutCard = async (card, ID) => await dispatch(putCard(card, ID))
+	const dispatchSetDroppingLotId = async (lotId, binId) => await dispatch(setDroppingLotId(lotId, binId))
+	const dispatchSetLotHovering = async (lotId) => await dispatch(setLotHovering(lotId))
+	const dispatchSetDraggingLotId = async (lotId) => await dispatch(setDraggingLotId(lotId))
+
+	// component state
+	const [dragEnter, setDragEnter] = useState(false)
 
 	const shouldAcceptDrop = (sourceContainerOptions, payload) => {
 		const {
@@ -51,11 +76,20 @@ const Column = ((props) => {
 		return true
 	}
 
+	const onMouseEnter = (event, lotId) => {
+		dispatchSetLotHovering(lotId)
+	}
+
+	const onMouseLeave = (event) => {
+		dispatchSetLotHovering(null)
+	}
+
+
 	const handleDrop = async (dropResult) => {
 		const { removedIndex, addedIndex, payload, element } = dropResult;
 
 		if (payload === null) { //  No new button, only reorder
-
+			return
 		} else {
 			if(addedIndex !== null) {
 				const {
@@ -66,7 +100,7 @@ const Column = ((props) => {
 					...remainingPayload
 				} = payload
 
-				await dispatchSetCardDragging(cardId, binId)
+				await dispatchSetDroppingLotId(cardId, binId)
 
 				if(!(binId === station_id)) {
 
@@ -87,7 +121,7 @@ const Column = ((props) => {
 							const oldCount = parseInt(oldBins[station_id]?.count || 0)
 							const movedCount = parseInt(movedBin?.count || 0)
 
-							await onPutCard({
+							await dispatchPutCard({
 								...remainingPayload,
 								bins: {
 									...remainingOldBins,
@@ -101,7 +135,7 @@ const Column = ((props) => {
 
 						// no items in bin
 						else {
-							const a = await onPutCard({
+							const a = await dispatchPutCard({
 								...remainingPayload,
 								bins: {
 									...remainingOldBins,
@@ -114,7 +148,7 @@ const Column = ((props) => {
 					}
 				}
 
-				await dispatchSetCardDragging(null, null)
+				await dispatchSetDroppingLotId(null, null)
 			}
 		}
 
@@ -125,7 +159,7 @@ const Column = ((props) => {
 			<styled.BodyContainer
 				dragEnter={dragEnter}
 			>
-				<div onTouchEndCapture={null}></div>
+				{/*<div onTouchEndCapture={null}></div>*/}
 				<Container
 					onDrop={async (DropResult)=> {
 						await handleDrop(DropResult)
@@ -133,8 +167,31 @@ const Column = ((props) => {
 					}}
 					shouldAcceptDrop={shouldAcceptDrop}
 					getGhostParent={()=>document.body}
-					onDragStart={(dragStartParams, b, c)=>{}}
-					onDragEnd={(dragEndParams)=>{}}
+					onDragStart={(dragStartParams, b, c)=>{
+						const {
+							isSource,
+							payload,
+							willAcceptDrop
+						} = dragStartParams
+
+						if(isSource) {
+							const {
+								binId,
+								cardId
+							} = payload
+
+							dispatchSetDraggingLotId(cardId)
+						}
+					}}
+					onDragEnd={(dragEndParams)=>{
+						const {
+							isSource,
+						} = dragEndParams
+
+						if(isSource) {
+							dispatchSetDraggingLotId(null)
+						}
+					}}
 					onDragEnter={()=> {
 						setDragEnter(true)
 					}}
@@ -155,25 +212,47 @@ const Column = ((props) => {
 								name,
 								object_id,
 								cardId,
-								start_date,
-								end_date
+								flags,
+								lotNumber,
+								totalQuantity,
+								processName,
+								lotTemplateId,
+								...rest
 							} = card
+
+							const templateValues = getLotTemplateData(lotTemplateId, card)
 
 							// const lotName = lots[lot_id] ? lots[lot_id].name : null
 							const objectName = objects[object_id] ? objects[object_id].name : null
 
+							const isSelected = (draggingLotId !== null) ? (draggingLotId === cardId) : (hoveringLotId === cardId)
+							const selectable = (hoveringLotId !== null) || (draggingLotId !== null)
+
 							return(
-								<Card
+								<Draggable
+									key={cardId}
+									onMouseEnter={(event) => onMouseEnter(event, cardId)}
+									onMouseLeave={onMouseLeave}
+								>
+								<Lot
+									enableFlagSelector={true}
+									templateValues={templateValues}
+									selectable={selectable}
+									isSelected={isSelected}
+									key={cardId}
+									processName={processName}
+									totalQuantity={totalQuantity}
+									lotNumber={lotNumber}
 									name={name}
-									start_date={start_date}
-									end_date={end_date}
 									objectName={objectName}
 									count={count}
-									id={index}
+									id={cardId}
+									flags={flags || []}
 									index={index}
 									onClick={()=>handleCardClick(cardId, processId, station_id)}
 									containerStyle={{marginBottom: "0.5rem"}}
 								/>
+								</Draggable>
 							)
 						})}
 
@@ -192,8 +271,18 @@ const Column = ((props) => {
 			>
 				{HeaderContent}
 
-				<styled.BodyContainer>
-					<styled.RotatedRouteName>{stationName}</styled.RotatedRouteName>
+				<styled.BodyContainer style={{
+					padding: "1rem 0",
+					whiteSpace: "nowrap",
+					overflow: "hidden",
+					textOverflow: "ellipsis",
+
+				}}>
+					<styled.RotationWrapperOuter>
+						<styled.RotationWrapperInner>
+							<styled.RotatedRouteName>{stationName}</styled.RotatedRouteName>
+						</styled.RotationWrapperInner>
+					</styled.RotationWrapperOuter>
 				</styled.BodyContainer>
 			</styled.StationContainer>
 		)

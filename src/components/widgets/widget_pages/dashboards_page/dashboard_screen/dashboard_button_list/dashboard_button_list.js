@@ -19,6 +19,7 @@ import { deepCopy } from "../../../../../../methods/utils/utils";
 import { OPERATION_TYPES, TYPES } from "../../dashboards_sidebar/dashboards_sidebar";
 import { theme } from "../../../../../../theme";
 import DashboardSplitButton from "../../dashboard_buttons/dashboard_split_button/dashboard_split_button";
+import {getCanDeleteDashboardButton} from "../../../../../../methods/utils/dashboards_utils";
 const logger = log.getLogger("Dashboards")
 
 

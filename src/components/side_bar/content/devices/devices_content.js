@@ -25,6 +25,7 @@ import DeviceItem from './device_item/device_item'
 // Import Actions
 import { putDevices, postDevices, getDevices, deleteDevices, setSelectedDevice } from '../../../../redux/actions/devices_actions'
 import { setSelectedStation, putStation, postStation } from '../../../../redux/actions/stations_actions'
+import { putDashboard } from '../../../../redux/actions/dashboards_actions'
 import { postPosition, putPosition, setSelectedStationChildrenCopy } from '../../../../redux/actions/positions_actions'
 import { postDashboard } from '../../../../redux/actions/dashboards_actions'
 import * as stationActions from '../../../../redux/actions/stations_actions'
@@ -47,12 +48,8 @@ const DevicesContent = () => {
     const dispatch = useDispatch()
     const dispatchPutDevice = (device, ID) => dispatch(putDevices(device, ID))
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
-    const dispatchSetSelectedStationChildrenCopy = (children) => dispatch(setSelectedStationChildrenCopy(children))
     const dispatchSetSelectedDevice = (selectedDevice) => dispatch(setSelectedDevice(selectedDevice))
-
-    const dispatchPostPosition = (position) => dispatch(postPosition(position))
-    const dispatchPutPosition = (position) => dispatch(putPosition(position))
-    const dispatchPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
+    const dispatchPutDashboards = (dashboard, id) => dispatch(putDashboard(dashboard, id))
 
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
@@ -61,6 +58,7 @@ const DevicesContent = () => {
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
     const selectedDevice = useSelector(state => state.devicesReducer.selectedDevice)
+    const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
 
     const width = useSelector(state => state.sidebarReducer.width)
     const isSmall = width < widthBreakPoint
@@ -75,11 +73,11 @@ const DevicesContent = () => {
     // ======================================== //
 
     // Sets the editingDeviceID to new so that the save knows to post instead of put
-    const handleAddDevice = () => {
+    const onAddDevice = () => {
     }
 
     // Renders Existing Devices
-    const handleExistingDevices = () => {
+    const renderExistingDevices = () => {
 
         try {
 
@@ -97,10 +95,7 @@ const DevicesContent = () => {
                         tasks={tasks}
                         taskQueue={taskQueue}
                         setSelectedDevice={(deviceID) => {
-
-                            console.log('QQQQ Selected Device', devices[deviceID])
                             dispatchSetSelectedDevice(deepCopy(devices[deviceID]))
-
                         }
                         }
                     />
@@ -115,16 +110,85 @@ const DevicesContent = () => {
     }
 
     /**
-     * This function is called when the save button is pressed. The location is POSTED or PUT to the backend.
-     * If the location is new and is a station, this function also handles posting the default dashboard and
-     * tieing it to this location. Each child position for a station is also either POSTED or PUT.
+     * This function is called when the save button is pressed.
+     * If its a Mir100 and the idle location has changed, then handle the associated device dashboard
      */
-    const handleSaveDevice = () => {
+    const onSaveDevice = async () => {
 
         // If a AMR, then just put device, no need to save locaiton since it does not need one
         if (selectedDevice.device_model === 'MiR100') {
-            dispatchPutDevice(selectedDevice, selectedDevice._id)
+
+            // Handle Idle Location changes
+            // If the idle location of selected device and the unedited version of selected device is different, then change the dashboard button
+            if (selectedDevice.idle_location !== devices[selectedDevice._id].idle_location) {
+
+                const dashboard = dashboards[selectedDevice.dashboards[0]]
+
+                // If no idle location, then delete dashboard button if need be
+                if (!selectedDevice.idle_location || selectedDevice.idle_location.length === 0) {
+
+                    // Map through buttons
+                    dashboard.buttons.map((button, ind) => {
+                        // If the button uses the old idle location, then delete the button
+                        if (!!button.custom_task && button.custom_task.position === devices[selectedDevice._id].idle_location) {
+
+                            // Delete button
+                            dashboard.buttons.splice(ind, 1)
+                        }
+                    })
+                }
+
+                // Add/edit the dashboard button
+                else {
+
+                    // Used to see if an idleButton alread exists
+                    let idleButtonExists = false
+
+                    dashboard.buttons.map((button, ind) => {
+                        // If the button uses the old idle location, then update
+                        if (!!button.custom_task && button.custom_task.position === devices[selectedDevice._id].idle_location) {
+                            // button exists so dont add a new on
+                            idleButtonExists = true
+
+                            // Edit the existing button to use the new idle location
+                            button = {
+                                ...button,
+                                custom_task: {
+                                    ...button.custom_task,
+                                    position: selectedDevice.idle_location
+                                }
+                            }
+                            // Splice in the new button
+                            dashboard.buttons.splice(ind, 1, button)
+                        }
+                    })
+
+                    // If the button doesnt exist then add the button to the dashbaord
+                    if (!idleButtonExists) {
+                        const newButton = {
+                            'name': 'Send to Idle Location',
+                            'color': '#FF4B4B',
+                            'task_id': 'custom_task',
+                            'custom_task': {
+                                'type': 'position_move',
+                                'position': selectedDevice.idle_location,
+                                'device_type': 'MiR_100',
+                            },
+                            'deviceType': 'MiR_100',
+                            'id': 'custom_task_idle'
+                        }
+                        dashboard.buttons.push(newButton)
+                    }
+                }
+
+                // Put the dashboard
+                await dispatchPutDashboards(dashboard, dashboard._id.$oid)
+            }
+
+
+            await dispatchPutDevice(selectedDevice, selectedDevice._id)
         }
+
 
         dispatchSetSelectedStation(null)
         dispatchSetSelectedDevice(null)
@@ -153,14 +217,14 @@ const DevicesContent = () => {
             */}
             <ContentHeader
                 content={'devices'}
-                mode={!!selectedDevice ? 'create' : 'list'}
-                onClickAdd={() => { handleAddDevice() }}
+                mode={!!selectedDevice ? 'create' : 'title'}
+                onClickAdd={() => { onAddDevice() }}
                 onClickBack={onBack}
 
                 backEnabled={!!selectedDevice ? true : false}
 
                 onClickSave={() => {
-                    handleSaveDevice()
+                    onSaveDevice()
                 }}
 
             />
@@ -170,7 +234,7 @@ const DevicesContent = () => {
                 <DeviceEdit deviceLocationDelete={onDeleteDeviceLocation} />
                 :
 
-                handleExistingDevices()
+                renderExistingDevices()
             }
 
 

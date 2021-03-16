@@ -23,20 +23,19 @@ export const Container = styled(Modal)`
 `
 
 export const Header = styled.div`
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 0;
-	margin: 0;
-	//height: 5rem;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: stretch;
+  margin: 0;
   padding: .5rem 1rem;
-	background: ${props => props.theme.bg.quinary};
+  background: ${props => props.theme.bg.quinary};
 `
 
 export const HeaderMainContentContainer = styled.div`
-	display: flex;
-  	flex-direction: column;
-	justify-content: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
   flex: 1;
 `

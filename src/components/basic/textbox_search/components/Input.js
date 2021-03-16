@@ -100,26 +100,25 @@ class Input extends Component {
 }
 
 export const TextboxInput = styled.input`
-    background-color: ${props => props.theme.bg.quinary};
+    background-color: white;
     border: none;
     font-size: 1.2rem;
     font-family: ${props => props.theme.font.primary};
     font-weight: 500;
     display: flex;
     flex-grow: 1;
-    color: ${props => props.theme.bg.octonary};
+    font-color: black;
 
     margin: 0 0.5rem 0 0.5rem;
 
     &:focus {
-      background-color: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};
       outline: none !important;
   }
 
     &::placeholder {
         font-size: ${props => props.theme.fontSize.sz4};
         font-family: ${props => props.theme.font.secondary};
-        color: ${props => props.theme.bg.senary};
+        color: ${props => props.theme.bg.hexanary};
     }
 `;
 
@@ -142,7 +141,7 @@ export const TextboxInput = styled.input`
 //     vertical-align: middle;
 //     line-height: 2rem;
 //     height: 2rem;
-    
+
 //     &::placeholder {
 //       color: ${props => props.theme.bg.senary};
 //     }

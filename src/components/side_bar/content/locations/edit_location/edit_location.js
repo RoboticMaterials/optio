@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import uuid from 'uuid'
 
@@ -12,10 +12,10 @@ import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/co
 import AssociatedPositions from './associated_positions/associated_positions'
 
 // Import Basic Components
-import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
 import Textbox from '../../../../basic/textbox/textbox.js'
 import TextField from '../../../../basic/form/text_field/text_field.js'
 import Button from '../../../../basic/button/button'
+
 
 // Import Constants
 import { StationTypes } from '../../../../../constants/station_constants'
@@ -26,12 +26,15 @@ import { LocationDefaultAttributes } from '../../../../../constants/location_con
 import { deepCopy } from '../../../../../methods/utils/utils'
 import { locationSchema } from '../../../../../methods/utils/form_schemas'
 
-// Import actions
-import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, updatePosition, setEditingPosition, putPosition, postPosition, setSelectedStationChildrenCopy, removePosition } from '../../../../../redux/actions/positions_actions'
-import { setSelectedStation, setStationAttributes, addStation, deleteStation, updateStation, setEditingStation, putStation, postStation, removeStation } from '../../../../../redux/actions/stations_actions'
 
-const EditLocation = () => {
+// Import actions
+import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, setEditingPosition, putPosition, postPosition, setSelectedStationChildrenCopy, removePosition } from '../../../../../redux/actions/positions_actions'
+import { setSelectedStation, setStationAttributes, addStation, deleteStation, setEditingStation, putStation, postStation, removeStation } from '../../../../../redux/actions/stations_actions'
+import { pageDataChanged } from '../../../../../redux/actions/sidebar_actions'
+
+const EditLocation = (props) => {
     const dispatch = useDispatch()
+
 
     // Station Dispatches
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
@@ -43,6 +46,8 @@ const EditLocation = () => {
     const dispatchPostStation = async (station) => await dispatch(postStation(station))
     const dispatchDeleteStation = async (id) => await dispatch(deleteStation(id))
     const dispatchRemoveStation = (id) => dispatch(removeStation(id))
+    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
+
 
     // Position Dispatches
     const dispatchSetSelectedPosition = async (position) => await dispatch(setSelectedPosition(position))
@@ -57,22 +62,20 @@ const EditLocation = () => {
     const stations = useSelector(state => state.stationsReducer.stations)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
-    const positions = useSelector(state => state.positionsReducer.positions)
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
 
-    const tasks = useSelector(state => state.tasksReducer.tasks)
+    const positions = useSelector(state => state.positionsReducer.positions)
+
     const devices = useSelector(state => state.devicesReducer.devices)
     const currentMap = useSelector(state => state.mapReducer.currentMap)
-    const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
     const deviceEnabled = serverSettings.deviceEnabled
-    const processes = useSelector(state => state.processesReducer.processes)
 
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [newName, setNewName] = useState('')
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
-
+    const locations = { ...stations, ...positions }
     const LocationTypes = {
         ...StationTypes,
         ...PositionTypes,
@@ -80,12 +83,12 @@ const EditLocation = () => {
 
     useEffect(() => {
         return () => {
-            dispatchSetEditingStation(false)
-            dispatchSetEditingPosition(false)
-
-            dispatchSetSelectedPosition(null)
-            dispatchSetSelectedStation(null)
-            dispatchSetSelectedStationChildrenCopy(null)
+            onBack()
+            // dispatchSetEditingStation(false)
+            // dispatchSetEditingPosition(false)
+            // dispatchSetSelectedPosition(null)
+            // dispatchSetSelectedStation(null)
+            // dispatchSetSelectedStationChildrenCopy(null)
         }
     }, [])
 
@@ -102,8 +105,6 @@ const EditLocation = () => {
             // Post
             if (!!copyStation.new) {
                 await dispatchPostStation(copyStation)
-
-                // Add dashboard
             }
             // Put
             else {
@@ -133,8 +134,6 @@ const EditLocation = () => {
         }
 
         onBack(true)
-
-
     }
 
     /**
@@ -183,6 +182,7 @@ const EditLocation = () => {
         }
         dispatchSetSelectedStationChildrenCopy(null)
 
+        // If there's a selected location and its new without saving, then delete
         if (!!selectedLocation && !!selectedLocation.new && !save) {
             if (selectedLocation.schema === 'station') {
                 dispatchRemoveStation(selectedLocation._id)
@@ -197,15 +197,16 @@ const EditLocation = () => {
         dispatchSetSelectedStation(null)
     }
 
+
     /**
      * The X and Y here are set in map view view dragNewEntity
      */
     const onAddLocation = async (type) => {
-
+        dispatchPageDataChanged(true)
         // TODO: Stick this into Constants
         const defaultAttributes = deepCopy(LocationDefaultAttributes)
 
-        defaultAttributes['neame'] = newName
+        defaultAttributes['name'] = newName
         defaultAttributes['map_id'] = currentMap._id
         defaultAttributes['_id'] = uuid.v4()
 
@@ -267,6 +268,10 @@ const EditLocation = () => {
                 await dispatchSetSelectedPosition(updatedSelectedLocation)
             }
         })
+    }
+
+    const handlePageDataChange = () => {
+        dispatchPageDataChanged(true)
     }
 
     const handleSetChildPositionToCartCoords = (position) => {
@@ -347,11 +352,12 @@ const EditLocation = () => {
                 <Formik
 
                     initialValues={{
-                        locationName: !!selectedLocation ? selectedLocation.name : null,
+                        locationName: !!selectedLocation ? selectedLocation.name : '',
 
                     }}
                     initialTouched={{
                         locationName: false,
+
                     }}
                     validateOnChange={true}
                     validateOnMount={true}
@@ -400,6 +406,7 @@ const EditLocation = () => {
 
                                 <TextField
                                     name={"locationName"}
+                                    changed={() => handlePageDataChange()}
                                     textStyle={{ fontWeight: 'Bold' }}
                                     placeholder='Enter Location Name'
                                     type='text'
@@ -438,22 +445,22 @@ const EditLocation = () => {
                                 </styled.LocationButtonConatiner>
 
                                 <styled.LocationButtonSubtitleContainer>
-                                  <styled.Subtitle schema={'locations'}>Workstation</styled.Subtitle>
-                                  <styled.Subtitle schema={'locations'}>Warehouse</styled.Subtitle>
+                                    <styled.Subtitle schema={'locations'}>Workstation</styled.Subtitle>
+                                    <styled.Subtitle schema={'locations'}>Warehouse</styled.Subtitle>
                                 </styled.LocationButtonSubtitleContainer>
 
                             </styled.LocationTypeContainer>
 
                             {deviceEnabled &&
                                 <styled.LocationTypeContainer>
-                                    <styled.Label schema={'locations'} style = {{marginTop: '1rem'}}>Positions</styled.Label>
+                                    <styled.Label schema={'locations'} style={{ marginTop: '1rem' }}>Positions</styled.Label>
                                     <styled.LocationButtonConatiner>
                                         {renderPositionButtons()}
                                     </styled.LocationButtonConatiner>
 
-                                    <styled.LocationButtonSubtitleContainer style = {{marginRight: '1.1rem'}}>
-                                      <styled.Subtitle schema={'locations'} style = {{marginRight: '4.5rem'}}>Cart</styled.Subtitle>
-                                      <styled.Subtitle schema={'locations'}>Shelf</styled.Subtitle>
+                                    <styled.LocationButtonSubtitleContainer style={{ marginRight: '1.1rem' }}>
+                                        <styled.Subtitle schema={'locations'} style={{ marginRight: '4.5rem' }}>Cart</styled.Subtitle>
+                                        <styled.Subtitle schema={'locations'}>Shelf</styled.Subtitle>
                                     </styled.LocationButtonSubtitleContainer>
 
                                 </styled.LocationTypeContainer>
@@ -464,7 +471,7 @@ const EditLocation = () => {
                         <LocationButton
                             type={selectedLocation['type']}
                             isSelected={(!!selectedLocation && selectedLocation.type !== null) ? selectedLocation.type : false}
-                            handleAddLocation={onAddLocation}
+                            handleAddLocation={() => null}
                         />
 
                     }
@@ -475,16 +482,22 @@ const EditLocation = () => {
 
                     <AssociatedPositions handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
                     :
-                    <Button
-                        schema={'locations'}
-                        secondary
-                        onClick={() => {
-                            handleSetPositionToCartCoords()
-                        }}
-                        style={{ marginBottom: '1rem' }}
-                    >
-                        Use Cart Location
-                    </Button>
+                    <>
+                        {!!deviceEnabled &&
+                            <Button
+                                schema={'locations'}
+                                secondary
+                                onClick={() => {
+                                    handleSetPositionToCartCoords()
+                                    dispatchPageDataChanged(true)
+                                }}
+                                style={{ marginBottom: '1rem' }}
+                            >
+                                Use Cart Location
+                        </Button>
+                        }
+                    </>
+
                 }
                 <div style={{ height: "100%" }}></div>
 

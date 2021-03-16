@@ -4,11 +4,6 @@ import {
     GET_OBJECTS_SUCCESS,
     GET_OBJECTS_FAILURE,
 
-    GET_OBJECT,
-    GET_OBJECT_STARTED,
-    GET_OBJECT_SUCCESS,
-    GET_OBJECT_FAILURE,
-
     POST_OBJECT,
     POST_OBJECT_STARTED,
     POST_OBJECT_SUCCESS,
@@ -29,10 +24,11 @@ import {
     UPDATE_OBJECTS,
     REMOVE_OBJECT,
     SET_OBJECT_ATTRIBUTES,
-    VALIDATE_OBJECT,
     SELECT_OBJECT,
-    SET_SELECTED_OBJECT,
     DESELECT_OBJECT,
+    SET_ROUTE_OBJECT,
+    SET_EDITING_OBJECT,
+    SET_SELECTED_OBJECT
 } from '../types/objects_types'
 
 import { deepCopy } from '../../methods/utils/utils';
@@ -41,14 +37,14 @@ import { deepCopy } from '../../methods/utils/utils';
 const defaultState = {
     objects: {},
     selectedObject: null,
+    editingObject: false,
+
 
     error: {},
     pending: false
 };
 
 export default function objectsReducer(state = defaultState, action) {
-    let index = ''
-    let objectID = ''
     let objectsCopy = {}
 
     switch (action.type) {
@@ -253,6 +249,24 @@ export default function objectsReducer(state = defaultState, action) {
                 ...state,
                 selectedObject: null,
             }
+
+        case SET_SELECTED_OBJECT:
+            return {
+                ...state,
+                selectedObject: action.payload.object
+            }
+
+            case SET_ROUTE_OBJECT:
+                return {
+                    ...state,
+                    routeObject: action.payload.object
+                }
+
+            case SET_EDITING_OBJECT:
+                return {
+                    ...state,
+                    editingObject: action.payload.bool
+                }
 
         default:
             return state;

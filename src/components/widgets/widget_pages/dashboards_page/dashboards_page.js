@@ -11,11 +11,16 @@ import { withRouter } from "react-router-dom";
 import DashboardsList from './dashboard_list/DashboardsList'
 import DashboardScreen from './dashboard_screen/dashboard_screen'
 import DashboardEditor from './dashboard_editor/dashboard_editor'
-import DashboardsSidebar from "./dashboards_sidebar/dashboards_sidebar.jsx"
+import DashboardsSidebar, {OPERATION_TYPES} from "./dashboards_sidebar/dashboards_sidebar.jsx"
 
 import { PAGES } from "../../../../constants/dashboard_contants";
 
-import {getDashboards, setDashboardKickOffProcesses, setDashboardFinishProcesses} from '../../../../redux/actions/dashboards_actions'
+import {
+    getDashboards,
+    setDashboardKickOffProcesses,
+    setDashboardFinishProcesses,
+    putDashboardAttributes
+} from '../../../../redux/actions/dashboards_actions'
 import { getTasks } from '../../../../redux/actions/tasks_actions'
 
 // Import Styles
@@ -23,7 +28,11 @@ import * as style from './dashboards_page.style'
 
 // logging
 import log from "../../../../logger";
-
+import {
+    getContainsFinishButton,
+    getContainsKickoffButton,
+    getOperationButton
+} from "../../../../methods/utils/dashboards_utils";
 const logger = log.getLogger("DashboardsPage");
 
 const DashboardsPage = (props) => {
@@ -32,6 +41,8 @@ const DashboardsPage = (props) => {
     const dispatch = useDispatch()
     const dispatchSetDashboardKickOffProcesses = async (dashboardId, kickOffEnabled) => await dispatch(setDashboardKickOffProcesses(dashboardId, kickOffEnabled))
     const dispatchSetDashboardFinishProcesses = async (dashboardId, finishEnabled) => await dispatch(setDashboardFinishProcesses(dashboardId, finishEnabled))
+    const dispatchPutDashboardAttributes = async (attributes, id) => await dispatch(putDashboardAttributes(attributes, id))
+
     const dispatchGetTasks = () => dispatch(getTasks())
 
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
@@ -64,9 +75,14 @@ const DashboardsPage = (props) => {
      */
     useEffect(() => {
 
+        onUpdateKickoffFinishInfo()
+
+    }, [processes])
+
+    const onUpdateKickoffFinishInfo = async () => {
         // list of all processes that the station is the first station of the process
-        var firstStationProcesses = []
-        var lastStationProcesses = []
+        let firstStationProcesses = []
+        let lastStationProcesses = []
 
         // loop through processes and check if the load station of the first route of any process matches the current dashboards station
         Object.values(processes).forEach((currProcess) => {
@@ -81,7 +97,7 @@ const DashboardsPage = (props) => {
                 const loadStationId = currRoute?.load?.station
 
                 // if the loadStationId matches the current dashboard's stationId, add the process's id to the list
-                if(loadStationId === stationID) firstStationProcesses.push(currProcess._id)
+                if(loadStationId === stationID && stationID !== undefined) firstStationProcesses.push(currProcess._id)
 
                 // now check if station is last route of any process
                 // get last routes id
@@ -94,21 +110,50 @@ const DashboardsPage = (props) => {
                 const unloadStationId = lastRoute?.unload?.station
 
                 // if the unloadStationId matches the current dashboard's stationId, add the process's id to the list of last stations
-                if(unloadStationId === stationID) lastStationProcesses.push(currProcess._id)
+                if(unloadStationId === stationID && stationID !== undefined) lastStationProcesses.push(currProcess._id)
 
 
             }
         })
 
+        const dashboard = dashboards[dashboardID]
+        const {
+            buttons = []
+        } = dashboard || {}
+
+        await dispatchSetDashboardKickOffProcesses(dashboardID, firstStationProcesses)
         if(firstStationProcesses.length > 0 ) {
-            dispatchSetDashboardKickOffProcesses(dashboardID, firstStationProcesses)
+
+            // check if kickoff button needs to be added
+            const containsKickoffButton = getContainsKickoffButton({buttons})
+
+            // if dashboard doesn't already contain kickoff button, add it
+            if(!containsKickoffButton) {
+                const kickOffButton = getOperationButton(OPERATION_TYPES.KICK_OFF.key)
+
+                await dispatchPutDashboardAttributes({
+                    buttons: [...buttons, kickOffButton]
+                }, dashboardID)
+            }
         }
 
+        await dispatchSetDashboardFinishProcesses(dashboardID, lastStationProcesses)
         if(lastStationProcesses.length > 0) {
-            dispatchSetDashboardFinishProcesses(dashboardID, lastStationProcesses)
-        }
 
-    }, [processes])
+
+            // check if finish button needs to be added
+            const containsFinishButton = getContainsFinishButton({buttons})
+
+            // add finish button
+            if(!containsFinishButton) {
+                const finishButton = getOperationButton(OPERATION_TYPES.FINISH.key)
+
+                await dispatchPutDashboardAttributes({
+                    buttons: [...buttons, finishButton]
+                }, dashboardID)
+            }
+        }
+    }
 
     // On page load, load the first and only dashboard with this station
     // Leaving the rest of the code in for adding dashboards and dashboard list view because we may need it in the future
@@ -202,27 +247,18 @@ const DashboardsPage = (props) => {
     // sets showSidebar to false if on dashboard page, effectively hiding the sidebar
     // sidebar is never used in a dashboard
     useEffect(() => {
-        if (page === PAGES.DASHBOARD) setShowSidebar(false)
-        else if (page === PAGES.EDITING || page === PAGES.DASHBOARDS) setShowSidebar(true)
+        if(page === PAGES.EDITING) {
+            setShowSidebar(true)
+        }
+        else {
+            setShowSidebar(false)
+        }
     }, [page])
 
 
     return (
         <style.PageContainer>
             <DndProvider backend={HTML5Backend}>
-
-                <div style={{ width: showSidebar && window.innerWidth > 1000 ? sidebarWidth : 0 }}>
-                    <DashboardsSidebar
-                        dashboardId={dashboardID}
-                        stationID={stationID}
-                        width={showSidebar ? sidebarWidth : 0}
-                        setWidth={setSidebarWidth}
-                        minWidth={300}
-
-                        clickable={page === PAGES.DASHBOARDS}
-                    />
-                </div>
-
                 <style.Container style={{ flexGrow: '1' }}>
                     {/* If the length of ID is not 0, then a dashboard must have been clicked */}
                     {page === PAGES.DASHBOARDS ?
@@ -234,7 +270,6 @@ const DashboardsPage = (props) => {
                             setEditingDashboard={(dashID) => {
                                 props.history.push(`/locations/${stationID}/dashboards/${dashID}/editing`)
                             }}
-                            setShowSidebar={setShowSidebar}
                             showSidebar={showSidebar}
                         />
                         :
@@ -250,7 +285,6 @@ const DashboardsPage = (props) => {
                                 dashboardId={selectedDashboard}
                                 setSelectedDashboard={setSelectedDashboard}
                                 goBack={() => setSelectedDashboard(null)}
-                                setShowSidebar={setShowSidebar}
                                 showSidebar={showSidebar}
                                 setEditingDashboard={(dashID) => {
                                     props.history.push(`/locations/${stationID}/dashboards/${dashID}/editing`)

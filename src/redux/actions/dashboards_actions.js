@@ -52,6 +52,8 @@ import * as stationActions from "./stations_actions";
 import {getDefaultStation} from "../../methods/utils/station_utils";
 import {removeArrayIndices} from "../../methods/utils/array_utils";
 import {ROUTE_TYPES} from "../../constants/route_constants";
+import {TYPES} from "../../components/widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
+import {DASHBOARD_BUTTON_COLORS} from "../../constants/dashboard_contants";
 
 
 export const getDashboards = () => {
@@ -111,6 +113,7 @@ export const postDashboard = (dashboard) => {
     }
 }
 export const putDashboard = (dashboard, ID) => {
+    const dashbaordCopy = deepCopy(dashboard)
     return async dispatch => {
         function onStart() {
             dispatch({ type: PUT_DASHBOARD_STARTED });
@@ -126,14 +129,31 @@ export const putDashboard = (dashboard, ID) => {
 
         try {
             onStart();
-            delete dashboard._id
-            const updateDashboard = await api.putDashboards(dashboard, ID);
+            delete dashbaordCopy._id
+            const updateDashboard = await api.putDashboards(dashbaordCopy, ID);
             return onSuccess(updateDashboard)
         } catch (error) {
             return onError(error)
         }
     }
 }
+
+export const putDashboardAttributes = (attributes, id) => {
+
+    return async (dispatch, getState) => {
+
+        const state = getState()
+        const dashboards = state.dashboardsReducer.dashboards || {}
+
+        const dashboard = dashboards[id]
+
+        dispatch(putDashboard({
+            ...dashboard,
+            ...attributes
+        }, id))
+    }
+}
+
 export const deleteDashboard = (ID) => {
     return async dispatch => {
         function onStart() {
@@ -223,7 +243,8 @@ export const addRouteToDashboards = (route) => {
             color: '#bcbcbc',
             id: uuid.v4(),
             name: routeName,
-            task_id: routeId
+            task_id: routeId,
+            type: TYPES.ROUTES.key,
         }
 
         if (dashboard === undefined) {

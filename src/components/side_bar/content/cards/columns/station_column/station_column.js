@@ -14,13 +14,15 @@ const StationsColumn = ((props) => {
 		cards = [],
 		processId,
 		maxHeight,
-		sortMode
+		sortMode,
+		sortDirection
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
 
 	return(
 		<Column
+			sortDirection={sortDirection}
 			maxWidth={"20rem"}
 			sortMode={sortMode}
 			maxHeight={maxHeight}
@@ -30,6 +32,7 @@ const StationsColumn = ((props) => {
 					<styled.HeaderContent>
 						<i className="fa fa-chevron-down" aria-hidden="true"
 						   onClick={() => setCollapsed(true)}
+						   style={{marginRight: "1rem"}}
 						/>
 
 						<styled.LabelContainer>

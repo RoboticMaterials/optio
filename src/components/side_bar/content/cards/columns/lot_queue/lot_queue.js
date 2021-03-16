@@ -1,15 +1,13 @@
-import {SortableContainer} from "react-sortable-hoc";
-import {useDispatch, useSelector} from "react-redux";
-import {putCard} from "../../../../../../redux/actions/card_actions";
-import * as styled from "./lot_queue.style";
-import {Container} from "react-smooth-dnd";
-import Card from "../../card/card";
 import React, {useState} from "react";
-import {setCardDragging, setColumnHovering} from "../../../../../../redux/actions/card_page_actions";
-import Button from "../../../../../basic/button/button";
-import CalendarField from "../../../../../basic/form/calendar_field/calendar_field";
+
+// functions external
 import PropTypes from 'prop-types';
+
+// components internal
 import Column from "../column/column";
+import Button from "../../../../../basic/button/button";
+
+import * as styled from "./lot_queue.style";
 
 const LotQueue = ((props) => {
 	const {
@@ -21,13 +19,15 @@ const LotQueue = ((props) => {
 		setShowCardEditor,
 		showCardEditor,
 		maxHeight,
-		sortMode
+		sortMode,
+		sortDirection
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
 
 	return(
 		<Column
+			sortDirection={sortDirection}
 			sortMode={sortMode}
 			maxHeight={maxHeight}
 			maxWidth={"20rem"}

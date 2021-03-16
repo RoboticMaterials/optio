@@ -1,19 +1,3 @@
-import React from 'react'
-
-import { useDispatch, useSelector } from 'react-redux'
-
-// Import utils
-import { deepCopy } from './utils'
-
-// Import Actions
-import { putDevices, postDevices, getDevices, deleteDevices } from '../../redux/actions/devices_actions'
-import * as locationActions from '../../redux/actions/locations_actions'
-import * as positionActions from '../../redux/actions/positions_actions'
-import * as dashboardActions from '../../redux/actions/dashboards_actions'
-import * as stationActions from '../../redux/actions/stations_actions'
-import * as taskActions from '../../redux/actions/tasks_actions'
-import * as deviceActions from '../../redux/actions/devices_actions'
-
 /**
  * All of these coordinates have been calc by adjusting them on map with chrome dev tools
  * @param {*} location
@@ -22,7 +6,6 @@ import * as deviceActions from '../../redux/actions/devices_actions'
  */
 
 export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
-
     let widgetInfo = {}
     widgetInfo.id = location._id
 
@@ -70,8 +53,8 @@ export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
 
     // Else its a postion/station
     else {
-        // Gets the element based on whether its a station or not
-        const el = location.schema === 'station' ? document.getElementById(`${rd3tClassName}-station`) : document.getElementById(`${rd3tClassName}-position`)
+        // Gets the element based on whether its a station, position or temp position
+        const el = location.schema === 'station' ? document.getElementById(`${rd3tClassName}-station`) : location.schema === 'temporary_position' ? document.getElementById(`${rd3tClassName}-temporary_position`) : document.getElementById(`${rd3tClassName}-position`)
         let bBox = null
 
         // Try catch for when page refreshses when in a widget. When refreshing in a widget, the elements is unmounted and cant get the bounding because of an unmounted element
@@ -97,7 +80,6 @@ export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
             widgetInfo.scale = 1.3
             widgetInfo.yPosition = location.y + bBox.height / 2 - 75
             widgetInfo.xPosition = location.schema === 'station' ? location.x + 45 : location.x + 12
-
         }
     }
 

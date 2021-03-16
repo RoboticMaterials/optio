@@ -22,9 +22,11 @@ import {
   POST_LOCAL_SETTINGS_FAILURE,
 
   STOP_API_CALLS,
+  SET_TEMP_SIGN_IN_DATA,
 
 } from '../types/local_types';
 import {defaultLocalSettings} from "../../constants/local_settings_constants";
+
 
 const defaultState = {
     loggers: {
@@ -68,8 +70,8 @@ const defaultState = {
     },
 
     localSettings: defaultLocalSettings,
-    devicesEnabled: false,
 
+    devicesEnabled: false,
     disableAll: false,
     enableAll: false,
     loaded: false,
@@ -173,7 +175,10 @@ const localReducer = (state = defaultState, action) => {
         case POST_LOCAL_SETTINGS_SUCCESS:
             return{
                 ...state,
-                localSettings: action.payload,
+                localSettings: {
+                    ...state.localSettings,
+                    ...action.payload
+                },
                 pending: false
             }
 
@@ -195,7 +200,12 @@ const localReducer = (state = defaultState, action) => {
             }
 
 
+
         // ~~~~~~~~~~~~~~~
+        default:
+            return {
+                ...state
+            }
     }
 
     return state

@@ -1,10 +1,8 @@
 import {
-
   GET_MODELS,
   GET_MODELS_STARTED,
   GET_MODELS_SUCCESS,
   GET_MODELS_FAILURE,
-
 } from '../types/models_types';
 
 const defaultState = {
@@ -38,7 +36,5 @@ export default function modelsReducer(state = defaultState, action) {
 
         default:
             return state;
-            break;
-
     }
 }

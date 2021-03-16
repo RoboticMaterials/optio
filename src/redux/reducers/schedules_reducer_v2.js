@@ -1,15 +1,12 @@
 import {
-  GET_SCHEDULES,
   GET_SCHEDULES_STARTED,
   GET_SCHEDULES_SUCCESS,
   GET_SCHEDULES_FAILURE,
 
-  POST_SCHEDULE,
   POST_SCHEDULE_STARTED,
   POST_SCHEDULE_SUCCESS,
   POST_SCHEDULE_FAILURE,
 
-  DELETE_SCHEDULE,
   DELETE_SCHEDULES,
 
   ADD_SCHEDULES,
@@ -17,19 +14,16 @@ import {
   DELETE_SCHEDULE_SUCCESS,
   DELETE_SCHEDULE_FAILURE,
 
-  PUT_SCHEDULE,
   PUT_SCHEDULE_STARTED,
   PUT_SCHEDULE_SUCCESS,
   PUT_SCHEDULE_FAILURE,
 
   UPDATE_SCHEDULE,
-  ADD_SCHEDULES_UNSAVED,
 } from '../types/schedule_types';
 
 import { clone_object } from '../../methods/utils/utils';
 
 const defaultState = {
-
   schedules: {},
   error: {},
   pending: false

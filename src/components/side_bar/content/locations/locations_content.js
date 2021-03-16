@@ -6,8 +6,6 @@ import { useSelector, useDispatch } from 'react-redux'
 import ContentList from '../content_list/content_list'
 import EditLocation from './edit_location/edit_location'
 
-import { convertD3ToReal } from '../../../../methods/utils/map_utils'
-
 // Import actions
 import { setEditingPosition, setSelectedPosition, setSelectedStationChildrenCopy } from '../../../../redux/actions/positions_actions'
 import { setEditingStation, setSelectedStation } from '../../../../redux/actions/stations_actions'
@@ -16,11 +14,8 @@ import { setEditingStation, setSelectedStation } from '../../../../redux/actions
 import { StationTypes } from '../../../../constants/station_constants'
 
 // Import Utils
-import { setAction } from '../../../../redux/actions/sidebar_actions'
-import { deepCopy } from '../../../../methods/utils/utils'
 import { locationsSortedAlphabetically } from '../../../../methods/utils/locations_utils'
 
-import uuid from 'uuid'
 
 // This adds a location selected info to the reducer
 export default function LocationContent() {

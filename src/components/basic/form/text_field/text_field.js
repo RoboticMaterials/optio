@@ -1,10 +1,16 @@
-import React from "react";
+import React, {useContext} from "react";
 import PropTypes from 'prop-types';
 import { useField, useFormikContext } from "formik";
+import { useSelector, useDispatch } from 'react-redux'
 
 import ErrorTooltip from '../error_tooltip/error_tooltip';
 import useChange from '../../../basic/form/useChange'
 import * as styled from './text_field.style'
+import { getMessageFromError } from "../../../../methods/utils/form_utils";
+
+import { pageDataChanged } from '../../../../redux/actions/sidebar_actions'
+import {ThemeContext} from "styled-components";
+
 
 const TextField = ({
     InputComponent,
@@ -18,6 +24,10 @@ const TextField = ({
     inputStyleFunc,
     IconContainerComponent,
     ContentContainer,
+    inputContainerStyle,
+    errorTooltipContainerStyle,
+    showErrorStyle,
+    containerStyle,
     FieldContainer,
     mapInput,
     mapOutput,
@@ -26,20 +36,45 @@ const TextField = ({
     style,
     ...props }) => {
 
-    const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext();
+    const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, status, validateForm, ...context } = useFormikContext();
     const [field, meta] = useField(props);
     const { touched, error } = meta
+    const {
+        name: fieldName
+    } = field
+
+    const {
+        warnings
+    } = status || {}
+
+    const {
+        [fieldName]: warning
+    } = warnings || {}
+
+    const themeContext = useContext(ThemeContext)
+
+    const dispatch = useDispatch()
+    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
     const hasError = touched && error
+    const hasWarning = touched && warning
+
+	useChange(setFieldValue)
+
+	const inputStyle = inputStyleFunc(hasError, showErrorStyle);
+
+	const errorMessage = getMessageFromError(error)
+	const warningMessage = getMessageFromError(warning)
     useChange(setFieldValue)
-    const inputStyle = inputStyleFunc(hasError);
+
     return (
         <>
             {fieldLabel &&
                 <LabelComponent hasError={hasError} htmlFor={props.id || props.name}>{fieldLabel}</LabelComponent>
             }
-            <ContentContainer>
-                <InputContainer>
+            <ContentContainer style={containerStyle}>
+                <InputContainer
+                >
                     <InputComponent
 
                         // inputStyle={{...inputStyle, ...style}}
@@ -53,10 +88,11 @@ const TextField = ({
                         onChange={(event) => {
                             // update touched if necessary
                             if (!touched) {
-                                setFieldTouched(field.name, true)
+                                setFieldTouched(fieldName, true)
+                                dispatchPageDataChanged(true)
                             }
 
-                            setFieldValue(field.name, mapOutput(event.target.value)) // update field value
+                            setFieldValue(fieldName, mapOutput(event.target.value)) // update field value
 
                             onChange(event) // call additional onChange prop if necessary
                         }}
@@ -64,7 +100,7 @@ const TextField = ({
                         onBlur={(event) => {
                             // update touched if necessary
                             if (!touched) {
-                                setFieldTouched(field.name, true)
+                                setFieldTouched(fieldName, true)
                             }
 
                             // validateOnBlur && validateField(field.name) // validate if necessary
@@ -74,9 +110,11 @@ const TextField = ({
                         }}
                     />
                     <ErrorTooltip
-                        visible={hasError}
-                        text={error}
+                        visible={hasError || hasWarning}
+                        text={hasError ? errorMessage : hasWarning ? warningMessage : null}
+                        color={hasWarning && !hasError && themeContext.warn}
                         ContainerComponent={IconContainerComponent}
+                        containerStyle={errorTooltipContainerStyle}
                     />
                 </InputContainer>
 
@@ -94,17 +132,18 @@ const TextField = ({
 * Accepts hasError prop, which can be used to change styling based on presence of errors
 *
 * */
-const defaultInputStyleFunc = (hasError) => {
+const defaultInputStyleFunc = (hasError, showErrorStyle) => {
     return {
         // borderColor: hasError && 'red',
         // border: hasError && '1px solid red',
-        transition: "all .5s ease-in-out",
-        boxShadow: hasError && `0 0 5px red !important`,
+        transition: "box-shadow .5s ease-in-out, border .5s ease-in-out",
+        // boxShadow:  && `0 0 1px red !important`,
+        boxShadow: (hasError && showErrorStyle) && `0 0 5px red`,
 
-        borderLeft: hasError ? '1px solid red' : "1px solid transparent",
-        borderTop: hasError ? '1px solid red' : "1px solid transparent",
-        borderRight: hasError ? '1px solid red' : "1px solid transparent",
-        borderBottom: hasError && '1px solid red',
+        borderLeft: (hasError && showErrorStyle) ? '1px solid red' : "1px solid transparent",
+        borderTop: (hasError && showErrorStyle) ? '1px solid red' : "1px solid transparent",
+        borderRight: (hasError && showErrorStyle) ? '1px solid red' : "1px solid transparent",
+        borderBottom: (hasError && showErrorStyle) && '1px solid red',
 
 
         overflow: "hidden",
@@ -129,6 +168,7 @@ TextField.propTypes = {
     IconContainerComponent: PropTypes.elementType,
     ContentComponent: PropTypes.elementType,
     style: PropTypes.object,
+    showErrorStyle: PropTypes.bool,
 };
 
 // Specifies the default values for props:
@@ -146,6 +186,7 @@ TextField.defaultProps = {
     FieldContainer: styled.DefaultFieldContainer,
     style: {},
     validateOnBlur: false,
+    showErrorStyle: true,
     mapInput: (val) => val,
     mapOutput: (val) => val,
 };

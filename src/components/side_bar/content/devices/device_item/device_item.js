@@ -4,12 +4,15 @@ import { useDispatch, useSelector } from 'react-redux'
 
 // Import actions
 import { setSelectedStation } from '../../../../../redux/actions/stations_actions'
+import { handlePostTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 
 // Import styles
 import * as styled from './device_item.style'
 
 // Import utils
 import { DeviceTypes } from '../../../../../constants/device_constants'
+import IconButton from '../../../../basic/icon_button/icon_button'
+
 
 const DeviceItem = (props) => {
 
@@ -29,11 +32,10 @@ const DeviceItem = (props) => {
 
     const dispatch = useDispatch()
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
-
+    const dispatchHandlePostTaskQueue = (id) => dispatch(handlePostTaskQueue())
     const stations = useSelector(state => state.stationsReducer.stations)
-
+    const devices = useSelector(state => state.devicesReducer.devices)
     const [stationId, setStationId] = useState(false)
-
 
     // Sets the type of device
     let deviceType = DeviceTypes['generic']
@@ -59,15 +61,12 @@ const DeviceItem = (props) => {
             if (device.state_text === 'EmergencyStop') {
                 deviceStatus = 'Emergency Stoped'
             }
-            else if (device.current_task_queue_id === null) {
+            else if (device.current_task_queue_id==null) {
                 deviceStatus = 'No Active Task'
             }
             else if (!!device.current_task_queue_id) {
-                try {
-                    deviceStatus = taskQueue[device.current_task_queue_id.$oid].mission_status
-                } catch (error) {
-                    deviceStatus = 'No Active Task'
-                }
+                deviceStatus = taskQueue[device.current_task_queue_id].mission_status
+              //deviceStatus = device.state_text
             }
 
             else {
@@ -80,6 +79,12 @@ const DeviceItem = (props) => {
 
 
         return deviceStatus
+    }
+
+    const handleShowDeviceHil = (device) => {
+      if(!!device.current_task_queue_id && !taskQueue[device.current_task_queue_id].custom_task){
+        dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: device.current_task_queue_id})
+      }
     }
 
     const handleDeviceBattery = () => {
@@ -218,14 +223,30 @@ const DeviceItem = (props) => {
 
                 <styled.DeviceTitle isSmall={isSmall}>{deviceName}</styled.DeviceTitle>
 
-                {/* Sets attributes of device Icon based on what type of device has been selected */}
-                <styled.DeviceIcon isSmall={isSmall} className={deviceType.icon} style={{ fontSize: !!deviceType.deviceFontSize && deviceType.deviceFontSize, color: !!stationId || deviceType.icon === 'icon-cart' ? deviceType.primaryColor : 'white' }} />
 
-                <styled.StatusContainer>
-                    <styled.StatusText isSmall={isSmall}>
-                        {handleDeviceStatus()}
-                    </styled.StatusText>
-                </styled.StatusContainer>
+                {/* Sets attributes of device Icon based on what type of device has been selected */}
+                  <styled.DeviceIcon isSmall={isSmall} className={deviceType.icon} style={{ fontSize: !!deviceType.deviceFontSize && deviceType.deviceFontSize, color: !!stationId || deviceType.icon === 'icon-cart' ? deviceType.primaryColor : 'white' }} />
+
+                  <styled.StatusContainer
+                      onClick = {()=>handleShowDeviceHil(device)}
+                  >
+                      <styled.StatusText isSmall={isSmall}>
+                          {handleDeviceStatus()}
+                      </styled.StatusText>
+                  </styled.StatusContainer>
+
+                  <styled.ConnectionStatusContainer isSmall = {isSmall}>
+                   <styled.ConnectionStatusText isSmall = {isSmall}>
+                      {!device.connected ? 'Disconnected': 'Connected'}
+                    </styled.ConnectionStatusText>
+                    <IconButton color={!device.connected ? 'red':'lightGreen'}>
+                        {!device.connected ?
+                            <i className="fas fa-times-circle" style = {{paddingTop: isSmall ? '.1rem': '.2rem'}}></i>
+                            :
+                            <i className="fas fa-check" style = {{paddingTop: isSmall ? '0rem': '.2rem'}}></i>
+                        }
+                    </IconButton>
+                  </styled.ConnectionStatusContainer>
 
                 <styled.EditDeviceIcon
                     isSmall={isSmall}

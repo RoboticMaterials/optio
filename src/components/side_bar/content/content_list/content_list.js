@@ -14,6 +14,7 @@ import { deepCopy } from '../../../../methods/utils/utils'
 // Import Constants
 import { StationTypes } from '../../../../constants/station_constants'
 import { PositionTypes } from '../../../../constants/position_constants'
+import {isOnlyHumanTask} from "../../../../methods/utils/route_utils";
 
 
 export default function ContentList(props) {
@@ -26,21 +27,7 @@ export default function ContentList(props) {
     } = props
 
     let taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
-    const [inQueue, setInQueue] = useState(false)
 
-
-    const handleInQueue = (element) => {
-        setInQueue(false)
-        if (!!element) {
-
-            Object.values(taskQueue).forEach((taskQueueItem, ind) => {
-                if (element._id === taskQueueItem.task_id) {
-                    setInQueue(true)
-                }
-            })
-        }
-        return inQueue
-    }
 
     const renderLocationTypeIcon = (element) => {
 
@@ -99,6 +86,19 @@ export default function ContentList(props) {
             <styled.List>
                 {elements.map((element, ind) => {
                     const error = (props.schema === 'processes' && element.broken) ? true : false
+                    let inQueue = false
+                    Object.values(taskQueue).forEach((item) => {
+
+                    if((item.task_id == element._id) && (props.schema === 'tasks')){
+                        if(isOnlyHumanTask(element) && element.handoff === true) {
+                            inQueue = false
+                        }
+                        else {
+                            inQueue = true
+                        }
+                    }
+                    })
+
                     return (
                         <>
                             <styled.ListItem
@@ -119,9 +119,10 @@ export default function ContentList(props) {
                                     {props.schema === 'tasks' &&
 
                                         <styled.ListItemIcon
+                                            style = {{color: inQueue === true ? 'grey' : 'lightGreen' }}
                                             className='fas fa-play'
                                             onClick={() => {
-                                                executeTask()
+                                                !inQueue && executeTask()
                                             }}
                                         />
                                     }

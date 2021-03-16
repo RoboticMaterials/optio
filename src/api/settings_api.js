@@ -3,6 +3,7 @@ import axios from 'axios';
 import logger from '../logger'
 
 import { apiIPAddress } from '../settings/settings'
+
 const operator = 'settings'
 
 const log = logger.getLogger('Api')
@@ -12,6 +13,11 @@ export async function getSettings() {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator,
+            headers:{
+                'X-API-Key': '123456',
+                'Access-Control-Allow-Origin': '*'
+            }
+            // token: token.username
         });
         // Success 🎉
         log.debug('getSettings response', response);
@@ -62,7 +68,9 @@ export async function postSettings(settings) {
             url: apiIPAddress() + operator,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'X-API-Key': '123456',
+                'Accept': 'application/json',
+                'Access-Control-Allow-Origin': '*'
             },
             data: settings
         });

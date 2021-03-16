@@ -33,6 +33,8 @@ import { deleteRouteClean } from "../../../../redux/actions/tasks_actions";
 import { isObject } from "../../../../methods/utils/object_utils";
 import { DEVICE_CONSTANTS } from "../../../../constants/device_constants";
 import { ADD_TASK_ALERT_TYPE } from '../../../../constants/dashboard_contants'
+import {getSidebarDeviceType, isRouteInQueue} from "../../../../methods/utils/task_queue_utils";
+import {isDeviceConnected} from "../../../../methods/utils/device_utils";
 
 export default function TaskContent(props) {
 
@@ -54,6 +56,8 @@ export default function TaskContent(props) {
     const stations = useSelector(state => state.stationsReducer.stations)
     const editing = useSelector(state => state.tasksReducer.editingTask) //Moved to redux so the variable can be accesed in the sideBar files for confirmation modal
     const objects = useSelector(state => state.objectsReducer.objects)
+    const selectedObject = useSelector(state => state.objectsReducer.selectedObject)
+    const routeObject = useSelector(state => state.objectsReducer.routeObject)
 
     /**
     * @param {*} Id
@@ -106,15 +110,26 @@ export default function TaskContent(props) {
         }
     }
 
+
+
     const onExecuteTask = () => {
+        const deviceType = getSidebarDeviceType(selectedTask)
 
-        let inQueue = false
-        let deviceType
+        const inQueue = isRouteInQueue(Id, deviceType)
 
-        Object.values(taskQueue).map((item) => {
-            // If its in the Q and not a handoff, then alert the user saying its already there
-            if (item.task_id === Id && !tasks[item.task_id].handoff) inQueue = true
-        })
+        const connectedDeviceExists = isDeviceConnected()
+
+        if(!connectedDeviceExists && deviceType !== DEVICE_CONSTANTS.HUMAN) {
+            // display alert notifying user that task is already in queue
+            setAddTaskAlert({
+                type: ADD_TASK_ALERT_TYPE.TASK_EXISTS,
+                label: "Alert! No device is currently connected to run this route",
+                message: `'${name}' not added`,
+            })
+
+            // clear alert after timeout
+            return setTimeout(() => setAddTaskAlert(null), 1800)
+        }
 
         // add alert to notify task has been added
         // If in Q, then tell them it's already there
@@ -132,14 +147,6 @@ export default function TaskContent(props) {
 
         // Else see what type of task it is and add accordingly
         else {
-
-            // See device type
-            if (isMiRTask(selectedTask)) {
-                deviceType = DEVICE_CONSTANTS.MIR_100
-            }
-            else if (isHumanTask(selectedTask)) {
-                deviceType = DEVICE_CONSTANTS.HUMAN
-            }
 
             // Handle Add
             if (deviceType !== 'human') {
@@ -165,7 +172,7 @@ export default function TaskContent(props) {
                 isNew={isNew}
                 initialValues={{
                     ...selectedTask,
-                    obj: handleDefaultObj(selectedTask.obj)
+                    obj: selectedObject,
                 }}
                 shift={shift}
                 toggleEditing={props => onEditing(props)}
@@ -197,7 +204,10 @@ export default function TaskContent(props) {
                     onMouseEnter={(task) => {
                         dispatchSetSelectedTask(task)
                     }}
-                    onMouseLeave={(task) => dispatchSetSelectedTask(null)}
+                    onMouseLeave={() => {
+                      dispatchSetSelectedTask(null)
+
+                    }}
                     onClick={(task) => {
                         setIsNew(false)
                         // If task button is clicked, start editing it

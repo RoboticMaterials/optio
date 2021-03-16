@@ -14,9 +14,20 @@ const buttonTheme = (props) => {
             background: ${!!props.schema ? props.theme.schema[props.schema].gradient : props.theme.fg.primary};
             color: ${props.theme.bg.octonary};
             border: none;
-             
+
             &:hover {
                 background-color: ${LightenDarkenColor(props.theme.bg.septenary, 10)}
+            }
+             `
+        )
+    } else if (props.quaternary) { // quaternary
+        return (`
+            background: #26ab76;
+            color: ${props.theme.bg.octonary};
+            border: none;
+
+            &:hover {
+                background-color: ${LightenDarkenColor('#26ab76', -10)}
             }
              `
         )

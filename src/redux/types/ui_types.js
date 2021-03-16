@@ -1,3 +1,6 @@
-export const CARD_DRAGGING = 'CARD_DRAGGING'
+export const LOT_DRAGGING = 'LOT_DRAGGING'
+export const LOT_DROPPING = 'LOT_DROPPING'
+export const FIELD_DRAGGING = 'FIELD_DRAGGING'
 export const COLUMN_HOVERING = 'COLUMN_HOVERING'
+export const LOT_HOVERING = 'LOT_HOVERING'
 export const SET_SIZE = "SET_SIZE"
