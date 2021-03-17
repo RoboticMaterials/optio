@@ -12,7 +12,7 @@ import { editing } from '../../../../methods/utils/locations_utils'
 import { PositionTypes } from '../../../../constants/position_constants'
 
 // Import Actions
-import { setTaskAttributes } from '../../../../redux/actions/tasks_actions'
+import { selectTask, setTaskAttributes } from '../../../../redux/actions/tasks_actions'
 import { setSelectedPosition, setPositionAttributes } from '../../../../redux/actions/positions_actions'
 import { hoverStationInfo } from '../../../../redux/actions/widget_actions'
 import { pageDataChanged } from '../../../../redux/actions/sidebar_actions'
@@ -93,8 +93,13 @@ function Position(props) {
     // Disbale if the selected stations children does not include this station
     else if (!!selectedStation && !selectedStation.children.includes(positionId)) disabled = true
 
-    // Disable making a task to this position if the select tasks station is this positions parent (cant make a route to the same parent/child)
-    else if (!!selectedTask && position?.parent === selectedTask?.load?.station) disabled = true
+    // Disables while making task (IE no unload station)
+    else if (!!selectedTask && selectedTask?.unload?.station === null) {
+        // Disable making a task to this position if the select tasks station is this positions parent (cant make a route to the same parent/child)
+        if (position?.parent === selectedTask?.load?.station) disabled = true
+        // Disable position if the selected task load position is a station (cant go from station to position or vice versa)
+        else if (!!stations[selectedTask?.load?.position]) disabled = true
+    }
 
     // This filters out positions when fixing a process
     // If the process is broken, then you can only start the task at the route before break's unload location

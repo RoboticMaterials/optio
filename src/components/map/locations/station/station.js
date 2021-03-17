@@ -55,6 +55,7 @@ function Station(props) {
     const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
+    const positions = useSelector(state => state.positionsReducer.positions)
 
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
@@ -85,8 +86,15 @@ function Station(props) {
     // Disable if theres a selected position and the station's children dont contain that position
     else if (!!selectedPosition && !station.children.includes(selectedPosition._id)) disabled = true
 
-    // Disable making a task this station if the selected position is the stations children (cant make a route to the same parent/child)
-    else if (!!selectedTask && station.children.includes(selectedTask?.load?.position)) disabled = true
+    // Disables while making task (IE no unload station)
+    else if (!!selectedTask && selectedTask?.unload?.station === null) {
+        // Disable making a task this station if the selected position is the stations children (cant make a route to the same parent/child)
+        if (station.children.includes(selectedTask?.load?.position) && selectedTask?.unload?.station === null) disabled = true
+        // Disable station if the selected task load position is a position (cant go from station to position or vice versa)
+        else if (!!positions[selectedTask?.load?.position]) disabled = true
+    }
+
+
 
     // This filters out stations when fixing a process
     // If the process is broken, then you can only start the task at the route before break's unload location
