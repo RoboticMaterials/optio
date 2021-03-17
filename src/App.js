@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 import ls from 'local-storage'
-
+import uuid from 'uuid'
 
 import { ThemeProvider } from "styled-components";
 import theme from './theme';
@@ -59,13 +59,41 @@ const App = () => {
     const windowWidth = size.width
 
     const mobileMode = windowWidth < widthBreakPoint;
+    const pendo = window.pendo;
 
     useEffect(() => {
-      handleLoadLocalData();
+        handleLoadLocalData();
+
+        // in your authentication promise handler or callback
+        pendo.initialize({
+            visitor: {
+                id: uuid.v4()   // Required if user is logged in
+                // email:        // Recommended if using Pendo Feedback, or NPS Email
+                // full_name:    // Recommended if using Pendo Feedback
+                // role:         // Optional
+
+                // You can add any additional visitor level key-values here,
+                // as long as it's not one of the above reserved names.
+            },
+
+            account: {
+                id: '2' // Highly recommended
+                // name:         // Optional
+                // is_paying:    // Recommended if using Pendo Feedback
+                // monthly_value:// Recommended if using Pendo Feedback
+                // planLevel:    // Optional
+                // planPrice:    // Optional
+                // creationDate: // Optional
+
+                // You can add any additional account level key-values here,
+                // as long as it's not one of the above reserved names.
+            }
+        });
     }, [])
 
+
     const handleLoadLocalData = async () => {
-      await dispatchGetLocalSettings()
+        await dispatchGetLocalSettings()
     }
 
     /**
@@ -103,8 +131,8 @@ const App = () => {
             <Logger />
 
 
-              {/* <ThemeProvider theme={theme[this.state.theme]}> */}
-              <ThemeProvider theme={theme['main']}>
+            {/* <ThemeProvider theme={theme[this.state.theme]}> */}
+            <ThemeProvider theme={theme['main']}>
 
                 <styled.Container>
                     <ConfirmDeleteModal
@@ -133,69 +161,69 @@ const App = () => {
                           </Route> */}
 
 
-                          <Route
-                              path={["/locations/:stationID?/:widgetPage?", '/:sidebar?/:data1?/:data2?', '/',]}
-                          >
-                              {authenticated && <ApiContainer styleMode={null} apiMode={null} mode={null} logMode={"DEV"} onLoad={() => setLoaded(true)} apiLoaded={() => setApiLoaded(true)} isApiLoaded={apiLoaded} />}
-                          </Route>
+                        <Route
+                            path={["/locations/:stationID?/:widgetPage?", '/:sidebar?/:data1?/:data2?', '/',]}
+                        >
+                            {authenticated && <ApiContainer styleMode={null} apiMode={null} mode={null} logMode={"DEV"} onLoad={() => setLoaded(true)} apiLoaded={() => setApiLoaded(true)} isApiLoaded={apiLoaded} />}
+                        </Route>
 
-                          {/* If all the API's have been loaded, but the user has not been authenticate then show the Authentication Screen */}
-                          {authenticated === null &&
-                              <Authentication authenticated={authenticated}/>
-                          }
-
-
-                          {loaded && authenticated && apiLoaded &&
-                              <styled.ContentContainer>
-
-                                  <styled.HeaderContainer>
-                                      {mapViewEnabled ?
-                                          <Route
-                                              path={["/locations/:stationID?/:widgetPage?", '/']}
-                                              component={StatusHeader}
-                                          />
-                                          :
-                                          <> </>
-                                      }
-                                  </styled.HeaderContainer>
+                        {/* If all the API's have been loaded, but the user has not been authenticate then show the Authentication Screen */}
+                        {authenticated === null &&
+                            <Authentication authenticated={authenticated} />
+                        }
 
 
+                        {loaded && authenticated && apiLoaded &&
+                            <styled.ContentContainer>
 
-                                  <styled.BodyContainer>
-                                      {/* Hides Side bar when in a dashboard in mobile mode */}
-                                      {mapViewEnabled ?
-                                          // mobileMode ?
-                                          // dashboardOpen ?
-                                          //     <></>
-                                          //     :
+                                <styled.HeaderContainer>
+                                    {mapViewEnabled ?
+                                        <Route
+                                            path={["/locations/:stationID?/:widgetPage?", '/']}
+                                            component={StatusHeader}
+                                        />
+                                        :
+                                        <> </>
+                                    }
+                                </styled.HeaderContainer>
 
-                                          <Route
-                                              path={["/:page?/:id?/:subpage?", '/']}
-                                          >
-                                              <SideBar
+
+
+                                <styled.BodyContainer>
+                                    {/* Hides Side bar when in a dashboard in mobile mode */}
+                                    {mapViewEnabled ?
+                                        // mobileMode ?
+                                        // dashboardOpen ?
+                                        //     <></>
+                                        //     :
+
+                                        <Route
+                                            path={["/:page?/:id?/:subpage?", '/']}
+                                        >
+                                            <SideBar
                                                 showSideBar={sideBarOpen}
                                                 setShowSideBar={setShowSideBar}
                                             />
-                                          </Route>
-                                          // :
-                                          //     <Route
-                                          //         path={["/:page?/:id?/:subpage?", '/']}
-                                          //     >
-                                          //         <SideBar
-                                          //             showSideBar={sideBarOpen}
-                                          //             setShowSideBar={setShowSideBar}
-                                          //         />
-                                          //     </Route>
-                                          :
-                                          <></>
-                                      }
+                                        </Route>
+                                        // :
+                                        //     <Route
+                                        //         path={["/:page?/:id?/:subpage?", '/']}
+                                        //     >
+                                        //         <SideBar
+                                        //             showSideBar={sideBarOpen}
+                                        //             setShowSideBar={setShowSideBar}
+                                        //         />
+                                        //     </Route>
+                                        :
+                                        <></>
+                                    }
 
-                                      <Route
-                                          path={["/locations/:stationID/dashboards/:dashboardID?", '/']}
-                                          component={HILModal}
-                                      />
+                                    <Route
+                                        path={["/locations/:stationID/dashboards/:dashboardID?", '/']}
+                                        component={HILModal}
+                                    />
 
-                                      {/* If there are no maps, then dont render mapview (Could cause an issue when there is no MIR map)
+                                    {/* If there are no maps, then dont render mapview (Could cause an issue when there is no MIR map)
                                           And if the device is mobile, then unmount if widgets are open
                                       */}
                                     {maps.length > 0 &&
@@ -235,22 +263,22 @@ const App = () => {
                                     {/* Widgets are here in mobile mode. If not in mobile mode, then they are in map_view.
                                       The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons).
                                       So they need to be here. */}
-                                      {hoveringInfo !== null && mobileMode &&
-                                          <Route
-                                              path={["/locations/:stationID?/:widgetPage?", '/', "/locations/:deviceID?/:widgetPage?"]}
-                                              component={Widgets}
-                                          />
-                                      }
+                                    {hoveringInfo !== null && mobileMode &&
+                                        <Route
+                                            path={["/locations/:stationID?/:widgetPage?", '/', "/locations/:deviceID?/:widgetPage?"]}
+                                            component={Widgets}
+                                        />
+                                    }
 
-                                  </styled.BodyContainer>
+                                </styled.BodyContainer>
 
-                              </styled.ContentContainer>
-                          }
+                            </styled.ContentContainer>
+                        }
 
-                      </BrowserRouter>
-                  </styled.Container>
-              </ThemeProvider>
-              </>
+                    </BrowserRouter>
+                </styled.Container>
+            </ThemeProvider>
+        </>
     );
 
 }
