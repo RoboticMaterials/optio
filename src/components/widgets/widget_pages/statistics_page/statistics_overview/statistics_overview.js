@@ -196,7 +196,6 @@ const StatisticsOverview = (props) => {
 
         // If the timespan changes to line, then dont change what the report chart is showing
         if (newTimeSpan !== 'line') {
-            console.log('QQQQ getting report data', body)
             const reportAnalyticsResponse = await getReportAnalytics(stationID, body)
             if (reportAnalyticsResponse && !(reportAnalyticsResponse instanceof Error)) {
                 setReportData(reportAnalyticsResponse)
