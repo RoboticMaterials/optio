@@ -211,7 +211,6 @@ export default function TaskContent(props) {
                     onClick={(task) => {
                         setIsNew(false)
                         // If task button is clicked, start editing it
-                        console.log('QQQQ editing task', task)
                         dispatchSetSelectedTask(task)
                         onEditing(true)
                     }}
