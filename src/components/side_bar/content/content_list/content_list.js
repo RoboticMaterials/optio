@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 // Import Styles
 import * as styled from './content_list.style'
+import theme from '../../../../theme'
 
 // Import Components
 import ContentHeader from '../content_header/content_header'
@@ -100,7 +101,7 @@ export default function ContentList(props) {
                                 onMouseEnter={() => props.onMouseEnter(element)}
                                 onMouseLeave={() => props.onMouseLeave(element)}
                             >
-                                <styled.ListItemIconContainer style={{ width: '15%' }} >
+                                <styled.ListItemIconContainer>
 
                                     {props.schema === 'locations' &&
                                         <>
@@ -155,7 +156,7 @@ export default function ContentList(props) {
                                     <styled.ListItemIcon
                                         className='fas fa-edit'
                                         onClick={() => props.onClick(element)}
-                                        style={{ color: '#c6ccd3' }}
+                                        style={{ color: theme.main.bg.quaternary }}
                                     />
 
 

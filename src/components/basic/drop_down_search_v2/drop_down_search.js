@@ -568,7 +568,8 @@ export class DropDownSearch extends Component {
 
 export const DefaultReactDropdownSelect = styled.div`
 
-    background-color: ${props => props.theme.bg.quinary};
+    background-color: ${props => props.theme.bg.tertiary};
+    box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1) !important;
     color: ${props => props.theme.bg.octonary};
 
     font-family: ${props => props.theme.font.primary};
@@ -594,7 +595,7 @@ export const DefaultReactDropdownSelect = styled.div`
      :focus,
      :focus-within {
         color: ${props => props.theme.bg.octonary};
-        background-color: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};
+        background-color: ${props => props.theme.bg.primary};
         box-shadow: none;
         border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.bg.octonary};
     }

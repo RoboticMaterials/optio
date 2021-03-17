@@ -258,7 +258,7 @@ const SideBar = (props) => {
             />
 
             <styled.SideBarOpenCloseButton
-                className="hamburger hamburger--slider"
+                className="hamburger hamburger--squeeze"
                 type='button'
                 id='sideBarButton'
                 onClick={() => {
@@ -269,8 +269,8 @@ const SideBar = (props) => {
                 }}
             // showSideBar={showSideBar}
             >
-                <span className='hamburger-box' id='sideBarButton' style={{ display: 'flex', justifyContent: 'center', width: 'auto' }}>
-                    <span className='hamburger-inner' id='sideBarButton' />
+                <span className='hamburger-box' id='sideBarButton' style={{ display: 'flex', justifyContent: 'center', width: 'auto', color: 'red' }}>
+                    <span className='hamburger-inner' id='sideBarButton' style={{color: 'red'}}/>
                 </span>
             </styled.SideBarOpenCloseButton>
 

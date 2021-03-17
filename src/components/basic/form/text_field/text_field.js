@@ -73,8 +73,7 @@ const TextField = ({
                 <LabelComponent hasError={hasError} htmlFor={props.id || props.name}>{fieldLabel}</LabelComponent>
             }
             <ContentContainer style={containerStyle}>
-                <InputContainer
-                >
+                <InputContainer>
                     <InputComponent
 
                         // inputStyle={{...inputStyle, ...style}}
@@ -108,14 +107,17 @@ const TextField = ({
 
                             onBlur(event) // call onBlur prop if passed
                         }}
-                    />
-                    <ErrorTooltip
-                        visible={hasError || hasWarning}
-                        text={hasError ? errorMessage : hasWarning ? warningMessage : null}
-                        color={hasWarning && !hasError && themeContext.warn}
-                        ContainerComponent={IconContainerComponent}
-                        containerStyle={errorTooltipContainerStyle}
-                    />
+                        tooltip={
+                            <ErrorTooltip
+                                visible={hasError || hasWarning}
+                                text={hasError ? errorMessage : hasWarning ? warningMessage : null}
+                                color={hasWarning && !hasError && themeContext.warn}
+                                ContainerComponent={IconContainerComponent}
+                                containerStyle={errorTooltipContainerStyle}
+                            />
+                        }
+                    ></InputComponent>
+                    
                 </InputContainer>
 
             </ContentContainer>
