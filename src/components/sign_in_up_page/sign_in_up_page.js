@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -16,7 +16,7 @@ import Textbox from '../basic/textbox/textbox'
 import * as styled from './sign_in_up_page.style'
 
 // Import actions
-import { postLocalSettings } from '../../redux/actions/local_actions'
+import { postLocalSettings, getLocalSettings, } from '../../redux/actions/local_actions'
 
 import configData from '../../settings/config'
 
@@ -28,16 +28,22 @@ const SignInUpPage = (props) => {
 
     const dispatch = useDispatch()
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const dispatchGetLocalSettings = (settings) => dispatch(getLocalSettings(settings))
+
     const localReducer = useSelector(state => state.localReducer.localSettings)
 
     // Check to see if we want authentication *** Dev ONLY ***
     if (!configData.authenticationNeeded) {
-        dispatchPostLocalSettings({
-            ...localReducer,
-            authenticated: 'no',
-            non_local_api_ip: window.location.hostname,
-            non_local_api: true,
+        const localSettingsPromise = dispatchGetLocalSettings()
+        localSettingsPromise.then(response =>{
+          dispatchPostLocalSettings({
+              ...response,
+              authenticated: 'no',
+              //non_local_api_ip: window.location.hostname,
+              //non_local_api: true,
+          })
         })
+
     }
 
     // signIn prop is passed from authentication container to tell this page to show sign in or sign up components
@@ -96,7 +102,7 @@ const SignInUpPage = (props) => {
                         authenticated: result.accessToken.payload.username,
                         non_local_api_ip: window.location.hostname,
                         non_local_api: true,
-                        refreshToken: result.getRefreshToken().getToken()
+                        refreshToken: true
                     })
 
 
@@ -111,7 +117,11 @@ const SignInUpPage = (props) => {
             if (password === confirmPassword) {
                 userPool.signUp(email, password, [], null, (err, data) => {
                     if (err) {
-                        alert(err.message)
+                        if(err.message === 'Invalid version. Version should be 1'){
+                            alert('Invalid email. Please use a valid email.')
+                        }else{
+                            alert(err.message)
+                        }
                     } else {
                         alert('You have sucessfully signed up! Please check you email for a verification link.')
                         handleSignInChange(true)

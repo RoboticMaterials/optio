@@ -1,4 +1,8 @@
 
+export const BIN_IDS = {
+	QUEUE: "QUEUE",
+	FINISH: "FINISH"
+}
 
 
 export const FIELD_COMPONENT_NAMES = {
@@ -57,10 +61,10 @@ export const LOT_EDITOR_SIDEBAR_OPTIONS = {
 		component: FIELD_COMPONENT_NAMES.NUMBER_INPUT,
 		dataType: FIELD_DATA_TYPES.INTEGER
 	},
-	// CALENDAR_SINGLE: {
-	// 	component: FIELD_COMPONENT_NAMES.CALENDAR_SINGLE
-	// 	dataType: FIELD_DATA_TYPES.DATE
-	// },
+	CALENDAR_SINGLE: {
+		component: FIELD_COMPONENT_NAMES.CALENDAR_SINGLE,
+		dataType: FIELD_DATA_TYPES.DATE
+	},
 	CALENDAR_START_END: {
 		component: FIELD_COMPONENT_NAMES.CALENDAR_START_END,
 		dataType: FIELD_DATA_TYPES.DATE_RANGE
@@ -103,6 +107,8 @@ export const DEFAULT_DISPLAY_NAMES = {
 
 export const NAME_FIELD = {fieldName: "name", dataType: FIELD_DATA_TYPES.STRING, displayName: DEFAULT_NAME_DISPLAY_NAME, label: "Name"}
 export const COUNT_FIELD = {fieldName: "count", fieldPath: ["bins", "QUEUE"], dataType: FIELD_DATA_TYPES.INTEGER, displayName: DEFAULT_COUNT_DISPLAY_NAME, label: "Quantity"}
+export const LOT_NUMBER_FIELD = {fieldName: "lotNumber", dataType: FIELD_DATA_TYPES.INTEGER, label: "Lot Number"}
+
 
 export const REQUIRED_FIELDS = [NAME_FIELD, COUNT_FIELD]
 
@@ -168,9 +174,11 @@ export const LOT_FILTER_OPTIONS = {
 	flags: {
 		label: "Flags"
 	},
+	lotNumber: {...LOT_NUMBER_FIELD}
 }
 
 export const LOT_SORT_OPTIONS = {
 	name: {...NAME_FIELD},
-	quantity: {...COUNT_FIELD}
+	quantity: {...COUNT_FIELD},
+	lotNumber: {...LOT_NUMBER_FIELD}
 }

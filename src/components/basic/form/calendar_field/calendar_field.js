@@ -13,7 +13,8 @@ import {isArray} from "../../../../methods/utils/array_utils";
 export const CALENDAR_FIELD_MODES = {
 	START: "START",
 	END: "END",
-	RANGE: "RANGE"
+	RANGE: "RANGE",
+	SINGLE: "SINGLE",
 }
 
 const CalendarField = ({

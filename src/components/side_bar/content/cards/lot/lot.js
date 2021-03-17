@@ -21,12 +21,14 @@ import {formatLotNumber} from "../../../../../methods/utils/lot_utils"
 
 // styles
 import * as styled from "./lot.style"
-import LotDateRangeRow from "./lot_date_row/lot_date_row";
+import LotDateRangeRow from "./lot_date_range_row/lot_date_range_row";
 import LotSimpleRow from "./lot_simple_row/lot_simple_row";
+import LotDateRow from "./lot_date_row/lot_date_row";
 
 const Lot = (props) => {
     const {
         name,
+        isFocused,
         highlight,
         index,
         totalQuantity,
@@ -57,9 +59,6 @@ const Lot = (props) => {
     useEffect(() => {
         setFormattedLotNumber(formatLotNumber(lotNumber))
     }, [lotNumber])
-
-    const startDateText = ((start_date?.month + 1) && start_date?.day && start_date?.year) ?  (start_date.month + 1) + "/" + start_date.day + "/" + start_date.year : "Start"
-    const endDateText = ((end_date?.month + 1) && end_date?.day && end_date?.year) ?  (end_date.month + 1) + "/" + end_date.day + "/" +end_date.year : "End"
 
     const renderTemplateValues = () => {
         return templateValues
@@ -101,7 +100,12 @@ const Lot = (props) => {
                 }
                 case FIELD_DATA_TYPES.DATE: {
                     return(
-                        <div>nope</div>
+                        <LotDateRow
+                            label={fieldName}
+                            isLast={isLast}
+                            date={value}
+                        />
+
                     )
                 }
                 case FIELD_DATA_TYPES.DATE_RANGE: {
@@ -181,8 +185,10 @@ const Lot = (props) => {
             </styled.FlagsContainer>
         )
     }
+
     return(
         <styled.Container
+            isFocused={isFocused}
             highlight={highlight}
             selectable={selectable}
             isSelected={isSelected}
@@ -284,17 +290,20 @@ const Lot = (props) => {
 // Specifies propTypes
 Lot.propTypes = {
     isSelected: PropTypes.bool,
-    selectable: PropTypes.bool
+    selectable: PropTypes.bool,
+    isFocused: PropTypes.bool,
 }
 
 // Specifies the default values for props:
 Lot.defaultProps = {
     isSelected: false,
+    isFocused: false,
     selectable: false,
     flags: [],
     highlight: false,
     enableFlagSelector: true,
-    templateValues: []
+    templateValues: [],
+    count: 0
 }
 
 export default Lot

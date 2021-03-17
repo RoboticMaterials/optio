@@ -31,29 +31,27 @@ export async function postLoggers(settings) {
     return loggerConfig;
 }
 
+
 export const postLocalSettings = async (settings) => {
-    // NOTE: localStorage.setItem returns undefined, so can't use this return value for anything
-    const localSettings = localStorage.setItem("local-settings-config", JSON.stringify(settings))
-    return localSettings
+  const locStorage = ls.set("localSettings", JSON.stringify(settings));
+  return locStorage
+}
+
+
+export const getLocalSettings = async () => {
+  const localSettings = ls.get("localSettings");
+
+  if (localSettings !== null) {
+      const locSettings = JSON.parse(localSettings);
+      return locSettings;
+  }
+  else {
+    await postLocalSettings(defaultLocalSettings)
+    return defaultLocalSettings
+  }
+
 }
 
 export const deleteLocalSettings = async () => {
-    localStorage.removeItem("local-settings-config")
-
-}
-
-export const getLocalSettings = async () => {
-    let localSettings = localStorage.getItem("local-settings-config");
-
-    if (localSettings !== null) {
-
-        localSettings = JSON.parse(localSettings);
-
-        return localSettings;
-    }
-    // Posts settigns to the backend if there's nothing there
-    else {
-        await postLocalSettings(defaultLocalSettings)
-        return defaultLocalSettings
-    }
+    localStorage.removeItem("local-settings-config");
 }

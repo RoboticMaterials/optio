@@ -60,8 +60,16 @@ const DragEntityProto = (props) => {
             deltaRotation = Math.round(deltaRotation / 10) * 10
         }
 
+
+        // Final Rotation
+        let rotation = originalRotation - deltaRotation
+        // If rotation goes negative, then add 360 to the number to get irs positive variant
+        if(rotation < 0){
+            rotation = rotation + 360
+        }
+        
         // Callback passed from props to set the appropriate location atttribute
-        handleRotate(originalRotation + deltaRotation)
+        handleRotate(rotation)
     }
 
     const rotateEnd = () => {

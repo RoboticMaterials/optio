@@ -113,7 +113,6 @@ export class DropDownSearch extends Component {
   }
 
   componentDidMount() {
-
     this.props.portal && this.props.portal.appendChild(this.dropdownRoot);
     window.addEventListener('resize', debounce(this.updateSelectBounds), {passive:true});
     window.addEventListener('scroll', debounce(this.onScroll), {passive:true});
@@ -598,10 +597,10 @@ export const DefaultReactDropdownSelect = styled.div`
         box-shadow: none;
         border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.bg.octonary};
     }
-  
+
   ${props => props.css && props.css};
-  
-  
+
+
 `;
 
 const DefaultContainer = styled.div`

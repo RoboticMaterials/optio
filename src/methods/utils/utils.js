@@ -227,3 +227,20 @@ export const getDateFromString = (str) => {
     const dateStr = deepCopy(str).replace(/ .*/, '').split('-');
     return new Date(dateStr[0], dateStr[1] - 1, dateStr[2]);
 }
+
+export const setAcceleratingInterval = (callback, factor, initialRate, times, minRate, timeoutRef) => {
+    let internalCallback = function(tick, counter) {
+
+        return () => {
+            if (--tick >= 0) {
+                const newRate = (initialRate) - (++counter * factor)
+                timeoutRef.current && clearTimeout(timeoutRef.current)
+                timeoutRef.current = setTimeout(internalCallback, (newRate > minRate) ? newRate : minRate);
+                callback();
+            }
+
+        }
+    }(times, 0);
+
+    timeoutRef.current = setTimeout(internalCallback, factor)
+}

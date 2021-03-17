@@ -30,6 +30,7 @@ function arraysEqual(a, b) {
 export const isNonEmptyArray = (arr) => {
     return isArray(arr) && arr.length > 0
 }
+
 export const immutableInsert = (arr, ele, index) => {
     return [...arr.slice(0, index), ele, ...arr.slice(index, arr.length)]
 }

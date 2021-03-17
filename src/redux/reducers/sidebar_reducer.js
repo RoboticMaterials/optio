@@ -3,7 +3,7 @@ import {
     SET_ACTION,
     SET_WIDTH,
     SET_OPEN,
-    PAGE_DATA_CHANGED,
+    PAGE_DATA_CHANGED, SET_CONFIRM_DELETE,
 } from '../types/sidebar_types'
 
 
@@ -13,11 +13,21 @@ const defaultState = {
     width: 450,
     open: false,
     pageDataChanged:false,
+    showConfirmDeleteModal: false,
+    confirmDeleteCallback: null
 };
 
 export default function sidebarReducer(state = defaultState, action) {
 
     switch (action.type) {
+
+        case SET_CONFIRM_DELETE: {
+            return {
+                ...state,
+                showConfirmDeleteModal: action.payload.show,
+                confirmDeleteCallback: action.payload.callback,
+            }
+        }
 
         case SET_MODE:
             return {

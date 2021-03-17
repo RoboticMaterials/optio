@@ -19,6 +19,8 @@ import { getStatus } from '../../redux/actions/status_actions'
 
 import { getSettings } from '../../redux/actions/settings_actions'
 import { getLocalSettings } from '../../redux/actions/local_actions'
+import { postDevSettings } from '../../api/local_api'
+
 import { getLoggers } from '../../redux/actions/local_actions';
 import { getRefreshToken } from '../../redux/actions/authentication_actions'
 
@@ -92,12 +94,15 @@ const ApiContainer = (props) => {
     const MiRMapEnabled = localReducer?.localSettings?.MiRMapEnabled
     const stopAPICalls = useSelector(state => state.localReducer.stopAPICalls)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
+    const localSettings = useSelector(state => state.localReducer.localSettings)
+
 
     // States
     const [currentPage, setCurrentPage] = useState('')
     const [apiError, setApiError] = useState(false)
     const [pageDataInterval, setPageDataInterval] = useState(null)
     const [criticalDataInterval, setCriticalDataInterval] = useState(null)
+    const [localDataInterval, setLocalDataInterval] = useState(null)
     const [mapDataInterval, setMapDataInterval] = useState(null)
 
     const params = useParams()
@@ -108,6 +113,7 @@ const ApiContainer = (props) => {
         // this interval is always on
         // loads essential info used on every page such as status and taskQueue
         setCriticalDataInterval(setInterval(() => loadCriticalData(), 500));
+
 
         if(!!mapViewEnabled){
             setMapDataInterval(setInterval(() => loadMapData(), 10000));
@@ -121,6 +127,7 @@ const ApiContainer = (props) => {
             //clearInterval(mapDataInterval)
         }
     }, [])
+
 
     useEffect(() => {
         if (stopAPICalls === true) {
@@ -150,13 +157,18 @@ const ApiContainer = (props) => {
             })
 
             // only update if MiRMapEnabled isn't currently set or MiRMapEnabled needs to be updated because it isn't equal to containsMirCart
-            if ((MiRMapEnabled === undefined) || (MiRMapEnabled !== containsMirCart)) onPostLocalSettings({
+            if ((MiRMapEnabled === undefined) || (MiRMapEnabled !== containsMirCart)){
+
+              const updatedLocalSettings = {
                 ...localReducer.localSettings,
                 MiRMapEnabled: containsMirCart,
-            })
+              }
+
+              onPostLocalSettings(updatedLocalSettings)
+            }
         }
 
-    }, [devices, MiRMapEnabled])
+    }, [devices,MiRMapEnabled])
 
     useEffect(() => {
 
@@ -283,7 +295,7 @@ const ApiContainer = (props) => {
 
     const loadInitialData = async () => {
         // Local Settings must stay on top of initial data so that the correct API address is seleceted
-        const localSettings = await onGetLocalSettings()
+        //const localSettings = await onGetLocalSettings()
         const settings = await onGetSettings();
         //await postSettings(settings)
         // const refreshToken = await onGetRefreshToken()
@@ -348,6 +360,10 @@ const ApiContainer = (props) => {
 
     const loadCriticalData = async () => {
         const dataStream = dispatchGetDataStream()
+    }
+
+    const loadLocalData = async () => {
+      const localSettings = await onGetLocalSettings()
     }
 
 
@@ -421,9 +437,8 @@ const ApiContainer = (props) => {
     */
     const loadSettingsData = async () => {
         const settings = await onGetSettings();
-        const localSettings = await onGetLocalSettings()
+        //const localSettings = await onGetLocalSettings()
         const loggers = await onGetLoggers();
-
     }
 
     /*

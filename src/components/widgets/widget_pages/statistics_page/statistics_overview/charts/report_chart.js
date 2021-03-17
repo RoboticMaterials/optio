@@ -59,7 +59,7 @@ const ReportChart = (props) => {
         []
 
     // set min height based on number of entries so chart won't squeeze rows too close together
-    const minHeight = (filteredData && Array.isArray(filteredData)) ? filteredData.length * 2 : 0
+    const minHeight = (filteredData && Array.isArray(filteredData)) ? filteredData.length : 0
 
     return (
         <styled.SinglePlotContainer
@@ -86,14 +86,13 @@ const ReportChart = (props) => {
                         colorBy={"id"}
                         mainTheme={themeContext}
                         timeSpan={timeSpan}
-                        layout={true ? "horizontal" : "vertical"}
-                        enableGridX={true ? true : false}
-                        enableGridY={!true ? true : false}
+                        layout={"vertical"}
+                        enableGridY={true}
                         axisBottom={{
-                            legend: 'Count',
+                            legend: 'Time',
                         }}
                         axisLeft={{
-                            legend: 'Time'
+                            legend: 'Count'
                         }}
                     />
 
