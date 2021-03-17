@@ -7,5 +7,6 @@ export const isShift = (event) => {
 }
 
 export const isControl = (event) => {
-	return event.metaKey
+	return event.ctrlKey || event.metaKey
 }
+

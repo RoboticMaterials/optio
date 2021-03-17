@@ -30,7 +30,7 @@ const Column = ((props) => {
 	const {
 		station_id,
 		stationName = "Unnamed",
-		handleCardClick,
+		onCardClick,
 		selectedCards,
 		processId,
 		HeaderContent,
@@ -168,10 +168,10 @@ const Column = ((props) => {
 		})
 
 		if(selectedIndex < existingIndex) {
-			return cards.slice(selectedIndex+1, existingIndex+1)
+			return cards.slice(selectedIndex, existingIndex+1)
 		}
 		else {
-			return cards.slice(existingIndex, selectedIndex)
+			return cards.slice(existingIndex, selectedIndex+1).reverse()
 		}
 	}
 
@@ -360,10 +360,13 @@ const Column = ((props) => {
 									<div
 										style={{
 											transform: isSelected && "rotate(2.5deg)",
-											border: isLastSelected && "3px solid red"
+											// border: isLastSelected && "1px solid red",
+											// boxShadow: isLastSelected && "0 0 5px ${color}",
+
 										}}
 									>
 								<Lot
+									glow={isLastSelected}
 									isFocused={isDragging || isHovering}
 									enableFlagSelector={true}
 									templateValues={templateValues}
@@ -380,10 +383,16 @@ const Column = ((props) => {
 									flags={flags || []}
 									index={index}
 									onClick={(e)=> {
-
 										const payload = getBetweenSelected(cardId)
-										console.log("payload",payload)
-										handleCardClick(e, cardId, processId, station_id, payload)
+										onCardClick(
+											e,
+											{
+												lotId: cardId,
+												processId: processId,
+												binId: station_id
+											},
+											payload
+										)
 									}}
 									containerStyle={{
 										marginBottom: "0.5rem",

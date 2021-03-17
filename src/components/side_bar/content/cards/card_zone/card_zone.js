@@ -33,7 +33,8 @@ const CardZone = ((props) => {
 		sortMode,
 		sortDirection,
 		selectedCards,
-		setSelectedCards
+		setSelectedCards,
+		handleAddLotClick,
 	} = props
 
 	// redux state
@@ -219,7 +220,7 @@ const CardZone = ((props) => {
 					processId={processId}
 					route_id={route_id}
 					cards={cardsArr}
-					handleCardClick={handleCardClick}
+					onCardClick={handleCardClick}
 				/>
 			)
 		})
@@ -240,7 +241,8 @@ const CardZone = ((props) => {
 				stationName={"Queue"}
 				processId={processId}
 				cards={queue}
-				handleCardClick={handleCardClick}
+				onCardClick={handleCardClick}
+				onAddLotClick={() => handleAddLotClick(processId)}
 			/>
 
 			{renderStationColumns()}
@@ -258,7 +260,7 @@ const CardZone = ((props) => {
 				stationName={"Finished"}
 				processId={processId}
 				cards={finished}
-				handleCardClick={handleCardClick}
+				onCardClick={handleCardClick}
 			/>
 		</styled.Container>
 	)

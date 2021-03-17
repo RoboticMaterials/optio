@@ -18,6 +18,10 @@ export const glow2 = (color) => css`
 	border: 1px solid ${color};
 `
 
+export const glow3 = (color) => css`
+	border: 4px ridge ${color};
+`
+
 export const errorGlow = css`
   ${props => glow(props.theme.bad)};
 `;

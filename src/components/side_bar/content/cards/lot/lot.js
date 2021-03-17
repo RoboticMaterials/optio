@@ -28,6 +28,7 @@ import LotDateRow from "./lot_date_row/lot_date_row";
 const Lot = (props) => {
     const {
         name,
+        glow,
         isFocused,
         highlight,
         index,
@@ -188,6 +189,7 @@ const Lot = (props) => {
 
     return(
         <styled.Container
+            glow={glow}
             isFocused={isFocused}
             highlight={highlight}
             selectable={selectable}
@@ -303,7 +305,8 @@ Lot.defaultProps = {
     highlight: false,
     enableFlagSelector: true,
     templateValues: [],
-    count: 0
+    count: 0,
+    glow: false
 }
 
 export default Lot

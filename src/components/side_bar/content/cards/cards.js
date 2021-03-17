@@ -30,6 +30,7 @@ import {isEmpty} from "../../../../methods/utils/object_utils";
 import ConfirmDeleteModal from "../../../basic/modals/confirm_delete_modal/confirm_delete_modal";
 import DeleteMultipleLots from "./delete_multiplie_lots_modal/delete_multiplie_lots_modal";
 import DeleteMultipleLotsModal from "./delete_multiplie_lots_modal/delete_multiplie_lots_modal";
+import {isControl, isControlAndShift, isShift} from "../../../../methods/utils/event_utils";
 
 const Cards = (props) => {
 
@@ -164,8 +165,14 @@ const Cards = (props) => {
    * @param {binId)} string - id of clicked lot's bin
    *
    * */
-    const handleCardClick = (event, cardId, processId, binId, lotsBetween) => {
-        if(event.shiftKey && event.metaKey) {
+    const handleCardClick = (event, {lotId, processId, binId}, lotsBetween) => {
+
+        /*
+        * Special keys: (ctrl (windows) OR cmd (mac)) AND shift
+        * Action: add cards between last added and just clicked (including just clicked)
+        * */
+        if(isControlAndShift(event)) {
+            // for each lot in lotsBetween, see if it already exists in selectedCards
             lotsBetween.forEach((currLotToAdd) => {
                 const {
                     binId: currAddingBinId,
@@ -183,6 +190,7 @@ const Cards = (props) => {
                     return (currAddingLotId === currExistingLotId) && (currAddingBinId === currExistingBinId) && (currAddingProcessId === currExistingProcessId)
                 })
 
+                // if it doesn't already exist in selectedCards, add it. Otherwise do nothing.
                 if(existingIndex === -1) {
                     setSelectedCards((previous) => {
                         return(
@@ -195,19 +203,51 @@ const Cards = (props) => {
                                 }
                             ]
                         )
-                    }
-
-                    )
-                }
-                else {
-
+                    })
                 }
             })
         }
-        else if (event.shiftKey) {
 
+        /*
+        * Special keys: shift
+        * Action: replace selected in current column with lots between last added and just clicked (including just clicked)
+        * */
+        else if (isShift(event)) {
+            // filter out lots in current column from selectedCards
+            let tempSelectedCards = selectedCards.filter((currLot) => {
+                const {
+                    binId: currBinId,
+                } = currLot
+
+                return currBinId !== binId
+            })
+
+            // add all lots from lotsBetween to selectedCards
+            lotsBetween.forEach((currLotToAdd) => {
+                const {
+                    binId: currAddingBinId,
+                    cardId: currAddingLotId,
+                    process_id: currAddingProcessId,
+                } = currLotToAdd
+
+
+                tempSelectedCards.push({
+                    cardId: currAddingLotId,
+                    processId: currAddingProcessId,
+                    binId: currAddingBinId
+                })
+            })
+
+            // update selectedCards
+            setSelectedCards(tempSelectedCards)
         }
-        else if(event.metaKey) {
+
+        /*
+        * Special keys: ctrl (windows), cmd (mac)
+        * Action: add just clicked
+        * */
+        else if(isControl(event)) {
+            // get index of lot in selected cards
             const existingIndex = selectedCards.findIndex((currLot) => {
                 const {
                     cardId: currLotId,
@@ -215,32 +255,39 @@ const Cards = (props) => {
                     processId: currExistingProcessId
                 } = currLot
 
-                return (cardId === currLotId) && (binId === currBinId) && (processId === currExistingProcessId)
+                return (lotId === currLotId) && (binId === currBinId) && (processId === currExistingProcessId)
             })
 
+            // if index === -1, lot isn't already in selected cards, so add
             if(existingIndex === -1) {
                 setSelectedCards([
                     ...selectedCards,
-                    { cardId, processId, binId }
+                    { cardId: lotId, processId, binId }
                 ])
             }
+            // otherwise lot is in selectedCards already, so remove
             else {
                 setSelectedCards(immutableDelete(selectedCards, existingIndex))
             }
         }
+
+        /*
+        * No special key pressed, open editor
+        * */
         else {
             onShowCardEditor(true)
-            setSelectedCard({ cardId, processId, binId })
+            setSelectedCard({ cardId: lotId, processId, binId })
         }
     }
-
-
 
     const handleDeleteClick = () => {
         setShowConfirmDeleteModal(true)
     }
 
-
+    const handleAddLotClick = (processId) => {
+        onShowCardEditor(true)
+        setSelectedCard({ cardId: null, processId, binId: null })
+    }
 
     return (
         <styled.Container>
@@ -316,6 +363,7 @@ const Cards = (props) => {
                                 handleCardClick={handleCardClick}
                                 setShowCardEditor={onShowCardEditor}
                                 showCardEditor={showCardEditor}
+                                handleAddLotClick={handleAddLotClick}
                             />,
                         'timeline':
                             <div
@@ -325,6 +373,7 @@ const Cards = (props) => {
                     }[id] ||
                     <styled.CardZoneContainer ref={zoneRef}>
                         <CardZone
+                            handleAddLotClick={handleAddLotClick}
                             setSelectedCards={setSelectedCards}
                             selectedCards={selectedCards}
                             maxHeight={(zoneSize.height - 75) + "px"} // maxHeight is set equal to size of parent div with some value subtracted as padding. NOTE: setting height to 100% doesn't currently work for this
