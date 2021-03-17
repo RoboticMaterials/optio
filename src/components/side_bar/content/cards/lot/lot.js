@@ -31,7 +31,6 @@ const Lot = (props) => {
         glow,
         isFocused,
         highlight,
-        index,
         totalQuantity,
         lotNumber,
         templateValues,

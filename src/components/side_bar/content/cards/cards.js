@@ -31,6 +31,7 @@ import ConfirmDeleteModal from "../../../basic/modals/confirm_delete_modal/confi
 import DeleteMultipleLots from "./delete_multiplie_lots_modal/delete_multiplie_lots_modal";
 import DeleteMultipleLotsModal from "./delete_multiplie_lots_modal/delete_multiplie_lots_modal";
 import {isControl, isControlAndShift, isShift} from "../../../../methods/utils/event_utils";
+import MoveMultipleLotsModal from "./move_multiplie_lots_modal/move_multiplie_lots_modal";
 
 const Cards = (props) => {
 
@@ -51,6 +52,7 @@ const Cards = (props) => {
 
     // internal state
     const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false)
+    const [showMoveModal, setShowMoveModal] = useState(false)
     const [selectedCards, setSelectedCards] = useState([])
     const [selectedCard, setSelectedCard] = useState(null)
     const [title, setTitle] = useState(null)
@@ -284,6 +286,10 @@ const Cards = (props) => {
         setShowConfirmDeleteModal(true)
     }
 
+    const handleMoveClick = () => {
+        setShowMoveModal(true)
+    }
+
     const handleAddLotClick = (processId) => {
         onShowCardEditor(true)
         setSelectedCard({ cardId: null, processId, binId: null })
@@ -297,6 +303,16 @@ const Cards = (props) => {
                 lots={selectedCards}
                 isOpen={showConfirmDeleteModal}
                 setShowConfirmDeleteModal={setShowConfirmDeleteModal}
+                setSelectedCards={setSelectedCards}
+                selectedCards={selectedCards}
+            />
+            }
+            {showMoveModal &&
+            <MoveMultipleLotsModal
+                handleClose={() => setShowMoveModal(false)}
+                lots={selectedCards}
+                isOpen={showMoveModal}
+                setShowConfirmDeleteModal={setShowMoveModal}
                 setSelectedCards={setSelectedCards}
                 selectedCards={selectedCards}
             />
@@ -335,6 +351,7 @@ const Cards = (props) => {
             <MultiSelectOptions
                 selectedLots={selectedCards}
                 onDeleteClick={handleDeleteClick}
+                onMoveClick={handleMoveClick}
                 onClearClick={()=>setSelectedCards([])}
             />
             }
