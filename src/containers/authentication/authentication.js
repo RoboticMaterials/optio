@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 
 import * as styled from './authentication.style'
 
@@ -7,7 +7,7 @@ import * as styled from './authentication.style'
 import SignInUpPage from '../../components/sign_in_up_page/sign_in_up_page'
 
 // Import actions
-import { postLocalSettings } from '../../redux/actions/local_actions'
+import { postLocalSettings, getLocalSettings } from '../../redux/actions/local_actions'
 
 // Get Auth from amplify
 import { Auth } from "aws-amplify";
@@ -26,7 +26,7 @@ import { Auth } from "aws-amplify";
  * TODO: Add HTTPS connection to server which allows for the use of a secure cookie. Increases security a lot 
  * @param {authenticated} props 
  */
-const Authentication = () => {
+const Authentication = (checkAuth) => {
 
     const dispatch = useDispatch()
 
@@ -35,7 +35,7 @@ const Authentication = () => {
     const [user, setUser] = useState(null);
 
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
-    const localReducer = useSelector(state => state.localReducer.localSettings)
+    const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
 
     const handleSignInChange = (value) => {
         setSignIn(value)
@@ -43,6 +43,7 @@ const Authentication = () => {
 
     useEffect(() => {
         checkUser();
+        setAuthenticated()
       }, []);
     
    const checkUser = async () => {
@@ -54,13 +55,24 @@ const Authentication = () => {
        }
     }
 
-    const handleInitialLoad = () => {
+    const setAuthenticated = async () => {
         if (user) {
+            const fetchedSettings = await dispatchGetLocalSettings()
             dispatchPostLocalSettings({
-                ...localReducer,
+                ...fetchedSettings,
                 authenticated: true,
             });
         }
+    }
+
+    useEffect(() => {
+        setAuthenticated()
+    }, [user])
+
+    
+
+    const handleInitialLoad = () => {
+        
 
         return (
             <styled.Container>

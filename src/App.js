@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -27,16 +27,44 @@ import Widgets from './components/widgets/widgets'
 import ListView from "./components/list_view/list_view";
 import ConfirmDeleteModal from './components/basic/modals/confirm_delete_modal/confirm_delete_modal'
 import FirstSignIn from './components/firstSignIn/firstSignIn'
+import Redirector from './components/redirector/redirector'
+
+// Import actions
+import { postLocalSettings, getLocalSettings } from './redux/actions/local_actions'
+
+// Get Auth from amplify
+import { Auth } from "aws-amplify";
 
 // Amplify configuration globally
 import Amplify from "aws-amplify";
 import config from "./aws-exports";
 
+import { API, graphqlOperation } from 'aws-amplify';
+import * as subscriptions from './graphql/subscriptions';
+
 Amplify.configure(config);
 
 const widthBreakPoint = 1000;
 
-const App = () => {
+
+
+const App = (props) => {
+
+    // Subscribe to creation of Todo
+    const stationSubscription = API.graphql(
+        graphqlOperation(subscriptions.onCreateStation)
+    ).subscribe({
+        next: ({ provider, value }) => console.log({ provider, value }),
+        error: error => console.warn(error)
+    });
+
+    // Subscribe to creation of Todo
+    const stationUpdates = API.graphql(
+        graphqlOperation(subscriptions.onUpdateStation)
+    ).subscribe({
+        next: ({ provider, value }) => console.log({ provider, value }),
+        error: error => console.warn(error)
+    });
 
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
     const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
@@ -54,10 +82,42 @@ const App = () => {
 
     const [showSideBar, setShowSideBar] = useState(false)
     const [showStopAPIModal, setShowStopAPIModal] = useState(true)
+
+    const [didCheckAuth, setDidCheckAuth] = useState(false)
+
     const size = useWindowSize()
     const windowWidth = size.width
 
     const mobileMode = windowWidth < widthBreakPoint;
+
+
+    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
+
+
+    useEffect(() => {
+        checkUser();
+
+    }, []);
+
+    const checkUser = async () => {
+        try {
+            const user = await Auth.currentAuthenticatedUser();
+            if (user) {
+                const fetchedSettings = await dispatchGetLocalSettings()
+
+                await dispatchPostLocalSettings({
+                    ...fetchedSettings,
+                    authenticated: true,
+                });
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setDidCheckAuth(true)
+        }
+    }
+
 
     /**
      * This handles Map view in mobile mode
@@ -77,12 +137,14 @@ const App = () => {
         }
     }
 
+    if (!didCheckAuth) return null
+
     return (
         <>
             <Logger />
 
-              {/* <ThemeProvider theme={theme[this.state.theme]}> */}
-              <ThemeProvider theme={theme['main']}>
+            {/* <ThemeProvider theme={theme[this.state.theme]}> */}
+            <ThemeProvider theme={theme['main']}>
 
                 <styled.Container>
                     <ConfirmDeleteModal
@@ -101,19 +163,25 @@ const App = () => {
                             setShowStopAPIModal(false)
                         }}
                     />
-                    <BrowserRouter basename="/">
+                    <BrowserRouter>
 
                         {/* Authentication */}
                         <Route exact path="/login" >
                             <Authentication />
                         </Route>
 
+
+                        <Redirector
+                            condition={(authenticated === null) || !authenticated}
+                            endpoint={"/login"}
+                        />
+
                         {/* If user has never signed in */}
                         <Route path="/login/organization" >
                             <FirstSignIn />
                         </Route>
 
-                     
+
                         {authenticated &&
                             <Route
                                 path={["/locations/:stationID?/:widgetPage?", '/:sidebar?/:data1?/:data2?', '/',]}
@@ -122,7 +190,7 @@ const App = () => {
                             </Route>
                         }
 
-                        { apiLoaded && loaded &&
+                        {apiLoaded && loaded &&
                             <styled.ContentContainer>
 
                                 <styled.HeaderContainer>
@@ -141,9 +209,9 @@ const App = () => {
                                             path={["/:page?/:id?/:subpage?", '/']}
                                         >
                                             <SideBar
-                                            showSideBar={sideBarOpen}
-                                            setShowSideBar={setShowSideBar}
-                                        />
+                                                showSideBar={sideBarOpen}
+                                                setShowSideBar={setShowSideBar}
+                                            />
                                         </Route>
                                     }
 
@@ -155,37 +223,37 @@ const App = () => {
                                     {/* If there are no maps, then dont render mapview (Could cause an issue when there is no MIR map)
                                         And if the device is mobile, then unmount if widgets are open
                                     */}
-                                {maps.length > 0 &&
-                                    <>
-                                        {mapViewEnabled ?
+                                    {maps.length > 0 &&
+                                        <>
+                                            {mapViewEnabled ?
 
-                                            (mobileMode ?
-                                                <Route
-                                                    path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                >
-                                                    {handleMobileMapView()}
-                                                </Route>
+                                                (mobileMode ?
+                                                    <Route
+                                                        path={["/locations/:stationID?/:widgetPage?", '/']}
+                                                    >
+                                                        {handleMobileMapView()}
+                                                    </Route>
+                                                    :
+                                                    <Route
+                                                        path={["/locations/:stationID?/:widgetPage?", '/']}
+                                                        component={MapView}
+                                                    />
+                                                )
+
                                                 :
+
                                                 <Route
                                                     path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                    component={MapView}
+                                                    component={ListView}
                                                 />
-                                            )
-
-                                            :
-
-                                            <Route
-                                                path={["/locations/:stationID?/:widgetPage?", '/']}
-                                                component={ListView}
-                                            />
 
 
-                                        }
-                                    </>
-                                }
+                                            }
+                                        </>
+                                    }
 
 
-                                {/* Widgets are here in mobile mode. If not in mobile mode, then they are in map_view.
+                                    {/* Widgets are here in mobile mode. If not in mobile mode, then they are in map_view.
                                     The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons).
                                     So they need to be here. */}
                                     {hoveringInfo !== null && mobileMode &&
@@ -200,11 +268,11 @@ const App = () => {
                             </styled.ContentContainer>
                         }
 
-                      </BrowserRouter>
-                  </styled.Container>
+                    </BrowserRouter>
+                </styled.Container>
             </ThemeProvider>
         </>
     );
 }
 
-export default App;
+export default App
