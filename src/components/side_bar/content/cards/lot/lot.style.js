@@ -58,8 +58,7 @@ const selectedCss = css`
 `
 
 const glowCss = css`
-
-    ${commonCss.glow3("#478fe6")};
+    border: 4px ridge #478fe6;
 `
 
 const focusedCss = css`
