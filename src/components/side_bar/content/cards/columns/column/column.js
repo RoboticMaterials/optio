@@ -167,14 +167,13 @@ const Column = ((props) => {
 			return (lotId === currLotId) && (station_id === currBinId)
 		})
 
-		return cards.slice(lastSelected, existingIndex)
-
-
-
-
-
+		if(selectedIndex < existingIndex) {
+			return cards.slice(selectedIndex+1, existingIndex+1)
+		}
+		else {
+			return cards.slice(existingIndex, selectedIndex)
+		}
 	}
-
 
 	const handleDrop = async (dropResult) => {
 		const { removedIndex, addedIndex, payload, element } = dropResult || {}
@@ -381,10 +380,10 @@ const Column = ((props) => {
 									flags={flags || []}
 									index={index}
 									onClick={(e)=> {
-										// const cardsBetweenClick =
-										const thing = getBetweenSelected(cardId)
-										console.log("thing",thing)
-										handleCardClick(e, cardId, processId, station_id)
+
+										const payload = getBetweenSelected(cardId)
+										console.log("payload",payload)
+										handleCardClick(e, cardId, processId, station_id, payload)
 									}}
 									containerStyle={{
 										marginBottom: "0.5rem",

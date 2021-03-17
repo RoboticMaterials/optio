@@ -164,18 +164,58 @@ const Cards = (props) => {
    * @param {binId)} string - id of clicked lot's bin
    *
    * */
-    const handleCardClick = (event, cardId, processId, binId) => {
-        if (event.shiftKey) {
+    const handleCardClick = (event, cardId, processId, binId, lotsBetween) => {
+        if(event.shiftKey && event.metaKey) {
+            lotsBetween.forEach((currLotToAdd) => {
+                const {
+                    binId: currAddingBinId,
+                    cardId: currAddingLotId,
+                    process_id: currAddingProcessId,
+                } = currLotToAdd
+
+                const existingIndex = selectedCards.findIndex((currExistingLot) => {
+                    const {
+                        cardId: currExistingLotId,
+                        binId: currExistingBinId,
+                        processId: currExistingProcessId
+                    } = currExistingLot
+
+                    return (currAddingLotId === currExistingLotId) && (currAddingBinId === currExistingBinId) && (currAddingProcessId === currExistingProcessId)
+                })
+
+                if(existingIndex === -1) {
+                    setSelectedCards((previous) => {
+                        return(
+                            [
+                                ...previous,
+                                {
+                                    cardId: currAddingLotId,
+                                    processId: currAddingProcessId,
+                                    binId: currAddingBinId
+                                }
+                            ]
+                        )
+                    }
+
+                    )
+                }
+                else {
+
+                }
+            })
+        }
+        else if (event.shiftKey) {
 
         }
         else if(event.metaKey) {
             const existingIndex = selectedCards.findIndex((currLot) => {
                 const {
                     cardId: currLotId,
-                    binId: currBinId
+                    binId: currBinId,
+                    processId: currExistingProcessId
                 } = currLot
 
-                return (cardId === currLotId) && (binId === currBinId)
+                return (cardId === currLotId) && (binId === currBinId) && (processId === currExistingProcessId)
             })
 
             if(existingIndex === -1) {
