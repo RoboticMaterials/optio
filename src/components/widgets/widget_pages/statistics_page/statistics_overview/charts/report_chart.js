@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef, useMemo } from 'react';
+import React, { useEffect, useContext } from 'react';
 
 // Import Styles
 import * as styled from './charts.style'
@@ -20,6 +20,13 @@ const ReportChart = (props) => {
         timeSpan,
         throughputData,
     } = props
+
+    useEffect(() => {
+        console.log('QQQQ throughput', reportData)
+        return () => {
+            
+        }
+    }, [reportData])
 
     // get array of report buttons for current station
     const reportButtonsArr = Object.values(reportButtons)
