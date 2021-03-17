@@ -120,7 +120,6 @@ const StatisticsOverview = (props) => {
     }, [])
 
     const getReportData = async (body) => {
-        console.log('QQQQ report data', body)
         const reportAnalyticsResponse = await getReportAnalytics(stationID, body)
 
         if (reportAnalyticsResponse && !(reportAnalyticsResponse instanceof Error)) {
