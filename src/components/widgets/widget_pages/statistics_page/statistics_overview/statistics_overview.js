@@ -202,8 +202,6 @@ const StatisticsOverview = (props) => {
             }
         }
 
-
-
         dataPromise.then(response => {
 
             if (response === undefined) return setIsThroughputLoading(false)
