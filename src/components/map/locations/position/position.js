@@ -83,12 +83,18 @@ function Position(props) {
 
     // Used to disable the ability to add position as a task
     let disabled = false
+
     // Disable if the selectedPosition is not this position
     if (!!selectedPosition && selectedPosition._id !== positionId) disabled = true
+
     // Disable if the position does not belong to the children copy
     else if (!!selectedStationChildrenCopy && !(positionId in selectedStationChildrenCopy)) disabled = true
+
     // Disbale if the selected stations children does not include this station
     else if (!!selectedStation && !selectedStation.children.includes(positionId)) disabled = true
+
+    // Disable making a task to this position if the select tasks station is this positions parent (cant make a route to the same parent/child)
+    else if (!!selectedTask && position?.parent === selectedTask?.load?.station) disabled = true
 
     // This filters out positions when fixing a process
     // If the process is broken, then you can only start the task at the route before break's unload location
