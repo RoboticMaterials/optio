@@ -143,13 +143,15 @@ const EditLocation = (props) => {
     const onDelete = async () => {
 
         // Station
-        if (selectedLocation.schema === 'station') {
-            await dispatchDeleteStation(selectedStation._id)
-        }
+        if(!!selectedLocation){
+          if (selectedLocation.schema === 'station') {
+              await dispatchDeleteStation(selectedStation._id)
+          }
 
-        // Position
-        else {
-            await dispatchDeletePosition(selectedPosition._id)
+          // Position
+          else {
+              await dispatchDeletePosition(selectedPosition._id)
+          }
         }
 
         // Adding true to save even though you arent saving
@@ -395,6 +397,7 @@ const EditLocation = (props) => {
                                 <div style={{ marginBottom: '1rem' }}>
                                     <ContentHeader
                                         content={'locations'}
+                                        disabled = {selectedLocation === null}
                                         mode={'create'}
                                         onClickBack={() => onBack()}
                                     />
@@ -487,7 +490,7 @@ const EditLocation = (props) => {
 
                                 {/* Delete Location Button */}
                                 <Button schema={'locations'} onClick={() => {}} >Save Location</Button>
-                                <Button schema={'locations'} secondary onClick={() => setConfirmDeleteModal(true)} >Delete</Button>
+                                <Button schema={'locations'} secondary disabled = {selectedLocation === null || !!selectedLocation.new} onClick={() => setConfirmDeleteModal(true)} >Delete</Button>
                                 </styled.ContentContainer>
                             </Form>
                         )

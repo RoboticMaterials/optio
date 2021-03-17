@@ -89,10 +89,10 @@ const ReportChart = (props) => {
                         layout={"vertical"}
                         enableGridY={true}
                         axisBottom={{
-                            legend: 'Count',
+                            legend: 'Time',
                         }}
                         axisLeft={{
-                            legend: 'Time'
+                            legend: 'Count'
                         }}
                     />
 

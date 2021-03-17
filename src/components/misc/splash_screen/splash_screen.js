@@ -1,7 +1,6 @@
 // import external dependencies
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import ls from 'local-storage'
 // components
 import Switch from 'react-ios-switch'
 import Textbox from '../../basic/textbox/textbox'
@@ -51,7 +50,7 @@ const SplashScreen = (props) => {
     const [localSettingsState, setLocalSettingsState] = useState({})
 
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
-    const dispatchGetLocalSettings = (settings) => dispatch(getLocalSettings(settings))
+    const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
 
     useEffect(() => {
       setLocalSettingsState(localSettings)
@@ -62,15 +61,16 @@ const SplashScreen = (props) => {
     const handleSubmitApiIpAddress = async () => {
         console.log("submitting")
 
-        const updatedLocalSettings = {
-          ...localSettingsState,
-          non_local_api: true,
-          non_local_api_ip: apiIpAddress,
-        }
+        const localSettingsPromise = dispatchGetLocalSettings()
+        localSettingsPromise.then(response =>{
+          dispatchPostLocalSettings({
+              ...response,
+              non_local_api_ip: apiIpAddress,
+              non_local_api: true,
+          })
+        })
 
-        await dispatchPostLocalSettings(localSettingsState)
-
-        window.location.reload(false);
+        //window.location.reload(false);
     }
 
     /*

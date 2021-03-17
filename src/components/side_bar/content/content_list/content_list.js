@@ -15,6 +15,7 @@ import { deepCopy } from '../../../../methods/utils/utils'
 // Import Constants
 import { StationTypes } from '../../../../constants/station_constants'
 import { PositionTypes } from '../../../../constants/position_constants'
+import {isOnlyHumanTask} from "../../../../methods/utils/route_utils";
 
 
 export default function ContentList(props) {
@@ -88,9 +89,15 @@ export default function ContentList(props) {
                     const error = (props.schema === 'processes' && element.broken) ? true : false
                     let inQueue = false
                     Object.values(taskQueue).forEach((item) => {
-                      if(item.task_id == element._id){
-                        inQueue = true
-                      }
+
+                    if((item.task_id == element._id) && (props.schema === 'tasks')){
+                        if(isOnlyHumanTask(element) && element.handoff === true) {
+                            inQueue = false
+                        }
+                        else {
+                            inQueue = true
+                        }
+                    }
                     })
 
                     return (
@@ -116,7 +123,7 @@ export default function ContentList(props) {
                                             style = {{color: inQueue === true ? 'grey' : 'lightGreen' }}
                                             className='fas fa-play'
                                             onClick={() => {
-                                                executeTask()
+                                                !inQueue && executeTask()
                                             }}
                                         />
                                     }

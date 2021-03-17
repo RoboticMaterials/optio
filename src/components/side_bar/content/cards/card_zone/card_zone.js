@@ -31,7 +31,9 @@ const CardZone = ((props) => {
 		lotFilterValue,
 		selectedFilterOption,
 		sortMode,
-		sortDirection
+		sortDirection,
+		selectedCards,
+		setSelectedCards
 	} = props
 
 	// redux state
@@ -205,6 +207,8 @@ const CardZone = ((props) => {
 
 			return (
 				<StationsColumn
+					setSelectedCards={setSelectedCards}
+					selectedCards={selectedCards}
 					sortMode={sortMode}
 					sortDirection={sortDirection}
 					maxHeight={maxHeight}
@@ -224,6 +228,8 @@ const CardZone = ((props) => {
 	return(
 		<styled.Container>
 			<LotQueue
+				setSelectedCards={setSelectedCards}
+				selectedCards={selectedCards}
 				key={"QUEUE"}
 				sortMode={sortMode}
 				sortDirection={sortDirection}
@@ -240,6 +246,8 @@ const CardZone = ((props) => {
 			{renderStationColumns()}
 
 			<FinishColumn
+				setSelectedCards={setSelectedCards}
+				selectedCards={selectedCards}
 				key={"FINISH"}
 				sortMode={sortMode}
 				sortDirection={sortDirection}
