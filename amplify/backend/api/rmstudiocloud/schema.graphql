@@ -242,3 +242,10 @@ type TaskQueue
   task_id: String!
   custom_task: AWSJSON
 }
+
+# Subs
+
+type Subscription {
+    onDeltaStation(id: ID): Station
+      @aws_subscribe(mutations: ["createStation","updateStation","deleteStation"])
+}

@@ -50,22 +50,6 @@ const widthBreakPoint = 1000;
 
 const App = (props) => {
 
-    // Subscribe to creation of Todo
-    const stationSubscription = API.graphql(
-        graphqlOperation(subscriptions.onCreateStation)
-    ).subscribe({
-        next: ({ provider, value }) => console.log({ provider, value }),
-        error: error => console.warn(error)
-    });
-
-    // Subscribe to creation of Todo
-    const stationUpdates = API.graphql(
-        graphqlOperation(subscriptions.onUpdateStation)
-    ).subscribe({
-        next: ({ provider, value }) => console.log({ provider, value }),
-        error: error => console.warn(error)
-    });
-
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
     const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
     const maps = useSelector(state => state.mapReducer.maps)

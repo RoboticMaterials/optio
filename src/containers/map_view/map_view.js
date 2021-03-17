@@ -512,7 +512,7 @@ export class MapView extends Component {
                 }
                 stations[station._id] = station
             })
-            this.props.dispatchUpdateStations(stations) // Bulk Update
+            this.props.dispatchUpdateStations(stations, null, this.d3) // Bulk Update
 
             //// Apply the event translation to each position
             Object.values(positions).forEach(position => {
@@ -526,7 +526,7 @@ export class MapView extends Component {
                 // Object.assign(position, { x, y })
                 positions[position._id] = position
             })
-            this.props.dispatchUpdatePositions(positions) // Bulk Update
+            this.props.dispatchUpdatePositions(positions, null, null,this.d3) // Bulk Update
 
             //// Apply the event translation to each mobile device
             Object.values(devices).filter(device => device.device_model == 'MiR100').map(device => {

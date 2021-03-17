@@ -20,26 +20,22 @@ import { getStatus } from '../../redux/actions/status_actions'
 import { getSettings } from '../../redux/actions/settings_actions'
 import { getLocalSettings } from '../../redux/actions/local_actions'
 import { getLoggers } from '../../redux/actions/local_actions';
-import { getRefreshToken } from '../../redux/actions/authentication_actions'
 
 import { getPositions, deletePosition, putPosition } from '../../redux/actions/positions_actions'
 import { getStations, putStation, deleteStation } from '../../redux/actions/stations_actions'
 
 import { postLocalSettings } from '../../redux/actions/local_actions'
-import * as localActions from '../../redux/actions/local_actions'
 
 // Import components
 import SplashScreen from "../../components/misc/splash_screen/splash_screen";
 
 // import utils
 import { isEquivalent, deepCopy } from '../../methods/utils/utils'
-
-// import logger
-import logger from '../../logger.js';
-import { getMap } from '../../api/map_api';
-import localReducer from "../../redux/reducers/local_reducer";
 import { getCards, getProcessCards } from "../../redux/actions/card_actions";
-import { getReportEvents } from "../../redux/actions/report_event_actions";
+
+// Amplify and GQL
+import { API, graphqlOperation } from 'aws-amplify';
+import * as subscriptions from '../../graphql/subscriptions';
 
 const ApiContainer = (props) => {
 
@@ -107,10 +103,21 @@ const ApiContainer = (props) => {
 
         // this interval is always on
         // loads essential info used on every page such as status and taskQueue
-        setCriticalDataInterval(setInterval(() => loadCriticalData(), 500));
+        setCriticalDataInterval(setInterval(() => loadCriticalData(), 50000));
 
         if(!!mapViewEnabled){
-            setMapDataInterval(setInterval(() => loadMapData(), 10000));
+            setMapDataInterval(setInterval(() => loadMapData(), 5000));
+
+            // Subscribe to stations
+            API.graphql(
+                graphqlOperation(subscriptions.onDeltaStation)
+            ).subscribe({
+                next: () => { 
+                    // run get stations
+                    onGetStations() 
+            },
+                error: error => console.warn(error)
+            });
         }
 
 
@@ -119,6 +126,8 @@ const ApiContainer = (props) => {
             clearInterval(pageDataInterval);
             clearInterval(criticalDataInterval);
             //clearInterval(mapDataInterval)
+
+
         }
     }, [])
 
@@ -350,8 +359,6 @@ const ApiContainer = (props) => {
         const dataStream = dispatchGetDataStream()
     }
 
-
-
     /*
         Loads data pertinent to Objects page
 
@@ -409,7 +416,7 @@ const ApiContainer = (props) => {
       tasks, skills, objects, locations, dashboards, sounds
     */
     const loadMapData = async () => {
-        const stations = await onGetStations();
+        // const stations = await onGetStations();
         const positions = await onGetPositions();
     }
 

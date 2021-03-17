@@ -97,7 +97,7 @@ export async function postStation(station) {
       variables: { input: input }
     })
 
-    return dataJson;
+    return dataJson.data.createStation;
   } catch (error) {
     // Error 😨
     errorLog(error)
@@ -121,8 +121,6 @@ export async function putStation(station, ID) {
     // delete input.id
     delete input.createdAt
     delete input.updatedAt
-
-    console.log(input)
 
     const dataJson = await API.graphql({
       query: updateStation,

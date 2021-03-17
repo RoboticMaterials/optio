@@ -1,6 +1,28 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const onDeltaStation = /* GraphQL */ `
+  subscription OnDeltaStation($id: ID) {
+    onDeltaStation(id: $id) {
+      id
+      _id
+      organizationId
+      name
+      schema
+      type
+      pos_x
+      pos_y
+      rotation
+      x
+      y
+      map_id
+      children
+      dashboards
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const onCreateUser = /* GraphQL */ `
   subscription OnCreateUser {
     onCreateUser {
