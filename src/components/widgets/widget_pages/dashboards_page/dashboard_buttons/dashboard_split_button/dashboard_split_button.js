@@ -58,7 +58,7 @@ const DashboardSplitButton = (props => {
                 css={containerCss}
                 onClick={clickable ? () => onClick(taskID, DEVICE_CONSTANTS.HUMAN) : null}
             >
-                <div style={{flexGrow: '1', alignItems: 'center', alignContent: 'center', justifyContent: 'center', height: '100%'}}>
+                <div style={{flexGrow: '1', display: 'flex', alignItems: 'center', alignContent: 'center', justifyContent: 'center', height: '100%'}}>
                     <SchemaIcon className={"fas fa-user"} color={theme.bg.octonary} style={{margin: '0'}}></SchemaIcon>
                     {!mobileMode &&
                         <style.ConditionText style={{flexGrow: '0', marginLeft: '0.5rem'}}>Run as human</style.ConditionText>
