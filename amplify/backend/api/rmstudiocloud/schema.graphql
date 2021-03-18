@@ -261,4 +261,7 @@ type Subscription {
 
     onDeltaPosition(id: ID): Position
       @aws_subscribe(mutations: ["createPosition","updatePosition","deletePosition"])
+
+    onDeltaTask(id: ID): Task
+      @aws_subscribe(mutations: ["createTask","updateTask","deleteTask"])
 }

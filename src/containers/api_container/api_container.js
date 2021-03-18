@@ -36,10 +36,15 @@ import { getCards, getProcessCards } from "../../redux/actions/card_actions";
 // Amplify and GQL
 import { API, graphqlOperation } from 'aws-amplify';
 import * as subscriptions from '../../graphql/subscriptions';
+import { Unsubscribe } from '@material-ui/icons';
 
 const ApiContainer = (props) => {
 
+    // Variables for stations and positions subs
     let stationSub, positionSub
+
+    // Variable for what we are currently subbed to
+    let currentSubscription = {}
 
     // Dispatches
     const dispatch = useDispatch()
@@ -98,6 +103,8 @@ const ApiContainer = (props) => {
     const [criticalDataInterval, setCriticalDataInterval] = useState(null)
     const [mapDataInterval, setMapDataInterval] = useState(null)
 
+    const [currentSubscriptions, setCurrentSubscriptions] = useState(null)
+
     const params = useParams()
 
     useEffect(() => {
@@ -144,7 +151,7 @@ const ApiContainer = (props) => {
             stationSub._cleanup()
             positionSub._cleanup()
         }
-    }, [stopAPICalls])
+    }, [stopAPICalls, currentSubscription])
 
 
     useEffect(() => {
@@ -183,13 +190,12 @@ const ApiContainer = (props) => {
 
     const updateCurrentPage = () => {
 
-        // let pathname = this.props.location.pathname;
+        // Unsubscribe for page switch
+        if(currentSubscriptions){
+            currentSubscriptions._cleanup()
+        }
 
         const currentPageRouter = params
-        // const currentPageRouter = getPageNameFromPath(pathname);
-        // this.logger.debug("api_container currentPage", currentPage);
-        // this.logger.debug("api_container currentPageRouter", currentPageRouter);
-
 
         // If the current page state and actual current page are different, then the page has changed so the data interval should change
         if (!isEquivalent(currentPageRouter, currentPage)) {
@@ -201,8 +207,6 @@ const ApiContainer = (props) => {
             // update data interval to get data for new currentPage
             setDataInterval(currentPageRouter);
         }
-
-
     }
 
 
@@ -210,7 +214,8 @@ const ApiContainer = (props) => {
      * Handles data interval based on page
      */
 
-    const setDataInterval = (pageParams) => {
+    const setDataInterval = async (pageParams) => {
+
         let pageName = ''
         const {
             data1,
@@ -255,7 +260,8 @@ const ApiContainer = (props) => {
                 break;
 
             case 'tasks':
-                setPageDataInterval(setInterval(() => loadTasksData(), 10000))
+                currentSubscription = await loadTasksData()
+                setCurrentSubscriptions(currentSubscription)
                 break;
 
             case 'settings':
@@ -280,7 +286,8 @@ const ApiContainer = (props) => {
                     setPageDataInterval(setInterval(() => loadCardsData(), 10000))
                 }
                 else {
-                    setPageDataInterval(setInterval(() => loadTasksData(), 10000))
+                    currentSubscription = await loadTasksData()
+                    setCurrentSubscriptions(currentSubscription)
                 }
 
                 break
@@ -382,9 +389,22 @@ const ApiContainer = (props) => {
         tasks
     */
     const loadTasksData = async () => {
-        const tasks = await onGetTasks()
+
+        // Subscribe to stations
+        const tasksSubscription = API.graphql(
+            graphqlOperation(subscriptions.onDeltaTask)
+        ).subscribe({
+            next: () => { 
+                // run get stations
+                onGetTasks()
+        },
+            error: error => console.warn(error)
+        });
+
         const processes = await onGetProcesses()
         const objects = await onGetObjects()
+
+        return tasksSubscription
     }
 
     /*

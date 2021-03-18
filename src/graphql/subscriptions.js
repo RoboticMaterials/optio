@@ -45,6 +45,28 @@ export const onDeltaPosition = /* GraphQL */ `
     }
   }
 `;
+export const onDeltaTask = /* GraphQL */ `
+  subscription OnDeltaTask($id: ID) {
+    onDeltaTask(id: $id) {
+      id
+      _id
+      organizationId
+      device_types
+      handoff
+      load
+      map_id
+      name
+      processes
+      quantity
+      track_quantity
+      type
+      unload
+      obj
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const onCreateUser = /* GraphQL */ `
   subscription OnCreateUser {
     onCreateUser {
