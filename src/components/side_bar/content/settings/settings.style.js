@@ -38,7 +38,7 @@ export const RowContainer = styled.div`
 
     justify-content: space-between;
     padding-bottom: .5rem;
-    margin-top: 1rem;
+    margin-top: .5rem;
     border-bottom: 1px solid white;
 `
 
