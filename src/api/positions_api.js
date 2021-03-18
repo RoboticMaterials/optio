@@ -96,8 +96,6 @@ export async function putPosition(position, ID) {
     delete input.createdAt
     delete input.updatedAt
 
-    console.log(input)
-
     const dataJson = await API.graphql({
       query: updatePosition,
       variables: { input: input }
