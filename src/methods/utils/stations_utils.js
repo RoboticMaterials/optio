@@ -11,3 +11,13 @@ export const getChildPositions = (stationID) => {
     })
 
 }
+
+export const getStationName = (stationId) => {
+    const stations = store.getState().stationsReducer.stations || {}
+    const station = stations[stationId] || {}
+    const {
+        name = ""
+    } = station
+
+    return name
+}

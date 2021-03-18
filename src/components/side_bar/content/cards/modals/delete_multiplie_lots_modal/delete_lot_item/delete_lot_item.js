@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
 import * as styled from "./delete_lot_item.style"
 
 // utils
-import {formatLotNumber} from "../../../../../../methods/utils/lot_utils"
+import {formatLotNumber} from "../../../../../../../methods/utils/lot_utils"
 
 const DeleteLotItem = props => {
 	const {

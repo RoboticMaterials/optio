@@ -31,6 +31,7 @@ const Lot = (props) => {
         glow,
         isFocused,
         highlight,
+        stationName,
         totalQuantity,
         lotNumber,
         templateValues,
@@ -276,6 +277,13 @@ const Lot = (props) => {
                         />
                     }
 
+                {stationName &&
+                <LotSimpleRow
+                    label={"Process"}
+                    value={processName}
+                />
+                }
+
                 <LotSimpleRow
                     label={"Quantity"}
                     value={`${count}/${totalQuantity}`}
@@ -305,7 +313,8 @@ Lot.defaultProps = {
     enableFlagSelector: true,
     templateValues: [],
     count: 0,
-    glow: false
+    glow: false,
+    stationName: ""
 }
 
 export default Lot

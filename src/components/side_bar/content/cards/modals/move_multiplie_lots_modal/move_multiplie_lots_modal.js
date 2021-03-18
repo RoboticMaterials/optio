@@ -1,23 +1,23 @@
 import React from 'react'
 
 // actions
-import {deleteCard, putCard} from "../../../../../redux/actions/card_actions"
+import {deleteCard, putCard} from "../../../../../../redux/actions/card_actions"
 
 // components internal
-import ConfirmDeleteModal from "../../../../basic/modals/confirm_delete_modal/confirm_delete_modal"
-import DeleteLotItem from "./delete_lot_item/delete_lot_item"
-import DeleteLotsHeader from "./delete_lots_header/delete_lots_header"
+import ConfirmDeleteModal from "../../../../../basic/modals/confirm_delete_modal/confirm_delete_modal"
 
 // functions external
 import PropTypes from 'prop-types'
 import {useDispatch, useSelector} from "react-redux"
 
 // utils
-import {isEmpty} from "../../../../../methods/utils/object_utils"
-import {getBinName} from "../../../../../methods/utils/lot_utils"
-import {getProcessName} from "../../../../../methods/utils/processes_utils"
+import {isEmpty} from "../../../../../../methods/utils/object_utils"
 
-const DeleteMultipleLotsModal = props => {
+import LotContainer from "../../lot/lot_container";
+
+import * as sharedStyles from "../modals.style"
+import * as styled from "./move_multiplie_lots_modal.style"
+const MoveMultipleLotsModal = (props) => {
 
 	const {
 		selectedCards,
@@ -35,8 +35,7 @@ const DeleteMultipleLotsModal = props => {
 
 	const renderSelectedLots = () => {
 		return (
-			<>
-				<DeleteLotsHeader/>
+			<sharedStyles.Container>
 				{selectedCards.map((currItem) => {
 					const {
 						cardId = "",
@@ -44,26 +43,16 @@ const DeleteMultipleLotsModal = props => {
 						binId = ""
 					} = currItem || {}
 
-					const currLot = cards[cardId] || {}
-					const {
-						name = "",
-						lotNumber=0
-					} = currLot
-
-					const binName = getBinName(binId)
-					const processName = getProcessName(processId)
-
 					return(
-						<DeleteLotItem
-							lotNumber={lotNumber}
-							key={`${cardId}+${binId}+${processId}`}
-							name={name}
-							binName={binName}
-							processName={processName}
+						<LotContainer
+							lotId={cardId}
+							binId={binId}
+							processId={processId}
+							enableFlagSelector={false}
 						/>
 					)
 				})}
-			</>
+			</sharedStyles.Container>
 			)
 	}
 
@@ -113,12 +102,12 @@ const DeleteMultipleLotsModal = props => {
 		<ConfirmDeleteModal
 			isOpen={isOpen}
 			close={handleClose}
-			title={"Are you sure you want to delete the following lots?"}
-			button_1_text={"Yes"}
-			button_2_text={"No"}
+			title={"Move Lots"}
+			button_1_text={"Move"}
+			button_2_text={"Cancel"}
 			handleClose={handleClose}
 			handleOnClick1={() => {
-				onDeleteLots()
+				// onDeleteLots()
 				setShowConfirmDeleteModal(false)
 			}}
 			handleOnClick2={() => {
@@ -129,14 +118,14 @@ const DeleteMultipleLotsModal = props => {
 	)
 }
 
-DeleteMultipleLotsModal.propTypes = {
+MoveMultipleLotsModal.propTypes = {
 	selectedCards: PropTypes.array
 }
 
-DeleteMultipleLotsModal.defaultProps = {
+MoveMultipleLotsModal.defaultProps = {
 	selectedCards: []
 }
 
 
 
-export default DeleteMultipleLotsModal
+export default MoveMultipleLotsModal

@@ -1,25 +1,63 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import Lot from "./lot";
 import {useSelector} from "react-redux";
+import {getBinQuantity, getLotTemplateData, getLotTotalQuantity} from "../../../../../methods/utils/lot_utils";
+import {getProcessName} from "../../../../../methods/utils/processes_utils";
+import {getStationName} from "../../../../../methods/utils/stations_utils";
 
 const LotContainer = (props) => {
 
     const {
         lotId,
         binId,
-        enableFlagSelector
+        enableFlagSelector,
+        processId
     } = props
 
     const cards = useSelector(state => { return state.cardsReducer.cards }) || {}
 
-    const [lot, setLot] = useState()
-    useEffect(() => {
+    const [totalQuantity, setTotalQuantity] = useState(0)
+    const [count, setCount] = useState(0)
+    const [templateValues, setTemplateValues] = useState([])
+    const [processName, setProcessName] = useState("")
+    const [stationName, setStationName] = useState("")
+    const [lot, setLot] = useState(cards[lotId])
+    const {
+        bins,
+        lotNumber,
+        lotTemplateId,
+        name,
+        flags
+    } = lot || {}
 
+    useEffect(() => {
+        setLot(cards[lotId] || {})
     }, [cards, lotId])
+
+    useEffect(() => {
+        setProcessName(getProcessName(processId))
+    }, [processId])
+
+    useEffect(() => {
+        setStationName(getStationName(binId))
+    }, [binId])
+
+    useEffect(() => {
+        setTemplateValues(getLotTemplateData(lotTemplateId, lot))
+    }, [lotTemplateId, lot])
+
+    useEffect(() => {
+        setTotalQuantity(getLotTotalQuantity({ bins }))
+    }, [bins])
+
+    useEffect(() => {
+        setCount(getBinQuantity({bins}, binId))
+    }, [bins, binId])
 
     return (
         <Lot
+            stationName={stationName}
             templateValues={templateValues}
             totalQuantity={totalQuantity}
             lotNumber={lotNumber}
@@ -27,11 +65,8 @@ const LotContainer = (props) => {
             flags={flags || []}
             enableFlagSelector={enableFlagSelector}
             name={name}
-            start_date={start_date}
-            end_date={end_date}
-            objectName={objectName}
             count={count}
-            id={cardId}
+            id={lotId}
             isSelected={false}
             selectable={false}
             onClick={() => {

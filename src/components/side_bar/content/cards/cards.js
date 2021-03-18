@@ -28,10 +28,10 @@ import {immutableDelete} from "../../../../methods/utils/array_utils";
 import MultiSelectOptions from "./multi_select_options/multi_select_options";
 import {isEmpty} from "../../../../methods/utils/object_utils";
 import ConfirmDeleteModal from "../../../basic/modals/confirm_delete_modal/confirm_delete_modal";
-import DeleteMultipleLots from "./delete_multiplie_lots_modal/delete_multiplie_lots_modal";
-import DeleteMultipleLotsModal from "./delete_multiplie_lots_modal/delete_multiplie_lots_modal";
+import DeleteMultipleLots from "./modals/delete_multiplie_lots_modal/delete_multiplie_lots_modal";
+import DeleteMultipleLotsModal from "./modals/delete_multiplie_lots_modal/delete_multiplie_lots_modal";
 import {isControl, isControlAndShift, isShift} from "../../../../methods/utils/event_utils";
-import MoveMultipleLotsModal from "./move_multiplie_lots_modal/move_multiplie_lots_modal";
+import MoveMultipleLotsModal from "./modals/move_multiplie_lots_modal/move_multiplie_lots_modal";
 
 const Cards = (props) => {
 
