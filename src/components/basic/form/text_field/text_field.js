@@ -67,6 +67,8 @@ const TextField = ({
 	const warningMessage = getMessageFromError(warning)
     useChange(setFieldValue)
 
+    console.log(themeContext.warn)
+
     return (
         <>
             {fieldLabel &&
@@ -111,7 +113,7 @@ const TextField = ({
                             <ErrorTooltip
                                 visible={hasError || hasWarning}
                                 text={hasError ? errorMessage : hasWarning ? warningMessage : null}
-                                color={hasWarning && !hasError && themeContext.warn}
+                                color={hasWarning && !hasError ? themeContext.warn : themeContext.bad}
                                 ContainerComponent={IconContainerComponent}
                                 containerStyle={errorTooltipContainerStyle}
                             />

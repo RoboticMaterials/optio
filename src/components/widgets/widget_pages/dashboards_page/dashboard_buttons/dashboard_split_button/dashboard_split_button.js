@@ -80,7 +80,7 @@ const DashboardSplitButton = (props => {
                 <style.ConditionText style={null}>{title}</style.ConditionText>
 
                 <>
-                    <svg viewBox="0 0 300 67" fill={theme.bg.primary} height='100%' width="12rem" preserveAspectRatio="none">
+                    <svg viewBox="0 0 300 67" fill={theme.bg.primary} height='100%' width="12rem" preserveAspectRatio="none" style={{minWidth: '12rem'}}>
                         <path d="M300,8v51c0,4.4-3.6,8-8,8H8.8L63.5,0H292C296.4,0,300,3.6,300,8z"/>
                     </svg>
                     <style.IconContainer>

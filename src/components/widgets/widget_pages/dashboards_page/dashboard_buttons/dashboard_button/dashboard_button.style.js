@@ -12,11 +12,12 @@ export const Container = styled.button`
     
     box-shadow: 0 9px 2px -4px ${props => LightenDarkenColor(props.theme.bg.tertiary,  -50)}; 
     height: 4rem; 
-    line-height: 4rem; 
+    // line-height: 4rem; 
     margin-bottom: 1rem; 
     min-width: 80%;
 
     padding: 0;
+    padding-left: 0.5rem;
 `
 
 export const ConditionText = styled.span`
