@@ -11,10 +11,6 @@ export const BackSymbol = styled.i`
     transform: translate(-50%, -50%);
 
     color: ${props => {
-      if (!props.schema) {
-        props.schema = 'default'
-      }
-      
       if (props.active) {
         return props.theme.bg.tertiary
       } else if (props.hovered) {
@@ -45,16 +41,12 @@ export const BackButton = styled.button`
       outline: 0;
     }
 
-    border: 0.1rem solid ${props => props.hovered ? (!!props.schema ? props.theme.schema[props.schema].solid : props.theme.schema.default.solid) : props.theme.bg.octonary};
+    border: 0.1rem solid ${props => props.hovered ? (!!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary) : props.theme.bg.octonary};
     &:active {
-      background: ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.schema.default.solid};
+      background: ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
     }
 
     ${props => {
-      if (!props.schema) {
-        props.schema = 'default'
-      }
-      
       if (props.active) {
         return `
           border: 0.1rem solid transparent;

@@ -30,15 +30,13 @@ export const ListItem = styled.div`
     border-radius: 0.5rem;
     border: 0.15rem solid;
     border-color:  ${props => props.theme.schema['routes'].solid};
-  
     box-shadow: ${props => props.theme.cardShadow};
 
-    ${props => `
-      // ${props.isNew &&  commonCss.newGlow};
-      // ${props.edited &&  commonCss.newGlow};
-      // ${props.error &&  commonCss.errorGlow};
-    `}
-  
+    ${props => css`
+      ${props.isNew && commonCss.newGlow};
+      ${props.edited && commonCss.newGlow};
+      ${props.error && commonCss.errorGlow};
+    `}  
 
 `
 

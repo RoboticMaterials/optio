@@ -180,12 +180,44 @@ const LoadUnloadFields = (props) => {
             }
 
             </styled.Card>
+
             <styled.Card>
+                {/* If its a human task, then the task can also be defined as a handoff.
+                    A handoff does not require unload confirmation.
+                */}
+                {isHumanTask(selectedTask) &&
+                    <styled.ContentContainer style={{ paddingBottom: '0rem' }}>
+                        <styled.RowContainer>
+                            <styled.Label style={{ marginBottom: '0rem' }}>
+                                {"Confirm Unload?"}
+                            </styled.Label>
+
+                            <SwitchField
+                                mapInput={(val)=>!val}
+                                mapOutput={(val)=>!val}
+                                name={fieldParent ? `${fieldParent}.handoff` : "handoff"}
+                                onColor='red'
+                                containerStyle={{ marginRight: '1rem' }}
+                            />
+                        </styled.RowContainer>
+                        <styled.HelpText>
+                            Tracks transit time by requiring button to be pressed at Unload Location
+                        </styled.HelpText>
+
+                        {isMiRTask(selectedTask) &&
+                            <styled.HelpText>
+                                (Not used when executed by a robot)
+                            </styled.HelpText>
+                        }
+
+                    </styled.ContentContainer>
+                }
+            </styled.Card>
 
             {/* Hides the unload field if its a handoff task */}
             {(!values.handoff || isMiRTask(selectedTask)) &&
 
-                <>
+                <styled.Card>
                     <styled.Header>Unload</styled.Header>
                     <TextField
                         name={fieldParent ? `${fieldParent}.unload.instructions` : "unload.instructions"}
@@ -226,42 +258,11 @@ const LoadUnloadFields = (props) => {
                             />
                         </div>
                     }
-                </>
+                </styled.Card>
             }
-            </styled.Card>
+            
 
-            <styled.Card>
-                {/* If its a human task, then the task can also be defined as a handoff.
-                    A handoff does not require unload confirmation.
-                */}
-                {isHumanTask(selectedTask) &&
-                    <styled.ContentContainer style={{ paddingBottom: '0rem' }}>
-                        <styled.RowContainer>
-                            <styled.Label style={{ marginBottom: '0rem' }}>
-                                {"Confirm Unload?"}
-                            </styled.Label>
-
-                            <SwitchField
-                                mapInput={(val)=>!val}
-                                mapOutput={(val)=>!val}
-                                name={fieldParent ? `${fieldParent}.handoff` : "handoff"}
-                                onColor='red'
-                                containerStyle={{ marginRight: '1rem' }}
-                            />
-                        </styled.RowContainer>
-                        <styled.HelpText>
-                            Tracks transit time by requiring button to be pressed at Unload Location
-                        </styled.HelpText>
-
-                        {isMiRTask(selectedTask) &&
-                            <styled.HelpText>
-                                (Not used when executed by a robot)
-                            </styled.HelpText>
-                        }
-
-                    </styled.ContentContainer>
-                }
-            </styled.Card>
+            
 
 
             {/* {selectedTask.device_type === 'MiR_100' &&
