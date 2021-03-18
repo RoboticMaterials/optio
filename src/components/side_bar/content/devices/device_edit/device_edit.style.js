@@ -16,6 +16,9 @@ export const Label = styled(style.SettingsLabel)`
 export const RowContainer = styled(style.RowContainer)`
 `
 
+export const ColumnContainer =styled(style.ColumnContainer)`
+`
+
 export const ConnectionButton = styled(styles.ConnectionButton)`
 `
 

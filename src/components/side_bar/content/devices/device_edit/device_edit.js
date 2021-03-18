@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useHistory, useParams } from 'react-router-dom'
+import { Formik, Form } from 'formik'
 
 // Import Style
 import * as styled from './device_edit.style'
@@ -8,6 +9,7 @@ import * as styled from './device_edit.style'
 // Import basic components
 import { deepCopy } from '../../../../../methods/utils/utils'
 import Textbox from '../../../../basic/textbox/textbox'
+import TextField from '../../../../basic/form/text_field/text_field'
 import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
 import Button from '../../../../basic/button/button'
 
@@ -207,6 +209,34 @@ const DeviceEdit = (props) => {
         )
     }
 
+    const renderChargeLevels = () => {
+
+        return (
+            <styled.SectionsContainer>
+                <styled.Label schema={'devices'} >Charge Levels</styled.Label>
+                <styled.RowContainer style={{ justifyContent: 'space-between' }}>
+                    <styled.Label schema={'devices'}>
+                        Expected Output
+                    </styled.Label>
+                    <TextField
+                        name={"expectedOutput"}
+                        placeholder='Qty'
+                        InputComponent={Textbox}
+                        ContentContainer={styled.RowContainer}
+                        style={{
+                            'fontSize': '1rem',
+                            'fontWeight': '600',
+                            'marginBottom': '.5rem',
+                            'marginTop': '0',
+                            width: '6rem',
+                        }}
+                    />
+                </styled.RowContainer>
+
+            </styled.SectionsContainer>
+        )
+    }
+
     // This set the device name
     const onSetDeviceName = (name) => {
         dispatchSetSelectedDevice({
@@ -254,29 +284,50 @@ const DeviceEdit = (props) => {
                 />
             </styled.SectionsContainer> */}
 
-            <styled.SectionsContainer>
+            <Formik
+                initialValues={{
+                }}
 
-                {renderMIRIP()}
+                // validation control
+                // validationSchema={}
+                validateOnChange={true}
+                validateOnMount={false}
+                validateOnBlur={false}
 
-                <styled.Label schema={'devices'} >Device Name</styled.Label>
+                onSubmit={async (values, { setSubmitting, setTouched, validateForm }) => {
+                    setSubmitting(true)
+                    // Submit hur
+                    setSubmitting(false)
+                }}
+            >
+                <Form>
 
-                <Textbox
-                    defaultValue={selectedDevice.device_name}
-                    onChange={(event) => {
-                        onSetDeviceName(event.target.value)
-                    }}
-                    style={{ fontWeight: '600', fontSize: '1.5rem' }}
-                    labelStyle={{ color: 'black' }}
-                />
+                    <styled.SectionsContainer>
 
-            </styled.SectionsContainer>
+                        {renderMIRIP()}
+
+                        <styled.Label schema={'devices'} >Device Name</styled.Label>
+
+                        <Textbox
+                            defaultValue={selectedDevice.device_name}
+                            onChange={(event) => {
+                                onSetDeviceName(event.target.value)
+                            }}
+                            style={{ fontWeight: '600', fontSize: '1.5rem' }}
+                            labelStyle={{ color: 'black' }}
+                        />
+
+                    </styled.SectionsContainer>
 
 
-            {selectedDevice.device_model !== 'MiR100' ?
-                renderDeviceMapLocation()
-                :
-                renderAMRIdleLocation()
-            }
+                    {selectedDevice.device_model !== 'MiR100' ?
+                        renderDeviceMapLocation()
+                        :
+                        renderAMRIdleLocation(),
+                        renderChargeLevels()
+                    }
+                </Form>
+            </Formik>
 
             <Button schema={'devices'} style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: '2rem', boxSizing: 'border-box' }}
                 onClick={() => {
