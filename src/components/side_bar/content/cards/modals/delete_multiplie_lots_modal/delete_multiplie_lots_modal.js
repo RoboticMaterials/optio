@@ -16,6 +16,7 @@ import {isEmpty} from "../../../../../../methods/utils/object_utils"
 import LotContainer from "../../lot/lot_container";
 
 import * as sharedStyles from "../modals.style"
+import {lotContainerStyle} from "../modals.style";
 
 const DeleteMultipleLotsModal = props => {
 
@@ -45,12 +46,15 @@ const DeleteMultipleLotsModal = props => {
 					} = currItem || {}
 
 					return(
+						<sharedStyles.LotWrapper>
 						<LotContainer
 							lotId={cardId}
 							binId={binId}
 							processId={processId}
 							enableFlagSelector={false}
+							containerStyle={lotContainerStyle}
 						/>
+						</sharedStyles.LotWrapper>
 					)
 				})}
 			</sharedStyles.Container>

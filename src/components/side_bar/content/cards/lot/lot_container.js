@@ -12,7 +12,8 @@ const LotContainer = (props) => {
         lotId,
         binId,
         enableFlagSelector,
-        processId
+        processId,
+        ...rest
     } = props
 
     const cards = useSelector(state => { return state.cardsReducer.cards }) || {}
@@ -55,6 +56,8 @@ const LotContainer = (props) => {
         setCount(getBinQuantity({bins}, binId))
     }, [bins, binId])
 
+    console.log("stationName",stationName)
+
     return (
         <Lot
             stationName={stationName}
@@ -72,7 +75,7 @@ const LotContainer = (props) => {
             onClick={() => {
 
             }}
-            containerStyle={{ marginBottom: "0.5rem" }}
+            {...rest}
         />
     );
 };

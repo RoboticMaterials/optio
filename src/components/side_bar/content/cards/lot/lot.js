@@ -279,8 +279,8 @@ const Lot = (props) => {
 
                 {stationName &&
                 <LotSimpleRow
-                    label={"Process"}
-                    value={processName}
+                    label={"Bin"}
+                    value={stationName}
                 />
                 }
 

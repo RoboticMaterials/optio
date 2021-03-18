@@ -6,7 +6,7 @@ import {
 	FIELD_DATA_TYPES,
 	LOT_FILTER_OPTIONS
 } from "../../constants/lot_contants";
-import {isArray} from "./array_utils";
+import {immutableDelete, immutableReplace, isArray} from "./array_utils";
 import store from '../../redux/store/index'
 import lotTemplatesReducer from "../../redux/reducers/lot_templates_reducer";
 import {toIntegerOrZero} from "./number_utils";
@@ -270,6 +270,54 @@ export const convertDataTypeContantToDisplay = (dataTypeContant) => {
 		}
 		default: {
 			return null
+		}
+	}
+}
+
+
+
+const getLotAfterBinMerge = async (lotToMove, currentBinId, destinationBinId) => {
+	const {
+		bins: oldBins,
+		...unchangedLotAttributes
+	} = lotToMove || {}
+
+	const {
+		[currentBinId]: movedBin,
+		[destinationBinId]: destinationBin,
+		...unchangedBins
+	} = oldBins || {}
+
+	if(movedBin) {
+		// already contains items in destinationBin
+		if (destinationBin && movedBin) {
+			const oldCount = parseInt(destinationBin?.count || 0)
+			const movedCount = parseInt(movedBin?.count || 0)
+
+			return {
+				...unchangedLotAttributes,
+				bins: {
+					...unchangedBins,
+					[destinationBinId]: {
+						...destinationBin,
+						count: oldCount + movedCount
+					}
+				}
+
+			}
+		}
+
+		// no items in bin
+		else {
+			return {
+				...unchangedLotAttributes,
+				bins: {
+					...unchangedBins,
+					[destinationBinId]: {
+						...movedBin,
+					}
+				}
+			}
 		}
 	}
 }

@@ -189,7 +189,6 @@ export const ContentContainer = styled.div`
 	align-items: center;
   	justify-content: center;
   align-items: center;
-  padding: 1rem;
 `
 export const ReportButtonsContainer = styled.div`
 	display: flex;
