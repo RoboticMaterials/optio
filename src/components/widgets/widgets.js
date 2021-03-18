@@ -45,7 +45,6 @@ const Widgets = (props) => {
     const positions = useSelector(state => state.positionsReducer.positions)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const editingPosition = useSelector(state => state.positionsReducer.editingPosition)
-
     const devices = useSelector(state => state.devicesReducer.devices)
     const showSideBar = useSelector(state => state.sidebarReducer.open)
 

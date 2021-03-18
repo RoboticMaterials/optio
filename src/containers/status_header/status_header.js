@@ -44,7 +44,7 @@ const StatusHeader = (props) => {
     const toggle = useSelector(state => state.notificationsReducer.toggleNotificationTaskQueue)
     const isSideBarOpen = useSelector(state => state.sidebarReducer.open)
     const taskQueueOpen = useSelector(state => state.taskQueueReducer.taskQueueOpen)
-
+    const showConfirmDeleteModal = useSelector(state => state.sidebarReducer.showConfirmDeleteModal)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
     const deviceEnabled = serverSettings.deviceEnabled
@@ -349,7 +349,7 @@ const StatusHeader = (props) => {
                         <feComponentTransfer>
                             <feFuncA type="linear" slope="0.3"/>
                         </feComponentTransfer>
-                        <feMerge> 
+                        <feMerge>
                             <feMergeNode/>
                             <feMergeNode in="SourceGraphic"/>
                         </feMerge>
