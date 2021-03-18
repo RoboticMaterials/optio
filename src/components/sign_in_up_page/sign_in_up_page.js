@@ -92,6 +92,7 @@ const SignInUpPage = (props) => {
 
             } catch (error) {
                 console.log("error signing in", error);
+                alert(error.message)
             }
         } else {
             if (password === confirmPassword) {

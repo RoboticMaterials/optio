@@ -154,7 +154,7 @@ const App = (props) => {
                             <Authentication />
                         </Route>
 
-
+                        {/* Redirect if needed */}
                         <Redirector
                             condition={(authenticated === null) || !authenticated}
                             endpoint={"/login"}
@@ -164,7 +164,6 @@ const App = (props) => {
                         <Route path="/login/organization" >
                             <FirstSignIn />
                         </Route>
-
 
                         {authenticated &&
                             <Route
