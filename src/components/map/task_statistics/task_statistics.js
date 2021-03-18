@@ -7,6 +7,7 @@ import * as styled from './task_statistics.style'
 import taskAnalysisReducer from "../../../redux/reducers/task_analysis_reducer";
 import IconButton from '../../basic/icon_button/icon_button'
 import {getTasksAnalysis} from "../../../redux/actions/task_analysis_actions";
+import {getRouteProcesses} from "../../../methods/utils/route_utils";
 
 const TaskStatistics = (props) => {
 
@@ -54,6 +55,7 @@ const TaskStatistics = (props) => {
         const startPos = task.device_types[0] == 'human' && task.load.position == task.load.station ? stations[task.load.position] : positions[task.load.position]
 
         const endPos = task.device_types[0] == 'human' && task.unload.position == task.unload.station ? stations[task.unload.position] : positions[task.unload.position]
+        const routeProcesses = getRouteProcesses(task._id)
 
         if (task === null || positions === null || startPos === undefined || endPos === undefined) return null
 
@@ -118,7 +120,7 @@ const TaskStatistics = (props) => {
 
               <styled.RowContainer style = {{paddingTop: '.2rem'}}>
 
-                  <styled.TaskText style = {{paddingRight: '.7rem'}}>{task.processes.length}</styled.TaskText>
+                  <styled.TaskText style = {{paddingRight: '.7rem'}}>{routeProcesses.length}</styled.TaskText>
 
                   <IconButton color= '#ffb62e'>
                     <i className="fas fa-route"></i>
