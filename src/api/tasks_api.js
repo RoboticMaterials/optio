@@ -41,6 +41,7 @@ export async function getTasks() {
         processes: JSON.parse(task.processes),
         load: JSON.parse(task.load),
         unload: JSON.parse(task.unload),
+        route_object: JSON.parse(task.route_object)
       })
     });
     
@@ -83,7 +84,8 @@ export async function postTask(task) {
       processes: JSON.stringify(task.processes),
       load: JSON.stringify(task.load),
       unload: JSON.stringify(task.unload),
-      obj: task.obj === undefined ? '' : task.obj.toString()
+      obj: task.obj === undefined ? '' : task.obj.toString(),
+      route_object: task.route_object === undefined ? '{}' : JSON.stringify(task.route_object)
     }
 
     const dataJson = await API.graphql({
@@ -133,7 +135,8 @@ export async function putTask(task, id) {
       processes: JSON.stringify(task.processes),
       load: JSON.stringify(task.load),
       unload: JSON.stringify(task.unload),
-      obj: task.obj === undefined ? '' : task.obj.toString()
+      obj: task.obj === undefined ? '' : task.obj.toString(),
+      route_object: JSON.stringify(task.route_object)
     }
 
     delete input.createdAt
@@ -144,7 +147,7 @@ export async function putTask(task, id) {
       variables: { input: input }
     })
     
-    return dataJson;
+    return dataJson.data.updateTask;
   } catch (error) {
     // Error 😨
     errorLog(error)

@@ -4,7 +4,7 @@
  * Created: ?
  * Created by: ?
  * 
- * Edited: March 9 20201
+ * Edited: March 18 20201
  * Edited by: Daniel Castillo
  * 
  **/
@@ -16,18 +16,23 @@ import errorLog from './errorLogging'
 import { API } from 'aws-amplify'
 
 // import the GraphQL queries, mutations and subscriptions
-import { listObjects } from '../graphql/queries'
+import { objectsByOrgId } from '../graphql/queries'
 import { createObject, updateObject } from '../graphql/mutations'
 import { deleteObject as deleteObjectByID } from '../graphql/mutations'
+
+import getUserOrgId from './user_api'
 
 export async function getObjects() {
   try {
 
+    const userOrgId = await getUserOrgId()
+
     const res = await API.graphql({
-      query: listObjects
+      query: objectsByOrgId,
+      variables: { organizationId: userOrgId }
     })
 
-    return res.data.listObjects.items
+    return res.data.ObjectsByOrgId.items
 } catch (error) {
     // Error 😨
     errorLog(error)
@@ -54,18 +59,19 @@ export async function deleteObject(ID) {
 export async function postObject(object) {
   try{
 
-    console.log(object)
+    const userOrgId = await getUserOrgId()
 
     const input =  {
       ...object,
-      id: object._id
+      id: object._id,
+      organizationId: userOrgId
     }
     const dataJson = await API.graphql({
         query: createObject,
         variables: { input: input }
     })
 
-    return dataJson;
+    return dataJson.data.createObject;
 
   } catch (error) {
     console.log(error)

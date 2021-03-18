@@ -115,7 +115,6 @@ export async function putStation(station, ID) {
       pos_y: parseFloat(station.pos_y),
       x: parseInt(station.x),
       y: parseInt(station.y),
-      _id: station._id.toString()
     }
 
     // delete input.id

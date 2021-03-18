@@ -61,7 +61,7 @@ type Station
 }
 
 type Position
-  @model
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "PositionsByOrgId", fields: ["organizationId"], queryField: "PositionsByOrgId" )
 {
@@ -85,7 +85,7 @@ type Position
 }
 
 type Task
-  @model
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "TasksByOrgId", fields: ["organizationId"], queryField: "TasksByOrgId" )
 {
@@ -106,11 +106,13 @@ type Task
   type: String!
   unload: AWSJSON!
   obj: String!
+  route_object: AWSJSON
 }
 
 type Process
-  @model
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
+  @key(name: "ProcessesByOrgId", fields: ["organizationId"], queryField: "ProcessesByOrgId" )
 {
   # IDs
   id: ID!
@@ -124,9 +126,29 @@ type Process
   map_id: String
 }
 
-type Card
-  @model
+type Object 
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
+  @key(name: "ObjectsByOrgId", fields: ["organizationId"], queryField: "ObjectsByOrgId" )
+{
+  # IDs
+  id: ID!
+  _id: String!
+  organizationId: ID!
+  
+  # Data
+  description: String!
+  map_id: String!
+  modelName: String!
+  name: String!
+  dimensions: String
+  quantity: String
+}
+
+type Card
+  @model(queries: null)
+  @auth(rules: [{ allow: private }])
+  @key(name: "ObjectsByOrgId", fields: ["organizationId"], queryField: "ObjectsByOrgId" )
 {
   # IDs
   id: ID!
@@ -145,61 +167,10 @@ type Card
   processName: String
 }
 
-type Object 
-  @model
-  @auth(rules: [{ allow: private }])
-{
-  # IDs
-  id: ID!
-  _id: String!
-  organizationId: ID!
-  
-  # Data
-  description: String!
-  map_id: String!
-  modelName: String!
-  name: String!
-  dimensions: String
-  quantity: String
-}
-
-type Schedule 
-  @model
-  @auth(rules: [{ allow: private }])
-{
-  # IDs
-  id: ID!
-  _id: String!
-  organizationId: ID!
-  
-  # Data
-  days_on: DaysOn!
-  interval_on: Boolean!
-  name: String!
-  schedule_on: Boolean!
-  start_time: String!
-  task_id: String!
-  time_interval: String!
-  
-}
-
-
-type DaysOn 
-{
-  friday: Boolean!,
-  monday: Boolean!,
-  saturday: Boolean!,
-  sunday: Boolean!,
-  thursday: Boolean!,
-  tuesday: Boolean!,
-  wednesday: Boolean!
-
-}
-
 # Data stream
 
 type Device
-  @model
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
 {
   # IDs
@@ -222,7 +193,7 @@ type Device
 }
 
 type Status 
-  @model
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
 {
   # IDs
@@ -237,7 +208,7 @@ type Status
 }
 
 type TaskQueue 
-  @model
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
 {
   # IDs
@@ -254,7 +225,6 @@ type TaskQueue
 }
 
 # Subs
-
 type Subscription {
     onDeltaStation(id: ID): Station
       @aws_subscribe(mutations: ["createStation","updateStation","deleteStation"])
@@ -264,4 +234,15 @@ type Subscription {
 
     onDeltaTask(id: ID): Task
       @aws_subscribe(mutations: ["createTask","updateTask","deleteTask"])
+
+    onDeltaProcess(id: ID): Process
+      @aws_subscribe(mutations: ["createProcess","updateProcess","deleteProcess"])
+
+    onDeltaObject(id: ID): Object
+      @aws_subscribe(mutations: ["createObject","updateObject","deleteObject"])
 }
+
+# Analysis Queries
+# type Query {
+#     taskAnalysis(id: ID): Task @function
+# }

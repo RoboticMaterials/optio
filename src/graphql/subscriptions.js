@@ -62,6 +62,39 @@ export const onDeltaTask = /* GraphQL */ `
       type
       unload
       obj
+      route_object
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeltaProcess = /* GraphQL */ `
+  subscription OnDeltaProcess($id: ID) {
+    onDeltaProcess(id: $id) {
+      id
+      _id
+      organizationId
+      name
+      broken
+      routes
+      map_id
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeltaObject = /* GraphQL */ `
+  subscription OnDeltaObject($id: ID) {
+    onDeltaObject(id: $id) {
+      id
+      _id
+      organizationId
+      description
+      map_id
+      modelName
+      name
+      dimensions
+      quantity
       createdAt
       updatedAt
     }
@@ -330,6 +363,7 @@ export const onCreateTask = /* GraphQL */ `
       type
       unload
       obj
+      route_object
       createdAt
       updatedAt
     }
@@ -352,6 +386,7 @@ export const onUpdateTask = /* GraphQL */ `
       type
       unload
       obj
+      route_object
       createdAt
       updatedAt
     }
@@ -374,6 +409,7 @@ export const onDeleteTask = /* GraphQL */ `
       type
       unload
       obj
+      route_object
       createdAt
       updatedAt
     }
@@ -419,6 +455,57 @@ export const onDeleteProcess = /* GraphQL */ `
       broken
       routes
       map_id
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onCreateObject = /* GraphQL */ `
+  subscription OnCreateObject {
+    onCreateObject {
+      id
+      _id
+      organizationId
+      description
+      map_id
+      modelName
+      name
+      dimensions
+      quantity
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateObject = /* GraphQL */ `
+  subscription OnUpdateObject {
+    onUpdateObject {
+      id
+      _id
+      organizationId
+      description
+      map_id
+      modelName
+      name
+      dimensions
+      quantity
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteObject = /* GraphQL */ `
+  subscription OnDeleteObject {
+    onDeleteObject {
+      id
+      _id
+      organizationId
+      description
+      map_id
+      modelName
+      name
+      dimensions
+      quantity
       createdAt
       updatedAt
     }
@@ -479,135 +566,6 @@ export const onDeleteCard = /* GraphQL */ `
       process_id
       totalQuantity
       processName
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onCreateObject = /* GraphQL */ `
-  subscription OnCreateObject {
-    onCreateObject {
-      id
-      _id
-      organizationId
-      description
-      map_id
-      modelName
-      name
-      dimensions
-      quantity
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onUpdateObject = /* GraphQL */ `
-  subscription OnUpdateObject {
-    onUpdateObject {
-      id
-      _id
-      organizationId
-      description
-      map_id
-      modelName
-      name
-      dimensions
-      quantity
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onDeleteObject = /* GraphQL */ `
-  subscription OnDeleteObject {
-    onDeleteObject {
-      id
-      _id
-      organizationId
-      description
-      map_id
-      modelName
-      name
-      dimensions
-      quantity
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onCreateSchedule = /* GraphQL */ `
-  subscription OnCreateSchedule {
-    onCreateSchedule {
-      id
-      _id
-      organizationId
-      days_on {
-        friday
-        monday
-        saturday
-        sunday
-        thursday
-        tuesday
-        wednesday
-      }
-      interval_on
-      name
-      schedule_on
-      start_time
-      task_id
-      time_interval
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onUpdateSchedule = /* GraphQL */ `
-  subscription OnUpdateSchedule {
-    onUpdateSchedule {
-      id
-      _id
-      organizationId
-      days_on {
-        friday
-        monday
-        saturday
-        sunday
-        thursday
-        tuesday
-        wednesday
-      }
-      interval_on
-      name
-      schedule_on
-      start_time
-      task_id
-      time_interval
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onDeleteSchedule = /* GraphQL */ `
-  subscription OnDeleteSchedule {
-    onDeleteSchedule {
-      id
-      _id
-      organizationId
-      days_on {
-        friday
-        monday
-        saturday
-        sunday
-        thursday
-        tuesday
-        wednesday
-      }
-      interval_on
-      name
-      schedule_on
-      start_time
-      task_id
-      time_interval
       createdAt
       updatedAt
     }

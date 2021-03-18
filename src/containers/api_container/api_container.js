@@ -191,9 +191,9 @@ const ApiContainer = (props) => {
     const updateCurrentPage = () => {
 
         // Unsubscribe for page switch
-        if(currentSubscriptions){
-            currentSubscriptions._cleanup()
-        }
+        // if(currentSubscriptions){
+        //     currentSubscriptions._cleanup()
+        // }
 
         const currentPageRouter = params
 
@@ -401,8 +401,27 @@ const ApiContainer = (props) => {
             error: error => console.warn(error)
         });
 
-        const processes = await onGetProcesses()
-        const objects = await onGetObjects()
+        // Subscribe to stations
+        const processesSubscription = API.graphql(
+            graphqlOperation(subscriptions.onDeltaProcess)
+        ).subscribe({
+            next: () => { 
+                // run get stations
+                onGetProcesses()
+        },
+            error: error => console.warn(error)
+        });
+
+        // Subscribe to stations
+        const objectsSubscription = API.graphql(
+            graphqlOperation(subscriptions.onDeltaObject)
+        ).subscribe({
+            next: () => { 
+                // run get stations
+                onGetProcesses()
+        },
+            error: error => console.warn(error)
+        });
 
         return tasksSubscription
     }

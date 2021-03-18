@@ -303,6 +303,7 @@ export const createTask = /* GraphQL */ `
       type
       unload
       obj
+      route_object
       createdAt
       updatedAt
     }
@@ -328,6 +329,7 @@ export const updateTask = /* GraphQL */ `
       type
       unload
       obj
+      route_object
       createdAt
       updatedAt
     }
@@ -353,6 +355,7 @@ export const deleteTask = /* GraphQL */ `
       type
       unload
       obj
+      route_object
       createdAt
       updatedAt
     }
@@ -407,6 +410,66 @@ export const deleteProcess = /* GraphQL */ `
       broken
       routes
       map_id
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const createObject = /* GraphQL */ `
+  mutation CreateObject(
+    $input: CreateObjectInput!
+    $condition: ModelObjectConditionInput
+  ) {
+    createObject(input: $input, condition: $condition) {
+      id
+      _id
+      organizationId
+      description
+      map_id
+      modelName
+      name
+      dimensions
+      quantity
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateObject = /* GraphQL */ `
+  mutation UpdateObject(
+    $input: UpdateObjectInput!
+    $condition: ModelObjectConditionInput
+  ) {
+    updateObject(input: $input, condition: $condition) {
+      id
+      _id
+      organizationId
+      description
+      map_id
+      modelName
+      name
+      dimensions
+      quantity
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteObject = /* GraphQL */ `
+  mutation DeleteObject(
+    $input: DeleteObjectInput!
+    $condition: ModelObjectConditionInput
+  ) {
+    deleteObject(input: $input, condition: $condition) {
+      id
+      _id
+      organizationId
+      description
+      map_id
+      modelName
+      name
+      dimensions
+      quantity
       createdAt
       updatedAt
     }
@@ -476,153 +539,6 @@ export const deleteCard = /* GraphQL */ `
       process_id
       totalQuantity
       processName
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const createObject = /* GraphQL */ `
-  mutation CreateObject(
-    $input: CreateObjectInput!
-    $condition: ModelObjectConditionInput
-  ) {
-    createObject(input: $input, condition: $condition) {
-      id
-      _id
-      organizationId
-      description
-      map_id
-      modelName
-      name
-      dimensions
-      quantity
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const updateObject = /* GraphQL */ `
-  mutation UpdateObject(
-    $input: UpdateObjectInput!
-    $condition: ModelObjectConditionInput
-  ) {
-    updateObject(input: $input, condition: $condition) {
-      id
-      _id
-      organizationId
-      description
-      map_id
-      modelName
-      name
-      dimensions
-      quantity
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const deleteObject = /* GraphQL */ `
-  mutation DeleteObject(
-    $input: DeleteObjectInput!
-    $condition: ModelObjectConditionInput
-  ) {
-    deleteObject(input: $input, condition: $condition) {
-      id
-      _id
-      organizationId
-      description
-      map_id
-      modelName
-      name
-      dimensions
-      quantity
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const createSchedule = /* GraphQL */ `
-  mutation CreateSchedule(
-    $input: CreateScheduleInput!
-    $condition: ModelScheduleConditionInput
-  ) {
-    createSchedule(input: $input, condition: $condition) {
-      id
-      _id
-      organizationId
-      days_on {
-        friday
-        monday
-        saturday
-        sunday
-        thursday
-        tuesday
-        wednesday
-      }
-      interval_on
-      name
-      schedule_on
-      start_time
-      task_id
-      time_interval
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const updateSchedule = /* GraphQL */ `
-  mutation UpdateSchedule(
-    $input: UpdateScheduleInput!
-    $condition: ModelScheduleConditionInput
-  ) {
-    updateSchedule(input: $input, condition: $condition) {
-      id
-      _id
-      organizationId
-      days_on {
-        friday
-        monday
-        saturday
-        sunday
-        thursday
-        tuesday
-        wednesday
-      }
-      interval_on
-      name
-      schedule_on
-      start_time
-      task_id
-      time_interval
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const deleteSchedule = /* GraphQL */ `
-  mutation DeleteSchedule(
-    $input: DeleteScheduleInput!
-    $condition: ModelScheduleConditionInput
-  ) {
-    deleteSchedule(input: $input, condition: $condition) {
-      id
-      _id
-      organizationId
-      days_on {
-        friday
-        monday
-        saturday
-        sunday
-        thursday
-        tuesday
-        wednesday
-      }
-      interval_on
-      name
-      schedule_on
-      start_time
-      task_id
-      time_interval
       createdAt
       updatedAt
     }

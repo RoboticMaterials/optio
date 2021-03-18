@@ -4,23 +4,30 @@ import * as log from "loglevel";
 // import the amplify modules needed
 import { API } from 'aws-amplify'
 
+import getUserOrgId from './user_api'
+
 // import the GraphQL queries, mutations and subscriptions
-import { listProcesss } from '../graphql/queries';
+import { processesByOrgId } from '../graphql/queries';
 import { createProcess, updateProcess } from '../graphql/mutations';
 import { deleteProcess as deleteProcessByID } from '../graphql/mutations';
 
 export async function getProcesses() {
   try {
 
+    const userOrgId = await getUserOrgId()
+
     // get the data
     const res = await API.graphql({
-      query: listProcesss
+      query: processesByOrgId,
+      variables: {
+        organizationId: userOrgId 
+      }
     })
 
     const GQLdata = []
 
     // change the data into json
-    res.data.listProcesss.items.forEach(process => {
+    res.data.ProcessesByOrgId.items.forEach(process => {
         GQLdata.push( {
           ...process,
           routes: JSON.parse(process.routes),
@@ -91,9 +98,12 @@ export async function deleteProcess(ID) {
 export async function postProcesses(process) {
   try {
     let input = process
+
+    const userOrgId = await getUserOrgId()
    
     input = {
       ...process,
+      organizationId: userOrgId,
       id: process._id,
       routes: JSON.stringify(process.routes)
     }
