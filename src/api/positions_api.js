@@ -5,7 +5,7 @@ import errorLog from './errorLogging'
 import { API } from 'aws-amplify'
 
 // import the GraphQL queries, mutations and subscriptions
-import { listPositions } from '../graphql/queries'
+import { positionsByOrgId } from '../graphql/queries'
 import { 
   createPosition, 
   updatePosition 
@@ -13,14 +13,19 @@ import {
 
 import { deletePosition as deletePositionbyID } from '../graphql/mutations'
 
+import getUserOrgId from './user_api'
+
 export async function getPositions() {
   try {
 
+    const userOrgId = await getUserOrgId()
+
     const res = await API.graphql({
-      query: listPositions
+      query: positionsByOrgId,
+      variables: { organizationId: userOrgId }
     })
     
-    const GQLdata = res.data.listPositions.items
+    const GQLdata = res.data.PositionsByOrgId.items
 
     return GQLdata;
   } catch (error) {
@@ -51,8 +56,11 @@ export async function postPosition(position) {
 
     // Amplify!
 
+    const userOrgId = await getUserOrgId()
+
     const input = {
       ...position,
+      organizationId: userOrgId,
       pos_x: parseFloat(position.pos_x),
       pos_y: parseFloat(position.pos_y),
       _id: position._id.toString(),
@@ -66,7 +74,7 @@ export async function postPosition(position) {
       variables: { input: input }
     })
 
-    return pos;
+    return pos.data.createPosition;
   } catch (error) {
     // Error 😨
     errorLog(error)

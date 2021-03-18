@@ -23,6 +23,28 @@ export const onDeltaStation = /* GraphQL */ `
     }
   }
 `;
+export const onDeltaPosition = /* GraphQL */ `
+  subscription OnDeltaPosition($id: ID) {
+    onDeltaPosition(id: $id) {
+      id
+      _id
+      organizationId
+      change_key
+      map_id
+      name
+      parent
+      pos_x
+      pos_y
+      rotation
+      schema
+      type
+      x
+      y
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const onCreateUser = /* GraphQL */ `
   subscription OnCreateUser {
     onCreateUser {
@@ -203,72 +225,6 @@ export const onDeleteStation = /* GraphQL */ `
     }
   }
 `;
-export const onCreateTask = /* GraphQL */ `
-  subscription OnCreateTask {
-    onCreateTask {
-      id
-      _id
-      organizationId
-      device_types
-      handoff
-      load
-      map_id
-      name
-      processes
-      quantity
-      track_quantity
-      type
-      unload
-      obj
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onUpdateTask = /* GraphQL */ `
-  subscription OnUpdateTask {
-    onUpdateTask {
-      id
-      _id
-      organizationId
-      device_types
-      handoff
-      load
-      map_id
-      name
-      processes
-      quantity
-      track_quantity
-      type
-      unload
-      obj
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onDeleteTask = /* GraphQL */ `
-  subscription OnDeleteTask {
-    onDeleteTask {
-      id
-      _id
-      organizationId
-      device_types
-      handoff
-      load
-      map_id
-      name
-      processes
-      quantity
-      track_quantity
-      type
-      unload
-      obj
-      createdAt
-      updatedAt
-    }
-  }
-`;
 export const onCreatePosition = /* GraphQL */ `
   subscription OnCreatePosition {
     onCreatePosition {
@@ -330,6 +286,72 @@ export const onDeletePosition = /* GraphQL */ `
       type
       x
       y
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onCreateTask = /* GraphQL */ `
+  subscription OnCreateTask {
+    onCreateTask {
+      id
+      _id
+      organizationId
+      device_types
+      handoff
+      load
+      map_id
+      name
+      processes
+      quantity
+      track_quantity
+      type
+      unload
+      obj
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateTask = /* GraphQL */ `
+  subscription OnUpdateTask {
+    onUpdateTask {
+      id
+      _id
+      organizationId
+      device_types
+      handoff
+      load
+      map_id
+      name
+      processes
+      quantity
+      track_quantity
+      type
+      unload
+      obj
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteTask = /* GraphQL */ `
+  subscription OnDeleteTask {
+    onDeleteTask {
+      id
+      _id
+      organizationId
+      device_types
+      handoff
+      load
+      map_id
+      name
+      processes
+      quantity
+      track_quantity
+      type
+      unload
+      obj
       createdAt
       updatedAt
     }

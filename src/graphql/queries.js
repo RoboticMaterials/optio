@@ -1,50 +1,50 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const getStation = /* GraphQL */ `
-  query GetStation($id: ID!) {
-    getStation(id: $id) {
+export const getPosition = /* GraphQL */ `
+  query GetPosition($id: ID!) {
+    getPosition(id: $id) {
       id
       _id
       organizationId
+      change_key
+      map_id
       name
-      schema
-      type
+      parent
       pos_x
       pos_y
       rotation
+      schema
+      type
       x
       y
-      map_id
-      children
-      dashboards
       createdAt
       updatedAt
     }
   }
 `;
-export const listStations = /* GraphQL */ `
-  query ListStations(
-    $filter: ModelStationFilterInput
+export const listPositions = /* GraphQL */ `
+  query ListPositions(
+    $filter: ModelPositionFilterInput
     $limit: Int
     $nextToken: String
   ) {
-    listStations(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    listPositions(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
         _id
         organizationId
+        change_key
+        map_id
         name
-        schema
-        type
+        parent
         pos_x
         pos_y
         rotation
+        schema
+        type
         x
         y
-        map_id
-        children
-        dashboards
         createdAt
         updatedAt
       }
@@ -96,57 +96,6 @@ export const listTasks = /* GraphQL */ `
         type
         unload
         obj
-        createdAt
-        updatedAt
-      }
-      nextToken
-    }
-  }
-`;
-export const getPosition = /* GraphQL */ `
-  query GetPosition($id: ID!) {
-    getPosition(id: $id) {
-      id
-      _id
-      organizationId
-      change_key
-      map_id
-      name
-      parent
-      pos_x
-      pos_y
-      rotation
-      schema
-      type
-      x
-      y
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const listPositions = /* GraphQL */ `
-  query ListPositions(
-    $filter: ModelPositionFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listPositions(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        _id
-        organizationId
-        change_key
-        map_id
-        name
-        parent
-        pos_x
-        pos_y
-        rotation
-        schema
-        type
-        x
-        y
         createdAt
         updatedAt
       }
@@ -592,6 +541,43 @@ export const stationsByOrgId = /* GraphQL */ `
         map_id
         children
         dashboards
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const positionsByOrgId = /* GraphQL */ `
+  query PositionsByOrgId(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelPositionFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    PositionsByOrgId(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        _id
+        organizationId
+        change_key
+        map_id
+        name
+        parent
+        pos_x
+        pos_y
+        rotation
+        schema
+        type
+        x
+        y
         createdAt
         updatedAt
       }

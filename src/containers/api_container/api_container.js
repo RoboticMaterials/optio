@@ -39,6 +39,8 @@ import * as subscriptions from '../../graphql/subscriptions';
 
 const ApiContainer = (props) => {
 
+    let stationSub, positionSub
+
     // Dispatches
     const dispatch = useDispatch()
     const onGetMaps = async () => await dispatch(getMaps())
@@ -103,21 +105,18 @@ const ApiContainer = (props) => {
 
         // this interval is always on
         // loads essential info used on every page such as status and taskQueue
-        setCriticalDataInterval(setInterval(() => loadCriticalData(), 50000));
+        setCriticalDataInterval(setInterval(() => loadCriticalData(), 500));
 
         if(!!mapViewEnabled){
-            setMapDataInterval(setInterval(() => loadMapData(), 5000));
 
-            // Subscribe to stations
-            API.graphql(
-                graphqlOperation(subscriptions.onDeltaStation)
-            ).subscribe({
-                next: () => { 
-                    // run get stations
-                    onGetStations() 
-            },
-                error: error => console.warn(error)
-            });
+            loadMapData().then((value) => {
+                // console.log(value[0]._cleanup);
+
+                stationSub = value[0]
+
+                positionSub = value[1]
+              });
+            
         }
 
 
@@ -127,7 +126,10 @@ const ApiContainer = (props) => {
             clearInterval(criticalDataInterval);
             //clearInterval(mapDataInterval)
 
-
+            // Making sure we unsub from both stations and positions
+            stationSub._cleanup()
+            positionSub._cleanup()
+            
         }
     }, [])
 
@@ -137,6 +139,10 @@ const ApiContainer = (props) => {
             clearInterval(pageDataInterval);
             clearInterval(mapDataInterval);
             //dispatchStopAPICalls(false)
+
+            // Making sure we unsub from both stations and positions
+            stationSub._cleanup()
+            positionSub._cleanup()
         }
     }, [stopAPICalls])
 
@@ -356,7 +362,7 @@ const ApiContainer = (props) => {
     */
 
     const loadCriticalData = async () => {
-        const dataStream = dispatchGetDataStream()
+        dispatchGetDataStream()
     }
 
     /*
@@ -366,9 +372,7 @@ const ApiContainer = (props) => {
         objects, poses, models
     */
     const loadObjectsData = async () => {
-        const objects = await onGetObjects();
-        // const poses = await this.props.getPoses();
-        // const models = await this.props.getModels();
+        await onGetObjects();
     }
 
     /*
@@ -402,7 +406,7 @@ const ApiContainer = (props) => {
         dashboards
     */
     const loadDashboardsData = async () => {
-        const dashboards = await onGetDashboards();
+        await onGetDashboards();
         await onGetCards()
         await onGetTasks()
         await onGetProcesses()
@@ -416,8 +420,31 @@ const ApiContainer = (props) => {
       tasks, skills, objects, locations, dashboards, sounds
     */
     const loadMapData = async () => {
-        // const stations = await onGetStations();
-        const positions = await onGetPositions();
+
+        // Subscribe to stations
+        const stationSubscription = API.graphql(
+            graphqlOperation(subscriptions.onDeltaStation)
+        ).subscribe({
+            next: () => { 
+                // run get stations
+                onGetStations() 
+        },
+            error: error => console.warn(error)
+        });
+
+        // Subscribe to positions
+        const positionSubscription = API.graphql(
+            graphqlOperation(subscriptions.onDeltaPosition)
+        ).subscribe({
+            next: () => { 
+                // run get stations
+                onGetPositions() 
+        },
+            error: error => console.warn(error)
+        });
+
+        return [stationSubscription, positionSubscription]
+        
     }
 
     /*

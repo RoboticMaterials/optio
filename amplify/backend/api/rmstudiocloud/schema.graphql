@@ -36,8 +36,8 @@ type Organization
 
 # Data related
 
-type Station 
-  @model
+type Station
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "StationsByOrgId", fields: ["organizationId"], queryField: "StationsByOrgId" )
 {
@@ -58,6 +58,30 @@ type Station
   map_id: String!
   children: AWSJSON!
   dashboards: AWSJSON!
+}
+
+type Position
+  @model
+  @auth(rules: [{ allow: private }])
+  @key(name: "PositionsByOrgId", fields: ["organizationId"], queryField: "PositionsByOrgId" )
+{
+  # IDs
+  id: ID!
+  _id: String!
+  organizationId: ID!
+  
+  # Data
+  change_key: String!
+  map_id: String!
+  name: String!
+  parent: String
+  pos_x: Float
+  pos_y: Float
+  rotation: Int
+  schema: String!
+  type: String!
+  x: Int!
+  y: Int!
 }
 
 type Task
@@ -84,30 +108,9 @@ type Task
   obj: String!
 }
 
-type Position
-  @model
-{
-  # IDs
-  id: ID!
-  _id: String!
-  organizationId: ID!
-  
-  # Data
-  change_key: String!
-  map_id: String!
-  name: String!
-  parent: String
-  pos_x: Float
-  pos_y: Float
-  rotation: Int
-  schema: String!
-  type: String!
-  x: Int!
-  y: Int!
-}
-
 type Process
   @model
+  @auth(rules: [{ allow: private }])
 {
   # IDs
   id: ID!
@@ -123,6 +126,7 @@ type Process
 
 type Card
   @model
+  @auth(rules: [{ allow: private }])
 {
   # IDs
   id: ID!
@@ -143,6 +147,7 @@ type Card
 
 type Object 
   @model
+  @auth(rules: [{ allow: private }])
 {
   # IDs
   id: ID!
@@ -159,7 +164,9 @@ type Object
 }
 
 type Schedule 
-@model{
+  @model
+  @auth(rules: [{ allow: private }])
+{
   # IDs
   id: ID!
   _id: String!
@@ -193,6 +200,7 @@ type DaysOn
 
 type Device
   @model
+  @auth(rules: [{ allow: private }])
 {
   # IDs
   id: ID!
@@ -215,6 +223,7 @@ type Device
 
 type Status 
   @model
+  @auth(rules: [{ allow: private }])
 {
   # IDs
   id: ID!
@@ -229,6 +238,7 @@ type Status
 
 type TaskQueue 
   @model
+  @auth(rules: [{ allow: private }])
 {
   # IDs
   id: ID!
@@ -248,4 +258,7 @@ type TaskQueue
 type Subscription {
     onDeltaStation(id: ID): Station
       @aws_subscribe(mutations: ["createStation","updateStation","deleteStation"])
+
+    onDeltaPosition(id: ID): Position
+      @aws_subscribe(mutations: ["createPosition","updatePosition","deletePosition"])
 }
