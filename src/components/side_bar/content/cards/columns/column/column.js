@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 
 // actions
 import {deleteCard, putCard} from "../../../../../../redux/actions/card_actions";
@@ -62,6 +62,24 @@ const Column = ((props) => {
 
 	// component state
 	const [dragEnter, setDragEnter] = useState(false)
+	const [lotQuantitySummation, setLotQuantitySummation] = useState(0)
+	const [numberOfLots, setNumberOfLots] = useState(0)
+
+	useEffect(() => {
+		let tempLotQuantitySummation = 0
+		let tempNumberOfLots = 0
+		cards.forEach((currLot) => {
+			const {
+				count = 0
+			} = currLot || {}
+
+			tempNumberOfLots = tempNumberOfLots + 1
+			tempLotQuantitySummation = tempLotQuantitySummation + count
+		})
+
+		setNumberOfLots(tempNumberOfLots)
+		setLotQuantitySummation(tempLotQuantitySummation)
+	}, [cards])
 
 	const shouldAcceptDrop = (sourceContainerOptions, payload) => {
 		const {
@@ -269,7 +287,7 @@ const Column = ((props) => {
 				isCollapsed={isCollapsed}
 				maxWidth={maxWidth}
 			>
-				{HeaderContent}
+				{HeaderContent(numberOfLots, lotQuantitySummation)}
 
 				<styled.BodyContainer style={{
 					padding: "1rem 0",
@@ -295,7 +313,7 @@ const Column = ((props) => {
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
 			>
-				{HeaderContent}
+				{HeaderContent(numberOfLots, lotQuantitySummation)}
 
 				{renderCards()}
 			</styled.StationContainer>

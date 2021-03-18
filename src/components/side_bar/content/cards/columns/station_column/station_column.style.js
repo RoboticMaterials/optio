@@ -44,9 +44,18 @@ export const StationHeader = styled.div`
     align-items: center;
     background: ${props => props.theme.bg.quinary};
     padding: .5rem 1rem;
-    
- 
-   
+`
+
+export const HeaderRow = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-self: stretch;
+`
+
+export const QuantityText = styled.span`
+  color: white;
+    font-size: 1rem;
 `
 
 export const HeaderContent = styled.div`
