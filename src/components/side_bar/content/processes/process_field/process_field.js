@@ -227,9 +227,8 @@ export const ProcessField = (props) => {
             ...remainingValues
         } = currRouteValue || {}
 
-
         setFieldValue("broken", isBrokenProcess(values.routes, tasks))
-        setFieldValue(editingTask, {...remainingValues})
+        setFieldValue(editingTask, {remainingValues})
         setEditingTask(false)
         dispatchSetSelectedTask(null)
     }
