@@ -110,9 +110,9 @@ export const DefaultDropDownComponent = styled.div`
   padding: 0;
   display: flex;
   flex-direction: column;
-  background: ${props => props.theme.bg.quinary};
+  background: ${props => props.theme.bg.tertiary};
   border-radius: 2px;
-  box-shadow: 0 0 10px 0 ${() => hexToRGBA('#000000', 0.2)};
+  box-shadow: 0px 0px 10px 3px rgba(0,0,0,0.1);
   max-height: ${({ dropdownHeight }) => dropdownHeight};
   overflow: auto;
   z-index: 1;

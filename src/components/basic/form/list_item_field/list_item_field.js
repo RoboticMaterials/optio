@@ -5,6 +5,7 @@ import { useField, useFormikContext } from "formik";
 import ErrorTooltip from '../error_tooltip/error_tooltip';
 import * as styled from './list_item_field.style'
 import {getMessageFromError} from "../../../../methods/utils/form_utils";
+import theme from '../../../../theme'
 
 const ListItemField = (props) => {
 	const {
@@ -17,6 +18,7 @@ const ListItemField = (props) => {
 		onEditClick,
 		onTitleClick,
 		playDisabled,
+		showPlay,
 		...rest
 	} = props
 
@@ -58,15 +60,17 @@ const ListItemField = (props) => {
 			onMouseEnter={onMouseEnter}
 			onMouseLeave={onMouseLeave}
 		>
-			<styled.ListItemIconContainer style={{ width: '15%' }}>
-				<styled.ListItemIcon
-					disabled={disabled}
-					className='fas fa-play'
-					onClick={() => {
-						if(!disabled) onIconClick()
-					}}
-				/>
-			</styled.ListItemIconContainer>
+			{showPlay &&
+				<styled.ListItemIconContainer style={{ width: '15%' }}>
+					<styled.ListItemIcon
+						disabled={disabled}
+						className='fas fa-play'
+						onClick={() => {
+							if(!disabled) onIconClick()
+						}}
+					/>
+				</styled.ListItemIconContainer>
+			}
 
 			{/* <styled.ListItemTitle schema={props.schema} onClick={() => props.onClick(element)}>{element.name}</styled.ListItemTitle> */}
 			<styled.ListItemTitle
@@ -78,39 +82,41 @@ const ListItemField = (props) => {
 
 			<styled.ListItemIconContainer>
 
-				<styled.ListItemIcon
-					className='fas fa-edit'
-					onClick={onEditClick}
-					style={{ color: '#c6ccd3' }}
-				/>
-
 				{hasError ?
 					<ErrorTooltip
 						visible={hasError}
 						text={errorMessage}
 						// className={"fas fa-exclamation-circle"}
-						// color={"red"}
+						color={theme.main.error}
 						ContainerComponent={ErrorTooltipContainerComponent}
 					/>
 				:
 					(isNew || unsaved) ?
 					<ErrorTooltip
+						type={'warning'}
 						visible={(isNew || unsaved)}
 						text={"This route is not saved. Leaving the editor will remove the route."}
 						className={"fas fa-exclamation-circle"}
-						color={"yellow"}
+						color={theme.main.warn}
 						ContainerComponent={ErrorTooltipContainerComponent}
 					/>
 					:
 						edited &&
 						<ErrorTooltip
+							type={'warning'}
 							visible={edited}
 							text={"This route contains unsaved changes. Leaving the editor without saving will undo your changes."}
 							className={"fas fa-exclamation-circle"}
-							color={"yellow"}
+							color={theme.main.warn}
 							ContainerComponent={ErrorTooltipContainerComponent}
 						/>
 				}
+
+				<styled.ListItemIcon
+					className='fas fa-edit'
+					onClick={onEditClick}
+					style={{ color: '#c6ccd3' }}
+				/>
 			</styled.ListItemIconContainer>
 		</styled.ListItem>
 		</Container>

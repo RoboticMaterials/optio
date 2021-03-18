@@ -16,7 +16,7 @@ import {setSelectedObject, setRouteObject, setEditingObject} from '../../../../.
 
 // Import styles
 import * as styled from './object_editor.style'
-
+import theme from '../../../../../theme'
 
 const ObjectEditor = (props) => {
 
@@ -49,22 +49,24 @@ const ObjectEditor = (props) => {
     const url = useLocation().pathname
 
       return (
-          <styled.ObjectContainer style = {{borderColor: url==='/tasks' ? '#313236': 'white'}} >
+          <styled.ObjectContainer>
             <styled.RowContainer>
                 <BackButton
-                  style = {{color: 'white', marginBottom:'2rem'}}
-                  schema = {'tasks'}
+                  style = {{ color: theme.main.schema['objects'].solid, marginBottom:'2rem'}}
+                  containerStyle={{borderColor: theme.main.schema['objects'].solid }}
+                  schema = {'objects'}
                   onClick = {onBackClick}
+                  
                 />
                 {!editingObject ?
-                  <styled.ListItemTitle style = {{fontSize:'1.2rem', paddingTop:'.7rem', paddingLeft:'.5rem', width: '75%'}}>Choose an object...</styled.ListItemTitle>
+                  <styled.ListItemTitle style = {{fontSize:'1.2rem', paddingLeft:'.5rem', width: '75%'}}>Pick Object</styled.ListItemTitle>
                   :
-                  <styled.ListItemTitle style = {{fontSize:'1.2rem', paddingTop:'.7rem', paddingLeft:'.5rem', width: '75%'}}>Editing Object</styled.ListItemTitle>
+                  <styled.ListItemTitle style = {{fontSize:'1.2rem', paddingLeft:'.5rem', width: '75%'}}>Editing Object</styled.ListItemTitle>
 
                 }
                 {!editingObject &&
                   <PlusButton
-                    style = {{marginTop: '0.2rem'}}
+                    style={{marginTop: '0.2rem', color: theme.main.schema['objects'].solid}}
                     onClick = {()=>{
                       dispatchSetEditingObject(true)
                       onAddObject()
@@ -111,7 +113,7 @@ const ObjectEditor = (props) => {
                         InputComponent={Textbox}
                         name={name}
                         placeholder={"Object Name"}
-                        schema={'tasks'}
+                        schema={'objects'}
                         focus={focus}
                         style={{ fontSize: '1.2rem', fontWeight: '600'}}
                     />
@@ -124,7 +126,7 @@ const ObjectEditor = (props) => {
                         InputComponent={Textbox}
                         name={description}
                         placeholder={"Add a Description..."}
-                        schema={'tasks'}
+                        schema={'objects'}
                         //focus={focus}
                         style={{ fontSize: '0.9rem', fontWeight: '600'}}
                         lines = {2}
@@ -133,9 +135,9 @@ const ObjectEditor = (props) => {
 
                   <styled.RowContainer style = {{marginTop: '0.5rem'}}>
                     <Button
-                        schema={'tasks'}
+                        schema={'objects'}
                         style = {{width: '50%'}}
-                        secondary
+                        tertiary
                         disabled = {saveDisabled}
                         onClick= {()=>{
                           onSaveObject()
@@ -148,7 +150,7 @@ const ObjectEditor = (props) => {
                     <Button
                         schema={'error'}
                         style = {{width: '50%'}}
-                        secondary
+                        tertiary
                         disabled = {deleteDisabled}
                         onClick={() => {
                           onDeleteObject()

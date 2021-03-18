@@ -56,11 +56,10 @@ export const LogoIcon = styled.i`
 export const LogoSubtitle = styled.h2`
     color: ${props => props.theme.bg.senary};
     font-family: 'Montserrat';
-    font-size: ${props => props.theme.fontSize.sz4};
+    font-size: 1rem;
     font-weight: 600;
-    margin: 0;
-    margin-bottom: -2rem;
-    padding: 0;
+    margin-bottom: -1.3rem;
+    margin-left: 0.2rem;
 `;
 
 
@@ -117,7 +116,7 @@ export const PlayButtonIcon = styled.i`
 export const NotificationIcon = styled.i`
     font-size: 2.2rem;
     /* font-size: ${props => props.theme.fontSize.sz3}; */
-    color: ${props => props.theme.fg.primary};
+    color: ${props => props.theme.fg.red};
     margin-left: .2rem;
     margin-right: .2rem;
     margin-bottom: 0.4rem;
@@ -170,7 +169,7 @@ export const NotificationText = styled.p`
 
     font-size: 1rem;
     font-weight: 600;
-    color: ${props => props.theme.fg.primary};
+    color: ${props => props.theme.fg.red};
     margin: 0;
     padding: 0;
 

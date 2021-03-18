@@ -283,7 +283,7 @@ const Settings = () => {
                         valueField="_id"
                         options={maps}
                         values={selectedMap ? [selectedMap] : []}
-                        dropdownGap={5}
+                        dropdownGap={2}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
                         onChange={values => {

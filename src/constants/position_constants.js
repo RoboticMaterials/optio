@@ -1,6 +1,8 @@
 import React from 'react'
 import uuid from 'uuid'
 
+const positionColor = '#2adba6';
+
 export const PositionTypes = {
 
     /**
@@ -15,14 +17,17 @@ export const PositionTypes = {
 
     shelf_position: {
         svgPath:
-            <svg y="70">
-                <path d="M263.53,56.31l33,47a10,10,0,0,1-8.18,15.74h-66a10,10,0,0,1-8.19-15.74l33-47A10,10,0,0,1,263.53,56.31Z" />
-                <path d="M142.71,56.31l33,47a10,10,0,0,1-8.19,15.74h-66a10,10,0,0,1-8.18-15.74l33-47A10,10,0,0,1,142.71,56.31Z" />
-                <circle cx="255.44" cy="146.56" r="12.5" />
-                <circle cx="255.44" cy="181.56" r="7.5" />
-                <circle stroke='none' cx="134.44" cy="146.56" r="12.5" />
-                <circle cx="134.44" cy="181.56" r="7.5" />
-                <rect fill='transparent' strokeMiterlimit='10' strokeWidth='20px' x="10" y="10" width="378" height="236" rx="30" />
+            <svg>
+                <rect fill='transparent' x="100" y="40" width="200" height="320" rx="30" transform="translate(400 0) rotate(90)" strokeMiterlimit="10" strokeWidth="20" />
+                <g y="65" transform="scale(0.87) translate(35, 100)">
+                    <path d="M263.53,56.31l33,47a10,10,0,0,1-8.18,15.74h-66a10,10,0,0,1-8.19-15.74l33-47A10,10,0,0,1,263.53,56.31Z" />
+                    <path d="M142.71,56.31l33,47a10,10,0,0,1-8.19,15.74h-66a10,10,0,0,1-8.18-15.74l33-47A10,10,0,0,1,142.71,56.31Z" />
+                
+                    <circle cx="255.44" cy="146.56" r="12.5" />
+                    <circle cx="255.44" cy="181.56" r="7.5" />
+                    <circle cx="134.44" cy="146.56" r="12.5" />
+                    <circle cx="134.44" cy="181.56" r="7.5" />
+                </g>
             </svg>,
         attributes:
         {
@@ -31,13 +36,13 @@ export const PositionTypes = {
             parent: null,
             new: true,
         },
-        color: '#fb7c4e',
+        color: positionColor,
 
     },
 
     charger_position: {
         svgPath:
-            <svg y="70">
+            <svg>
                 <path d="M344.75,131.18l-47,33A10,10,0,0,1,282,156V90a10,10,0,0,1,15.75-8.18l47,33A10,10,0,0,1,344.75,131.18Z" />
                 <rect fill='none' strokeMiterlimit='10' strokeWidth='20px' x="5" y="5" width="378" height="236" rx="30" />
                 <path d="M251,171.13c-2.45,3.47-4.09,3.9-8.1,2.12l-73.27-32.63c-.72-.32-1.45-.61-2.47-1v3.15q0,12.9,0,25.81c0,4.89-3,6.91-7.46,5L31.14,118.34c-2.83-1.22-4.08-3.12-3.65-5.47s2.19-3.61,5.09-3.91q29.51-3,59-6c9-.91,17.93-1.86,26.91-2.63,1.81-.15,2.1-.82,2.06-2.38-.09-3.65,0-7.29,0-10.94,0-4.26,1.43-5.77,5.64-6.1q32.61-2.53,65.23-5.1c17.69-1.36,35.38-2.65,53.06-4.08,2.93-.23,5.1.52,6.54,3.12Z" />
@@ -63,7 +68,7 @@ export const PositionTypes = {
             parent: null,
             new: true,
         },
-        color: '#6283f0',
+        color: positionColor,
     },
 
     temporary_cart_position: {
