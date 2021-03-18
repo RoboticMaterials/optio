@@ -32,10 +32,11 @@ export const EditTitle = styled.h1`
     color: ${props => props.theme.schema[props.schema].solid};
     user-select: none;
 
-    text-align: center;
+    text-align: left;
     flex-grow: 1;
 
-    transform: translateX(-1.5rem);
+    padding-right: 4rem;
+    padding-left: 1rem;
 `
 
 export const ClearIcon = styled(DeleteForeverIcon)`

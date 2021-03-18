@@ -9,13 +9,13 @@ export const overflowTextCss = css`
 
 
 export const glow = (color) => css`
-	box-shadow: 0 0 5px ${color} ;
-	border: 1px solid ${color};
+	box-shadow: 0px 0px 5px ${color} ;
+	border-color: ${color};
 `
 
 export const glow2 = (color) => css`
 	box-shadow: 0 0 5px ${color} ;
-	border: 1px solid ${color};
+	border-color: ${color};
 `
 
 export const errorGlow = css`

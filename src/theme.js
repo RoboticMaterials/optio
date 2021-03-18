@@ -123,6 +123,10 @@ export const theme = {
         },
 
         schema: {
+            default: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(168, 0, 36, 0.95) 0%, rgba(217, 21, 0, 0.95) 100%)',
+                solid: '#FF4B4B'
+            },
             locations: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(92, 111, 255, 0.95) 0%, rgba(159, 91, 255, 0.95) 100%)',
                 solid: '#5c6fff'

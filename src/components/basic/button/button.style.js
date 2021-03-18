@@ -1,8 +1,14 @@
+import { propSatisfies } from 'ramda';
 import styled from 'styled-components'
 import { hexToRGBA, LightenDarkenColor, RGB_Linear_Shade } from '../../../methods/utils/color_utils';
 
 
 const buttonTheme = (props) => {
+
+    if (!props.schema) {
+        props.schema = 'default'
+    }
+
     if (props.disabled) { // Disabled
         return (`
             background-color: ${props.theme.bg.secondary};

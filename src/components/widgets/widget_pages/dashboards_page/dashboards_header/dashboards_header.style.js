@@ -7,16 +7,17 @@ export const Header = styled.div`
     display: flex;
 
     flex-direction: row;
-    // align-items: center;
-    justify-content: flex-start;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 
-    margin: 0rem 5rem 0rem 5rem;
+    width: calc(90% - 1rem);
+    margin: 0 calc(5% + 0.5rem) 0 calc(5% + 0.5rem);
 
     height: 6rem;
     max-height: 6rem;
     min-height: 6rem;
     line-height: 6rem;
-
 `
 
 export const Title = styled.h2`
@@ -34,6 +35,8 @@ export const Title = styled.h2`
         font-size: ${props => props.theme.fontSize.sz2};
     }
     user-select: none;
+
+    position: absolute;
 
     pointer-events: none;
     white-space: nowrap;

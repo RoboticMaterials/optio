@@ -133,7 +133,6 @@ export const RightMenuContainer = styled.div`
 
     border-radius: .5rem;
     // border: .2em solid;
-    // border-color: ${props => props.theme.fg.primary};
 
 
     &:hover {
@@ -143,7 +142,7 @@ export const RightMenuContainer = styled.div`
 
     ${props => props.checked && `
         box-shadow: inset 2px 2px 4px 0px rgba(0, 0, 0, 0.25), inset -2px -2px 3px 0px rgba(255, 255, 255, 0.6);
-        background: rgba(0,0,0,0.01);
+        background: rgba(0,0,0,0.05);
     `}
 
     margin-left: 0;
