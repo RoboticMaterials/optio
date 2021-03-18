@@ -31,7 +31,13 @@ export const BatterySvg = styled.svg`
     top: 50%;
     transform: translateY(-50%);
 `
-
+export const ColumnContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+`
 export const OEESvg = styled.svg`
     position: absolute;
     overflow: visible;
@@ -134,9 +140,10 @@ export const EditDeviceIcon = styled.i`
 export const StatusContainer = styled.div`
     border: solid .1rem;
     border-color: ${props => props.theme.bg.octonary};
-    border-radius: 1rem;
-    width: 75%;
-    height: 10%;
+    border-radius: .5rem;
+    width: 70%;
+    height: 17%;
+		margin-bottom:.8rem;
     text-align: center;
     position: absolute;
     text-overflow: ellipsis;
@@ -166,7 +173,7 @@ export const ConnectionStatusContainer = styled.div`
 export const StatusText = styled.p`
     margin: auto;
     font-family: ${props => props.theme.font.primary};
-    font-size: ${props => props.theme.fontSize.sz3};
+    font-size: ${props => props.theme.fontSize.sz4};
     color: ${props => props.theme.bg.octonary};
     overflow: hidden;
     user-select: none;
@@ -174,6 +181,21 @@ export const StatusText = styled.p`
 
     ${props => props.isSmall && {
 		fontSize: props.theme.fontSize.sz4
+	}};
+`
+export const MissionText = styled.p`
+    margin: auto;
+    font-family: ${props => props.theme.font.primary};
+    font-size: ${props => props.theme.fontSize.sz4};
+    color: ${props => props.theme.bg.octonary};
+    overflow: hidden;
+    user-select: none;
+		border-top: 1px solid white;
+
+
+
+    ${props => props.isSmall && {
+		fontSize: props.theme.fontSize.sz5
 	}};
 `
 export const ConnectionStatusText = styled.p`

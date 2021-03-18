@@ -54,7 +54,6 @@ const DeviceItem = (props) => {
     // Handles Device status, this might have to be tailord for each device
     const handleDeviceStatus = () => {
         // Sets the current task of the device
-
         let deviceStatus = ''
 
         try {
@@ -79,6 +78,17 @@ const DeviceItem = (props) => {
 
 
         return deviceStatus
+    }
+
+    const handleMissionStatus = () => {
+      let missionStatus = ''
+
+      if(!!device && !!device.mission_text){
+        missionStatus = device.mission_text
+      }
+      else{missionStatus="Idle"}
+
+      return missionStatus
     }
 
     const handleShowDeviceHil = (device) => {
@@ -230,9 +240,14 @@ const DeviceItem = (props) => {
                   <styled.StatusContainer
                       onClick = {()=>handleShowDeviceHil(device)}
                   >
+                    <styled.ColumnContainer>
                       <styled.StatusText isSmall={isSmall}>
                           {handleDeviceStatus()}
                       </styled.StatusText>
+                      <styled.MissionText isSmall={isSmall}>
+                          {handleMissionStatus()}
+                      </styled.MissionText>
+                    </styled.ColumnContainer>>
                   </styled.StatusContainer>
 
                   <styled.ConnectionStatusContainer isSmall = {isSmall}>
