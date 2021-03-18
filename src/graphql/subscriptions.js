@@ -100,6 +100,27 @@ export const onDeltaObject = /* GraphQL */ `
     }
   }
 `;
+export const onDeltaCard = /* GraphQL */ `
+  subscription OnDeltaCard($id: ID) {
+    onDeltaCard(id: $id) {
+      id
+      _id
+      organizationId
+      bins
+      dates
+      description
+      flags
+      lotNumber
+      lotTemplateId
+      name
+      process_id
+      totalQuantity
+      processName
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const onCreateUser = /* GraphQL */ `
   subscription OnCreateUser {
     onCreateUser {
@@ -515,6 +536,7 @@ export const onCreateCard = /* GraphQL */ `
   subscription OnCreateCard {
     onCreateCard {
       id
+      _id
       organizationId
       bins
       dates
@@ -535,6 +557,7 @@ export const onUpdateCard = /* GraphQL */ `
   subscription OnUpdateCard {
     onUpdateCard {
       id
+      _id
       organizationId
       bins
       dates
@@ -555,6 +578,7 @@ export const onDeleteCard = /* GraphQL */ `
   subscription OnDeleteCard {
     onDeleteCard {
       id
+      _id
       organizationId
       bins
       dates

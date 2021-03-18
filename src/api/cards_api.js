@@ -16,23 +16,30 @@ import errorLog from './errorLogging'
 import { API } from 'aws-amplify'
 
 // import the GraphQL queries, mutations and subscriptions
-import { listCards } from '../graphql/queries'
+import { cardsByOrgId } from '../graphql/queries'
 import { createCard, updateCard } from '../graphql/mutations'
-import { getCard as getCardByID } from '../graphql/queries'
+import { getCardById } from '../graphql/queries'
 import { deleteCard as deleteCardByID } from '../graphql/mutations'
+
+// to get user org id
+import getUserOrgId from './user_api'
 
 // For creating a card
 import { uuidv4 } from '../methods/utils/utils'
 
 export async function getCards() {
     try {
+
+        const userOrgId = await getUserOrgId()
+
         const res = await API.graphql({
-            query: listCards
+            query: cardsByOrgId,
+            variables: { organizationId: userOrgId }
           })
 
         let GQLdata = []
 
-        res.data.listCards.items.forEach(card => {
+        res.data.CardsByOrgId.items.forEach(card => {
             GQLdata.push( {
                 ...card,
                 bins: JSON.parse(card.bins),
@@ -54,7 +61,7 @@ export async function getCard(cardId) {
         const id = {id: cardId}
 
         const dataJson = await API.graphql({
-            query: getCardByID,
+            query: getCardById,
             variables: { input: id }
         })
 
@@ -69,9 +76,9 @@ export async function getCard(cardId) {
 export async function postCard(card) {
     try {
 
-        console.log(card)
-
         const fakeID = uuidv4();
+
+        const userOrgId = await getUserOrgId()
 
         const input = {
             ...card,
@@ -79,7 +86,8 @@ export async function postCard(card) {
             dates: JSON.stringify(card.dates),
             flags: JSON.stringify(card.flags),
             _id: fakeID,
-            id: fakeID
+            id: fakeID,
+            organizationId: userOrgId
         }
         
         const dataJson = await API.graphql({
@@ -97,11 +105,14 @@ export async function postCard(card) {
 
 export async function getCardsCount() {
     try {
+        const userOrgId = await getUserOrgId()
+
         const res = await API.graphql({
-            query: listCards
+            query: cardsByOrgId,
+            variables: { organizationId: userOrgId }
           })
 
-        return res.data.listCards.items.length
+        return res.data.CardsByOrgId.items.length
 
     } catch (error) {
         // Error 😨
@@ -114,16 +125,19 @@ export async function getCardsCount() {
 export async function getProcessCards(processId) {
     try {
 
+        const userOrgId = await getUserOrgId()
+
         const res = await API.graphql({
-            query: listCards,
-            variables:{
-              filter: {processId: {eq: processId}}
-            }
+            query: cardsByOrgId,
+            variables: { 
+                organizationId: userOrgId,
+                filter: {processId: {eq: processId}}
+             }
           })
 
         let GQLdata = []
 
-        res.data.listCards.items.forEach(card => {
+        res.data.CardsByOrgId.items.forEach(card => {
             GQLdata.push( {
                 ...card,
                 bins: JSON.parse(card.bins),

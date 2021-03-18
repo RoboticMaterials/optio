@@ -1,53 +1,6 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const getCard = /* GraphQL */ `
-  query GetCard($id: ID!) {
-    getCard(id: $id) {
-      id
-      organizationId
-      bins
-      dates
-      description
-      flags
-      lotNumber
-      lotTemplateId
-      name
-      process_id
-      totalQuantity
-      processName
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const listCards = /* GraphQL */ `
-  query ListCards(
-    $filter: ModelCardFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listCards(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        organizationId
-        bins
-        dates
-        description
-        flags
-        lotNumber
-        lotTemplateId
-        name
-        process_id
-        totalQuantity
-        processName
-        createdAt
-        updatedAt
-      }
-      nextToken
-    }
-  }
-`;
 export const usersbyOrg = /* GraphQL */ `
   query UsersbyOrg(
     $organizationId: ID
@@ -323,6 +276,78 @@ export const objectsByOrgId = /* GraphQL */ `
         name
         dimensions
         quantity
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const cardsByOrgId = /* GraphQL */ `
+  query CardsByOrgId(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelCardFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    CardsByOrgId(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        _id
+        organizationId
+        bins
+        dates
+        description
+        flags
+        lotNumber
+        lotTemplateId
+        name
+        process_id
+        totalQuantity
+        processName
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getCardById = /* GraphQL */ `
+  query GetCardById(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelCardFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    getCardById(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        _id
+        organizationId
+        bins
+        dates
+        description
+        flags
+        lotNumber
+        lotTemplateId
+        name
+        process_id
+        totalQuantity
+        processName
         createdAt
         updatedAt
       }

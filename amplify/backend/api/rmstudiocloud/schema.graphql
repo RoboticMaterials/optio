@@ -148,10 +148,12 @@ type Object
 type Card
   @model(queries: null)
   @auth(rules: [{ allow: private }])
-  @key(name: "ObjectsByOrgId", fields: ["organizationId"], queryField: "ObjectsByOrgId" )
+  @key(name: "CardsByOrgId", fields: ["organizationId"], queryField: "CardsByOrgId" )
+  @key(name: "getCardById", fields: ["organizationId"], queryField: "getCardById" )
 {
   # IDs
   id: ID!
+  _id: ID!
   organizationId: ID!
 
   # Data
@@ -240,6 +242,9 @@ type Subscription {
 
     onDeltaObject(id: ID): Object
       @aws_subscribe(mutations: ["createObject","updateObject","deleteObject"])
+
+    onDeltaCard(id: ID): Card
+      @aws_subscribe(mutations: ["createCard","updateCard","deleteCard"])
 }
 
 # Analysis Queries

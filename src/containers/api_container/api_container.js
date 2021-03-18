@@ -248,7 +248,8 @@ const ApiContainer = (props) => {
         switch (pageName) {
 
             case 'objects':
-                setPageDataInterval(setInterval(() => loadObjectsData(), 10000))
+                currentSubscription = await loadObjectsData()
+                setCurrentSubscriptions(currentSubscription)
                 break;
 
             case 'scheduler':
@@ -269,7 +270,11 @@ const ApiContainer = (props) => {
                 break;
 
             case 'lots':
-                setPageDataInterval(setInterval(() => loadCardsData(), 10000))
+                // setPageDataInterval(setInterval(() => loadCardsData(), 10000))
+
+                currentSubscription = await loadCardsData()
+                setCurrentSubscriptions(currentSubscription)
+
                 break
 
             case 'processes':
@@ -379,7 +384,18 @@ const ApiContainer = (props) => {
         objects, poses, models
     */
     const loadObjectsData = async () => {
-        await onGetObjects();
+        // Subscribe to objects
+        const objectsSubscription = API.graphql(
+            graphqlOperation(subscriptions.onDeltaObject)
+        ).subscribe({
+            next: () => { 
+                // run get stations
+                onGetProcesses()
+        },
+            error: error => console.warn(error)
+        });
+
+        return objectsSubscription
     }
 
     /*
@@ -513,8 +529,21 @@ const ApiContainer = (props) => {
             onGetCards()
         }
 
+        // Subscribe to stations
+        const cardSubscription = API.graphql(
+            graphqlOperation(subscriptions.onDeltaCard)
+        ).subscribe({
+            next: () => { 
+                // run get stations
+                onGetCards() 
+        },
+            error: error => console.warn(error)
+        });
+
         onGetProcesses()
         onGetTasks()
+
+        return cardSubscription
     }
 
     /*
