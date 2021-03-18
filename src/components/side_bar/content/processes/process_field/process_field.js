@@ -227,8 +227,6 @@ export const ProcessField = (props) => {
             ...remainingValues
         } = currRouteValue || {}
 
-        const bprocesses = getRouteProcesses(currRouteValue._id) // get routes processes
-
         setFieldValue("broken", isBrokenProcess(values.routes, tasks))
         setFieldValue(editingTask, {remainingValues})
         setEditingTask(false)
