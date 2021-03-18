@@ -2,6 +2,7 @@ import styled, { css } from 'styled-components'
 import * as style from '../devices_content.style'
 import * as styles from '../../settings/settings.style'
 import * as stylel from '../../locations/edit_location/location_button/location_button.style'
+import { columnContainer } from '../../../../../common_css/common_css'
 
 export const Container = styled(style.SettingsContainer)`
 `
@@ -16,7 +17,8 @@ export const Label = styled(style.SettingsLabel)`
 export const RowContainer = styled(style.RowContainer)`
 `
 
-export const ColumnContainer =styled(style.ColumnContainer)`
+export const ColumnContainer = styled.div`
+    ${columnContainer}
 `
 
 export const ConnectionButton = styled(styles.ConnectionButton)`
