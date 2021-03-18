@@ -807,3 +807,39 @@ export const onDeleteTaskQueue = /* GraphQL */ `
     }
   }
 `;
+export const onCreateDashboard = /* GraphQL */ `
+  subscription OnCreateDashboard {
+    onCreateDashboard {
+      id
+      _id
+      organizationId
+      data
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateDashboard = /* GraphQL */ `
+  subscription OnUpdateDashboard {
+    onUpdateDashboard {
+      id
+      _id
+      organizationId
+      data
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteDashboard = /* GraphQL */ `
+  subscription OnDeleteDashboard {
+    onDeleteDashboard {
+      id
+      _id
+      organizationId
+      data
+      createdAt
+      updatedAt
+    }
+  }
+`;

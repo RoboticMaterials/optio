@@ -453,3 +453,30 @@ export const taskQueueByOrgId = /* GraphQL */ `
     }
   }
 `;
+export const dashboardsByOrgId = /* GraphQL */ `
+  query DashboardsByOrgId(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelDashboardFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    DashboardsByOrgId(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        _id
+        organizationId
+        data
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;

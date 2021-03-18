@@ -1,193 +1,130 @@
-import axios from 'axios';
-// import * as log from 'loglevel';
+/**
+ * All of the API calls for Dashboards
+ * 
+ * Created: ?
+ * Created by: ?
+ * 
+ * Edited: March 9 20201
+ * Edited by: Daniel Castillo
+ * 
+ */
 
-import logger from '../logger'
+// logging for error in API
+import errorLog from './errorLogging'
 
-import { apiIPAddress } from '../settings/settings'
-const operator = 'dashboards'
-const log = logger.getLogger('Api')
+import getUserOrgId from './user_api'
+
+// import the API category from Amplify library
+import { API } from 'aws-amplify'
+
+// import the GraphQL queries, mutations and subscriptions
+import { dashboardsByOrgId } from '../graphql/queries'
+import { createDashboard, updateDashboard } from '../graphql/mutations'
+import { deleteDashboard as deleteDashboardByID } from '../graphql/mutations'
+
+// For creating a card
+// import { uuidv4 } from '../methods/utils/utils'
 
 export async function getDashboards() {
     try {
-        const response = await axios({
-            method: 'get',
-            url: apiIPAddress() + operator,
-            headers: {
-                'X-API-Key': '123456',
-                'Access-Control-Allow-Origin': '*'
-            }
+
+        const userOrgId = await getUserOrgId()
+
+        const res = await API.graphql({
+            query: dashboardsByOrgId,
+            variables: { organizationId: userOrgId }
+        })
+
+        let GQLdata = []
+
+        res.data.DashboardsByOrgId.items.forEach(dash => {
+            let data = JSON.parse(dash.data)
+
+            GQLdata.push( {
+                ...dash,
+                ...data
+            })
         });
+        
+
         // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = res.data.DashboardsByOrgId.items
         return dataJson;
-
-
     } catch (error) {
-
         // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        errorLog(error)
     }
-
 }
 
 export async function deleteDashboards(ID) {
     try {
-        const response = await axios({
-            method: 'DELETE',
-            url: apiIPAddress() + operator + '/' + ID,
-            headers: {
-                'Accept': 'application/json',
-                'X-API-Key': '123456',
-                'Access-Control-Allow-Origin': '*'
-            },
-        });
+        const userOrgId = await getUserOrgId()
 
-        // Success 🎉
-        // log.debug('response',response);
-        // const data = response.data;
-        // const dataJson = JSON.parse(data)
-        return response;
+        const res = await API.graphql({
+        query: dashboardsByOrgId,
+        variables:{
+            organizationId: userOrgId,
+            filter: {_id: {eq: ID}}
+        }
+        })
 
+        await API.graphql({
+            query: deleteDashboardByID,
+            variables: { input: {id: res.data.DashboardsByOrgId.items[0].id} }
+        })
+
+        return 'Deleted'
 
     } catch (error) {
-
         // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        errorLog(error)
     }
 }
 
 export async function postDashboards(dashboards) {
     try {
-        const response = await axios({
-            method: 'POST',
-            url: apiIPAddress() + operator,
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': '123456',
-                'Accept': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
-            data: dashboards
-        });
+        const userOrgId = await getUserOrgId()
 
-        // Success 🎉
-        // log.debug('response',response);
-        const data = response.data;
-        const dataJson = JSON.parse(data)
-        // log.debug('response data json',dataJson);
+        // const fakeID = uuidv4();
 
-        return dataJson;
+        let dashboardInput = {
+            organizationId: userOrgId,
+            data: JSON.stringify(dashboards),
+            // _id: fakeID,
+            // id: fakeID,
+        }
 
+        await API.graphql({
+            query: createDashboard,
+            variables: { input: dashboardInput }
+        })
+
+        return {
+            ...dashboards,
+            organizationId: userOrgId,
+            // _id: fakeID,
+            // id: fakeID,
+        }
 
     } catch (error) {
-
         // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        errorLog(error)
     }
 }
 
 export async function putDashboards(dashboard, ID) {
 
     try {
-        const response = await axios({
-            method: 'PUT',
-            url: apiIPAddress() + operator + '/' + ID,
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': '123456',
-                'Accept': 'text/html',
-                'Access-Control-Allow-Origin': '*'
-            },
-            data: dashboard
-        });
 
-        // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
+        const dataJson = await API.graphql({
+            query: updateDashboard,
+            variables: { input: dashboard }
+        })
 
-        return dataJson;
-
+        return dataJson.data.updateDashboard;
 
     } catch (error) {
-
         // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        errorLog(error)
     }
 }

@@ -230,6 +230,20 @@ type TaskQueue
   custom_task: AWSJSON
 }
 
+type Dashboard 
+  @model(queries: null)
+  @auth(rules: [{ allow: private }])
+  @key(name: "DashboardsByOrgId", fields: ["organizationId"], queryField: "DashboardsByOrgId" )
+{
+  # IDs
+  id: ID!
+  _id: String
+  organizationId: ID!
+  
+  # Data
+  data: AWSJSON!
+}
+
 # Subs
 type Subscription {
     onDeltaStation(id: ID): Station
