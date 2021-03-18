@@ -557,6 +557,7 @@ export const createDevice = /* GraphQL */ `
       _id
       organizationId
       battery_percentage
+      connected
       current_task_queue_id
       dashboards
       device_model
@@ -582,6 +583,7 @@ export const updateDevice = /* GraphQL */ `
       _id
       organizationId
       battery_percentage
+      connected
       current_task_queue_id
       dashboards
       device_model
@@ -607,6 +609,7 @@ export const deleteDevice = /* GraphQL */ `
       _id
       organizationId
       battery_percentage
+      connected
       current_task_queue_id
       dashboards
       device_model

@@ -310,10 +310,12 @@ const ApiContainer = (props) => {
 
     const loadInitialData = async () => {
         // Local Settings must stay on top of initial data so that the correct API address is seleceted
-        const localSettings = await onGetLocalSettings()
-        const settings = await onGetSettings();
-        //await postSettings(settings)
-        // const refreshToken = await onGetRefreshToken()
+        await onGetLocalSettings()
+
+        // Get settings from the DB
+        await onGetSettings();
+
+        // Get devices and maps
         const devices = await onGetDevices()
         const maps = await onGetMaps()
 
@@ -334,7 +336,9 @@ const ApiContainer = (props) => {
         const cards = onGetCards()
 
         const status = await onGetStatus()
-        const getSchedules = await onGetSchedules()
+
+        // Seems we are not using so commeneted it out
+        // const getSchedules = await onGetSchedules()
 
         const loggers = await onGetLoggers()
 
@@ -374,7 +378,46 @@ const ApiContainer = (props) => {
     */
 
     const loadCriticalData = async () => {
-        dispatchGetDataStream()
+
+        // took this out so the loop doesnt run anymore
+        // dispatchGetDataStream()
+
+        // Start subscription to status, taskQueue, devices
+        // Dont need to clean this one up because we always need it
+
+        // Subscribe to status
+        API.graphql(
+            graphqlOperation(subscriptions.onDeltaStatus)
+        ).subscribe({
+            next: () => { 
+                // run get stations
+                onGetStatus()
+        },
+            error: error => console.warn(error)
+        });
+
+        // Subscribe to taskQueue
+        API.graphql(
+            graphqlOperation(subscriptions.onDeltaTask)
+        ).subscribe({
+            next: () => { 
+                // run get stations
+                onGetProcesses()
+        },
+            error: error => console.warn(error)
+        });
+
+        // Subscribe to Devices
+        API.graphql(
+            graphqlOperation(subscriptions.onDeltaDevice)
+        ).subscribe({
+            next: () => { 
+                // run get stations
+                onGetProcesses()
+        },
+            error: error => console.warn(error)
+        });
+
     }
 
     /*

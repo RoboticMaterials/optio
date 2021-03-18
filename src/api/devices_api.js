@@ -1,194 +1,112 @@
-import axios from 'axios';
-// import * as log from 'loglevel';
+/** 
+ * All of the API calls for Devices
+ * 
+ * Created: ?
+ * Created by: ?
+ * 
+ * Edited: March 18 20201
+ * Edited by: Daniel Castillo
+ * 
+ * TODO: Actually stringify and parse the JSON
+ * CANT TEST NOW BECAUSE ITLL BREAK THE PAGE
+ * 
+ **/
 
-import logger from '../logger'
+// logging for error in API
+import errorLog from './errorLogging'
 
-import { apiIPAddress } from '../settings/settings'
+// import the API category from Amplify library
+import { API } from 'aws-amplify'
 
-const operator = 'devices'
-const log = logger.getLogger('Api')
+// import the GraphQL queries, mutations and subscriptions
+import { devicesByOrgId } from '../graphql/queries'
+import { createDevice, updateDevice } from '../graphql/mutations'
+import { deleteDevice as deleteDeviceByID } from '../graphql/mutations'
+
+// to get user org id
+import getUserOrgId from './user_api'
 
 export async function getDevices() {
     try {
-        const response = await axios({
-            method: 'get',
-            url: apiIPAddress() + operator,
-            headers: {
-                'X-API-Key': '123456',
-                'Access-Control-Allow-Origin': '*'
-            }
-            // token: token.username
-        });
-        // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
-        return dataJson;     
+        const userOrgId = await getUserOrgId()
 
+        const res = await API.graphql({
+            query: devicesByOrgId,
+            variables: { organizationId: userOrgId }
+          })
+
+        let GQLdata = []
+
+        res.data.DevicesByOrgId.items.forEach(device => {
+            GQLdata.push( {
+                ...device,
+                dashboards: JSON.parse(device.dashboards),
+                position: JSON.parse(device.position)
+            })
+        });
+        
+        return GQLdata;
 
     } catch (error) {
-
         // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        errorLog(error)
     }
-
 }
 
 export async function deleteDevices(ID) {
     try {
-        const response = await axios({
-            method: 'DELETE',
-            url: apiIPAddress() + operator + '/' + ID,
-            headers: {
-                'Accept': 'application/json',
-                'X-API-Key': '123456',
-            },
-        });
+        const userOrgId = await getUserOrgId()
 
-        // Success 🎉
-        // log.debug('response',response);
-        // const data = response.data;
-        // const dataJson = JSON.parse(data)
-        return response;
-
-
-    } catch (error) {
-
-        // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
+        const res = await API.graphql({
+        query: devicesByOrgId,
+        variables:{
+            organizationId: userOrgId,
+            filter: {_id: {eq: ID}}
         }
-        log.debug('error', error);
-    }
-}
+        })
 
-export async function postDevices(devices) {
-    try {
-        const response = await axios({
-            method: 'POST',
-            url: apiIPAddress() + operator,
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-API-Key': '123456',
-            },
-            data: devices
-        });
-
-        // Success 🎉
-        // log.debug('response',response);
-        const data = response.data;
-        const dataJson = JSON.parse(data)
-        // log.debug('response data json',dataJson);
-
+        const dataJson = await API.graphql({
+            query: deleteDeviceByID,
+            variables: { input: {id: res.data.TasksByOrgId.items[0].id} }
+        })
 
         return dataJson;
 
+    } catch (error) {
+         // Error 😨
+         errorLog(error)
+    }
+}
+
+export async function postDevices(device) {
+    try {
+
+        const dataJson = await API.graphql({
+            query: createDevice,
+            variables: { input: device }
+          })
+          
+        return dataJson.data.createDevice;
+
 
     } catch (error) {
-
-        // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+         // Error 😨
+         errorLog(error)
     }
 }
 
 export async function putDevices(device, ID) {
     try {
-        const response = await axios({
-            method: 'PUT',
-            url: apiIPAddress() + operator + '/' + ID,
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'text/html',
-                'X-API-Key': '123456',
-            },
-            data: device
-        });
 
-        // Success 🎉
-        // log.debug('response',response);
-        const data = response.data;
-        const dataJson = JSON.parse(data)
-        return dataJson;
-
+        const dataJson = await API.graphql({
+            query: updateDevice,
+            variables: { input: device }
+          })
+          
+        return dataJson.data.updateDevice;
 
     } catch (error) {
-
-
         // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        errorLog(error)
     }
 }

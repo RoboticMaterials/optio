@@ -93,8 +93,6 @@ export async function postTask(task) {
       variables: { input: input }
     })
 
-    console.log(dataJson)
-
     return dataJson.data.createTask;
   } catch (error) {
     // Error 😨

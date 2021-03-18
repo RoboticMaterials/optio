@@ -1,104 +1,68 @@
-import axios from 'axios';
-import * as log from 'loglevel';
+/** 
+ * All of the API calls for Cards
+ * 
+ * Created: ?
+ * Created by: ?
+ * 
+ * Edited: March 18 20201
+ * Edited by: Daniel Castillo
+ * 
+ * TODO: Actually stringify and parse the JSON
+ * CANT TEST NOW BECAUSE ITLL BREAK THE PAGE
+ * 
+ **/
 
-import { apiIPAddress } from '../settings/settings'
+// logging for error in API
+import errorLog from './errorLogging'
 
-const operator = 'status'
+// import the API category from Amplify library
+import { API } from 'aws-amplify'
+
+// import the GraphQL queries, mutations and subscriptions
+import { statusByOrgId } from '../graphql/queries'
+import { createStatus } from '../graphql/mutations'
+
+// to get user org id
+import getUserOrgId from './user_api'
+
 
 export async function getStatus() {
     try {
-        const response = await axios({
-            method: 'get',
-            url: apiIPAddress() + operator,
-            headers: {
-                'X-API-Key': '123456',
-                'Access-Control-Allow-Origin': '*'
-            }
-            // token: token.username
-        });
-        // Success 🎉
-        //  log.debug('THE STATE OF PLAY IS!!! on get status',response);
-        const data = response.data;
-        const dataJson = JSON.parse(data)
-        return dataJson;
+        const userOrgId = await getUserOrgId()
+
+        const dataJson = await API.graphql({
+            query: statusByOrgId,
+            variables: { organizationId: userOrgId }
+          })
+          
+        return dataJson.data.statusByOrgId;
 
     } catch (error) {
 
         // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
-        throw error;
+        errorLog(error)
 
     }
-
-
 }
 
 export async function postStatus(status) {
-    // log.debug("postStatus: started: status", status)
     try {
-        const response = await axios({
-            method: 'POST',
-            url: apiIPAddress() + operator,
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': '123456',
-                'Accept': 'application/json'
-            },
-            data: status
-        });
 
-        // Success 🎉
-        // log.debug('postStatus: response: ',response);
-        // const data = response.data;
-        // const dataJson = JSON.parse(data)
-        // log.debug('response data json',dataJson);
-
-        return response;
-
+        const userOrgId = await getUserOrgId()
+        
+        status = {
+            ...status,
+            organizationId: userOrgId
+        }
+        const dataJson = await API.graphql({
+            query: createStatus,
+            variables: { input: status }
+          })
+          
+        return dataJson.data.createDevice;
 
     } catch (error) {
-
         // Error 😨
-        if (error.response) {
-
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
-        throw error;
+        errorLog(error)
     }
 }

@@ -121,6 +121,59 @@ export const onDeltaCard = /* GraphQL */ `
     }
   }
 `;
+export const onDeltaDevice = /* GraphQL */ `
+  subscription OnDeltaDevice($id: ID) {
+    onDeltaDevice(id: $id) {
+      id
+      _id
+      organizationId
+      battery_percentage
+      connected
+      current_task_queue_id
+      dashboards
+      device_model
+      device_name
+      distance_to_next_target
+      idle_location
+      map_id
+      position
+      shelf_attached
+      state_text
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeltaStatus = /* GraphQL */ `
+  subscription OnDeltaStatus($id: ID) {
+    onDeltaStatus(id: $id) {
+      id
+      _id
+      organizationId
+      active_map
+      mir_connection
+      pause_status
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeltaTasQueue = /* GraphQL */ `
+  subscription OnDeltaTasQueue($id: ID) {
+    onDeltaTasQueue(id: $id) {
+      id
+      _id
+      organizationId
+      device_type
+      mission_status
+      owner
+      task_id
+      custom_task
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const onCreateUser = /* GraphQL */ `
   subscription OnCreateUser {
     onCreateUser {
@@ -602,6 +655,7 @@ export const onCreateDevice = /* GraphQL */ `
       _id
       organizationId
       battery_percentage
+      connected
       current_task_queue_id
       dashboards
       device_model
@@ -624,6 +678,7 @@ export const onUpdateDevice = /* GraphQL */ `
       _id
       organizationId
       battery_percentage
+      connected
       current_task_queue_id
       dashboards
       device_model
@@ -646,6 +701,7 @@ export const onDeleteDevice = /* GraphQL */ `
       _id
       organizationId
       battery_percentage
+      connected
       current_task_queue_id
       dashboards
       device_model

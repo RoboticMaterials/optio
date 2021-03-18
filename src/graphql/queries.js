@@ -355,3 +355,101 @@ export const getCardById = /* GraphQL */ `
     }
   }
 `;
+export const devicesByOrgId = /* GraphQL */ `
+  query DevicesByOrgId(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelDeviceFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    DevicesByOrgId(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        _id
+        organizationId
+        battery_percentage
+        connected
+        current_task_queue_id
+        dashboards
+        device_model
+        device_name
+        distance_to_next_target
+        idle_location
+        map_id
+        position
+        shelf_attached
+        state_text
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const statusByOrgId = /* GraphQL */ `
+  query StatusByOrgId(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelStatusFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    StatusByOrgId(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        _id
+        organizationId
+        active_map
+        mir_connection
+        pause_status
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const taskQueueByOrgId = /* GraphQL */ `
+  query TaskQueueByOrgId(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelTaskQueueFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    TaskQueueByOrgId(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        _id
+        organizationId
+        device_type
+        mission_status
+        owner
+        task_id
+        custom_task
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
