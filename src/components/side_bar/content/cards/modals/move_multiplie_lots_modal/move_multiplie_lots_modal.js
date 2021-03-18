@@ -6,6 +6,8 @@ import {deleteCard, putCard} from "../../../../../../redux/actions/card_actions"
 // components internal
 import ConfirmDeleteModal from "../../../../../basic/modals/confirm_delete_modal/confirm_delete_modal"
 
+import MoonLoader from "react-spinners/MoonLoader";
+
 // functions external
 import PropTypes from 'prop-types'
 import {useDispatch, useSelector} from "react-redux"
@@ -25,7 +27,11 @@ import {BIN_IDS, BIN_THEMES} from "../../../../../../constants/lot_contants";
 import LocationSvg from "../../../../../map/locations/location_svg/location_svg";
 import {StationTypes} from "../../../../../../constants/station_constants";
 import {PositionTypes} from "../../../../../../constants/position_constants";
-import {isNonEmptyArray} from "../../../../../../methods/utils/array_utils";
+import {immutableDelete, isNonEmptyArray} from "../../../../../../methods/utils/array_utils";
+import {getLotAfterBinMerge} from "../../../../../../methods/utils/lot_utils";
+import Portal from "../../../../../../higher_order_components/portal";
+import Footer_content from "./footer_content/footer_content";
+import PreBodyContent from "./pre_body_content/pre_body_content";
 const MoveMultipleLotsModal = (props) => {
 
 	const {
@@ -40,12 +46,15 @@ const MoveMultipleLotsModal = (props) => {
 	const dispatchDeleteCard = async (cardId, processId) => await dispatch(deleteCard(cardId, processId))
 	const dispatchPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 
+	const cards = useSelector(state => { return state.cardsReducer.cards })
+
 	const [processBins, setProcessBins] = useState([])
 	const [processIds, setProcessIds] = useState([])
 	const [processIdsIndex, setProcessIdsIndex] = useState(0)
 	const [stationsAttributes, setStationsAttributes] = useState([])
 	const [selectedStationId, setSelectedStationId] = useState(null)
 	const [processName, setProcessName] = useState("")
+	const [isMoving, setIsMoving] = useState(false)
 
 	/*
 	* this effect is used to separate lots by processId, since difference processes will have different stations available to move to,
@@ -100,7 +109,18 @@ const MoveMultipleLotsModal = (props) => {
 		const lotsToRender = processBins[processIds[processIdsIndex]] || []
 
 		return (
-			<sharedStyles.Container>
+			<>
+				<sharedStyles.ContainerWrapper>
+					<MoonLoader
+						loading={isMoving}
+						color={"#4ffff0"}
+						size={50}
+					/>
+				</sharedStyles.ContainerWrapper>
+			<sharedStyles.Container
+				greyed={isMoving}
+			>
+
 				{lotsToRender.map((currItem) => {
 					const {
 						cardId = "",
@@ -121,6 +141,8 @@ const MoveMultipleLotsModal = (props) => {
 					)
 				})}
 			</sharedStyles.Container>
+			</>
+
 			)
 	}
 
@@ -128,6 +150,8 @@ const MoveMultipleLotsModal = (props) => {
 		return(
 			<sharedStyles.StationSelectorContainer>
 				<sharedStyles.SubTitle>Select Destination</sharedStyles.SubTitle>
+
+				<sharedStyles.StationsScrollWrapper>
 			<sharedStyles.StationsContainer>
 				{stationsAttributes.map((currStation, currIndex) => {
 					const {
@@ -195,6 +219,7 @@ const MoveMultipleLotsModal = (props) => {
 
 								>
 									<sharedStyles.StationButton
+										isSelected={isSelected}
 										className={_id === BIN_IDS.QUEUE ? BIN_THEMES.QUEUE.ICON : BIN_THEMES.FINISH.ICON}
 										color={_id === BIN_IDS.QUEUE ? BIN_THEMES.QUEUE.COLOR : BIN_THEMES.FINISH.COLOR}
 
@@ -207,6 +232,7 @@ const MoveMultipleLotsModal = (props) => {
 
 				}
 			</sharedStyles.StationsContainer>
+				</sharedStyles.StationsScrollWrapper>
 			</sharedStyles.StationSelectorContainer>
 		)
 	}
@@ -214,29 +240,55 @@ const MoveMultipleLotsModal = (props) => {
 	const renderChildren = () => {
 		return(
 			<sharedStyles.Containerrr>
-				<sharedStyles.ProcessHeader>
-					<sharedStyles.SubTitle>Process: {processName}</sharedStyles.SubTitle>
-				</sharedStyles.ProcessHeader>
+
 				{renderSelectedLots()}
-				{renderAvailableBins()}
 			</sharedStyles.Containerrr>
 		)
 	}
 
-	const onMoveClick = () => {
-		const lotsToRender = processBins[processIds[processIdsIndex]] || []
+	const onMoveClick = async () => {
+		setIsMoving(true)
+		const currentProcessId = processIds[processIdsIndex]
+		const {
+			[currentProcessId]: lotsToRender = [],
+			...unchangedProcessBins
+		} = processBins || {}
+
 		const isLastProcess = processIdsIndex === (processIds.length - 1)
 
 		// *** first, handle moving the lots ***
 		if(isNonEmptyArray(lotsToRender)) {
+			let index = 0
+			for(const currItem of lotsToRender) {
+				const {
+					cardId = "",
+					processId = "",
+					binId = ""
+				} = currItem || {}
 
+				const currLot = cards[cardId] || {}
+				console.log("currLot before merge", currLot)
+				const lotWithUpdatedBins = getLotAfterBinMerge(currLot, binId, selectedStationId)
+				console.log("lotWithUpdatedBins",lotWithUpdatedBins)
+
+				const result = await dispatchPutCard(lotWithUpdatedBins, cardId)
+				setProcessBins((previous) => {
+					return {
+						...previous,
+						[currentProcessId]: immutableDelete(lotsToRender, index)
+					}
+				})
+			}
+
+			index = index + 1
 		}
 
-
 		// *** now, handle toggling to next process or closing modal ***
+		setProcessBins(unchangedProcessBins)
 
 		// if last process was just handled, close it
 		if(isLastProcess) {
+			setSelectedCards([])
 			handleClose()
 		}
 
@@ -245,6 +297,8 @@ const MoveMultipleLotsModal = (props) => {
 			setProcessIdsIndex(processIdsIndex + 1)
 			setSelectedStationId(null)
 		}
+
+		setIsMoving(false)
 	}
 
 	return (
@@ -254,6 +308,7 @@ const MoveMultipleLotsModal = (props) => {
 			close={handleClose}
 			title={"Move Lots"}
 			button_1_text={"Move"}
+			button_1_disabled={isMoving || selectedStationId === null}
 			button_2_text={"Cancel"}
 			onCloseButtonClick={handleClose}
 			onRequestClose={handleClose}
@@ -261,6 +316,18 @@ const MoveMultipleLotsModal = (props) => {
 			handleOnClick2={() => {
 				setShowConfirmDeleteModal(false)
 			}}
+			PreBodyContent={
+				<PreBodyContent
+					processName={processName}
+				/>
+			}
+			FooterContent={
+				<Footer_content
+					stationsAttributes={stationsAttributes}
+					selectedStationId={selectedStationId}
+					setSelectedStationId={setSelectedStationId}
+				/>
+			}
 			children={renderChildren()}
 		/>
 	)

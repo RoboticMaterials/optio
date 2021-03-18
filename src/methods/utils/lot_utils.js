@@ -274,9 +274,7 @@ export const convertDataTypeContantToDisplay = (dataTypeContant) => {
 	}
 }
 
-
-
-const getLotAfterBinMerge = async (lotToMove, currentBinId, destinationBinId) => {
+export const getLotAfterBinMerge = (lotToMove, currentBinId, destinationBinId) => {
 	const {
 		bins: oldBins,
 		...unchangedLotAttributes

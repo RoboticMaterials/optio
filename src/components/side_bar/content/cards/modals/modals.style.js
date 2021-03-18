@@ -9,6 +9,30 @@ export const Container = styled.div`
   align-items: stretch;
   display: flex;
   flex-direction: column;
+  transition: all 0.2s ease;
+  position: relative;
+  
+  ${props => props.greyed && lotsContainerGreyedCss};
+`
+export const ContainerWrapper = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+	//position: relative;
+`
+
+export const spinnerCss = css`
+	//position: absolute;
+  //	top: 50%;
+  //left: 50%;
+  //transform: translate(-50%, -50%);
+  //z-index: 1000;
+`
+
+const lotsContainerGreyedCss = css`
+  filter: contrast(70%) brightness(70%);
 `
 
 export const LotWrapper = styled.div`
@@ -30,19 +54,37 @@ export const Containerrr = styled.div`
 `
 
 export const StationSelectorContainer = styled.div`
-  background: ${props => props.theme.bg.tertiary};
+  // background: ${props => props.theme.bg.tertiary};
   display: flex;
   flex-direction: column;
-  align-self: stretch;
   align-items: center;
   //padding: 1rem;
-  padding: .5rem;
-
-
-  border: 2px groove ${props => props.theme.bg.primary};
-  border-bottom-left-radius: 1rem;
-  border-bottom-right-radius: 1rem;;
+  //padding: .5rem;
+  padding-top: 1rem;
+  // border: 2px groove ${props => props.theme.bg.primary};
+  //border-radius: 3rem;
+  //max-width: 65rem;
+  overflow: hidden;
+  flex: 1;
 `
+
+export const StationSelectorContainerWrapper = styled.div`
+  justify-content: center;
+  display: flex;
+  //margin: 1rem 0;
+`
+
+
+
+// export const LotWrapper = styled.div`
+//   justify-content: center;
+//   display: flex;
+// `
+//
+// export const lotContainerStyle = {
+// 	flex: 1,
+// 	maxWidth: "40rem",
+// }
 
 export const SubTitle = styled.span`
 	font-size: ${props => props.theme.fontSize.sz3};
@@ -54,35 +96,46 @@ export const StationName = styled.span`
   color: ${props => props.theme.bg.octonary};
 `
 
+export const StationsScrollWrapper = styled.div`
+	overflow-x: auto;
+  	align-self: stretch;
+
+  /* width */
+  ::-webkit-scrollbar {
+	height: 10px;
+  }
+`
+
 export const StationsContainer = styled.div`
 	
-  overflow-x: auto;
   display: flex;
-  //padding: 3rem 1rem;
-  //height: fit-content;
-  //min-height: fit-content;
-  height: fit-content;
-  align-items: center;
+  overflow: visible;
   justify-content: center;
-  padding-top: .5rem; // needed so stations don't get cut off when they bounce up when selected
-  
+  align-items: center;
+  width: fit-content;
+  height: 10rem;
+  //align-self: stretch;
   
 `
 
 export const ProcessHeader = styled.div`
 	align-self: stretch;
-  	background: ${props => props.theme.bg.tertiary};
-  	padding: .5rem;
-  display: flex;
-  justify-content: center;
+  	margin-top: 1rem;
+	align-self: center;
+	display: flex;
+	justify-content: center;
 `
 
 export const StationButton = styled.button`
 	${iconButtonCss};
   	color: ${props => props.color};
-  font-size: 3rem;
   padding: 0;
   margin: 0;
+  
+  transition: font-size 0.5s ease;
+
+  //margin: 1rem;
+  font-size: ${props => props.isSelected ? "4rem" : "3rem"};
 `
 
 
@@ -115,13 +168,14 @@ const selectedCss = css`
 export const StationSvgContainer = styled.div`
   //transform: scale(3);
   // background: red;
-  height: fit-content;
   height: 3rem;
   width: 3rem;
   margin: 10px;
   //overflow: hidden;
   padding: 0;
   border-radius: .6rem;
+  transition: width 0.5s ease;
+  transition: height 0.5s ease;
   //font-size: 3rem;
   
   //margin: 1rem;
@@ -133,6 +187,8 @@ const svgGreyedCss = css`
 	filter: contrast(70%) brightness(70%);
 `
 const svgSelectedCss = css`
+  height: 4rem;
+  width: 4rem;
 
   rect {
     //fill: #9fcdff;
