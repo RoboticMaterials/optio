@@ -39,6 +39,7 @@ function Position(props) {
         mouseDown
     } = props
 
+
     const {
         _id: positionId
     } = position

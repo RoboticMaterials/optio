@@ -7,6 +7,7 @@ import * as styled from './task_statistics.style'
 import taskAnalysisReducer from "../../../redux/reducers/task_analysis_reducer";
 import IconButton from '../../basic/icon_button/icon_button'
 import {getTasksAnalysis} from "../../../redux/actions/task_analysis_actions";
+import {getRouteProcesses} from "../../../methods/utils/route_utils";
 
 const TaskStatistics = (props) => {
 
@@ -24,8 +25,12 @@ const TaskStatistics = (props) => {
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const positions = useSelector(state => state.positionsReducer.positions)
+    const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
+
     const stations = useSelector(state => state.stationsReducer.stations)
     const tasksAnalysis = useSelector(state => state.taskAnalysisReducer.tasksAnalysis) || {}
+    const taskQueue = useSelector(state=>state.taskQueueReducer.taskQueue)
+    const devices = useSelector(state=>state.devicesReducer.devices)
 
     const editingStation = useSelector(state => state.stationsReducer.editingStation)
     const editingPosition = useSelector(state => state.positionsReducer.editingPosition)
@@ -36,6 +41,7 @@ const TaskStatistics = (props) => {
 
     useEffect(() => {
         onGetTasksAnalysis()
+
     }, [])
 
     const handleSingleTask = (task) => {
@@ -47,7 +53,9 @@ const TaskStatistics = (props) => {
 
         const selectedTaskAnalysis = !!task ? tasksAnalysis[task._id]: null
         const startPos = task.device_types[0] == 'human' && task.load.position == task.load.station ? stations[task.load.position] : positions[task.load.position]
+
         const endPos = task.device_types[0] == 'human' && task.unload.position == task.unload.station ? stations[task.unload.position] : positions[task.unload.position]
+        const routeProcesses = getRouteProcesses(task._id)
 
         if (task === null || positions === null || startPos === undefined || endPos === undefined) return null
 
@@ -60,6 +68,7 @@ const TaskStatistics = (props) => {
         // Some fancy calculation to find a common offset from a task path
         // Doesnt work because it doesnt
         const x1 = startPos.x
+
         const y1 = startPos.y
         const x2 = endPos.x
         const y2 = endPos.y
@@ -111,7 +120,7 @@ const TaskStatistics = (props) => {
 
               <styled.RowContainer style = {{paddingTop: '.2rem'}}>
 
-                  <styled.TaskText style = {{paddingRight: '.7rem'}}>{task.processes.length}</styled.TaskText>
+                  <styled.TaskText style = {{paddingRight: '.7rem'}}>{routeProcesses.length}</styled.TaskText>
 
                   <IconButton color= '#ffb62e'>
                     <i className="fas fa-route"></i>
