@@ -109,7 +109,7 @@ const ScheduleList = (props) => {
 
                         logger.log("renderTasks item",item)
 
-                        // const id = item._id.$oid
+                        // const id = item._id
                         const selectedTask = task_id ? tasks[task_id] : {};
                         const taskIsDeleted = task_id === 'TASK DELETED';
 

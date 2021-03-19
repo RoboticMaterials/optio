@@ -494,6 +494,7 @@ export const createCard = /* GraphQL */ `
       process_id
       totalQuantity
       processName
+      count
       createdAt
       updatedAt
     }
@@ -518,6 +519,7 @@ export const updateCard = /* GraphQL */ `
       process_id
       totalQuantity
       processName
+      count
       createdAt
       updatedAt
     }
@@ -542,6 +544,7 @@ export const deleteCard = /* GraphQL */ `
       process_id
       totalQuantity
       processName
+      count
       createdAt
       updatedAt
     }
@@ -740,7 +743,6 @@ export const createDashboard = /* GraphQL */ `
   ) {
     createDashboard(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       data
       createdAt
@@ -755,7 +757,6 @@ export const updateDashboard = /* GraphQL */ `
   ) {
     updateDashboard(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       data
       createdAt
@@ -770,7 +771,6 @@ export const deleteDashboard = /* GraphQL */ `
   ) {
     deleteDashboard(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       data
       createdAt

@@ -42,7 +42,7 @@ const FinishModal = (props) => {
     } = props
 
     // get current buttons, default to empty array
-    const dashboardId = dashboard?._id?.$oid
+    const dashboardId = dashboard?._id
 
     const theme = useTheme()
 

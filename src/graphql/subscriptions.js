@@ -116,6 +116,7 @@ export const onDeltaCard = /* GraphQL */ `
       process_id
       totalQuantity
       processName
+      count
       createdAt
       updatedAt
     }
@@ -601,6 +602,7 @@ export const onCreateCard = /* GraphQL */ `
       process_id
       totalQuantity
       processName
+      count
       createdAt
       updatedAt
     }
@@ -622,6 +624,7 @@ export const onUpdateCard = /* GraphQL */ `
       process_id
       totalQuantity
       processName
+      count
       createdAt
       updatedAt
     }
@@ -643,6 +646,7 @@ export const onDeleteCard = /* GraphQL */ `
       process_id
       totalQuantity
       processName
+      count
       createdAt
       updatedAt
     }
@@ -811,7 +815,6 @@ export const onCreateDashboard = /* GraphQL */ `
   subscription OnCreateDashboard {
     onCreateDashboard {
       id
-      _id
       organizationId
       data
       createdAt
@@ -823,7 +826,6 @@ export const onUpdateDashboard = /* GraphQL */ `
   subscription OnUpdateDashboard {
     onUpdateDashboard {
       id
-      _id
       organizationId
       data
       createdAt
@@ -835,7 +837,6 @@ export const onDeleteDashboard = /* GraphQL */ `
   subscription OnDeleteDashboard {
     onDeleteDashboard {
       id
-      _id
       organizationId
       data
       createdAt

@@ -91,7 +91,7 @@ const NewButtonForm = (props) => {
                 }
 
                 // update dashboard
-                onPutDashboard(updatedDashboard, dashboard._id.$oid)
+                onPutDashboard(updatedDashboard, dashboard._id)
             }
 
             // create new button
@@ -113,7 +113,7 @@ const NewButtonForm = (props) => {
                 }
 
                 // update dashboard
-                onPutDashboard(updatedDashboard, dashboard._id.$oid)
+                onPutDashboard(updatedDashboard, dashboard._id)
             }
 
             // close form
@@ -370,7 +370,7 @@ const ReportModal = (props) => {
 
         const reportEvent = {
             // save identifying info
-            dashboard_id: dashboard._id.$oid,
+            dashboard_id: dashboard._id,
             station_id: dashboard.station,
             report_button_id: _id,
             date: new Date().getTime(),
@@ -501,7 +501,7 @@ const ReportModal = (props) => {
                                                         }
 
                                                         // update dashboard
-                                                        onPutDashboard(updatedDashboard, dashboard._id.$oid)
+                                                        onPutDashboard(updatedDashboard, dashboard._id)
                                                     }}
                                                 >
                                                     <i
@@ -566,7 +566,7 @@ const ReportModal = (props) => {
                                     //                     }
                                     //
                                     //                     // update dashboard
-                                    //                     onPutDashboard(updatedDashboard, dashboard._id.$oid)
+                                    //                     onPutDashboard(updatedDashboard, dashboard._id)
                                     //                 }}
                                     //             />
                                     //         }
@@ -608,7 +608,7 @@ const ReportModal = (props) => {
                                     //             {/*            }*/}
                                     //
                                     //             {/*            // update dashboard*/}
-                                    //             {/*            onPutDashboard(updatedDashboard, dashboard._id.$oid)*/}
+                                    //             {/*            onPutDashboard(updatedDashboard, dashboard._id)*/}
                                     //             {/*        }}*/}
                                     //             {/*    />*/}
                                     //             {/*    }*/}

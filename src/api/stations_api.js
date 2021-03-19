@@ -97,7 +97,11 @@ export async function postStation(station) {
       variables: { input: input }
     })
 
-    return dataJson.data.createStation;
+    return {
+      ...dataJson.data.createStation,
+      children: station.children,
+      dashboards: station.dashboards,
+    }
   } catch (error) {
     // Error 😨
     errorLog(error)

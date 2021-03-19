@@ -167,6 +167,7 @@ type Card
   process_id: String!
   totalQuantity: Int
   processName: String
+  count: Int
 }
 
 # Data stream
@@ -231,13 +232,12 @@ type TaskQueue
 }
 
 type Dashboard 
-  @model(queries: null)
+  @model
   @auth(rules: [{ allow: private }])
   @key(name: "DashboardsByOrgId", fields: ["organizationId"], queryField: "DashboardsByOrgId" )
 {
   # IDs
   id: ID!
-  _id: String
   organizationId: ID!
   
   # Data

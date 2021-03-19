@@ -65,7 +65,7 @@ export async function getCard(cardId) {
             variables: { input: id }
         })
 
-        return dataJson;
+        return dataJson.data.getCardById;
 
     } catch (error) {
         // Error 😨
@@ -95,7 +95,7 @@ export async function postCard(card) {
             variables: { input: input }
         })
 
-        return dataJson;
+        return dataJson.data.createCard;
 
     } catch (error) {
         // Error 😨

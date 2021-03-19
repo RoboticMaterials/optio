@@ -100,6 +100,7 @@ export const postStation = (station) => {
             delete stationCopy.temp
             delete stationCopy.new
             const newStation = await api.postStation(stationCopy);
+            
             return onSuccess(newStation);
         } catch (error) {
             return onError(error);
@@ -330,7 +331,8 @@ const onPostStation = (station) => {
 
         //// Now post the dashboard, and on return tie that dashboard to location.dashboards and put the location
         const postedDashboard = await dispatch(postDashboard(defaultDashboard))
-        station.dashboards = [postedDashboard._id.$oid]
+
+        station.dashboards = [postedDashboard.id]
 
         // Save Children
         await dispatch(onSaveChildren())

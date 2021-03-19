@@ -20,7 +20,7 @@ export async function getSchedules() {
     const data = response.data;
     const dataJson = JSON.parse(data)
     // log.debug('dataJson', dataJson)
-    // log.debug('getSchedulesdataJson', dataJson[0]._id.$oid)
+    // log.debug('getSchedulesdataJson', dataJson[0]._id)
     return dataJson;
 
 
@@ -67,7 +67,7 @@ export async function getSchedule(scheduleId) {
     const data = response.data;
     const dataJson = JSON.parse(data)
     // log.debug('dataJson', dataJson)
-    // log.debug('getSchedulesdataJson', dataJson[0]._id.$oid)
+    // log.debug('getSchedulesdataJson', dataJson[0]._id)
     return dataJson;
 
 
@@ -218,7 +218,7 @@ export async function putSchedule(scheduleId, schedule) {
     // log.debug('updateSchedule: response',response);
     const data = response.data;
     const dataJson = JSON.parse(data)
-    // log.debug('getSchedulesdataJson', dataJson._id.$oid)
+    // log.debug('getSchedulesdataJson', dataJson._id)
     return dataJson;
 
     //return response;

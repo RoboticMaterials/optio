@@ -46,7 +46,7 @@ const KickOffModal = (props) => {
     } = props
 
     // get current buttons, default to empty array
-    const dashboardId = dashboard?._id?.$oid
+    const dashboardId = dashboard.id
 
     const theme = useTheme()
 
@@ -273,6 +273,8 @@ const KickOffModal = (props) => {
         const processesResult = await dispatchGetProcesses()
         dispatchGetLotTemplates()
 
+        console.log(cardsResult,processesResult );
+
         if(!(cardsResult instanceof Error) && !(processesResult instanceof Error)) {
             setDidLoadData(true)
         }
@@ -306,6 +308,7 @@ const KickOffModal = (props) => {
         let tempAvailableCards = []
 
         if(kickOffEnabledInfo && Array.isArray(kickOffEnabledInfo)) kickOffEnabledInfo.forEach((currProcessId) => {
+            
             const currProcessCards = processCards[currProcessId]
 
             let filteredCards = []

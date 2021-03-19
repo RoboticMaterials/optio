@@ -1,6 +1,35 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const getDashboard = /* GraphQL */ `
+  query GetDashboard($id: ID!) {
+    getDashboard(id: $id) {
+      id
+      organizationId
+      data
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listDashboards = /* GraphQL */ `
+  query ListDashboards(
+    $filter: ModelDashboardFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listDashboards(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        organizationId
+        data
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
 export const usersbyOrg = /* GraphQL */ `
   query UsersbyOrg(
     $organizationId: ID
@@ -312,6 +341,7 @@ export const cardsByOrgId = /* GraphQL */ `
         process_id
         totalQuantity
         processName
+        count
         createdAt
         updatedAt
       }
@@ -348,6 +378,7 @@ export const getCardById = /* GraphQL */ `
         process_id
         totalQuantity
         processName
+        count
         createdAt
         updatedAt
       }
@@ -470,7 +501,6 @@ export const dashboardsByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
         data
         createdAt

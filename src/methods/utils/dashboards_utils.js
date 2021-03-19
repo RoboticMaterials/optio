@@ -20,7 +20,7 @@ export const postToDashboards = (dashboardName) => {
 
 export const findDashboardByID = (availableDashboards, ID) => {
     const dashboardNameIndex = Object.values(availableDashboards).findIndex(d => {
-        return d._id.$oid === ID;
+        return d._id === ID;
     })
     return dashboardNameIndex
 }
@@ -133,7 +133,7 @@ export const handleCurrentDashboard = (dashboards, dashboardID) => {
     availableDash = Object.values(availableDash)
 
     const dashboardNameIndex = Object.values(availableDash).findIndex(d => {
-        return d._id.$oid === dashboardID;
+        return d._id === dashboardID;
     })
 
     return availableDash[dashboardNameIndex]

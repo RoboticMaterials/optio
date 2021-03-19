@@ -23,7 +23,7 @@ import { createDashboard, updateDashboard } from '../graphql/mutations'
 import { deleteDashboard as deleteDashboardByID } from '../graphql/mutations'
 
 // For creating a card
-// import { uuidv4 } from '../methods/utils/utils'
+import { uuidv4 } from '../methods/utils/utils'
 
 export async function getDashboards() {
     try {
@@ -41,15 +41,14 @@ export async function getDashboards() {
             let data = JSON.parse(dash.data)
 
             GQLdata.push( {
-                ...dash,
+                id: dash.id,
+                organizationId: dash.organizationId,
                 ...data
             })
         });
         
-
         // Success 🎉
-        const dataJson = res.data.DashboardsByOrgId.items
-        return dataJson;
+        return GQLdata;
     } catch (error) {
         // Error 😨
         errorLog(error)
@@ -64,9 +63,11 @@ export async function deleteDashboards(ID) {
         query: dashboardsByOrgId,
         variables:{
             organizationId: userOrgId,
-            filter: {_id: {eq: ID}}
+            filter: {id: {eq: ID}}
         }
         })
+
+        console.log(res, ID)
 
         await API.graphql({
             query: deleteDashboardByID,
@@ -85,13 +86,12 @@ export async function postDashboards(dashboards) {
     try {
         const userOrgId = await getUserOrgId()
 
-        // const fakeID = uuidv4();
+        const fakeID = uuidv4();
 
         let dashboardInput = {
             organizationId: userOrgId,
             data: JSON.stringify(dashboards),
-            // _id: fakeID,
-            // id: fakeID,
+            id: fakeID,
         }
 
         await API.graphql({
@@ -102,8 +102,7 @@ export async function postDashboards(dashboards) {
         return {
             ...dashboards,
             organizationId: userOrgId,
-            // _id: fakeID,
-            // id: fakeID,
+            id: fakeID,
         }
 
     } catch (error) {
@@ -113,15 +112,29 @@ export async function postDashboards(dashboards) {
 }
 
 export async function putDashboards(dashboard, ID) {
-
     try {
 
-        const dataJson = await API.graphql({
+        console.log(dashboard);
+
+        let dashboardInput = {
+            id: dashboard.id,
+            organizationId: dashboard.organizationId,
+        }
+
+        delete dashboard.id
+        delete dashboard.organizationId
+
+        dashboardInput = {
+            ...dashboardInput,
+            data: JSON.stringify(dashboard),
+        }
+
+        await API.graphql({
             query: updateDashboard,
-            variables: { input: dashboard }
+            variables: { input: dashboardInput }
         })
 
-        return dataJson.data.updateDashboard;
+        return dashboardInput
 
     } catch (error) {
         // Error 😨

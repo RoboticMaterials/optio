@@ -85,16 +85,16 @@ const DashboardEditor = (props) => {
             buttons
             .filter((currButton) => {
                 const {
-                    task_id,
+                    taskid,
                     type
                 } = currButton
 
-                if(task_id && taskIds.includes(task_id)) {
-                    logger.error(`Button with duplicate task_id found in dashboard. {task_id:${task_id}`)
+                if(taskid && taskIds.includes(taskid)) {
+                    logger.error(`Button with duplicate taskid found in dashboard. {taskid:${taskid}`)
                     return false // don't add duplicate tasks
                 }
 
-                taskIds.push(task_id)
+                taskIds.push(taskid)
                 return true
             })
             .map((value, index) => {
@@ -156,10 +156,10 @@ const DashboardEditor = (props) => {
         // get dashboard id
         let dashboardId = null
 
-        // use try catch block to prevent error in the case that a dashboard doesn't have _id key
+        // use try catch block to prevent error in the case that a dashboard doesn't have id key
         try {
-            dashboardId = dashboardCopy._id.$oid
-            delete dashboardCopy._id
+            dashboardId = dashboardCopy.id
+            delete dashboardCopy.id
         }
         catch (e) { }
 
@@ -253,7 +253,7 @@ const DashboardEditor = (props) => {
                     stationCopy.dashboards.splice(deleteDashboardIndex, 1)
 
                     history.push(`/locations/${params.stationID}/dashboards`)
-                    await onPutStation(stationCopy, stationCopy._id)
+                    await onPutStation(stationCopy, stationCopy.id)
                     await onDeleteDashboard(params.dashboardID)
 
                 }
@@ -263,7 +263,7 @@ const DashboardEditor = (props) => {
                     name: dashboardName,
                     station: dashboardStationId,
                     device: dashboardDeviceId,
-                    _id: dashboardIdObject
+                    id: dashboardIdObject
                 } = dashboard || {}
 
                 const {

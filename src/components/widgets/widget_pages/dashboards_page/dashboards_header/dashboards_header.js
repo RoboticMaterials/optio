@@ -58,7 +58,7 @@ const DashboardsHeader = (props) => {
         let hasLot = false
 
         for (let i = 0; i < Object.values(cards).length; i++) {
-            if (!!Object.values(cards)[i].bins[location._id]) {
+            if (!!Object.values(cards)[i].bins[location.id]) {
                 hasLot = true
                 break
             }
@@ -70,9 +70,9 @@ const DashboardsHeader = (props) => {
                     <style.LotsTitle>Lots:</style.LotsTitle>
                     {Object.values(cards).map((card, ind) =>
                         <>
-                            {!!card.bins[location._id] &&
+                            {!!card.bins[location.id] &&
 
-                                <style.LotItem>{card.name + ' (' + card.bins[location._id].count + ')'}</style.LotItem>
+                                <style.LotItem>{card.name + ' (' + card.bins[location.id].count + ')'}</style.LotItem>
                             }
                         </>
 

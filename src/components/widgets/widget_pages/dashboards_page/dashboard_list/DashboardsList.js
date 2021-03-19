@@ -69,6 +69,9 @@ const DashboardsList = (props) => {
 
     // redux state
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
+
+    console.log(dashboards);
+
     const stations = useSelector(state => state.stationsReducer.stations)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const devices = useSelector(state => state.devicesReducer.devices)
@@ -116,7 +119,7 @@ const DashboardsList = (props) => {
         targetDashboardCopy.buttons.push(button) // add new button
 
         // dispatch action to update api and redux
-        onPutDashboard(targetDashboardCopy, targetDashboardCopy._id.$oid)
+        onPutDashboard(targetDashboardCopy, targetDashboardCopy._id)
     }
 
     const handleNew = (button) => {
@@ -149,7 +152,7 @@ const DashboardsList = (props) => {
         postDashboardPromise.then(async postedDashboard => {
 
             let stationDashboards = selectedDashboardType.dashboards
-            stationDashboards.push(postedDashboard._id.$oid)
+            stationDashboards.push(postedDashboard._id)
             await dispatch(stationActions.setStationAttributes(station._id, { dashboards: stationDashboards }))
             const stationID = station._id
             delete station._id
@@ -157,7 +160,7 @@ const DashboardsList = (props) => {
 
             if (button == null) { // Drop not click
                 // Go into the new dashboard
-                setSelectedDashboard(postedDashboard._id.$oid)
+                setSelectedDashboard(postedDashboard._id)
             }
         })
     }
@@ -183,7 +186,7 @@ const DashboardsList = (props) => {
 
             // get dashboard properties
             let name = currDashboard.name
-            let ID = currDashboard._id.$oid
+            let ID = currDashboard._id
             let buttons = currDashboard.buttons
             let deleted = false
 

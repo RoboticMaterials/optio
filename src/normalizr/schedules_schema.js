@@ -12,16 +12,16 @@ export const scheduleSchema = new schema.Entity(
   // options
   {
     idAttribute: (value, parent, key) => {
-      return value._id.$oid
+      return value._id
     },
 
     // processStrategy
     processStrategy: (value, parent, key) => {
       return {
         _id: {
-          $oid: value._id.$oid ? value._id.$oid : null
+          $oid: value._id ? value._id : null
         },
-        id: value._id.$oid ? value._id.$oid : null,
+        id: value._id ? value._id : null,
         name: value.name ? value.name : '',
 
         days_on: value.days_on ? value.days_on : {

@@ -103,6 +103,7 @@ const ApiContainer = (props) => {
     const [criticalDataInterval, setCriticalDataInterval] = useState(null)
     const [mapDataInterval, setMapDataInterval] = useState(null)
 
+    // Subscriptions
     const [currentSubscriptions, setCurrentSubscriptions] = useState(null)
 
     const params = useParams()
@@ -636,7 +637,7 @@ const ApiContainer = (props) => {
 
                 return newDashboard.then(async (dashPromise) => {
                     console.log(dashPromise)
-                    device.dashboards = [dashPromise._id.$oid]
+                    device.dashboards = [dashPromise._id]
                     await onPutDevice(device, device._id)
                 })
 
@@ -659,7 +660,7 @@ const ApiContainer = (props) => {
                     return newDashboard.then(async (dashPromise) => {
                         if (dashPromise._id !== undefined){
                         // Add new dashboard
-                        device.dashboards.push(dashPromise._id.$oid)
+                        device.dashboards.push(dashPromise._id)
 
                         // Delete old dashboard
                         const index = device.dashboards.indexOf(dashboard)
@@ -858,7 +859,7 @@ const ApiContainer = (props) => {
             if (!!dashboard.location && !dashboard.device && !stations[dashboard.location]) {
                 console.log('QQQQ dashboard belongs to a station that does not exist', dashboard)
                 alert('Dashboard belongs to a station that does not exist')
-                onDeleteDashboard(dashboard._id.$oid)
+                onDeleteDashboard(dashboard._id)
             }
         })
 
