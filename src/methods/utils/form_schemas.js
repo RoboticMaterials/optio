@@ -5,7 +5,7 @@ import { isObject } from "./object_utils";
 import { get } from "lodash"
 import { isArray } from "./array_utils";
 import { LOT_TEMPLATES_RESERVED_FIELD_NAMES } from "../../constants/form_constants";
-import {convertCardDate} from "./card_utils";
+import { convertCardDate } from "./card_utils";
 
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
@@ -13,7 +13,7 @@ const mapValues = require('lodash/mapValues')
 Yup.addMethod(Yup.object, 'startEndDate', function (startPath, endPath, message) {
     return this.test('startEndDate', message, function (value) {
 
-        if(!value) return true
+        if (!value) return true
 
         const {
             path,
@@ -23,8 +23,8 @@ Yup.addMethod(Yup.object, 'startEndDate', function (startPath, endPath, message)
         const startDate = convertCardDate(value[startPath])
         const endDate = convertCardDate(value[endPath])
 
-        if(startDate && endDate) {
-            if(endDate < startDate) {
+        if (startDate && endDate) {
+            if (endDate < startDate) {
                 return this.createError({
                     path: `${path}`,
                     message,
@@ -720,4 +720,23 @@ export const throughputSchema = Yup.object().shape({
                 .lessThan("startOfBreak3", 'The end of break cannot be before the start of the break')
         }),
 
+})
+
+
+export const deviceSchema = Yup.object().shape({
+
+    minLevel: Yup.string()
+        // Only validate when true
+        .when('chargeLevelSwitch', {
+            is: true,
+            then: Yup.string()
+                .required('Required')
+        }),
+    maxLevel: Yup.string()
+        // Only validate when true
+        .when('chargeLevelSwitch', {
+            is: true,
+            then: Yup.string()
+                .required('Required')
+        }),
 })

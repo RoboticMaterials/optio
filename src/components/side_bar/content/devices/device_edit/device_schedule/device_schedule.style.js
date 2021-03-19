@@ -25,13 +25,17 @@ export const ColumnContainer = styled(style.ColumnContainer)`
 `
 
 export const ScheduleContainer = styled(style.SectionsContainer)`
+    background-color: ${props => props.theme.bg.tertiary};
     margin-bottom: .25rem;
+    
 `
 
 export const DayOfTheWeekContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    user-select: none;
+    background-color: ${props => props.theme.bg.tertiary};
 
     height: 2rem;
     width: 2rem;
@@ -45,8 +49,12 @@ export const DayOfTheWeekContainer = styled.div`
         background: rgba(0,0,0,0.05);
     `
         :
-        `box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3), -3px -3px 5px rgba(255, 255, 255, .7);`
+        `box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2), -2px -2px 3px rgba(255, 255, 255, 1);`
         // `box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3), -3px -3px 5px rgba(0, 0, 0, -.3);`
+    };
+
+    &:hover{
+        cursor: pointer;
     }
 `
 

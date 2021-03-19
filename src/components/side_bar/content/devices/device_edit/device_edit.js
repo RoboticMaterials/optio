@@ -15,6 +15,9 @@ import Button from '../../../../basic/button/button'
 import Switch from '../../../../basic/form/switch_field/switch_field'
 import ContentHeader from '../../content_header/content_header'
 
+// Import Schema
+import { deviceSchema } from '../../../../../methods/utils/form_schemas'
+
 // Import Components
 import DeviceSchedule from './device_schedule/device_schedule'
 
@@ -415,15 +418,17 @@ const DeviceEdit = (props) => {
 
             <Formik
                 initialValues={{
+                    
                 }}
 
                 // validation control
-                // validationSchema={}
+                validationSchema={deviceSchema}
                 validateOnChange={true}
                 validateOnMount={false}
                 validateOnBlur={false}
 
                 onSubmit={async (values, { setSubmitting, setTouched, validateForm }) => {
+                    validateForm()
                     setSubmitting(true)
                     onSaveDevice(values)
                     setSubmitting(false)
