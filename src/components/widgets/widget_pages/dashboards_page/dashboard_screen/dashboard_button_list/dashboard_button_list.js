@@ -67,7 +67,6 @@ const DashboardButtonList = ((props) => {
                     :
                     "Unnamed"
 
-        console.log("type", type)
         // const associatedTaskId = task?.associated_task
         const deviceTypes = task?.device_types || []
 
