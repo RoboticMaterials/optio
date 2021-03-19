@@ -376,7 +376,6 @@ const TaskField = (props) => {
       }
     }
 
-
     const updateDashboard = () => {
         // Add the task automatically to the associated load station dashboard
         // Since as of now the only type of task we are doing is push, only need to add it to the load location
@@ -398,6 +397,8 @@ const TaskField = (props) => {
 
             })
         }
+
+
 
         const newDashboardButton = {
             color: '#bcbcbc',
@@ -731,7 +732,7 @@ const TaskField = (props) => {
                     {!!isProcessTask && selectedProcess ? 
                         <Button
                             schema={'error'}
-                            disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
+                            disabled={!!selectedTask && !!selectedTask._id && isNew}
                             secondary
                             onClick={() => {
                                 onRemove(routeId)
