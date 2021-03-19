@@ -199,12 +199,10 @@ export const objectAtLocationGoalSchema = Yup.object().shape({
 export const dashboardSchema = Yup.object().shape({
     name: Yup.string()
         .min(1, '1 character minimum.')
-        .max(50, '50 character maximum.')
-        .required('Please enter a name.'),
+        .max(50, '50 character maximum.'),
     buttons: Yup.array().of(
         Yup.object().shape({
-            name: Yup.string()
-                .required('Please enter a name.'),
+            name: Yup.string(),
             // task: Yup.array().of(
             //     Yup.object().shape({
             //         Description: Yup.string()
