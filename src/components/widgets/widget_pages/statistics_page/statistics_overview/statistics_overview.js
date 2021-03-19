@@ -257,7 +257,7 @@ const StatisticsOverview = (props) => {
             <div style={{ marginBottom: '1rem', alignItems: "center", display: "flex", flexDirection: "column" }}>
                 {
                     <>
-                        <TimeSpans timespanDisabled={timespanDisabled} color={colors[selector]} setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
+                        <TimeSpans timespanDisabled={timespanDisabled} color={themeContext.charts} setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
 
                         {/* Commented out for now, only need through put bar chart */}
                         {/* {handleGaugeCharts()} */}

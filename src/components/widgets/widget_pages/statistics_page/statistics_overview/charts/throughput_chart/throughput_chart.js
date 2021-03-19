@@ -74,7 +74,7 @@ const ThroughputChart = (props) => {
                             selected={showBar}
                         >
                             Bar
-                </styled.ChartTypeButton>
+                        </styled.ChartTypeButton>
                         <styled.ChartTypeButton
                             style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
                             onClick={() => {
@@ -116,6 +116,7 @@ const ThroughputChart = (props) => {
                             axisBottom={{
                                 tickRotation: -90,
                             }}
+                            colors={themeContext.charts}
                             axisLeft={{
                                 enable: true,
                             }}

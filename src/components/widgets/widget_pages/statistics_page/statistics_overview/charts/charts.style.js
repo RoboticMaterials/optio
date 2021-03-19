@@ -12,7 +12,8 @@ export const SinglePlotContainer = styled.div`
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	background: ${props => props.theme.bg.tertiary};
+	background: ${props => props.theme.bg.primary};
+  box-shadow: ${props => props.theme.cardShadow};
 	border-radius: 1.5rem;
 	padding: 1rem;
 	min-width: 60rem;
@@ -43,6 +44,7 @@ export const SinglePlotContainer = styled.div`
 	// 	height: fit-content;
 	// 	min-height: fit-content;
 	// } */
+
 `
 
 export const PlotContainer = styled.div`
@@ -139,9 +141,32 @@ export const BreakContainer = styled.div`
     border-radius: .5rem;
 `
 
-export const ChartTypeButton = styled(styles.StatisticsSectionsButton)`
+export const ChartTypeButton = styled.button`
     font-size: 1.25rem;
     width: 5rem;
+
+    font-size: 1rem;
+    width: 8rem;
+    border: none;
+    font-family: ${props => props.theme.font.primary};
+
+    color: ${props => props.selected ? props.theme.bg.primary : props.theme.bg.quinary};
+
+    background-color: ${props => props.selected ? props.theme.charts : props.theme.bg.secondary};
+
+    transition: background-color 0.25s ease, box-shadow 0.1s ease;
+
+    &:focus{
+        outline: 0 !important
+    }
+
+    &:active{
+        box-shadow: none;
+    }
+
+    &:hover{
+        //background-color: ${props => props.theme.bg.quaternary};
+    }
 `
 
 export const BreakLabel = styled.label`

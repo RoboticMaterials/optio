@@ -4,7 +4,7 @@ export const StatisticsContainer = styled.div`
     height: 100%;
     width: 100%;
 
-    background: ${props => props.theme.bg.quaternary};
+    background: ${props => props.theme.bg.tertiary};
 `
 
 export const StatisticsSectionsButtonContainer = styled.div`
@@ -84,10 +84,11 @@ export const Header = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: center;
-	background: ${props => props.theme.bg.quinary};
-  	border-bottom: 1px solid black;
+	background: ${props => props.theme.bg.primary};
+    box-shadow: ${props => props.theme.cardShadow};
   	width: 100%;
   	padding: 1rem;
+    z-index: 100;
 `
 
 export const StationName = styled.h1`

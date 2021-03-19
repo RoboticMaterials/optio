@@ -27,7 +27,7 @@ const light = {
     primary: '#FFFFFF',  // White
     secondary: '#dedfe3',
     tertiary: '#f5f5fa',
-    quaternary: '#a2a3a8',  // light light grey
+    quaternary: '#b8b9bf',  // light light grey
     quinary: '#79797d',   // light grey
     senary: '#7e7e7e',    // charcoal
     septenary: '#545454', //dark dark grey
@@ -78,6 +78,7 @@ export const theme = {
                 active: "#FFFFFF",
             }
         },
+        charts: "#54AAFF",
         cardShadow: '0px 0px 6px 1px rgba(0,0,0,0.1)',
 
         font: {
@@ -136,7 +137,7 @@ export const theme = {
                 solid: '#5294ff'
             },
             objects: {
-                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(93, 219, 77, 0.95) 0%, rgba(5, 247, 255, 0.95) 100%)',
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(31, 255, 94, 0.95) 0%, rgba(0, 126, 237, 0.95) 100%)',
                 solid: '#2ed182',
             },
             processes: {
@@ -144,11 +145,11 @@ export const theme = {
                 solid: '#ffbf1f'
             },
             tasks: {
-                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(93, 219, 77, 0.95) 0%, rgba(5, 247, 255, 0.95) 100%)',
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(31, 255, 94, 0.95) 0%, rgba(0, 126, 237, 0.95) 100%)',
                 solid: '#2ed182',
             },
             routes: {
-                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(93, 219, 77, 0.95) 0%, rgba(5, 247, 255, 0.95) 100%)',
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(31, 255, 94, 0.95) 0%, rgba(0, 126, 237, 0.95) 100%)',
                 solid: '#2ed182',
                 iconName: "fas fa-route"
             },
