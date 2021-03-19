@@ -8,6 +8,10 @@ export const Container = styled(style.SettingsContainer)`
 `
 
 export const SectionsContainer = styled(style.SettingsSectionsContainer)`
+    background-color: ${props => props.theme.bg.secondary};
+    padding: .25rem;
+    border-radius: .5rem;
+    margin-bottom: 1rem;
 `
 
 export const Label = styled(style.SettingsLabel)`

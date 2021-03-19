@@ -12,9 +12,13 @@ import Textbox from '../../../../basic/textbox/textbox'
 import TextField from '../../../../basic/form/text_field/text_field'
 import DropDownSearch from '../../../../basic/drop_down_search_v2/drop_down_search'
 import Button from '../../../../basic/button/button'
+import Switch from '../../../../basic/form/switch_field/switch_field'
+import ContentHeader from '../../content_header/content_header'
 
 // Import actions
 import { setSelectedDevice, putDevices } from '../../../../../redux/actions/devices_actions'
+import { setSelectedStation } from '../../../../../redux/actions/stations_actions'
+import { putDashboard } from '../../../../../redux/actions/dashboards_actions'
 import { widgetLoaded, hoverStationInfo } from '../../../../../redux/actions/widget_actions'
 import { postStatus } from '../../../../../redux/actions/status_actions'
 
@@ -50,6 +54,8 @@ const DeviceEdit = (props) => {
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchPutDevice = (device) => dispatch(putDevices(device, device._id))
     const dispatchPostStatus = (status) => dispatch(postStatus(status))
+    const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
+    const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
 
     const selectedDevice = useSelector(state => state.devicesReducer.selectedDevice)
     const devices = useSelector(state => state.devicesReducer.devices)
@@ -74,6 +80,10 @@ const DeviceEdit = (props) => {
 
         setMirUpdated(false)
 
+    }
+
+    const onBack = () => {
+        dispatchSetSelectedDevice(null)
     }
 
     const renderMIRIP = () => {
@@ -213,7 +223,23 @@ const DeviceEdit = (props) => {
 
         return (
             <styled.SectionsContainer>
-                <styled.Label schema={'devices'} >Charge Levels</styled.Label>
+                <styled.RowContainer style={{ justifyContent: 'space-around', alignItems: 'center', marginBottom: '.5rem' }}>
+                    <styled.Label schema={'devices'} style={{marginBottom: '0rem', fontWeight: 'bold'}} >Charge Levels</styled.Label>
+                    <Switch
+                        name={'chargeLevelSwitch'}
+                        onColor='red'
+                        checked={selectedDevice?.charge_level?.enabled}
+                        onChange={() => {
+                            dispatchSetSelectedDevice({
+                                ...selectedDevice,
+                                charge_level: {
+                                    ...selectedDevice.charge_level,
+                                    enabled: !selectedDevice?.charge_level?.enabled
+                                }
+                            })
+                        }}
+                    />
+                </styled.RowContainer>
                 <styled.RowContainer style={{ justifyContent: 'space-between' }}>
                     <styled.ColumnContainer>
                         <styled.Label schema={'devices'}>
@@ -238,7 +264,7 @@ const DeviceEdit = (props) => {
                             Max Level
                     </styled.Label>
                         <TextField
-                            name={"minLevel"}
+                            name={"maxLevel"}
                             placeholder='%'
                             InputComponent={Textbox}
                             ContentContainer={styled.RowContainer}
@@ -284,34 +310,113 @@ const DeviceEdit = (props) => {
 
     }
 
+    /**
+     * This function is called when the save button is pressed.
+    * If its a Mir100 and the idle location has changed, then handle the associated device dashboard
+    */
+    const onSaveDevice = async (values) => {
+
+        return console.log('QQQQ values', values)
+
+        // If a AMR, then just put device, no need to save locaiton since it does not need one
+        if (selectedDevice.device_model === 'MiR100') {
+
+            // Handle Idle Location changes
+            // If the idle location of selected device and the unedited version of selected device is different, then change the dashboard button
+            if (selectedDevice.idle_location !== devices[selectedDevice._id].idle_location) {
+
+                const dashboard = dashboards[selectedDevice.dashboards[0]]
+
+                // If no idle location, then delete dashboard button if need be
+                if (!selectedDevice.idle_location || selectedDevice.idle_location.length === 0) {
+
+                    // Map through buttons
+                    dashboard.buttons.map((button, ind) => {
+                        // If the button uses the old idle location, then delete the button
+                        if (!!button.custom_task && button.custom_task.position === devices[selectedDevice._id].idle_location) {
+
+                            // Delete button
+                            dashboard.buttons.splice(ind, 1)
+                        }
+                    })
+                }
+
+                // Add/edit the dashboard button
+                else {
+
+                    // Used to see if an idleButton alread exists
+                    let idleButtonExists = false
+
+                    dashboard.buttons.map((button, ind) => {
+                        // If the button uses the old idle location, then update
+                        if (!!button.custom_task && button.custom_task.position === devices[selectedDevice._id].idle_location) {
+                            // button exists so dont add a new on
+                            idleButtonExists = true
+
+                            // Edit the existing button to use the new idle location
+                            button = {
+                                ...button,
+                                custom_task: {
+                                    ...button.custom_task,
+                                    position: selectedDevice.idle_location
+                                }
+                            }
+                            // Splice in the new button
+                            dashboard.buttons.splice(ind, 1, button)
+                        }
+                    })
+
+                    // If the button doesnt exist then add the button to the dashbaord
+                    if (!idleButtonExists) {
+                        const newButton = {
+                            'name': 'Send to Idle Location',
+                            'color': '#FF4B4B',
+                            'task_id': 'custom_task',
+                            'custom_task': {
+                                'type': 'position_move',
+                                'position': selectedDevice.idle_location,
+                                'device_type': 'MiR_100',
+                            },
+                            'deviceType': 'MiR_100',
+                            'id': 'custom_task_idle'
+                        }
+                        dashboard.buttons.push(newButton)
+                    }
+                }
+
+
+
+                // Put the dashboard
+                await dispatchPutDashboard(dashboard, dashboard._id.$oid)
+            }
+
+            // Handle Values Passed in through Formik
+            if (!!values) {
+
+            }
+
+            await dispatchPutDevice(selectedDevice, selectedDevice._id)
+        }
+
+
+        dispatchSetSelectedStation(null)
+        dispatchSetSelectedDevice(null)
+    }
+
     return (
         <styled.Container>
+            <ContentHeader
+                content={'devices'}
+                mode={!!selectedDevice ? 'create' : 'title'}
+                onClickBack={onBack}
 
-            {/* Commented Out for now because we dont need to show/connect via IP TODO: Probably delete   */}
-            {/* <styled.SectionsContainer>
+                backEnabled={!!selectedDevice ? true : false}
 
-                <styled.RowContainer style={{ justifyContent: 'space-between' }}>
-                    <styled.SettingsLabel schema={'devices'} >Device IP</styled.SettingsLabel>
+                onClickSave={() => {
+                    onSaveDevice()
+                }}
 
-                    <styled.ConnectionButton onClick={() => onDeviceConnection()} disabled={(connectionText === 'Connected' || connectionText === 'Connecting')}>
-                        {connectionText}
-                        <styled.ConnectionIcon className={connectionIcon} />
-                    </styled.ConnectionButton>
-
-                </styled.RowContainer>
-                <Textbox
-                    defaultValue={device.ip}
-                    onChange={(event) => {
-                        // Sets the IP address of the device to the event target vcalue
-                        setDevice({
-                            ...device,
-                            ip: event.target.value
-                        })
-                    }}
-                    style={{ fontWeight: '600', fontSize: '1.5rem' }}
-                    labelStyle={{ color: 'black' }}
-                />
-            </styled.SectionsContainer> */}
+            />
 
             <Formik
                 initialValues={{
@@ -325,55 +430,66 @@ const DeviceEdit = (props) => {
 
                 onSubmit={async (values, { setSubmitting, setTouched, validateForm }) => {
                     setSubmitting(true)
-                    // Submit hur
+                    onSaveDevice(values)
                     setSubmitting(false)
                 }}
             >
-                <Form>
+                {formikProps => {
 
-                    <styled.SectionsContainer>
+                    const {
+                        submitForm,
+                        setValidationSchema,
+                        values,
+                        errors,
+                    } = formikProps
+                    return (
+                        <Form>
 
-                        {renderMIRIP()}
+                            <styled.SectionsContainer>
 
-                        <styled.Label schema={'devices'} >Device Name</styled.Label>
+                                {renderMIRIP()}
 
-                        <Textbox
-                            defaultValue={selectedDevice.device_name}
-                            onChange={(event) => {
-                                onSetDeviceName(event.target.value)
-                            }}
-                            style={{ fontWeight: '600', fontSize: '1.5rem' }}
-                            labelStyle={{ color: 'black' }}
-                        />
+                                <styled.Label schema={'devices'} >Device Name</styled.Label>
 
-                    </styled.SectionsContainer>
+                                <Textbox
+                                    defaultValue={selectedDevice.device_name}
+                                    onChange={(event) => {
+                                        onSetDeviceName(event.target.value)
+                                    }}
+                                    style={{ fontWeight: '600', fontSize: '1.5rem' }}
+                                    labelStyle={{ color: 'black' }}
+                                />
+
+                            </styled.SectionsContainer>
 
 
-                    {selectedDevice.device_model !== 'MiR100' ?
-                        renderDeviceMapLocation()
-                        :
-                        renderAMRIdleLocation(),
-                        renderChargeLevels()
-                    }
-                </Form>
+                            {selectedDevice.device_model !== 'MiR100' ?
+                                renderDeviceMapLocation()
+                                :
+                                renderAMRIdleLocation(),
+                                renderChargeLevels()
+                            }
+
+
+                            <Button schema={'devices'} style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: '2rem', boxSizing: 'border-box' }}
+                                onClick={() => {
+                                    onEditDeviceDashboard()
+                                }}
+                            >
+                                Edit Dashboard
+                            </Button>
+
+                            <Button schema={'devices'} secondary style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: '2rem', boxSizing: 'border-box' }}
+                            // onClick={() => {
+                            //     submitForm()
+                            // }}
+                            >
+                                Save Device
+                            </Button>
+                        </Form>
+                    )
+                }}
             </Formik>
-
-            <Button schema={'devices'} style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: '2rem', boxSizing: 'border-box' }}
-                onClick={() => {
-                    onEditDeviceDashboard()
-                }}
-            >
-                Edit Dashboard
-            </Button>
-
-            {/* Disabling delete for now */}
-            {/* <Button schema={'devices'} secondary style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: '2rem' }}
-                onClick={() => {
-                    deviceLocationDelete()
-                }}
-            >
-                Delete
-                </Button> */}
 
         </styled.Container>
     )
