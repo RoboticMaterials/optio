@@ -8,7 +8,12 @@ export const ListItem = styled.div`
     height: 2.5rem;
     text-overflow: ellipsis;
     justify-content: space-between;
-    background: #26ab76;
+    background: ${props => props.theme.schema['objects'].solid};
+
+    &:hover {
+        background: ${props => LightenDarkenColor(props.theme.schema['objects'].solid, 10)};
+    }
+
     margin-left: .5rem;
     margin-right: .5rem;
     margin-top: 0rem;
@@ -16,9 +21,8 @@ export const ListItem = styled.div`
     border-radius: 0.5rem;
     border: 0.1rem solid;
 
-    border-color: ${props => props.error ? 'red' : '#26ab76'};
+    border-color: ${props => props.error ? props.theme.error : 'transparent'};
 
-    // border-color: ${props => props.isNew ? 'blue' : '#26ab76'};
 
 
 `
@@ -27,12 +31,13 @@ export const ObjectContainer = styled.div`
     flex-grow: .5rem;
 
     flex-direction: column;
-    margin-top: 1.5rem;
+    margin-top: 0rem;
     margin-bottom: 1rem;
     padding-top: .2rem;
-    background-color: #313236;
-    border: 0.1rem solid;
+    background-color: ${props => props.theme.bg.primary};
     border-radius: 0.5rem;
+
+    box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.1);
 `
 export const QuantityInput = styled.input`
     margin-top: 1rem;
@@ -81,18 +86,20 @@ export const ListItemTitle = styled.h1`
     font-weight: 500;
     color: ${props => props.theme.bg.octonary};
     user-select: none;
-    width: 10rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     margin-left: 0.5rem;
+    margin-right: 1rem;
     margin-bottom: 0rem;
+
+    text-align: center;
 
 `
 export const ListItemIcon = styled.i`
 
     font-size: 1.3rem;
-    color: white;
+    color: ${props => props.theme.bg.primary};
     padding-left: 0.8rem;
 
     &:hover {
@@ -105,7 +112,7 @@ export const RowContainer = styled.div`
     justify-content: space-between;
     flex-direction: row;
     margin-bottom: .5rem;
-
+    align-items: center;
 `
 export const HoverContainer = styled.div`
     display: flex;

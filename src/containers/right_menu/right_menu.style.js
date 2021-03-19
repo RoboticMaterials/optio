@@ -20,9 +20,9 @@ export const NotificationsContainer = styled.div`
     max-height: ${props => props.windowHeight};
     /* max-height: 10rem; */
 
-    box-shadow: -6px 6px 6px 0px rgba(0,0,0,0.3);
+    box-shadow: -1px 2.5px 2.5px 0px rgba(0,0,0,0.1);
 
-    background: ${props => hexToRGBA(props.theme.bg.septenary, 0.97)};
+    background: ${props => hexToRGBA(props.theme.bg.tertiary, 0.97)};
 
     border-radius: 0 0 0 1rem;
 

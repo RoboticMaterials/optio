@@ -2,6 +2,7 @@ import React from 'react'
 
 // Import styles
 import * as styled from './contnet_header.style'
+import theme from '../../../../theme'
 
 // Import Utils
 import { upperCaseFirstLetterInString } from '../../../../methods/utils/utils'
@@ -64,6 +65,7 @@ const ContentHeader = (props) => {
                     </BounceButton>
                     :
                     <PlusButton
+                        style={{color: theme.main.schema[content].solid}}
                         onClick={onClickAdd}
                     />
                 }
@@ -77,15 +79,10 @@ const ContentHeader = (props) => {
         return (
             <styled.Header>
 
-                <BackButton schema={content} style={{ display: 'inline-block' }}
+                <BackButton schema={content} style={{ display: 'inline-block'}}
                     onClick={onClickBack}
                 />
-
-                <Button schema={content} style={{ display: 'inline-block', float: 'right' }}
-                    onClick={onClickSave} disabled={disabled}
-                >
-                    Save
-                </Button>
+                <styled.EditTitle schema={content}>{handleTitle()}</styled.EditTitle>
             </styled.Header>
 
         )
@@ -99,12 +96,6 @@ const ContentHeader = (props) => {
                 <BackButton schema={content} style={{ display: 'inline-block' }}
                     onClick={onClickBack}
                 />
-
-                <Button schema={content} style={{ display: 'inline-block', float: 'right' }}
-                    onClick={onClickSave} disabled={disabled}
-                >
-                    Add
-                    </Button>
             </styled.Header>
 
         )
@@ -115,7 +106,7 @@ const ContentHeader = (props) => {
         return (
             <styled.Header>
 
-                <styled.Title schema={content}>{handleTitle()}</styled.Title>
+                <styled.EditTitle schema={content}>{handleTitle()}</styled.EditTitle>
 
 
                 {saveEnabled &&

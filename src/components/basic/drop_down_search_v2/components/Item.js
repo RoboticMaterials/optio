@@ -108,28 +108,26 @@ export const DefaultItemComponent = styled.span`
 
   :hover,
   :focus {
-    background: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};
+    background: ${props => !!props.schema ? hexToRGBA(props.theme.schema[props.schema].solid, 0.1) : hexToRGBA(props.theme.fg.red, 0.1)};
     outline: none;
   }
 
 
   &.${LIB_NAME}-item-selected {
     ${props => props.disabled ? `
-      background: rgba(0,0,0,0.01);
-      color: ${props.theme.bg.primary};
+      background: ${!!props.schema ? hexToRGBA(props.theme.schema[props.schema].solid, 0.2) : hexToRGBA(props.theme.fg.red, 0.2)};
     `
     : `
-      background: ${!!props.schema ? hexToRGBA(props.theme.schema[props.schema].solid, 0.1) : hexToRGBA(props.theme.bg.senary, 0.1)};
-      color: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.bg.senary};
-      border-color: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.bg.senary};
+      background: ${!!props.schema ? hexToRGBA(props.theme.schema[props.schema].solid, 0.2) : hexToRGBA(props.theme.fg.red, 0.2)};
+      border-color: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.red};
     `}
   }
 
   ${({ disabled }) =>
     disabled
       ? `
-    background: ${props => props.theme.bg.secondary};
-    color: ${props => props.theme.bg.tertiary};
+    background: ${props => props.theme.bg.quinary};
+    color: ${props => props.theme.bg.primary};
 
     ins {
       text-decoration: none;

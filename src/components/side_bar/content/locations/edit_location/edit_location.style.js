@@ -12,12 +12,13 @@ export const DefaultTypesContainer = styled.div`
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    border-bottom: 0.1rem solid ${props => props.theme.bg.septenary};
+    border-bottom: 0.15rem solid ${props => props.theme.bg.secondary};
     justify-content: center;
     align-items: center;
 
-    margin-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    margin-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
 `
 
 export const LocationTypeContainer = styled.div`
@@ -25,8 +26,7 @@ export const LocationTypeContainer = styled.div`
     flex-direction: column;
     align-items: center;
     width: 8rem;
-    // margin-right: 1rem;
-    // background: blue;
+
 `
 
 export const LocationButtonConatiner = styled.div`
@@ -47,7 +47,7 @@ export const Subtitle = styled.h1`
     flex-grow: 1;
     font-size: 1rem;
     font-weight: 500;
-    color: white;
+    color: black;
     margin-right: 1rem;
     justify-content: center;
 `

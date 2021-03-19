@@ -1,56 +1,34 @@
+import { propSatisfies } from 'ramda';
 import styled from 'styled-components'
 import { hexToRGBA, LightenDarkenColor, RGB_Linear_Shade } from '../../../methods/utils/color_utils';
 
 
 const buttonTheme = (props) => {
+
+    if (!props.schema) {
+        props.schema = 'default'
+    }
+
     if (props.disabled) { // Disabled
         return (`
-            background-color: ${props.theme.bg.quinary};
+            background-color: ${props.theme.bg.secondary};
             color: ${props.theme.bg.senary};
             border: none;`
         )
     } else if (props.secondary) { // Secondary
         return (`
-            background: ${!!props.schema ? props.theme.schema[props.schema].gradient : props.theme.fg.primary};
-            color: ${props.theme.bg.octonary};
-            border: none;
-
-            &:hover {
-                background-color: ${LightenDarkenColor(props.theme.bg.septenary, 10)}
-            }
-             `
-        )
-    } else if (props.quaternary) { // quaternary
-        return (`
-            background: #26ab76;
-            color: ${props.theme.bg.octonary};
-            border: none;
-
-            &:hover {
-                background-color: ${LightenDarkenColor('#26ab76', -10)}
-            }
-             `
-        )
-    } else { // Primary
-        return (`
-            border: 0.1rem solid ${props.theme.bg.octonary};
+            background-color: transparent;
+            border: 0.15rem solid ${props.theme.bg.octonary};
+            color: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
+            border-color: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
             box-sizing: content-box;
-
-            ${!props.active && `
-                background-color: transparent;
-                color: ${props.theme.bg.octonary};
-
-                &:hover {
-                    color: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
-                    border-color: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
-                }`
+            
+            &:hover {
+                background-color: ${hexToRGBA(props.theme.bg.octonary, 0.03)}
             }
 
             ${props.active ? `
-                border-color: red;
-                color: ${props.theme.bg.tertiary};
                 background: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
-                border-color: transparent;
 
                 &:active {
                     color: ${props.theme.bg.tertiary};
@@ -64,6 +42,42 @@ const buttonTheme = (props) => {
                 }`
             }`
         )
+        
+    } else if (props.tertiary) { // tertiary (Gradient)
+
+        return (`
+            background: ${!!props.schema ? props.theme.schema[props.schema].gradient : props.theme.fg.primary};
+            color: ${props.theme.bg.octonary};
+            border: none;
+
+            &:hover {
+                background-color: ${!!props.schema ? LightenDarkenColor(props.theme.schema[props.schema].solid, 10) : LightenDarkenColor(props.theme.fg.primary, 10)}
+            }
+             `
+        )
+
+    } else if (props.quaternary) { // quaternary
+        return (`
+            background: #26ab76;
+            color: ${props.theme.bg.octonary};
+            border: none;
+
+            &:hover {
+                background-color: ${LightenDarkenColor('#26ab76', -10)}
+            }
+             `
+        )
+    } else { // Primary
+        return (`
+            background: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
+            color: ${props.theme.bg.octonary};
+            border: none;
+
+            &:hover {
+                background-color: ${!!props.schema ? LightenDarkenColor(props.theme.schema[props.schema].solid, 10) : LightenDarkenColor(props.theme.fg.primary, 10)}
+            }
+            `)
+        
     }
 }
 
