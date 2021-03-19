@@ -43,6 +43,7 @@ const Cards = (props) => {
     //redux state
     const processes = useSelector(state => { return state.processesReducer.processes })
     const showCardEditor = useSelector(state => { return state.cardsReducer.showEditor })
+    const currentMap = useSelector(state => state.mapReducer.currentMap)
 
     // actions
     const dispatch = useDispatch()
@@ -55,6 +56,7 @@ const Cards = (props) => {
     const [currentProcess, setCurrentProcess] = useState(null)
     const [isProcessView, setIsProcessView] = useState(false)
     const [showMenu, setShowMenu] = useState(false)
+    const [filteredProcesses, setFilteredProcesses] = useState(Object.values(processes).filter((currProcess) => currProcess.map_id === currentMap._id))
     const [zoneSize, setZoneSize] = useState({
         width: undefined,
         height: undefined,
@@ -66,7 +68,7 @@ const Cards = (props) => {
     const [sortMode, setSortMode] = useState(LOT_FILTER_OPTIONS.name)
     const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.ASCENDING)
     // internal component state
-    const [selectedProcesses, setSelectedProcesses] = useState(Object.values(processes)) // array of {process} objects - the list of selected processes
+    const [selectedProcesses, setSelectedProcesses] = useState(filteredProcesses) // array of {process} objects - the list of selected processes
 
     // refs
     const zoneRef = useRef(null);
@@ -75,6 +77,13 @@ const Cards = (props) => {
         dispatchGetLotTemplates()
 
     }, [])
+
+    /*
+    * filters processes by map id
+    * */
+    useEffect(() => {
+        setFilteredProcesses(Object.values(processes).filter((currProcess) => currProcess.map_id === currentMap._id))
+    }, [processes])
 
     /*
     * This effect monitors the div referenced by zoneRef and the window height
