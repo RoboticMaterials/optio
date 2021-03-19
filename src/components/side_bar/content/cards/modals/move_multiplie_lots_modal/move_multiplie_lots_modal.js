@@ -3,35 +3,33 @@ import React, {useEffect, useState} from 'react'
 // actions
 import {deleteCard, putCard} from "../../../../../../redux/actions/card_actions"
 
-// components internal
-import ConfirmDeleteModal from "../../../../../basic/modals/confirm_delete_modal/confirm_delete_modal"
+// components external
+import MoonLoader from "react-spinners/MoonLoader"
 
-import MoonLoader from "react-spinners/MoonLoader";
+// components internal
+import LotContainer from "../../lot/lot_container"
+import SimpleModal from "../../../../../basic/modals/simple_modal/simple_modal"
+import FooterContent from "./footer_content/footer_content"
+import PreBodyContent from "./pre_body_content/pre_body_content"
+
+// constants
+import {BIN_IDS, BIN_THEMES} from "../../../../../../constants/lot_contants"
+import {StationTypes} from "../../../../../../constants/station_constants"
+import {PositionTypes} from "../../../../../../constants/position_constants"
 
 // functions external
 import PropTypes from 'prop-types'
 import {useDispatch, useSelector} from "react-redux"
 
 // utils
-import {isEmpty} from "../../../../../../methods/utils/object_utils"
+import {getProcessName, getStationAttributes, getStationIds} from "../../../../../../methods/utils/processes_utils"
+import {immutableDelete, isNonEmptyArray} from "../../../../../../methods/utils/array_utils"
+import {getLotAfterBinMerge} from "../../../../../../methods/utils/lot_utils"
 
-import LotContainer from "../../lot/lot_container";
-
+// styles
 import * as sharedStyles from "../modals.style"
-import * as styled from "./move_multiplie_lots_modal.style"
-import {lotContainerStyle} from "../modals.style";
-import SimpleModal from "../../../../../basic/modals/simple_modal/simple_modal";
-import {getProcessName, getStationAttributes, getStationIds} from "../../../../../../methods/utils/processes_utils";
-import CardZone from "../../card_zone/card_zone";
-import {BIN_IDS, BIN_THEMES} from "../../../../../../constants/lot_contants";
-import LocationSvg from "../../../../../map/locations/location_svg/location_svg";
-import {StationTypes} from "../../../../../../constants/station_constants";
-import {PositionTypes} from "../../../../../../constants/position_constants";
-import {immutableDelete, isNonEmptyArray} from "../../../../../../methods/utils/array_utils";
-import {getLotAfterBinMerge} from "../../../../../../methods/utils/lot_utils";
-import Portal from "../../../../../../higher_order_components/portal";
-import Footer_content from "./footer_content/footer_content";
-import PreBodyContent from "./pre_body_content/pre_body_content";
+import {lotContainerStyle} from "../modals.style"
+
 const MoveMultipleLotsModal = (props) => {
 
 	const {
@@ -43,7 +41,6 @@ const MoveMultipleLotsModal = (props) => {
 	} = props
 
 	const dispatch = useDispatch()
-	const dispatchDeleteCard = async (cardId, processId) => await dispatch(deleteCard(cardId, processId))
 	const dispatchPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 
 	const cards = useSelector(state => { return state.cardsReducer.cards })
@@ -65,9 +62,7 @@ const MoveMultipleLotsModal = (props) => {
 
 		selectedCards.forEach((currLot) => {
 			const {
-				cardId = "",
 				processId = "",
-				binId = ""
 			} = currLot
 
 			// if tempProcessBins already contains key for current lots processId, add to it
@@ -109,14 +104,14 @@ const MoveMultipleLotsModal = (props) => {
 		const lotsToRender = processBins[processIds[processIdsIndex]] || []
 
 		return (
-			<>
-				<sharedStyles.ContainerWrapper>
+			<sharedStyles.ContainerWrapper>
+				<sharedStyles.LoaderWrapper>
 					<MoonLoader
 						loading={isMoving}
 						color={"#4ffff0"}
 						size={50}
 					/>
-				</sharedStyles.ContainerWrapper>
+				</sharedStyles.LoaderWrapper>
 			<sharedStyles.Container
 				greyed={isMoving}
 			>
@@ -141,106 +136,14 @@ const MoveMultipleLotsModal = (props) => {
 					)
 				})}
 			</sharedStyles.Container>
-			</>
+			</sharedStyles.ContainerWrapper>
 
 			)
-	}
-
-	const renderAvailableBins = () => {
-		return(
-			<sharedStyles.StationSelectorContainer>
-				<sharedStyles.SubTitle>Select Destination</sharedStyles.SubTitle>
-
-				<sharedStyles.StationsScrollWrapper>
-			<sharedStyles.StationsContainer>
-				{stationsAttributes.map((currStation, currIndex) => {
-					const {
-						name,
-						_id
-					} = currStation
-
-					const isSelected = selectedStationId === _id
-					const greyed = selectedStationId !== null && !isSelected
-
-					if(_id !== BIN_IDS.FINISH && _id !== BIN_IDS.QUEUE) {
-						const locationTypes = {
-							...StationTypes,
-							...PositionTypes
-						}
-
-						let color = StationTypes[currStation.type].color
-
-
-						return(
-							<sharedStyles.StationContainer
-								isSelected={isSelected}
-								key={_id}
-								style={{
-
-								}}
-								onClick={() => {
-									setSelectedStationId(_id)
-								}}
-							>
-								<sharedStyles.StationName>{name}</sharedStyles.StationName>
-								<sharedStyles.StationSvgContainer
-									isSelected={isSelected}
-									greyed={greyed}
-
-								>
-									<svg
-										width={"100%"}
-										height={"100%"}
-										style={{ fill: color, stroke:color }}
-										viewBox={"50 50 300 300"}
-									>
-										{locationTypes[currStation.type].svgPath}
-									</svg>
-								</sharedStyles.StationSvgContainer>
-							</sharedStyles.StationContainer>
-						)
-					}
-					else {
-						return(
-							<sharedStyles.StationContainer
-								isSelected={isSelected}
-								key={_id}
-								style={{
-
-								}}
-								onClick={() => {
-									setSelectedStationId(_id)
-								}}
-							>
-								<sharedStyles.StationName>{name}</sharedStyles.StationName>
-								<sharedStyles.StationSvgContainer
-									isSelected={isSelected}
-									greyed={greyed}
-
-								>
-									<sharedStyles.StationButton
-										isSelected={isSelected}
-										className={_id === BIN_IDS.QUEUE ? BIN_THEMES.QUEUE.ICON : BIN_THEMES.FINISH.ICON}
-										color={_id === BIN_IDS.QUEUE ? BIN_THEMES.QUEUE.COLOR : BIN_THEMES.FINISH.COLOR}
-
-									/>
-								</sharedStyles.StationSvgContainer>
-							</sharedStyles.StationContainer>
-						)
-					}
-				})
-
-				}
-			</sharedStyles.StationsContainer>
-				</sharedStyles.StationsScrollWrapper>
-			</sharedStyles.StationSelectorContainer>
-		)
 	}
 
 	const renderChildren = () => {
 		return(
 			<sharedStyles.Containerrr>
-
 				{renderSelectedLots()}
 			</sharedStyles.Containerrr>
 		)
@@ -262,16 +165,13 @@ const MoveMultipleLotsModal = (props) => {
 			for(const currItem of lotsToRender) {
 				const {
 					cardId = "",
-					processId = "",
 					binId = ""
 				} = currItem || {}
 
 				const currLot = cards[cardId] || {}
-				console.log("currLot before merge", currLot)
 				const lotWithUpdatedBins = getLotAfterBinMerge(currLot, binId, selectedStationId)
-				console.log("lotWithUpdatedBins",lotWithUpdatedBins)
 
-				const result = await dispatchPutCard(lotWithUpdatedBins, cardId)
+				await dispatchPutCard(lotWithUpdatedBins, cardId)
 				setProcessBins((previous) => {
 					return {
 						...previous,
@@ -322,7 +222,7 @@ const MoveMultipleLotsModal = (props) => {
 				/>
 			}
 			FooterContent={
-				<Footer_content
+				<FooterContent
 					stationsAttributes={stationsAttributes}
 					selectedStationId={selectedStationId}
 					setSelectedStationId={setSelectedStationId}

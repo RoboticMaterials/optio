@@ -167,7 +167,10 @@ const Column = ((props) => {
 			return (lotId === currLotId) && (station_id === currBinId)
 		})
 
-		if(selectedIndex < existingIndex) {
+		if(selectedIndex === -1) {
+			return [cards[existingIndex]]
+		}
+		else if(selectedIndex < existingIndex) {
 			return cards.slice(selectedIndex, existingIndex+1)
 		}
 		else {

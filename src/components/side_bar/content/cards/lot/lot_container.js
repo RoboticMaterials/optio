@@ -56,8 +56,6 @@ const LotContainer = (props) => {
         setCount(getBinQuantity({bins}, binId))
     }, [bins, binId])
 
-    console.log("stationName",stationName)
-
     return (
         <Lot
             stationName={stationName}

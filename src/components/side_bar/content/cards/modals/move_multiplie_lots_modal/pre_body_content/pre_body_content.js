@@ -1,6 +1,10 @@
 import React from 'react'
+
+// functions external
 import PropTypes from 'prop-types'
-import * as sharedStyles from "../../modals.style"
+
+// styles
+import * as styled from "./pre_body_content.style"
 
 const PreBodyContent = (props) => {
 
@@ -9,9 +13,9 @@ const PreBodyContent = (props) => {
 	} = props
 
 	return (
-		<sharedStyles.ProcessHeader>
-			<sharedStyles.SubTitle>Process: {processName}</sharedStyles.SubTitle>
-		</sharedStyles.ProcessHeader>
+		<styled.ProcessHeader>
+			<styled.SubTitle>Process: {processName}</styled.SubTitle>
+		</styled.ProcessHeader>
 	)
 }
 

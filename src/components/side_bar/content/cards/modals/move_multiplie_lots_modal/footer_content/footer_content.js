@@ -1,14 +1,17 @@
-import React from 'react';
+import React from 'react'
 
-import PropTypes from 'prop-types';
+// functions external
+import PropTypes from 'prop-types'
 
-import * as sharedStyles from "../../modals.style";
+// constants
+import {BIN_IDS, BIN_THEMES} from "../../../../../../../constants/lot_contants"
+import {StationTypes} from "../../../../../../../constants/station_constants"
+import {PositionTypes} from "../../../../../../../constants/position_constants"
 
-import {BIN_IDS, BIN_THEMES} from "../../../../../../../constants/lot_contants";
-import {StationTypes} from "../../../../../../../constants/station_constants";
-import {PositionTypes} from "../../../../../../../constants/position_constants";
+// styles
+import * as styled from "./footer_content.style"
 
-const Footer_content = (props) => {
+const FooterContent = (props) => {
 
 	const {
 		stationsAttributes,
@@ -17,12 +20,12 @@ const Footer_content = (props) => {
 	} = props
 
 	return (
-		<sharedStyles.StationSelectorContainerWrapper>
-		<sharedStyles.StationSelectorContainer>
-			<sharedStyles.SubTitle>Select Destination</sharedStyles.SubTitle>
+		<styled.StationSelectorContainerWrapper>
+		<styled.StationSelectorContainer>
+			<styled.SubTitle>Select Destination</styled.SubTitle>
 
-			<sharedStyles.StationsScrollWrapper>
-				<sharedStyles.StationsContainer>
+			<styled.StationsScrollWrapper>
+				<styled.StationsContainer>
 					{stationsAttributes.map((currStation, currIndex) => {
 						const {
 							name,
@@ -42,7 +45,7 @@ const Footer_content = (props) => {
 
 
 							return(
-								<sharedStyles.StationContainer
+								<styled.StationContainer
 									isSelected={isSelected}
 									key={_id}
 									style={{
@@ -52,8 +55,8 @@ const Footer_content = (props) => {
 										setSelectedStationId(_id)
 									}}
 								>
-									<sharedStyles.StationName>{name}</sharedStyles.StationName>
-									<sharedStyles.StationSvgContainer
+									<styled.StationName>{name}</styled.StationName>
+									<styled.StationSvgContainer
 										isSelected={isSelected}
 										greyed={greyed}
 
@@ -66,13 +69,13 @@ const Footer_content = (props) => {
 										>
 											{locationTypes[currStation.type].svgPath}
 										</svg>
-									</sharedStyles.StationSvgContainer>
-								</sharedStyles.StationContainer>
+									</styled.StationSvgContainer>
+								</styled.StationContainer>
 							)
 						}
 						else {
 							return(
-								<sharedStyles.StationContainer
+								<styled.StationContainer
 									isSelected={isSelected}
 									key={_id}
 									style={{
@@ -82,34 +85,42 @@ const Footer_content = (props) => {
 										setSelectedStationId(_id)
 									}}
 								>
-									<sharedStyles.StationName>{name}</sharedStyles.StationName>
-									<sharedStyles.StationSvgContainer
+									<styled.StationName>{name}</styled.StationName>
+									<styled.StationSvgContainer
 										isSelected={isSelected}
 										greyed={greyed}
 
 									>
-										<sharedStyles.StationButton
+										<styled.StationButton
 											isSelected={isSelected}
 											className={_id === BIN_IDS.QUEUE ? BIN_THEMES.QUEUE.ICON : BIN_THEMES.FINISH.ICON}
 											color={_id === BIN_IDS.QUEUE ? BIN_THEMES.QUEUE.COLOR : BIN_THEMES.FINISH.COLOR}
 
 										/>
-									</sharedStyles.StationSvgContainer>
-								</sharedStyles.StationContainer>
+									</styled.StationSvgContainer>
+								</styled.StationContainer>
 							)
 						}
 					})
 
 					}
-				</sharedStyles.StationsContainer>
-			</sharedStyles.StationsScrollWrapper>
-		</sharedStyles.StationSelectorContainer>
-		</sharedStyles.StationSelectorContainerWrapper>
-	);
-};
+				</styled.StationsContainer>
+			</styled.StationsScrollWrapper>
+		</styled.StationSelectorContainer>
+		</styled.StationSelectorContainerWrapper>
+	)
+}
 
-Footer_content.propTypes = {
+FooterContent.propTypes = {
+	selectedStationId: PropTypes.string,
+	stationsAttributes: PropTypes.array,
+	setSelectedStationId: PropTypes.func
+}
 
-};
+FooterContent.defaultProps = {
+	selectedStationId: null,
+	stationsAttributes: [],
+	setSelectedStationId: () => {}
+}
 
-export default Footer_content;
+export default FooterContent
