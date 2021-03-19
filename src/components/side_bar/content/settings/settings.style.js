@@ -19,14 +19,27 @@ export const SettingsContainer = styled.div`
 export const SettingContainer = styled.div`
 
     width: 100%;
-    max-width: 20rem;
     margin-bottom: 2rem;
 `
+export const ChevronIcon = styled.i`
+    font-size: 1.3rem;
+    color: white;
+    margin-left: 1rem;
 
+    &:hover{
+        cursor: pointer;
+    }
+`
 export const RowContainer = styled.div`
+
     display: flex;
     flex-direction: row;
     align-items: center;
+
+    justify-content: space-between;
+    padding-bottom: .5rem;
+    margin-top: .5rem;
+    border-bottom: 1px solid white;
 `
 
 export const ColumnContainer = styled.div`
@@ -86,6 +99,6 @@ export const SwitchContainerLabel = styled.span`
     margin: 0;
     align-self: center;
     font-family: ${props => props.theme.font.primary};
-    font-size: ${props => props.theme.fontSize.sz4};
+    font-size: 1rem;
     color: ${props => props.theme.bg.octonary};
 `
