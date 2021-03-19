@@ -19,6 +19,7 @@ export const RowContainer = styled(style.RowContainer)`
 
 export const ColumnContainer = styled.div`
     ${columnContainer}
+    align-items: center;
 `
 
 export const ConnectionButton = styled(styles.ConnectionButton)`

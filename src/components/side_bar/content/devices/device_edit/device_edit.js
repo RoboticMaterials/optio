@@ -215,23 +215,52 @@ const DeviceEdit = (props) => {
             <styled.SectionsContainer>
                 <styled.Label schema={'devices'} >Charge Levels</styled.Label>
                 <styled.RowContainer style={{ justifyContent: 'space-between' }}>
-                    <styled.Label schema={'devices'}>
-                        Expected Output
+                    <styled.ColumnContainer>
+                        <styled.Label schema={'devices'}>
+                            Min Level
                     </styled.Label>
-                    <TextField
-                        name={"expectedOutput"}
-                        placeholder='Qty'
-                        InputComponent={Textbox}
-                        ContentContainer={styled.RowContainer}
-                        style={{
-                            'fontSize': '1rem',
-                            'fontWeight': '600',
-                            'marginBottom': '.5rem',
-                            'marginTop': '0',
-                            width: '6rem',
-                        }}
-                    />
+                        <TextField
+                            name={"minLevel"}
+                            placeholder='%'
+                            InputComponent={Textbox}
+                            ContentContainer={styled.RowContainer}
+                            style={{
+                                'fontSize': '1rem',
+                                'fontWeight': '600',
+                                'marginBottom': '.5rem',
+                                'marginTop': '0',
+                                'width': '4rem',
+                            }}
+                        />
+                    </styled.ColumnContainer>
+                    <styled.ColumnContainer>
+                        <styled.Label schema={'devices'}>
+                            Max Level
+                    </styled.Label>
+                        <TextField
+                            name={"minLevel"}
+                            placeholder='%'
+                            InputComponent={Textbox}
+                            ContentContainer={styled.RowContainer}
+                            style={{
+                                'fontSize': '1rem',
+                                'fontWeight': '600',
+                                'marginBottom': '.5rem',
+                                'marginTop': '0',
+                                'width': '4rem',
+                            }}
+                        />
+                    </styled.ColumnContainer>
                 </styled.RowContainer>
+
+            </styled.SectionsContainer>
+        )
+    }
+
+    const renderPositionSchedule = () => {
+        return (
+            <styled.SectionsContainer>
+                <styled.Label schema={'devices'} >Position Schedule</styled.Label>
 
             </styled.SectionsContainer>
         )
