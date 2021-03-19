@@ -12,6 +12,7 @@ export const SectionsContainer = styled(style.SettingsSectionsContainer)`
     padding: .25rem;
     border-radius: .5rem;
     margin-bottom: 1rem;
+    box-shadow: ${props => props.theme.cardShadow};
 `
 
 export const Label = styled(style.SettingsLabel)`

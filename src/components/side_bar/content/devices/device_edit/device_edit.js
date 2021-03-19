@@ -15,6 +15,9 @@ import Button from '../../../../basic/button/button'
 import Switch from '../../../../basic/form/switch_field/switch_field'
 import ContentHeader from '../../content_header/content_header'
 
+// Import Components
+import DeviceSchedule from './device_schedule/device_schedule'
+
 // Import actions
 import { setSelectedDevice, putDevices } from '../../../../../redux/actions/devices_actions'
 import { setSelectedStation } from '../../../../../redux/actions/stations_actions'
@@ -224,7 +227,7 @@ const DeviceEdit = (props) => {
         return (
             <styled.SectionsContainer>
                 <styled.RowContainer style={{ justifyContent: 'space-around', alignItems: 'center', marginBottom: '.5rem' }}>
-                    <styled.Label schema={'devices'} style={{marginBottom: '0rem', fontWeight: 'bold'}} >Charge Levels</styled.Label>
+                    <styled.Label schema={'devices'} style={{ marginBottom: '0rem', fontWeight: 'bold' }} >Charge Levels</styled.Label>
                     <Switch
                         name={'chargeLevelSwitch'}
                         onColor='red'
@@ -283,14 +286,6 @@ const DeviceEdit = (props) => {
         )
     }
 
-    const renderPositionSchedule = () => {
-        return (
-            <styled.SectionsContainer>
-                <styled.Label schema={'devices'} >Position Schedule</styled.Label>
-
-            </styled.SectionsContainer>
-        )
-    }
 
     // This set the device name
     const onSetDeviceName = (name) => {
@@ -466,8 +461,12 @@ const DeviceEdit = (props) => {
                             {selectedDevice.device_model !== 'MiR100' ?
                                 renderDeviceMapLocation()
                                 :
-                                renderAMRIdleLocation(),
-                                renderChargeLevels()
+                                <styled.ColumnContainer>
+                                    {renderAMRIdleLocation()}
+                                    {renderChargeLevels()}
+                                    <DeviceSchedule selectedDevice={selectedDevice} />
+                                </styled.ColumnContainer>
+
                             }
 
 
