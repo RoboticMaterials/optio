@@ -146,10 +146,10 @@ const Settings = () => {
           <styled.SettingContainer>
 
 
-              <styled.Header>Select a Timezone</styled.Header>
+              <styled.SwitchContainerLabel>Select a Timezone</styled.SwitchContainerLabel>
 
 
-              <styled.RowContainer>
+              <styled.RowContainer style = {{borderColor: 'transparent'}}>
                   <DropDownSearch
                       placeholder="Select Timezone"
                       label="Select your timezone"
@@ -175,29 +175,27 @@ const Settings = () => {
     const APIAddress = () => {
         //  if(MiRMapEnabled){
         return (
-            <styled.SettingContainer>
+            <styled.SettingContainer >
 
+                <styled.RowContainer style = {{justifyContent: 'start', borderColor: localSettingsState.toggleDevOptions ? "transparent" : "white"}}>
+                    <styled.SwitchContainerLabel>Show Developer Settings</styled.SwitchContainerLabel>
 
-
-                <styled.RowContainer>
-                    <styled.Header>Show Developer Settings</styled.Header>
-`                  <Switch
-                        checked={!!localSettingsState.toggleDevOptions}
-                        onChange={() => {
-                            handleUpdateLocalSettings({ toggleDevOptions: !localSettingsState.toggleDevOptions })
+                    <styled.ChevronIcon
+                        className={!!localSettingsState.toggleDevOptions ? 'fas fa-chevron-up':'fas fa-chevron-down'}
+                        style={{ color: 'black' }}
+                        onClick={() => {
+                          handleUpdateLocalSettings({ toggleDevOptions: !localSettingsState.toggleDevOptions })
                         }}
-                        onColor='red'
-                        style={{ marginRight: '1rem' }}
                     />
 
                 </styled.RowContainer>
 
                 {!!localSettingsState.toggleDevOptions ?
                     <>
+                        <styled.RowContainer style = {{borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
 
-                        <styled.Header style={{ fontSize: '1.2rem' }}>Non Local API IP Address</styled.Header>
+                          <styled.SwitchContainerLabel>Enable Non Local API</styled.SwitchContainerLabel>
 
-                        <styled.RowContainer>
                             <Switch
                                 checked={localSettingsState.non_local_api}
                                 onChange={() => {
@@ -206,24 +204,25 @@ const Settings = () => {
                                 onColor='red'
                                 style={{ marginRight: '1rem' }}
                             />
-                            {!!localSettingsState.non_local_api &&
+
+                        </styled.RowContainer>
+
+                        {!!localSettingsState.non_local_api &&
+                          <styled.RowContainer style = {{marginTop: '0rem'}}>
                                 <Textbox
-                                    placeholder="API IP Address"
+                                    placeholder="Enter a Non Local IP..."
                                     value={!!localSettingsState.non_local_api_ip? localSettingsState.non_local_api_ip: ""}
                                     onChange={(event) => {
                                         handleUpdateLocalSettings({ non_local_api_ip: event.target.value })
                                     }}
                                     style={{ width: '100%' }}
-                                // type = 'number'
                                 />
-                            }
+                          </styled.RowContainer>
+                      }
 
-                        </styled.RowContainer>
-
-                        <styled.Header style={{ fontSize: '1.2rem', paddingTop: '2rem' }}>Devices Enabled</styled.Header>
 
                         <styled.RowContainer>
-                            <styled.Header style={{ fontSize: '.8rem', paddingTop: '1rem', paddingRight: '1rem' }}>Disabled</styled.Header>
+                            <styled.SwitchContainerLabel>Enable Devices</styled.SwitchContainerLabel>
                             <Switch
                                 checked={serverSettingsState.deviceEnabled}
                                 onChange={() => {
@@ -236,7 +235,6 @@ const Settings = () => {
                                 onColor='red'
                                 style={{ marginRight: '1rem' }}
                             />
-                            <styled.Header style={{ fontSize: '.8rem', paddingTop: '1rem' }}>Enabled</styled.Header>
                         </styled.RowContainer>
                     </>
                     :
@@ -245,7 +243,7 @@ const Settings = () => {
 
             </styled.SettingContainer>
         )
-        //  }
+        //  }Choose a Map
     }
 
 
@@ -253,21 +251,15 @@ const Settings = () => {
         return (
             <styled.SettingContainer>
 
-
-                <styled.Header>Show Map View</styled.Header>
-
-
-                <styled.RowContainer>
-                    <styled.SwitchContainerLabel>Show List View</styled.SwitchContainerLabel>
+                <styled.RowContainer style = {{marginTop: '2rem'}}>
+                    <styled.SwitchContainerLabel>Enable Map View</styled.SwitchContainerLabel>
                     <Switch
                         onColor='red'
                         checked={!!localSettingsState.mapViewEnabled}
                         onChange={() => {
                             handleUpdateLocalSettings({ mapViewEnabled: !localSettingsState.mapViewEnabled })
                         }}
-                        style={{ margin: "0 2rem 0 2rem" }}
                     />
-                    <styled.SwitchContainerLabel>Show Map View</styled.SwitchContainerLabel>
                 </styled.RowContainer>
 
             </styled.SettingContainer>
@@ -280,10 +272,10 @@ const Settings = () => {
             <styled.SettingContainer>
 
 
-                <styled.Header>Current Map</styled.Header>
+                <styled.SwitchContainerLabel>Select a Map</styled.SwitchContainerLabel>
 
 
-                <styled.RowContainer>
+                <styled.RowContainer style = {{borderColor: 'transparent'}}>
                     <DropDownSearch
                         placeholder="Select Map"
                         label="Select the map you would like to use for RMStudio"
@@ -291,7 +283,7 @@ const Settings = () => {
                         valueField="_id"
                         options={maps}
                         values={selectedMap ? [selectedMap] : []}
-                        dropdownGap={5}
+                        dropdownGap={2}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
                         onChange={values => {
@@ -352,9 +344,9 @@ const Settings = () => {
             <ContentHeader content={'settings'} mode={'title'} saveEnabled={true} onClickSave={handleSumbitSettings} />
             {MapViewEnabled()}
             {CurrentMap()}
+            {TimeZone()}
             {SignOut()}
             {APIAddress()}
-            {TimeZone()}
 
             {/* {TimeZone()} */}
         </styled.SettingsContainer>

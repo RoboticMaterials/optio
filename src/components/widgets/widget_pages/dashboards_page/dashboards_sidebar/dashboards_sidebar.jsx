@@ -288,6 +288,7 @@ const DashboardsSidebar = (props) => {
                 style={{ width: width }}
             >
                 <style.Container>
+
                     <style.ListContainer>
                         {(type === TYPES.ROUTES.key) &&
 

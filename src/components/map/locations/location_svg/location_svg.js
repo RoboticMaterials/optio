@@ -96,9 +96,8 @@ const LocationSvg = (props) => {
                 }
             </g>
 
-            <g
+            <styled.TranslateGroup
                 className={`${rd3tClassName}-trans`}
-                style={{ cursor: "pointer" }}
                 onMouseEnter={() => {
                     handleMouseEnter()
                 }}
@@ -113,7 +112,7 @@ const LocationSvg = (props) => {
                 </svg>
 
 
-            </g>
+            </styled.TranslateGroup>
 
 
         </styled.WorkstationGroup>

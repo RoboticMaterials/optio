@@ -116,7 +116,7 @@ const DashboardsHeader = (props) => {
             <style.Header>
 
                 {showBackButton &&
-                <BackButton style={{ order: '1' }} containerStyle={{ marginTop: '1.8rem' }}
+                <BackButton style={{ order: '1' }} containerStyle={{  }}
                             onClick={onBack}
                 />
                 }
@@ -126,18 +126,20 @@ const DashboardsHeader = (props) => {
                 }
 
                 {showEditButton && !mobileMode &&
-                <Button style={{ order: '3', marginTop: '1.8rem' }}
+                <Button style={{ order: '3', position: 'absolute', right: '0', marginRight: '0' }}
                         onClick={setEditingDashboard}
+                        secondary
                 >
-                    Edit
+                    Edit Dashboard
                 </Button>
                 }
 
                 {showSaveButton &&
                 <>
-                    <Button style={{ order: '3', marginTop: '1.8rem' }}
+                    <Button style={{ order: '3' }}
                             type='submit'
                             disabled={saveDisabled}
+                            secondary
                     >
                         Save
                     </Button>

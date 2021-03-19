@@ -67,7 +67,7 @@ const SideBar = (props) => {
     const confirmDeleteCallback = useSelector(state => state.sidebarReducer.confirmDeleteCallback)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
-
+    const taskQueue = useSelector(state=>state.taskQueueReducer.taskQueue)
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
 
     const history = useHistory()
@@ -86,7 +86,7 @@ const SideBar = (props) => {
         }
     }, [])
 
-    // Useeffect for open close button, if the button is not active but there is an id in the URL, then the button should be active 
+    // Useeffect for open close button, if the button is not active but there is an id in the URL, then the button should be active
     // If the side bar is not active and there is no id then toggle it off
     useEffect(() => {
         const hamburger = document.querySelector('.hamburger')
@@ -270,7 +270,7 @@ const SideBar = (props) => {
             />
 
             <styled.SideBarOpenCloseButton
-                className="hamburger hamburger--slider"
+                className="hamburger hamburger--squeeze"
                 type='button'
                 id='sideBarButton'
                 onClick={() => {
@@ -281,8 +281,8 @@ const SideBar = (props) => {
                 }}
             // showSideBar={showSideBar}
             >
-                <span className='hamburger-box' id='sideBarButton' style={{ display: 'flex', justifyContent: 'center', width: 'auto' }}>
-                    <span className='hamburger-inner' id='sideBarButton' />
+                <span className='hamburger-box' id='sideBarButton' style={{ display: 'flex', justifyContent: 'center', width: 'auto', color: 'red' }}>
+                    <span className='hamburger-inner' id='sideBarButton' style={{color: 'red'}}/>
                 </span>
             </styled.SideBarOpenCloseButton>
 

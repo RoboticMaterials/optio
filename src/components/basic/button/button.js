@@ -10,6 +10,7 @@ const Button = (props) => {
       schema,
       style,
       secondary,
+      tertiary,
       children,
       label,
     } = props
@@ -22,6 +23,7 @@ const Button = (props) => {
             schema={schema}
             style={style}
             secondary={secondary}
+            tertiary={tertiary}
             {...props} >
 
         {children ?
