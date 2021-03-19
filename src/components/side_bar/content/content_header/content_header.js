@@ -105,8 +105,11 @@ const ContentHeader = (props) => {
     else if (mode === 'title') {
         return (
             <styled.Header>
-
-                <styled.EditTitle schema={content}>{handleTitle()}</styled.EditTitle>
+            {content==="settings" || content==="devices"?
+              <styled.Title schema={content}>{handleTitle()}</styled.Title>
+              :
+              <styled.EditTitle schema={content}>{handleTitle()}</styled.EditTitle>
+            }
 
 
                 {saveEnabled &&
