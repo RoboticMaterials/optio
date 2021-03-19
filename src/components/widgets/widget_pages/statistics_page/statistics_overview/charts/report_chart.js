@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef, useMemo } from 'react';
+import React, { useContext } from 'react';
 
 // Import Styles
 import * as styled from './charts.style'
