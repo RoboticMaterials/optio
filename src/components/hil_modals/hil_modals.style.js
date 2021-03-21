@@ -145,23 +145,28 @@ export const HilButtonContainer = styled.div`
 export const LotSelectorContainer = styled.div`
     display: flex;
     flex-direction: column;
+    align-items: center;
     flex: 1;
 
     width: 100%;
 
     overflow: hidden;
+    
+    background: ${props => props.theme.bg.secondary};
 `
 
 export const LotsContainer = styled.div`
     display: flex;
     position: relative;
     flex-direction: column;
-    width: 100%;
-    overflow: auto;
+    align-self: stretch;
     flex: 1;
-    /* padding: 2rem 1rem 1rem 1rem; */
-    padding: 1rem;
+    overflow: hidden;
     align-items: center;
+    margin: 1rem;
+    border: 3px solid #cacaca;
+    border-radius: 2rem;
+    background: ${props => props.theme.bg.primary};
 `
 
 export const NoLotsContainer = styled.div`
@@ -189,8 +194,8 @@ export const SubtitleContainer = styled.div`
 `
 
 export const FooterContainer = styled.div`
-    background: ${props => props.theme.bg.septenary};
-    border-top: 1px solid ${props => props.theme.bg.tertiary};
+    background: ${props => props.theme.bg.secondary};
+    // border-top: 1px solid ${props => props.theme.bg.tertiary};
     width: 100%;
     display: flex;
     justify-content: center;
@@ -339,12 +344,22 @@ export const Header = styled.div`
     display:flex;
     flex-direction: row;
     width: 100%;
-    background: ${props => props.theme.bg.septenary};
+    background: ${props => props.theme.bg.secondary};
     border-bottom: 1px solid ${props => props.theme.bg.tertiary};
     align-items: center;
     justify-content: space-around;
     align-items: center;
     padding: .5rem 1rem;
+`
+
+export const RealLotsContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    align-self: stretch;
+    padding: 1rem;
+    
 `
 
 export const HeaderMainContent = styled.div`
@@ -400,8 +415,6 @@ export const HilButton = styled.button`
     align-items: center;
     justify-content: center;
     ${props => props.disabled && "filter: grayscale(80%)"};
-
-
 `
 
 export const LotButton = styled.button`
@@ -419,9 +432,7 @@ export const LotButton = styled.button`
     margin-bottom: 2rem;
 `
 
-export const FooterButton = styled.button`
-    ${HilButtonCss};
-
+export const footerButtonCss = css`
     min-height: 5rem;
     height: 5rem;
     max-height: 5rem;

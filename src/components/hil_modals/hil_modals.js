@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams, useHistory } from 'react-router-dom'
@@ -26,7 +26,7 @@ import { putTaskQueueItem } from '../../api/task_queue_api'
 // Import Utils
 import { deepCopy } from '../../methods/utils/utils'
 import { getCards } from "../../redux/actions/card_actions";
-import { sortBy } from "../../methods/utils/card_utils";
+import {getInitialValues, sortBy} from "../../methods/utils/card_utils";
 import { SORT_MODES } from "../../constants/common_contants";
 import Lot from "../side_bar/content/cards/lot/lot";
 import { getRouteProcesses, getLoadStationId } from "../../methods/utils/route_utils";
@@ -34,7 +34,7 @@ import { getLotTemplateData, getLotTotalQuantity, getMatchesFilter } from "../..
 import { getLotTemplates } from "../../redux/actions/lot_template_actions";
 import LotSortBar from "../side_bar/content/cards/lot_sort_bar/lot_sort_bar";
 import LotFilterBar from "../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
-import { LOT_FILTER_OPTIONS, SORT_DIRECTIONS } from "../../constants/lot_contants";
+import {CONTENT, defaultBins, LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../constants/lot_contants";
 import {
     BarsContainer,
     columnCss,
@@ -45,6 +45,12 @@ import {
     valueCss
 } from "../side_bar/content/cards/lot_bars.style";
 import SortFilterContainer from "../side_bar/content/cards/sort_filter_container/sort_filter_container";
+import HilLotItem from "./hil_lot_item/hil_lot_item";
+import {CARD_SCHEMA_MODES, getCardSchema} from "../../methods/utils/form_schemas";
+import {Formik} from "formik";
+import LotContainer from "../side_bar/content/cards/lot/lot_container";
+import {isNonEmptyArray} from "../../methods/utils/array_utils";
+import HilButton from "./hil_button/hil_button";
 
 
 /**
@@ -93,7 +99,7 @@ const HILModals = (props) => {
     const [selectedTask, setSelectedTask] = useState(null)
     const [associatedTask, setAssociatedTask] = useState(null)
     const [trackQuantity, setTrackQuantity] = useState(null)
-    const [selectedLot, setSelectedLot] = useState(null)
+    const [selectedLots, setSelectedLots] = useState([])
     const [isProcessTask, setIsProcessTask] = useState(true)
     const [availableLots, setAvailableLots] = useState([])
     const [selectedDashboard, setSelectedDashboard] = useState(null)
@@ -117,6 +123,8 @@ const HILModals = (props) => {
     const size = useWindowSize()
     const windowWidth = size.width
 
+    const formRef = useRef(null)
+
     const {
         name: dashboardName,
         station: stationId, //"c754a665-f756-4c74-a7c5-e8c014039ba3"
@@ -137,22 +145,6 @@ const HILModals = (props) => {
     const {
         station: loadStationId
     } = load || {}
-
-    const {
-        name: selectedLotName,
-        _id: selectedLotId,
-        bins
-    } = selectedLot || {}
-
-    const currentBin = bins ? bins[loadStationId] : {}
-    const {
-        count
-    } = currentBin || {}
-
-    // If the qty goes below 0, then set to 0. You can never send negative parts
-    if (quantity < 0) {
-        setQuantity(0)
-    }
 
     // if number of available lots >= 5, auto focus lot filter text box
     useEffect(() => {
@@ -186,7 +178,7 @@ const HILModals = (props) => {
         }
 
         else {
-            setSelectedLot(null) // clear selected lot
+            setSelectedLots([]) // clear selected lot
             setShowLotSelector(false) // hide lot selector
             setTrackQuantity(true)
         }
@@ -235,8 +227,8 @@ const HILModals = (props) => {
             }
 
             if (stationCards && Array.isArray(stationCards) && stationCards.length > 0) {
-                if ((stationCards.length === 1) && !selectedLot && !didSelectInitialLot) {
-                    setSelectedLot(stationCards[0])
+                if ((stationCards.length === 1) && !isNonEmptyArray(selectedLots) && !didSelectInitialLot) {
+                    setSelectedLots([stationCards[0]])
                     setDidSelectInitialLot(true)
                 }
                 setAvailableLots(stationCards)
@@ -251,96 +243,6 @@ const HILModals = (props) => {
 
 
     }, [cards, selectedTask, sortMode, sortDirection])
-
-    useEffect(() => {
-        if (count && quantity && (quantity > count)) setQuantity(parseInt(count))
-
-
-    }, [selectedLot])
-
-    // Changes quantity on Mouse hold
-    useEffect(() => {
-        const interval = setInterval(() => {
-
-            switch (changeQtyMouseHold) {
-                case 'decrementTen':
-                    if (count) {
-                        if (quantity > count) {
-                            // quantity should not exceed count, it may have been set higher before a lot was selected
-                            // reduce quantity to lot count
-                            setQuantity(count)
-                        }
-                        else {
-                            // quantity cannot be negative
-                            if (quantity - 10 > 0) setQuantity(quantity => quantity - 10)
-                        }
-                    }
-                    else {
-                        // quantity cannot be negative
-                        if (quantity - 10 > 0) setQuantity(quantity => quantity - 10)
-                    }
-
-                    break;
-
-                case 'decrementOne':
-                    if (count) {
-                        if (quantity > count) {
-                            // quantity should not exceed count, it may have been set higher before a lot was selected
-                            // reduce quantity to lot count
-                            setQuantity(count)
-                        }
-                        else {
-                            // quantity cannot be negative
-                            if (quantity > 0) setQuantity(quantity => quantity - 1)
-                        }
-                    }
-                    else {
-                        // quantity cannot be negative
-                        if (quantity > 0) setQuantity(quantity => quantity - 1)
-                    }
-
-                    break;
-
-                case 'incrementOne':
-                    if (count) {
-                        if (quantity < count) {
-                            setQuantity(quantity => quantity + 1)
-                        }
-
-                        else {
-                            setQuantity(count)
-                        }
-
-                    }
-                    // otherwise quantity can be anything
-                    else {
-                        setQuantity(quantity => quantity + 1)
-                    }
-
-                    break;
-
-                case 'incrementTen':
-                    if (count) {
-                        if (quantity + 10 < count) {
-                            setQuantity(quantity => quantity + 10)
-                        }
-                        else {
-                            setQuantity(parseInt(count))
-                        }
-
-                    }
-                    // otherwise quantity can be anything
-                    else {
-                        setQuantity(quantity => quantity + 10)
-                    }
-            }
-
-        }, 200);
-        return () => clearInterval(interval)
-    }, [changeQtyMouseHold]
-    )
-
-
 
     // Use Effect for when page loads, handles wether the HIL is a load or unload
     useEffect(() => {
@@ -378,19 +280,6 @@ const HILModals = (props) => {
     }, [])
 
     useEffect(() => {
-
-        if (!!item.quantity) {
-            setQuantity(item.quantity)
-        } else {
-            if (!!selectedLot) {
-                setQuantity(selectedLot.bins[loadStationId].count)
-            }
-            else { setQuantity(0) }
-        }
-
-    }, [selectedLot], [tasks])
-
-    useEffect(() => {
         const currentTask = tasks[item.task_id]
         const routeProcesses = getRouteProcesses(currentTask?._id).map((currProcess) => currProcess._id) || []
 
@@ -419,7 +308,7 @@ const HILModals = (props) => {
         let newItem = {
             ...item,
             hil_response: true,
-            lot_id: selectedLotId
+            lots: []
         }
 
         // If its a load, then add a quantity to the response
@@ -458,13 +347,6 @@ const HILModals = (props) => {
     // HIL Postpone will place the current task after the next task in the queue. (Delays task by 1 task)
     const onHilPostpone = () => {
         dispatchTaskQueueItemClicked('')
-    }
-
-
-    const onBlurQuantityInput = () => {
-        if (quantity > count) {
-            setQuantity(count)
-        }
     }
 
     // Posts HIL Failure to API
@@ -528,33 +410,23 @@ const HILModals = (props) => {
                         {taskHasProcess && //If the task isn't part of a process don't render the choose lot stuff on the HIL
                             <styled.SelectedLotContainer style={{ flexDirection: 'column', paddingBottom: '1rem' }}>
 
-                                {selectedLot ?
+                                {isNonEmptyArray(selectedLots) ?
                                     <styled.LotTitleDescription style={{ fontSize: '1.5rem' }}>Selected Lot:</styled.LotTitleDescription>
                                     :
-                                    <styled.FooterButton
-                                        onClick={() => {
-                                            setShowLotSelector(true)
-                                            setNoLotsSelected(false)
-                                        }}
-                                    >
-
-                                        <styled.LotTitleDescription>Select Lot</styled.LotTitleDescription>
-                                    </styled.FooterButton>
+                                    <div>temp</div>
+                                    // <styled.FooterButton
+                                    //     onClick={() => {
+                                    //         setShowLotSelector(true)
+                                    //         setNoLotsSelected(false)
+                                    //     }}
+                                    // >
+                                    //
+                                    //     <styled.LotTitleDescription>Select Lot</styled.LotTitleDescription>
+                                    // </styled.FooterButton>
                                 }
 
-                                {(selectedLot) &&
+                                {isNonEmptyArray(selectedLots) &&
                                     <styled.SelectedLotName>
-                                        {selectedLotName &&
-                                            <styled.LotTitleName>{selectedLotName}</styled.LotTitleName>
-                                        }
-                                        {!showLotSelector &&
-                                            <styled.EditLotIcon
-                                                className="fas fa-edit"
-                                                onClick={() => {
-                                                    setShowLotSelector(true)
-                                                }}
-                                            />
-                                        }
                                     </styled.SelectedLotName>
                                 }
                             </styled.SelectedLotContainer>
@@ -565,33 +437,24 @@ const HILModals = (props) => {
                         {taskHasProcess && //If the task isn't part of a process don't render the choose lot stuff on the HIL
                             <styled.SelectedLotContainer>
 
-                                {selectedLot ?
+                                {isNonEmptyArray(selectedLots) ?
                                     <styled.LotTitleDescription>Selected Lot:</styled.LotTitleDescription>
                                     :
-                                    <styled.FooterButton
-                                        onClick={() => {
-                                            setShowLotSelector(true)
-                                            setNoLotsSelected(false)
-                                        }}
-                                    >
-
-                                        <styled.LotTitleDescription>Select Lot</styled.LotTitleDescription>
-                                    </styled.FooterButton>
+                                    <div></div>
+                                    // <styled.FooterButton
+                                    //     onClick={() => {
+                                    //         setShowLotSelector(true)
+                                    //         setNoLotsSelected(false)
+                                    //     }}
+                                    // >
+                                    //
+                                    //     <styled.LotTitleDescription>Select Lot</styled.LotTitleDescription>
+                                    // </styled.FooterButton>
                                 }
 
-                                {(selectedLot) &&
+                                {isNonEmptyArray(selectedLots) &&
                                     <styled.SelectedLotName>
-                                        {selectedLotName &&
-                                            <styled.LotTitleName>{selectedLotName}</styled.LotTitleName>
-                                        }
-                                        {!showLotSelector &&
-                                            <styled.EditLotIcon
-                                                className="fas fa-edit"
-                                                onClick={() => {
-                                                    setShowLotSelector(true)
-                                                }}
-                                            />
-                                        }
+
                                     </styled.SelectedLotName>
                                 }
                             </styled.SelectedLotContainer>
@@ -602,6 +465,7 @@ const HILModals = (props) => {
     }
 
     const renderUnloadOptions = () => {
+        console.log("renderUnloadOptions")
         return (
             <>
                 <styled.Header>
@@ -642,6 +506,7 @@ const HILModals = (props) => {
     }
 
     const renderFractionOptions = () => {
+        console.log("renderFractionOptions")
 
         const fractionOptions = ['1', '3/4', '1/2', '1/4']
         const fractionDecimals = ['1', '0.75', '0.5', '0.25']
@@ -688,8 +553,8 @@ const HILModals = (props) => {
                             /> */}
                                     <styled.RowContainer>
                                         <styled.HilButtonText style={{ fontSize: '3rem' }} color={'#1c933c'}>{value}</styled.HilButtonText>
-                                        {!!count &&
-                                            <styled.HilButtonQuantityText color={'#1c933c'}>{'(Quantity ' + Math.ceil(count * decimal) + ')'}</styled.HilButtonQuantityText>
+                                        {!!2 &&
+                                            <styled.HilButtonQuantityText color={'#1c933c'}>{'(Quantity ' + Math.ceil(2 * decimal) + ')'}</styled.HilButtonQuantityText>
                                         }
 
                                     </styled.RowContainer>
@@ -704,19 +569,19 @@ const HILModals = (props) => {
 
                             {renderSelectedLot()}
 
-                            <styled.FooterButton style={{ marginBottom: '1rem', marginTop: "1rem", marginLeft: '1rem' }} color={'#ff9898'}
-                                onClick={() => {
-                                    onHilFailure()
-                                    dispatchSetShowModalId(null)
-                                    setModalClosed(true)
-                                }}>
-                                <styled.HilIcon
-                                    style={{ marginBottom: 0, marginRight: "1rem", fontSize: "2.5rem" }}
-                                    className='fas fa-times'
-                                    color={'#ff1818'}
-                                />
-                                <styled.HilButtonText style={{ margin: 0, padding: 0 }} color={'#ff1818'}>Cancel</styled.HilButtonText>
-                            </styled.FooterButton>
+                            {/*<styled.FooterButton style={{ marginBottom: '1rem', marginTop: "1rem", marginLeft: '1rem' }} color={'#ff9898'}*/}
+                            {/*    onClick={() => {*/}
+                            {/*        onHilFailure()*/}
+                            {/*        dispatchSetShowModalId(null)*/}
+                            {/*        setModalClosed(true)*/}
+                            {/*    }}>*/}
+                            {/*    <styled.HilIcon*/}
+                            {/*        style={{ marginBottom: 0, marginRight: "1rem", fontSize: "2.5rem" }}*/}
+                            {/*        className='fas fa-times'*/}
+                            {/*        color={'#ff1818'}*/}
+                            {/*    />*/}
+                            {/*    <styled.HilButtonText style={{ margin: 0, padding: 0 }} color={'#ff1818'}>Cancel</styled.HilButtonText>*/}
+                            {/*</styled.FooterButton>*/}
                         </styled.FooterContainer>
                     }
 
@@ -728,299 +593,23 @@ const HILModals = (props) => {
 
     }
 
-    const renderQuantityOptions = () => {
 
-        const disabledQty = (quantity > count || !!count && quantity === 0)
+    const getIsSelected = (lotId) => {
+        for(const currLot of selectedLots) {
+            const {
+                _id: currLotId
+            } = currLot
 
-        return (
-            <>
+            if(currLotId === lotId) return true
+        }
 
-                <styled.Header>
-
-                    <styled.ColumnContainer>
-                        <styled.HilMessage>{hilMessage}</styled.HilMessage>
-
-
-                        {/* Only Showing timers on load at the moment, will probably change in the future */}
-                        {
-                            !!hilTimers[item._id] && hilLoadUnload === 'load' &&
-                            <styled.HilTimer>{hilTimers[item._id]}</styled.HilTimer>
-                        }
-                    </styled.ColumnContainer>
-
-                    {/* <styled.InvisibleItem /> */}
-
-                </styled.Header>
-
-                <styled.LotSelectorContainer>
-
-                    <styled.LotsContainer style={{ justifyContent: hilLoadUnload === 'load' && "space-between" }}>
-
-
-
-                        <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-                            {
-                                (hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
-                                <>
-                                    <styled.HilMessage style={{ marginBottom: '1rem' }}>Enter Quantity</styled.HilMessage>
-
-                                    <styled.HilInputContainer>
-
-                                        {windowWidth > 590 &&
-                                            <styled.HilInputIconContainer
-                                                onClick={() => {
-
-                                                    if (count) {
-                                                        if (quantity > count) {
-                                                            // quantity should not exceed count, it may have been set higher before a lot was selected
-                                                            // reduce quantity to lot count
-                                                            setQuantity(count)
-                                                        }
-                                                        else {
-                                                            // quantity cannot be negative
-                                                            if (quantity - 10 >= 0) setQuantity(quantity - 10)
-                                                            else { setQuantity(0) }
-                                                        }
-                                                    }
-                                                    else {
-                                                        // quantity cannot be negative
-                                                        if (quantity - 10 >= 0) setQuantity(quantity - 10)
-                                                        else { setQuantity(0) }
-
-                                                    }
-
-                                                }}
-                                                onMouseDown={() => {
-                                                    setChangeQtyMouseHold('decrementTen')
-                                                }}
-                                                onMouseUp={() => {
-                                                    setChangeQtyMouseHold('')
-                                                }}
-                                            >
-                                                <styled.HilInputIcon
-                                                    className='fas fa-minus-circle'
-                                                    style={{ color: '#ff9898' }}
-                                                />
-                                                <styled.HilInputIconText style={{ color: '#ff9898' }}>10</styled.HilInputIconText>
-                                            </styled.HilInputIconContainer>
-                                        }
-
-                                        <styled.HilInputIconContainer
-                                            onClick={() => {
-
-                                                if (count) {
-                                                    if (quantity > count) {
-                                                        // quantity should not exceed count, it may have been set higher before a lot was selected
-                                                        // reduce quantity to lot count
-                                                        setQuantity(count)
-                                                    }
-                                                    else {
-                                                        // quantity cannot be negative
-                                                        if (quantity > 0) setQuantity(quantity - 1)
-                                                    }
-                                                }
-                                                else {
-                                                    // quantity cannot be negative
-                                                    if (quantity > 0) setQuantity(quantity - 1)
-                                                }
-
-                                            }}
-
-                                            onMouseDown={() => {
-                                                setChangeQtyMouseHold('decrementOne')
-                                            }}
-                                            onMouseUp={() => {
-                                                setChangeQtyMouseHold('')
-                                            }}
-                                        >
-                                            {
-
-                                            }      <styled.HilInputIcon
-                                                className='fas fa-minus-circle'
-                                                style={{ color: '#ff9898' }}
-                                            />
-                                            <styled.HilInputIconText style={{ color: '#ff9898' }}>1</styled.HilInputIconText>
-                                        </styled.HilInputIconContainer>
-
-
-                                        <styled.HilInput
-                                            type="number"
-                                            onChange={(e) => {
-                                                // get value and parse to int to avoid string concat instead of addition / subtraction
-                                                const value = parseInt(e.target.value)
-
-                                                // if there is a lot with a count, the quantity cannot exceed the count
-                                                //  if (count) {
-                                                //    if (value <= count)
-                                                //}
-
-                                                // otherwise the value can be anything
-                                                //else {
-                                                setQuantity(value)
-                                                //}
-                                            }}
-                                            value={quantity}
-                                            style={disabledQty ? { backgroundColor: 'red' } : {}}
-                                            onBlur={onBlurQuantityInput}
-                                        />
-                                        <styled.HilInputIconContainer
-                                            onClick={() => {
-                                                // if there is a lot count, quantity cannot exceed lot count
-                                                if (count) {
-                                                    if (quantity < count) {
-                                                        setQuantity(quantity + 1)
-                                                    }
-
-                                                    // quantity is greater than count (probably was set before lot was selected), reduce to count
-                                                    else {
-                                                        setQuantity(parseInt(count))
-                                                    }
-
-                                                }
-                                                // otherwise quantity can be anything
-                                                else {
-                                                    setQuantity(quantity + 1)
-                                                }
-
-                                            }}
-
-                                            onMouseDown={() => {
-                                                setChangeQtyMouseHold('incrementOne')
-                                            }}
-                                            onMouseUp={() => {
-                                                setChangeQtyMouseHold('')
-                                            }}
-                                        >
-                                            <styled.HilInputIcon
-                                                className='fas fa-plus-circle'
-                                                style={{ color: '#90eaa8' }}
-                                            />
-                                            <styled.HilInputIconText style={{ color: '#90eaa8' }}>1</styled.HilInputIconText>
-                                        </styled.HilInputIconContainer>
-
-                                        {windowWidth > 590 &&
-                                            <styled.HilInputIconContainer
-                                                onClick={() => {
-                                                    // if there is a lot count, quantity cannot exceed lot count
-                                                    if (count) {
-                                                        if (quantity + 10 < count) {
-                                                            setQuantity(quantity + 10)
-                                                        }
-
-                                                        // quantity is greater than count (probably was set before lot was selected), reduce to count
-                                                        else {
-                                                            setQuantity(parseInt(count))
-                                                        }
-
-                                                    }
-                                                    // otherwise quantity can be anything
-                                                    else {
-                                                        setQuantity(quantity + 10)
-                                                    }
-
-                                                }}
-                                                onMouseDown={() => {
-                                                    setChangeQtyMouseHold('incrementTen')
-                                                }}
-                                                onMouseUp={() => {
-                                                    setChangeQtyMouseHold('')
-                                                }}
-                                            >
-                                                <styled.HilInputIcon
-                                                    className='fas fa-plus-circle'
-                                                    style={{ color: '#90eaa8' }}
-                                                />
-                                                <styled.HilInputIconText style={{ color: '#90eaa8' }}>10</styled.HilInputIconText>
-                                            </styled.HilInputIconContainer>
-                                        }
-
-                                    </styled.HilInputContainer>
-                                    {disabledQty &&
-                                        <styled.HilSubText style={{ marginBottom: "1rem", color: 'red' }}>Please enter a quantity above 0</styled.HilSubText>
-                                    }
-                                    {renderSelectedLot()}
-                                </>
-
-                            }
-
-
-                            {count &&
-                                <styled.HilSubText style={{ marginBottom: "1rem"}}>Available Lot Items: {count}</styled.HilSubText>
-                            }
-                        </div>
-
-                        <styled.HilButtonContainer>
-
-                            <styled.HilButton
-                                color={'#90eaa8'}
-                                disabled={disabledQty}
-                                onClick={() => {
-                                    onHilSuccess()
-                                    dispatchSetShowModalId(null)
-                                }}
-                            >
-                                <styled.HilIcon
-                                    // onClick={() => {
-                                    //     onHilSuccess()
-                                    // }}
-                                    style={{ margin: 0, marginRight: "1rem", fontSize: "2.5rem" }}
-                                    className='fas fa-check'
-                                    color={'#1c933c'}
-
-                                />
-                                <styled.HilButtonText
-                                    color={'#1c933c'}
-                                    style={{ margin: 0, padding: 0 }}
-                                >
-                                    Confirm
-                                </styled.HilButtonText>
-                            </styled.HilButton>
-
-                            {((hilType === 'pull' && hilLoadUnload === 'load') || hilType === 'check') &&
-                                <></>
-                                //<styled.HilButton color={'#f7cd89'} onClick={onHilPostpone}>
-                                //    <styled.HilIcon
-                                //        style={{}}
-                                // onClick={onHilPostpone}
-                                //        className='icon-postpone'
-                                //      color={'#ff7700'}
-                                //      styled={{ marginTop: '.5rem' }}
-                                //  />
-                                //  <styled.HilButtonText
-                                //      color={'#ff7700'}
-                                //      style={{ margin: 0, padding: 0 }}
-                                //  >
-                                //      Postpone
-                                //  </styled.HilButtonText>
-                                //  </styled.HilButton>
-                            }
-
-                            {(hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
-
-                                <styled.HilButton
-                                    color={'#ff9898'}
-                                    onClick={() => {
-                                        onHilFailure()
-                                        dispatchSetShowModalId(null)
-                                        setModalClosed(true)
-                                    }}>
-                                    <styled.HilIcon
-                                        className='fas fa-times'
-                                        color={'#ff1818'}
-                                    />
-                                    <styled.HilButtonText color={'#ff1818'}>Cancel</styled.HilButtonText>
-                                </styled.HilButton>
-                            }
-
-                        </styled.HilButtonContainer>
-                    </styled.LotsContainer>
-                </styled.LotSelectorContainer>
-            </>
-        )
+        return false
     }
 
+    console.log("hi")
 
     const renderLotSelector = () => {
+        console.log("oh boy")
         return (
             <>
                 <styled.Header style={{ flexDirection: "column" }}>
@@ -1064,54 +653,25 @@ const HILModals = (props) => {
                                 .map((currLot, lotIndex) => {
                                     const {
                                         _id: lotId,
-                                        name,
-                                        object_id,
-                                        cardId,
-                                        start_date,
-                                        end_date,
-                                        bins = {},
-                                        flags,
-                                        lotNumber,
                                         process_id: processId = "",
-                                        lotTemplateId
                                     } = currLot
 
-                                    const process = processes[processId]
-                                    const {
-                                        name: processName
-                                    } = process || {}
 
-                                    const totalQuantity = getLotTotalQuantity({ bins }) || 0
 
-                                    const count = bins[stationId || loadStationId]?.count || 0
-
-                                    const isSelected = selectedLotId === lotId
-                                    const templateValues = getLotTemplateData(lotTemplateId, currLot)
-
-                                    // const lotName = lots[lot_id] ? lots[lot_id].name : null
-                                    const objectName = objects[object_id] ? objects[object_id].name : null
+                                    const isSelected = getIsSelected(lotId)
 
                                     return (
                                         <styled.CardContainer>
-                                            <Lot
-                                                templateValues={templateValues}
-                                                totalQuantity={totalQuantity}
-                                                lotNumber={lotNumber}
-                                                processName={processName}
-                                                flags={flags || []}
-                                                enableFlagSelector={false}
-                                                name={name}
-                                                start_date={start_date}
-                                                end_date={end_date}
-                                                objectName={objectName}
-                                                count={count}
-                                                id={lotId}
-                                                index={lotIndex}
+                                            <LotContainer
+                                                lotId={lotId}
+                                                binId={stationId || loadStationId}
+                                                processId={processId}
                                                 isSelected={isSelected}
-                                                selectable={!!selectedLotId}
+                                                selectable={!!isNonEmptyArray(selectedLots)}
                                                 onClick={() => {
-                                                    // set selected lot and close lot selector
-                                                    setSelectedLot(currLot)
+                                                    setSelectedLots(()=> {
+                                                        return [...selectedLots, currLot]
+                                                    })
                                                     setShowLotSelector(false)
                                                 }}
                                                 containerStyle={{ marginBottom: "0.5rem" }}
@@ -1129,49 +689,132 @@ const HILModals = (props) => {
                     }
 
                     <styled.FooterContainer>
-                        <styled.FooterButton
-                            color={'#90eaa8'}
+                        <HilButton
+                            containerCss={styled.footerButtonCss}
+                            label={"Continue Without Lot"}
                             onClick={() => {
-                                setSelectedLot(null) // clear selected lot
+                                setSelectedLots([]) // clear selected lot
                                 setNoLotsSelected(true)
                                 setShowLotSelector(false) // hide lot selector
                             }}
-                        >
-                            <styled.HilButtonText
-                                style={{ margin: 0, padding: 0 }}
-                                color={'#1c933c'}
-                            >
-                                {"Continue Without Lot"}
-                            </styled.HilButtonText>
-                        </styled.FooterButton>
+                            color={'#90eaa8'}
+                            textColor={'#1c933c'}
+                        />
 
-                        <styled.FooterButton
-                            color={'#ff9898'}
+                        <HilButton
+                            containerCss={styled.footerButtonCss}
+                            label={"Cancel"}
                             onClick={() => {
                                 onHilFailure()
                                 dispatchSetShowModalId(null)
                                 setModalClosed(true)
                             }}
-                        >
-                            <styled.HilIcon
-                                className='fas fa-times'
-                                color={'#ff1818'}
-                                style={{ marginRight: '0.8rem' }}
-                            />
-                            <styled.HilButtonText
-                                style={{ margin: 0, padding: 0 }}
-                                color={'#ff1818'}
-                            >
-                                {"Cancel"}
-                            </styled.HilButtonText>
-
-
-                        </styled.FooterButton>
+                            color={'#ff9898'}
+                            iconColor={'#ff1818'}
+                            iconName={'fas fa-times'}
+                            textColor={'#ff1818'}
+                        />
                     </styled.FooterContainer>
+                </styled.LotSelectorContainer>
+            </>
+        )
+    }
 
+    const renderLots = () => {
 
+        return (
+            <styled.RealLotsContainer>
+                {selectedLots.map((currLot, currIndex) => {
+                    const {
+                        _id: lotId,
+                        process_id: processId = "",
+                    } = currLot
 
+                    return (
+                        <HilLotItem
+                            name={`lots[${currIndex}]`}
+                            lotId={lotId}
+                            binId={stationId || loadStationId}
+                            processId={processId}
+                        />
+                    )
+                })}
+            </styled.RealLotsContainer>
+        )
 
+    }
+
+    const renderStuff = () => {
+
+        return (
+            <>
+                <styled.Header>
+                    <styled.ColumnContainer>
+                        <styled.HilMessage>{hilMessage}</styled.HilMessage>
+                        {/* Only Showing timers on load at the moment, will probably change in the future */}
+                        {
+                            !!hilTimers[item._id] && hilLoadUnload === 'load' &&
+                            <styled.HilTimer>{hilTimers[item._id]}</styled.HilTimer>
+                        }
+                    </styled.ColumnContainer>
+                </styled.Header>
+
+                <styled.LotSelectorContainer>
+                    <styled.LotsContainer>
+                        {renderLots()}
+                    </styled.LotsContainer>
+
+                    <styled.HilButtonContainer>
+
+                        <HilButton
+                            label={"Confirm"}
+                            color={'#90eaa8'}
+                            iconName={'fas fa-check'}
+                            iconColor={'#1c933c'}
+                            textColor={'#1c933c'}
+                            onClick={() => {
+                                onHilSuccess()
+                                dispatchSetShowModalId(null)
+                            }}
+                        />
+
+                        {((hilType === 'pull' && hilLoadUnload === 'load') || hilType === 'check') &&
+                        <></>
+                            //<styled.HilButton color={'#f7cd89'} onClick={onHilPostpone}>
+                            //    <styled.HilIcon
+                            //        style={{}}
+                            // onClick={onHilPostpone}
+                            //        className='icon-postpone'
+                            //      color={'#ff7700'}
+                            //      styled={{ marginTop: '.5rem' }}
+                            //  />
+                            //  <styled.HilButtonText
+                            //      color={'#ff7700'}
+                            //      style={{ margin: 0, padding: 0 }}
+                            //  >
+                            //      Postpone
+                            //  </styled.HilButtonText>
+                            //  </styled.HilButton>
+                        }
+
+                        {(hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
+
+                            <HilButton
+                                color={'#ff9898'}
+                                iconName={'fas fa-times'}
+                                iconColor={'#ff1818'}
+                                label={"Cancel"}
+                                textColor={'#ff1818'}
+                                onClick={() => {
+                                    onHilFailure()
+                                    dispatchSetShowModalId(null)
+                                    setModalClosed(true)
+                                }}
+                            />
+
+                        }
+
+                    </styled.HilButtonContainer>
                 </styled.LotSelectorContainer>
             </>
         )
@@ -1205,6 +848,16 @@ const HILModals = (props) => {
 
     if (dataLoaded && modalClosed !== true) {
         return (
+            <Formik
+                innerRef={formRef}
+                initialValues={{
+                }}
+                validateOnChange={true}
+                validateOnBlur={true}
+                onSubmit={()=>{}} // this is necessary
+            >
+
+
             <styled.HilContainer >
 
                 {/*<styled.HilBorderContainer >*/}
@@ -1217,7 +870,7 @@ const HILModals = (props) => {
                             trackQuantity !== true && lotsAtStation === true && noLotsSelected !== true ?
                                 renderFractionOptions()
                                 :
-                                renderQuantityOptions()
+                                renderStuff()
 
                             :
                             renderUnloadOptions()
@@ -1229,9 +882,11 @@ const HILModals = (props) => {
                 {/*</styled.HilBorderContainer>*/}
 
             </styled.HilContainer>
+            </Formik>
         )
     }
     else {
+        console.log("ELLLLSSSEEE")
         return null
     }
 }
