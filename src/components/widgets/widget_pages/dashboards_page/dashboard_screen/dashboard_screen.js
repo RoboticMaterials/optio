@@ -71,6 +71,10 @@ const DashboardScreen = (props) => {
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
     const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] }) || []
     const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] }) || []
+    const stations = useSelector(state => state.stationsReducer.stations)
+    const {
+        name: dashboardName
+    } = currentDashboard || {}
 
     //actions
     const dispatchGetProcesses = () => dispatch(getProcesses())
@@ -81,6 +85,11 @@ const DashboardScreen = (props) => {
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
     const [reportModal, setReportModal] = useState(null);
+    const [displayName, setDisplayName] = useState(dashboardName);
+    const [dashboardStation, setDashboardStation] = useState({});
+    const {
+        name: stationName
+    } = dashboardStation || {}
 
     // actions
     const dispatch = useDispatch()
@@ -102,6 +111,15 @@ const DashboardScreen = (props) => {
 
     const mobileMode = windowWidth < widthBreakPoint;
     const showTaskQueueButton = !mapViewEnabled? true: mobileMode ? true: false
+
+    useEffect(() => {
+        setDashboardStation(stations[stationID] || {})
+    }, [stations, stationID])
+
+    useEffect(() => {
+        setDisplayName(dashboardName ? dashboardName : `${stationName} Dashboard`)
+
+    }, [dashboardName, stationName])
 
     /**
      * When a dashboard screen is loaded, tell redux that its open
@@ -481,7 +499,7 @@ const DashboardScreen = (props) => {
 
                 onBack={() => { setEditingDashboard(false) }}
             >
-                <pageStyle.Title>{currentDashboard.name}</pageStyle.Title>
+                <pageStyle.Title>{displayName}</pageStyle.Title>
             </DashboardsHeader>
 
             <DashboardButtonList

@@ -28,10 +28,6 @@ export const LotsContainer = styled.div`
 `
 
 
-
-
-
-
 export const StationName = styled.h1`
     color: ${props => props.theme.bg.septenary};
     font-family: ${props => props.theme.font.primary};
@@ -62,7 +58,3 @@ export const SubtitleContainer = styled.div`
     padding-bottom:.5rem;
     position: relative;
 `
-
-
-
-

@@ -89,6 +89,10 @@ export const TransparentTextBox = styled(Textbox)`
         outline: none !important;
     }
 
+    ::placeholder{
+        color: ${props => props.theme.bg.primary};
+    }
+
     text-align: center;
 `
 
