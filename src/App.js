@@ -13,7 +13,6 @@ import * as styled from './App.style'
 
 // Import API
 import { stopAPICalls } from './redux/actions/local_actions'
-import { postLocalSettings, getLocalSettings } from './redux/actions/local_actions'
 
 // import containers
 import ApiContainer from './containers/api_container/api_container';
@@ -80,10 +79,6 @@ const App = (props) => {
     const handleLoadLocalData = async () => {
       await dispatchGetLocalSettings()
     }
-
-    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
-    const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
-
 
     useEffect(() => {
         checkUser();
