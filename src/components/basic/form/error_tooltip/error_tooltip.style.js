@@ -12,6 +12,8 @@ export const WarningIcon = styled.i`
     // margin-left: 1rem;
     opacity: ${props => props.visible ? 1 : 0};
 
+    position: relative;
+
     z-index: 2;
 `;
 

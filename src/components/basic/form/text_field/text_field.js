@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, { useContext } from "react";
 import PropTypes from 'prop-types';
 import { useField, useFormikContext } from "formik";
 import { useSelector, useDispatch } from 'react-redux'
@@ -9,7 +9,7 @@ import * as styled from './text_field.style'
 import { getMessageFromError } from "../../../../methods/utils/form_utils";
 
 import { pageDataChanged } from '../../../../redux/actions/sidebar_actions'
-import {ThemeContext} from "styled-components";
+import { ThemeContext } from "styled-components";
 
 
 const TextField = ({
@@ -59,13 +59,15 @@ const TextField = ({
     const hasError = touched && error
     const hasWarning = touched && warning
 
-	useChange(setFieldValue)
-
-	const inputStyle = inputStyleFunc(hasError, showErrorStyle);
-
-	const errorMessage = getMessageFromError(error)
-	const warningMessage = getMessageFromError(warning)
     useChange(setFieldValue)
+
+    const inputStyle = inputStyleFunc(hasError, showErrorStyle);
+
+    const errorMessage = getMessageFromError(error)
+    const warningMessage = getMessageFromError(warning)
+    useChange(setFieldValue)
+
+    console.log(themeContext.warn)
 
     return (
         <>
@@ -73,8 +75,7 @@ const TextField = ({
                 <LabelComponent hasError={hasError} htmlFor={props.id || props.name}>{fieldLabel}</LabelComponent>
             }
             <ContentContainer style={containerStyle}>
-                <InputContainer
-                >
+                <InputContainer>
                     <InputComponent
 
                         // inputStyle={{...inputStyle, ...style}}
@@ -108,14 +109,17 @@ const TextField = ({
 
                             onBlur(event) // call onBlur prop if passed
                         }}
+                        tooltip={
+                            <ErrorTooltip
+                                visible={hasError || hasWarning}
+                                text={hasError ? errorMessage : hasWarning ? warningMessage : null}
+                                color={hasWarning && !hasError ? themeContext.warn : themeContext.bad}
+                                ContainerComponent={IconContainerComponent}
+                                containerStyle={errorTooltipContainerStyle}
+                            />
+                        }
                     />
-                    <ErrorTooltip
-                        visible={hasError || hasWarning}
-                        text={hasError ? errorMessage : hasWarning ? warningMessage : null}
-                        color={hasWarning && !hasError && themeContext.warn}
-                        ContainerComponent={IconContainerComponent}
-                        containerStyle={errorTooltipContainerStyle}
-                    />
+
                 </InputContainer>
 
             </ContentContainer>

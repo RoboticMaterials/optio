@@ -146,10 +146,10 @@ const Settings = () => {
           <styled.SettingContainer>
 
 
-              <styled.Header>Select a Timezone</styled.Header>
+              <styled.SwitchContainerLabel>Select a Timezone</styled.SwitchContainerLabel>
 
 
-              <styled.RowContainer>
+              <styled.RowContainer style = {{borderColor: 'transparent'}}>
                   <DropDownSearch
                       placeholder="Select Timezone"
                       label="Select your timezone"
@@ -182,7 +182,7 @@ const Settings = () => {
 
                     <styled.ChevronIcon
                         className={!!localSettingsState.toggleDevOptions ? 'fas fa-chevron-up':'fas fa-chevron-down'}
-                        style={{ color: 'white' }}
+                        style={{ color: 'black' }}
                         onClick={() => {
                           handleUpdateLocalSettings({ toggleDevOptions: !localSettingsState.toggleDevOptions })
                         }}
@@ -243,7 +243,7 @@ const Settings = () => {
 
             </styled.SettingContainer>
         )
-        //  }
+        //  }Choose a Map
     }
 
 
@@ -272,10 +272,10 @@ const Settings = () => {
             <styled.SettingContainer>
 
 
-                <styled.SwitchContainerLabel>Choose a Map</styled.SwitchContainerLabel>
+                <styled.SwitchContainerLabel>Select a Map</styled.SwitchContainerLabel>
 
 
-                <styled.RowContainer>
+                <styled.RowContainer style = {{borderColor: 'transparent'}}>
                     <DropDownSearch
                         placeholder="Select Map"
                         label="Select the map you would like to use for RMStudio"
@@ -283,7 +283,7 @@ const Settings = () => {
                         valueField="_id"
                         options={maps}
                         values={selectedMap ? [selectedMap] : []}
-                        dropdownGap={5}
+                        dropdownGap={2}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
                         onChange={values => {
@@ -344,9 +344,9 @@ const Settings = () => {
             <ContentHeader content={'settings'} mode={'title'} saveEnabled={true} onClickSave={handleSumbitSettings} />
             {MapViewEnabled()}
             {CurrentMap()}
+            {TimeZone()}
             {SignOut()}
             {APIAddress()}
-            {TimeZone()}
 
             {/* {TimeZone()} */}
         </styled.SettingsContainer>

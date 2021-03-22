@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 
 // import components
@@ -8,7 +8,7 @@ import {SchemaIcon} from "../../dashboard_editor/button_fields/button_fields.sty
 // Import Styles
 import * as style from './dashboard_button.style';
 import * as dashboard_buttons_style from '../dashboard_buttons.style';
-import { theme } from "../../../../../../theme"
+import {ThemeContext} from "styled-components";
 
 // import logging
 import log from '../../../../../../logger'
@@ -39,6 +39,8 @@ const DashboardButton = (props => {
         iconClassName
     } = props
 
+    const theme = useContext(ThemeContext);
+
     return (
         <style.Container
             type={"button"}
@@ -53,22 +55,29 @@ const DashboardButton = (props => {
             style={containerStyle}
             css={containerCss}
         >
-            <div style={{display: "flex", alignItems: "center"}}>
-                <style.ConditionText style={titleStyle}>{title}</style.ConditionText>
-                {(iconColor && iconClassName) &&
-                <style.IconContainer>
-                    <SchemaIcon className={iconClassName} color={color ? color : iconColor}></SchemaIcon>
-                </style.IconContainer>
+            {/* <div style={{display: "flex", alignItems: "center", border: '1px solid red'}}> */}
+            <style.ConditionText style={titleStyle}>{title}</style.ConditionText>
 
-                }
+            
 
-                {children && children}
+            {(iconColor && iconClassName) &&
+                <>
+                    <svg viewBox="0 0 300 67" fill={theme.bg.primary} height='100%' width="12rem" preserveAspectRatio="none">
+                        <path d="M300,8v51c0,4.4-3.6,8-8,8H8.8L63.5,0H292C296.4,0,300,3.6,300,8z"/>
+                    </svg>
+                    <style.IconContainer>
+                        <SchemaIcon className={iconClassName} color={color ? color : iconColor}></SchemaIcon>
+                    </style.IconContainer>
+                </>
+            }
+
+                {/* {children && children}
                 <ErrorTooltip
                     visible={error}
                     text={error}
                     ContainerComponent={dashboard_buttons_style.ErrorContainerComponent}
-                />
-            </div>
+                /> */}
+            {/* </div> */}
 
 
 

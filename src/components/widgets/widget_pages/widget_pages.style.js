@@ -15,7 +15,6 @@ export const Container = styled.div`
 
 
     display: flex;
-    /* background-color: ${props => hexToRGBA(props.theme.bg.tertiary, !!props.showWidgetPage ? 0.97 : 0)}; */
     flex-direction: column;
 
     /* // styles when showWidgetPage is true */;
