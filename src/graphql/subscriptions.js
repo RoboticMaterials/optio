@@ -724,6 +724,48 @@ export const onDeleteSettings = /* GraphQL */ `
     }
   }
 `;
+export const onCreateLotTemplate = /* GraphQL */ `
+  subscription OnCreateLotTemplate {
+    onCreateLotTemplate {
+      id
+      _id
+      organizationId
+      name
+      displayNames
+      fields
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateLotTemplate = /* GraphQL */ `
+  subscription OnUpdateLotTemplate {
+    onUpdateLotTemplate {
+      id
+      _id
+      organizationId
+      name
+      displayNames
+      fields
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteLotTemplate = /* GraphQL */ `
+  subscription OnDeleteLotTemplate {
+    onDeleteLotTemplate {
+      id
+      _id
+      organizationId
+      name
+      displayNames
+      fields
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const onCreateDevice = /* GraphQL */ `
   subscription OnCreateDevice {
     onCreateDevice {

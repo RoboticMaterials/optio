@@ -195,6 +195,22 @@ type Settings
   timezone: AWSJSON
 }
 
+type LotTemplate 
+  @model
+  @auth(rules: [{ allow: private }])
+  @key(name: "LotTemplatesByOrgId", fields: ["organizationId"], queryField: "LotTemplatesByOrgId" )
+{
+
+  # IDs
+  id: ID!
+  _id: String
+  organizationId: ID!
+
+  # Data
+  name: String!
+  displayNames: AWSJSON!
+  fields: AWSJSON!
+}
 # Data stream
 
 type Device

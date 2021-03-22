@@ -56,6 +56,41 @@ export const listSettingss = /* GraphQL */ `
     }
   }
 `;
+export const getLotTemplate = /* GraphQL */ `
+  query GetLotTemplate($id: ID!) {
+    getLotTemplate(id: $id) {
+      id
+      _id
+      organizationId
+      name
+      displayNames
+      fields
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listLotTemplates = /* GraphQL */ `
+  query ListLotTemplates(
+    $filter: ModelLotTemplateFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listLotTemplates(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        _id
+        organizationId
+        name
+        displayNames
+        fields
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
 export const getDashboard = /* GraphQL */ `
   query GetDashboard($id: ID!) {
     getDashboard(id: $id) {
@@ -473,6 +508,35 @@ export const settingsByOrgId = /* GraphQL */ `
         shiftDetails
         toggleDevOptions
         timezone
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const lotTemplatesByOrgId = /* GraphQL */ `
+  query LotTemplatesByOrgId(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelLotTemplateFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    LotTemplatesByOrgId(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        _id
+        organizationId
+        name
+        displayNames
+        fields
         createdAt
         updatedAt
       }

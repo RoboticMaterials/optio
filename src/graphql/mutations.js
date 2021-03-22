@@ -631,6 +631,57 @@ export const deleteSettings = /* GraphQL */ `
     }
   }
 `;
+export const createLotTemplate = /* GraphQL */ `
+  mutation CreateLotTemplate(
+    $input: CreateLotTemplateInput!
+    $condition: ModelLotTemplateConditionInput
+  ) {
+    createLotTemplate(input: $input, condition: $condition) {
+      id
+      _id
+      organizationId
+      name
+      displayNames
+      fields
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateLotTemplate = /* GraphQL */ `
+  mutation UpdateLotTemplate(
+    $input: UpdateLotTemplateInput!
+    $condition: ModelLotTemplateConditionInput
+  ) {
+    updateLotTemplate(input: $input, condition: $condition) {
+      id
+      _id
+      organizationId
+      name
+      displayNames
+      fields
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteLotTemplate = /* GraphQL */ `
+  mutation DeleteLotTemplate(
+    $input: DeleteLotTemplateInput!
+    $condition: ModelLotTemplateConditionInput
+  ) {
+    deleteLotTemplate(input: $input, condition: $condition) {
+      id
+      _id
+      organizationId
+      name
+      displayNames
+      fields
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const createDevice = /* GraphQL */ `
   mutation CreateDevice(
     $input: CreateDeviceInput!

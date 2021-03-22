@@ -1,238 +1,166 @@
-import axios from 'axios';
-// import * as log from 'loglevel';
+/** 
+ * All of the API calls for Cards
+ * 
+ * Created: ?
+ * Created by: ?
+ * 
+ * Edited: March 9 20201
+ * Edited by: Daniel Castillo
+ * 
+ **/
 
-import logger from '../logger'
+// logging for error in API
+import errorLog from './errorLogging'
 
-import { apiIPAddress } from '../settings/settings'
-const operator = 'cards/templates'
-const log = logger.getLogger('Api')
+// import the API category from Amplify library
+import { API } from 'aws-amplify'
+
+// import the GraphQL queries, mutations and subscriptions
+import { lotTemplatesByOrgId } from '../graphql/queries'
+import { createLotTemplate, updateLotTemplate } from '../graphql/mutations'
+import { deleteLotTemplate as deleteLotById } from '../graphql/mutations'
+
+// to get user org id
+import getUserOrgId from './user_api'
+
+// For creating a card
+import { uuidv4 } from '../methods/utils/utils'
 
 export async function getLotTemplate(id) {
     try {
-        const response = await axios({
-            method: 'get',
-            url: apiIPAddress() + operator + "/" + id,
-            headers: {
-                'X-API-Key': '123456',
-                'Access-Control-Allow-Origin': '*'
-            }
-        });
-        // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
-        return dataJson;
+        const userOrgId = await getUserOrgId()
 
+        const res = await API.graphql({
+            query: lotTemplatesByOrgId,
+            variables: { 
+                organizationId: userOrgId,
+                filter: {_id: {eq: id}} 
+            }
+          })
+
+        let GQLdata = []
+
+        res.data.LotTemplatesByOrgId.items.forEach(lotTemplate => {
+            GQLdata.push( {
+                ...lotTemplate,
+                displayNames: JSON.parse(lotTemplate.displayNames),
+                fields: JSON.parse(lotTemplate.fields),
+            })
+        });
+        
+        return GQLdata[0];
 
     } catch (error) {
-
         // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        errorLog(error)
     }
 
 }
 
 export async function getLotTemplates() {
     try {
-        const response = await axios({
-            method: 'get',
-            url: apiIPAddress() + operator,
-            headers: {
-                'X-API-Key': '123456',
-                'Access-Control-Allow-Origin': '*'
-            }
-        });
-        // Success 🎉
-        const data = response.data;
-        const dataJson = JSON.parse(data)
-        return dataJson;
 
+        const userOrgId = await getUserOrgId()
+
+        const res = await API.graphql({
+            query: lotTemplatesByOrgId,
+            variables: { organizationId: userOrgId }
+          })
+
+        let GQLdata = []
+
+        res.data.LotTemplatesByOrgId.items.forEach(lotTemplate => {
+            GQLdata.push( {
+                ...lotTemplate,
+                displayNames: JSON.parse(lotTemplate.displayNames),
+                fields: JSON.parse(lotTemplate.fields),
+            })
+        });
+        
+        return GQLdata;
 
     } catch (error) {
-
         // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        errorLog(error)
     }
 
 }
 
 export async function deleteLotTemplate(ID) {
     try {
-        const response = await axios({
-            method: 'DELETE',
-            url: apiIPAddress() + operator + '/' + ID,
-            headers: {
-                'Accept': 'application/json',
-                'X-API-Key': '123456',
-                'Access-Control-Allow-Origin': '*'
-            },
-        });
+        const id = {id: ID}
 
-        // Success 🎉
-        // log.debug('response',response);
-        // const data = response.data;
-        // const dataJson = JSON.parse(data)
-        return response;
+        const dataJson = await API.graphql({
+            query: deleteLotById,
+            variables: { input: id }
+        })
+
+        return dataJson;
 
 
     } catch (error) {
-
         // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        errorLog(error)
     }
 }
 
 export async function postLotTemplate(lotTemplate) {
     try {
-        const response = await axios({
-            method: 'POST',
-            url: apiIPAddress() + operator,
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-API-Key': '123456',
-                'Access-Control-Allow-Origin': '*'
-            },
-            data: lotTemplate
-        });
 
-        // Success 🎉
-        // log.debug('response',response);
-        const data = response.data;
-        const dataJson = JSON.parse(data)
-        // log.debug('response data json',dataJson);
+        const fakeID = uuidv4();
 
+        const userOrgId = await getUserOrgId()
 
-        return dataJson;
+        const input = {
+            ...lotTemplate,
+            displayNames: JSON.stringify(lotTemplate.displayNames),
+            fields: JSON.stringify(lotTemplate.fields),
+            _id: fakeID,
+            id: fakeID,
+            organizationId: userOrgId
+        }
+        
+        const dataJson = await API.graphql({
+            query: createLotTemplate,
+            variables: { input: input }
+        })
 
+        console.log(dataJson);
+
+        return {
+            ...dataJson.data.createLotTemplate,
+            displayNames: lotTemplate.displayNames,
+            fields: lotTemplate.fields
+        }
 
     } catch (error) {
-
         // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        errorLog(error)
     }
 }
 
 export async function putLotTemplate(lotTemplate, ID) {
     try {
-        const response = await axios({
-            method: 'PUT',
-            url: apiIPAddress() + operator + '/' + ID,
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'text/html',
-                'X-API-Key': '123456',
-                'Access-Control-Allow-Origin': '*'
-            },
-            data: JSON.stringify(lotTemplate)
-        });
 
-        // Success 🎉
-        // log.debug('response',response);
-        const data = response.data;
-        const dataJson = JSON.parse(data)
-        return dataJson;
+        const input = {
+            ...lotTemplate,
+            displayNames: JSON.stringify(lotTemplate.displayNames),
+            fields: JSON.stringify(lotTemplate.fields),
+        }
+        
+        const dataJson = await API.graphql({
+            query: updateLotTemplate,
+            variables: { input: input }
+        })
 
+        return {
+            ...dataJson.data.createLotTemplate,
+            displayNames: lotTemplate.displayNames,
+            fields: lotTemplate.fields
+        }
 
     } catch (error) {
-
         // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-        }
-        log.debug('error', error);
+        errorLog(error)
     }
 }
