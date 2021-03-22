@@ -139,10 +139,10 @@ export const EditDeviceIcon = styled.i`
 
 export const StatusContainer = styled.div`
     border: solid .1rem;
-    border-color: ${props => props.theme.bg.octonary};
+    border-color: ${props => props.theme.bg.quaternary};
     border-radius: .5rem;
     width: 70%;
-    height: 17%;
+    height: ${props=>props.isSmall} ? 15%: 17%;
 		margin-bottom:.8rem;
     text-align: center;
     position: absolute;
@@ -152,7 +152,7 @@ export const StatusContainer = styled.div`
 		z-index: 10;
 		&:hover {
 			cursor: pointer;
-			background-color: red;
+			background-color: ${props=>props.theme.bg.secondary};
 		}
     bottom: 25%;
     transform: translateY(50%);
@@ -187,7 +187,7 @@ export const MissionText = styled.p`
     color: ${props => props.theme.bg.octonary};
     overflow: hidden;
     user-select: none;
-		border-top: 1px solid white;
+		border-top: 1px solid ${props=>props.theme.bg.octonary};
 
     ${props => props.isSmall && {
 		fontSize: props.theme.fontSize.sz5
