@@ -28,9 +28,10 @@ import LotDateRow from "./lot_date_row/lot_date_row";
 const Lot = (props) => {
     const {
         name,
+        glow,
         isFocused,
         highlight,
-        index,
+        stationName,
         totalQuantity,
         lotNumber,
         templateValues,
@@ -188,6 +189,7 @@ const Lot = (props) => {
 
     return(
         <styled.Container
+            glow={glow}
             isFocused={isFocused}
             highlight={highlight}
             selectable={selectable}
@@ -275,6 +277,13 @@ const Lot = (props) => {
                         />
                     }
 
+                {stationName &&
+                <LotSimpleRow
+                    label={"Bin"}
+                    value={stationName}
+                />
+                }
+
                 <LotSimpleRow
                     label={"Quantity"}
                     value={`${count}/${totalQuantity}`}
@@ -303,7 +312,9 @@ Lot.defaultProps = {
     highlight: false,
     enableFlagSelector: true,
     templateValues: [],
-    count: 0
+    count: 0,
+    glow: false,
+    stationName: ""
 }
 
 export default Lot

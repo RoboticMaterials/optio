@@ -10,6 +10,7 @@ const StatusListBody = (props) => {
 		data,
 		onItemClick,
 		onCreateClick,
+		displayNames,
 	} = props
 
 	const renderData = () => {
@@ -20,6 +21,7 @@ const StatusListBody = (props) => {
 				errors,
 				validationStatus,
 				resourceStatus,
+				warnings,
 				created
 			} = currDatem || {}
 
@@ -33,10 +35,9 @@ const StatusListBody = (props) => {
 				code: resourceCode
 			} = resourceStatus || {}
 
-
-
 			return(
 				<StatusListItem
+					displayNames={displayNames}
 					onCreateClick={onCreateClick}
 					created={created}
 					key={currIndex}
@@ -45,6 +46,7 @@ const StatusListBody = (props) => {
 					onEditClick={onItemClick}
 					title={title}
 					errors={errors}
+					warnings={warnings}
 					validationMessage={validationMessage}
 					validationCode={validationCode}
 					resourceMessage={resourceMessage}
