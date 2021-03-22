@@ -58,14 +58,28 @@ export async function getCards() {
 export async function getCard(cardId) {
     try {
 
-        const id = {id: cardId}
+        const userOrgId = await getUserOrgId()
 
-        const dataJson = await API.graphql({
-            query: getCardById,
-            variables: { input: id }
+        const res = await API.graphql({
+            query: cardsByOrgId,
+            variables:{
+                organizationId: userOrgId,
+                filter: {_id: {eq: cardId}}
+            }
         })
 
-        return dataJson.data.getCardById;
+        // This query doesnt want to work for some reason
+        // const dataJson = await API.graphql({
+        //     query: getCardById,
+        //     variables: { id: cardId }
+        // })
+
+        return {
+            ...res.data.CardsByOrgId.items[0],
+            bins: JSON.parse(res.data.CardsByOrgId.items[0].bins),
+            dates: JSON.parse(res.data.CardsByOrgId.items[0].dates),
+            flags: JSON.parse(res.data.CardsByOrgId.items[0].flags)
+        };
 
     } catch (error) {
         // Error 😨

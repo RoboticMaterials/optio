@@ -3,7 +3,7 @@
 type User 
   @model(queries: null)
   @auth(rules: [
-    # allow all authenticated users to read posts
+    # allow all authenticated users
     { allow: owner },
     { allow: private, operations: [read]}
     ])
@@ -149,7 +149,7 @@ type Card
   @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "CardsByOrgId", fields: ["organizationId"], queryField: "CardsByOrgId" )
-  @key(name: "getCardById", fields: ["organizationId"], queryField: "getCardById" )
+  @key(name: "getCardById", fields: ["id"], queryField: "getCardById" )
 {
   # IDs
   id: ID!

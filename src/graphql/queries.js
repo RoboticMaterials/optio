@@ -351,14 +351,14 @@ export const cardsByOrgId = /* GraphQL */ `
 `;
 export const getCardById = /* GraphQL */ `
   query GetCardById(
-    $organizationId: ID
+    $id: ID
     $sortDirection: ModelSortDirection
     $filter: ModelCardFilterInput
     $limit: Int
     $nextToken: String
   ) {
     getCardById(
-      organizationId: $organizationId
+      id: $id
       sortDirection: $sortDirection
       filter: $filter
       limit: $limit

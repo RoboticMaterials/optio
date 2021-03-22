@@ -65,7 +65,14 @@ export async function getTask(id) {
       }
     })
 
-    return res.data.listTasks.items[0]
+    return {
+      ...res.data.TasksByOrgId.items[0],
+      device_types: JSON.parse(res.data.TasksByOrgId.items[0].device_types),
+      processes: JSON.parse(res.data.TasksByOrgId.items[0].processes),
+      load: JSON.parse(res.data.TasksByOrgId.items[0].load),
+      unload: JSON.parse(res.data.TasksByOrgId.items[0].unload),
+      route_object: JSON.parse(res.data.TasksByOrgId.items[0].route_object)
+    }
   } catch (error) {
     // Error 😨
     errorLog(error)
@@ -80,6 +87,7 @@ export async function postTask(task) {
     const input = {
       ...task,
       organizationId: userOrgId,
+      id: task._id,
       device_types: JSON.stringify(task.device_types),
       processes: JSON.stringify(task.processes),
       load: JSON.stringify(task.load),

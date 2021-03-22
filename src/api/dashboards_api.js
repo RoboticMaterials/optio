@@ -67,8 +67,6 @@ export async function deleteDashboards(ID) {
         }
         })
 
-        console.log(res, ID)
-
         await API.graphql({
             query: deleteDashboardByID,
             variables: { input: {id: res.data.DashboardsByOrgId.items[0].id} }
@@ -94,6 +92,8 @@ export async function postDashboards(dashboards) {
             id: fakeID,
         }
 
+        console.log('post', dashboardInput);
+
         await API.graphql({
             query: createDashboard,
             variables: { input: dashboardInput }
@@ -114,10 +114,10 @@ export async function postDashboards(dashboards) {
 export async function putDashboards(dashboard, ID) {
     try {
 
-        console.log(dashboard);
+        console.log('befire dash', dashboard, ID);
 
         let dashboardInput = {
-            id: dashboard.id,
+            id: ID ? ID : dashboard.id,
             organizationId: dashboard.organizationId,
         }
 
@@ -133,6 +133,8 @@ export async function putDashboards(dashboard, ID) {
             query: updateDashboard,
             variables: { input: dashboardInput }
         })
+
+        console.log('updated dash', dashboardInput);
 
         return dashboardInput
 

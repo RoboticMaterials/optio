@@ -85,16 +85,16 @@ const DashboardEditor = (props) => {
             buttons
             .filter((currButton) => {
                 const {
-                    taskid,
+                    task_id,
                     type
                 } = currButton
 
-                if(taskid && taskIds.includes(taskid)) {
-                    logger.error(`Button with duplicate taskid found in dashboard. {taskid:${taskid}`)
+                if(task_id && taskIds.includes(task_id)) {
+                    logger.error(`Button with duplicate task_id found in dashboard. {task_id:${task_id}`)
                     return false // don't add duplicate tasks
                 }
 
-                taskIds.push(taskid)
+                taskIds.push(task_id)
                 return true
             })
             .map((value, index) => {
