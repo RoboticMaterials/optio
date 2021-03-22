@@ -22,7 +22,7 @@ export const Body = styled.div`
 	position: relative;
 	
 	
-	background: ${props => props.theme.bg.tertiary};
+	background: ${props => props.theme.bg.secondary};
 `
 
 export const CardZoneContainer = styled.div`

@@ -22,7 +22,7 @@ export const NotificationsContainer = styled.div`
 
     box-shadow: -1px 2.5px 2.5px 0px rgba(0,0,0,0.1);
 
-    background: ${props => hexToRGBA(props.theme.bg.tertiary, 0.97)};
+    background: ${props => hexToRGBA(props.theme.bg.secondary, 0.97)};
 
     border-radius: 0 0 0 1rem;
 

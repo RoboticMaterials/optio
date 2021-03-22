@@ -54,7 +54,7 @@ export const SidebarWrapper = styled.div`
     // width: auto;
     // flex-grow: 0;
 
-    background-color: ${props => hexToRGBA(props.theme.bg.tertiary, 0.97)};
+    background-color: ${props => hexToRGBA(props.theme.bg.secondary, 0.97)};
     overflow: hidden;
 `
 
@@ -76,7 +76,7 @@ export const SidebarContent = styled.div`
 `
 
 export const ResizeBar = styled.div`
-	background-color: ${props => hexToRGBA(props.theme.bg.tertiary, 0.97)};
+	background-color: ${props => hexToRGBA(props.theme.bg.secondary, 0.97)};
     cursor: ew-resize;
     width: 8px;
     min-width: 8px;

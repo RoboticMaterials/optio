@@ -48,5 +48,5 @@ font-size: ${props => props.theme.fontSize.sz4};
 export const DateArrow = styled.i`
 	margin-left: .35rem;
 	margin-right: .35rem;
-	color: ${props => props.theme.bg.secondary};
+	color: ${props => props.theme.bg.tertiary};
 `

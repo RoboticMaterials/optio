@@ -149,7 +149,7 @@ const LotFilterBar = (props) => {
                     valueField={"label"}
                     schema={"lots"}
                     style={{
-                        background: themeContext.bg.tertiary,
+                        background: themeContext.bg.secondary,
                         borderTopRightRadius: 0,
                         borderBottomRightRadius: 0,
                         fontSize: "2px",
@@ -260,7 +260,7 @@ const LotFilterBar = (props) => {
                         }}
 
                         style={{
-                            background: themeContext.bg.tertiary,
+                            background: themeContext.bg.secondary,
                             // width: "15rem",
                             borderTopLeftRadius: 0,
                             borderBottomLeftRadius: 0,
@@ -281,7 +281,7 @@ const LotFilterBar = (props) => {
                         }}
                         focus={shouldFocusLotFilter}
                         style={{
-                            background: themeContext.bg.tertiary,
+                            background: themeContext.bg.secondary,
                             height: "100%",
                             flex: 1,
                             borderTopLeftRadius: 0,

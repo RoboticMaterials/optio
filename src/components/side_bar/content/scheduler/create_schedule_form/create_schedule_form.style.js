@@ -108,7 +108,7 @@ export const FooLabel = styled.div``;
 // ************************************
 // ************************************
 export const Input = styled.input`
-    background-color: ${props => props.theme.bg.secondary};
+    background-color: ${props => props.theme.bg.tertiary};
     border: 1px solid ${props => props.theme.bg.primary};
     font-size: ${props => props.theme.fontSize.sz8};
     font-family: ${props => props.theme.font.primary};
@@ -121,7 +121,7 @@ export const Input = styled.input`
         border: 1px solid ${props => props.theme.fg.primary};
         color: ${props => props.theme.bg.septenary};
         box-shadow: none;
-        background-color: ${props => props.theme.bg.secondary};
+        background-color: ${props => props.theme.bg.tertiary};
     }
 
     &::placeholder {
@@ -149,7 +149,7 @@ export const InputLabel = styled.label`
 `;
 
 export const TitleTextbox = styled.input`
-    background-color: ${props => props.theme.bg.secondary};
+    background-color: ${props => props.theme.bg.tertiary};
     border-color: ${props => props.theme.bg.primary};;
     font-size: ${props => props.theme.fontSize.sz2};
     font-family: ${props => props.theme.font.primary};
@@ -160,7 +160,7 @@ export const TitleTextbox = styled.input`
         border: 1px solid ${props => props.theme.fg.primary};
         color: ${props => props.theme.bg.septenary};
         box-shadow: none;
-        background-color: ${props => props.theme.bg.secondary};
+        background-color: ${props => props.theme.bg.tertiary};
     }
 
     &::placeholder {

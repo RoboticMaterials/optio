@@ -161,7 +161,7 @@ export const ProcessOptionsContainer = styled.div`
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: ${props => props.theme.bg.tertiary};
+    background: ${props => props.theme.bg.secondary};
     border-radius: .5rem;
   }
 
@@ -434,7 +434,7 @@ export const FieldsHeader = styled.div`
 	//justify-content: space-between;
 	width: 100%;
   	//margin-bottom: 1rem;
-  border-bottom: 1px solid ${props => props.theme.bg.tertiary};
+  border-bottom: 1px solid ${props => props.theme.bg.secondary};
 	//padding: 1rem;
 `
 
@@ -520,6 +520,10 @@ export const SubHeader = styled.div`
 `
 export const IconRow = styled.div`
   ${rowCss2};
+  background: ${props => props.theme.bg.secondary};
+  justify-content: flex-end;
+  align-items: center;
+  padding: .25rem;
 `
 
 export const ColumnContainer = styled.div`
@@ -551,8 +555,8 @@ export const HistoryBodyContainer = styled.div`
 	overflow-y: auto;
 	overflow-x: hidden;
 	flex: 1;
-	border-bottom: 1px solid ${props => props.theme.bg.tertiary};
-	border-top: 1px solid ${props => props.theme.bg.tertiary};
+	border-bottom: 1px solid ${props => props.theme.bg.secondary};
+	border-top: 1px solid ${props => props.theme.bg.secondary};
 `
 
 export const HistoryItemContainer = styled.div`
