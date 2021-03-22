@@ -223,7 +223,6 @@ export const convertExcelToLot = (excel, lotTemplate, processId) => {
 * @param {string} sortMode - string identifier of mode to sort by
 * */
 export const sortBy = (arr, sortMode, sortDirection) => {
-
 	const isAscending = sortDirection.id === SORT_DIRECTIONS.ASCENDING.id
 
 	const {
@@ -243,7 +242,25 @@ export const sortBy = (arr, sortMode, sortDirection) => {
 			break
 		}
 		case FIELD_DATA_TYPES.DATE: {
-			// not yet implemented
+			arr.sort((itemA, itemB) => {
+				const {
+					[fieldName]: valA
+				} = itemA
+				const {
+					[fieldName]: valB
+				} = itemB
+
+				if(!valA) return 1
+
+				if(!valA) return 1
+				if(!valB) return -1
+				if(isAscending) {
+					return new Date(valA) - new Date(valB);
+				}
+				else {
+					return new Date(valB) - new Date(valA);
+				}
+			})
 			break
 
 		}
