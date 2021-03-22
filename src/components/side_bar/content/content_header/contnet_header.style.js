@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
 export const Header = styled.div`
-    display: flex; 
+    display: flex;
     flex-direction: row;
     width: 100%;
     justify-content: space-between;
