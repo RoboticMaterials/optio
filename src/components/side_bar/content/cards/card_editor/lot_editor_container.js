@@ -3,6 +3,9 @@ import React, { useState, useRef, useEffect, useCallback } from 'react'
 // actions
 import { postCard } from "../../../../../redux/actions/card_actions";
 
+// api
+import { getCardsCount } from "../../../../../api/cards_api";
+
 // components internal
 import LotEditor from "./lot_editor"
 import StatusList from "../../../../basic/status_list/status_list"
@@ -20,7 +23,7 @@ import {
 } from "../../../../../constants/lot_contants"
 
 // functions external
-// import PropTypes from 'prop-types'
+import PropTypes from 'prop-types'
 import { setNestedObjectValues } from "formik"
 import { ValidationError } from "yup";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,7 +40,8 @@ import { getDisplayName } from "../../../../../methods/utils/lot_utils";
 
 // styles
 import * as styled from "./lot_editor_container.style";
-import { getCardsCount } from "../../../../../api/cards_api";
+
+
 
 const LotEditorContainer = (props) => {
 
@@ -63,7 +67,6 @@ const LotEditorContainer = (props) => {
     const [showPasteMapper, setShowPasteMapper] = useState(false)				// bool - used for whether or not to render pasteForm
     const [showSimpleModal, setShowSimpleModal] = useState(false)				// bool - controls rendering of simple modal for pasting
     const [pasteMapperHidden, setPasteMapperHidden] = useState(true)			// bool - controls whether or not paste form is hidden (this is distinct from rendering)
-    const [createMappedValues, setCreateMappedValues] = useState(false)		// bool - controls running effect to map pasteForm values to lots
     const [showStatusList, setShowStatusList] = useState(false)				// bool - controls whether or not to show statusList
     const [createdLot, setCreatedLot] = useState(false)				// bool - controls whether or not to show statusList
     const [fieldNameArr, setFieldNameArr] = useState([])

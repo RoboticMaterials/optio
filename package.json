@@ -52,6 +52,7 @@
     "react-spinners": "^0.8.0",
     "react-timer-hook": "^2.0.7",
     "react-timezone": "^2.4.0",
+    "react-timezone-select": "^0.10.7",
     "react-tooltip": "^4.2.15",
     "reactjs-popup": "^2.0.4",
     "redux": "^4.0.5",

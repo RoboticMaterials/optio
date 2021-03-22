@@ -10,7 +10,7 @@ import CardZone from "./card_zone/card_zone";
 import SummaryZone from "./summary_zone/summary_zone";
 
 // actions
-import { showEditor } from '../../../../redux/actions/card_actions'
+import {deleteCard, putCard, showEditor} from '../../../../redux/actions/card_actions'
 
 // styles
 import * as styled from './cards.style'
@@ -23,6 +23,13 @@ import LotCreatorForm from "./card_editor/template_form";
 import {getLotTemplates} from "../../../../redux/actions/lot_template_actions";
 import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../constants/lot_contants";
 import LotEditorContainer from "./card_editor/lot_editor_container";
+import SummaryHeader from "./summary_header/summary_header";
+import {immutableDelete} from "../../../../methods/utils/array_utils";
+import MultiSelectOptions from "./multi_select_options/multi_select_options";
+import {isEmpty} from "../../../../methods/utils/object_utils";
+import ConfirmDeleteModal from "../../../basic/modals/confirm_delete_modal/confirm_delete_modal";
+import DeleteMultipleLots from "./delete_multiplie_lots_modal/delete_multiplie_lots_modal";
+import DeleteMultipleLotsModal from "./delete_multiplie_lots_modal/delete_multiplie_lots_modal";
 
 const Cards = (props) => {
 
@@ -30,9 +37,6 @@ const Cards = (props) => {
     const {
         id
     } = props
-
-    // history
-    const history = useHistory()
 
     const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
 
@@ -45,7 +49,8 @@ const Cards = (props) => {
     const onShowCardEditor = (bool) => dispatch(showEditor(bool))
 
     // internal state
-    const [selectedCard, setSelectedCard] = useState(null)
+    const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false)
+    const [selectedCards, setSelectedCards] = useState([])
     const [title, setTitle] = useState(null)
     const [currentProcess, setCurrentProcess] = useState(null)
     const [isProcessView, setIsProcessView] = useState(false)
@@ -158,63 +163,94 @@ const Cards = (props) => {
    * @param {binId)} string - id of clicked lot's bin
    *
    * */
-    const handleCardClick = (cardId, processId, binId) => {
-        onShowCardEditor(true)
-        setSelectedCard({ cardId, processId, binId })
+    const handleCardClick = (event, cardId, processId, binId) => {
+        if (event.shiftKey) {
+            const existingIndex = selectedCards.findIndex((currLot) => {
+                const {
+                    cardId: currLotId,
+                    binId: currBinId
+                } = currLot
+
+                return (cardId === currLotId) && (binId === currBinId)
+            })
+
+            if(existingIndex === -1) {
+                setSelectedCards([
+                    ...selectedCards,
+                    { cardId, processId, binId }
+                ])
+            }
+            else {
+                setSelectedCards(immutableDelete(selectedCards, existingIndex))
+            }
+        }
+        else {
+            onShowCardEditor(true)
+            setSelectedCards([{ cardId, processId, binId }])
+        }
     }
+
+
+
+    const handleDeleteClick = () => {
+        setShowConfirmDeleteModal(true)
+    }
+
+
 
     return (
         <styled.Container>
+            {showConfirmDeleteModal &&
+            <DeleteMultipleLotsModal
+                handleClose={() => setShowConfirmDeleteModal(false)}
+                lots={selectedCards}
+                isOpen={showConfirmDeleteModal}
+                setShowConfirmDeleteModal={setShowConfirmDeleteModal}
+                setSelectedCards={setSelectedCards}
+                selectedCards={selectedCards}
+            />
+            }
+
             {showCardEditor &&
             <LotEditorContainer
                 isOpen={showCardEditor}
                 onAfterOpen={null}
-                cardId={selectedCard ? selectedCard.cardId : null}
-                processId={selectedCard ? selectedCard.processId : null}
-                binId={selectedCard ? selectedCard.binId : null}
+                cardId={selectedCards[0] ? selectedCards[0].cardId : null}
+                processId={selectedCards[0] ? selectedCards[0].processId : null}
+                binId={selectedCards[0] ? selectedCards[0].binId : null}
                 close={()=>{
                     onShowCardEditor(false)
-                    setSelectedCard(null)
+                    setSelectedCards([])
                 }}
             />
             }
-            <styled.Header>
-                {isProcessView ?
-                    <styled.MenuButton
-                        style={{ marginRight: "auto" }}
-                        className="fas fa-chevron-left"
-                        aria-hidden="true"
-                        onClick={() => {
-                            history.replace('/processes')
-                        }
-                        }
-                    />
-                    :
-                    <styled.InvisibleItem style={{ marginRight: "auto" }} /> // used for spacing
-                }
-                <div style={{ flex: 1, flexDirection: "column", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <styled.Title>{title ? title : "untitled"}</styled.Title>
-                </div>
-                <styled.InvisibleItem
-                    style={{ marginLeft: "auto" }}
-                />
-            </styled.Header>
+            <SummaryHeader
+                showBackButton={isProcessView}
+                title={title}
+            />
             <ZoneHeader
                 sortDirection={sortDirection}
                 setSortDirection={setSortDirection}
                 sortMode={sortMode}
                 setSortMode={setSortMode}
-
                 setLotFilterValue={setLotFilterValue}
                 selectedFilterOption={selectedFilterOption}
                 setSelectedFilterOption={setSelectedFilterOption}
-
                 selectedProcesses={selectedProcesses}
                 setSelectedProcesses={setSelectedProcesses}
                 zone={id}
             />
+            {selectedCards.length > 0 &&
+            <MultiSelectOptions
+                selectedLots={selectedCards}
+                onDeleteClick={handleDeleteClick}
+                onClearClick={()=>setSelectedCards([])}
+            />
+            }
 
-            <styled.Body id={"cards-body"}>
+            <styled.Body
+                id={"cards-body"}
+            >
                 {showMenu &&
                     <CardMenu
                         currentProcess={currentProcess}
@@ -226,6 +262,8 @@ const Cards = (props) => {
                     {
                         'summary':
                             <SummaryZone
+                                setSelectedCards={setSelectedCards}
+                                selectedCards={selectedCards}
                                 sortMode={sortMode}
                                 sortDirection={sortDirection}
                                 selectedProcesses={selectedProcesses}
@@ -243,6 +281,8 @@ const Cards = (props) => {
                     }[id] ||
                     <styled.CardZoneContainer ref={zoneRef}>
                         <CardZone
+                            setSelectedCards={setSelectedCards}
+                            selectedCards={selectedCards}
                             maxHeight={(zoneSize.height - 75) + "px"} // maxHeight is set equal to size of parent div with some value subtracted as padding. NOTE: setting height to 100% doesn't currently work for this
                             setShowCardEditor={onShowCardEditor}
                             showCardEditor={showCardEditor}

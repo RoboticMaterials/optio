@@ -50,7 +50,7 @@ const DashboardAddTask = (props) => {
                 noDataLabel={"No matches found"}
                 labelField={'Description'}
                 closeOnSelect={true}
-                dropdownGap={5}
+                dropdownGap={2}
                 backspaceDelete={true}
                 key={2}
                 fillable={false}

@@ -192,11 +192,14 @@ const StatisticsOverview = (props) => {
 
         const body = { timespan: newTimeSpan, index: newDateIndex }
         const dataPromise = getStationAnalytics(stationID, body)
-        const reportAnalyticsResponse = await getReportAnalytics(stationID, body)
 
-        if (reportAnalyticsResponse && !(reportAnalyticsResponse instanceof Error)) {
-            setReportData(reportAnalyticsResponse)
-            setIsReportsLoading(false)
+        // If the timespan changes to line, then dont change what the report chart is showing
+        if (newTimeSpan !== 'line') {
+            const reportAnalyticsResponse = await getReportAnalytics(stationID, body)
+            if (reportAnalyticsResponse && !(reportAnalyticsResponse instanceof Error)) {
+                setReportData(reportAnalyticsResponse)
+                setIsReportsLoading(false)
+            }
         }
 
         dataPromise.then(response => {

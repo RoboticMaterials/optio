@@ -1,7 +1,7 @@
 // import external modules
 import React from "react";
 import { useField, useFormikContext } from "formik";
-import TimePicker from 'rc-time-picker';
+import TimePicker from './time_picker';
 import moment from 'moment';
 import 'rc-time-picker/assets/index.css';
 
@@ -49,7 +49,7 @@ const TimePickerField = (props) => {
 			<Container
 				style={containerStyle}
 			>
-				<styled.TimePickerComponent
+				<TimePicker
 					{...style}
 					{...field}
 					{...rest}
