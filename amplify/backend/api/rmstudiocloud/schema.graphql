@@ -170,6 +170,31 @@ type Card
   count: Int
 }
 
+type Settings 
+  @model
+  @auth(rules: [{ allow: private }])
+  @key(name: "SettingsByOrgId", fields: ["organizationId"], queryField: "SettingsByOrgId" )
+{
+  # IDs
+  id: ID!
+  _id: String
+  organizationId: ID!
+
+  MiRMapEnabled: Boolean
+  accessToken: String
+  authenticated: Boolean
+  currentMapId: String
+  deviceEnabled: Boolean
+  loggers: AWSJSON
+  mapViewEnabled: Boolean
+  non_local_api: Boolean
+  non_local_api_ip: String
+  refreshToken: String
+  shiftDetails: AWSJSON
+  toggleDevOptions: Boolean
+  timezone: AWSJSON
+}
+
 # Data stream
 
 type Device

@@ -652,6 +652,78 @@ export const onDeleteCard = /* GraphQL */ `
     }
   }
 `;
+export const onCreateSettings = /* GraphQL */ `
+  subscription OnCreateSettings {
+    onCreateSettings {
+      id
+      _id
+      organizationId
+      MiRMapEnabled
+      accessToken
+      authenticated
+      currentMapId
+      deviceEnabled
+      loggers
+      mapViewEnabled
+      non_local_api
+      non_local_api_ip
+      refreshToken
+      shiftDetails
+      toggleDevOptions
+      timezone
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateSettings = /* GraphQL */ `
+  subscription OnUpdateSettings {
+    onUpdateSettings {
+      id
+      _id
+      organizationId
+      MiRMapEnabled
+      accessToken
+      authenticated
+      currentMapId
+      deviceEnabled
+      loggers
+      mapViewEnabled
+      non_local_api
+      non_local_api_ip
+      refreshToken
+      shiftDetails
+      toggleDevOptions
+      timezone
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteSettings = /* GraphQL */ `
+  subscription OnDeleteSettings {
+    onDeleteSettings {
+      id
+      _id
+      organizationId
+      MiRMapEnabled
+      accessToken
+      authenticated
+      currentMapId
+      deviceEnabled
+      loggers
+      mapViewEnabled
+      non_local_api
+      non_local_api_ip
+      refreshToken
+      shiftDetails
+      toggleDevOptions
+      timezone
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const onCreateDevice = /* GraphQL */ `
   subscription OnCreateDevice {
     onCreateDevice {

@@ -1,113 +1,103 @@
-import axios from 'axios';
-// import * as log from 'loglevel';
-import logger from '../logger'
+/**
+ * All of the API calls for Settings
+ * 
+ * Created: ?
+ * Created by: ?
+ * 
+ * Edited: March 18 20201
+ * Edited by: Daniel Castillo
+ * 
+ *  NEEDS TO BE FIXED
+ *  WORKS FOR NOW
+ * 
+ * Add flow for when there are no settings
+ * 
+ */
 
-import { apiIPAddress } from '../settings/settings'
+// logging for error in API
+import errorLog from './errorLogging'
 
-const operator = 'settings'
+// import the API category from Amplify library
+import { API } from 'aws-amplify'
 
-const log = logger.getLogger('Api')
+import getUserOrgId from './user_api'
+
+// import the GraphQL queries, mutations and subscriptions
+import { settingsByOrgId } from '../graphql/queries';
+import { createSettings, updateSettings } from '../graphql/mutations';
 
 export async function getSettings() {
     try {
-        const response = await axios({
-            method: 'get',
-            url: apiIPAddress() + operator,
-            headers:{
-                'X-API-Key': '123456',
-                'Access-Control-Allow-Origin': '*'
-            }
-            // token: token.username
-        });
-        // Success 🎉
-        log.debug('getSettings response', response);
-        const data = response.data;
 
-        const dataJson = JSON.parse(data)
-        log.debug('getSettings dataJson', dataJson);
-        return dataJson;
+        const userOrgId = await getUserOrgId()
 
-        // const settings = {
-        //   mir_ip: '10.1.12.136',
-        //   idle_task: 'Bring me beer',
-        //   charge_location: 'Station'
-        // }
-        // return settings;
+        const res = await API.graphql({
+            query: settingsByOrgId,
+            variables: { organizationId: userOrgId }
+        })
 
-    } catch (error) {
+        let settings = res.data.SettingsByOrgId.items[0]
 
-        // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
+        let GQLdata = {
+            ...settings,
+            loggers: JSON.parse(settings.loggers),
+            shiftDetails: JSON.parse(settings.shiftDetails),
+            timezone: JSON.parse(settings.timezone)
         }
-        log.debug('error', error);
+        
+        return GQLdata;
+    } catch (error) {
+        // Error 😨
+        errorLog(error)
     }
-
 }
 
 export async function postSettings(settings) {
     try {
-        const response = await axios({
-            method: 'POST',
-            url: apiIPAddress() + operator,
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': '123456',
-                'Accept': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
-            data: settings
-        });
 
-        // Success 🎉
-        log.debug('response', response);
-        const data = response.data;
-        const dataJson = JSON.parse(data)
-        log.debug('response data json', dataJson);
-        return dataJson;
-
-
-    } catch (error) {
-
-        // Error 😨
-        if (error.response) {
-            /*
-             * The request was made and the server responded with a
-             * status code that falls out of the range of 2xx
-             */
-            log.debug('error.response.data', error.response.data);
-            log.debug('error.response.status', error.response.status);
-            log.debug('error.response.headers', error.response.headers);
-
-        } else if (error.request) {
-            /*
-             * The request was made but no response was received, `error.request`
-             * is an instance of XMLHttpRequest in the browser and an instance
-             * of http.ClientRequest in Node.js
-             */
-            log.debug('error.request', error.request);
-
-        } else {
-            // Something happened in setting up the request and triggered an Error
-            log.debug('error.message', error.message);
-
+        const input = {
+            ...settings,
+            loggers: JSON.stringify(settings.loggers),
+            shiftDetails: JSON.stringify(settings.shiftDetails),
+            timezone: JSON.stringify(settings.timezone)
         }
-        log.debug('error', error);
+
+        delete input.createdAt
+        delete input.updatedAt
+
+        let dataJson = await API.graphql({
+            query: createSettings,
+            variables: { input: input }
+        })
+
+        return dataJson.data.createTask;
+    } catch (error) {
+        // Error 😨
+        errorLog(error)
+    }
+}
+
+export async function putSettings(settings) {
+    try {
+
+        const input = {
+            ...settings,
+            loggers: JSON.stringify(settings.loggers),
+            shiftDetails: JSON.stringify(settings.shiftDetails),
+            timezone: JSON.stringify(settings.timezone)
+        }
+
+        delete input.createdAt
+        delete input.updatedAt
+
+        let dataJson = await API.graphql({
+            query: updateSettings,
+            variables: { input: input }
+        })
+
+        return dataJson.data.createTask;
+    } catch (error) {
+        // Error 😨
+        errorLog(error)
     }
 }

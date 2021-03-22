@@ -1,6 +1,61 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const getSettings = /* GraphQL */ `
+  query GetSettings($id: ID!) {
+    getSettings(id: $id) {
+      id
+      _id
+      organizationId
+      MiRMapEnabled
+      accessToken
+      authenticated
+      currentMapId
+      deviceEnabled
+      loggers
+      mapViewEnabled
+      non_local_api
+      non_local_api_ip
+      refreshToken
+      shiftDetails
+      toggleDevOptions
+      timezone
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listSettingss = /* GraphQL */ `
+  query ListSettingss(
+    $filter: ModelSettingsFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listSettingss(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        _id
+        organizationId
+        MiRMapEnabled
+        accessToken
+        authenticated
+        currentMapId
+        deviceEnabled
+        loggers
+        mapViewEnabled
+        non_local_api
+        non_local_api_ip
+        refreshToken
+        shiftDetails
+        toggleDevOptions
+        timezone
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
 export const getDashboard = /* GraphQL */ `
   query GetDashboard($id: ID!) {
     getDashboard(id: $id) {
@@ -379,6 +434,45 @@ export const getCardById = /* GraphQL */ `
         totalQuantity
         processName
         count
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const settingsByOrgId = /* GraphQL */ `
+  query SettingsByOrgId(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelSettingsFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    SettingsByOrgId(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        _id
+        organizationId
+        MiRMapEnabled
+        accessToken
+        authenticated
+        currentMapId
+        deviceEnabled
+        loggers
+        mapViewEnabled
+        non_local_api
+        non_local_api_ip
+        refreshToken
+        shiftDetails
+        toggleDevOptions
+        timezone
         createdAt
         updatedAt
       }

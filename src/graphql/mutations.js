@@ -550,6 +550,87 @@ export const deleteCard = /* GraphQL */ `
     }
   }
 `;
+export const createSettings = /* GraphQL */ `
+  mutation CreateSettings(
+    $input: CreateSettingsInput!
+    $condition: ModelSettingsConditionInput
+  ) {
+    createSettings(input: $input, condition: $condition) {
+      id
+      _id
+      organizationId
+      MiRMapEnabled
+      accessToken
+      authenticated
+      currentMapId
+      deviceEnabled
+      loggers
+      mapViewEnabled
+      non_local_api
+      non_local_api_ip
+      refreshToken
+      shiftDetails
+      toggleDevOptions
+      timezone
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateSettings = /* GraphQL */ `
+  mutation UpdateSettings(
+    $input: UpdateSettingsInput!
+    $condition: ModelSettingsConditionInput
+  ) {
+    updateSettings(input: $input, condition: $condition) {
+      id
+      _id
+      organizationId
+      MiRMapEnabled
+      accessToken
+      authenticated
+      currentMapId
+      deviceEnabled
+      loggers
+      mapViewEnabled
+      non_local_api
+      non_local_api_ip
+      refreshToken
+      shiftDetails
+      toggleDevOptions
+      timezone
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteSettings = /* GraphQL */ `
+  mutation DeleteSettings(
+    $input: DeleteSettingsInput!
+    $condition: ModelSettingsConditionInput
+  ) {
+    deleteSettings(input: $input, condition: $condition) {
+      id
+      _id
+      organizationId
+      MiRMapEnabled
+      accessToken
+      authenticated
+      currentMapId
+      deviceEnabled
+      loggers
+      mapViewEnabled
+      non_local_api
+      non_local_api_ip
+      refreshToken
+      shiftDetails
+      toggleDevOptions
+      timezone
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const createDevice = /* GraphQL */ `
   mutation CreateDevice(
     $input: CreateDeviceInput!

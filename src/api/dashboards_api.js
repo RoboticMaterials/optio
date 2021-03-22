@@ -92,8 +92,6 @@ export async function postDashboards(dashboards) {
             id: fakeID,
         }
 
-        console.log('post', dashboardInput);
-
         await API.graphql({
             query: createDashboard,
             variables: { input: dashboardInput }
@@ -114,8 +112,6 @@ export async function postDashboards(dashboards) {
 export async function putDashboards(dashboard, ID) {
     try {
 
-        console.log('befire dash', dashboard, ID);
-
         let dashboardInput = {
             id: ID ? ID : dashboard.id,
             organizationId: dashboard.organizationId,
@@ -133,8 +129,6 @@ export async function putDashboards(dashboard, ID) {
             query: updateDashboard,
             variables: { input: dashboardInput }
         })
-
-        console.log('updated dash', dashboardInput);
 
         return dashboardInput
 

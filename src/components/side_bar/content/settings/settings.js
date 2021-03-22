@@ -15,7 +15,7 @@ import {Timezones} from '../../../../constants/timezone_constants'
 import { Auth } from "aws-amplify";
 
 // Import Actions
-import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
+import { putSettings, getSettings } from '../../../../redux/actions/settings_actions'
 import { postLocalSettings, getLocalSettings } from '../../../../redux/actions/local_actions'
 
 import { deviceEnabled } from '../../../../redux/actions/settings_actions'
@@ -30,7 +30,7 @@ const Settings = () => {
     const history = useHistory()
 
     const dispatch = useDispatch()
-    const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
+    const dispatchPostSettings = (settings) => dispatch(putSettings(settings))
     const dispatchGetSettings = () => dispatch(getSettings())
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())

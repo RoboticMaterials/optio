@@ -68,6 +68,31 @@ export const postSettings = (settings) => {
     }
 }
 
+export const putSettings = (settings) => {
+    return async dispatch => {
+        function onStart() {
+            dispatch({ type: POST_SETTINGS_STARTED });
+        }
+        function onSuccess(response) {
+            dispatch({ type: POST_SETTINGS_SUCCESS, payload: settings });
+            return response;
+        }
+        function onError(error) {
+            dispatch({ type: POST_SETTINGS_FAILURE, payload: error });
+            return error;
+        }
+
+        try {
+            onStart();
+            delete settings._id
+            const newSettings = await api.putSettings(settings);
+            return onSuccess(newSettings)
+        } catch (error) {
+            return onError(error)
+        }
+    }
+}
+
 export const deviceEnabled = (state) => {
     return { type: DEVICE_ENABLED, payload: state}
 }
