@@ -67,8 +67,6 @@ const TextField = ({
     const warningMessage = getMessageFromError(warning)
     useChange(setFieldValue)
 
-    console.log(themeContext.warn)
-
     return (
         <>
             {fieldLabel &&

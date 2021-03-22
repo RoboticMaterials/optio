@@ -10,7 +10,7 @@ export const Container = styled.div`
     padding-left: .5rem;
     padding-right: .5rem;
     text-align: center;
-    background-color: ${props => props.theme.bg.secondary};
+    background-color: ${props => props.theme.bg.tertiary};
 
     font-family: ${props => props.theme.font.primary};
     font-weight: 400;

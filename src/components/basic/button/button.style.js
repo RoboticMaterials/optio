@@ -11,7 +11,7 @@ const buttonTheme = (props) => {
 
     if (props.disabled) { // Disabled
         return (`
-            background-color: ${props.theme.bg.secondary};
+            background-color: ${props.theme.bg.tertiary};
             color: ${props.theme.bg.senary};
             border: none;`
         )
@@ -31,12 +31,12 @@ const buttonTheme = (props) => {
                 background: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
 
                 &:active {
-                    color: ${props.theme.bg.tertiary};
+                    color: ${props.theme.bg.secondary};
                 }
                 `
                 : `
                 &:active {
-                    color: ${props.theme.bg.tertiary};
+                    color: ${props.theme.bg.secondary};
                     background: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
                     border-color: transparent;
                 }`

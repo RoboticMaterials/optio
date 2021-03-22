@@ -49,7 +49,7 @@ const LocationSvg = (props) => {
             onMouseLeave={() => {
                 handleMouseLeave()
             }}
-            transform={`translate(${location.x},${location.y}) rotate(-${location.rotation}) scale(${d3.scale / d3.imgResolution})`}
+            transform={`translate(${location.x},${location.y}) rotate(${-location.rotation}) scale(${d3.scale / d3.imgResolution})`}
         >
             <defs>
 

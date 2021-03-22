@@ -9,7 +9,7 @@ const backgroundColor = (props) => {
 
   else {
     if(props.tertiary) {
-      return props.theme.bg.secondary;
+      return props.theme.bg.tertiary;
     }
     else {
        if(props.disabled) {
@@ -45,7 +45,7 @@ export const SmallButton = styled.button`
        (props.theme.bg.senary)
       :
       (props.tertiary ?
-        props.theme.bg.secondary
+        props.theme.bg.tertiary
         :
         (props.disabled ? props.theme.disabled :  props.theme.fg.primary))};
     */
@@ -57,7 +57,7 @@ export const SmallButton = styled.button`
     &:focus {
         outline: none;
         background-color: ${props => backgroundColor(props)};
-        //background-color: ${props => props.secondary || props.disabled ? props.theme.bg.senary : (props.tertiary ? props.theme.bg.secondary : props.theme.fg.primary)};
+        //background-color: ${props => props.secondary || props.disabled ? props.theme.bg.senary : (props.tertiary ? props.theme.bg.tertiary : props.theme.fg.primary)};
     }
 
     &:hover {

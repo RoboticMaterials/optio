@@ -72,7 +72,7 @@ export const RobotButton = styled.div`
 export const HumanButton = styled.button`
     ${ButtonStyle};
     flex: 1;
-    border-left: 1px solid ${props => props.theme.bg.tertiary};
+    border-left: 1px solid ${props => props.theme.bg.secondary};
     background: ${props => `linear-gradient(180deg, 
                             ${LightenDarkenColor(props.background, -40)} 0%, 
                             ${LightenDarkenColor(props.background, -50)} 50%, 
@@ -85,7 +85,7 @@ export const Container = styled.button`
     // flex layout
     flex-direction: row;
     
-    box-shadow: 0 9px 2px -4px ${props => LightenDarkenColor(props.theme.bg.tertiary,  -50)}; 
+    box-shadow: 0 9px 2px -4px ${props => LightenDarkenColor(props.theme.bg.secondary,  -50)}; 
     height: 4rem; 
     // line-height: 4rem; 
     margin-bottom: 1rem; 

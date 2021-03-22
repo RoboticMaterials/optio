@@ -7,7 +7,7 @@ export const PlusSymbol = styled.i`
     flex-basis: 5rem;
     flex-shrink: 0;
 
-    color: ${props => props.disabled ? props.theme.bg.tertiary : props.schema ? props.theme.schema[props.schema] : props.theme.fg.primary};
+    color: ${props => props.disabled ? props.theme.bg.secondary : props.schema ? props.theme.schema[props.schema] : props.theme.fg.primary};
     height: 1.6rem;
     width: 1.6rem;
     margin: none;

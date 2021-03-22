@@ -121,7 +121,7 @@ export const Header = styled.div`
 	padding: 0;
 	margin: 0;
 	height: 3rem;
-	background: ${props => props.theme.bg.tertiary};
+	background: ${props => props.theme.bg.secondary};
 	
 `
 export const Label = styled.span`
@@ -195,7 +195,7 @@ export const IconSelectorContainer = styled.div`
 `
 
 export const ContentContainer = styled.div`
-	background: ${props => props.theme.bg.tertiary};
+	background: ${props => props.theme.bg.secondary};
 	border-radius: 1rem;
 	display: flex;
 	flex-direction: column;
@@ -229,7 +229,7 @@ export const RightContentContainer = styled.div`
     justify-content: center;
     background: ${props => props.theme.bg.senary};
     width: 4rem;
-    border-left: 1px solid ${props => props.theme.bg.tertiary};
+    border-left: 1px solid ${props => props.theme.bg.secondary};
     height: 100%;
     // background-color: ${props => props.theme.bg.septenary};
     
@@ -322,7 +322,7 @@ export const AddNewButtonContainer = styled.div`
 	display: flex;
 	justify-content: center;
 	width: 100%;
-	border-bottom:  ${props => props.showBorder && `1px solid` + props.theme.bg.tertiary};
+	border-bottom:  ${props => props.showBorder && `1px solid` + props.theme.bg.secondary};
 `
 
 export const ColorFieldContainer = styled.div`

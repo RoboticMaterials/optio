@@ -80,7 +80,7 @@ export const DefaultTypesContainer = styled.div`
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    border-bottom: 0.1rem solid ${props => props.theme.bg.secondary};
+    border-bottom: 0.1rem solid ${props => props.theme.bg.tertiary};
     justify-content: center;
 
     margin-top: 0.5rem;
