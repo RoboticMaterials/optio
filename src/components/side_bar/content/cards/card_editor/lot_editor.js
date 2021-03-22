@@ -738,27 +738,33 @@ const FormComponent = (props) => {
 
 						<styled.FieldsHeader>
 
-							<styled.IconRow>
-								{showPasteIcon &&
-								<styled.PasteIcon
-									type={"button"}
-									className="fas fa-paste"
-									color={"#ffc20a"}
-									onClick={onPasteIconClick}
-								/>
-								}
+							<styled.SubHeader>
+								<div>
+									<styled.ContentTitle>Selected Template: </styled.ContentTitle>
+									<styled.ContentValue>{lotTemplate.name}</styled.ContentValue>
+								</div>
 
-								<styled.TemplateButton
-									type={"button"}
-									className={SIDE_BAR_MODES.TEMPLATES.iconName}
-									color={SIDE_BAR_MODES.TEMPLATES.color}
-									onClick={() => {
-										setShowTemplateSelector(!showTemplateSelector)
-										dispatchSetSelectedLotTemplate(lotTemplateId)
-									}}
-								/>
+								<styled.IconRow>
+									{showPasteIcon &&
+									<styled.PasteIcon
+										type={"button"}
+										className="fas fa-paste"
+										color={"#ffc20a"}
+										onClick={onPasteIconClick}
+									/>
+									}
 
-							</styled.IconRow>
+									<styled.TemplateButton
+										type={"button"}
+										className={SIDE_BAR_MODES.TEMPLATES.iconName}
+										color={SIDE_BAR_MODES.TEMPLATES.color}
+										onClick={() => {
+											setShowTemplateSelector(!showTemplateSelector)
+											dispatchSetSelectedLotTemplate(lotTemplateId)
+										}}
+									/>
+								</styled.IconRow>
+							</styled.SubHeader>
 
 							{(showProcessSelector || !values.processId) && renderProcessSelector()}
 

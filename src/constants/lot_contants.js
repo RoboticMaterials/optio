@@ -117,7 +117,7 @@ export const EMPTY_DEFAULT_FIELDS =  [
 
 export const BASIC_LOT_TEMPLATE = {
 	fields: EMPTY_DEFAULT_FIELDS,
-	name: BASIC_LOT_TEMPLATE_ID,
+	name: "Basic",
 	_id: BASIC_LOT_TEMPLATE_ID
 }
 
