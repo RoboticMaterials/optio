@@ -25,7 +25,7 @@ export const TextboxLabel = styled.h1`
 `;
 
 export const TextboxInput = styled.input`
-    background-color: ${props => props.theme.bg.tertiary};
+    background-color: ${props => props.theme.bg.secondary};
     border: none;
     font-size: ${props => props.theme.fontSize.sz4};
     font-family: ${props => props.theme.font.primary};
@@ -35,7 +35,7 @@ export const TextboxInput = styled.input`
     color: ${props => props.theme.bg.octonary};
 
     box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1) !important;
-    border-bottom: 2px solid ${props => props.theme.bg.tertiary};
+    border-bottom: 2px solid ${props => props.theme.bg.secondary};
 
     &:focus {
         border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
@@ -50,7 +50,7 @@ export const TextboxInput = styled.input`
 `;
 
 export const TextboxArea = styled.textarea`
-    background-color: ${props => props.theme.bg.tertiary};
+    background-color: ${props => props.theme.bg.secondary};
     border: none;
     font-size: ${props => props.theme.fontSize.sz4};
     font-family: ${props => props.theme.font.primary};
@@ -60,10 +60,10 @@ export const TextboxArea = styled.textarea`
     color: ${props => props.theme.bg.octonary};
 
     box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1) !important;
-    border-bottom: 2px solid ${props => props.theme.bg.tertiary};
+    border-bottom: 2px solid ${props => props.theme.bg.secondary};
 
     &:focus {
-        background-color: ${props => LightenDarkenColor(props.theme.bg.tertiary, 3)};
+        background-color: ${props => LightenDarkenColor(props.theme.bg.secondary, 3)};
         border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
         color: ${props => props.theme.bg.octonary};
         outline: none !important;

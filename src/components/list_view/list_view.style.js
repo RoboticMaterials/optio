@@ -3,7 +3,7 @@ import * as stylesh from '../../containers/status_header/status_header.style'
 import {LightenDarkenColor} from "../../methods/utils/color_utils";
 
 export const Container = styled.div`
-    background: ${props => props.theme.bg.tertiary};
+    background: ${props => props.theme.bg.secondary};
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -24,7 +24,7 @@ export const Icon = styled.i`
 
 
 export const Header = styled.div`
-	background: ${props => props.theme.bg.secondary};
+	background: ${props => props.theme.bg.tertiary};
 	width: 100%;
 	padding: 1rem;
 	align-items: center;

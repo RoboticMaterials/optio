@@ -4,7 +4,7 @@ export const StatisticsContainer = styled.div`
     height: 100%;
     width: 100%;
 
-    background: ${props => props.theme.bg.tertiary};
+    background: ${props => props.theme.bg.secondary};
 `
 
 export const StatisticsSectionsButtonContainer = styled.div`
@@ -73,7 +73,7 @@ export const StatisticsDownloadButton = styled.button`
     }
 
     &:hover{
-        background-color: ${props => props.theme.bg.secondary};
+        background-color: ${props => props.theme.bg.tertiary};
     }
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){

@@ -33,7 +33,7 @@ export const Container = styled.button`
 	outline: none;
   }
   
-	border: thin solid ${props => props.theme.bg.secondary};
+	border: thin solid ${props => props.theme.bg.tertiary};
 	border-radius: .5rem;
 	// box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
 	transition: all 0.2s ease 0s;
@@ -65,6 +65,6 @@ export const Container = styled.button`
 	
 }
   
-	background-color: ${props => LightenDarkenColor(props.theme.bg.secondary,20)};
+	background-color: ${props => LightenDarkenColor(props.theme.bg.tertiary,20)};
 	padding: .5rem;
 `

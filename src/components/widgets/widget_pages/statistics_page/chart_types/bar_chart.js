@@ -58,7 +58,7 @@ const BarChart = (props) => {
         },
         grid: {
             line: {
-                stroke: themeContext.bg.secondary,
+                stroke: themeContext.bg.tertiary,
                 strokeWidth: 1
             }
         },

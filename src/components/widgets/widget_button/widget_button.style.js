@@ -23,7 +23,7 @@ export const WidgetButtonButton = styled.button`
     transition: background-color 0.25s ease, box-shadow 0.1s ease;
 
     &:hover{
-        background-color: ${props => props.theme.bg.tertiary};
+        background-color: ${props => props.theme.bg.secondary};
     }
 
     &:focus{

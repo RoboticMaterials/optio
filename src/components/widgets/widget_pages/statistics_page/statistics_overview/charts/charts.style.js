@@ -89,9 +89,10 @@ export const PlotTitle = styled.h2`
 
 export const ChartButton = styled.button`
     ${buttonCss.button};
-    background-color:${props => props.theme.bg.tertiary};
-    color: white;
-    margin-top: .25rem;
+    background-color:${props => props.theme.schema.charts.solid};
+    color: ${props => props.theme.bg.primary};
+    margin-top: .5rem;
+    margin-bottom: 0.1rem;
     font-size: 1.25rem;
 `
 
@@ -102,13 +103,13 @@ export const RowContainer = styled.div`
 `
 
 export const ColumnContainer = styled.div`
-    ${commonCss.columnContainer}
+    ${commonCss.columnContainer};
 `
 
 export const Label = styled.label`
   font-size: ${props => props.theme.fontSize.sz3};
   font-family: ${props => props.theme.font.primary};
-  color: white;
+  color: ${props => props.theme.bg.octonary};
 `
 
 export const DatePickerLabel = styled.label`
@@ -137,7 +138,7 @@ export const BreakContainer = styled.div`
     flex-direction: column;
     align-items: center;
     height: fit-content;
-    background-color: ${props => props.theme.bg.quaternary};
+    background-color: ${props => props.theme.bg.secondary};
     border-radius: .5rem;
 `
 
@@ -152,7 +153,7 @@ export const ChartTypeButton = styled.button`
 
     color: ${props => props.selected ? props.theme.bg.primary : props.theme.bg.quinary};
 
-    background-color: ${props => props.selected ? props.theme.charts : props.theme.bg.secondary};
+    background-color: ${props => props.selected ? props.theme.schema.charts.solid : props.theme.bg.tertiary};
 
     transition: background-color 0.25s ease, box-shadow 0.1s ease;
 
@@ -172,5 +173,5 @@ export const ChartTypeButton = styled.button`
 export const BreakLabel = styled.label`
   font-size: ${props => props.theme.fontSize.sz4};
   font-family: ${props => props.theme.font.primary};
-  color: white;
+  color: ${props => props.theme.bg.senary};
 `

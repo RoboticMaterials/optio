@@ -116,7 +116,7 @@ const ThroughputChart = (props) => {
                             axisBottom={{
                                 tickRotation: -90,
                             }}
-                            colors={themeContext.charts}
+                            colors={themeContext.schema.charts.solid}
                             axisLeft={{
                                 enable: true,
                             }}

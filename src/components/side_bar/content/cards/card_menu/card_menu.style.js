@@ -8,7 +8,7 @@ export const Container = styled.div`
 	// flex: 1;
 	padding: 1rem;
 	color: ${props => props.theme.bg.octonary};
-	border-right: 1px solid ${props => props.theme.bg.tertiary};
+	border-right: 1px solid ${props => props.theme.bg.secondary};
 `
 
 export const Header = styled.div`

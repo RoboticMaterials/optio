@@ -11,22 +11,11 @@ export const size = {
     desktop: '2560px'
 }
 
-const dark = {
-    primary: '#000000',  // Black
-    secondary: '#27272b',
-    tertiary: '#313236',
-    // quaternary: '#4f5063',
-    quaternary: '#5a5a63',
-    quinary: '#6c6e78',
-    senary: '#a6a7ba',
-    septenary: '#e9e9f2',
-    octonary: '#FFFFFF',  // White
-}
 
 const light = {
     primary: '#FFFFFF',  // White
-    secondary: '#dedfe3',
-    tertiary: '#f5f5fa',
+    secondary: '#f5f5fa',
+    tertiary: '#dedfe3',
     quaternary: '#b8b9bf',  // light light grey
     quinary: '#79797d',   // light grey
     senary: '#7e7e7e',    // charcoal
@@ -78,7 +67,6 @@ export const theme = {
                 active: "#FFFFFF",
             }
         },
-        charts: "#54AAFF",
         cardShadow: '0px 0px 6px 1px rgba(0,0,0,0.1)',
 
         font: {
@@ -161,6 +149,9 @@ export const theme = {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(167, 114, 252, 0.95) 0%, rgba(251, 0, 255, 0.95) 100%)',
                 solid: '#9e64fc',
                 iconName: "fas fa-play"
+            },
+            charts: {
+                solid: "#54AAFF",
             },
             kick_off: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(197, 155, 255) 0%, rgba(173, 115, 255, 0.95) 100%)',

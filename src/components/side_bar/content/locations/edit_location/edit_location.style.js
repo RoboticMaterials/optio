@@ -12,7 +12,7 @@ export const DefaultTypesContainer = styled.div`
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    border-bottom: 0.15rem solid ${props => props.theme.bg.secondary};
+    border-bottom: 0.15rem solid ${props => props.theme.bg.tertiary};
     justify-content: center;
     align-items: center;
 

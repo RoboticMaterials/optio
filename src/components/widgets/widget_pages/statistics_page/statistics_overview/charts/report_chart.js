@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef, useEffect } from 'react';
 
 // Import Styles
 import * as styled from './charts.style'
@@ -91,7 +91,7 @@ const ReportChart = (props) => {
                 >
                     <BarChart
                         data={filteredData.current}
-                        colors={bar => !!filteredDataColors ? filteredDataColors.current[bar.id] : themeContext.charts}
+                        colors={bar => !!filteredDataColors ? filteredDataColors.current[bar.id] : themeContext.theme.schema.charts.solid}
                         keys={reportButtonNames}
                         indexBy={'lable'}
                         colorBy={"id"}
