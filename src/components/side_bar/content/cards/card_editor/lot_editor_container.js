@@ -40,6 +40,7 @@ import { getDisplayName } from "../../../../../methods/utils/lot_utils";
 
 // styles
 import * as styled from "./lot_editor_container.style";
+import {postLocalSettings} from "../../../../../redux/actions/local_actions";
 
 
 
@@ -48,11 +49,20 @@ const LotEditorContainer = (props) => {
     // actions
     const dispatch = useDispatch()
     const dispatchPostCard = async (card) => await dispatch(postCard(card))
+    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
 
     // redux state
     const selectedLotTemplatesId = useSelector(state => { return state.lotTemplatesReducer.selectedLotTemplatesId })
     const lotTemplates = useSelector(state => { return state.lotTemplatesReducer.lotTemplates }) || {}
     const cards = useSelector(state => { return state.cardsReducer.cards })
+    const localReducer = useSelector(state => state.localReducer) || {}
+    const {
+        loaded: localSettingsLoaded,
+        localSettings
+    } = localReducer
+    const {
+        lastLotTemplateId = null
+    } = localSettings || {}
 
     // component state
     const [mappedStatus, setMappedStatus] = useState([])						// array of form status objects
@@ -70,7 +80,7 @@ const LotEditorContainer = (props) => {
     const [createdLot, setCreatedLot] = useState(false)				// bool - controls whether or not to show statusList
     const [fieldNameArr, setFieldNameArr] = useState([])
     const [lotTemplate, setLotTemplate] = useState([])
-    const [lotTemplateId, setLotTemplateId] = useState([])
+    const [lotTemplateId, setLotTemplateId] = useState(null)
     const [card, setCard] = useState(cards[props.cardId] || null)
     const [collectionCount, setCollectionCount] = useState(null)
     const [lazyCreate, setLazyCreate] = useState(false)
@@ -109,6 +119,7 @@ const LotEditorContainer = (props) => {
     }, [props.cardId])
 
     useEffect(() => {
+        console.log("oh no 1")
         let tempLotTemplateId = selectedLotTemplatesId  // set template id to selected template from redux - set by sidebar when you pick a template
 
         // if a template isn't provided by redux, check if card has template id
@@ -116,8 +127,9 @@ const LotEditorContainer = (props) => {
             tempLotTemplateId = card?.lotTemplateId
         }
 
-        if (!tempLotTemplateId) tempLotTemplateId = BASIC_LOT_TEMPLATE_ID
-        let tempLotTemplate = lotTemplates[tempLotTemplateId] || BASIC_LOT_TEMPLATE
+        // if card also doesn't have template id, use local stored or BASIC_LOT_TEMPLATE
+        if (!tempLotTemplateId) tempLotTemplateId = lastLotTemplateId
+        let tempLotTemplate = lotTemplates[tempLotTemplateId]
         if (!lotTemplates[tempLotTemplateId]) {
             tempLotTemplateId = BASIC_LOT_TEMPLATE_ID
             tempLotTemplate = BASIC_LOT_TEMPLATE
@@ -125,7 +137,22 @@ const LotEditorContainer = (props) => {
 
         setLotTemplateId(tempLotTemplateId)
         setLotTemplate(tempLotTemplate)
-    }, [selectedLotTemplatesId, card, lotTemplates])
+    }, [selectedLotTemplatesId, card, lotTemplates, lastLotTemplateId])
+
+    useEffect(() => {
+        console.log("oh no 2")
+        // only post to local settings if localsettings have been loaded. Otherwise this could overwrite the stored localsettings with the initial (default) values
+        if(localSettingsLoaded && (lotTemplateId !== null) && (lastLotTemplateId !== lotTemplateId)) {
+            const {
+                localSettings
+            } = localReducer || {}
+
+            dispatchPostLocalSettings({
+                ...localSettings,
+                lastLotTemplateId: lotTemplateId,
+            })
+        }
+    }, [lotTemplateId, localSettingsLoaded, lastLotTemplateId])
 
 
     useEffect(() => {

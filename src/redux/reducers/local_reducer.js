@@ -151,6 +151,7 @@ const localReducer = (state = defaultState, action) => {
                 ...state,
                 localSettings: action.payload,
                 pending: false,
+                loaded: true,
             }
 
         case GET_LOCAL_SETTINGS_FAILURE:
