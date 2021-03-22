@@ -6,8 +6,6 @@ import * as styled from './location_svg.style'
 import { StationTypes } from '../../../../constants/station_constants'
 import { PositionTypes } from '../../../../constants/position_constants'
 import PropTypes from "prop-types";
-import MoveMultipleLotsModal
-    from "../../../side_bar/content/cards/modals/move_multiplie_lots_modal/move_multiplie_lots_modal";
 
 const LocationSvg = (props) => {
 
