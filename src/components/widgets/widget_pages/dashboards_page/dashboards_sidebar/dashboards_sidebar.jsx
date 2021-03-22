@@ -307,7 +307,7 @@ const DashboardsSidebar = (props) => {
                                     type: currButtonType
                                 } = currButton || {}
 
-                                const dashboardContainsTask = getDashboardContainsRouteButton({buttons: existingButtons}, {task_id: currButtonTaskId})
+                                const dashboardContainsTask = currButtonTaskId === 'custom_task' ? false : getDashboardContainsRouteButton({buttons: existingButtons}, {task_id: currButtonTaskId})
                                 return (
                                     <DashboardSidebarButton
                                         key={`dashboard-sidebar-button-${currButtonId}`}
