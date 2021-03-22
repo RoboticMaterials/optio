@@ -53,8 +53,7 @@ import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
 import {isArray} from "../../../../../methods/utils/array_utils";
 import {formatLotNumber, getDisplayName} from "../../../../../methods/utils/lot_utils";
 
-// import styles    git push --set-upstream origin deleting_new_location_crahses_page
-
+// import styles
 import * as styled from "./lot_editor.style"
 import * as FormStyle from "./lot_form_creator/lot_form_creator.style"
 
@@ -89,6 +88,7 @@ const FormComponent = (props) => {
 		processId,
 		errors,
 		values,
+		status,
 		touched,
 		footerContent,
 		isSubmitting,
@@ -100,7 +100,8 @@ const FormComponent = (props) => {
 		content,
 		setContent,
 		onAddClick,
-		loaded
+		loaded,
+		cardNames
 	} = props
 
 	const {
@@ -133,6 +134,20 @@ const FormComponent = (props) => {
 	const [showProcessSelector, setShowProcessSelector] = useState(props.showProcessSelector)
 	const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
+	const [warningValues, setWarningValues] = useState()
+
+	useEffect(() => {
+		setWarningValues({
+			name: values.name,
+			cardNames
+		})
+	}, [values.name, cardNames])
+
+	useWarn(uniqueNameSchema, {
+		setStatus: formikProps.setStatus,
+		status,
+		values: warningValues
+	})
 
 	// derived state
 	const selectedBinName = stations[binId] ?
@@ -1036,7 +1051,8 @@ const LotEditor = (props) => {
 		initialValues,
 		formRef,
 		onValidate,
-		onPasteIconClick
+		onPasteIconClick,
+		cardNames,
 	} = props
 
 	// redux state
@@ -1059,7 +1075,7 @@ const LotEditor = (props) => {
 	const [loaded, setLoaded] = useState(false)
 	const [formMode, setFormMode] = useState(props.cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
 	const [showLotTemplateEditor, setShowLotTemplateEditor] = useState(false)
-	const [cardNames, setCardNames] = useState([])
+
 
 	// get card object from redux by cardId
 	const card = cards[cardId] || null
@@ -1099,20 +1115,6 @@ const LotEditor = (props) => {
 		setCardId(props.cardId)
 	}, [props.cardId])
 
-	useEffect(() => {
-		let tempCardNames = []
-
-		Object.values(cards).forEach((currCard, currCardIndex) => {
-			const {
-				name,
-				_id: currLotId
-			} = currCard || {}
-
-			tempCardNames.push({name, id: currLotId})
-		})
-
-		setCardNames(tempCardNames)
-	}, [cards])
 
 	useEffect(() => {
 		setLotNumber((card && card.lotNumber !== null) ? card.lotNumber : collectionCount)
@@ -1208,8 +1210,7 @@ const LotEditor = (props) => {
 								defaultBins,
 							[lotTemplateId]: {
 								...getInitialValues(lotTemplate, card)
-							},
-							cardNames
+							}
 						}}
 
 						// validation control
@@ -1423,6 +1424,7 @@ const LotEditor = (props) => {
 							if(hidden || showLotTemplateEditor) return null
 							return (
 								<FormComponent
+									cardNames={cardNames}
 									onAddClick={onAddClick}
 									footerContent={footerContent}
 									showCreationStatusButton={showCreationStatusButton}

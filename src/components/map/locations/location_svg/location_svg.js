@@ -5,6 +5,7 @@ import * as styled from './location_svg.style'
 // Import Constants
 import { StationTypes } from '../../../../constants/station_constants'
 import { PositionTypes } from '../../../../constants/position_constants'
+import PropTypes from "prop-types";
 
 const LocationSvg = (props) => {
 
@@ -117,6 +118,22 @@ const LocationSvg = (props) => {
 
         </styled.WorkstationGroup>
     )
+}
+
+LocationSvg.propTypes = {
+    handleMouseEnter: PropTypes.func,
+    handleMouseLeave: PropTypes.func,
+    handleMouseDown: PropTypes.func,
+    handleTranslating: PropTypes.func,
+    handleRotating: PropTypes.func,
+}
+
+LocationSvg.defaultProps = {
+    handleMouseEnter: () => {},
+    handleMouseLeave: () => {},
+    handleMouseDown: () => {},
+    handleTranslating: () => {},
+    handleRotating: () => {},
 }
 
 export default LocationSvg

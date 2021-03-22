@@ -2,7 +2,7 @@ import styled, {css} from "styled-components";
 
 import {rowCss} from "../card_editor/lot_editor.style";
 import * as commonCss from "../../../../../common_css/common_css";
-import {commonClickableIcon, commonIcon, iconButtonCss} from "../../../../../common_css/common_css";
+import {commonClickableIcon, commonIcon, glow, iconButtonCss} from "../../../../../common_css/common_css";
 
 export const Container = styled.div`
  	margin: 10px; // prevents glow from being cut off
@@ -47,6 +47,7 @@ export const Container = styled.div`
     color: black;
 
   ${props => (props.selectable && !(props.isSelected || props.isFocused)) && notSelectedCss};
+  ${props => props.glow && glowCss};
   ${props => props.isFocused && focusedCss};
   ${props => props.isSelected && selectedCss};
   ${props => props.containerStyle};
@@ -54,6 +55,10 @@ export const Container = styled.div`
 `
 
 const selectedCss = css`
+`
+
+const glowCss = css`
+    border: 4px ridge #478fe6;
 `
 
 const focusedCss = css`
