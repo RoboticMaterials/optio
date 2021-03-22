@@ -10,6 +10,7 @@ const StatusListBody = (props) => {
 		data,
 		onItemClick,
 		onCreateClick,
+		displayNames,
 	} = props
 
 	const renderData = () => {
@@ -36,6 +37,7 @@ const StatusListBody = (props) => {
 
 			return(
 				<StatusListItem
+					displayNames={displayNames}
 					onCreateClick={onCreateClick}
 					created={created}
 					key={currIndex}

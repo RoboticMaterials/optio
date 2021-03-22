@@ -18,7 +18,7 @@ import PropTypes from 'prop-types'
 import * as styled from "./status_list_item.style"
 
 // utils
-import {isEmpty} from "../../../../methods/utils/object_utils"
+import {isEmpty, isObject} from "../../../../methods/utils/object_utils"
 import {getMessageFromError} from "../../../../methods/utils/form_utils"
 
 const FADE_LOADER_COLORS = {
@@ -45,7 +45,8 @@ const StatusListItem = (props) => {
 		showTopBorder,
 		showBottomBorer,
 		created,
-		onCreateClick
+		onCreateClick,
+		displayNames
 	} = props
 
 	const [mappedErrors, setMappedErrors] = useState({})
@@ -54,15 +55,22 @@ const StatusListItem = (props) => {
 	const [hasWarnings, setHasWarnings] = useState(false)
 
 	useEffect(() => {
-		// setMappedErrors(
 		let tempMappedErrors = {}
 
-		Object.entries(errors).forEach((currErr) => {
-			const [ currKey, currVal] = currErr
-			const split = currKey.split(".")
-			const newKey = split[split.length - 1]
+		Object.keys(errors).forEach((currKey) => {
+			let tempCurrKey = currKey
+			let currErrCopy = errors[currKey]
 
-			tempMappedErrors[newKey] = [getMessageFromError(currVal)]
+			while(isObject(currErrCopy)) {
+				tempCurrKey = Object.keys(currErrCopy)[0]
+				currErrCopy = currErrCopy[tempCurrKey]
+			}
+
+			if(Object.keys(displayNames).includes(tempCurrKey)) {
+				tempCurrKey = displayNames[tempCurrKey]
+			}
+
+			tempMappedErrors[tempCurrKey] = [getMessageFromError(currErrCopy)]
 		})
 
 		setMappedErrors(tempMappedErrors)
@@ -74,12 +82,20 @@ const StatusListItem = (props) => {
 		// setMappedErrors(
 		let tempMappedWarnings = {}
 
-		Object.entries(warnings).forEach((currErr) => {
-			const [ currKey, currVal] = currErr
-			const split = currKey.split(".")
-			const newKey = split[split.length - 1]
+		Object.keys(warnings).forEach((currKey) => {
+			let tempCurrKey = currKey
+			let currErrCopy = warnings[currKey]
 
-			tempMappedWarnings[newKey] = [getMessageFromError(currVal)]
+			while(isObject(currErrCopy)) {
+				tempCurrKey = Object.keys(currErrCopy)[0]
+				currErrCopy = currErrCopy[tempCurrKey]
+			}
+
+			if(Object.keys(displayNames).includes(tempCurrKey)) {
+				tempCurrKey = displayNames[tempCurrKey]
+			}
+
+			tempMappedWarnings[tempCurrKey] = [getMessageFromError(currErrCopy)]
 		})
 
 		setMappedWarnings(tempMappedWarnings)

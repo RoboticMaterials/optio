@@ -72,6 +72,7 @@ const LotEditorContainer = (props) => {
     const [card, setCard] = useState(cards[props.cardId] || null)
     const [collectionCount, setCollectionCount] = useState(null)
     const [lazyCreate, setLazyCreate] = useState(false)
+
     const [cardNames, setCardNames] = useState([])
     const [showStatusListLazy, setShowStatusListLazy] = useState(null)
 
@@ -155,7 +156,7 @@ const LotEditorContainer = (props) => {
             setMappedValues(immutableReplace(mappedValues, newValue, previousSelectedIndex))	// update mapped values
             setMappedErrors(immutableReplace(mappedErrors, errors, previousSelectedIndex))		// update mapped errors
             setMappedTouched(immutableReplace(mappedTouched, touched, previousSelectedIndex))	// update mapped touched
-            setMappedStatus(immutableReplace(mappedStatus, status, previousSelectedIndex))	// update mapped status
+            // setMappedStatus(immutableReplace(mappedStatus, status, previousSelectedIndex))	// update mapped status
         }
 
     }, [values, selectedIndex])
@@ -227,6 +228,7 @@ const LotEditorContainer = (props) => {
 
             validateLot(newLot, currMappedLotIndex)		// validate that bad boy
         })
+
     }
 
     /*
@@ -301,143 +303,118 @@ const LotEditorContainer = (props) => {
     }, [disablePasteModal])
 
     const handleValidate = (values) => {
-
         if (selectedIndex !== null) {
-
-            editLotSchema.validate(values, { abortEarly: false })
-                .then((ayo) => {
-                    setMappedStatus((previous) => {
-                        const previousStatus = previous[selectedIndex] || {}
-                        return immutableSet(previous, {
-                            ...previousStatus,
-                            validationStatus: {
-                                message: `Successfully validated lot!`,
-                                code: FORM_STATUS.VALIDATION_SUCCESS
-                            }
-                        }, selectedIndex)
-                    })
-                })
-                .catch((err) => {
-
-                    setMappedStatus((previous) => {
-                        const previousStatus = previous[selectedIndex] || {}
-                        return immutableSet(previous, {
-                            ...previousStatus,
-                            validationStatus: {
-                                message: `Error validating lot.`,
-                                code: FORM_STATUS.VALIDATION_ERROR
-                            }
-                        }, selectedIndex)
-                    })
-                });
+            validateLot(values, selectedIndex)
         }
     }
 
-    /*
-    * handles logic for creating a lot from mappedValues
-    * */
-    const createLot = (index, cb) => {
-        if(!createdLot) setCreatedLot(true)
+    const setPending = (index) => {
         const values = convertExcelToLot(mappedValues[index], lotTemplate, props.processId)		// convert mappedValues at selectedIndex to form format
-        if (values._id) return	// lot was already created, don't try creating it again
+        if (values._id) return
 
         // update status
-
         setMappedStatus((previous) => {
             const previousStatus = previous[index] || {}
             return immutableSet(previous, {
                 ...previousStatus,
                 resourceStatus: {
-                    message: `Started creating lot.`,
+                    message: `Waiting.`,
+                    code: FORM_STATUS.WAITING
+                }
+            }, index)
+        })
+    }
+
+    /*
+    * handles logic for creating a lot from mappedValues
+    * */
+    const createLot = async (index, cb) => {
+        if(!createdLot) setCreatedLot(true)
+        const values = convertExcelToLot(mappedValues[index], lotTemplate, props.processId)		// convert mappedValues at selectedIndex to form format
+        if (values._id) return	// lot was already created, don't try creating it again
+
+        // update status
+        setMappedStatus((previous) => {
+            const previousStatus = previous[index] || {}
+            return immutableSet(previous, {
+                ...previousStatus,
+                resourceStatus: {
+                    message: `Started.`,
                     code: FORM_STATUS.CREATE_START
                 }
             }, index)
         })
 
         // re-run validation right before submitting to ensure there are no errors
-        validateLot(values, index)
-            .then((validationResult) => {
-                const hasErrors = validationResult instanceof ValidationError
+        try {
+            const validationResult = validateLot(values, index)
 
-                if (hasErrors) {
-                    // update status - found errors so create is cancelled
-                    setMappedStatus((previous) => {
-                        const previousStatus = previous[index] || {}
-                        return immutableSet(previous, {
-                            ...previousStatus,
-                            resourceStatus: {
-                                message: `Creation cancelled due to validation errors.`,
-                                code: FORM_STATUS.VALIDATION_ERROR
-                            }
-                        }, index)
-                    })
+            const hasErrors = validationResult instanceof ValidationError
+
+            if (hasErrors) {
+                // update status - found errors so create is cancelled
+                setMappedStatus((previous) => {
+                    const previousStatus = previous[index] || {}
+                    return immutableSet(previous, {
+                        ...previousStatus,
+                        resourceStatus: {
+                            message: `Creation cancelled due to validation errors.`,
+                            code: FORM_STATUS.VALIDATION_ERROR
+                        }
+                    }, index)
+                })
+            }
+            else {
+                // no errors, POST it
+                const {
+                    name: newName,
+                    bins: newBins,
+                    processId: newProcessId,
+                    [lotTemplateId]: templateValues,
+                } = values || {}
+
+                const submitItem = {
+                    name: newName,
+                    bins: newBins,
+                    process_id: newProcessId,
+                    lotTemplateId: lotTemplateId,
+                    ...templateValues,
+                    lotNumber: index //collectionCount + index
                 }
-                else {
-                    // no errors, POST it
-                    const {
-                        name: newName,
-                        bins: newBins,
-                        processId: newProcessId,
-                        [lotTemplateId]: templateValues,
-                    } = values || {}
 
-                    const submitItem = {
-                        name: newName,
-                        bins: newBins,
-                        process_id: newProcessId,
-                        lotTemplateId: lotTemplateId,
-                        ...templateValues,
-                        lotNumber: index //collectionCount + index
-                    }
+                await dispatchPostCard(submitItem)
+                    .then((result) => {
+                        if (result) {
+                            // successfully POSTed
+                            const {
+                                _id = null
+                            } = result || {}
 
-                    dispatchPostCard(submitItem)
-                        .then((result) => {
-                            if (result) {
-                                // successfully POSTed
-                                const {
-                                    _id = null
-                                } = result || {}
+                            // update status, POST success
+                            setMappedStatus((previous) => {
+                                const previousStatus = previous[index] || {}
+                                return immutableSet(previous, {
+                                    ...previousStatus,
+                                    resourceStatus: {
+                                        message: `Successfully created lot!`,
+                                        code: FORM_STATUS.CREATE_SUCCESS
+                                    }
+                                }, index)
+                            })
 
-                                // update status, POST success
-                                setMappedStatus((previous) => {
-                                    const previousStatus = previous[index] || {}
-                                    return immutableSet(previous, {
-                                        ...previousStatus,
-                                        resourceStatus: {
-                                            message: `Successfully created lot!`,
-                                            code: FORM_STATUS.CREATE_SUCCESS
-                                        }
-                                    }, index)
-                                })
+                            // update values (only difference should be ID added and maybe lotNumber was different
+                            setMappedValues((previous) => {
+                                return immutableSet(previous, {
+                                    ...result
+                                }, index)
+                            })
 
-                                // update values (only difference should be ID added and maybe lotNumber was different
-                                setMappedValues((previous) => {
-                                    return immutableSet(previous, {
-                                        ...result
-                                    }, index)
-                                })
+                            // call callback if provided
+                            cb && cb(_id)
+                        }
 
-                                // call callback if provided
-                                cb && cb(_id)
-                            }
-
-                            else {
-                                // POST error, update status
-
-                                setMappedStatus((previous) => {
-                                    const previousStatus = previous[index] || {}
-                                    return immutableSet(previous, {
-                                        ...previousStatus,
-                                        resourceStatus: {
-                                            message: `Error creating lot.`,
-                                            code: FORM_STATUS.CREATE_ERROR
-                                        }
-                                    }, index)
-                                })
-                            }
-                        })
-                        .catch((err) => {
-
+                        else {
+                            // POST error, update status
                             setMappedStatus((previous) => {
                                 const previousStatus = previous[index] || {}
                                 return immutableSet(previous, {
@@ -448,162 +425,179 @@ const LotEditorContainer = (props) => {
                                     }
                                 }, index)
                             })
+                        }
+                    })
+                    .catch((err) => {
+
+                        setMappedStatus((previous) => {
+                            const previousStatus = previous[index] || {}
+                            return immutableSet(previous, {
+                                ...previousStatus,
+                                resourceStatus: {
+                                    message: `Error creating lot.`,
+                                    code: FORM_STATUS.CREATE_ERROR
+                                }
+                            }, index)
                         })
-                }
-            })
-        // .catch(() => {
-        // })
+                    })
+            }
+        }
+
+        catch(err) {
+            console.error("create err",err)
+        }
+
     }
 
     /*
     * runs async validation for a lot and  updates its status
     * */
     const validateLot = (values, index) => {
-        uniqueNameSchema.validate({
-            name: values.name,
-            cardNames: cardNames,
-        }, {abortEarly: false})
-            .then(() => {
-                setMappedStatus((previous) => {
-                    const previousStatus = previous[index] || {}
-                    return immutableSet(previous, {
-                        ...previousStatus,
-                        warnings: {}
-                    }, index)
-                })
+        try {
+            uniqueNameSchema.validateSync({
+                name: values.name,
+                cardNames: cardNames,
+            }, {abortEarly: false})
+
+            setMappedStatus((previous) => {
+                const previousStatus = previous[index] || {}
+                return immutableSet(previous, {
+                    ...previousStatus,
+                    warnings: {}
+                }, index)
             })
-            .catch((err) => {
-                // oh no there was an error
+        }
+        catch(err) {
+            const {
+                inner = [],
+                // message
+            } = err || {}
+
+            let lotErrors = {}
+
+            // collect errors
+            inner.forEach((currErr) => {
                 const {
-                    inner = [],
-                    // message
-                } = err || {}
+                    // errors,
+                    path,
+                    message
+                } = currErr || {}
 
-                let lotErrors = {}
+                // let existingErrors = lotErrors[path] || []
 
-                // collect errors
-                inner.forEach((currErr) => {
-                    const {
-                        // errors,
-                        path,
-                        message
-                    } = currErr || {}
+                const errorObj = pathStringToObject(path, ".", message)
 
-                    // let existingErrors = lotErrors[path] || []
-
-                    const errorObj = pathStringToObject(path, ".", message)
-
-                    lotErrors = {
-                        ...lotErrors,
-                        ...errorObj
-                    }
-                })
-
-                // set touched
-                const updatedTouched = setNestedObjectValues(lotErrors, true)
-                setMappedTouched((previous) => {
-                    const previousTouched = previous[index] || {}
-                    return immutableSet(previous, {
-                        ...previousTouched,
-                        ...updatedTouched
-                    }, index)
-                })
-
-                // set errors
-                setMappedStatus((previous) => {
-                    const previousStatus = previous[index] || {}
-                    return immutableSet(previous, {
-                        ...previousStatus,
-                        warnings: lotErrors
-                    }, index)
-                })
-
-                return err
-            });
-
-        return editLotSchema.validate(values, { abortEarly: false })
-            .then(() => {
-                // clear errors and  touched
-                setMappedErrors((previous) => {
-                    return immutableSet(previous, {}, index)
-                })
-                setMappedTouched((previous) => {
-                    const previousTouched = previous[index] || {}
-                    return immutableSet(previous, {
-                        ...previousTouched
-                    }, index)
-                })
-
-                // update status with success
-
-                setMappedStatus((previous) => {
-                    const previousStatus = previous[index] || {}
-                    return immutableSet(previous, {
-                        ...previousStatus,
-                        validationStatus: {
-                            message: `Successfully validated lot!`,
-                            code: FORM_STATUS.VALIDATION_SUCCESS
-                        }
-                    }, index)
-                })
+                lotErrors = {
+                    ...lotErrors,
+                    ...errorObj
+                }
             })
-            .catch((err) => {
-                // oh no there was an error
 
-                const {
-                    inner = [],
-                    // message
-                } = err || {}
+            // set touched
+            const updatedTouched = setNestedObjectValues(lotErrors, true)
+            setMappedTouched((previous) => {
+                const previousTouched = previous[index] || {}
+                return immutableSet(previous, {
+                    ...previousTouched,
+                    ...updatedTouched
+                }, index)
+            })
 
-                let lotErrors = {}
+            // set errors
+            setMappedStatus((previous) => {
+                const previousStatus = previous[index] || {}
+                return immutableSet(previous, {
+                    ...previousStatus,
+                    warnings: lotErrors
+                }, index)
+            })
+        }
 
-                // collect errors
-                inner.forEach((currErr) => {
-                    const {
-                        // errors,
-                        path,
-                        message
-                    } = currErr || {}
+        try {
+            editLotSchema.validateSync(values, { abortEarly: false })
 
-                    // let existingErrors = lotErrors[path] || []
+            // clear errors and  touched
+            setMappedErrors((previous) => {
+                return immutableSet(previous, {}, index)
+            })
+            setMappedTouched((previous) => {
+                const previousTouched = previous[index] || {}
+                return immutableSet(previous, {
+                    ...previousTouched
+                }, index)
+            })
 
-                    const errorObj = pathStringToObject(path, ".", message)
-
-                    lotErrors = {
-                        ...lotErrors,
-                        ...errorObj
+            // update status with success
+            setMappedStatus((previous) => {
+                const previousStatus = previous[index] || {}
+                return immutableSet(previous, {
+                    ...previousStatus,
+                    validationStatus: {
+                        message: `Successfully validated lot!`,
+                        code: FORM_STATUS.VALIDATION_SUCCESS
                     }
-                })
+                }, index)
+            })
+        }
 
-                // update status with errors
-                setMappedStatus((previous) => {
-                    const previousStatus = previous[index] || {}
-                    return immutableSet(previous, {
-                        ...previousStatus,
-                        validationStatus: {
-                            message: `Error validating lot.`,
-                            code: FORM_STATUS.VALIDATION_ERROR
-                        }
-                    }, index)
-                })
+        catch(err) {
+            // oh no there was an error
+            const {
+                inner = [],
+                // message
+            } = err || {}
 
-                // set errors
-                setMappedErrors((previous) => {
-                    return immutableSet(previous, lotErrors, index)
-                })
+            let lotErrors = {}
 
-                // set touched
-                const updatedTouched = setNestedObjectValues(lotErrors, true)
-                setMappedTouched((previous) => {
-                    const previousTouched = previous[index] || {}
-                    return immutableSet(previous, {
-                        ...previousTouched,
-                        ...updatedTouched
-                    }, index)
-                })
+            // collect errors
+            inner.forEach((currErr) => {
+                const {
+                    // errors,
+                    path,
+                    message
+                } = currErr || {}
 
-                return err
-            });
+                // let existingErrors = lotErrors[path] || []
+
+                const errorObj = pathStringToObject(path, ".", message)
+
+                lotErrors = {
+                    ...lotErrors,
+                    ...errorObj
+                }
+            })
+
+            // update status with errors
+            setMappedStatus((previous) => {
+                const previousStatus = previous[index] || {}
+                return immutableSet(previous, {
+                    ...previousStatus,
+                    validationStatus: {
+                        message: `Error validating lot.`,
+                        code: FORM_STATUS.VALIDATION_ERROR
+                    }
+                }, index)
+            })
+
+            // set errors
+            setMappedErrors((previous) => {
+                return immutableSet(previous, lotErrors, index)
+            })
+
+            // set touched
+            const updatedTouched = setNestedObjectValues(lotErrors, true)
+            setMappedTouched((previous) => {
+                const previousTouched = previous[index] || {}
+                return immutableSet(previous, {
+                    ...previousTouched,
+                    ...updatedTouched
+                }, index)
+            })
+
+            return err
+        }
+
+        // return
     }
 
     /*
@@ -673,14 +667,18 @@ const LotEditorContainer = (props) => {
         >
             {showStatusList &&
                 <StatusList
+                    displayNames={lotTemplate?.displayNames || {}}
                     onItemClick={(item) => {
                         setSelectedIndex(item.index)
                         setShowStatusListLazy(false)
                     }}
                     onCreateClick={createLot}
-                    onCreateAllClick={() => {
+                    onCreateAllClick={async () => {
                         for (let i = 0; i < mappedValues.length; i++) {
-                            createLot(i)
+                            setPending(i)
+                        }
+                        for (let i = 0; i < mappedValues.length; i++) {
+                            await createLot(i)
                         }
                     }}
                     onCanceleClick={() => {
