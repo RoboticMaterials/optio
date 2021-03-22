@@ -10,7 +10,7 @@ export const FooterContainer = styled.div`
 	overflow-x: scroll;
 	overflow-y: hidden;
 	padding: 1rem;
-	background: ${props => props.theme.bg.tertiary + "B1"};
+	background: ${props => props.theme.bg.secondary + "B1"};
 
     justify-content: center;
 `
@@ -43,7 +43,7 @@ export const Container = styled.div`
     z-index: 1;
 
     flex: 1;
-    background: ${props => props.theme.bg.secondary};
+    background: ${props => props.theme.bg.tertiary};
     
 `
 
@@ -71,7 +71,7 @@ export const ListContainer = styled.div`
     overflow-x: hidden;
     z-index: 1;
     
-    background: ${props => props.theme.bg.tertiary};
+    background: ${props => props.theme.bg.secondary};
     
     
     // hide scroll bar
@@ -144,7 +144,7 @@ export const SidebarContent = styled.div`
     // background: ${props => props.theme.bg.primary};
     z-index: 1;
 
-    border-right: 8px solid ${props => props.theme.bg.secondary};
+    border-right: 8px solid ${props => props.theme.bg.tertiary};
     
 `
 

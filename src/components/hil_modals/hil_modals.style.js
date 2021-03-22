@@ -190,7 +190,7 @@ export const SubtitleContainer = styled.div`
 
 export const FooterContainer = styled.div`
     background: ${props => props.theme.bg.septenary};
-    border-top: 1px solid ${props => props.theme.bg.tertiary};
+    border-top: 1px solid ${props => props.theme.bg.secondary};
     width: 100%;
     display: flex;
     justify-content: center;
@@ -340,7 +340,7 @@ export const Header = styled.div`
     flex-direction: row;
     width: 100%;
     background: ${props => props.theme.bg.septenary};
-    border-bottom: 1px solid ${props => props.theme.bg.tertiary};
+    border-bottom: 1px solid ${props => props.theme.bg.secondary};
     align-items: center;
     justify-content: space-around;
     align-items: center;

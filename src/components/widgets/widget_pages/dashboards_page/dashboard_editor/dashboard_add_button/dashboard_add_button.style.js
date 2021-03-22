@@ -9,8 +9,8 @@ export const Container = styled.button`
     background: ${props => props.theme.bg.primary};
     border-radius: 1rem;
     
-    border: 3px solid ${props => props.theme.bg.secondary};
-    color: ${props => props.theme.bg.secondary};
+    border: 3px solid ${props => props.theme.bg.tertiary};
+    color: ${props => props.theme.bg.tertiary};
     
     
     &:focus {

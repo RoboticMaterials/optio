@@ -64,7 +64,7 @@ export const RightContentContainer = styled.div`
     justify-content: center;
     background: ${props => props.theme.bg.senary};
     width: 8rem;
-    border-left: 1px solid ${props => props.theme.bg.tertiary};
+    border-left: 1px solid ${props => props.theme.bg.secondary};
     // padding-left: 1rem;
     border-top-right-radius: 0.6rem;
     border-bottom-right-radius: 0.6rem;
@@ -75,7 +75,7 @@ export const TaskName = styled.span`
   font: ${props => props.theme.font.primary};
   font-size: ${props => props.theme.fontSize.sz3};
 
-  color: ${props => props.theme.bg.tertiary};
+  color: ${props => props.theme.bg.secondary};
 
 `
 
@@ -87,6 +87,10 @@ export const TransparentTextBox = styled(Textbox)`
         background-color: rgba(0 ,0 ,0 , 0.3);
         border-bottom: 2px solid white;
         outline: none !important;
+    }
+
+    ::placeholder{
+        color: ${props => props.theme.bg.primary};
     }
 
     text-align: center;

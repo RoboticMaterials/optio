@@ -5,7 +5,7 @@ export const AddTaskAlertContainer = styled.div`
     flex-direction: column;
     text-align: center;
 
-    background-color: ${props => props.theme.bg.tertiary};
+    background-color: ${props => props.theme.bg.secondary};
     opacity: 90%;
     border-radius: .3rem;
     min-width: 70%;

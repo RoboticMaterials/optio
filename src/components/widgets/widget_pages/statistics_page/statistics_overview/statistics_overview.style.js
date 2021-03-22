@@ -9,13 +9,13 @@ export const OverviewContainer = styled.div`
     width: 100%;
     height: 100%;
     flex: 1;
-    border-radius: 1rem;
 
     align-items: center;
     justify-content: start;
 
     //padding-top: 1rem;
     // padding: .5rem;
+
 
 `
 
