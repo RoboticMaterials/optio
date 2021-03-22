@@ -26,12 +26,12 @@ const HilButton = (props) => {
 			<styled.HilIcon
 				style={{ margin: 0, marginRight: "1rem", fontSize: "2.5rem" }}
 				className={iconName}
-				color={iconColor}
+				color={color}
 
 			/>
 			}
 			<styled.HilButtonText
-				color={textColor}
+				color={color}
 				style={{ margin: 0, padding: 0 }}
 			>
 				{label}

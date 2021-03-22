@@ -39,6 +39,7 @@ export const HilButtonText = styled.p`
     font-size: 2rem;
     margin: 0;
     padding: 0;
+    filter: brightness(50%);
 `
 
 
@@ -69,6 +70,7 @@ export const HilIcon = styled.i`
     color:  ${props => props.color};
     fill: green;
     font-size: 2.5rem;
+    filter: brightness(50%);
     margin-right: 1rem;
     &:hover {
         cursor: pointer;

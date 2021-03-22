@@ -99,7 +99,6 @@ const HILModals = (props) => {
     const [selectedTask, setSelectedTask] = useState(null)
     const [associatedTask, setAssociatedTask] = useState(null)
     const [trackQuantity, setTrackQuantity] = useState(null)
-    const [selectedLots, setSelectedLots] = useState([])
     const [isProcessTask, setIsProcessTask] = useState(true)
     const [availableLots, setAvailableLots] = useState([])
     const [selectedDashboard, setSelectedDashboard] = useState(null)
@@ -124,6 +123,25 @@ const HILModals = (props) => {
     const windowWidth = size.width
 
     const formRef = useRef(null)
+    const {
+        current
+    } = formRef || {}
+
+    const {
+        values = {},
+        touched = {},
+        errors = {},
+        status = {},
+        setValues = () => { },
+        setErrors = () => { },
+        resetForm = () => { },
+        setTouched = () => { },
+        setFieldValue = () => { },
+        setStatus = () => { },
+    } = current || {}
+    const {
+        lots: selectedLots = []
+    } = values || {}
 
     const {
         name: dashboardName,
@@ -178,7 +196,7 @@ const HILModals = (props) => {
         }
 
         else {
-            setSelectedLots([]) // clear selected lot
+            setFieldValue(`lots`, []) // clear selected lot
             setShowLotSelector(false) // hide lot selector
             setTrackQuantity(true)
         }
@@ -228,7 +246,11 @@ const HILModals = (props) => {
 
             if (stationCards && Array.isArray(stationCards) && stationCards.length > 0) {
                 if ((stationCards.length === 1) && !isNonEmptyArray(selectedLots) && !didSelectInitialLot) {
-                    setSelectedLots([stationCards[0]])
+                    // setSelectedLots([stationCards[0]])
+                    setFieldValue(`lots[0]`, {
+                        lot: stationCards[0],
+                        quantity: 0
+                    })
                     setDidSelectInitialLot(true)
                 }
                 setAvailableLots(stationCards)
@@ -606,7 +628,22 @@ const HILModals = (props) => {
         return false
     }
 
-    console.log("hi")
+    const getSelectedLotIndex = (lot) => {
+        const {
+            _id: lotId
+        } = lot || {}
+
+        const index = selectedLots.findIndex((currLot) => {
+            const {
+                _id: currLotId
+            } = currLot || {}
+
+            return lotId === currLotId
+        })
+
+        return index
+    }
+
 
     const renderLotSelector = () => {
         console.log("oh boy")
@@ -635,7 +672,7 @@ const HILModals = (props) => {
                 <styled.LotSelectorContainer>
 
                     {availableLots.length > 0 ?
-                        <styled.LotsContainer>
+                        <styled.RealLotsContainer>
 
                             {availableLots
                                 .filter((currLot) => {
@@ -669,10 +706,17 @@ const HILModals = (props) => {
                                                 isSelected={isSelected}
                                                 selectable={!!isNonEmptyArray(selectedLots)}
                                                 onClick={() => {
-                                                    setSelectedLots(()=> {
-                                                        return [...selectedLots, currLot]
-                                                    })
-                                                    setShowLotSelector(false)
+                                                    const existingIndex = getSelectedLotIndex(currLot) // check if lot is already selected
+                                                    if(existingIndex === -1) {
+                                                        setFieldValue(`lots`, [
+                                                            ...values.lots,
+                                                            {
+                                                                lot: currLot,
+                                                                quantity: 0
+                                                            }
+                                                        ])
+                                                        setShowLotSelector(false)
+                                                    }
                                                 }}
                                                 containerStyle={{ marginBottom: "0.5rem" }}
                                             />
@@ -680,7 +724,7 @@ const HILModals = (props) => {
                                     )
                                 })
                             }
-                        </styled.LotsContainer>
+                        </styled.RealLotsContainer>
 
                         :
                         <styled.NoLotsContainer>
@@ -693,7 +737,7 @@ const HILModals = (props) => {
                             containerCss={styled.footerButtonCss}
                             label={"Continue Without Lot"}
                             onClick={() => {
-                                setSelectedLots([]) // clear selected lot
+                                setFieldValue(`lots`, []) // clear selected lot
                                 setNoLotsSelected(true)
                                 setShowLotSelector(false) // hide lot selector
                             }}
@@ -765,6 +809,19 @@ const HILModals = (props) => {
                     </styled.LotsContainer>
 
                     <styled.HilButtonContainer>
+
+                        <HilButton
+                            label={"Add Lots"}
+                            color={'#34baeb'}
+                            iconName={'fas fa-plus'}
+                            iconColor={'#1c933c'}
+                            textColor={'#1c933c'}
+                            onClick={() => {
+                                setShowLotSelector(true)
+                                // onHilSuccess()
+                                // dispatchSetShowModalId(null)
+                            }}
+                        />
 
                         <HilButton
                             label={"Confirm"}
@@ -851,6 +908,7 @@ const HILModals = (props) => {
             <Formik
                 innerRef={formRef}
                 initialValues={{
+                    lots: []
                 }}
                 validateOnChange={true}
                 validateOnBlur={true}
