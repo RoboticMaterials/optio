@@ -253,15 +253,13 @@ const DeviceEdit = (props) => {
                     </styled.Label>
                         <TextField
                             name={"minLevel"}
-                            placeholder='%'
+                            placeholder='Min %'
                             InputComponent={Textbox}
                             ContentContainer={styled.RowContainer}
                             style={{
-                                'fontSize': '1rem',
-                                'fontWeight': '600',
                                 'marginBottom': '.5rem',
                                 'marginTop': '0',
-                                'width': '4rem',
+                                'width': '5rem',
                             }}
                         />
                     </styled.ColumnContainer>
@@ -271,15 +269,13 @@ const DeviceEdit = (props) => {
                     </styled.Label>
                         <TextField
                             name={"maxLevel"}
-                            placeholder='%'
+                            placeholder='Max %'
                             InputComponent={Textbox}
                             ContentContainer={styled.RowContainer}
                             style={{
-                                'fontSize': '1rem',
-                                'fontWeight': '600',
                                 'marginBottom': '.5rem',
                                 'marginTop': '0',
-                                'width': '4rem',
+                                'width': '5rem',
                             }}
                         />
                     </styled.ColumnContainer>

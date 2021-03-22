@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
+import { FieldArray } from 'formik'
 import moment from 'moment';
 import uuid from 'uuid';
 
@@ -131,6 +132,95 @@ const DeviceSchedule = (props) => {
             })
         }
 
+        return (
+            <FieldArray
+                name='schedules'
+                render={
+                    Object.values(selectedDevice.schedules).map((schedule, ind) => {
+                        return (
+                            <styled.ScheduleContainer>
+
+                                <styled.RowContainer>
+                                    <TextField
+                                        name={"scheduleName"}
+                                        placeholder='Schedule Name'
+                                        InputComponent={Textbox}
+                                        ContentContainer={styled.RowContainer}
+                                        style={{
+                                            'marginBottom': '.5rem',
+                                            'marginTop': '0',
+                                            'width': '10rem',
+                                        }}
+                                    />
+                                    <Switch
+                                        name={'chargeLevelSwitch'}
+                                        onColor='red'
+                                        checked={schedule.enabled}
+                                        onChange={() => {
+                                            const enabled = { enabled: !schedule.enabled }
+                                            onUpdateSchedule(schedule.id, enabled)
+                                        }}
+                                    />
+                                </styled.RowContainer>
+
+                                <styled.RowContainer style={{ margin: '.2rem' }}>
+                                    {renderDaySelector(schedule.id)}
+                                </styled.RowContainer>
+
+                                <styled.RowContainer style={{ marginTop: '.5rem' }}>
+                                    <DropDownSearchField
+                                        containerSyle={{ flex: '9', marginRight: '1rem' }}
+                                        pattern={null}
+                                        name="moveLocation"
+                                        labelField={'name'}
+                                        options={Object.values(positions)}
+                                        valueField={"_id"}
+                                    />
+                                    <TimePickerField
+                                        mapInput={
+                                            (value) => {
+                                                if (value) {
+                                                    const splitVal = value.split(':')
+                                                    return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                                }
+                                            }
+                                        }
+                                        mapOutput={(value) => {
+                                            return convert12hto24h(value.format('hh:mm a'))
+                                        }}
+                                        name={'endOfShift'}
+                                        containerStyle={{ width: '6rem' }}
+                                        style={{ flex: '1', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                                        showHour={true}
+                                        showSecond={false}
+                                        className="xxx"
+                                        use12Hours
+                                        format={'hh:mm a'}
+                                        autocomplete={"off"}
+                                        allowEmpty={false}
+                                        defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                                        defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                                    />
+
+                                </styled.RowContainer>
+                                <Button
+                                    schema={'devices'}
+                                    style={{ display: 'inline-block', float: 'right', maxWidth: '25rem', boxSizing: 'border-box' }}
+                                    onClick={() => {
+                                        onDeleteSchedule(schedule)
+                                    }}
+                                >
+                                    Delete Schedule
+                                </Button>
+
+                            </styled.ScheduleContainer>
+
+                        )
+                    })
+                }
+            />
+        )
+
         return Object.values(selectedDevice.schedules).map((schedule, ind) => {
             return (
                 <styled.ScheduleContainer>
@@ -142,11 +232,9 @@ const DeviceSchedule = (props) => {
                             InputComponent={Textbox}
                             ContentContainer={styled.RowContainer}
                             style={{
-                                'fontSize': '1rem',
-                                'fontWeight': '600',
                                 'marginBottom': '.5rem',
                                 'marginTop': '0',
-                                width: '6rem',
+                                'width': '10rem',
                             }}
                         />
                         <Switch
