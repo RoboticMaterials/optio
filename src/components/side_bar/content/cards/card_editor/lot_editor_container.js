@@ -80,6 +80,9 @@ const LotEditorContainer = (props) => {
     const [createdLot, setCreatedLot] = useState(false)				// bool - controls whether or not to show statusList
     const [fieldNameArr, setFieldNameArr] = useState([])
     const [lotTemplate, setLotTemplate] = useState([])
+    const {
+        name: lotTemplateName = ""
+    } = lotTemplate || {}
     const [lotTemplateId, setLotTemplateId] = useState(null)
     const [card, setCard] = useState(cards[props.cardId] || null)
     const [collectionCount, setCollectionCount] = useState(null)
@@ -103,6 +106,10 @@ const LotEditorContainer = (props) => {
         setFieldValue = () => { },
     } = current || {}
 
+    /*
+    * This effect is used to update the current predicted lotNumber on an interval
+    * The lotNumber here is just used for display, the actual assigned lotNumber should be handled on the backend
+    * */
     useEffect(() => {
         getCount()
         let lotNumberTimer = setInterval(() => {
@@ -114,12 +121,15 @@ const LotEditorContainer = (props) => {
         }
     }, [])
 
+    // when card id changes, update card
     useEffect(() => {
         setCard(cards[props.cardId] || null)
     }, [props.cardId])
 
+    /*
+    * This effect is used to determine which lotTemplateId / lotTemplate to use
+    * */
     useEffect(() => {
-        console.log("oh no 1")
         let tempLotTemplateId = selectedLotTemplatesId  // set template id to selected template from redux - set by sidebar when you pick a template
 
         // if a template isn't provided by redux, check if card has template id
@@ -127,9 +137,13 @@ const LotEditorContainer = (props) => {
             tempLotTemplateId = card?.lotTemplateId
         }
 
-        // if card also doesn't have template id, use local stored or BASIC_LOT_TEMPLATE
+        // if card also doesn't have template id, use lastLotTemplateId from localstorage
         if (!tempLotTemplateId) tempLotTemplateId = lastLotTemplateId
+
+        // get lottemplate using id
         let tempLotTemplate = lotTemplates[tempLotTemplateId]
+
+        // if the template wasn't found, default everything to use BASIC_LOT_TEMPLATE
         if (!lotTemplates[tempLotTemplateId]) {
             tempLotTemplateId = BASIC_LOT_TEMPLATE_ID
             tempLotTemplate = BASIC_LOT_TEMPLATE
@@ -139,8 +153,11 @@ const LotEditorContainer = (props) => {
         setLotTemplate(tempLotTemplate)
     }, [selectedLotTemplatesId, card, lotTemplates, lastLotTemplateId])
 
+
+    /*
+    * This effect is used to update localSettings with the last used lotTemplateId
+    * */
     useEffect(() => {
-        console.log("oh no 2")
         // only post to local settings if localsettings have been loaded. Otherwise this could overwrite the stored localsettings with the initial (default) values
         if(localSettingsLoaded && (lotTemplateId !== null) && (lastLotTemplateId !== lotTemplateId)) {
             const {
@@ -155,6 +172,9 @@ const LotEditorContainer = (props) => {
     }, [lotTemplateId, localSettingsLoaded, lastLotTemplateId])
 
 
+    /*
+    * This effect is used as a callback to call createLot after other useStates have run.
+    * */
     useEffect(() => {
         if (lazyCreate) {
             setLazyCreate(false)
@@ -175,7 +195,7 @@ const LotEditorContainer = (props) => {
     }, [values, selectedIndex])
 
     /*
-    * This hook is used for updating form values from mapped state when selectedIndex is changed
+    * This hook is used for updating form values from stored mapped state when selectedIndex is changed
     * */
     useEffect(() => {
         if (isArray(mappedValues) && mappedValues.length > 0 && mappedValues[selectedIndex] && selectedIndex !== previousSelectedIndex) {
@@ -198,7 +218,7 @@ const LotEditorContainer = (props) => {
 
 
     /*
-    * Updates collectionCount state var, used for displaying lot number
+    * Updates collectionCount state var, used for displaying predicted lot number
     * */
     const getCount = async () => {
         const count = await getCardsCount()
@@ -713,6 +733,7 @@ const LotEditorContainer = (props) => {
             }
 
             <LotEditor
+                lotTemplateName={lotTemplateName}
                 onAddClick={() => {
                     /*
                     * Note: createLot function uses mappedValues and the index within mappedValues to retrieve data for which lot to create
