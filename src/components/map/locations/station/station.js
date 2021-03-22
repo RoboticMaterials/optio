@@ -87,11 +87,26 @@ function Station(props) {
     else if (!!selectedPosition && !station.children.includes(selectedPosition._id)) disabled = true
 
     // Disables while making task (IE no unload station)
-    else if (!!selectedTask && selectedTask?.unload?.station === null) {
+    else if (!!selectedTask && selectedTask?.load?.station !== null && selectedTask?.unload?.station === null) {
         // Disable making a task this station if the selected position is the stations children (cant make a route to the same parent/child)
         if (station.children.includes(selectedTask?.load?.position) && selectedTask?.unload?.station === null) disabled = true
         // Disable station if the selected task load position is a position (cant go from station to position or vice versa)
         else if (!!positions[selectedTask?.load?.position]) disabled = true
+        // Disable station if its the load station. Cant make a task to itself
+        else if (selectedTask.load.station === station._id) disabled = true
+    }
+
+    // Disables when adding a task to the beginning of a process. Adding to the beginning of a process is when the insert index is 0
+    else if (!!selectedProcess && !!selectedTask && selectedTask?.temp?.insertIndex === 0) {
+
+        // Find the station at the beginning of process
+        const firstStation = selectedProcess.routes[0].load.station
+
+        if(selectedTask.load.station !== null) {
+            console.log('QQQQ hur', selectedTask)
+
+        }
+        if (station._id !== firstStation && selectedTask.load.station !== null) disabled = true
     }
 
 

@@ -95,11 +95,13 @@ function Position(props) {
     else if (!!selectedStation && !selectedStation.children.includes(positionId)) disabled = true
 
     // Disables while making task (IE no unload station)
-    else if (!!selectedTask && selectedTask?.unload?.station === null) {
+    else if (!!selectedTask && selectedTask?.load?.station !== null && selectedTask?.unload?.station === null) {
         // Disable making a task to this position if the select tasks station is this positions parent (cant make a route to the same parent/child)
         if (position?.parent === selectedTask?.load?.station) disabled = true
         // Disable position if the selected task load position is a station (cant go from station to position or vice versa)
         else if (!!stations[selectedTask?.load?.position]) disabled = true
+        // Disable position if its the load position. Cant make a task to itself
+        else if (selectedTask.load.position === position._id) disabled = true
     }
 
     // This filters out positions when fixing a process
