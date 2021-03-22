@@ -247,7 +247,7 @@ const DeviceItem = (props) => {
                       <styled.MissionText isSmall={isSmall}>
                           {handleMissionStatus()}
                       </styled.MissionText>
-                    </styled.ColumnContainer>>
+                    </styled.ColumnContainer>
                   </styled.StatusContainer>
 
                   <styled.ConnectionStatusContainer isSmall = {isSmall}>

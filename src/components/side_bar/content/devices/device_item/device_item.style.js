@@ -156,8 +156,6 @@ export const StatusContainer = styled.div`
 		}
     bottom: 25%;
     transform: translateY(50%);
-
-
 `
 export const ConnectionStatusContainer = styled.div`
 	display: flex;
@@ -178,7 +176,6 @@ export const StatusText = styled.p`
     overflow: hidden;
     user-select: none;
 
-
     ${props => props.isSmall && {
 		fontSize: props.theme.fontSize.sz4
 	}};
@@ -192,8 +189,6 @@ export const MissionText = styled.p`
     user-select: none;
 		border-top: 1px solid white;
 
-
-
     ${props => props.isSmall && {
 		fontSize: props.theme.fontSize.sz5
 	}};
@@ -206,5 +201,4 @@ export const ConnectionStatusText = styled.p`
 		padding-right: .3rem;
 		padding-left: .5rem;
 		margin-bottom: 1.2rem;
-
 `
