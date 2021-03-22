@@ -274,7 +274,7 @@ export const sortBy = (arr, sortMode, sortDirection) => {
 				} = itemB
 
 				if(!rangeA) return 1
-				// if(!rangeB) return -1
+				if(!rangeB) return -1
 
 				const valA = rangeA[index]
 				const valB = rangeB[index]
