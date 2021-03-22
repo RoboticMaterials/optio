@@ -2,6 +2,8 @@ import { deepCopy } from './utils'
 import {isObject} from "./object_utils";
 import store from "../../redux/store";
 import {getLoadStationId, getUnloadStationId} from "./route_utils";
+import {useSelector} from "react-redux";
+import {isArray, isNonEmptyArray} from "./array_utils";
 
 /**
  * This function checks to see if a process is broken. 
@@ -165,6 +167,16 @@ export const getProcessStations = (process, routes) => {
     return stationIds
 }
 
+export const getProcessName = (processId) => {
+    const processes = store.getState().processesReducer.processes || {}
+    const process = processes[processId] || {}
+    const {
+        name = ""
+    } = process
+
+    return name
+}
+
 export const getPreviousRoute = (processRoutes, currentRouteId) => {
     const storeState = store.getState()
     const routes = storeState.tasksReducer.tasks
@@ -194,6 +206,80 @@ export const getPreviousRoute = (processRoutes, currentRouteId) => {
         return previousRoute
     }
 
+}
+
+export const callOnStations = (processId, callback) => {
+    const storeState = store.getState()
+    const routes = storeState.tasksReducer.tasks || {}
+    const process = storeState.processesReducer.processes[processId] || {}
+
+    let prevLoadStationId		// tracks previous load station id when looping through routes
+    let prevUnloadStationId		// tracks previous unload station id when looping through routes
+    let stationIds = []
+
+    // loop through routes, get load / unload station id and create entry in tempCardsSorted for each station
+    process.routes && process.routes.forEach((currRouteId, index) => {
+
+        // get current route and load / unload station ids
+        const currRoute = routes[currRouteId]
+        const loadStationId = getLoadStationId(currRoute)
+        const unloadStationId = getUnloadStationId(currRoute)
+
+        // only add loadStation entry if the previous unload wasn't identical (in order to avoid duplicates)
+        if (prevUnloadStationId !== loadStationId) {
+            callback(loadStationId)
+        }
+
+        // add entry in tempCardsSorted
+        callback(unloadStationId)
+
+        // update prevLoadStationId and prevUnloadStationId
+        prevLoadStationId = loadStationId
+        prevUnloadStationId = unloadStationId
+    })
+}
+
+export const getStationIds = (processId) => {
+    let stationIds = []
+
+    const callback = (stationId) => {
+        stationIds.push(stationId)
+    }
+
+    callOnStations(processId, callback)
+
+    return stationIds
+}
+
+export const getStationAttributes = (processId, attributes) => {
+    const storeState = store.getState()
+    const stations = storeState.stationsReducer.stations || {}
+
+    let stationAttributes = []
+
+    const isAttributesNotEmpty = isNonEmptyArray(attributes)
+
+    const callback = (stationId) => {
+        const station = stations[stationId]
+
+        let currentStationAttributes
+
+        if(isAttributesNotEmpty) {
+            currentStationAttributes = {}
+            attributes.forEach((currAttribute) => {
+                currentStationAttributes[currAttribute] = station[currAttribute]
+            })
+        }
+        else {
+            currentStationAttributes = {...station}
+        }
+
+        stationAttributes.push(currentStationAttributes)
+    }
+
+    callOnStations(processId, callback)
+
+    return stationAttributes
 }
 
 

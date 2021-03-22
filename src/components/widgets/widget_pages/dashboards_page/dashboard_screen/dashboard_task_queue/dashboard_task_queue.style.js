@@ -15,8 +15,6 @@ export const ExpandContainer = styled.div`
 
     justify-content: center;
 
-    /* background-color: ${props => props.theme.bg.quinary}; */
-
 `
 
 export const ExpandIcon = styled.i`
@@ -43,7 +41,7 @@ export const ExpandSVG = styled.svg`
 `
 
 export const ExpandPath = styled.path`
-    background-color: ${props => props.theme.bg.quinary};
+    background-color: ${props => props.theme.bg.primary};
 
     &:hover{
         cursor: pointer;
@@ -66,7 +64,7 @@ export const TaskQContatiner = styled.div`
     /* width: 20rem; */
     width: 100%;
 
-    background-color: ${props => props.theme.bg.quinary};
+    background-color: ${props => props.theme.bg.primary};
 
 `
 
@@ -83,4 +81,5 @@ export const CloseButton = styled.i`
     right: 1rem;
     font-size: 2.5rem;
     margin: 1rem;
+    color: ${props => props.theme.fg.red};
 `

@@ -27,6 +27,7 @@ import { editingProcess } from '../../redux/actions/processes_actions'
 import { setWidth, setMode, pageDataChanged, setOpen } from "../../redux/actions/sidebar_actions";
 
 import * as taskActions from '../../redux/actions/tasks_actions'
+import * as sidebarActions from "../../redux/actions/sidebar_actions";
 
 const SideBar = (props) => {
 
@@ -51,6 +52,7 @@ const SideBar = (props) => {
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
     const dispatchSetSelectedPosition = (station) => dispatch(setSelectedPosition(station))
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
+    const dispatchSetConfirmDelete = (show, callback) => dispatch(sidebarActions.setConfirmDelete(show, callback))
 
     const [pageWidth, setPageWidth] = useState(450)
     const [prevWidth, setPrevWidth] = useState(pageWidth)
@@ -61,9 +63,11 @@ const SideBar = (props) => {
     const widgetPageLoaded = useSelector(state => { return state.widgetReducer.widgetPageLoaded })
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
+    const showConfirmDeleteModal = useSelector(state => state.sidebarReducer.showConfirmDeleteModal)
+    const confirmDeleteCallback = useSelector(state => state.sidebarReducer.confirmDeleteCallback)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
-
+    const taskQueue = useSelector(state=>state.taskQueueReducer.taskQueue)
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
 
     const history = useHistory()
@@ -82,7 +86,7 @@ const SideBar = (props) => {
         }
     }, [])
 
-    // Useeffect for open close button, if the button is not active but there is an id in the URL, then the button should be active 
+    // Useeffect for open close button, if the button is not active but there is an id in the URL, then the button should be active
     // If the side bar is not active and there is no id then toggle it off
     useEffect(() => {
         const hamburger = document.querySelector('.hamburger')
@@ -242,23 +246,31 @@ const SideBar = (props) => {
     return (
         <>
             <ConfirmDeleteModal
-                isOpen={!!confirmDeleteModal}
+                isOpen={!!confirmDeleteModal || showConfirmDeleteModal}
                 title={"Are you sure you want to leave this page? Any changes will not be saved"}
                 button_1_text={"Yes"}
                 button_2_text={"No"}
                 handleClose={() => setConfirmDeleteModal(null)}
                 handleOnClick1={() => {
-                    handleSideBarOpenCloseButtonClick()
+                    if(showConfirmDeleteModal) {
+                        confirmDeleteCallback()
+                    }
+                    else {
+                        handleSideBarOpenCloseButtonClick()
+                    }
+
                     setConfirmDeleteModal(null)
                     dispatchPageDataChanged(false)
+                    dispatchSetConfirmDelete(false, null)
                 }}
                 handleOnClick2={() => {
                     setConfirmDeleteModal(null)
+                    dispatchSetConfirmDelete(false, null)
                 }}
             />
 
             <styled.SideBarOpenCloseButton
-                className="hamburger hamburger--slider"
+                className="hamburger hamburger--squeeze"
                 type='button'
                 id='sideBarButton'
                 onClick={() => {
@@ -269,8 +281,8 @@ const SideBar = (props) => {
                 }}
             // showSideBar={showSideBar}
             >
-                <span className='hamburger-box' id='sideBarButton' style={{ display: 'flex', justifyContent: 'center', width: 'auto' }}>
-                    <span className='hamburger-inner' id='sideBarButton' />
+                <span className='hamburger-box' id='sideBarButton' style={{ display: 'flex', justifyContent: 'center', width: 'auto', color: 'red' }}>
+                    <span className='hamburger-inner' id='sideBarButton' style={{color: 'red'}}/>
                 </span>
             </styled.SideBarOpenCloseButton>
 

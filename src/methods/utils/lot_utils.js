@@ -2,14 +2,15 @@ import {isObject} from "./object_utils";
 import {capitalizeFirstLetter, isEqualCI, isString} from "./string_utils";
 import {
 	BASIC_LOT_TEMPLATE,
-	BASIC_LOT_TEMPLATE_ID,
+	BASIC_LOT_TEMPLATE_ID, BIN_IDS,
 	FIELD_DATA_TYPES,
 	LOT_FILTER_OPTIONS
 } from "../../constants/lot_contants";
-import {isArray} from "./array_utils";
+import {immutableDelete, immutableReplace, isArray} from "./array_utils";
 import store from '../../redux/store/index'
 import lotTemplatesReducer from "../../redux/reducers/lot_templates_reducer";
 import {toIntegerOrZero} from "./number_utils";
+import {useSelector} from "react-redux";
 
 export const getDisplayName = (lotTemplate, fieldName, fallback) => {
 	let returnVal
@@ -20,11 +21,38 @@ export const getDisplayName = (lotTemplate, fieldName, fallback) => {
 	return isString(returnVal) ? returnVal : fallback ? fallback : ""
 }
 
+export const getBinName = (binId) => {
+	const stations = store.getState().stationsReducer.stations || {}
+
+	if(binId === BIN_IDS.QUEUE) {
+		return "Queue"
+	}
+	else if(binId === BIN_IDS.FINISH) {
+		return "Finish"
+	}
+	else {
+		const station = stations[binId] || {}
+		const {
+			name = ""
+		} = station
+
+		return name
+	}
+}
+
 export const getMatchesFilter = (lot, filterValue, filterMode) => {
 	switch(filterMode.label) {
 		case LOT_FILTER_OPTIONS.name.label: {
 			if(filterValue) {
 				return lot.name.toLowerCase().includes((filterValue || "").toLowerCase())
+			}
+			return true
+			break
+		}
+		case LOT_FILTER_OPTIONS.lotNumber.label: {
+			if(filterValue) {
+				const formattedLotNumber = formatLotNumber(lot.lotNumber)
+				return formattedLotNumber.toLowerCase().includes((filterValue || "").toLowerCase())
 			}
 			return true
 			break
@@ -51,9 +79,10 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
 				const {
 					dataType,		//"STRING"
 					label,			//"Skew (String)"
+					fieldName,
 				} = filterMode || {}
 
-				if(lot[label] !== undefined) {
+				if(lot[fieldName] !== undefined) {
 					if(!filterValue) return true
 
 					switch(dataType) {
@@ -74,10 +103,10 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
 							return true
 						}
 						case FIELD_DATA_TYPES.STRING: {
-							return lot[label].toLowerCase().includes((filterValue || "").toLowerCase())
+							return lot[fieldName].toLowerCase().includes((filterValue || "").toLowerCase())
 						}
 						case FIELD_DATA_TYPES.INTEGER: {
-							return toIntegerOrZero(lot[label]) === toIntegerOrZero(filterValue)
+							return toIntegerOrZero(lot[fieldName]) === toIntegerOrZero(filterValue)
 						}
 						default: {
 							// unknown dateType, return true
@@ -120,6 +149,22 @@ export const getLotTotalQuantity = ({bins}) => {
 	return totalQuantity
 }
 
+export const getBinQuantity = ({bins}, binId) => {
+	const {
+		[binId]: currentBin
+	} = bins || {}
+
+	const {
+		count
+	} = currentBin || {}
+
+	return count
+}
+
+export const getIsCardAtBin = ({bins}, binId) => {
+	return !!getBinQuantity({bins}, binId)
+}
+
 export const getAllTemplateFields = () => {
 	const lotTemplates = store.getState().lotTemplatesReducer.lotTemplates
 
@@ -145,7 +190,8 @@ export const getAllTemplateFields = () => {
 					// label: `${capitalizeFirstLetter(fieldName)} (${convertDataTypeContantToDisplay(dataType)})`,
 					label: fieldName,
 					dataType,
-					component
+					component,
+					fieldName
 				}
 
 				let alreadyExists = false
@@ -182,14 +228,12 @@ export const getLotTemplateData = (lotTemplateId, lot) => {
 
 			if(isArray(currRow)) {
 				currRow.forEach((currItem) => {
-					// console.log("template data currItem",currItem)
 					const {
 						dataType,
 						fieldName
 					} = currItem
 
 					const lotValue = lot[fieldName]
-					// console.log("lotValue",lotValue)
 					templateValues.push({
 						dataType,
 						fieldName,
@@ -226,6 +270,52 @@ export const convertDataTypeContantToDisplay = (dataTypeContant) => {
 		}
 		default: {
 			return null
+		}
+	}
+}
+
+export const getLotAfterBinMerge = (lotToMove, currentBinId, destinationBinId) => {
+	const {
+		bins: oldBins,
+		...unchangedLotAttributes
+	} = lotToMove || {}
+
+	const {
+		[currentBinId]: movedBin,
+		[destinationBinId]: destinationBin,
+		...unchangedBins
+	} = oldBins || {}
+
+	if(movedBin) {
+		// already contains items in destinationBin
+		if (destinationBin && movedBin) {
+			const oldCount = parseInt(destinationBin?.count || 0)
+			const movedCount = parseInt(movedBin?.count || 0)
+
+			return {
+				...unchangedLotAttributes,
+				bins: {
+					...unchangedBins,
+					[destinationBinId]: {
+						...destinationBin,
+						count: oldCount + movedCount
+					}
+				}
+
+			}
+		}
+
+		// no items in bin
+		else {
+			return {
+				...unchangedLotAttributes,
+				bins: {
+					...unchangedBins,
+					[destinationBinId]: {
+						...movedBin,
+					}
+				}
+			}
 		}
 	}
 }

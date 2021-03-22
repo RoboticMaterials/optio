@@ -1,7 +1,6 @@
 // import external dependencies
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import ls from 'local-storage'
 // components
 import Switch from 'react-ios-switch'
 import Textbox from '../../basic/textbox/textbox'
@@ -12,7 +11,8 @@ import * as styled from "./splash_screen.style"
 
 // import logger
 import logger from '../../../logger.js';
-import { postLocalSettings } from "../../../redux/actions/local_actions";
+import { postLocalSettings, getLocalSettings } from "../../../redux/actions/local_actions";
+
 
 
 const ToggleMapViewSwitch = (props) => {
@@ -41,27 +41,47 @@ const SplashScreen = (props) => {
         apiError
     } = props
 
-    const dispatch = useDispatch()
-    const localSettings = useSelector(state => state.localReducer)
-    const [apiIpAddress, setApiIpAddress] = useState('')
-    const onPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
 
+    const dispatch = useDispatch()
+    const localSettings = useSelector(state => state.localReducer.localSettings)
+    const apiAddress = localSettings.non_local_api_ip
+
+    const [apiIpAddress, setApiIpAddress] = useState(apiAddress)
+    const [localSettingsState, setLocalSettingsState] = useState({})
+
+    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
+
+    useEffect(() => {
+      setLocalSettingsState(localSettings)
+    }, [])
     /**
      * Submit API address to local storage
      */
     const handleSubmitApiIpAddress = async () => {
         console.log("submitting")
-        ls.set('NonLocalAPIAddressEnabled', true)
-        ls.set('NonLocalAPIAddress', apiIpAddress)
 
-        window.location.reload(false);
+        const localSettingsPromise = dispatchGetLocalSettings()
+        localSettingsPromise.then(response =>{
+          dispatchPostLocalSettings({
+              ...response,
+              non_local_api_ip: apiIpAddress,
+              non_local_api: true,
+          })
+        })
+
+        //window.location.reload(false);
     }
 
     /*
     * toggle mapViewEnabled
     * */
     const toggleMapViewEnabled = async () => {
-        await onPostLocalSettings({ ...localSettings.localSettings, mapViewEnabled: !localSettings.localSettings.mapViewEnabled })
+        const updatedLocalSettings = {
+          ...localSettingsState,
+          mapViewEnabled: !localSettingsState.mapViewEnabled,
+        }
+        await dispatchPostLocalSettings(updatedLocalSettings)
     }
 
     return (
@@ -93,7 +113,7 @@ const SplashScreen = (props) => {
                                 transform: "translateY(-50%)",
                                 position: "absolute"
                             }}
-                            checked={localSettings.localSettings.mapViewEnabled}
+                            checked={localSettingsState.mapViewEnabled}
                             onChange={toggleMapViewEnabled}
                         />
                     </div>

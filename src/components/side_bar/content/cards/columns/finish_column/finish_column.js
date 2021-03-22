@@ -10,18 +10,22 @@ const FinishColumn = ((props) => {
 	const {
 		station_id,
 		stationName = "Unnamed",
-		handleCardClick,
+		onCardClick,
 		cards = [],
 		processId,
 		maxHeight,
 		sortMode,
-		sortDirection
+		sortDirection,
+		selectedCards,
+		setSelectedCards
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
 
 	return(
 		<Column
+			setSelectedCards={setSelectedCards}
+			selectedCards={selectedCards}
 			sortDirection={sortDirection}
 			maxHeight={maxHeight}
 			sortMode={sortMode}
@@ -51,7 +55,7 @@ const FinishColumn = ((props) => {
 			}
 			station_id={station_id}
 			stationName = {stationName}
-			handleCardClick={handleCardClick}
+			onCardClick={onCardClick}
 			cards = {cards}
 			processId={processId}
 			isCollapsed={isCollapsed}

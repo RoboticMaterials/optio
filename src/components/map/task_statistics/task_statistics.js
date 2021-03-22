@@ -7,6 +7,7 @@ import * as styled from './task_statistics.style'
 import taskAnalysisReducer from "../../../redux/reducers/task_analysis_reducer";
 import IconButton from '../../basic/icon_button/icon_button'
 import {getTasksAnalysis} from "../../../redux/actions/task_analysis_actions";
+import {getRouteProcesses} from "../../../methods/utils/route_utils";
 
 const TaskStatistics = (props) => {
 
@@ -20,11 +21,16 @@ const TaskStatistics = (props) => {
     const onGetTasksAnalysis = () => dispatch(getTasksAnalysis())
 
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
+    const selectedHoveringTask = useSelector(state => state.tasksReducer.selectedHoveringTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const positions = useSelector(state => state.positionsReducer.positions)
+    const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
+
     const stations = useSelector(state => state.stationsReducer.stations)
     const tasksAnalysis = useSelector(state => state.taskAnalysisReducer.tasksAnalysis) || {}
+    const taskQueue = useSelector(state=>state.taskQueueReducer.taskQueue)
+    const devices = useSelector(state=>state.devicesReducer.devices)
 
     const editingStation = useSelector(state => state.stationsReducer.editingStation)
     const editingPosition = useSelector(state => state.positionsReducer.editingPosition)
@@ -35,17 +41,21 @@ const TaskStatistics = (props) => {
 
     useEffect(() => {
         onGetTasksAnalysis()
+
     }, [])
 
     const handleSingleTask = (task) => {
-
-      if(!!task && location.pathname !== '/processes'){
+      if(!!task){
         if (task === undefined || selectedTask === undefined) return null
-        if (editingStation === true || editingPosition === true || taskEditing=== true || processEditing === true) return null
+
+        if (editingStation === true || editingPosition === true ||(taskEditing && location.pathname === '/tasks')) return null
+
 
         const selectedTaskAnalysis = !!task ? tasksAnalysis[task._id]: null
         const startPos = task.device_types[0] == 'human' && task.load.position == task.load.station ? stations[task.load.position] : positions[task.load.position]
+
         const endPos = task.device_types[0] == 'human' && task.unload.position == task.unload.station ? stations[task.unload.position] : positions[task.unload.position]
+        const routeProcesses = getRouteProcesses(task._id)
 
         if (task === null || positions === null || startPos === undefined || endPos === undefined) return null
 
@@ -58,6 +68,7 @@ const TaskStatistics = (props) => {
         // Some fancy calculation to find a common offset from a task path
         // Doesnt work because it doesnt
         const x1 = startPos.x
+
         const y1 = startPos.y
         const x2 = endPos.x
         const y2 = endPos.y
@@ -95,7 +106,7 @@ const TaskStatistics = (props) => {
               <styled.TaskStatisticsContainer xPosition={xPosition} yPosition={yPosition}>
               <styled.RowContainer style = {{borderBottom: '1px solid black', padding: '.2rem .2rem .2rem .2rem', width: '100%'}}>
 
-                <styled.TaskText style = {{paddingRight: '.7rem'}}>{task.name} </styled.TaskText>
+                <styled.TaskText style = {{paddingRight: '.3rem'}}>{task.name} </styled.TaskText>
 
                   <IconButton color={'red'} style = {{paddingRight: '.2rem'}}>
                       {task.device_types[0] === 'human' ?
@@ -109,7 +120,7 @@ const TaskStatistics = (props) => {
 
               <styled.RowContainer style = {{paddingTop: '.2rem'}}>
 
-                  <styled.TaskText style = {{paddingRight: '.7rem'}}>{task.processes.length}</styled.TaskText>
+                  <styled.TaskText style = {{paddingRight: '.7rem'}}>{routeProcesses.length}</styled.TaskText>
 
                   <IconButton color= '#ffb62e'>
                     <i className="fas fa-route"></i>
@@ -146,8 +157,8 @@ const TaskStatistics = (props) => {
 
     const handleProcessTasks = () => {
 
-        if (!!selectedTask) {
-            return handleSingleTask(selectedTask)
+        if (!!selectedHoveringTask) {
+            return handleSingleTask(selectedHoveringTask)
         }
 
         // return Object.keys(selectedProcess.routes).map((station) => {

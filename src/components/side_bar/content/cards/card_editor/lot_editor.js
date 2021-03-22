@@ -24,6 +24,8 @@ import FieldComponentMapper from "./field_component_mapper/field_component_mappe
 import TemplateSelectorSidebar from "./lot_sidebars/template_selector_sidebar/template_selector_sidebar";
 import SubmitErrorHandler from "../../../../basic/form/submit_error_handler/submit_error_handler";
 import LotCreatorForm from "./template_form";
+import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
+
 
 // actions
 import {deleteCard, getCard, postCard, putCard} from "../../../../../redux/actions/card_actions";
@@ -86,6 +88,7 @@ const FormComponent = (props) => {
 		processId,
 		errors,
 		values,
+		status,
 		touched,
 		footerContent,
 		isSubmitting,
@@ -97,7 +100,8 @@ const FormComponent = (props) => {
 		content,
 		setContent,
 		onAddClick,
-		loaded
+		loaded,
+		cardNames
 	} = props
 
 	const {
@@ -128,6 +132,22 @@ const FormComponent = (props) => {
 	const [showTemplateSelector, setShowTemplateSelector] = useState(false)
 	const [finalProcessOptions, setFinalProcessOptions] = useState([])
 	const [showProcessSelector, setShowProcessSelector] = useState(props.showProcessSelector)
+	const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
+
+	const [warningValues, setWarningValues] = useState()
+
+	useEffect(() => {
+		setWarningValues({
+			name: values.name,
+			cardNames
+		})
+	}, [values.name, cardNames])
+
+	useWarn(uniqueNameSchema, {
+		setStatus: formikProps.setStatus,
+		status,
+		values: warningValues
+	})
 
 	// derived state
 	const selectedBinName = stations[binId] ?
@@ -243,9 +263,9 @@ const FormComponent = (props) => {
 		} = values || {}
 
 		// if doesn't contain values for current object, set initialValues
-		if(!templateValues) setFieldValue(lotTemplateId, getInitialValues(lotTemplate, card))
+		setFieldValue(lotTemplateId, getInitialValues(lotTemplate, templateValues))
 
-	}, [lotTemplateId])
+	}, [lotTemplateId, lotTemplate])
 
 	useEffect( () => {
 		if(isArray(processOptions)) {
@@ -387,7 +407,7 @@ const FormComponent = (props) => {
 						minDate={calendarFieldMode === CALENDAR_FIELD_MODES.END && fieldValue[0]}
 						maxDate={calendarFieldMode === CALENDAR_FIELD_MODES.START && fieldValue[1]}
 						selectRange={false}
-						name={`${fullFieldName}[${calendarFieldMode === CALENDAR_FIELD_MODES.START ? 0 : 1}]`}
+						name={fullFieldName}
 					/>
 				</styled.CalendarContainer>
 			</styled.BodyContainer>
@@ -597,8 +617,27 @@ const FormComponent = (props) => {
 									<FieldComponentMapper
 										value={fieldValue}
 										onCalendarClick={(mode) => {
+											let newName
+											switch(mode) {
+												case CALENDAR_FIELD_MODES.START: {
+													newName = `${fullFieldName}[0]`
+													break
+												}
+												case CALENDAR_FIELD_MODES.END: {
+													newName = `${fullFieldName}[1]`
+													break
+												}
+												case CALENDAR_FIELD_MODES.SINGLE: {
+													newName = fullFieldName
+													break
+												}
+												default: {
+													newName = fullFieldName
+												}
+											}
+
 											setContent(CONTENT.CALENDAR)
-											setCalendarFieldName({fullFieldName, fieldName})
+											setCalendarFieldName({fullFieldName: newName, fieldName})
 											setCalendarFieldMode(mode)
 										}}
 										displayName={fieldName}
@@ -651,6 +690,22 @@ const FormComponent = (props) => {
 	const renderForm = () => {
 		return(
 			<styled.StyledForm>
+
+				<ConfirmDeleteModal
+						isOpen={!!confirmDeleteModal}
+						title={"Are you sure you want to delete this Lot Card?"}
+						button_1_text={"Yes"}
+						button_2_text={"No"}
+						handleClose={() => setConfirmDeleteModal(null)}
+						handleOnClick1={() => {
+							handleDeleteClick(binId)
+							setConfirmDeleteModal(null)
+
+						}}
+						handleOnClick2={() => {
+								setConfirmDeleteModal(null)
+						}}
+				/>
 				<styled.Header>
 					{((content === CONTENT.CALENDAR) || (content === CONTENT.HISTORY) || (content === CONTENT.MOVE))  &&
 					<Button
@@ -776,6 +831,7 @@ const FormComponent = (props) => {
 									<>
 
 										<Button
+											type={"button"}
 											style={{...buttonStyle, width: "8rem"}}
 											onClick={() => setContent(null)}
 											schema={"ok"}
@@ -784,14 +840,18 @@ const FormComponent = (props) => {
 											Ok
 										</Button>
 										<Button
+											type={"button"}
 											style={{...buttonStyle}}
-											onClick={() => setFieldValue(`${calendarFieldName.fullFieldName}[${calendarFieldMode === CALENDAR_FIELD_MODES.START ? 0 : 1}]`, null)}
+											onClick={() => {
+												setFieldValue(calendarFieldName.fullFieldName, null)
+											}}
 											// secondary={"error"}
 											schema={"error"}
 										>
 											Clear Date
 										</Button>
 										<Button
+											type={"button"}
 											style={buttonStyle}
 											onClick={() => setContent(null)}
 											schema={"error"}
@@ -927,7 +987,7 @@ const FormComponent = (props) => {
 											schema={'delete'}
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
 											type={"button"}
-											onClick={() => handleDeleteClick(binId)}
+											onClick={() => setConfirmDeleteModal(true)}
 											secondary
 										>
 											<i style={{marginRight: ".5rem"}} className="fa fa-trash" aria-hidden="true"/>
@@ -991,7 +1051,8 @@ const LotEditor = (props) => {
 		initialValues,
 		formRef,
 		onValidate,
-		onPasteIconClick
+		onPasteIconClick,
+		cardNames,
 	} = props
 
 	// redux state
@@ -1014,7 +1075,7 @@ const LotEditor = (props) => {
 	const [loaded, setLoaded] = useState(false)
 	const [formMode, setFormMode] = useState(props.cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
 	const [showLotTemplateEditor, setShowLotTemplateEditor] = useState(false)
-	const [cardNames, setCardNames] = useState([])
+
 
 	// get card object from redux by cardId
 	const card = cards[cardId] || null
@@ -1054,20 +1115,6 @@ const LotEditor = (props) => {
 		setCardId(props.cardId)
 	}, [props.cardId])
 
-	useEffect(() => {
-		let tempCardNames = []
-
-		Object.values(cards).forEach((currCard, currCardIndex) => {
-			const {
-				name,
-				_id: currLotId
-			} = currCard || {}
-
-			tempCardNames.push({name, id: currLotId})
-		})
-
-		setCardNames(tempCardNames)
-	}, [cards])
 
 	useEffect(() => {
 		setLotNumber((card && card.lotNumber !== null) ? card.lotNumber : collectionCount)
@@ -1163,8 +1210,7 @@ const LotEditor = (props) => {
 								defaultBins,
 							[lotTemplateId]: {
 								...getInitialValues(lotTemplate, card)
-							},
-							cardNames
+							}
 						}}
 
 						// validation control
@@ -1378,6 +1424,7 @@ const LotEditor = (props) => {
 							if(hidden || showLotTemplateEditor) return null
 							return (
 								<FormComponent
+									cardNames={cardNames}
 									onAddClick={onAddClick}
 									footerContent={footerContent}
 									showCreationStatusButton={showCreationStatusButton}

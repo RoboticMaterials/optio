@@ -28,8 +28,6 @@ export default function Textbox(props) {
                 {props.inline && <styled.TextboxLabel style={props.labelStyle}>{props.label}</styled.TextboxLabel>}
                 <InputComponent 
                     ref={inputRef}
-                    theme={props.theme}
-                    style={props.style}
                     className={"form-control "+props.className}
                     placeholder={props.placeholder}
                     value={props.value}
@@ -42,8 +40,8 @@ export default function Textbox(props) {
                     schema={props.schema}
                     onBlur={props.onBlur}
                     onFocus={props.onFocus}
-                    >
-                </InputComponent>
+                />
+                {props.tooltip}
                 </styled.TextboxContainer>
         </React.Fragment>
     )

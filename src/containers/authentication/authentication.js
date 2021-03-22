@@ -15,18 +15,19 @@ import { Auth } from "aws-amplify";
 /**
  * After the APIs have been loaded in the api_container this container is loaded
  * It checks to see if the user has already signed in based on whether or not a refresh token exists in cookies
- * If there is a token, it uses that to get a new JWT and uses that to make sure the session is valid, no reason to sign in if there's a valid session. 
+ * If there is a token, it uses that to get a new JWT and uses that to make sure the session is valid, no reason to sign in if there's a valid session.
  * If the refresh token is expired, you have to sign in again
- * If there is no token, the user either has to sign in or sign up 
+ * If there is no token, the user either has to sign in or sign up
  * Authenticated props is used for telling APP.js the user is authenticated
- * 
+ *
  * TODO: Should show loading when there is a refresh token and its being used to get new JWT credntials
  * TODO: Styling updates
  * TODO: Forgot password
- * TODO: Add HTTPS connection to server which allows for the use of a secure cookie. Increases security a lot 
- * @param {authenticated} props 
+ * TODO: Add HTTPS connection to server which allows for the use of a secure cookie. Increases security a lot
+ * @param {authenticated} props
  */
 const Authentication = (checkAuth) => {
+
 
     const dispatch = useDispatch()
 
@@ -73,7 +74,6 @@ const Authentication = (checkAuth) => {
 
     const handleInitialLoad = () => {
         
-
         return (
             <styled.Container>
 
@@ -114,7 +114,41 @@ const Authentication = (checkAuth) => {
     }
 
     return (
-        handleInitialLoad()
+        <styled.Container>
+
+            <styled.LogoContainer>
+                <styled.LogoIcon className='icon-rmLogo' />
+                <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
+            </styled.LogoContainer>
+
+            <styled.LogoWelcome> Wecome Back </styled.LogoWelcome>
+
+            <styled.CheckBoxWrapper>
+                <styled.Button
+                    onClick={() => setSignIn(true)}
+                    selected={signIn}
+                    style={{borderRadius: '.5rem 0  0 .5rem'}}
+                >
+                    Sign In
+                </styled.Button>
+
+                <styled.Button
+                    onClick={() => setSignIn(false)}
+                    selected={!signIn}
+                    style={{borderRadius: '0 .5rem .5rem 0'}}
+                >
+                    Sign Up
+                </styled.Button>
+            </styled.CheckBoxWrapper>
+
+            <styled.SignInUpContainer>
+
+                <SignInUpPage
+                    signIn={signIn}
+                    onChange={handleSignInChange} />
+
+            </styled.SignInUpContainer>
+        </styled.Container>
     )
 
 }

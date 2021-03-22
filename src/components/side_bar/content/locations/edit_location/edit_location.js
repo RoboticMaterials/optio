@@ -143,13 +143,15 @@ const EditLocation = (props) => {
     const onDelete = async () => {
 
         // Station
-        if (selectedLocation.schema === 'station') {
-            await dispatchDeleteStation(selectedStation._id)
-        }
+        if(!!selectedLocation){
+          if (selectedLocation.schema === 'station') {
+              await dispatchDeleteStation(selectedStation._id)
+          }
 
-        // Position
-        else {
-            await dispatchDeletePosition(selectedPosition._id)
+          // Position
+          else {
+              await dispatchDeletePosition(selectedPosition._id)
+          }
         }
 
         // Adding true to save even though you arent saving
@@ -314,7 +316,7 @@ const EditLocation = (props) => {
         return types.map((type, i) => {
             const isSelected = (!!selectedStation && selectedStation.type !== null && selectedStation.type === type) ? selectedStation.type : false;
             return (
-                <LocationButton key={`stat_button_${i}`} type={type} isSelected={isSelected} handleAddLocation={onAddLocation} />
+                <LocationButton key={`stat_button_${i}`} schema={'station'} type={type} isSelected={isSelected} handleAddLocation={onAddLocation} />
             )
         })
 
@@ -326,15 +328,14 @@ const EditLocation = (props) => {
         return types.map((type, i) => {
             const isSelected = (!!selectedPosition && selectedPosition.type !== null && selectedPosition.type === type) ? selectedPosition.type : false;
             return (
-                <LocationButton key={`pos_button_${i}`} type={type} isSelected={isSelected} handleAddLocation={onAddLocation} />
+                <LocationButton key={`pos_button_${i}`} schema={'position'} type={type} isSelected={isSelected} handleAddLocation={onAddLocation} />
             )
         })
     }
 
     return (
         <>
-            <styled.ContentContainer
-            >
+            <styled.ContentContainer style={{padding: '0'}}>
 
                 <ConfirmDeleteModal
                     isOpen={!!confirmDeleteModal}
@@ -389,27 +390,26 @@ const EditLocation = (props) => {
                                         e.preventDefault();
                                     }
                                 }}
+                                style={{flex: '1', margin: '0'}}
                             >
+                                <styled.ContentContainer style={{height: '100%'}}>
 
                                 <div style={{ marginBottom: '1rem' }}>
-
                                     <ContentHeader
                                         content={'locations'}
+                                        disabled = {selectedLocation === null}
                                         mode={'create'}
                                         onClickBack={() => onBack()}
-                                        onClickSave={() => {
-
-                                        }}
-
                                     />
                                 </div>
 
                                 <TextField
                                     name={"locationName"}
                                     changed={() => handlePageDataChange()}
-                                    textStyle={{ fontWeight: 'Bold' }}
+                                    textStyle={{ fontWeight: 'Bold', 'fontSize': '3rem' }}
                                     placeholder='Enter Location Name'
                                     type='text'
+                                    label='Location Name'
                                     InputComponent={Textbox}
                                     style={{
                                         'fontSize': '1.2rem',
@@ -418,94 +418,87 @@ const EditLocation = (props) => {
                                         'marginTop': '0',
                                     }}
                                 />
-                                {/* <Textbox
-                                    name={'locationName'}
-                                    placeholder="Location Name"
-                                    defaultValue={!!selectedLocation ? selectedLocation.name : null}
-                                    schema={'locations'}
-                                    focus={!!selectedLocation && selectedLocation.type == null}
-                                    onChange={(e) => {
-                                        onLocationNameChange(e)
-                                    }}
-                                    style={{ fontSize: '1.2rem', fontWeight: '600' }}>
-                                </Textbox> */}
+
+                                {/* Location Type */}
+                                <styled.DefaultTypesContainer>
+
+                                {!selectedLocation ?
+                                    <>
+                                        <styled.LocationTypeContainer>
+                                            <styled.Label schema={'locations'}>Stations</styled.Label>
+                                            <styled.LocationButtonConatiner>
+                                                {renderStationButtons()}
+                                            </styled.LocationButtonConatiner>
+
+                                            {/* <styled.LocationButtonSubtitleContainer>
+                                                <styled.Subtitle schema={'locations'}>Workstation</styled.Subtitle>
+                                                <styled.Subtitle schema={'locations'}>Warehouse</styled.Subtitle>
+                                            </styled.LocationButtonSubtitleContainer> */}
+
+                                        </styled.LocationTypeContainer>
+
+                                        {deviceEnabled &&
+                                            <styled.LocationTypeContainer>
+                                                <styled.Label schema={'locations'} style={{ marginTop: '1rem' }}>Positions</styled.Label>
+                                                <styled.LocationButtonConatiner>
+                                                    {renderPositionButtons()}
+                                                </styled.LocationButtonConatiner>
+
+                                                {/* <styled.LocationButtonSubtitleContainer style={{ marginRight: '1.1rem' }}>
+                                                    <styled.Subtitle schema={'locations'} style={{ marginRight: '4.5rem' }}>Cart</styled.Subtitle>
+                                                    <styled.Subtitle schema={'locations'}>Shelf</styled.Subtitle>
+                                                </styled.LocationButtonSubtitleContainer> */}
+
+                                            </styled.LocationTypeContainer>
+                                        }
+                                    </>
+
+                                    :
+                                    <LocationButton
+                                        type={selectedLocation['type']}
+                                        isSelected={(!!selectedLocation && selectedLocation.type !== null) ? selectedLocation.type : false}
+                                        handleAddLocation={() => null}
+                                    />
+
+                                }
+
+                                </styled.DefaultTypesContainer>
+
+                                {(!!selectedLocation && selectedLocation.schema === 'station') ?
+
+                                <AssociatedPositions handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
+                                :
+                                <>
+                                    {!!deviceEnabled &&
+                                        <Button
+                                            schema={'locations'}
+                                            secondary
+                                            onClick={() => {
+                                                handleSetPositionToCartCoords()
+                                                dispatchPageDataChanged(true)
+                                            }}
+                                            style={{ marginBottom: '1rem'}}
+                                        >
+                                            Use Cart Location
+                                    </Button>
+                                    }
+                                </>
+
+                                }
+                                <div style={{ height: "100%" }}></div>
+
+
+                                {/* Delete Location Button */}
+                                <Button schema={'locations'} onClick={() => {}} >Save Location</Button>
+                                <Button schema={'locations'} secondary disabled = {selectedLocation === null || !!selectedLocation.new} onClick={() => setConfirmDeleteModal(true)} >Delete</Button>
+                                </styled.ContentContainer>
                             </Form>
                         )
                     }}
+            
                 </Formik>
-                {/* Location Type */}
-                <styled.DefaultTypesContainer>
-
-                    {!selectedLocation ?
-                        <>
-                            <styled.LocationTypeContainer>
-                                <styled.Label schema={'locations'}>Stations</styled.Label>
-                                <styled.LocationButtonConatiner>
-                                    {renderStationButtons()}
-                                </styled.LocationButtonConatiner>
-
-                                <styled.LocationButtonSubtitleContainer>
-                                    <styled.Subtitle schema={'locations'}>Workstation</styled.Subtitle>
-                                    <styled.Subtitle schema={'locations'}>Warehouse</styled.Subtitle>
-                                </styled.LocationButtonSubtitleContainer>
-
-                            </styled.LocationTypeContainer>
-
-                            {deviceEnabled &&
-                                <styled.LocationTypeContainer>
-                                    <styled.Label schema={'locations'} style={{ marginTop: '1rem' }}>Positions</styled.Label>
-                                    <styled.LocationButtonConatiner>
-                                        {renderPositionButtons()}
-                                    </styled.LocationButtonConatiner>
-
-                                    <styled.LocationButtonSubtitleContainer style={{ marginRight: '1.1rem' }}>
-                                        <styled.Subtitle schema={'locations'} style={{ marginRight: '4.5rem' }}>Cart</styled.Subtitle>
-                                        <styled.Subtitle schema={'locations'}>Shelf</styled.Subtitle>
-                                    </styled.LocationButtonSubtitleContainer>
-
-                                </styled.LocationTypeContainer>
-                            }
-                        </>
-
-                        :
-                        <LocationButton
-                            type={selectedLocation['type']}
-                            isSelected={(!!selectedLocation && selectedLocation.type !== null) ? selectedLocation.type : false}
-                            handleAddLocation={() => null}
-                        />
-
-                    }
-
-                </styled.DefaultTypesContainer>
-
-                {(!!selectedLocation && selectedLocation.schema === 'station') ?
-
-                    <AssociatedPositions handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
-                    :
-                    <>
-                        {!!deviceEnabled &&
-                            <Button
-                                schema={'locations'}
-                                secondary
-                                onClick={() => {
-                                    handleSetPositionToCartCoords()
-                                    dispatchPageDataChanged(true)
-                                }}
-                                style={{ marginBottom: '1rem' }}
-                            >
-                                Use Cart Location
-                        </Button>
-                        }
-                    </>
-
-                }
-                <div style={{ height: "100%" }}></div>
-
-
-                {/* Delete Location Button */}
-                <Button schema={'locations'} secondary onClick={() => setConfirmDeleteModal(true)} >Delete</Button>
             </styled.ContentContainer>
-
+            
         </>
     )
 }

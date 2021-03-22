@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -12,8 +12,8 @@ import useWindowSize from './hooks/useWindowSize'
 import * as styled from './App.style'
 
 // Import API
-import { deleteLocalSettings } from './api/local_api'
 import { stopAPICalls } from './redux/actions/local_actions'
+import { postLocalSettings, getLocalSettings } from './redux/actions/local_actions'
 
 // import containers
 import ApiContainer from './containers/api_container/api_container';
@@ -39,14 +39,9 @@ import { Auth } from "aws-amplify";
 import Amplify from "aws-amplify";
 import config from "./aws-exports";
 
-import { API, graphqlOperation } from 'aws-amplify';
-import * as subscriptions from './graphql/subscriptions';
-
 Amplify.configure(config);
 
 const widthBreakPoint = 1000;
-
-
 
 const App = (props) => {
 
@@ -56,10 +51,14 @@ const App = (props) => {
     const sideBarOpen = useSelector(state => state.sidebarReducer.open)
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
     const getFailureCount = useSelector(state => state.taskQueueReducer.getFailureCount)
+    const localSettings = useSelector(state => state.localReducer.localSettings)
+    const authenticated = useSelector(state => state.localReducer.localSettings.authenticated)
+
+
     const dispatch = useDispatch()
     const dispatchStopAPICalls = (bool) => dispatch(stopAPICalls(bool))
-
-    const authenticated = useSelector(state => state.localReducer.localSettings.authenticated)
+    const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
+    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
 
     const [loaded, setLoaded] = useState(false)
     const [apiLoaded, setApiLoaded] = useState(false)
@@ -74,6 +73,13 @@ const App = (props) => {
 
     const mobileMode = windowWidth < widthBreakPoint;
 
+    useEffect(() => {
+      handleLoadLocalData();
+    }, [])
+
+    const handleLoadLocalData = async () => {
+      await dispatchGetLocalSettings()
+    }
 
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())

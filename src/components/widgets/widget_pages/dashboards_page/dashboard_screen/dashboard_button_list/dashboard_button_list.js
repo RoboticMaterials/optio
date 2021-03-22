@@ -126,7 +126,7 @@ const DashboardButtonList = ((props) => {
                 key={index}
                 type={type}
                 onClick={onClick}
-                containerStyle={{ height: '4rem', lineHeight: '3rem', marginBottom: '0.5rem', minWidth: '80%' }}
+                containerStyle={{ }}
                 hoverable={false}
                 taskID={taskID}
                 color={currentButton.color}
@@ -146,7 +146,7 @@ const DashboardButtonList = ((props) => {
                 key={index}
                 type={type}
                 onClick={onClick}
-                containerStyle={{ height: '4rem', lineHeight: '3rem', marginBottom: '0.5rem', minWidth: '80%' }}
+                containerStyle={{  }}
                 hoverable={false}
                 taskID={taskID}
                 color={currentButton.color}

@@ -1,15 +1,33 @@
-import styled from 'styled-components'
+import styled from 'styled-components';
+import { hexToRGBA, LightenDarkenColor } from '../../../methods/utils/color_utils';
+
+export const SideBarButtonWrapper = styled.div`
+
+    // background-color: ${props => props.mode==props.currentMode && props.theme.bg.primary};
+    // box-shadow: ${props => props.mode==props.currentMode && '0px 5px 15px 8px rgba(0,0,0,0.05)'};
+
+    width: 5rem;
+    height: 5rem;
+    border-radius: 2.5rem;
+
+    margin-top: 0.6rem;
+`
 
 export const SideBarButtonIcon = styled.i`
-    font-size: 2rem;
-    padding: 1.5rem;
+    font-size: 1.8rem;
+    padding: 1rem;
     cursor: pointer;
     display: flex;
     flex-direction:column;
     align-items: center;
 
+    
+
     // You cant stack a color on a gradient, but you CAN stack a gradient on a gradient
-    background: ${props => props.mode==props.currentMode ? `linear-gradient(rgba(255,255,255,0.4),rgba(255,255,255,0.4)), `+props.theme.schema[props.mode].gradient : props.theme.bg.octonary};
+    background: ${props => props.mode==props.currentMode ? 
+        props.theme.schema[props.mode].gradient 
+        : 
+        props.theme.bg.quaternary};
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 
@@ -31,8 +49,8 @@ export const SideBarButtonIcon = styled.i`
 export const SideBarButtonText = styled.h1`
   padding-top:.3rem;
   font-family: ${props => props.theme.font.primary};
-  font-weight: 100;
-  font-size:1rem;
+  font-weight: 500;
+  font-size: 0.8rem;
   color: ${props => props.theme.schema.locations};
   text-align: center;
 

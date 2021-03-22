@@ -1,5 +1,33 @@
 
+export const QUEUE_BIN_ID = "QUEUE"
+export const FINISH_BIN_ID = "FINISH"
 
+export const QUEUE_BIN_DISPLAY_NAME = "Queue"
+export const FINISH_BIN_DISPLAY_NAME = "Finish"
+
+export const BIN_IDS = {
+	QUEUE: QUEUE_BIN_ID,
+	FINISH: FINISH_BIN_ID
+}
+
+export const QUEUE_THEME = {
+	ICON: "fas fa-ellipsis-h",
+	COLOR: "#b642f5",
+	ID: QUEUE_BIN_ID,
+	DISPLAY_NAME: QUEUE_BIN_DISPLAY_NAME
+
+}
+export const FINISH_THEME = {
+	ICON: "fas fa-box",
+	COLOR: "#ff8605",
+	ID: FINISH_BIN_ID,
+	DISPLAY_NAME: FINISH_BIN_DISPLAY_NAME,
+}
+
+export const BIN_THEMES = {
+	QUEUE: QUEUE_THEME,
+	FINISH: FINISH_THEME
+}
 
 export const FIELD_COMPONENT_NAMES = {
 	TEXT_BOX: "TEXT_BOX",
@@ -57,10 +85,10 @@ export const LOT_EDITOR_SIDEBAR_OPTIONS = {
 		component: FIELD_COMPONENT_NAMES.NUMBER_INPUT,
 		dataType: FIELD_DATA_TYPES.INTEGER
 	},
-	// CALENDAR_SINGLE: {
-	// 	component: FIELD_COMPONENT_NAMES.CALENDAR_SINGLE
-	// 	dataType: FIELD_DATA_TYPES.DATE
-	// },
+	CALENDAR_SINGLE: {
+		component: FIELD_COMPONENT_NAMES.CALENDAR_SINGLE,
+		dataType: FIELD_DATA_TYPES.DATE
+	},
 	CALENDAR_START_END: {
 		component: FIELD_COMPONENT_NAMES.CALENDAR_START_END,
 		dataType: FIELD_DATA_TYPES.DATE_RANGE
@@ -103,6 +131,8 @@ export const DEFAULT_DISPLAY_NAMES = {
 
 export const NAME_FIELD = {fieldName: "name", dataType: FIELD_DATA_TYPES.STRING, displayName: DEFAULT_NAME_DISPLAY_NAME, label: "Name"}
 export const COUNT_FIELD = {fieldName: "count", fieldPath: ["bins", "QUEUE"], dataType: FIELD_DATA_TYPES.INTEGER, displayName: DEFAULT_COUNT_DISPLAY_NAME, label: "Quantity"}
+export const LOT_NUMBER_FIELD = {fieldName: "lotNumber", dataType: FIELD_DATA_TYPES.INTEGER, label: "Lot Number"}
+
 
 export const REQUIRED_FIELDS = [NAME_FIELD, COUNT_FIELD]
 
@@ -168,9 +198,11 @@ export const LOT_FILTER_OPTIONS = {
 	flags: {
 		label: "Flags"
 	},
+	lotNumber: {...LOT_NUMBER_FIELD}
 }
 
 export const LOT_SORT_OPTIONS = {
 	name: {...NAME_FIELD},
-	quantity: {...COUNT_FIELD}
+	quantity: {...COUNT_FIELD},
+	lotNumber: {...LOT_NUMBER_FIELD}
 }

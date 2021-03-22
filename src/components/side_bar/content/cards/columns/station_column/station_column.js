@@ -10,18 +10,22 @@ const StationsColumn = ((props) => {
 	const {
 		station_id,
 		stationName = "Unnamed",
-		handleCardClick,
+		onCardClick,
 		cards = [],
 		processId,
 		maxHeight,
 		sortMode,
-		sortDirection
+		sortDirection,
+		selectedCards,
+		setSelectedCards
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
 
 	return(
 		<Column
+			setSelectedCards={setSelectedCards}
+			selectedCards={selectedCards}
 			sortDirection={sortDirection}
 			maxWidth={"20rem"}
 			sortMode={sortMode}
@@ -36,7 +40,6 @@ const StationsColumn = ((props) => {
 						/>
 
 						<styled.LabelContainer>
-
 							<styled.StationTitle>{stationName}</styled.StationTitle>
 						</styled.LabelContainer>
 
@@ -52,14 +55,12 @@ const StationsColumn = ((props) => {
 			}
 			station_id={station_id}
 			stationName = {stationName}
-			handleCardClick={handleCardClick}
+			onCardClick={onCardClick}
 			cards = {cards}
 			processId={processId}
 			isCollapsed={isCollapsed}
 		/>
 	)
-
-
 })
 
 export default StationsColumn

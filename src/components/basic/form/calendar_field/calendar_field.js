@@ -13,7 +13,8 @@ import {isArray} from "../../../../methods/utils/array_utils";
 export const CALENDAR_FIELD_MODES = {
 	START: "START",
 	END: "END",
-	RANGE: "RANGE"
+	RANGE: "RANGE",
+	SINGLE: "SINGLE",
 }
 
 const CalendarField = ({
@@ -29,8 +30,6 @@ const CalendarField = ({
 	...props
 }) => {
 
-	console.log("cal minDate",minDate)
-	console.log("cal maxDate",maxDate)
 	const { setFieldValue, setFieldTouched, ...formikContext } = useFormikContext();
 	const [{value: fieldValue, ...field}, {initialValue, ...meta}] = useField(props);
 	const hasError = meta.touched && meta.error;

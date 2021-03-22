@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -16,7 +16,7 @@ import Textbox from '../basic/textbox/textbox'
 import * as styled from './sign_in_up_page.style'
 
 // Import actions
-import { postLocalSettings } from '../../redux/actions/local_actions'
+import { postLocalSettings, getLocalSettings, } from '../../redux/actions/local_actions'
 
 // Get Auth from amplify
 import { Auth, API } from "aws-amplify";
@@ -30,6 +30,8 @@ const SignInUpPage = (props) => {
 
     const dispatch = useDispatch()
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const dispatchGetLocalSettings = (settings) => dispatch(getLocalSettings(settings))
+
     const localReducer = useSelector(state => state.localReducer.localSettings)
 
     const history = useHistory()

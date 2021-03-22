@@ -3,7 +3,7 @@ import * as stylesh from '../../containers/status_header/status_header.style'
 import {LightenDarkenColor} from "../../methods/utils/color_utils";
 
 export const Container = styled.div`
-    background: ${props => props.theme.bg.quaternary};
+    background: ${props => props.theme.bg.tertiary};
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -24,12 +24,12 @@ export const Icon = styled.i`
 
 
 export const Header = styled.div`
-	background: ${props => props.theme.bg.septenary};
+	background: ${props => props.theme.bg.secondary};
 	width: 100%;
 	padding: 1rem;
-	border-bottom: 1px solid black;
 	align-items: center;
 	display: flex;
+    // box-shadow: 0px 2px 4px 2px rgba(0, 0, 0, 0.3);
 `
 
 export const Title = styled.span`
@@ -72,12 +72,13 @@ export const ListItemRect = styled.div`
 
     cursor: pointer;
     user-select: none;
-
-    border: 0.1rem solid white;
     box-sizing: border-box;
 
+    background-color: ${props => props.theme.bg.primary};
+    box-shadow: ${props => props.theme.cardShadow};
+
     &:hover {
-        background: ${props => props.theme.bg.octonary};
+        background: ${props => LightenDarkenColor(props.theme.bg.primary, -10)};
     }
 
 `

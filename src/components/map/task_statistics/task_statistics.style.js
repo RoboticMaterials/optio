@@ -13,7 +13,7 @@ export const TaskStatisticsContainer = styled.div`
 
     max-height: 6.5rem;
     min-width: 7rem;
-    max-width: 15rem;
+    max-width: 20rem;
     padding: .1rem;
 
     background: red;
@@ -24,7 +24,6 @@ export const TaskStatisticsContainer = styled.div`
     overflow: hidden;
 
 `
-
 export const TaskNameText = styled.span`
     margin-bottom: 0rem;
     font-family: ${props => props.theme.font.primary};
@@ -37,13 +36,12 @@ export const TaskNameText = styled.span`
     width: 100%;
     height: 100%;
     word-break: break-word;
-
 `
 
 export const TaskNameContainer = styled.div`
-	flex: 1;
-	display: flex;
-	justify-content: first baseline;
+  	flex: 1;
+  	display: flex;
+  	justify-content: first baseline;
     flex-direction: column;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -52,15 +50,14 @@ export const TaskNameContainer = styled.div`
 `
 
 export const TaskText = styled.p`
-    align-self: auto;
+    align-self: center;
+    text-align: center;
     margin-left: .25rem;
     margin-top: auto;
     margin-bottom: auto;
     font-family: ${props => props.theme.font.primary};
-
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    align-text: center;
+    white-space: break-spaces;
 `
 
 export const TaskIcon = styled.i`
