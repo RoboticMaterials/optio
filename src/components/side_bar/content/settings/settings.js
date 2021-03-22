@@ -182,7 +182,7 @@ const Settings = () => {
 
                     <styled.ChevronIcon
                         className={!!localSettingsState.toggleDevOptions ? 'fas fa-chevron-up':'fas fa-chevron-down'}
-                        style={{ color: 'white' }}
+                        style={{ color: 'black' }}
                         onClick={() => {
                           handleUpdateLocalSettings({ toggleDevOptions: !localSettingsState.toggleDevOptions })
                         }}
