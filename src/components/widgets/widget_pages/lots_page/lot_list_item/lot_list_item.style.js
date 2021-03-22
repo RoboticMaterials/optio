@@ -1,29 +1,48 @@
 import styled from "styled-components";
 
 export const ListItemRect = styled.div`
-    height: 5rem;
     border-radius: 0.5rem;
     margin-left:1rem;
     margin-right:2rem;
     margin-top:0.5rem;
+    margin-bottom: 1rem;
+    background-color: white;
 
-    border: 0.1rem solid white;
-    box-sizing: border-box;
+    border: 1px solid black;
 
-    &:hover {
-    }
+    letter-spacing: 1.5px;
+    box-shadow: 2px 2px 2px  rgba(0, 0, 0, 0.5);
+
+    outline: none;
+    user-select: none;
+
 `
 
 export const RowContainer = styled.div`
     display: flex;
+    min-height: 3.5rem;
     flex-direction: row;
     justify-content: flex-start;
     width: 100%;
-    padding-top:.5rem;
+    border-radius: 0.5rem 0.5rem 0rem 0rem;
+    background: ${props => props.theme.bg.septenary};
+    margin-bottom: 1rem;
+
+`
+export const  ContentRowContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid black;
+    background: white;
+
 `
 
 
-export const ColumnContainer1 = styled.div`
+export const ColumnContainer = styled.div`
     display: flex;
     flex: 4;
     flex-direction: column;
@@ -39,17 +58,9 @@ export const ColumnContainer1 = styled.div`
       flex:1;
     }
 `
-
-export const ColumnContainer2 = styled.div`
-    display: flex;
-    flex:1;
-    flex-direction: column;
-    height: 100%;
-`
-
 export const ListItemIcon = styled.i`
     font-size: 1.8rem;
-    color: #ffb62e;
+    color: #c59bff;
     padding-top: .9rem;
     padding-right:1rem;
 
@@ -57,7 +68,6 @@ export const ListItemIcon = styled.i`
 
     &:hover {
         cursor: pointer;
-        color:yellow;
     }
 `
 
@@ -68,7 +78,7 @@ export const ListContent = styled.div`
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz3};
     font-weight: 500;
-    color: ${props => props.theme.bg.octonary};
+    color: black;
 
     padding-left:1rem;
 
@@ -77,14 +87,12 @@ export const ListContent = styled.div`
     text-overflow: ellipsis;
 `
 
-export const ListSubtitle = styled.div`
-    width: 100%;
+export const TextContent = styled.div`
     height:100%;
-
     font-family: ${props => props.theme.font.primary};
-    font-size: ${props => props.theme.fontSize.sz3};
+    font-size: 1rem;
     font-weight: 500;
-    color: ${props => props.theme.bg.senary};
+    color: black;
 
     white-space: nowrap;
     overflow: hidden;
