@@ -45,7 +45,7 @@ export const ProcessOptionsContainer = styled.div`
 
     /* Handle */
     ::-webkit-scrollbar-thumb {
-        background: ${props => props.theme.bg.tertiary};
+        background: ${props => props.theme.bg.secondary};
         border-radius: .5rem;
     }
 

@@ -123,8 +123,8 @@ export const DefaultItemComponent = styled.span`
   ${({ disabled }) =>
     disabled
       ? `
-    background: ${props => props.theme.bg.secondary};
-    color: ${props => props.theme.bg.tertiary};
+    background: ${props => props.theme.bg.tertiary};
+    color: ${props => props.theme.bg.secondary};
 
     ins {
       text-decoration: none;

@@ -12,7 +12,7 @@ export const BackSymbol = styled.i`
 
     color: ${props => {
       if (props.active) {
-        return props.theme.bg.tertiary
+        return props.theme.bg.secondary
       } else if (props.hovered) {
         return !!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary
       } else {

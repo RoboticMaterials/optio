@@ -567,7 +567,7 @@ export class DropDownSearch extends Component {
 
 export const DefaultReactDropdownSelect = styled.div`
 
-    background-color: ${props => props.theme.bg.tertiary};
+    background-color: ${props => props.theme.bg.secondary};
     box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1) !important;
     color: ${props => props.theme.bg.octonary};
 

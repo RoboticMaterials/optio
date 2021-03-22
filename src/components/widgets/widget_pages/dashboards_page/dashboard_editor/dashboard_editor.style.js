@@ -19,7 +19,7 @@ export const FooterContainer = styled.div`
     display: flex;
     justify-content: center;
     
-    background-image: linear-gradient(to top, ${props => props.theme.bg.tertiary}, ${props => props.theme.bg.primary});
+    background-image: linear-gradient(to top, ${props => props.theme.bg.secondary}, ${props => props.theme.bg.primary});
     box-shadow: 0px 0px 15px black;
     
     padding: 1rem;

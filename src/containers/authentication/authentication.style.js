@@ -80,5 +80,5 @@ export const Button = styled.button`
     border: none;
 
     box-shadow: ${props => !!props.selected ? 'none' : '0 0.05rem 0.1rem 0rem #303030'};
-    background-color: ${props => !!props.selected ? props.theme.bg.tertiary : props.theme.bg.senary}
+    background-color: ${props => !!props.selected ? props.theme.bg.secondary : props.theme.bg.senary}
 `
