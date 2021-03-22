@@ -53,11 +53,15 @@ import {isNonEmptyArray} from "../../methods/utils/array_utils";
 import HilButton from "./hil_button/hil_button";
 
 
+export const QUANTITY_MODES = {
+    QUANTITY: "QUANTITY",
+    FRACTION: "FRACTION"
+}
+
 /**
  * Handles what type of HIL to display depending on the status
  */
 const HILModals = (props) => {
-
     const {
         hilMessage,
         hilType,
@@ -527,7 +531,7 @@ const HILModals = (props) => {
         )
     }
 
-    const renderFractionOptions = () => {
+    const renderFractionOptions = (index) => {
         console.log("renderFractionOptions")
 
         const fractionOptions = ['1', '3/4', '1/2', '1/4']
@@ -561,26 +565,17 @@ const HILModals = (props) => {
                         {fractionOptions.map((value, ind) => {
                             const decimal = fractionDecimals[ind]
                             return (
-                                <styled.HilButton
+                                <HilButton
                                     color={'#90eaa8'}
+                                    label={`${value} (Quantity ${Math.ceil(2 * decimal)})`}
                                     filter={Math.cbrt(eval(value))}
                                     onClick={() => {
-                                        onHilSuccess(eval(value))
-                                        dispatchSetShowModalId(null)
+                                        setFieldValue(`lots${index}`, {
+                                            ...selectedLots[index],
+                                            fraction: value
+                                        })
                                     }}
-                                >
-                                    {/* <styled.HilIcon
-                                className='fas fa-check'
-                                color={'#1c933c'}
-                            /> */}
-                                    <styled.RowContainer>
-                                        <styled.HilButtonText style={{ fontSize: '3rem' }} color={'#1c933c'}>{value}</styled.HilButtonText>
-                                        {!!2 &&
-                                            <styled.HilButtonQuantityText color={'#1c933c'}>{'(Quantity ' + Math.ceil(2 * decimal) + ')'}</styled.HilButtonQuantityText>
-                                        }
-
-                                    </styled.RowContainer>
-                                </styled.HilButton>
+                                />
                             )
                         })}
 
@@ -617,7 +612,10 @@ const HILModals = (props) => {
 
 
     const getIsSelected = (lotId) => {
-        for(const currLot of selectedLots) {
+        for(const currItem of selectedLots) {
+            const {
+                lot: currLot
+            } = currItem || {}
             const {
                 _id: currLotId
             } = currLot
@@ -633,7 +631,10 @@ const HILModals = (props) => {
             _id: lotId
         } = lot || {}
 
-        const index = selectedLots.findIndex((currLot) => {
+        const index = selectedLots.findIndex((currItem) => {
+            const {
+                lot: currLot
+            } = currItem || {}
             const {
                 _id: currLotId
             } = currLot || {}
@@ -768,7 +769,12 @@ const HILModals = (props) => {
 
         return (
             <styled.RealLotsContainer>
-                {selectedLots.map((currLot, currIndex) => {
+                {selectedLots.map((currItem, currIndex) => {
+                    const {
+                        lot: currLot,
+                        quantity: currQuantity,
+                        fraction
+                    } = currItem || {}
                     const {
                         _id: lotId,
                         process_id: processId = "",
@@ -776,10 +782,13 @@ const HILModals = (props) => {
 
                     return (
                         <HilLotItem
+                            quantityMode={trackQuantity ? QUANTITY_MODES.QUANTITY : QUANTITY_MODES.FRACTION}
                             name={`lots[${currIndex}]`}
                             lotId={lotId}
                             binId={stationId || loadStationId}
                             processId={processId}
+                            selectedQuantity={currQuantity}
+                            fraction={fraction}
                         />
                     )
                 })}

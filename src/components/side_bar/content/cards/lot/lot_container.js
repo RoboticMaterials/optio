@@ -13,6 +13,7 @@ const LotContainer = (props) => {
         binId,
         enableFlagSelector,
         processId,
+        onSetCount,
         ...rest
     } = props
 
@@ -53,7 +54,9 @@ const LotContainer = (props) => {
     }, [bins])
 
     useEffect(() => {
-        setCount(getBinQuantity({bins}, binId))
+        const tempCount = getBinQuantity({bins}, binId)
+        setCount(tempCount)
+        onSetCount && onSetCount(tempCount)
     }, [bins, binId])
 
     return (
@@ -80,13 +83,15 @@ const LotContainer = (props) => {
 
 LotContainer.propTypes = {
     lotId: PropTypes.string,
-    binId: PropTypes.string
+    binId: PropTypes.string,
+    onSetCount: PropTypes.func
 };
 
 LotContainer.defaultProps = {
     lotId: "",
     binId: "",
     enableFlagSelector: false,
+    onSetCount: () => {},
 };
 
 export default LotContainer;
