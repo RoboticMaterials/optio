@@ -1,21 +1,22 @@
 import React from 'react'
 
 // actions
-import {deleteCard, putCard} from "../../../../../redux/actions/card_actions"
+import {deleteCard, putCard} from "../../../../../../redux/actions/card_actions"
 
 // components internal
-import ConfirmDeleteModal from "../../../../basic/modals/confirm_delete_modal/confirm_delete_modal"
-import DeleteLotItem from "./delete_lot_item/delete_lot_item"
-import DeleteLotsHeader from "./delete_lots_header/delete_lots_header"
+import ConfirmDeleteModal from "../../../../../basic/modals/confirm_delete_modal/confirm_delete_modal"
 
 // functions external
 import PropTypes from 'prop-types'
 import {useDispatch, useSelector} from "react-redux"
 
 // utils
-import {isEmpty} from "../../../../../methods/utils/object_utils"
-import {getBinName} from "../../../../../methods/utils/lot_utils"
-import {getProcessName} from "../../../../../methods/utils/processes_utils"
+import {isEmpty} from "../../../../../../methods/utils/object_utils"
+
+import LotContainer from "../../lot/lot_container";
+
+import * as sharedStyles from "../modals.style"
+import {lotContainerStyle} from "../modals.style";
 
 const DeleteMultipleLotsModal = props => {
 
@@ -34,9 +35,9 @@ const DeleteMultipleLotsModal = props => {
 	const cards = useSelector(state => { return state.cardsReducer.cards })
 
 	const renderSelectedLots = () => {
+
 		return (
-			<>
-				<DeleteLotsHeader/>
+			<sharedStyles.Container>
 				{selectedCards.map((currItem) => {
 					const {
 						cardId = "",
@@ -44,26 +45,19 @@ const DeleteMultipleLotsModal = props => {
 						binId = ""
 					} = currItem || {}
 
-					const currLot = cards[cardId] || {}
-					const {
-						name = "",
-						lotNumber=0
-					} = currLot
-
-					const binName = getBinName(binId)
-					const processName = getProcessName(processId)
-
 					return(
-						<DeleteLotItem
-							lotNumber={lotNumber}
-							key={`${cardId}+${binId}+${processId}`}
-							name={name}
-							binName={binName}
-							processName={processName}
+						<sharedStyles.LotWrapper>
+						<LotContainer
+							lotId={cardId}
+							binId={binId}
+							processId={processId}
+							enableFlagSelector={false}
+							containerStyle={lotContainerStyle}
 						/>
+						</sharedStyles.LotWrapper>
 					)
 				})}
-			</>
+			</sharedStyles.Container>
 			)
 	}
 

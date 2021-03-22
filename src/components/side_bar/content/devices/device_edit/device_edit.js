@@ -187,7 +187,7 @@ const DeviceEdit = (props) => {
                     valueField="_id"
                     options={locationsSortedAlphabetically(Object.values(positions))}
                     values={!!selectedDevice.idle_location ? [positions[selectedDevice.idle_location]] : []}
-                    dropdownGap={5}
+                    dropdownGap={2}
                     noDataLabel="No matches found"
                     closeOnSelect="true"
                     onChange={values => {

@@ -11,32 +11,21 @@ export const size = {
     desktop: '2560px'
 }
 
-const dark = {
-    primary: '#000000',  // Black
-    secondary: '#27272b',
-    tertiary: '#313236',
-    // quaternary: '#4f5063',
-    quaternary: '#5a5a63',
-    quinary: '#6c6e78',
-    senary: '#a6a7ba',
-    septenary: '#e9e9f2',
-    octonary: '#FFFFFF',  // White
-}
 
 const light = {
     primary: '#FFFFFF',  // White
-    secondary: '#E6E6E6',
-    tertiary: '#C8C8C8',
-    quaternary: '#A8A8A8',  // light light grey
-    quinary: '#808080',   // light grey
+    secondary: '#f5f5fa',
+    tertiary: '#dedfe3',
+    quaternary: '#b8b9bf',  // light light grey
+    quinary: '#79797d',   // light grey
     senary: '#7e7e7e',    // charcoal
     septenary: '#545454', //dark dark grey
-    octonary: '#000000',  // Black
+    octonary: '#363636',  // Black
 }
 
 export const theme = {
     main: {
-        bg: dark,
+        bg: light,
         fg: {
             primary: '#798fd9',
             secondary: '#FF4B4B', // RM RED
@@ -51,13 +40,14 @@ export const theme = {
             red: '#FF4B4B',   // RM RED
 
         },
+        textColor: '#303030',
         error: {
             borderColor: '#FF4B4B',
         },
         good: '#52B853',
         okay: '#ffa200',
         bad: '#FF4B4B',
-        warn: '#ffe62b',
+        warn: '#ffbf1f',
         disabled: '#808080',           // light grey
         radioButton: {
             active: '#FF4B4B',          // RM RED
@@ -77,6 +67,7 @@ export const theme = {
                 active: "#FFFFFF",
             }
         },
+        cardShadow: '0px 0px 6px 1px rgba(0,0,0,0.1)',
 
         font: {
             primary: 'Montserrat'
@@ -120,60 +111,34 @@ export const theme = {
             desktopL: `${size.desktop}`
         },
 
-        tree: {
-            bg: light,
-            normal: {
-                fg: '#7de7ff',
-                mg: '#bff3ff',
-                bg: '#edf5f7'
-            },
-            goal: {
-                fg: '#e399ff',
-                mg: '#ecbdfc',
-                bg: '#ede4f0',
-            },
-            warning: {
-                fg: '#ffc04b',
-                bg: '#f5eee9',
-            },
-            selected: {
-                fg: '#FF4B4B',
-                bg: '#ffe8e8',
-            },
-            alternate: {
-                fg: '#e0e0e0',
-                bg: '#f5f5f5',
-            },
-            disabled: {
-                fg: '',
-                bg: '',
-            }
-        },
-
         schema: {
+            default: {
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(168, 0, 36, 0.95) 0%, rgba(217, 21, 0, 0.95) 100%)',
+                solid: '#FF4B4B'
+            },
             locations: {
-                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 143, 217, 0.95) 0%, rgba(125, 89, 183, 0.95) 100%)',
-                solid: '#798fd9'
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(92, 111, 255, 0.95) 0%, rgba(159, 91, 255, 0.95) 100%)',
+                solid: '#5c6fff'
             },
             dashboards: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 214, 0, 0.95) 0%, rgba(255, 138, 0, 0.95) 100%)',
                 solid: '#5294ff'
             },
             objects: {
-                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 214, 0, 0.95) 0%, rgba(255, 138, 0, 0.95) 100%)',
-                solid: '#ffb62e'
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(31, 255, 94, 0.95) 0%, rgba(0, 126, 237, 0.95) 100%)',
+                solid: '#2ed182',
             },
             processes: {
-                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 214, 0, 0.95) 0%, rgba(255, 138, 0, 0.95) 100%)',
-                solid: '#ffb62e'
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(255, 214, 0, 0.95) 0%, rgba(255, 118, 33, 0.95) 100%)',
+                solid: '#ffbf1f'
             },
             tasks: {
-                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
-                solid: '#79d99b'
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(31, 255, 94, 0.95) 0%, rgba(0, 126, 237, 0.95) 100%)',
+                solid: '#2ed182',
             },
             routes: {
-                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',
-                solid: '#79d99b',
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(31, 255, 94, 0.95) 0%, rgba(0, 126, 237, 0.95) 100%)',
+                solid: '#2ed182',
                 iconName: "fas fa-route"
             },
             all: {
@@ -181,9 +146,12 @@ export const theme = {
                 solid: '#1ae8a0'
             },
             lots: {
-                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(167, 48, 255) 0%, rgba(148, 80, 199, 0.95) 100%)',
-                solid: '#bc61ff',
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(167, 114, 252, 0.95) 0%, rgba(251, 0, 255, 0.95) 100%)',
+                solid: '#9e64fc',
                 iconName: "fas fa-play"
+            },
+            charts: {
+                solid: "#54AAFF",
             },
             kick_off: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(197, 155, 255) 0%, rgba(173, 115, 255, 0.95) 100%)',
@@ -196,8 +164,8 @@ export const theme = {
                 iconName: "fas fa-flag-checkered"
             },
             error: {
-                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(250, 67, 47, 0.95) 0%, rgba(217, 21, 0, 0.95) 100%)',
-                solid: '#ff1900'
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(168, 0, 36, 0.95) 0%, rgba(217, 21, 0, 0.95) 100%)',
+                solid: '#FF4B4B'
             },
             ok: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(10, 189, 0, 0.95) 0%, rgba(77, 196, 71, 0.95) 100%)',

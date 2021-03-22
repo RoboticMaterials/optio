@@ -72,7 +72,7 @@ export default function Positions(props) {
             return Object.values(selectedStationChildrenCopy).map((position, i) => {
                 if (position.type === positionType) {
                     return (
-                        <styled.PositionListItem background={PositionTypes[positionType].color} key={`associatecd_pos_${i}`}>
+                        <styled.PositionListItem key={`associatecd_pos_${i}`}>
 
 
                             <MinusButton
@@ -81,9 +81,11 @@ export default function Positions(props) {
                                     setDeletingIndex(i)
                                     setDeletingPosition(position)
                                 }}
+                                style={{color: PositionTypes[positionType].color}}
                             />
                             <Textbox
                                 style={{ flex: '1' }}
+                                textboxContainerStyle={{flex: '1', marginLeft: '0.3rem'}}
                                 schema="locations"
                                 focus={i == editingIndex}
                                 // defaultValue={position.name}
@@ -99,7 +101,7 @@ export default function Positions(props) {
 
                             {/* If not a human position, then add ability to use cart location */}
                             {position.type !== 'human_position' &&
-                                <styled.CartIcon className='icon-cart' onClick={() => handleSetChildPositionToCartCoords(position)} />
+                                <styled.CartIcon className='icon-cart' onClick={() => handleSetChildPositionToCartCoords(position)} style={{color: PositionTypes[positionType].color}}/>
                             }
 
                             {/* Commenting out for now, not working with constent updating */}
@@ -169,14 +171,15 @@ export default function Positions(props) {
                         }
                         }
                     >
+                        <styled.LocationTypeLabel>
+                            {positionName}
+                        </styled.LocationTypeLabel>
 
                         <styled.LocationTypeGraphic fill={PositionTypes[positionType].color} stroke={PositionTypes[positionType].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
                             {PositionTypes[positionType].svgPath}
                         </styled.LocationTypeGraphic>
 
-                        <styled.LocationTypeLabel>
-                            {positionName}
-                        </styled.LocationTypeLabel>
+                        
 
                     </styled.NewPositionCard>
                 </styled.Card>

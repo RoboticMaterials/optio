@@ -21,7 +21,9 @@ const SimpleModal = (props) => {
         button_1_disabled,
         button_2_disabled,
         children,
-        contentLabel
+        contentLabel,
+        FooterContent,
+        PreBodyContent,
     } = props
 
     return (
@@ -39,6 +41,7 @@ const SimpleModal = (props) => {
             }}
         >
             <styled.Header>
+                <styled.HeaderRow>
                 <styled.Title>{title}</styled.Title>
 
                 <Button
@@ -47,29 +50,35 @@ const SimpleModal = (props) => {
                 >
                     <i className="fa fa-times" aria-hidden="true"/>
                 </Button>
+                </styled.HeaderRow>
+
             </styled.Header>
             <styled.BodyContainer>
+                {PreBodyContent}
                         <styled.ContentContainer>
                             {children}
                         </styled.ContentContainer>
 
                         <styled.ButtonForm>
-                            <Button
-                                tertiary
-                                schema={"ok"}
-                                onClick={handleOnClick1}
-                                label={button_1_text}
-                                type="button"
-                                disabled={button_1_disabled}
-                            />
-                            <Button
-                                tertiary
-                                schema={"delete"}
-                                onClick={handleOnClick2}
-                                label={button_2_text}
-                                type="button"
-                                disabled={button_2_disabled}
-                            />
+                            {FooterContent}
+                            <styled.ButtonContainers>
+                                <Button
+                                    tertiary
+                                    schema={"ok"}
+                                    onClick={handleOnClick1}
+                                    label={button_1_text}
+                                    type="button"
+                                    disabled={button_1_disabled}
+                                />
+                                <Button
+                                    tertiary
+                                    schema={"delete"}
+                                    onClick={handleOnClick2}
+                                    label={button_2_text}
+                                    type="button"
+                                    disabled={button_2_disabled}
+                                />
+                            </styled.ButtonContainers>
                         </styled.ButtonForm>
             </styled.BodyContainer>
         </styled.Container>
@@ -103,6 +112,8 @@ SimpleModal.defaultProps = {
     children: null,
     button_1_disabled: false,
     button_2_disabled: false,
+    FooterContent: null,
+    PreBodyContent: null,
 };
 
 

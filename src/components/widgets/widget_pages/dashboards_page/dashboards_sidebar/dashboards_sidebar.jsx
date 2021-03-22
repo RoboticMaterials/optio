@@ -288,14 +288,18 @@ const DashboardsSidebar = (props) => {
                 style={{ width: width }}
             >
                 <style.Container>
+
                     <style.ListContainer>
                         {(type === TYPES.ROUTES.key) &&
 
                         <Container
                             groupName="dashboard-buttons"
-                            getChildPayload={index =>
-                                availableButtons[index]
-                            }
+                            getChildPayload={index => {
+                                return {
+                                    ...availableButtons[index],
+                                    name: ""
+                                }
+                            }}
                         >
                             {availableButtons.map((currButton, index) => {
 
@@ -328,9 +332,12 @@ const DashboardsSidebar = (props) => {
                         {(type === TYPES.OPERATIONS.key) &&
                         <Container
                             groupName="dashboard-buttons"
-                            getChildPayload={index =>
-                                availableReportButtons[index]
-                            }
+                            getChildPayload={index => {
+                                return {
+                                    ...availableReportButtons[index],
+                                    name: ""
+                                }
+                            }}
                         >
                             {availableReportButtons.map((button, index) => {
                                 const {

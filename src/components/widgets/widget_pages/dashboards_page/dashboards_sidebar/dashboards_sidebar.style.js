@@ -10,8 +10,9 @@ export const FooterContainer = styled.div`
 	overflow-x: scroll;
 	overflow-y: hidden;
 	padding: 1rem;
-	border-top: 1px solid ${props => props.theme.bg.quaternary};
-	background: ${props => props.theme.bg.tertiary + "B1"};
+	background: ${props => props.theme.bg.secondary + "B1"};
+
+    justify-content: center;
 `
 
 // export const
@@ -37,10 +38,12 @@ export const Container = styled.div`
     flex-direction: column;
     // justify-content: flex-start;
     align-items: center;
+    justify-content: center;
+    align-content: center;
     z-index: 1;
 
     flex: 1;
-    background: ${props => LightenDarkenColor(props.theme.bg.quaternary, 20)};
+    background: ${props => props.theme.bg.tertiary};
     
 `
 
@@ -59,7 +62,6 @@ export const ListContainer = styled.div`
     padding-left: 2rem;
     padding-right: 2rem;
     
-    
     display: flex;
     flex-direction: column;
     // align-items: center;
@@ -69,7 +71,7 @@ export const ListContainer = styled.div`
     overflow-x: hidden;
     z-index: 1;
     
-    background: ${props => LightenDarkenColor(props.theme.bg.quaternary, 20)};
+    background: ${props => props.theme.bg.secondary};
     
     
     // hide scroll bar
@@ -142,7 +144,7 @@ export const SidebarContent = styled.div`
     // background: ${props => props.theme.bg.primary};
     z-index: 1;
 
-    border-right: 8px solid ${props => LightenDarkenColor(props.theme.bg.quinary,20)};
+    border-right: 8px solid ${props => props.theme.bg.tertiary};
     
 `
 

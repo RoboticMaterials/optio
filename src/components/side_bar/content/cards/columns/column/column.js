@@ -30,7 +30,7 @@ const Column = ((props) => {
 	const {
 		station_id,
 		stationName = "Unnamed",
-		handleCardClick,
+		onCardClick,
 		selectedCards,
 		processId,
 		HeaderContent,
@@ -111,6 +111,71 @@ const Column = ((props) => {
 	const getIsSelected = (lotId, binId) => {
 		const existingIndex = getSelectedIndex(lotId, binId)
 		return (existingIndex !== -1)
+	}
+
+	const getLastSelectedIndex = () => {
+		let addedIndex = -1
+		for (var i = selectedCards.length - 1; i >= 0; i--) {
+			const currLot = selectedCards[i]
+			const {
+				binId: currBinId
+			} = currLot || {}
+
+			if((currBinId === station_id) && (i > addedIndex)) {
+				addedIndex = i
+			}
+		}
+
+		return addedIndex
+	}
+
+	const getLastSelected = () => {
+		const lastSelectedIndex = getLastSelectedIndex()
+		return selectedCards[lastSelectedIndex]
+	}
+
+	const getIsLastSelected = (lotId) => {
+		const lastSelected = getLastSelected() || {}
+		const {
+			cardId: currLotId,
+		} = lastSelected
+
+		return lotId === currLotId
+	}
+
+	const getBetweenSelected = (lotId) => {
+		const lastSelected = getLastSelected() || {}
+		const {
+			cardId: lastSelectedLotId,
+		} = lastSelected
+
+		const selectedIndex = cards.findIndex((currLot) => {
+			const {
+				cardId: currLotId,
+				binId: currBinId
+			} = currLot
+
+			return (lastSelectedLotId === currLotId) && (station_id === currBinId)
+		})
+
+		const existingIndex = cards.findIndex((currLot) => {
+			const {
+				cardId: currLotId,
+				binId: currBinId
+			} = currLot
+
+			return (lotId === currLotId) && (station_id === currBinId)
+		})
+
+		if(selectedIndex === -1) {
+			return [cards[existingIndex]]
+		}
+		else if(selectedIndex < existingIndex) {
+			return cards.slice(selectedIndex, existingIndex+1)
+		}
+		else {
+			return cards.slice(existingIndex, selectedIndex+1).reverse()
+		}
 	}
 
 	const handleDrop = async (dropResult) => {
@@ -281,6 +346,8 @@ const Column = ((props) => {
 							const isDragging = draggingLotId === cardId
 							const isHovering = hoveringLotId === cardId
 
+							const isLastSelected = getIsLastSelected(cardId)
+
 							// const isSelected = (draggingLotId !== null) ? () : ()
 							const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
 
@@ -295,10 +362,14 @@ const Column = ((props) => {
 								>
 									<div
 										style={{
-											transform: isSelected && "rotate(2.5deg)"
+											transform: isSelected && "rotate(2.5deg)",
+											// border: isLastSelected && "1px solid red",
+											// boxShadow: isLastSelected && "0 0 5px ${color}",
+
 										}}
 									>
 								<Lot
+									glow={isLastSelected}
 									isFocused={isDragging || isHovering}
 									enableFlagSelector={true}
 									templateValues={templateValues}
@@ -314,7 +385,18 @@ const Column = ((props) => {
 									id={cardId}
 									flags={flags || []}
 									index={index}
-									onClick={(e)=>handleCardClick(e, cardId, processId, station_id)}
+									onClick={(e)=> {
+										const payload = getBetweenSelected(cardId)
+										onCardClick(
+											e,
+											{
+												lotId: cardId,
+												processId: processId,
+												binId: station_id
+											},
+											payload
+										)
+									}}
 									containerStyle={{
 										marginBottom: "0.5rem",
 

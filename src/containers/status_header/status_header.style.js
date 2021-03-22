@@ -56,11 +56,10 @@ export const LogoIcon = styled.i`
 export const LogoSubtitle = styled.h2`
     color: ${props => props.theme.bg.senary};
     font-family: 'Montserrat';
-    font-size: ${props => props.theme.fontSize.sz4};
+    font-size: 1rem;
     font-weight: 600;
-    margin: 0;
-    margin-bottom: -2rem;
-    padding: 0;
+    margin-bottom: -1.3rem;
+    margin-left: 0.2rem;
 `;
 
 
@@ -117,7 +116,7 @@ export const PlayButtonIcon = styled.i`
 export const NotificationIcon = styled.i`
     font-size: 2.2rem;
     /* font-size: ${props => props.theme.fontSize.sz3}; */
-    color: ${props => props.theme.fg.primary};
+    color: ${props => props.theme.fg.red};
     margin-left: .2rem;
     margin-right: .2rem;
     margin-bottom: 0.4rem;
@@ -134,7 +133,6 @@ export const RightMenuContainer = styled.div`
 
     border-radius: .5rem;
     // border: .2em solid;
-    // border-color: ${props => props.theme.fg.primary};
 
 
     &:hover {
@@ -144,7 +142,7 @@ export const RightMenuContainer = styled.div`
 
     ${props => props.checked && `
         box-shadow: inset 2px 2px 4px 0px rgba(0, 0, 0, 0.25), inset -2px -2px 3px 0px rgba(255, 255, 255, 0.6);
-        background: rgba(0,0,0,0.01);
+        background: rgba(0,0,0,0.05);
     `}
 
     margin-left: 0;
@@ -170,7 +168,7 @@ export const NotificationText = styled.p`
 
     font-size: 1rem;
     font-weight: 600;
-    color: ${props => props.theme.fg.primary};
+    color: ${props => props.theme.fg.red};
     margin: 0;
     padding: 0;
 

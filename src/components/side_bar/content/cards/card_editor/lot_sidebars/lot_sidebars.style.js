@@ -12,7 +12,7 @@ export const FooterContainer = styled.div`
 	overflow-y: hidden;
 	padding: 1rem;
 	border-top: 1px solid ${props => props.theme.bg.quaternary};
-	background: ${props => props.theme.bg.secondary};
+	background: ${props => props.theme.bg.tertiary};
 `
 
 // export const
@@ -138,7 +138,7 @@ export const ListContainer = styled.div`
     overflow-x: hidden;
     //z-index: 1;
     
-    background: ${props => props.theme.bg.tertiary};
+    background: ${props => props.theme.bg.secondary};
    
     // hide scroll bar
     ::-webkit-scrollbar {
@@ -215,7 +215,7 @@ export const ResizeHandle = styled.div`
     cursor: ew-resize;
     width: 4px;
     height: 30px;
-    background: ${props => props.theme.bg.tertiary};
+    background: ${props => props.theme.bg.secondary};
     border-radius: 8px;
     text-align: center;
     z-index: 2;

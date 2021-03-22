@@ -16,7 +16,7 @@ const TimeSpans = (props) => {
             {/* <styled.TimespanButton color={color} selected={timeSpan == 'live'} onClick={() => setTimeSpan('live')}>Live</styled.TimespanButton> */}
             <styled.TimespanButton color={color} disabled={timespanDisabled} selected={(timeSpan == 'day' || timeSpan === 'line')} onClick={() => setTimeSpan('day')}>Day</styled.TimespanButton>
             <styled.TimespanButton color={color} disabled={timespanDisabled} selected={timeSpan === 'week'} onClick={() => setTimeSpan('week')}>Week</styled.TimespanButton>
-            <styled.TimespanButton color={color} disabled={timespanDisabled} selected={timeSpan === 'month'} onClick={() => setTimeSpan('month')}>6 weeks</styled.TimespanButton>
+            <styled.TimespanButton color={color} disabled={timespanDisabled} selected={timeSpan === 'month'} onClick={() => setTimeSpan('month')}>6 Weeks</styled.TimespanButton>
             <styled.TimespanButton color={color} disabled={timespanDisabled} selected={timeSpan === 'year'} onClick={() => setTimeSpan('year')}>Year</styled.TimespanButton>
             {/* <styled.TimespanButton color={color} selected={timeSpan == 'all'} onClick={() => setTimeSpan('all')}>ALL</styled.TimespanButton> */}
         </styled.Container>
