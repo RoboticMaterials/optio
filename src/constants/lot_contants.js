@@ -1,9 +1,33 @@
 
+export const QUEUE_BIN_ID = "QUEUE"
+export const FINISH_BIN_ID = "FINISH"
+
+export const QUEUE_BIN_DISPLAY_NAME = "Queue"
+export const FINISH_BIN_DISPLAY_NAME = "Finish"
+
 export const BIN_IDS = {
-	QUEUE: "QUEUE",
-	FINISH: "FINISH"
+	QUEUE: QUEUE_BIN_ID,
+	FINISH: FINISH_BIN_ID
 }
 
+export const QUEUE_THEME = {
+	ICON: "fas fa-ellipsis-h",
+	COLOR: "#b642f5",
+	ID: QUEUE_BIN_ID,
+	DISPLAY_NAME: QUEUE_BIN_DISPLAY_NAME
+
+}
+export const FINISH_THEME = {
+	ICON: "fas fa-box",
+	COLOR: "#ff8605",
+	ID: FINISH_BIN_ID,
+	DISPLAY_NAME: FINISH_BIN_DISPLAY_NAME,
+}
+
+export const BIN_THEMES = {
+	QUEUE: QUEUE_THEME,
+	FINISH: FINISH_THEME
+}
 
 export const FIELD_COMPONENT_NAMES = {
 	TEXT_BOX: "TEXT_BOX",

@@ -47,7 +47,7 @@ const LineThroughputChart = (props) => {
     const colors = { Actual: 'hsl(53, 84%, 50%)', Expected: 'hsl(120, 60%, 50%)' }
 
     // Settings local state here because enabled breaks needs to access breaks outside of formik
-    // See the Switch below forme details
+    // See the Switch below for more details
     useEffect(() => {
 
         // If there's shift details
@@ -515,7 +515,7 @@ const LineThroughputChart = (props) => {
                     validateOnMount={false}
                     validateOnBlur={false}
 
-                    onSubmit={async (values, { setSubmitting, setTouched, validateForm}) => {
+                    onSubmit={async (values, { setSubmitting, setTouched, validateForm }) => {
                         setSubmitting(true)
                         onSubmitShift(values)
                         setSubmitting(false)
@@ -640,109 +640,116 @@ const LineThroughputChart = (props) => {
         )
     }
 
+    const renderResponsiveLine = useMemo(() => {
+
+        return (
+            < styled.PlotContainer style={{ flexGrow: '7' }} minHeight={27}>
+                <ResponsiveLine
+                    data={lineDataConverter}
+                    // data={!!convertedData ? convertedData : []}
+                    colors={line => colors[line.id]}
+
+                    xScale={{ type: "time" }}
+                    xFormat="time:%H:%M"
+                    yFormat={value => Math.round(value)}
+                    yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
+
+                    axisTop={null}
+                    axisRight={null}
+                    axisBottom={{ format: "%H:%M", tickRotation: 45 }}
+                    axisLeft={{
+                        orient: 'left',
+                        tickSize: 5,
+                        tickPadding: 5,
+                        tickOffset: 10,
+                        tickValues: 4
+                    }}
+                    axisLeft={{
+                        enable: true,
+                    }}
+
+                    animate={false}
+                    useMesh={true}
+
+                    enablePoints={true}
+                    pointSize={5}
+                    pointBorderWidth={1}
+                    pointBorderColor={{ from: 'white' }}
+                    pointLabel="y"
+                    pointLabelYOffset={-12}
+
+                    margin={{ top: 22, left: 70, right: 70, bottom: 30 }}
+                    enableGridY={isData ? true : false}
+
+                    // curve="monotoneX"
+                    // mainTheme={themeContext}
+                    legends={[
+                        {
+                            anchor: 'top-left',
+                            direction: 'column',
+                            justify: false,
+                            translateX: 10,
+                            translateY: 0,
+                            itemsSpacing: 0,
+                            itemDirection: 'left-to-right',
+                            itemWidth: 80,
+                            itemHeight: 20,
+                            itemOpacity: 0.75,
+                            symbolSize: 12,
+                            symbolShape: 'circle',
+                            symbolBorderColor: 'rgba(0, 0, 0, .5)',
+                            effects: [
+                                {
+                                    on: 'hover',
+                                    style: {
+                                        itemBackground: 'rgba(0, 0, 0, .03)',
+                                        itemOpacity: 1
+                                    }
+                                }
+                            ]
+                        }]}
+                    theme={{
+                        textColor: '#ffffff',
+                        axis: {
+                            ticks: {
+                                line: {
+                                    stroke: "fff",
+                                },
+                                // text: {
+                                //     fill: "fff",
+                                //     textColor: '#ffffff',
+                                //     // fontFamily: 'Montserrat',
+                                //     fontSize: "0.8rem"
+                                // },
+                            }
+                        },
+                        grid: {
+                            line: {
+                                stroke: '#55575e',
+                                strokeWidth: 1,
+                            }
+                        },
+                        crosshair: {
+                            line: {
+                                stroke: "#fff",
+                                strokeDasharray: "0"
+                            }
+                        }
+                    }}
+
+                />
+
+
+            </styled.PlotContainer>
+        )
+    },[lineDataConverter])
+
     return (
         <styled.RowContainer>
             {breaksEnabled !== null &&
                 <>
                     {renderForm()}
-                    < styled.PlotContainer style={{ flexGrow: '7' }} minHeight={27}>
-                        <ResponsiveLine
-                            data={lineDataConverter}
-                            // data={!!convertedData ? convertedData : []}
-                            colors={line => colors[line.id]}
-
-                            xScale={{ type: "time" }}
-                            xFormat="time:%H:%M"
-                            yFormat={value => Math.round(value)}
-                            yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
-
-                            axisTop={null}
-                            axisRight={null}
-                            axisBottom={{ format: "%H:%M", tickRotation: 45 }}
-                            axisLeft={{
-                                orient: 'left',
-                                tickSize: 5,
-                                tickPadding: 5,
-                                tickOffset: 10,
-                                tickValues: 4
-                            }}
-                            axisLeft={{
-                                enable: true,
-                            }}
-
-                            animate={false}
-                            useMesh={true}
-
-                            enablePoints={true}
-                            pointSize={5}
-                            pointBorderWidth={1}
-                            pointBorderColor={{ from: 'white' }}
-                            pointLabel="y"
-                            pointLabelYOffset={-12}
-
-                            margin={{ top: 22, left: 70, right: 70, bottom: 30 }}
-                            enableGridY={isData ? true : false}
-
-                            // curve="monotoneX"
-                            // mainTheme={themeContext}
-                            legends={[
-                                {
-                                    anchor: 'top-left',
-                                    direction: 'column',
-                                    justify: false,
-                                    translateX: 10,
-                                    translateY: 0,
-                                    itemsSpacing: 0,
-                                    itemDirection: 'left-to-right',
-                                    itemWidth: 80,
-                                    itemHeight: 20,
-                                    itemOpacity: 0.75,
-                                    symbolSize: 12,
-                                    symbolShape: 'circle',
-                                    symbolBorderColor: 'rgba(0, 0, 0, .5)',
-                                    effects: [
-                                        {
-                                            on: 'hover',
-                                            style: {
-                                                itemBackground: 'rgba(0, 0, 0, .03)',
-                                                itemOpacity: 1
-                                            }
-                                        }
-                                    ]
-                                }]}
-                            theme={{
-                                textColor: '#ffffff',
-                                axis: {
-                                    ticks: {
-                                        line: {
-                                            stroke: "fff",
-                                        },
-                                        // text: {
-                                        //     fill: "fff",
-                                        //     textColor: '#ffffff',
-                                        //     // fontFamily: 'Montserrat',
-                                        //     fontSize: "0.8rem"
-                                        // },
-                                    }
-                                },
-                                grid: {
-                                    line: {
-                                        stroke: '#55575e',
-                                        strokeWidth: 1,
-                                    }
-                                },
-                                crosshair: {
-                                    line: {
-                                        stroke: "#fff",
-                                        strokeDasharray: "0"
-                                    }
-                                }
-                            }}
-
-                        />
-
-
-                    </styled.PlotContainer>
+                    {renderResponsiveLine}
                 </>
 
             }
