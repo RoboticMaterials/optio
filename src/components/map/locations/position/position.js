@@ -102,6 +102,15 @@ function Position(props) {
         else if (!!stations[selectedTask?.load?.position]) disabled = true
         // Disable position if its the load position. Cant make a task to itself
         else if (selectedTask.load.position === position._id) disabled = true
+
+        // Disables when adding a task to the beginning of a process. 
+        // To tell if a task is being added to the beginning of a process is when the task has a temp insert index at 0
+        else if (selectedTask?.temp?.insertIndex === 0) {
+            // Find the station at the beginning of process
+            const firstPosition = selectedProcess.routes[0].load.position
+
+            if (position._id !== firstPosition && selectedTask.load.position !== null) disabled = true
+        }
     }
 
     // This filters out positions when fixing a process

@@ -94,21 +94,16 @@ function Station(props) {
         else if (!!positions[selectedTask?.load?.position]) disabled = true
         // Disable station if its the load station. Cant make a task to itself
         else if (selectedTask.load.station === station._id) disabled = true
-    }
 
-    // Disables when adding a task to the beginning of a process. Adding to the beginning of a process is when the insert index is 0
-    else if (!!selectedProcess && !!selectedTask && selectedTask?.temp?.insertIndex === 0) {
+        // Disables when adding a task to the beginning of a process. 
+        // To tell if a task is being added to the beginning of a process is when the task has a temp insert index at 0
+        else if (selectedTask?.temp?.insertIndex === 0) {
+            // Find the station at the beginning of process
+            const firstStation = selectedProcess.routes[0].load.station
 
-        // Find the station at the beginning of process
-        const firstStation = selectedProcess.routes[0].load.station
-
-        if(selectedTask.load.station !== null) {
-            console.log('QQQQ hur', selectedTask)
-
+            if (station._id !== firstStation && selectedTask.load.station !== null) disabled = true
         }
-        if (station._id !== firstStation && selectedTask.load.station !== null) disabled = true
     }
-
 
 
     // This filters out stations when fixing a process
