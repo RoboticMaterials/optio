@@ -102,12 +102,13 @@ const DeviceSchedule = (props) => {
 
     const renderSchedules = () => {
 
-        const renderDaySelector = (id) => {
+        const renderDaySelector = (id, ind1) => {
             const daysOfTheWeek = ['M', 'T', 'W', 'Th', 'F', 'Sa', 'Su']
 
-            return daysOfTheWeek.map((day) => {
+            return daysOfTheWeek.map((day, ind2) => {
                 return (
                     <styled.DayOfTheWeekContainer
+                        name={`schedules.${ind1}.${day}`}
                         checked={selectedDevice.schedules[id].days_on.includes(day)}
                         onClick={() => {
                             let newDaysOn = deepCopy(selectedDevice.schedules[id].days_on)
@@ -134,15 +135,16 @@ const DeviceSchedule = (props) => {
 
         return (
             <FieldArray
-                name='schedules'
-                render={
+                name={'schedules'}
+                validateOnChange={true}
+                render={arrayHelpers => (
                     Object.values(selectedDevice.schedules).map((schedule, ind) => {
                         return (
                             <styled.ScheduleContainer>
 
                                 <styled.RowContainer>
                                     <TextField
-                                        name={"scheduleName"}
+                                        name={`schedules.${ind}.scheduleName`}
                                         placeholder='Schedule Name'
                                         InputComponent={Textbox}
                                         ContentContainer={styled.RowContainer}
@@ -153,7 +155,7 @@ const DeviceSchedule = (props) => {
                                         }}
                                     />
                                     <Switch
-                                        name={'chargeLevelSwitch'}
+                                        name={`schedules.${ind}.chargeLevelSwitch`}
                                         onColor='red'
                                         checked={schedule.enabled}
                                         onChange={() => {
@@ -164,19 +166,20 @@ const DeviceSchedule = (props) => {
                                 </styled.RowContainer>
 
                                 <styled.RowContainer style={{ margin: '.2rem' }}>
-                                    {renderDaySelector(schedule.id)}
+                                    {renderDaySelector(schedule.id, ind)}
                                 </styled.RowContainer>
 
                                 <styled.RowContainer style={{ marginTop: '.5rem' }}>
                                     <DropDownSearchField
+                                        name={`schedules.${ind}.moveLocation`}
                                         containerSyle={{ flex: '9', marginRight: '1rem' }}
                                         pattern={null}
-                                        name="moveLocation"
                                         labelField={'name'}
                                         options={Object.values(positions)}
                                         valueField={"_id"}
                                     />
                                     <TimePickerField
+                                        name={`schedules.${ind}.endOfShift`}
                                         mapInput={
                                             (value) => {
                                                 if (value) {
@@ -188,7 +191,6 @@ const DeviceSchedule = (props) => {
                                         mapOutput={(value) => {
                                             return convert12hto24h(value.format('hh:mm a'))
                                         }}
-                                        name={'endOfShift'}
                                         containerStyle={{ width: '6rem' }}
                                         style={{ flex: '1', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
                                         showHour={true}
@@ -217,7 +219,7 @@ const DeviceSchedule = (props) => {
 
                         )
                     })
-                }
+                )}
             />
         )
 

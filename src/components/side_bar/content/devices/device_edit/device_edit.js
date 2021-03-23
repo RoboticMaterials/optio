@@ -420,8 +420,8 @@ const DeviceEdit = (props) => {
                 // validation control
                 validationSchema={deviceSchema}
                 validateOnChange={true}
-                validateOnMount={false}
-                validateOnBlur={false}
+                validateOnMount={true}
+                validateOnBlur={true}
 
                 onSubmit={async (values, { setSubmitting, setTouched, validateForm }) => {
                     validateForm()
@@ -438,6 +438,7 @@ const DeviceEdit = (props) => {
                         values,
                         errors,
                     } = formikProps
+                    console.log('QQQQ errors', errors)
                     return (
                         <Form>
 
