@@ -442,12 +442,23 @@ export const ContentTitle = styled.span`
 	font-size: ${props => props.theme.fontSize.sz3};
 	font-weight: ${props => props.theme.fontWeight.bold};
 `
+
+export const ContentValue = styled.span`
+  font-size: ${props => props.theme.fontSize.sz3};
+  font-weight: ${props => props.theme.fontWeight.normal};
+`
+
+// export const InfoText = styled.span`
+//   font-size: ${props => props.theme.fontSize.sz3};
+//   font-weight: ${props => props.theme.fontWeight.no};
+// `
+
 export const LotName = styled.span`
 	font-size: ${props => props.theme.fontSize.sz3};
 	font-weight: ${props => props.theme.fontWeight.bold};
-  white-space: nowrap ;
-  margin-right: 2rem;
-  margin-bottom: .5rem;
+	white-space: nowrap ;
+	margin-right: 2rem;
+	margin-bottom: .5rem;
 `
 
 export const TemplateButton = styled.button`
@@ -499,6 +510,14 @@ export const RowContainer = styled.div`
 	${rowCss2};
 `
 
+export const SubHeader = styled.div`
+	display: flex;
+  justify-content: space-between;
+  align-self: stretch;
+  align-items: center;
+  padding: .25rem 1rem;
+  background: ${props => props.theme.bg.quinary};
+`
 export const IconRow = styled.div`
   ${rowCss2};
   background: ${props => props.theme.bg.secondary};
