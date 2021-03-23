@@ -495,10 +495,10 @@ const EditLocation = (props) => {
                             </Form>
                         )
                     }}
-            
+
                 </Formik>
             </styled.ContentContainer>
-            
+
         </>
     )
 }

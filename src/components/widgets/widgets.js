@@ -138,15 +138,12 @@ const Widgets = (props) => {
         if (!!device) {
             return (
                 <>
-
                     <WidgetButton
                         id={stationID}
                         type={'dashboards'}
                         label={'Dashboards'}
                         currentPage={widgetPage}
-
                     />
-
                 </>
 
             )

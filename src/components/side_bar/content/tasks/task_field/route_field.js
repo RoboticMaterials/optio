@@ -99,6 +99,8 @@ const TaskField = (props) => {
         changed,
         temp
     } = values || {}
+
+
     const {
         insertIndex
     } = temp || {}
@@ -246,7 +248,7 @@ const TaskField = (props) => {
     }, [])
 
     useEffect(() => {
-
+      if(!!showObjectSelector){
         if (selectedObject) {
             setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", selectedObject, false)
         }
@@ -254,8 +256,10 @@ const TaskField = (props) => {
         if (!selectedObject) {
             setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", null , false)
         }
+      }
 
-    },[selectedObject])
+    },[editingObject])
+
 
 
     // calls save function when values.needsSubmit is true - used for auto submit when selecting route from existing
@@ -272,8 +276,10 @@ const TaskField = (props) => {
     }, [needsValidate])
 
     useEffect(() => {
-      dispatchPageDataChanged(changed)
-    }, [changed])
+      if(!!values.changed){
+        dispatchPageDataChanged(true)
+      }
+    },[values])
 
 
     useEffect(() => {
@@ -488,7 +494,7 @@ const TaskField = (props) => {
                                         dispatchSetEditingObject(false)
                                     }}
                                 />
-                            </div>   
+                            </div>
                             <styled.Label>
                                 <styled.LabelHighlight>Either</styled.LabelHighlight> choose an existing Route
                             </styled.Label>
@@ -582,7 +588,7 @@ const TaskField = (props) => {
                     }
 
                     {!!selectedTask && isProcessTask && !!selectedTask.new ?
-                    
+
                         <styled.Label style={{ marginTop: '1rem' }}>
                             <styled.LabelHighlight>Or</styled.LabelHighlight> make a new one
                         </styled.Label>
@@ -596,7 +602,7 @@ const TaskField = (props) => {
                                     dispatchSetEditingObject(false)
                                 }}
                             />
-                        </div>   
+                        </div>
 
                     }
 
@@ -626,7 +632,7 @@ const TaskField = (props) => {
                                             className='fas fa-box'
                                         />
                                         <styled.ListItemTitle>{routeObject ? objects[routeObject._id].name: ""}</styled.ListItemTitle>
-                                    
+
                                         <styled.Icon
                                             className='fas fa-exchange-alt'
                                             style={{ color: 'white', transform: 'rotate(-45deg)', fontSize: '1.1rem' }}
@@ -720,7 +726,7 @@ const TaskField = (props) => {
 
                     <hr />
 
-                    <Button 
+                    <Button
                         schema={'tasks'}
                         disabled={submitDisabled || editingObject}
                         onClick={async () => {
@@ -729,7 +735,7 @@ const TaskField = (props) => {
                     >{(!!isProcessTask ? 'Add' : (selectedTask.new ? 'Create' : 'Save'))} Route</Button>
 
                     {/* Remove Task From Process Button */}
-                    {!!isProcessTask && selectedProcess ? 
+                    {!!isProcessTask && selectedProcess ?
                         <Button
                             schema={'error'}
                             disabled={!!selectedTask && !!selectedTask._id && isNew}
@@ -748,7 +754,7 @@ const TaskField = (props) => {
                             onClick={() => {
                                 setConfirmDeleteModal(true)
                             }}
-                            
+
                         >
                             Delete Route
                         </Button>

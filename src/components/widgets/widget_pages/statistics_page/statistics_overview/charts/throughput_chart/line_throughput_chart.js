@@ -25,6 +25,7 @@ import { deepCopy } from '../../../../../../../methods/utils/utils';
 import { postSettings } from '../../../../../../../redux/actions/settings_actions'
 import { convertData } from '../../../../../../../redux/actions/report_event_actions';
 import { LightenDarkenColor, hexToRGBA } from '../../../../../../../methods/utils/color_utils';
+import { pageDataChanged } from '../../../../../../../redux/actions/sidebar_actions'
 
 const LineThroughputChart = (props) => {
 
@@ -37,11 +38,11 @@ const LineThroughputChart = (props) => {
 
     const dispatch = useDispatch()
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
+    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
     const settings = useSelector(state => state.settingsReducer.settings)
 
     const [breaksEnabled, setBreaksEnabled] = useState({})
-
     const shiftDetails = settings.shiftDetails;
 
     // Used for colors in line chart below
@@ -67,6 +68,7 @@ const LineThroughputChart = (props) => {
         return () => {
         }
     }, [settings])
+
 
     /**
     * This converts the incoming data for a line graph
@@ -352,8 +354,6 @@ const LineThroughputChart = (props) => {
             switch3,
         } = values
 
-
-
         const shiftSettings = {
             startOfShift: startOfShift,
             endOfShift: endOfShift,
@@ -415,19 +415,19 @@ const LineThroughputChart = (props) => {
             {
                 numberOfBreaks.map((bk, ind) => {
                     const adjustedInd = ind + 1
-        
+
                     // This uses useState
                     // The reasoning behind this, is to be able to enable/disable switches without going through formik submit
                     // This also allows to enable a break, but not effect the graph until submitted
                     const breakEnabled = breaksEnabled[ind]
-        
+
                     const breakName = `Break ${adjustedInd}`
                     const switchName = `switch${adjustedInd}`
                     const breakStart = `startOfBreak${adjustedInd}`
                     const breakEnd = `endOfBreak${adjustedInd}`
                     return (
                         <styled.RowContainer style={{ alignItems: 'center', minWidth: '23rem' }}>
-        
+
                             <styled.RowContainer style={{ width: '100%', marginTop: '.25rem' }}>
                                 <styled.Label>{breakName}</styled.Label>
                                 <Switch
@@ -544,10 +544,14 @@ const LineThroughputChart = (props) => {
                     validateOnMount={false}
                     validateOnBlur={false}
 
-                    onSubmit={async (values, { setSubmitting, setTouched, validateForm }) => {
+                    onSubmit={async (values, { setSubmitting, setTouched, validateForm}) => {
+
                         setSubmitting(true)
                         onSubmitShift(values)
                         setSubmitting(false)
+
+                        setTouched({})
+                        dispatchPageDataChanged(false)
                     }}
                 >
                     {formikProps => {
@@ -557,7 +561,12 @@ const LineThroughputChart = (props) => {
                             setValidationSchema,
                             values,
                             errors,
+                            touched,
                         } = formikProps
+
+                        if(Object.keys(touched).length!==0){
+                          dispatchPageDataChanged(true)
+                        }
 
                         return (
                             <Form
