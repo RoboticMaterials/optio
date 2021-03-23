@@ -31,9 +31,10 @@ export const Container = styled.div`
 
   transition: all 0.2s ease;
 
+  cursor: pointer;
   &:active {
       box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.3);
-      transform: translateY(-2px);
+      cursor: grabbing;
   }
 
   &:hover {
@@ -48,6 +49,7 @@ export const Container = styled.div`
   // ${props => props.isFocused && focusedCss};
   // ${props => props.isSelected && selectedCss};
   // ${props => props.containerStyle};
+  
   
 `
 
