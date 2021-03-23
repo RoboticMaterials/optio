@@ -154,7 +154,6 @@ const BarChart = (props) => {
             // padding={{ top: 5, left: 5, right: 5, bottom: 5 }}
             layout={layout}
             labelTextColor={themeContext.bg.primary}
-            // isInteractive={false}
 
             axisTop={null}
             axisRight={null}

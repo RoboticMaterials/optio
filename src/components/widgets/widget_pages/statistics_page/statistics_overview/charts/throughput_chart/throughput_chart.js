@@ -42,68 +42,64 @@ const ThroughputChart = (props) => {
 
     useEffect(() => {
         let tempChartKeys = []  // keys for chart = object names
-        let tempLineData = []  // keys for chart = object names
         // let tempChartColors = {}
         let tempFilteredData = []
 
-        data?.throughPut.forEach((currItem) => {
-            // if(!showBar) return currItem // bar chart breaks if y's are removed
+        if(showBar) {
+            data?.throughPut.forEach((currItem) => {
+                // if(!showBar) return currItem // bar chart breaks if y's are removed
 
-            const {
-                lable,
-                ...objectIds
-            } = currItem
+                const {
+                    lable,
+                    ...objectIds
+                } = currItem
 
-            let updatedItem = {lable}   // used for changing keys from object ids to object names, keep label the same
-            let lineItem = {
-                x: lable,
-                y: 0
-            }
+                let updatedItem = {lable}   // used for changing keys from object ids to object names, keep label the same
 
-            Object.entries(objectIds)
-                .filter((currEntry) => {
-                    const [currKey, currVal] = currEntry
+                Object.entries(objectIds)
+                    .filter((currEntry) => {
+                        const [currKey, currVal] = currEntry
 
-                    // remove entry if key is invalid, there is no corresponding object, or the value is not greater than 0
-                    return currKey && isObject(objects[currKey]) && currVal > 0
-                })
-                .forEach((currEntry) => {
-                    const [currKey, currVal] = currEntry
+                        // remove entry if key is invalid, there is no corresponding object, or the value is not greater than 0
+                        return currKey && isObject(objects[currKey]) && currVal > 0
+                    })
+                    .forEach((currEntry) => {
+                        const [currKey, currVal] = currEntry
 
-                    // handle throughput data
-                    {
-                        const currObject = objects[currKey]
-                        const {
-                            name: currObjectName = ""
-                        } = currObject || {}
+                        // handle throughput data
+                        {
+                            const currObject = objects[currKey]
+                            const {
+                                name: currObjectName = ""
+                            } = currObject || {}
 
-                        // add curr object to chartKeys if it isn't already in there
-                        if (!tempChartKeys.includes(currObjectName)) {
-                            tempChartKeys.push(currObjectName)
+                            // add curr object to chartKeys if it isn't already in there
+                            if (!tempChartKeys.includes(currObjectName)) {
+                                tempChartKeys.push(currObjectName)
+                            }
+
+                            // set updateItems value to current value for this object name
+                            updatedItem[currObjectName] = currVal
+
+
                         }
+                    })
 
-                        // set updateItems value to current value for this object name
-                        updatedItem[currObjectName] = currVal
+                tempFilteredData.push(updatedItem)
 
+            })
 
-                    }
+            // setChartColors(tempChartColors)
+            setChartKeys(tempChartKeys)
+            setIsData((throughputData && Array.isArray(throughputData) && throughputData.length > 0))
+            setThroughputData(tempFilteredData)
+            setLineData([])
 
-                    // handle line data
-                    {
-                        lineItem.y = lineItem.y + currVal
-                    }
-                })
-
-            tempFilteredData.push(updatedItem)
-            tempLineData.push(lineItem)
-
-        })
-
-        // setChartColors(tempChartColors)
-        setChartKeys(tempChartKeys)
-        setIsData((throughputData && Array.isArray(throughputData) && throughputData.length > 0))
-        setThroughputData(tempFilteredData)
-        setLineData(tempLineData)
+        }
+        else {
+            setLineData(data.throughPut)
+            setThroughputData([])
+        }
     }, [data])
 
     useEffect(() => {
