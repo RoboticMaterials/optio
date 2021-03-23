@@ -125,21 +125,13 @@ const LotSortBar = (props) => {
                     valueField={"label"}
                     schema={"lots"}
                     style={{
-                        background: themeContext.bg.tertiary,
-                        borderTopRightRadius: 0,
-                        borderBottomRightRadius: 0,
-                        borderTopLeftRadius: "1rem",
-                        borderBottomLeftRadius: "1rem",
-                        overflow: "hidden",
-                        // minWidth: "10rem",
-                        flex: 1,
-                        borderBottom: `1px solid ${themeContext.bg.quinary}`,
+                        minWidth: "10rem",
                     }}
                 />
 
                 <DropDownSearch
-                    maxDropdownWidth={`3rem` }
-                    portal={document.getElementById("root")}
+                    maxDropdownWidth={`3.5rem` }
+                    // portal={document.getElementById("root")}
                     dropdownCss={props.dropdownCss}
                     options={Object.values(SORT_DIRECTIONS)}
                     values={[sortDirection]}
@@ -172,12 +164,13 @@ const LotSortBar = (props) => {
                                                     style={{
                                                         // paddingTop: ".5rem",
                                                         // paddingBottom: ".5rem",
-                                                        // margin: "auto"
+                                                        margin: "auto",
+                                                        fontSize: '1rem',
                                                     }}
                                                     selected={isSelected}
                                                     key={currItemId}
                                                     type={"button"}
-                                                    color={"white"}
+                                                    color={themeContext.bg.octonary}
                                                     role="option"
                                                     tabIndex="-1"
                                                     onClick={(event) => {
@@ -217,7 +210,7 @@ const LotSortBar = (props) => {
                                 selected={isSelected}
                                 key={currItemId}
                                 type={"button"}
-                                color={"white"}
+                                color={themeContext.bg.octonary}
                                 role="option"
                                 tabIndex="-1"
                                 onClick={item.disabled ? undefined : () => methods.addItem(item)}
@@ -229,14 +222,7 @@ const LotSortBar = (props) => {
                     }}
 
                     style={{
-                        background: themeContext.bg.tertiary,
-                        width: "3.5rem",
-                        borderTopLeftRadius: 0,
-                        borderBottomLeftRadius: 0,
-                        borderTopRightRadius: "1rem",
-                        borderBottomRightRadius: "1rem",
-                        borderLeft: `1px solid ${themeContext.bg.quaternary}`,
-                        borderBottom: `1px solid ${themeContext.bg.quinary}`,
+                        width: '3.5rem'
                     }}
                 />
 

@@ -25,6 +25,10 @@ export const ZoneContainer = styled.div`
     display: flex;
     align-items: center;
     
+    background: ${props => props.theme.bg.primary};
+    box-shadow: ${props => props.theme.cardShadow};
+    margin: 1.5rem;
+    border-radius: 0.5rem;
 `
 
 export const ProcessName = styled.h3`
@@ -32,7 +36,7 @@ export const ProcessName = styled.h3`
     margin: 0;
     margin: 0 2rem;
     font-size: ${props => props.theme.fontSize.sz3};
-    color: white;
+    color: ${props => props.theme.schema.lots.solid};
     text-align: center;
     width: 5rem;
     min-width: 8rem;

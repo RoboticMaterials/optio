@@ -138,7 +138,7 @@ const ZoneHeader = (props) => {
 	return (
 		<styled.Container>
 
-			{zone === "summary" &&
+			{/* {zone === "summary" &&
 			<styled.ColumnContainer
 				css={columnCss3}
 			>
@@ -184,7 +184,7 @@ const ZoneHeader = (props) => {
 				/>
 				</div>
 			</styled.ColumnContainer>
-			}
+			} */}
 
 			<LotSortBar
 				sortMode={sortMode}
