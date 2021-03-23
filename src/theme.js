@@ -153,6 +153,9 @@ export const theme = {
             charts: {
                 solid: "#54AAFF",
             },
+            throughputChart: {
+                colors: ["red", "blue"]
+            },
             kick_off: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(197, 155, 255) 0%, rgba(173, 115, 255, 0.95) 100%)',
                 solid: '#c59bff',

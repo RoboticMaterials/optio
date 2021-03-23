@@ -12,13 +12,17 @@ import { getStationAnalytics } from '../../../../../../../redux/actions/stations
 
 // Import Charts
 import BarChart from '../../../chart_types/bar_chart'
+import {useSelector} from "react-redux";
+import {isObject} from "../../../../../../../methods/utils/object_utils";
+
+const minHeight = 0
 
 const ThroughputChart = (props) => {
 
     const themeContext = useContext(ThemeContext);
 
     const {
-        throughputData,
+        data,
         isThroughputLoading,
         timeSpan,
         loadLineChartData,
@@ -26,26 +30,81 @@ const ThroughputChart = (props) => {
         disableTimeSpan,
     } = props
 
+    // redux state
+    const objects = useSelector(state => state.objectsReducer.objects)
+
     const [showBar, setShowBar] = useState(true)
+    const [throughputData, setThroughputData] = useState([])
+    const [lineData, setLineData] = useState([])
+    const [isData, setIsData] = useState(false)
+    const [chartKeys, setChartKeys] = useState(false)
+    // const [chartColors, setChartColors] = useState(false)
 
-    const filteredData = throughputData?.throughPut.map((currItem) => {
-        if(!showBar) return currItem // bar chart breaks if y's are removed
+    useEffect(() => {
+        let tempChartKeys = []  // keys for chart = object names
+        let tempLineData = []  // keys for chart = object names
+        // let tempChartColors = {}
+        let tempFilteredData = []
 
-        // get x and y
-        const {
-            x,y
-        } = currItem
+        data?.throughPut.forEach((currItem) => {
+            // if(!showBar) return currItem // bar chart breaks if y's are removed
 
-        // if y === 0, remove so a bunch of 0's don't show
-        if(y === 0) return {x}
+            const {
+                lable,
+                ...objectIds
+            } = currItem
 
-        // otherwise leave data unaltered
-        return currItem
-    })
+            let updatedItem = {lable}   // used for changing keys from object ids to object names, keep label the same
+            let lineItem = {
+                x: lable,
+                y: 0
+            }
 
-    const minHeight = 0
+            Object.entries(objectIds)
+                .filter((currEntry) => {
+                    const [currKey, currVal] = currEntry
 
-    const isData = (filteredData && Array.isArray(filteredData) && filteredData.length > 0)
+                    // remove entry if key is invalid, there is no corresponding object, or the value is not greater than 0
+                    return currKey && isObject(objects[currKey]) && currVal > 0
+                })
+                .forEach((currEntry) => {
+                    const [currKey, currVal] = currEntry
+
+                    // handle throughput data
+                    {
+                        const currObject = objects[currKey]
+                        const {
+                            name: currObjectName = ""
+                        } = currObject || {}
+
+                        // add curr object to chartKeys if it isn't already in there
+                        if (!tempChartKeys.includes(currObjectName)) {
+                            tempChartKeys.push(currObjectName)
+                        }
+
+                        // set updateItems value to current value for this object name
+                        updatedItem[currObjectName] = currVal
+
+
+                    }
+
+                    // handle line data
+                    {
+                        lineItem.y = lineItem.y + currVal
+                    }
+                })
+
+            tempFilteredData.push(updatedItem)
+            tempLineData.push(lineItem)
+
+        })
+
+        // setChartColors(tempChartColors)
+        setChartKeys(tempChartKeys)
+        setIsData((throughputData && Array.isArray(throughputData) && throughputData.length > 0))
+        setThroughputData(tempFilteredData)
+        setLineData(tempLineData)
+    }, [data])
 
     useEffect(() => {
         if (showBar) {
@@ -89,7 +148,6 @@ const ThroughputChart = (props) => {
                 }
             </styled.PlotHeader>
 
-
             {isThroughputLoading ?
                 <styled.PlotContainer>
                     <styled.LoadingIcon className="fas fa-circle-notch fa-spin" style={{ fontSize: '3rem', marginTop: '5rem' }} />
@@ -103,34 +161,34 @@ const ThroughputChart = (props) => {
                     {!showBar ?
                         <LineThroughputChart
                             themeContext={themeContext}
-                            data={filteredData ? filteredData : []}
+                            data={lineData ? lineData : []}
                             isData={isData}
-                            date={throughputData.date_title}
+                            date={data.date_title}
                         />
                         :
                         <BarChart
-                            data={filteredData ? filteredData : []}
+                            data={throughputData ? throughputData : []}
                             enableGridY={isData ? true : false}
                             mainTheme={themeContext}
                             timeSpan={timeSpan}
                             axisBottom={{
                                 tickRotation: -90,
                             }}
-                            colors={themeContext.schema.charts.solid}
                             axisLeft={{
                                 enable: true,
                             }}
+                            keys={chartKeys}
+                            indexBy={'lable'}
+                            colorBy={"id"}
                         />
 
                     }
 
-
-                    {!throughputData &&
+                    {!data &&
                         <styled.NoDataText>No Data</styled.NoDataText>
                     }
                 </styled.PlotContainer>
             }
-
         </styled.SinglePlotContainer>
     )
 }

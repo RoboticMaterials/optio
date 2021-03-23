@@ -388,7 +388,7 @@ const StatisticsOverview = (props) => {
             >
                 {renderHeader()}
                 <ThroughputChart
-                    throughputData={throughputData}
+                    data={throughputData}
                     isThroughputLoading={isThroughputLoading}
                     timeSpan={timeSpan}
                     loadLineChartData={() => {
