@@ -9,7 +9,7 @@ const RmSwitch = (props) => {
     return(
       <Switch
           {...props}
-          onColor = {theme.main.bg.secondary}
+          onColor = {theme.main.bg.tertiary}
           handleColor = {theme.main.fg.primary}
           //style={{borderColor: theme.main.bg.quinary}}
           offColor={theme.main.bg.quaternary}

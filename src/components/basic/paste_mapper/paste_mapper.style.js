@@ -90,7 +90,7 @@ export const TitleText = styled.span`
 `
 
 export const SectionBreak = styled.hr`
-    border-top: 1px solid ${props => props.theme.bg.secondary};
+    border-top: 1px solid ${props => props.theme.bg.tertiary};
     width: 100%;
     margin: 0;
     
@@ -127,7 +127,7 @@ export const Row = styled.div`
     align-self:stretch;
     flex: 1;
     display: flex;
-    border: 1px solid ${props => props.theme.bg.secondary};
+    border: 1px solid ${props => props.theme.bg.tertiary};
 `
 
 export const cellCss = css`
@@ -146,7 +146,7 @@ export const Trapezoid = styled.div`
     position: absolute;
     transform: translate(-50%, -50%);
     z-index: 0;
-    background: ${props => props.theme.bg.tertiary};
+    background: ${props => props.theme.bg.secondary};
     ${trapezoidCss};
     width: 94.5%;
     height: 100%;
@@ -164,7 +164,7 @@ export const ItemContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    background: ${props => props.theme.bg.tertiary};
+    background: ${props => props.theme.bg.secondary};
     
     min-height: 2rem;
     max-height: 2rem;
@@ -243,7 +243,7 @@ export const SectionDescription = styled.span`
 
 export const FieldButton = styled.div`
     margin: 0 1rem;
-    background: ${props => props.disabled ? "pink" : props.theme.bg.tertiary};
+    background: ${props => props.disabled ? "pink" : props.theme.bg.secondary};
     //padding: 1rem;
     border-radius: 1rem;
     min-width: fit-content;
@@ -270,7 +270,7 @@ export const FieldDescription = styled.div`
     min-width: fit-content;
     justify-content: center;
     align-items: center;
-    color: ${props => props.theme.bg.tertiary};
+    color: ${props => props.theme.bg.secondary};
     font-style: italic;
 `
 
@@ -313,7 +313,7 @@ export const buttonViewCss = css`
 
 
 export const buttonViewSelectedCss = css`
-    background: ${props => props.theme.bg.secondary};
+    background: ${props => props.theme.bg.tertiary};
     color: white;
 `
 export const buttonCss = css`

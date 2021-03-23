@@ -125,7 +125,7 @@ const LotSortBar = (props) => {
                     valueField={"label"}
                     schema={"lots"}
                     style={{
-                        background: themeContext.bg.tertiary,
+                        background: themeContext.bg.secondary,
                         borderTopRightRadius: 0,
                         borderBottomRightRadius: 0,
                         borderTopLeftRadius: "1rem",
@@ -229,7 +229,7 @@ const LotSortBar = (props) => {
                     }}
 
                     style={{
-                        background: themeContext.bg.tertiary,
+                        background: themeContext.bg.secondary,
                         width: "3.5rem",
                         borderTopLeftRadius: 0,
                         borderBottomLeftRadius: 0,

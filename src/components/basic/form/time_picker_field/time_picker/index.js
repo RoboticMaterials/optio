@@ -34,7 +34,7 @@ const StyledTimePicker = styled(TimePicker)`
     font-size: ${props => props.theme.fontSize.sz4};
     cursor: pointer;
     
-    background: ${props => props.theme.bg.tertiary};
+    background: ${props => props.theme.bg.secondary};
 
     ::-webkit-scrollbar {
       width: 0;

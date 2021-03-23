@@ -461,7 +461,7 @@ const PasteMapper = (props) => {
 															}}
 															placeholder={"Field name..."}
 															style={{
-																background: themeContext.bg.tertiary,
+																background: themeContext.bg.secondary,
 																maxHeight: "2rem",
 																color: "white",
 															}}

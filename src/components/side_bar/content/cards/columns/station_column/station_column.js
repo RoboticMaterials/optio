@@ -10,7 +10,7 @@ const StationsColumn = ((props) => {
 	const {
 		station_id,
 		stationName = "Unnamed",
-		handleCardClick,
+		onCardClick,
 		cards = [],
 		processId,
 		maxHeight,
@@ -55,7 +55,7 @@ const StationsColumn = ((props) => {
 			}
 			station_id={station_id}
 			stationName = {stationName}
-			handleCardClick={handleCardClick}
+			onCardClick={onCardClick}
 			cards = {cards}
 			processId={processId}
 			isCollapsed={isCollapsed}

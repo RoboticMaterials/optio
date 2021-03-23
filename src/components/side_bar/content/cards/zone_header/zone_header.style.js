@@ -38,7 +38,7 @@ export const Container = styled.div`
     width: 100vw;
     padding: .5rem 1rem; 
     background: ${props => props.theme.bg.quaternary};
-    border-bottom: 1px solid ${props => props.theme.bg.tertiary};
+    border-bottom: 1px solid ${props => props.theme.bg.secondary};
     z-index: 20;
   position: relative;
 
@@ -115,7 +115,7 @@ export const Spacer = styled.div`
 `
 
 const selectedCss = css`
-	background: ${props => props.theme.bg.tertiary};
+	background: ${props => props.theme.bg.secondary};
 `
 
 export const FlagButton = styled.button`

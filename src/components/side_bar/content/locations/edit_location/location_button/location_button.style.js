@@ -17,7 +17,7 @@ export const LocationTypeButton = styled.div`
     width: 6rem;
     border-radius: 0.5rem;
 
-    background: ${props => props.isSelected ? `transparent` : props.isNotSelected ? 'lightgray' : props.theme.bg.tertiary};
+    background: ${props => props.isSelected ? `transparent` : props.isNotSelected ? 'lightgray' : props.theme.bg.secondary};
 
     margin: 0.5rem;
     position: relative;

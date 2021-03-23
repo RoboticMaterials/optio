@@ -2,22 +2,22 @@ import styled, {css} from "styled-components";
 
 import {rowCss} from "../card_editor/lot_editor.style";
 import * as commonCss from "../../../../../common_css/common_css";
-import {commonClickableIcon, commonIcon, iconButtonCss} from "../../../../../common_css/common_css";
+import {commonClickableIcon, commonIcon, glow, iconButtonCss} from "../../../../../common_css/common_css";
 
 export const Container = styled.div`
  	margin: 10px; // prevents glow from being cut off
      height: fit-content;
-  
+
 
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     overflow: hidden;
-        
+
     background: white;
     border-radius: 0.6rem;
   	border: 1px solid ${props => props.color};
-  
+
     outline: none;
     &:focus {
         outline: none;
@@ -25,7 +25,7 @@ export const Container = styled.div`
 
     letter-spacing: 1.5px;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
-    
+
     outline: none;
     user-select: none;
 
@@ -43,17 +43,22 @@ export const Container = styled.div`
     transform: translateY(-2px);
     cursor: grabbing;
   }
-    
+
     color: black;
-  
+
   ${props => (props.selectable && !(props.isSelected || props.isFocused)) && notSelectedCss};
+  ${props => props.glow && glowCss};
   ${props => props.isFocused && focusedCss};
   ${props => props.isSelected && selectedCss};
   ${props => props.containerStyle};
-  
+
 `
 
 const selectedCss = css`
+`
+
+const glowCss = css`
+    border: 4px ridge #478fe6;
 `
 
 const focusedCss = css`
@@ -89,7 +94,7 @@ export const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  
+
   max-height: 10rem;
   overflow-y: scroll;
 `
@@ -149,7 +154,7 @@ export const FlagButton = styled.button`
 	${iconButtonCss};
   	${commonClickableIcon};
   	margin: 0 1rem;
-  	
+
   	${props => !props.selected && notSelectedFlagCss};
 `
 
@@ -161,7 +166,7 @@ export const FlagsContainer = styled.div`
     padding: 1rem 2rem;
     align-items: center;
     justify-content: center;
-    
+
 `
 
 export const HeaderBar = styled.div`

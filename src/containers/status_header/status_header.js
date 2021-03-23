@@ -339,7 +339,7 @@ const StatusHeader = (props) => {
                     zIndex: '1',
                 }}>
                 <svg
-                    fill={hexToRGBA(theme.bg.tertiary, 0.97)}
+                    fill={hexToRGBA(theme.bg.secondary, 0.97)}
                     viewBox={`0 0 ${window.innerWidth} 50`}
                     width='100%' height='100%' preserveAspectRatio="none"
                 >

@@ -252,8 +252,8 @@ export const HistoryBodyContainer = styled.div`
 	overflow-y: auto;
 	overflow-x: hidden;
 	flex: 1;
-	border-bottom: 1px solid ${props => props.theme.bg.tertiary};
-	border-top: 1px solid ${props => props.theme.bg.tertiary};
+	border-bottom: 1px solid ${props => props.theme.bg.secondary};
+	border-top: 1px solid ${props => props.theme.bg.secondary};
 `
 
 export const HistoryItemContainer = styled.div`

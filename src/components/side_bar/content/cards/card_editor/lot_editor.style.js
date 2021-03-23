@@ -161,7 +161,7 @@ export const ProcessOptionsContainer = styled.div`
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: ${props => props.theme.bg.tertiary};
+    background: ${props => props.theme.bg.secondary};
     border-radius: .5rem;
   }
 
@@ -434,7 +434,7 @@ export const FieldsHeader = styled.div`
 	//justify-content: space-between;
 	width: 100%;
   	//margin-bottom: 1rem;
-  border-bottom: 1px solid ${props => props.theme.bg.tertiary};
+  border-bottom: 1px solid ${props => props.theme.bg.secondary};
 	//padding: 1rem;
 `
 
@@ -442,12 +442,23 @@ export const ContentTitle = styled.span`
 	font-size: ${props => props.theme.fontSize.sz3};
 	font-weight: ${props => props.theme.fontWeight.bold};
 `
+
+export const ContentValue = styled.span`
+  font-size: ${props => props.theme.fontSize.sz3};
+  font-weight: ${props => props.theme.fontWeight.normal};
+`
+
+// export const InfoText = styled.span`
+//   font-size: ${props => props.theme.fontSize.sz3};
+//   font-weight: ${props => props.theme.fontWeight.no};
+// `
+
 export const LotName = styled.span`
 	font-size: ${props => props.theme.fontSize.sz3};
 	font-weight: ${props => props.theme.fontWeight.bold};
-  white-space: nowrap ;
-  margin-right: 2rem;
-  margin-bottom: .5rem;
+	white-space: nowrap ;
+	margin-right: 2rem;
+	margin-bottom: .5rem;
 `
 
 export const TemplateButton = styled.button`
@@ -499,9 +510,17 @@ export const RowContainer = styled.div`
 	${rowCss2};
 `
 
+export const SubHeader = styled.div`
+	display: flex;
+  justify-content: space-between;
+  align-self: stretch;
+  align-items: center;
+  padding: .25rem 1rem;
+  background: ${props => props.theme.bg.quinary};
+`
 export const IconRow = styled.div`
   ${rowCss2};
-  background: ${props => props.theme.bg.tertiary};
+  background: ${props => props.theme.bg.secondary};
   justify-content: flex-end;
   align-items: center;
   padding: .25rem;
@@ -536,8 +555,8 @@ export const HistoryBodyContainer = styled.div`
 	overflow-y: auto;
 	overflow-x: hidden;
 	flex: 1;
-	border-bottom: 1px solid ${props => props.theme.bg.tertiary};
-	border-top: 1px solid ${props => props.theme.bg.tertiary};
+	border-bottom: 1px solid ${props => props.theme.bg.secondary};
+	border-top: 1px solid ${props => props.theme.bg.secondary};
 `
 
 export const HistoryItemContainer = styled.div`

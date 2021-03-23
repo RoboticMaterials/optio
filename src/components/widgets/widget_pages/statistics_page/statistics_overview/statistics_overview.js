@@ -192,11 +192,14 @@ const StatisticsOverview = (props) => {
 
         const body = { timespan: newTimeSpan, index: newDateIndex }
         const dataPromise = getStationAnalytics(stationID, body)
-        const reportAnalyticsResponse = await getReportAnalytics(stationID, body)
 
-        if (reportAnalyticsResponse && !(reportAnalyticsResponse instanceof Error)) {
-            setReportData(reportAnalyticsResponse)
-            setIsReportsLoading(false)
+        // If the timespan changes to line, then dont change what the report chart is showing
+        if (newTimeSpan !== 'line') {
+            const reportAnalyticsResponse = await getReportAnalytics(stationID, body)
+            if (reportAnalyticsResponse && !(reportAnalyticsResponse instanceof Error)) {
+                setReportData(reportAnalyticsResponse)
+                setIsReportsLoading(false)
+            }
         }
 
         dataPromise.then(response => {
@@ -257,7 +260,7 @@ const StatisticsOverview = (props) => {
             <div style={{ marginBottom: '1rem', alignItems: "center", display: "flex", flexDirection: "column" }}>
                 {
                     <>
-                        <TimeSpans timespanDisabled={timespanDisabled} color={colors[selector]} setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
+                        <TimeSpans timespanDisabled={timespanDisabled} color={themeContext.schema.charts.solid} setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
 
                         {/* Commented out for now, only need through put bar chart */}
                         {/* {handleGaugeCharts()} */}
