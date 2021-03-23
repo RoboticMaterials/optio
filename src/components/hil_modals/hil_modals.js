@@ -34,7 +34,7 @@ import {getBinQuantity, getLotTemplateData, getLotTotalQuantity, getMatchesFilte
 import { getLotTemplates } from "../../redux/actions/lot_template_actions";
 import LotSortBar from "../side_bar/content/cards/lot_sort_bar/lot_sort_bar";
 import LotFilterBar from "../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
-import {CONTENT, defaultBins, LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../constants/lot_contants";
+import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../constants/lot_contants";
 import {
     BarsContainer,
     columnCss,
@@ -49,9 +49,12 @@ import HilLotItem from "./hil_lot_item/hil_lot_item";
 import {CARD_SCHEMA_MODES, getCardSchema} from "../../methods/utils/form_schemas";
 import {Formik} from "formik";
 import LotContainer from "../side_bar/content/cards/lot/lot_container";
-import {immutableDelete, isNonEmptyArray} from "../../methods/utils/array_utils";
+import {immutableDelete, immutableReplace, isNonEmptyArray} from "../../methods/utils/array_utils";
 import HilButton from "./hil_button/hil_button";
 import NumberField from "../basic/form/number_field/number_field";
+import SummaryZone from "../side_bar/content/cards/summary_zone/summary_zone";
+import CardZone from "../side_bar/content/cards/card_zone/card_zone";
+import ScaleWrapper from "../basic/scale_wrapper/scale_wrapper";
 
 
 export const QUANTITY_MODES = {
@@ -59,6 +62,12 @@ export const QUANTITY_MODES = {
     FRACTION: "FRACTION"
 }
 
+const CONTENT = {
+    QUANTITY_SELECTOR: "QUANTITY_SELECTOR",
+    FRACTION_SELECTOR: "FRACTION_SELECTOR",
+    REVIEW: "REVIEW",
+    LOT_SELECTOR: "LOT_SELECTOR"
+}
 /**
  * Handles what type of HIL to display depending on the status
  */
@@ -116,6 +125,7 @@ const HILModals = (props) => {
     const [dataLoaded, setDataLoaded] = useState(false)
     const [shouldFocusLotFilter, setShouldFocusLotFilter] = useState('')
     const [changeQtyMouseHold, setChangeQtyMouseHold] = useState('')
+    const [content, setContent] = useState(CONTENT.LOT_SELECTOR)
 
     const [lotsAtStation, setLotsAtStation] = useState(false)
     const [taskHasProcess, setTaskHasProcess] = useState(false)
@@ -511,7 +521,7 @@ const HILModals = (props) => {
                 </styled.Header>
 
                 <styled.LotSelectorContainer>
-                    <styled.LotsContainer>
+                    <styled.InnerContentContainer>
 
                         <styled.HilButton color={'#90eaa8'}
                             onClick={() => {
@@ -528,14 +538,28 @@ const HILModals = (props) => {
                             {/* <styled.HilButtonText color={'#1c933c'}>1</styled.HilButtonText> */}
                         </styled.HilButton>
 
-                    </styled.LotsContainer>
+                    </styled.InnerContentContainer>
                 </styled.LotSelectorContainer>
             </>
         )
     }
 
-    const renderFractionOptions = (index) => {
+    const renderFractionOptions = () => {
         console.log("renderFractionOptions")
+
+        const activeItem = selectedLots[activeLotIndex]
+        const {
+            lot: activeLot = {},
+            quantity: activeLotQuantity,
+            fraction: activeLotFraction
+        } = activeItem || {}
+
+        const {
+            _id: lotId,
+            process_id: processId = "",
+        } = activeLot || {}
+
+        const availableItems = getBinQuantity(activeLot, stationId || loadStationId)
 
         const fractionOptions = ['1', '3/4', '1/2', '1/4']
         const fractionDecimals = ['1', '0.75', '0.5', '0.25']
@@ -558,51 +582,85 @@ const HILModals = (props) => {
                 </styled.Header>
 
                 <styled.LotSelectorContainer>
+                    <styled.InnerHeader>
+                        <styled.ColumnContainer style={{flex: 1}}>
+                        <div style={{alignSelf: "stretch", background: "pink"}}>
 
-                    <styled.LotsContainer>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        alignSelf: "stretch",
+                                    }}
+                                >
+                                    <styled.SubtitleContainer>
+                                        <styled.HilSubtitleMessage>Current Lot</styled.HilSubtitleMessage>
+                                    </styled.SubtitleContainer>
+                                    <ScaleWrapper
+                                        scaleFactor={0.7}
+                                    >
+                                    <LotContainer
+                                        lotId={lotId}
+                                        binId={stationId || loadStationId}
+                                        processId={processId}
+                                        containerStyle={{ marginBottom: "0.5rem", alignSelf: "stretch" }}
+                                    />
+                                    </ScaleWrapper>
+                                </div>
+
+
+                        </div>
+
                         <styled.SubtitleContainer>
-                            <styled.HilSubtitleMessage>Select a fraction:</styled.HilSubtitleMessage>
+                            <styled.HilSubtitleMessage>Select Fraction</styled.HilSubtitleMessage>
                         </styled.SubtitleContainer>
+                        </styled.ColumnContainer>
+                    </styled.InnerHeader>
 
-
+                    <styled.InnerContentContainer>
+                        <styled.ScrollContainer>
                         {fractionOptions.map((value, ind) => {
                             const decimal = fractionDecimals[ind]
                             return (
                                 <HilButton
+                                    key={value}
                                     color={'#90eaa8'}
-                                    label={`${value} (Quantity ${Math.ceil(2 * decimal)})`}
+                                    label={`${value} (Quantity ${Math.ceil(availableItems * decimal)})`}
                                     filter={Math.cbrt(eval(value))}
                                     onClick={() => {
-                                        setFieldValue(`lots${index}`, {
-                                            ...selectedLots[index],
-                                            fraction: value
-                                        })
+                                        setFieldValue(`lots`, immutableReplace(selectedLots,
+                                        {
+                                                ...selectedLots[activeLotIndex],
+                                                fraction: value
+                                            }, activeLotIndex))
+                                        setContent(CONTENT.REVIEW)
                                     }}
                                 />
                             )
                         })}
-
-                    </styled.LotsContainer>
+                        </styled.ScrollContainer>
+                    </styled.InnerContentContainer>
 
                     {(hilType === 'pull' || hilType === 'push') && hilLoadUnload === 'load' &&
-                        <styled.FooterContainer>
+                        <styled.HilButtonContainer>
 
                             {renderSelectedLot()}
 
-                            {/*<styled.FooterButton style={{ marginBottom: '1rem', marginTop: "1rem", marginLeft: '1rem' }} color={'#ff9898'}*/}
-                            {/*    onClick={() => {*/}
-                            {/*        onHilFailure()*/}
-                            {/*        dispatchSetShowModalId(null)*/}
-                            {/*        setModalClosed(true)*/}
-                            {/*    }}>*/}
-                            {/*    <styled.HilIcon*/}
-                            {/*        style={{ marginBottom: 0, marginRight: "1rem", fontSize: "2.5rem" }}*/}
-                            {/*        className='fas fa-times'*/}
-                            {/*        color={'#ff1818'}*/}
-                            {/*    />*/}
-                            {/*    <styled.HilButtonText style={{ margin: 0, padding: 0 }} color={'#ff1818'}>Cancel</styled.HilButtonText>*/}
-                            {/*</styled.FooterButton>*/}
-                        </styled.FooterContainer>
+                            <HilButton
+                                // style={{ marginBottom: '1rem', marginTop: "1rem", marginLeft: '1rem' }}
+                                containerCss={styled.footerButtonCss}
+                                label={"Cancel"}
+                                onClick={() => {
+                                    onHilFailure()
+                                    dispatchSetShowModalId(null)
+                                    setModalClosed(true)
+                                }}
+                                iconName={'fas fa-times'}
+                                color={'#ff9898'}
+                                textColor={'#1c933c'}
+                            />
+                        </styled.HilButtonContainer>
                     }
 
 
@@ -650,7 +708,6 @@ const HILModals = (props) => {
 
 
     const renderLotSelector = () => {
-        console.log("oh boy")
         return (
             <>
                 <styled.Header style={{ flexDirection: "column" }}>
@@ -674,10 +731,11 @@ const HILModals = (props) => {
                     />
                 </styled.Header>
                 <styled.LotSelectorContainer>
+                    <styled.InnerHeader></styled.InnerHeader>
 
+                    <styled.InnerContentContainer>
                     {availableLots.length > 0 ?
-                        <styled.RealLotsContainer>
-
+                        <styled.ScrollContainer>
                             {availableLots
                                 .filter((currLot) => {
                                     const {
@@ -697,16 +755,20 @@ const HILModals = (props) => {
                                         process_id: processId = "",
                                     } = currLot
 
-
-
-                                    const isSelected = getIsSelected(lotId)
-
+                                    const existingIndex = getSelectedLotIndex(currLot)
+                                    const isSelected = existingIndex !== -1
                                     return (
                                         <styled.CardContainer>
 
-                                            {/*<styled.XContainer/>*/}
-                                            {/*<styled.Line1 className="line1"></styled.Line1>*/}
-                                            {/*<styled.Line2 className="line2"></styled.Line2>*/}
+                                            {isSelected &&
+                                            <styled.XContainer
+                                                className="far fa-times-circle"
+                                                onClick={() => {
+                                                    setFieldValue(`lots`, immutableDelete(selectedLots, existingIndex))
+                                                }}
+                                            />
+                                            }
+
                                             <LotContainer
                                                 lotId={lotId}
                                                 binId={stationId || loadStationId}
@@ -714,7 +776,6 @@ const HILModals = (props) => {
                                                 isSelected={isSelected}
                                                 selectable={!!isNonEmptyArray(selectedLots)}
                                                 onClick={() => {
-                                                    const existingIndex = getSelectedLotIndex(currLot) // check if lot is already selected
                                                     if(existingIndex === -1) {
                                                         setFieldValue(`lots`, [
                                                             ...values.lots,
@@ -723,12 +784,10 @@ const HILModals = (props) => {
                                                                 quantity: 0
                                                             }
                                                         ])
-                                                        setShowLotSelector(false)
-                                                        setShowQuantitySelector(true)
+
+
+                                                        setContent(trackQuantity ? CONTENT.QUANTITY_SELECTOR : CONTENT.FRACTION_SELECTOR)
                                                         setActiveLotIndex(selectedLots.length)
-                                                    }
-                                                    else {
-                                                        setFieldValue(`lots`, immutableDelete(selectedLots, existingIndex))
                                                     }
                                                 }}
                                                 containerStyle={{ marginBottom: "0.5rem" }}
@@ -737,15 +796,16 @@ const HILModals = (props) => {
                                     )
                                 })
                             }
-                        </styled.RealLotsContainer>
+                        </styled.ScrollContainer>
 
                         :
                         <styled.NoLotsContainer>
                             <styled.NoLotsText>No lots available</styled.NoLotsText>
                         </styled.NoLotsContainer>
                     }
+                    </styled.InnerContentContainer>
 
-                    <styled.FooterContainer>
+                    <styled.HilButtonContainer>
                         <HilButton
                             containerCss={styled.footerButtonCss}
                             label={"Continue Without Lot"}
@@ -771,7 +831,7 @@ const HILModals = (props) => {
                             iconName={'fas fa-times'}
                             textColor={'#ff1818'}
                         />
-                    </styled.FooterContainer>
+                    </styled.HilButtonContainer>
                 </styled.LotSelectorContainer>
             </>
         )
@@ -780,7 +840,7 @@ const HILModals = (props) => {
     const renderLots = () => {
 
         return (
-            <styled.RealLotsContainer>
+            <styled.ScrollContainer>
                 {selectedLots.map((currItem, currIndex) => {
                     const {
                         lot: currLot,
@@ -798,8 +858,9 @@ const HILModals = (props) => {
                             onMinusClick={() => {
                                 setFieldValue("lots", immutableDelete(selectedLots, currIndex))
                             }}
+                            trackQuantity={trackQuantity}
                             onQuantityClick={() => {
-                                setShowQuantitySelector(true)
+                                setContent(trackQuantity ? CONTENT.QUANTITY_SELECTOR : CONTENT.FRACTION_SELECTOR)
                                 setActiveLotIndex(currIndex)
                             }}
                             quantityMode={trackQuantity ? QUANTITY_MODES.QUANTITY : QUANTITY_MODES.FRACTION}
@@ -812,7 +873,7 @@ const HILModals = (props) => {
                         />
                     )
                 })}
-            </styled.RealLotsContainer>
+            </styled.ScrollContainer>
         )
 
     }
@@ -833,25 +894,27 @@ const HILModals = (props) => {
                 </styled.Header>
 
                 <styled.LotSelectorContainer>
-                    <styled.LotsContainer>
-                        {renderLots()}
-                    </styled.LotsContainer>
-
-                    <styled.HilButtonContainer>
-
+                    <styled.InnerHeader>
                         <HilButton
+                            containerCss={styled.addLotsCss}
+                            textCss={styled.addLotsTextCss}
+                            iconCss={styled.addLotsIconCss}
                             label={"Add Lots"}
                             color={'#34baeb'}
                             iconName={'fas fa-plus'}
-                            iconColor={'#1c933c'}
-                            textColor={'#1c933c'}
                             onClick={() => {
-                                setShowLotSelector(true)
+                                setContent(CONTENT.LOT_SELECTOR)
                                 // onHilSuccess()
                                 // dispatchSetShowModalId(null)
                             }}
                         />
+                    </styled.InnerHeader>
 
+                    <styled.InnerContentContainer>
+                        {renderLots()}
+                    </styled.InnerContentContainer>
+
+                    <styled.HilButtonContainer>
                         <HilButton
                             label={"Confirm"}
                             color={'#90eaa8'}
@@ -935,7 +998,7 @@ const HILModals = (props) => {
                 </styled.Header>
 
                 <styled.LotSelectorContainer>
-                    <styled.LotsContainer style={{
+                    <styled.InnerContentContainer style={{
                         justifyContent: "space-around"
                     }}>
 
@@ -982,7 +1045,7 @@ const HILModals = (props) => {
                             </styled.RowContainer>
                         </div>
 
-                    </styled.LotsContainer>
+                    </styled.InnerContentContainer>
 
                     <styled.HilButtonContainer>
 
@@ -1045,26 +1108,19 @@ const HILModals = (props) => {
 
                 {/*<styled.HilBorderContainer >*/}
 
-                {showQuantitySelector ?
-                    renderQuantitySelector()
-                    :
-                    showLotSelector ?
-                        renderLotSelector()
-                        :
-                        !!selectedTask && hilLoadUnload === 'load' ?
-                            trackQuantity !== true && lotsAtStation === true && noLotsSelected !== true ?
-                                renderFractionOptions()
-                                :
-                                renderStuff()
-
-                            :
-                            renderUnloadOptions()
+                {
+                    {
+                        [CONTENT.LOT_SELECTOR]:
+                            renderLotSelector(),
+                        [CONTENT.QUANTITY_SELECTOR]:
+                        renderQuantitySelector(),
+                        [CONTENT.FRACTION_SELECTOR]:
+                            renderFractionOptions(),
+                        [CONTENT.REVIEW]:
+                            renderStuff()
+                    }[content] ||
+                        <div>DEFAULT HTML</div>
                 }
-
-
-
-
-                {/*</styled.HilBorderContainer>*/}
 
             </styled.HilContainer>
             </Formik>

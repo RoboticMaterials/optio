@@ -6,7 +6,7 @@ const HilButtonCss = css`
     border-radius: 1rem;
     box-shadow: 0 0.1rem 0.2rem 0rem #303030;
     height: 100%;
-    min-height: 5rem;
+    min-height: 4rem;
     max-height: 7rem;
     width: 100%;
     display: flex;
@@ -16,7 +16,7 @@ const HilButtonCss = css`
     transition: background-color 0.25s ease, filter 0.1s ease;
     background-color: ${props => props.color};
 
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 
     filter: brightness(${props => props.filter});
 
@@ -29,9 +29,9 @@ const HilButtonCss = css`
         filter: brightness(85%);
     }
 
-    @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
-        height: 9rem;
-    }
+    // @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
+    //     height: 4rem;
+    // }
 `
 
 export const HilButtonText = styled.p`
@@ -40,6 +40,8 @@ export const HilButtonText = styled.p`
     margin: 0;
     padding: 0;
     filter: brightness(50%);
+    
+    ${props => props.css && props.css};
 `
 
 
@@ -72,11 +74,13 @@ export const HilIcon = styled.i`
     font-size: 2.5rem;
     filter: brightness(50%);
     margin-right: 1rem;
-    &:hover {
-        cursor: pointer;
-    }
+    // &:hover {
+    //     cursor: pointer;
+    // }
 
-    &:active{
-        filter: brightness(85%)
-    }
+    // &:active{
+    //     filter: brightness(85%)
+    // }
+    
+    ${props => props.css && props.css};
 `

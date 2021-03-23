@@ -6,6 +6,7 @@ import NumberField from "../../basic/form/number_field/number_field";
 import * as styled from "./hil_lot_item.style"
 import {getBinQuantity} from "../../../methods/utils/lot_utils";
 import {QUANTITY_MODES} from "../hil_modals";
+import {immutableDelete} from "../../../methods/utils/array_utils";
 
 const HilLotItem = (props) => {
 	const {
@@ -19,6 +20,7 @@ const HilLotItem = (props) => {
 		quantityMode,
 		fraction,
 		onMinusClick,
+		trackQuantity
 	} = props
 
 	const [count, setCount] = useState(0)
@@ -27,25 +29,39 @@ const HilLotItem = (props) => {
 	console.log("fractionfraction",fraction)
 	return (
 		<styled.Container>
-			<styled.RemoveButton
-				color={"#ff0000"}
-				className={"fas fa-minus"}
-				onClick={onMinusClick}
-			/>
+			{/*<styled.RemoveButton*/}
+			{/*	color={"#ff0000"}*/}
+			{/*	className={"fas fa-minus"}*/}
+			{/*	onClick={onMinusClick}*/}
+			{/*/>*/}
 
+			{/*<styled.ScaleContainer*/}
+			{/*	style={{background: "blue"}}*/}
+			{/*>*/}
+			<styled.CardContainer>
+				{/*<styled.XContainer*/}
+
+				{/*>*/}
+					<styled.X
+						className="far fa-times-circle"
+						onClick={onMinusClick}
+					/>
+				{/*</styled.XContainer>*/}
 			<LotContainer
 				onSetCount={(val) => setCount(val)}
 				lotId={lotId}
 				binId={binId}
 				enableFlagSelector={enableFlagSelector}
 				processId={processId}
-				containerStyle={{flex: 1, marginRight: "5rem"}}
+				containerStyle={{flex: 1}}
 			/>
+			</styled.CardContainer>
+			{/*</styled.ScaleContainer>*/}
 
 			<styled.QuantityItem
 				onClick={onQuantityClick}
 			>
-				{selectedQuantity}
+				{trackQuantity ? selectedQuantity : fraction}
 			</styled.QuantityItem>
 		</styled.Container>
 	);

@@ -14,6 +14,8 @@ const HilButton = (props) => {
 		iconName,
 		textColor,
 		containerCss,
+		iconCss,
+		textCss
 	} = props
 
 	return (
@@ -24,15 +26,15 @@ const HilButton = (props) => {
 		>
 			{iconName &&
 			<styled.HilIcon
-				style={{ margin: 0, marginRight: "1rem", fontSize: "2.5rem" }}
 				className={iconName}
 				color={color}
+				css={iconCss}
 
 			/>
 			}
 			<styled.HilButtonText
 				color={color}
-				style={{ margin: 0, padding: 0 }}
+				css={textCss}
 			>
 				{label}
 			</styled.HilButtonText>

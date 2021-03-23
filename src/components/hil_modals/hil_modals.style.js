@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components'
 import * as commonCss from "../../common_css/common_css";
+import {iconButtonCss} from "../../common_css/common_css";
 
 export const HilContainer = styled.div`
     position: absolute;
@@ -132,7 +133,7 @@ export const HilButtonContainer = styled.div`
     justify-content: space-between;
     width: 100%;
     max-width: 50rem;
-    margin-top: 2rem;
+    // margin-top: 1rem;
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
         padding: 0rem 2rem;
@@ -141,6 +142,30 @@ export const HilButtonContainer = styled.div`
 
 
 `
+export const addLotsCss = css`
+    height: 1rem;
+    width: fit-content;
+    padding: .5rem;
+    margin: 0;
+`
+
+export const addLotsTextCss = css`
+    font-size: ${props => props.theme.fontSize.sz3};
+`
+
+export const addLotsIconCss = css`
+    font-size: 2rem;
+`
+
+
+export const InnerHeader = styled.div`
+    align-self: stretch;
+    display: flex;
+    justify-content: flex-end;
+    margin: .5rem 0;
+    padding: 0 1rem;
+`
+
 
 export const LotSelectorContainer = styled.div`
     display: flex;
@@ -156,7 +181,7 @@ export const LotSelectorContainer = styled.div`
     
 `
 
-export const LotsContainer = styled.div`
+export const InnerContentContainer = styled.div`
     display: flex;
     position: relative;
     flex-direction: column;
@@ -164,7 +189,7 @@ export const LotsContainer = styled.div`
     flex: 1;
     overflow: hidden;
     align-items: center;
-    margin: 1rem;
+    margin: 0 1rem 1rem 1rem;
     border: 3px solid #cacaca;
     justify-content: center;
     border-radius: 2rem;
@@ -255,37 +280,6 @@ export const LotDropdownContainer = styled.div`
   flex-direction: column;
 `
 
-const iconButtonCss = css`
-    text-shadow: 0.05rem 0.05rem 0.2rem #303030;
-    //transition: text-shadow 0.1s ease, filter 0.1s ease;
-    &:hover {
-        cursor: pointer;
-        filter: brightness(85%);
-    }
-
-    &:active{
-        filter: brightness(85%);
-        text-shadow: none;
-    }
-
-    background: none;
-    outline: none;
-    border: none;
-
-    &:focus {
-        outline: none;
-    }
-`
-
-export const DeselectLotIcon = styled.button`
-    ${iconButtonCss};
-    font-size: 3rem;
-    position: absolute;
-    top: 0;
-    left: 0;
-    transform: translate(-25%,-25%);
-    color: red;
-`
 
 export const LotTitle = styled.span`
   display: inline-flex;
@@ -364,7 +358,7 @@ export const Header = styled.div`
     padding: .5rem 1rem;
 `
 
-export const RealLotsContainer = styled.div`
+export const ScrollContainer = styled.div`
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -515,15 +509,6 @@ export const LotTitleName = styled.span`
 
 `
 
-export const EditLotIcon = styled.button`
-    ${iconButtonCss};
-    color: white;
-    margin-left: 2rem;
-    font-size: 1.5rem;
-
-
-`
-
 export const HilButtonText = styled.p`
     color:  ${props => props.color};
     font-size: 2rem;
@@ -538,26 +523,50 @@ export const HilButtonQuantityText = styled.p`
     padding-top: .6rem;
 `
 
-export const XContainer = styled.div`
+export const XContainer = styled.button`
+    ${iconButtonCss};
     position: absolute;
-    left: 9px;
-    right: 9px;
-    top: 9px;
-    bottom: 9px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    font-size: 8rem;
+    color: ${props => props.theme.schema.delete.solid};
+    // opacity: 60%;
     z-index: 5;
-    background: 
-         linear-gradient(to top left,
-             rgba(0,0,0,0) 0%,
-             rgba(0,0,0,0) calc(50% - 0.8px),
-             rgba(0,0,0,1) 50%,
-             rgba(0,0,0,0) calc(50% + 0.8px),
-             rgba(0,0,0,0) 100%),
-         linear-gradient(to top right,
-             rgba(0,0,0,0) 0%,
-             rgba(0,0,0,0) calc(50% - 0.8px),
-             rgba(0,0,0,1) 50%,
-             rgba(0,0,0,0) calc(50% + 0.8px),
-             rgba(0,0,0,0) 100%);
+    cursor: pointer;
+    
+    opacity: 0;
+    transition: all 0.3s ease;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    &:hover{
+        opacity: 1;
+    }
+    
+    
+    text-shadow: 0.05rem 0.05rem 0.2rem #303030;
+    //transition: text-shadow 0.1s ease, filter 0.1s ease;
+    &:hover {
+        cursor: pointer;
+        filter: brightness(85%);
+    }
+
+    &:active{
+        filter: brightness(85%);
+        text-shadow: none;
+    }
+
+    background: none;
+    outline: none;
+    border: none;
+
+    &:focus {
+        outline: none;
+    }
     
     
 `
