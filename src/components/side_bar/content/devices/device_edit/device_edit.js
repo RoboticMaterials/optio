@@ -310,7 +310,7 @@ const DeviceEdit = (props) => {
     */
     const onSaveDevice = async (values) => {
 
-        return console.log('QQQQ values', values)
+        // return console.log('QQQQ values', values)
 
         // If a AMR, then just put device, no need to save locaiton since it does not need one
         if (selectedDevice.device_model === 'MiR100') {
@@ -386,7 +386,12 @@ const DeviceEdit = (props) => {
 
             // Handle Values Passed in through Formik
             if (!!values) {
+                const schedules = values.schedules
 
+                schedules.forEach((schedule, ind) => {
+                    const matchingSchedule = deepCopy(Object.values(selectedDevice.schedules)[ind])
+
+                })
             }
 
             await dispatchPutDevice(selectedDevice, selectedDevice._id)
@@ -414,7 +419,7 @@ const DeviceEdit = (props) => {
 
             <Formik
                 initialValues={{
-                    
+
                 }}
 
                 // validation control
@@ -438,7 +443,7 @@ const DeviceEdit = (props) => {
                         values,
                         errors,
                     } = formikProps
-                    console.log('QQQQ errors', errors)
+                    // console.log('QQQQ errors', errors)
                     return (
                         <Form>
 
