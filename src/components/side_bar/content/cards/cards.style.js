@@ -22,7 +22,7 @@ export const Body = styled.div`
 	position: relative;
 	
 	
-	background: ${props => props.theme.bg.tertiary};
+	background: ${props => props.theme.bg.secondary};
   box-shadow: inset 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
 `
 

@@ -11,23 +11,12 @@ export const size = {
     desktop: '2560px'
 }
 
-const dark = {
-    primary: '#000000',  // Black
-    secondary: '#27272b',
-    tertiary: '#313236',
-    // quaternary: '#4f5063',
-    quaternary: '#5a5a63',
-    quinary: '#6c6e78',
-    senary: '#a6a7ba',
-    septenary: '#e9e9f2',
-    octonary: '#FFFFFF',  // White
-}
 
 const light = {
     primary: '#FFFFFF',  // White
-    secondary: '#dedfe3',
-    tertiary: '#f5f5fa',
-    quaternary: '#a2a3a8',  // light light grey
+    secondary: '#f5f5fa',
+    tertiary: '#dedfe3',
+    quaternary: '#b8b9bf',  // light light grey
     quinary: '#79797d',   // light grey
     senary: '#7e7e7e',    // charcoal
     septenary: '#545454', //dark dark grey
@@ -136,7 +125,7 @@ export const theme = {
                 solid: '#5294ff'
             },
             objects: {
-                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(93, 219, 77, 0.95) 0%, rgba(5, 247, 255, 0.95) 100%)',
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(31, 255, 94, 0.95) 0%, rgba(0, 126, 237, 0.95) 100%)',
                 solid: '#2ed182',
             },
             processes: {
@@ -144,11 +133,11 @@ export const theme = {
                 solid: '#ffbf1f'
             },
             tasks: {
-                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(93, 219, 77, 0.95) 0%, rgba(5, 247, 255, 0.95) 100%)',
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(31, 255, 94, 0.95) 0%, rgba(0, 126, 237, 0.95) 100%)',
                 solid: '#2ed182',
             },
             routes: {
-                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(93, 219, 77, 0.95) 0%, rgba(5, 247, 255, 0.95) 100%)',
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(31, 255, 94, 0.95) 0%, rgba(0, 126, 237, 0.95) 100%)',
                 solid: '#2ed182',
                 iconName: "fas fa-route"
             },
@@ -160,6 +149,9 @@ export const theme = {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(167, 114, 252, 0.95) 0%, rgba(251, 0, 255, 0.95) 100%)',
                 solid: '#b385ff',
                 iconName: "fas fa-play"
+            },
+            charts: {
+                solid: "#54AAFF",
             },
             kick_off: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(197, 155, 255) 0%, rgba(173, 115, 255, 0.95) 100%)',

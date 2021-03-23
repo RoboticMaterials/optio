@@ -159,7 +159,7 @@ const ZoneHeader = (props) => {
 					schema={"lots"}
 					placeholder='Select processes...'
 					style={{
-						background: themeContext.bg.tertiary,
+						background: themeContext.bg.secondary,
 						flex: 1,
 						overflow: "hidden"
 					}}

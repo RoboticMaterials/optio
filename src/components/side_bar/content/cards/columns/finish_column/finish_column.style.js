@@ -42,7 +42,7 @@ export const StationHeader = styled.div`
     width: 100%;
     justify-content: center;
     align-items: center;
-    background: ${props => props.theme.bg.tertiary};
+    background: ${props => props.theme.bg.secondary};
     padding: .5rem 1rem;
  
    

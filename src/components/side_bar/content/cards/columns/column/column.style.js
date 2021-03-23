@@ -72,7 +72,7 @@ export const BodyContainer = styled.div`
 	flex-direction: column;
 	min-height: ${minHeight};
 	overflow: hidden;
-	background: ${props => props.theme.bg.tertiary};
+	background: ${props => props.theme.bg.secondary};
 	opacity: ${props => props.dragEnter ? 0.75 : 1};
 	border-bottom-right-radius: 0.5rem;
 	border-bottom-left-radius: 0.5rem;

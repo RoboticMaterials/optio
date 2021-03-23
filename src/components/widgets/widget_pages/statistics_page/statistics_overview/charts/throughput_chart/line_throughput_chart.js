@@ -24,6 +24,7 @@ import { deepCopy } from '../../../../../../../methods/utils/utils';
 // Import actions
 import { postSettings } from '../../../../../../../redux/actions/settings_actions'
 import { convertData } from '../../../../../../../redux/actions/report_event_actions';
+import { LightenDarkenColor, hexToRGBA } from '../../../../../../../methods/utils/color_utils';
 
 const LineThroughputChart = (props) => {
 
@@ -44,7 +45,7 @@ const LineThroughputChart = (props) => {
     const shiftDetails = settings.shiftDetails;
 
     // Used for colors in line chart below
-    const colors = { Actual: 'hsl(53, 84%, 50%)', Expected: 'hsl(120, 60%, 50%)' }
+    const colors = { Actual: themeContext.schema.charts.solid, Expected: 'rgba(84, 170, 255, 0.4)' }
 
     // Settings local state here because enabled breaks needs to access breaks outside of formik
     // See the Switch below for more details
@@ -318,13 +319,13 @@ const LineThroughputChart = (props) => {
 
         const lineData = [{
             "id": 'Actual',
-            "color": "hsl(182, 70%, 50%)",
+            "color": themeContext.bg.octonary,
             "data": convertedData
 
         },
         {
             "id": 'Expected',
-            "color": "hsl(120, 60%, 50%)",
+            "color": themeContext.bg.octonary,
             "data": expectedOutput
 
         },
@@ -390,104 +391,132 @@ const LineThroughputChart = (props) => {
 
         const numberOfBreaks = [0, 1, 2]
 
-        return numberOfBreaks.map((bk, ind) => {
-            const adjustedInd = ind + 1
+        return (
+            <>
+            <styled.RowContainer style={{ alignItems: 'center', minWidth: '23rem' }}>
 
-            // This uses useState
-            // The reasoning behind this, is to be able to enable/disable switches without going through formik submit
-            // This also allows to enable a break, but not effect the graph until submitted
-            const breakEnabled = breaksEnabled[ind]
+                <styled.RowContainer style={{ width: '100%' }}>
 
-            const breakName = `Break ${adjustedInd}`
-            const switchName = `switch${adjustedInd}`
-            const breakStart = `startOfBreak${adjustedInd}`
-            const breakEnd = `endOfBreak${adjustedInd}`
-            return (
-                <styled.RowContainer style={{ alignItems: 'center', minWidth: '23rem' }}>
-
-                    <styled.RowContainer style={{ width: '100%', marginTop: '.25rem' }}>
-                        <styled.Label>{breakName}</styled.Label>
-                        <Switch
-                            name={switchName}
-                            onColor='red'
-                            checked={breaksEnabled[ind]}
-                            onChange={() => {
-                                setBreaksEnabled({
-                                    ...breaksEnabled,
-                                    [ind]: !breakEnabled
-                                })
-                            }}
-                        />
-                    </styled.RowContainer>
-                    <styled.RowContainer>
-                        <styled.ColumnContainer style={{ margin: '.25rem' }}>
-                            <styled.BreakLabel>
-                                Start of Break
-                        </styled.BreakLabel>
-                            <TimePickerField
-                                disabled={!breakEnabled}
-                                mapInput={
-                                    (value) => {
-                                        if (value) {
-                                            const splitVal = value.split(':')
-                                            return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
-                                        }
-                                    }
-                                }
-                                mapOutput={(value) => {
-                                    return convert12hto24h(value.format('hh:mm a'))
-                                }}
-                                name={breakStart}
-                                style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                                containerStyle={{ width: '6rem' }}
-                                showHour={true}
-                                showMinute={true}
-                                showSecond={false}
-                                className="xxx"
-                                use12Hours
-                                format={'hh:mm a'}
-                                autocomplete={"off"}
-                                allowEmpty={false}
-                                defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                                defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                            />
-                        </styled.ColumnContainer>
-                        <styled.ColumnContainer style={{ margin: '.25rem' }}>
-                            <styled.BreakLabel>
-                                End of Break
-                            </styled.BreakLabel>
-                            <TimePickerField
-                                disabled={!breakEnabled}
-                                mapInput={
-                                    (value) => {
-                                        if (value) {
-                                            const splitVal = value.split(':')
-                                            return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
-                                        }
-                                    }
-                                }
-                                mapOutput={(value) => {
-                                    return convert12hto24h(value.format('hh:mm a'))
-                                }}
-                                name={breakEnd}
-                                style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                                containerStyle={{ width: '6rem' }}
-                                showHour={true}
-                                showMinute={true}
-                                showSecond={false}
-                                className="xxx"
-                                use12Hours
-                                format={'hh:mm a'}
-                                autocomplete={"off"}
-                                allowEmpty={false}
-                                defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                                defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                            />
-                        </styled.ColumnContainer>
-                    </styled.RowContainer>
                 </styled.RowContainer>
-            )
-        })
+                <styled.RowContainer>
+                    <styled.ColumnContainer style={{ margin: '.25rem', width: '6rem' }}>
+                        <styled.BreakLabel>
+                            Start of Break
+                        </styled.BreakLabel>
+                    </styled.ColumnContainer>
+                    <styled.ColumnContainer style={{ margin: '.25rem', width: '6rem' }}>
+                        <styled.BreakLabel>
+                            End of Break
+                        </styled.BreakLabel>
+                    </styled.ColumnContainer>
+                </styled.RowContainer>
+            </styled.RowContainer>
+
+            {
+                numberOfBreaks.map((bk, ind) => {
+                    const adjustedInd = ind + 1
+        
+                    // This uses useState
+                    // The reasoning behind this, is to be able to enable/disable switches without going through formik submit
+                    // This also allows to enable a break, but not effect the graph until submitted
+                    const breakEnabled = breaksEnabled[ind]
+        
+                    const breakName = `Break ${adjustedInd}`
+                    const switchName = `switch${adjustedInd}`
+                    const breakStart = `startOfBreak${adjustedInd}`
+                    const breakEnd = `endOfBreak${adjustedInd}`
+                    return (
+                        <styled.RowContainer style={{ alignItems: 'center', minWidth: '23rem' }}>
+        
+                            <styled.RowContainer style={{ width: '100%', marginTop: '.25rem' }}>
+                                <styled.Label>{breakName}</styled.Label>
+                                <Switch
+                                    name={switchName}
+                                    schema={'charts'}
+                                    checked={breaksEnabled[ind]}
+                                    onChange={() => {
+                                        setBreaksEnabled({
+                                            ...breaksEnabled,
+                                            [ind]: !breakEnabled
+                                        })
+                                    }}
+                                />
+                            </styled.RowContainer>
+                            <styled.RowContainer>
+                                <styled.ColumnContainer style={{ margin: '.25rem' }}>
+                                    {/* <styled.BreakLabel>
+                                        Start of Break
+                                </styled.BreakLabel> */}
+                                    <TimePickerField
+                                        disabled={!breakEnabled}
+                                        schema={'charts'}
+                                        mapInput={
+                                            (value) => {
+                                                if (value) {
+                                                    const splitVal = value.split(':')
+                                                    return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                                }
+                                            }
+                                        }
+                                        mapOutput={(value) => {
+                                            return convert12hto24h(value.format('hh:mm a'))
+                                        }}
+                                        name={breakStart}
+                                        style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                                        containerStyle={{ width: '6rem' }}
+                                        showHour={true}
+                                        showMinute={true}
+                                        showSecond={false}
+                                        className="xxx"
+                                        use12Hours
+                                        format={'hh:mm a'}
+                                        autocomplete={"off"}
+                                        allowEmpty={false}
+                                        defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                                        defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                                    />
+                                </styled.ColumnContainer>
+                                <styled.ColumnContainer style={{ margin: '.25rem' }}>
+                                    {/* <styled.BreakLabel>
+                                        End of Break
+                                    </styled.BreakLabel> */}
+                                    <TimePickerField
+                                        disabled={!breakEnabled}
+                                        schema={'charts'}
+                                        mapInput={
+                                            (value) => {
+                                                if (value) {
+                                                    const splitVal = value.split(':')
+                                                    return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                                }
+                                            }
+                                        }
+                                        mapOutput={(value) => {
+                                            return convert12hto24h(value.format('hh:mm a'))
+                                        }}
+                                        name={breakEnd}
+                                        style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                                        containerStyle={{ width: '6rem' }}
+                                        showHour={true}
+                                        showMinute={true}
+                                        showSecond={false}
+                                        className="xxx"
+                                        use12Hours
+                                        format={'hh:mm a'}
+                                        autocomplete={"off"}
+                                        allowEmpty={false}
+                                        defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                                        defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                                    />
+                                </styled.ColumnContainer>
+                            </styled.RowContainer>
+                        </styled.RowContainer>
+                    )
+                })
+            }
+            </>
+        )
+
     }, [shiftDetails, breaksEnabled])
 
     const renderForm = () => {
@@ -533,7 +562,8 @@ const LineThroughputChart = (props) => {
                         return (
                             <Form
                                 style={{
-                                    backgroundColor: '#6c6e78',
+                                    backgroundColor: themeContext.bg.primary,
+                                    boxShadow: themeContext.cardShadow,
                                     padding: '.5rem',
                                     borderRadius: '.5rem'
                                 }}
@@ -545,6 +575,7 @@ const LineThroughputChart = (props) => {
                                             Start of Shift
                                         </styled.Label>
                                         <TimePickerField
+                                            schema={'charts'}
                                             mapInput={
                                                 (value) => {
                                                     if (value) {
@@ -576,6 +607,7 @@ const LineThroughputChart = (props) => {
                                             End of Shift
                                         </styled.Label>
                                         <TimePickerField
+                                            schema={'charts'}
                                             mapInput={
                                                 (value) => {
                                                     if (value) {
@@ -616,7 +648,7 @@ const LineThroughputChart = (props) => {
                                                 'fontWeight': '600',
                                                 'marginBottom': '.5rem',
                                                 'marginTop': '0',
-                                                width: '6rem',
+                                                'width': '6rem',
                                             }}
                                         />
                                     </styled.RowContainer>
@@ -678,7 +710,7 @@ const LineThroughputChart = (props) => {
                     pointLabel="y"
                     pointLabelYOffset={-12}
 
-                    margin={{ top: 22, left: 70, right: 70, bottom: 30 }}
+                    margin={{ top: 22, left: 70, right: 70, bottom: 32 }}
                     enableGridY={isData ? true : false}
 
                     // curve="monotoneX"
@@ -709,7 +741,7 @@ const LineThroughputChart = (props) => {
                             ]
                         }]}
                     theme={{
-                        textColor: '#ffffff',
+                        textColor: themeContext.bg.octonary,
                         axis: {
                             ticks: {
                                 line: {
@@ -725,7 +757,7 @@ const LineThroughputChart = (props) => {
                         },
                         grid: {
                             line: {
-                                stroke: '#55575e',
+                                stroke: 'rgba(0, 0, 0, 0.1)',
                                 strokeWidth: 1,
                             }
                         },

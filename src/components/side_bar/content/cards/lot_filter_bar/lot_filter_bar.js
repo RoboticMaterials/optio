@@ -264,7 +264,7 @@ const LotFilterBar = (props) => {
                         }}
                         focus={shouldFocusLotFilter}
                         style={{
-                            background: themeContext.bg.tertiary,
+                            background: themeContext.bg.secondary,
                             height: "100%",
                             flex: 1,
                             borderTopLeftRadius: 0,

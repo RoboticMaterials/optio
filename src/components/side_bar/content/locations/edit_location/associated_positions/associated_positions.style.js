@@ -71,7 +71,7 @@ export const NewPositionCard = styled.div`
 
     border-radius: 0.5rem;
 
-    background: ${props => props.theme.bg.tertiary};
+    background: ${props => props.theme.bg.secondary};
     opacity: 0.999;
 
     position: absolute;

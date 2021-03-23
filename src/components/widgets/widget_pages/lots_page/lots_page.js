@@ -101,7 +101,7 @@ const LotsPage = (props) => {
                     <styled.Subtitle>No Lots</styled.Subtitle>
                 }
                 <Button
-                    schema={'devices'}
+                    schema={'lots'}
                     onClick = {goToCardPage}
                     style = {{position: 'absolute', right:'1.6rem'}}
                 >
@@ -119,6 +119,7 @@ const LotsPage = (props) => {
                         lotNumber,
                         bins,
                         dates,
+                        description,
                         _id: currCardId,
                         process_id: currCardProcessId
                     } = card || {}
@@ -132,6 +133,7 @@ const LotsPage = (props) => {
                             lotNumber={lotNumber}
                             quantity={quantity}
                             dates={dates}
+                            description = {description}
                             onClick={() => {
                                 openEditor(currCardId, currCardProcessId, location._id)
                             }}

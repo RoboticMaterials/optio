@@ -105,7 +105,7 @@ export const Spacer = styled.div`
 `
 
 const selectedCss = css`
-	background: ${props => props.theme.bg.tertiary};
+	background: ${props => props.theme.bg.secondary};
 `
 
 export const FlagButton = styled.button`
