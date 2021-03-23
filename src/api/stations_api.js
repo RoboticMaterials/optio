@@ -196,7 +196,7 @@ export async function getStationAnalytics(id, timeSpan) {
     try {
         const response = await axios({
             method: 'PUT',
-            url: apiIPAddress() + operator + '/' + id + '/analysis',
+            url: apiIPAddress() + operator + '/' + id + '/stats',
             headers: {
                 'Content-Type': 'application/json',
                 'X-API-Key': '123456',
@@ -209,6 +209,8 @@ export async function getStationAnalytics(id, timeSpan) {
         // Success 🎉
         const data = response.data;
         const dataJson = JSON.parse(data)
+
+        console.log("getStationAnalytics dataJson",dataJson)
         return dataJson;
 
 

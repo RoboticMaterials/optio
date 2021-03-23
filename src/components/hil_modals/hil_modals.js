@@ -30,7 +30,7 @@ import {getInitialValues, sortBy} from "../../methods/utils/card_utils";
 import { SORT_MODES } from "../../constants/common_contants";
 import Lot from "../side_bar/content/cards/lot/lot";
 import { getRouteProcesses, getLoadStationId } from "../../methods/utils/route_utils";
-import { getLotTemplateData, getLotTotalQuantity, getMatchesFilter } from "../../methods/utils/lot_utils";
+import {getBinQuantity, getLotTemplateData, getLotTotalQuantity, getMatchesFilter} from "../../methods/utils/lot_utils";
 import { getLotTemplates } from "../../redux/actions/lot_template_actions";
 import LotSortBar from "../side_bar/content/cards/lot_sort_bar/lot_sort_bar";
 import LotFilterBar from "../side_bar/content/cards/lot_filter_bar/lot_filter_bar";
@@ -49,8 +49,9 @@ import HilLotItem from "./hil_lot_item/hil_lot_item";
 import {CARD_SCHEMA_MODES, getCardSchema} from "../../methods/utils/form_schemas";
 import {Formik} from "formik";
 import LotContainer from "../side_bar/content/cards/lot/lot_container";
-import {isNonEmptyArray} from "../../methods/utils/array_utils";
+import {immutableDelete, isNonEmptyArray} from "../../methods/utils/array_utils";
 import HilButton from "./hil_button/hil_button";
+import NumberField from "../basic/form/number_field/number_field";
 
 
 export const QUANTITY_MODES = {
@@ -103,6 +104,8 @@ const HILModals = (props) => {
     const [selectedTask, setSelectedTask] = useState(null)
     const [associatedTask, setAssociatedTask] = useState(null)
     const [trackQuantity, setTrackQuantity] = useState(null)
+    const [showQuantitySelector, setShowQuantitySelector] = useState(false)
+    const [activeLotIndex, setActiveLotIndex] = useState(null)
     const [isProcessTask, setIsProcessTask] = useState(true)
     const [availableLots, setAvailableLots] = useState([])
     const [selectedDashboard, setSelectedDashboard] = useState(null)
@@ -716,7 +719,10 @@ const HILModals = (props) => {
                                                                 quantity: 0
                                                             }
                                                         ])
-                                                        setShowLotSelector(false)
+                                                        // setShowLotSelector(false)
+                                                    }
+                                                    else {
+                                                        setFieldValue(`lots`, immutableDelete(selectedLots, existingIndex))
                                                     }
                                                 }}
                                                 containerStyle={{ marginBottom: "0.5rem" }}
@@ -738,7 +744,7 @@ const HILModals = (props) => {
                             containerCss={styled.footerButtonCss}
                             label={"Continue Without Lot"}
                             onClick={() => {
-                                setFieldValue(`lots`, []) // clear selected lot
+                                // setFieldValue(`lots`, []) // clear selected lot
                                 setNoLotsSelected(true)
                                 setShowLotSelector(false) // hide lot selector
                             }}
@@ -780,8 +786,16 @@ const HILModals = (props) => {
                         process_id: processId = "",
                     } = currLot
 
+
                     return (
                         <HilLotItem
+                            onMinusClick={() => {
+                                setFieldValue("lots", immutableDelete(selectedLots, currIndex))
+                            }}
+                            onQuantityClick={() => {
+                                setShowQuantitySelector(true)
+                                setActiveLotIndex(currIndex)
+                            }}
                             quantityMode={trackQuantity ? QUANTITY_MODES.QUANTITY : QUANTITY_MODES.FRACTION}
                             name={`lots[${currIndex}]`}
                             lotId={lotId}
@@ -886,6 +900,102 @@ const HILModals = (props) => {
         )
     }
 
+    const renderQuantitySelector = () => {
+        const activeItem = selectedLots[activeLotIndex]
+        const {
+            lot: activeLot,
+            quantity: activeLotQuantity,
+            fraction: activeLotFraction
+        } = activeItem || {}
+
+        const {
+            _id: lotId,
+            process_id: processId = "",
+        } = activeLot
+
+        const maxValue = getBinQuantity(activeLot, stationId || loadStationId)
+
+        return (
+            <>
+                <styled.Header>
+                    <styled.ColumnContainer>
+                        <styled.HilMessage>{hilMessage}</styled.HilMessage>
+                        {/* Only Showing timers on load at the moment, will probably change in the future */}
+                        {
+                            !!hilTimers[item._id] && hilLoadUnload === 'load' &&
+                            <styled.HilTimer>{hilTimers[item._id]}</styled.HilTimer>
+                        }
+                    </styled.ColumnContainer>
+                </styled.Header>
+
+                <styled.LotSelectorContainer>
+                    <styled.LotsContainer style={{
+                        justifyContent: "space-around"
+                    }}>
+
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                alignSelf: "stretch"
+                            }}
+                        >
+                        <styled.SubtitleContainer>
+                            <styled.HilSubtitleMessage>Current Lot</styled.HilSubtitleMessage>
+                        </styled.SubtitleContainer>
+                        <LotContainer
+                            lotId={lotId}
+                            binId={stationId || loadStationId}
+                            processId={processId}
+                            containerStyle={{ marginBottom: "0.5rem", alignSelf: "stretch" }}
+                        />
+                        </div>
+
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center"
+                            }}
+                        >
+                            <styled.SubtitleContainer>
+                                <styled.HilSubtitleMessage>Enter Quantity</styled.HilSubtitleMessage>
+                            </styled.SubtitleContainer>
+
+                            <NumberField
+                                minValue={0}
+                                maxValue={maxValue}
+                                name={`lots[${activeLotIndex}].quantity`}
+                            />
+
+                            <styled.RowContainer style={{
+                                marginTop: "1rem"
+                            }}>
+                                <styled.InfoText>{`There are ${maxValue} items available in the current lot.`}</styled.InfoText>
+                            </styled.RowContainer>
+                        </div>
+
+                    </styled.LotsContainer>
+
+                    <styled.HilButtonContainer>
+
+                        <HilButton
+                            label={"Continue"}
+                            color={'#90eaa8'}
+                            iconName={'fas fa-check'}
+                            iconColor={'#1c933c'}
+                            textColor={'#1c933c'}
+                            onClick={() => {
+                                setShowQuantitySelector(false)
+                            }}
+                        />
+                    </styled.HilButtonContainer>
+                </styled.LotSelectorContainer>
+            </>
+        )
+    }
+
     /**
      * Conditioinally renders HIL Modal based on type.
      *
@@ -929,7 +1039,9 @@ const HILModals = (props) => {
 
                 {/*<styled.HilBorderContainer >*/}
 
-                {
+                {showQuantitySelector ?
+                    renderQuantitySelector()
+                    :
                     showLotSelector ?
                         renderLotSelector()
                         :

@@ -26,12 +26,15 @@ const NumberInput = ({
 						 inputCss,
 						 longPlusPressEvent,
 						 longMinusPressEvent,
+						 containerStyle,
 	inputChildren,
 	...props }) => {
 
 
 	return (
-		<styled.Container>
+		<styled.Container
+			containerStyle={containerStyle}
+		>
 			<styled.Button
 				color={'#ff1818'}
 				className='fas fa-minus-circle'

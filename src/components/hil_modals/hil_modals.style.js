@@ -165,6 +165,7 @@ export const LotsContainer = styled.div`
     align-items: center;
     margin: 1rem;
     border: 3px solid #cacaca;
+    justify-content: center;
     border-radius: 2rem;
     background: ${props => props.theme.bg.primary};
 `
@@ -230,6 +231,16 @@ export const HilSubtitleMessage = styled.h4`
     font-size: 1.6rem;
     text-align: center;
 `
+export const InfoText = styled.span`
+    display: flex;
+    font-family: ${props => props.theme.font.primary};
+    justify-content: center;
+    font-size: ${props => props.theme.fontSize.sz3};
+    color: ${props => props.theme.textColor};
+    text-align: center;
+`
+
+
 
 export const HilSubText = styled.span`
     font-family: ${props => props.theme.font.primary};
@@ -358,8 +369,8 @@ export const RealLotsContainer = styled.div`
     overflow-y: auto;
     overflow-x: hidden;
     align-self: stretch;
+    align-items: center;
     padding: 1rem;
-    
 `
 
 export const HeaderMainContent = styled.div`

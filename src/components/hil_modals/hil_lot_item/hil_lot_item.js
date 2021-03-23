@@ -18,6 +18,7 @@ const HilLotItem = (props) => {
 		onQuantityClick,
 		quantityMode,
 		fraction,
+		onMinusClick,
 	} = props
 
 	const [count, setCount] = useState(0)
@@ -26,6 +27,12 @@ const HilLotItem = (props) => {
 	console.log("fractionfraction",fraction)
 	return (
 		<styled.Container>
+			<styled.RemoveButton
+				color={"#ff0000"}
+				className={"fas fa-minus"}
+				onClick={onMinusClick}
+			/>
+
 			<LotContainer
 				onSetCount={(val) => setCount(val)}
 				lotId={lotId}
@@ -34,6 +41,7 @@ const HilLotItem = (props) => {
 				processId={processId}
 				containerStyle={{flex: 1, marginRight: "5rem"}}
 			/>
+
 			<styled.QuantityItem
 				onClick={onQuantityClick}
 			>
@@ -49,6 +57,7 @@ HilLotItem.propTypes = {
 	binId: PropTypes.string,
 	processId: PropTypes.string,
 	onQuantityClick: PropTypes.func,
+	onMinusClick: PropTypes.func,
 	quantityMode: PropTypes.string
 };
 
@@ -58,6 +67,7 @@ HilLotItem.defaultProps = {
 	binId: "",
 	processId: "",
 	onQuantityClick: () => {},
+	onMinusClick: () => {},
 	quantityMode: ""
 };
 

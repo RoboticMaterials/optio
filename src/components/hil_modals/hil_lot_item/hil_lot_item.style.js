@@ -1,10 +1,20 @@
 import styled, { css } from 'styled-components'
+import * as commonCss from "../../../common_css/common_css";
 
 export const Container = styled.div`
 	display: flex;
   align-items: center;
+  align-self: stretch;
+  
 `
 
+export const RemoveButton = styled.div`
+    ${commonCss.iconButtonCss};
+    ${commonCss.commonClickableIcon};
+    font-size: 3rem;
+    margin: 0 5rem 0 0;
+    padding: 0;
+`
 
 export const QuantityItem = styled.button`
   background: linear-gradient(0deg, rgb(215, 215, 215) 0%, rgb(152, 152, 152) 100%);
@@ -17,6 +27,7 @@ export const QuantityItem = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  
   
   
   
