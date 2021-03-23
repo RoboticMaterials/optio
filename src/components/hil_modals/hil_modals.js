@@ -703,6 +703,10 @@ const HILModals = (props) => {
 
                                     return (
                                         <styled.CardContainer>
+
+                                            {/*<styled.XContainer/>*/}
+                                            {/*<styled.Line1 className="line1"></styled.Line1>*/}
+                                            {/*<styled.Line2 className="line2"></styled.Line2>*/}
                                             <LotContainer
                                                 lotId={lotId}
                                                 binId={stationId || loadStationId}
@@ -719,7 +723,9 @@ const HILModals = (props) => {
                                                                 quantity: 0
                                                             }
                                                         ])
-                                                        // setShowLotSelector(false)
+                                                        setShowLotSelector(false)
+                                                        setShowQuantitySelector(true)
+                                                        setActiveLotIndex(selectedLots.length)
                                                     }
                                                     else {
                                                         setFieldValue(`lots`, immutableDelete(selectedLots, existingIndex))
@@ -903,7 +909,7 @@ const HILModals = (props) => {
     const renderQuantitySelector = () => {
         const activeItem = selectedLots[activeLotIndex]
         const {
-            lot: activeLot,
+            lot: activeLot = {},
             quantity: activeLotQuantity,
             fraction: activeLotFraction
         } = activeItem || {}
@@ -911,7 +917,7 @@ const HILModals = (props) => {
         const {
             _id: lotId,
             process_id: processId = "",
-        } = activeLot
+        } = activeLot || {}
 
         const maxValue = getBinQuantity(activeLot, stationId || loadStationId)
 

@@ -153,6 +153,7 @@ export const LotSelectorContainer = styled.div`
     overflow: hidden;
     
     background: ${props => props.theme.bg.secondary};
+    
 `
 
 export const LotsContainer = styled.div`
@@ -537,8 +538,65 @@ export const HilButtonQuantityText = styled.p`
     padding-top: .6rem;
 `
 
+export const XContainer = styled.div`
+    position: absolute;
+    left: 9px;
+    right: 9px;
+    top: 9px;
+    bottom: 9px;
+    z-index: 5;
+    background: 
+         linear-gradient(to top left,
+             rgba(0,0,0,0) 0%,
+             rgba(0,0,0,0) calc(50% - 0.8px),
+             rgba(0,0,0,1) 50%,
+             rgba(0,0,0,0) calc(50% + 0.8px),
+             rgba(0,0,0,0) 100%),
+         linear-gradient(to top right,
+             rgba(0,0,0,0) 0%,
+             rgba(0,0,0,0) calc(50% - 0.8px),
+             rgba(0,0,0,1) 50%,
+             rgba(0,0,0,0) calc(50% + 0.8px),
+             rgba(0,0,0,0) 100%);
+    
+    
+`
 export const CardContainer = styled.div`
     width: 80%;
+    position: relative;
+
+    
+     
+`
+
+export const Line1 = styled.div`
+    // width: 80%;
+    z-index: 1000;
+    
+     flex: 1;
+     width: 100%;
+    height: 100%;
+    border-bottom: 1px solid red;
+    -webkit-transform:
+        // translateY(-20px)
+        // translateX(5px)
+        rotate(27deg); 
+    position: absolute;
+    /* top: -20px; */
+`
+
+export const Line2 = styled.div`
+width: 100%;
+z-index: 1000;
+    height: 100%;
+    border-bottom: 1px solid green;
+    -webkit-transform:
+        // translateY(20px)
+        // translateX(5px)
+        rotate(-26deg);
+    position: absolute;
+    top: -33px;
+    left: -13px;
 `
 
 
