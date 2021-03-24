@@ -34,6 +34,9 @@ export const apiIPAddress = () => {
     } else {
         return 'http://' + window.location.hostname + ':5000/api/'
     }
+
+    // return 'http://demo.rm.studio:5000/api/'
+
 };
 
 store.subscribe(apiIPAddress);

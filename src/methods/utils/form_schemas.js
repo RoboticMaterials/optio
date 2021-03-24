@@ -355,7 +355,7 @@ export const signUpSchema = Yup.object().shape({
 
     confirmPassword: Yup.string()
         .oneOf([Yup.ref('password'), null], 'Passwords must match')
-        .required('Password confirm is required'),
+        .required('Password confirm is required')
 })
 
 export const signInSchema = Yup.object().shape({
@@ -367,6 +367,28 @@ export const signInSchema = Yup.object().shape({
 
 })
 
+export const emailSchema = Yup.object().shape({
+    email: Yup.string()
+        .email()
+        .required('Please enter an email')
+})
+
+export const passwordResetSchema = Yup.object().shape({
+    email: Yup.string()
+        .email()
+        .required('Please enter an email'),
+    verification: Yup.string()
+        .required('Please enter you verification code'),
+    password: Yup.string()
+        .required('Please enter a password')
+        .matches(
+            /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+            "Must Contain 8 characters, one uppercase, one lowercase, one number and one special character"
+        ),
+    checkPassword: Yup.string()
+        .oneOf([Yup.ref('password'), null], 'Passwords must match')
+        .required('Password confirm is required')
+})
 
 export const quantityOneSchema = Yup.object().shape({
     quantity: Yup.number()

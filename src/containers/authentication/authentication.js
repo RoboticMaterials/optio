@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import * as styled from './authentication.style'
 
+import { Link } from 'react-router-dom'
+
 // Import components
 import SignInUpPage from '../../components/sign_in_up_page/sign_in_up_page'
 
@@ -103,9 +105,7 @@ const Authentication = (props) => {
                 <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
             </styled.LogoContainer>
 
-            <styled.LogoWelcome> Wecome Back </styled.LogoWelcome>
-
-            <styled.CheckBoxWrapper>
+            {/* <styled.CheckBoxWrapper>
                 <styled.Button
                     onClick={() => setSignIn(true)}
                     selected={signIn}
@@ -121,7 +121,7 @@ const Authentication = (props) => {
                 >
                     Sign Up
                 </styled.Button>
-            </styled.CheckBoxWrapper>
+            </styled.CheckBoxWrapper> */}
 
             <styled.SignInUpContainer>
 
@@ -130,6 +130,24 @@ const Authentication = (props) => {
                     onChange={handleSignInChange} />
 
             </styled.SignInUpContainer>
+
+            <styled.LogoContainer>
+
+            <Link to="/forgot-password">Forgot Password? </Link>
+            
+            <Link to="/login" style={{
+                marginLeft: '.5rem', 
+                marginRight: '.5rem',
+                textDecoration: 'none',
+                cursor: 'default'
+                }}> • </Link>
+
+            <Link to="/about"> Create an account </Link>
+
+            </styled.LogoContainer>
+            
+
+            
         </styled.Container>
     )
 

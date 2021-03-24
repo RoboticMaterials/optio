@@ -78,15 +78,15 @@ export const CheckBoxWrapper = styled.div`
 export const Button = styled.button`
     cursor: 'pointer';
     width: 10rem;
-    display: flex;
+    border-radius: 0.5rem;
     background-color: #FF4B4B;
     color: white;
-    border-color: white;
+    display: flex;
     align-self: center;
     justify-content: center;
     padding: 0.5rem;
+    margin: 0.5rem;
     border: none;
+    box-shadow: 0 0.05rem 0.1rem 0rem #303030
 
-    box-shadow: ${props => !!props.selected ? 'none' : '0 0.05rem 0.1rem 0rem #303030'};
-    background-color: ${props => !!props.selected ? props.theme.bg.secondary : props.theme.bg.senary}
 `
