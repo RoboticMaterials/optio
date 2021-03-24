@@ -75,6 +75,7 @@ const DeviceEdit = (props) => {
 
         // Sets the type of device, unknown devic defaults to an RM logo while known devices use their own custom SVGs
         if (selectedDevice.device_model === 'MiR100') setDeviceType('cart')
+        console.log('QQQQ selected device', selectedDevice)
 
     }, [])
 
@@ -232,18 +233,8 @@ const DeviceEdit = (props) => {
                 <styled.RowContainer style={{ justifyContent: 'space-around', alignItems: 'center', marginBottom: '.5rem' }}>
                     <styled.Label schema={'devices'} style={{ marginBottom: '0rem', fontWeight: 'bold' }} >Charge Levels</styled.Label>
                     <Switch
-                        name={'chargeLevelSwitch'}
-                        onColor='red'
-                        checked={selectedDevice?.charge_level?.enabled}
-                        onChange={() => {
-                            dispatchSetSelectedDevice({
-                                ...selectedDevice,
-                                charge_level: {
-                                    ...selectedDevice.charge_level,
-                                    enabled: !selectedDevice?.charge_level?.enabled
-                                }
-                            })
-                        }}
+                        name={'charge_level.chargeEnabled'}
+                        schema={'devices'}
                     />
                 </styled.RowContainer>
                 <styled.RowContainer style={{ justifyContent: 'space-between' }}>
@@ -252,7 +243,7 @@ const DeviceEdit = (props) => {
                             Min Level
                     </styled.Label>
                         <TextField
-                            name={"minLevel"}
+                            name={"charge_level.min"}
                             placeholder='Min %'
                             InputComponent={Textbox}
                             ContentContainer={styled.RowContainer}
@@ -268,7 +259,7 @@ const DeviceEdit = (props) => {
                             Max Level
                     </styled.Label>
                         <TextField
-                            name={"maxLevel"}
+                            name={"charge_level.max"}
                             placeholder='Max %'
                             InputComponent={Textbox}
                             ContentContainer={styled.RowContainer}
@@ -325,29 +316,11 @@ const DeviceEdit = (props) => {
     */
     const onSaveDevice = async (values) => {
         console.log('QQQQ values', values)
-        // Handle Values Passed in through Formik
-        if (Object.values(values).length > 0) {
-            let deviceCopy = deepCopy(selectedDevice)
 
-            if (!!values.schedules) {
-                const schedules = values.schedules
+        let deviceCopy = deepCopy(selectedDevice)
 
-                schedules.forEach((schedule, ind) => {
-                    let matchingSchedule = deepCopy(Object.values(selectedDevice.schedules)[ind])
-                    // matchingSchedule = {
-                    //     ...matchingSchedule,
-                    //     ...schedule
-                    // }
-                    onUpdateSchedule(matchingSchedule.id, schedule)
 
-                })
-            }
-
-        }
-
-        console.log('QQQQ device', selectedDevice)
-
-        return
+        // return
 
         // If a AMR, then just put device, no need to save locaiton since it does not need one
         if (selectedDevice.device_model === 'MiR100') {
@@ -421,14 +394,34 @@ const DeviceEdit = (props) => {
                 await dispatchPutDashboard(dashboard, dashboard._id.$oid)
             }
 
+            // Handle Values Passed in through Formik
+            if (Object.values(values).length > 0) {
+                console.log('QQQQ values', values)
+                deviceCopy = {
+                    ...deviceCopy,
+                    ...values
+                }
+            }
 
-
-            await dispatchPutDevice(selectedDevice, selectedDevice._id)
+            await dispatchPutDevice(deviceCopy, deviceCopy._id)
         }
 
 
         dispatchSetSelectedStation(null)
         dispatchSetSelectedDevice(null)
+    }
+
+    const onInitialValues = () => {
+        let initialValues = {}
+        if (!!selectedDevice.schedules) {
+            initialValues['schedules'] = Object.values(selectedDevice.schedules)
+
+        }
+        if (!!selectedDevice.charge_level) {
+            initialValues['charge_level'] = selectedDevice.charge_level
+
+        } 
+        return initialValues
     }
 
     return (
@@ -447,15 +440,13 @@ const DeviceEdit = (props) => {
             />
 
             <Formik
-                initialValues={{
-
-                }}
+                initialValues={onInitialValues()}
 
                 // validation control
                 validationSchema={deviceSchema}
                 validateOnChange={true}
-                validateOnMount={true}
-                validateOnBlur={true}
+                validateOnMount={false}
+                validateOnBlur={false}
 
                 onSubmit={async (values, { setSubmitting, setTouched, validateForm }) => {
                     validateForm()
@@ -505,8 +496,7 @@ const DeviceEdit = (props) => {
 
                             }
 
-
-                            <Button schema={'devices'} style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: '2rem', boxSizing: 'border-box' }}
+                            <Button type={'button'} schema={'devices'} style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: '2rem', boxSizing: 'border-box' }}
                                 onClick={() => {
                                     onEditDeviceDashboard()
                                 }}

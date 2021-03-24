@@ -33,8 +33,6 @@ const DeviceSchedule = (props) => {
     const {
     } = props
 
-    const { setFieldValue, setFieldTouched } = useFormikContext();
-
     const dispatch = useDispatch()
     const dispatchSetSelectedDevice = (selectedDevice) => dispatch(setSelectedDevice(selectedDevice))
 
@@ -94,6 +92,7 @@ const DeviceSchedule = (props) => {
 
                 <Button
                     schema={'devices'}
+                    type={'button'}
                     style={{ display: 'inline-block', float: 'right', maxWidth: '25rem', boxSizing: 'border-box' }}
                     onClick={() => {
                         onAddSchedule()
@@ -115,7 +114,8 @@ const DeviceSchedule = (props) => {
                     <DayOfTheWeekButton
                         name={`schedules.${ind1}.${day}`}
                         key={`day.${ind2}`}
-                        checked={selectedDevice.schedules[id].days_on.includes(day)}
+                        day={day}
+                        index={ind1}
                     />
                 )
             })
@@ -146,12 +146,8 @@ const DeviceSchedule = (props) => {
                                     />
                                     <Switch
                                         name={`schedules.${ind}.enabled`}
-                                        onColor='red'
-                                        checked={schedule.enabled}
-                                        onChange={() => {
-                                            const enabled = { enabled: !schedule.enabled }
-                                            onUpdateSchedule(schedule.id, enabled)
-                                        }}
+                                        schema={'devices'}
+                                        // onColor='red'
                                     />
                                 </styled.RowContainer>
 
@@ -163,12 +159,15 @@ const DeviceSchedule = (props) => {
                                     <DropDownSearchField
                                         name={`schedules.${ind}.position`}
                                         containerSyle={{ flex: '9', marginRight: '1rem' }}
+                                        placeholder="Select Position"
                                         pattern={null}
                                         labelField={'name'}
-                                        options={Object.values(positions)}
                                         valueField={"_id"}
+                                        options={Object.values(positions)}
+                                        mapInput={(val) => {
+                                            return [positions[val]]
+                                        }}
                                         mapOutput={(val) => {
-                                            console.log('QQQQ val', val[0]._id)
                                             return val[0]._id
                                         }}
                                     />
@@ -201,9 +200,13 @@ const DeviceSchedule = (props) => {
                                 </styled.RowContainer>
                                 <Button
                                     schema={'devices'}
+                                    type={'button'}
                                     style={{ display: 'inline-block', float: 'right', maxWidth: '25rem', boxSizing: 'border-box' }}
                                     onClick={() => {
                                         onDeleteSchedule(schedule)
+                                        // Removes the values from formik. 
+                                        // Otherwise you would delete and schedule and then when re-adding a new one, it owuld use the old valus
+                                        arrayHelpers.remove(ind)
                                     }}
                                 >
                                     Delete Schedule
@@ -216,88 +219,6 @@ const DeviceSchedule = (props) => {
                 )}
             />
         )
-
-        return Object.values(selectedDevice.schedules).map((schedule, ind) => {
-            return (
-                <styled.ScheduleContainer>
-
-                    <styled.RowContainer>
-                        <TextField
-                            name={"scheduleName"}
-                            placeholder='Schedule Name'
-                            InputComponent={Textbox}
-                            ContentContainer={styled.RowContainer}
-                            style={{
-                                'marginBottom': '.5rem',
-                                'marginTop': '0',
-                                'width': '10rem',
-                            }}
-                        />
-                        <Switch
-                            name={'chargeLevelSwitch'}
-                            onColor='red'
-                            checked={schedule.enabled}
-                            onChange={() => {
-                                const enabled = { enabled: !schedule.enabled }
-                                onUpdateSchedule(schedule.id, enabled)
-                            }}
-                        />
-                    </styled.RowContainer>
-
-                    <styled.RowContainer style={{ margin: '.2rem' }}>
-                        {renderDaySelector(schedule.id)}
-                    </styled.RowContainer>
-
-                    <styled.RowContainer style={{ marginTop: '.5rem' }}>
-                        <DropDownSearchField
-                            containerSyle={{ flex: '9', marginRight: '1rem' }}
-                            pattern={null}
-                            name="moveLocation"
-                            labelField={'name'}
-                            options={Object.values(positions)}
-                            valueField={"_id"}
-                        />
-                        <TimePickerField
-                            mapInput={
-                                (value) => {
-                                    if (value) {
-                                        const splitVal = value.split(':')
-                                        return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
-                                    }
-                                }
-                            }
-                            mapOutput={(value) => {
-                                return convert12hto24h(value.format('hh:mm a'))
-                            }}
-                            name={'endOfShift'}
-                            containerStyle={{ width: '6rem' }}
-                            style={{ flex: '1', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                            showHour={true}
-                            showSecond={false}
-                            className="xxx"
-                            use12Hours
-                            format={'hh:mm a'}
-                            autocomplete={"off"}
-                            allowEmpty={false}
-                            defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                            defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                        />
-
-                    </styled.RowContainer>
-                    <Button
-                        schema={'devices'}
-                        style={{ display: 'inline-block', float: 'right', maxWidth: '25rem', boxSizing: 'border-box' }}
-                        onClick={() => {
-                            onDeleteSchedule(schedule)
-                        }}
-                    >
-                        Delete Schedule
-                    </Button>
-
-                </styled.ScheduleContainer>
-
-            )
-        })
     }
 
     return (

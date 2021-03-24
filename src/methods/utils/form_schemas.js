@@ -723,26 +723,34 @@ export const throughputSchema = Yup.object().shape({
 
 export const deviceSchema = Yup.object().shape({
 
-    minLevel: Yup.string()
-        // Only validate when true
-        .when('chargeLevelSwitch', {
-            is: true,
-            then: Yup.string()
-                .required('Required')
-        }),
-    maxLevel: Yup.string()
-        // Only validate when true
-        .when('chargeLevelSwitch', {
-            is: true,
-            then: Yup.string()
-                .required('Required')
-        }),
-
     schedules: Yup.array()
         .of(
             Yup.object().shape({
                 name: Yup.string().required('Required'),
+                position: Yup.string().required('Required'),
+                time: Yup.string().required('Required')
             })
-        )
-        // .required('Must have friends')
+        ),
+
+    charge_level: Yup.object().shape({
+        chargeEnabled: Yup.bool(),
+
+        min: Yup.number()
+            // Only validate when true
+            .when('chargeEnabled', {
+                is: true,
+                then: Yup.number()
+                    .required('Required')
+                    .nullable(),
+            }),
+        max: Yup.number()
+            // Only validate when true
+            .when('chargeEnabled', {
+                is: true,
+                then: Yup.number()
+                    .required('Required')
+                    .nullable(),
+            }),
+
+    }),
 })

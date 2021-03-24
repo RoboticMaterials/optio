@@ -4,34 +4,59 @@ import { FieldArray, useField, useFormikContext } from 'formik'
 // Import style
 import * as styled from './device_schedule.style'
 
+import { getMessageFromError } from "../../../../../../methods/utils/form_utils";
+
 const DayOfTheWeekButton = (props) => {
 
     const {
-        checked,
         day,
+        onChange,
+        index,
     } = props
 
     const { setFieldValue, setFieldTouched } = useFormikContext();
+    const [field, meta] = useField(props);
 
+    const {
+        value: fieldValue,
+        name: fieldName
+    } = field
+
+    const {
+        touched,
+        error
+    } = meta
+
+    const daysOnField = useField(`schedules.${index}.days_on`)
+    const daysOnValue = daysOnField[0].value
+
+    const hasError = touched && error;
+    const errorMessage = getMessageFromError(error);
 
     return (
         <styled.DayOfTheWeekContainer
-            checked={checked}
+            checked={!!daysOnValue && daysOnValue.includes(day)}
             onClick={() => {
-                let newDaysOn = deepCopy(selectedDevice.schedules[id].days_on)
 
-                // If day is in days array, remove
-                if (newDaysOn.includes(day)) {
-                    const index = newDaysOn.indexOf(day)
-                    newDaysOn.splice(index, 1)
+                if (!touched) setFieldTouched(fieldName, true)
+
+                // If daysOnValue is falsy, then add the first day
+                if (!daysOnValue) {
+                    setFieldValue(`schedules.${index}.days_on`, [day])
+
                 }
-                // Else add
+                // If it includes the day, then remove
+                else if (daysOnValue.includes(day)) {
+                    const ind = daysOnValue.indexOf(day)
+                    daysOnValue.splice(ind, 1)
+                    setFieldValue(`schedules.${index}.days_on`, daysOnValue)
+                }
+                // Else add the day
                 else {
-                    newDaysOn.push(day)
+                    setFieldValue(`schedules.${index}.days_on`, [...daysOnValue, day])
                 }
+                onChange && onChange(day)
 
-                newDaysOn = { days_on: newDaysOn }
-                onUpdateSchedule(id, newDaysOn)
             }}
         >
             <styled.DayOfTheWeekText>{day}</styled.DayOfTheWeekText>
