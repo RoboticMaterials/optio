@@ -8,7 +8,8 @@ import DashboardsPage from "../widgets/widget_pages/dashboards_page/dashboards_p
 import Settings from "../side_bar/content/settings/settings";
 import LocationList from './location_list/location_list'
 import BounceButton from "../basic/bounce_button/bounce_button";
-
+import ClickNHold from 'react-click-n-hold'
+import ConfirmDeleteModal from '../basic/modals/confirm_delete_modal/confirm_delete_modal'
 // Import hooks
 import useWindowSize from '../../hooks/useWindowSize'
 
@@ -66,6 +67,7 @@ const ListView = (props) => {
 
     const [showDashboards, setShowDashboards] = useState(false)
     const [showSettings, setShowSettings] = useState(false)
+    const [confirmExitModal, setConfirmExitModal] = useState(false);
 
     const CURRENT_SCREEN = (showDashboards) ? SCREENS.DASHBOARDS :
         showSettings ? SCREENS.SETTINGS : SCREENS.LOCATIONS
@@ -154,14 +156,31 @@ const ListView = (props) => {
 
     return (
         <styled.Container>
+
+            <ConfirmDeleteModal
+                isOpen={!!confirmExitModal}
+                title={"Are you sure you want to leave this page?"}
+                button_1_text={"Yes"}
+                handleOnClick1={() => {
+                  setShowDashboards(false)
+                  history.push('/locations')
+                  setConfirmExitModal(null)
+                }}
+                button_2_text={"No"}
+                handleOnClick2={() => setConfirmExitModal(null)}
+                handleClose={() => setConfirmExitModal(null)}
+            />
+
             <styled.Header>
                 {(showDashboards) ?
+                  <ClickNHold
+                    time = {2}
+                    onClickNHold={() => {
+                      setConfirmExitModal(true)
+                    }}
+                  >
                     <BounceButton
                         color={"black"}
-                        onClick={() => {
-                            setShowDashboards(false)
-                            history.push('/locations')
-                        }}
                         containerStyle={{
                             width: "3rem",
                             height: "3rem",
@@ -172,23 +191,26 @@ const ListView = (props) => {
                             className={"fa fa-times"}
                         />
                     </BounceButton>
+                    </ClickNHold>
+
                     :
-                    <BounceButton
-                        color={"black"}
-                        onClick={() => {
-                            setShowSettings(!showSettings)
-                        }}
-                        active={showSettings}
-                        containerStyle={{
-                            width: "3rem",
-                            height: "3rem",
-                            position: "relative"
-                        }}
-                    >
+                      <BounceButton
+                          color={"black"}
+                          onClick={() => {
+                             setShowSettings(!showSettings)
+                          }}
+                          active={showSettings}
+                          containerStyle={{
+                              width: "3rem",
+                              height: "3rem",
+                              position: "relative"
+                          }}
+                      >
                         <styled.Icon
                             className={!showSettings ? "fa fa-cog" : "fa fa-times"}
                         />
-                    </BounceButton>
+                      </BounceButton>
+
                 }
                 <styled.Title schema={CURRENT_SCREEN.schema}>{title}</styled.Title>
                 {handleTaskQueueStatus()}
