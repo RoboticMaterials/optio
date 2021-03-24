@@ -363,6 +363,7 @@ const TaskField = (props) => {
     const onSelectObject = () => {
       dispatchSetRouteObject(selectedObject)
       setShowObjectSelector(false)
+      dispatchPageDataChanged(true)
       setFieldValue(fieldParent ? `${fieldParent}.route_object` : "route_object", selectedObject, false)
     }
 
