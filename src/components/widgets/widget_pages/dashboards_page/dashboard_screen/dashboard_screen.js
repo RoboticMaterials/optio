@@ -157,7 +157,7 @@ const DashboardScreen = (props) => {
                 }
             }
             // Dont add duplicate buttons, delete if they're are any
-            else if (task_id && taskIds.includes(task_id)) {
+            else if (task_id && task_id !== 'custom_task' && taskIds.includes(task_id)) {
                 const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
                 if (index !== -1) {
                     updatedButtons = immutableDelete(updatedButtons, index)
