@@ -304,13 +304,46 @@ const DeviceEdit = (props) => {
 
     }
 
+    const onUpdateSchedule = (id, attr) => {
+        console.log('QQQQ updating this schedule', id, attr)
+
+        dispatchSetSelectedDevice({
+            ...selectedDevice,
+            schedules: {
+                ...selectedDevice.schedules,
+                [id]: {
+                    ...selectedDevice.schedules[id],
+                    ...attr
+                }
+            }
+        })
+    }
+
     /**
      * This function is called when the save button is pressed.
     * If its a Mir100 and the idle location has changed, then handle the associated device dashboard
     */
     const onSaveDevice = async (values) => {
+        console.log('QQQQ values', values)
+        // Handle Values Passed in through Formik
+        if (!!values) {
+            let deviceCopy = deepCopy(selectedDevice)
+            const schedules = values.schedules
 
-        // return console.log('QQQQ values', values)
+            schedules.forEach((schedule, ind) => {
+                let matchingSchedule = deepCopy(Object.values(selectedDevice.schedules)[ind])
+                // matchingSchedule = {
+                //     ...matchingSchedule,
+                //     ...schedule
+                // }
+                onUpdateSchedule(matchingSchedule.id, schedule)
+
+            })
+        }
+
+        console.log('QQQQ device', selectedDevice)
+
+        return 
 
         // If a AMR, then just put device, no need to save locaiton since it does not need one
         if (selectedDevice.device_model === 'MiR100') {
@@ -384,15 +417,7 @@ const DeviceEdit = (props) => {
                 await dispatchPutDashboard(dashboard, dashboard._id.$oid)
             }
 
-            // Handle Values Passed in through Formik
-            if (!!values) {
-                const schedules = values.schedules
 
-                schedules.forEach((schedule, ind) => {
-                    const matchingSchedule = deepCopy(Object.values(selectedDevice.schedules)[ind])
-
-                })
-            }
 
             await dispatchPutDevice(selectedDevice, selectedDevice._id)
         }
