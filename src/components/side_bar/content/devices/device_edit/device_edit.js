@@ -326,24 +326,28 @@ const DeviceEdit = (props) => {
     const onSaveDevice = async (values) => {
         console.log('QQQQ values', values)
         // Handle Values Passed in through Formik
-        if (!!values) {
+        if (Object.values(values).length > 0) {
             let deviceCopy = deepCopy(selectedDevice)
-            const schedules = values.schedules
 
-            schedules.forEach((schedule, ind) => {
-                let matchingSchedule = deepCopy(Object.values(selectedDevice.schedules)[ind])
-                // matchingSchedule = {
-                //     ...matchingSchedule,
-                //     ...schedule
-                // }
-                onUpdateSchedule(matchingSchedule.id, schedule)
+            if (!!values.schedules) {
+                const schedules = values.schedules
 
-            })
+                schedules.forEach((schedule, ind) => {
+                    let matchingSchedule = deepCopy(Object.values(selectedDevice.schedules)[ind])
+                    // matchingSchedule = {
+                    //     ...matchingSchedule,
+                    //     ...schedule
+                    // }
+                    onUpdateSchedule(matchingSchedule.id, schedule)
+
+                })
+            }
+
         }
 
         console.log('QQQQ device', selectedDevice)
 
-        return 
+        return
 
         // If a AMR, then just put device, no need to save locaiton since it does not need one
         if (selectedDevice.device_model === 'MiR100') {
