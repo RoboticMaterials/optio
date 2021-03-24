@@ -734,7 +734,6 @@ export const deviceSchema = Yup.object().shape({
 
     charge_level: Yup.object().shape({
         chargeEnabled: Yup.bool(),
-
         min: Yup.number()
             // Only validate when true
             .when('chargeEnabled', {

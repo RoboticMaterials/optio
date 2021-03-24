@@ -59,21 +59,6 @@ const DeviceSchedule = (props) => {
         })
     }
 
-    const onUpdateSchedule = (id, attr) => {
-        console.log('QQQQ updating this schedule', id, attr)
-
-        dispatchSetSelectedDevice({
-            ...selectedDevice,
-            schedules: {
-                ...selectedDevice.schedules,
-                [id]: {
-                    ...selectedDevice.schedules[id],
-                    ...attr
-                }
-            }
-        })
-    }
-
     const onDeleteSchedule = (schedule) => {
         let schedulesCopy = deepCopy(selectedDevice.schedules)
         delete schedulesCopy[schedule.id]

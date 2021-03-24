@@ -295,32 +295,13 @@ const DeviceEdit = (props) => {
 
     }
 
-    const onUpdateSchedule = (id, attr) => {
-        console.log('QQQQ updating this schedule', id, attr)
-
-        dispatchSetSelectedDevice({
-            ...selectedDevice,
-            schedules: {
-                ...selectedDevice.schedules,
-                [id]: {
-                    ...selectedDevice.schedules[id],
-                    ...attr
-                }
-            }
-        })
-    }
-
     /**
      * This function is called when the save button is pressed.
     * If its a Mir100 and the idle location has changed, then handle the associated device dashboard
     */
     const onSaveDevice = async (values) => {
-        console.log('QQQQ values', values)
 
         let deviceCopy = deepCopy(selectedDevice)
-
-
-        // return
 
         // If a AMR, then just put device, no need to save locaiton since it does not need one
         if (selectedDevice.device_model === 'MiR100') {
@@ -396,10 +377,23 @@ const DeviceEdit = (props) => {
 
             // Handle Values Passed in through Formik
             if (Object.values(values).length > 0) {
-                console.log('QQQQ values', values)
+                let updatedSchedules = {}
+
+                if (!!deviceCopy.schedules) {
+                    Object.values(deviceCopy.schedules).forEach((schedule, ind) => {
+                        updatedSchedules[schedule.id] = {
+                            ...schedule,
+                            ...values['schedules'][ind]
+                        }
+                    })
+
+                    updatedSchedules = { schedules: updatedSchedules }
+                }
+
                 deviceCopy = {
                     ...deviceCopy,
-                    ...values
+                    ...values,
+                    ...updatedSchedules,
                 }
             }
 
@@ -420,7 +414,8 @@ const DeviceEdit = (props) => {
         if (!!selectedDevice.charge_level) {
             initialValues['charge_level'] = selectedDevice.charge_level
 
-        } 
+        }
+
         return initialValues
     }
 
@@ -463,7 +458,6 @@ const DeviceEdit = (props) => {
                         values,
                         errors,
                     } = formikProps
-                    // console.log('QQQQ errors', errors)
                     return (
                         <Form>
 
