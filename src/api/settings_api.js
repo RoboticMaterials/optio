@@ -38,14 +38,19 @@ export async function getSettings() {
 
         let settings = res.data.SettingsByOrgId.items[0]
 
-        let GQLdata = {
-            ...settings,
-            loggers: JSON.parse(settings.loggers),
-            shiftDetails: JSON.parse(settings.shiftDetails),
-            timezone: JSON.parse(settings.timezone)
+        if(settings !== undefined){
+
+            let GQLdata = {
+                ...settings,
+                loggers: JSON.parse(settings.loggers),
+                shiftDetails: JSON.parse(settings.shiftDetails),
+                timezone: JSON.parse(settings.timezone)
+            }
+            
+            return GQLdata;
+        }else{
+            return null
         }
-        
-        return GQLdata;
     } catch (error) {
         // Error 😨
         errorLog(error)
@@ -80,22 +85,33 @@ export async function postSettings(settings) {
 export async function putSettings(settings) {
     try {
 
-        const input = {
-            ...settings,
-            loggers: JSON.stringify(settings.loggers),
-            shiftDetails: JSON.stringify(settings.shiftDetails),
-            timezone: JSON.stringify(settings.timezone)
+        const userOrgId = await getUserOrgId()
+
+        if(settings.id){
+
+            const input = {
+                ...settings,
+                loggers: JSON.stringify(settings.loggers),
+                shiftDetails: JSON.stringify(settings.shiftDetails),
+                timezone: JSON.stringify(settings.timezone)
+            }
+
+            delete input.createdAt
+            delete input.updatedAt
+
+            let dataJson = await API.graphql({
+                query: updateSettings,
+                variables: { input: input }
+            })
+
+            return dataJson.data.createTask;
+
+        }else{
+            postSettings({
+                ...settings,
+                organizationId: userOrgId
+            })
         }
-
-        delete input.createdAt
-        delete input.updatedAt
-
-        let dataJson = await API.graphql({
-            query: updateSettings,
-            variables: { input: input }
-        })
-
-        return dataJson.data.createTask;
     } catch (error) {
         // Error 😨
         errorLog(error)

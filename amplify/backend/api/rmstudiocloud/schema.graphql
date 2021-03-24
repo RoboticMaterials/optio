@@ -255,7 +255,7 @@ type Status
 }
 
 type TaskQueue 
-  @model(queries: null)
+  @model
   @auth(rules: [{ allow: private }])
   @key(name: "TaskQueueByOrgId", fields: ["organizationId"], queryField: "TaskQueueByOrgId" )
 {
@@ -270,6 +270,11 @@ type TaskQueue
   owner: String
   task_id: String!
   custom_task: AWSJSON
+  dashboard: String
+  showModal: Boolean
+  hil_response: Boolean
+  quantity: Int
+  lot_id: String
 }
 
 type Dashboard 
@@ -313,8 +318,8 @@ type Subscription {
     onDeltaStatus(id: ID): Status
       @aws_subscribe(mutations: ["createStatus","updateStatus","deleteStatus"])
 
-    onDeltaTasQueue(id: ID): TaskQueue
-      @aws_subscribe(mutations: ["createTaskQueue","updateTaskQueue","deleteTaskQueue"])
+    onDeltaTaskQueue(id: ID): TaskQueue
+      @aws_subscribe(mutations: ["createTaskQueue"])
 }
 
 # Analysis Queries

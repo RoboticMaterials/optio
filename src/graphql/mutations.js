@@ -825,6 +825,11 @@ export const createTaskQueue = /* GraphQL */ `
       owner
       task_id
       custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lot_id
       createdAt
       updatedAt
     }
@@ -844,6 +849,11 @@ export const updateTaskQueue = /* GraphQL */ `
       owner
       task_id
       custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lot_id
       createdAt
       updatedAt
     }
@@ -863,6 +873,11 @@ export const deleteTaskQueue = /* GraphQL */ `
       owner
       task_id
       custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lot_id
       createdAt
       updatedAt
     }

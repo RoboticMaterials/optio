@@ -124,7 +124,6 @@ const ApiContainer = (props) => {
         if(!!mapViewEnabled){
 
             loadMapData().then((value) => {
-                // console.log(value[0]._cleanup);
 
                 stationSub = value[0]
 
@@ -390,6 +389,15 @@ const ApiContainer = (props) => {
         status, taskQueue, devices
     */
 
+    // Handle task being created
+    const handleTaskCreation = (task) => {
+        console.log(task);
+
+        // do all the thinking here
+        
+        
+    }
+
     const loadCriticalData = async () => {
 
         // took this out so the loop doesnt run anymore
@@ -411,25 +419,28 @@ const ApiContainer = (props) => {
 
         // Subscribe to taskQueue
         API.graphql(
-            graphqlOperation(subscriptions.onDeltaTask)
+            graphqlOperation(subscriptions.onDeltaTaskQueue)
         ).subscribe({
-            next: () => { 
-                // run get stations
-                onGetProcesses()
+            next: ({ provider, value }) => {  
+                
+                handleTaskCreation(value.data.onDeltaTaskQueue)
+                // run get queue
+                onGetTaskQueue()
         },
             error: error => console.warn(error)
         });
 
         // Subscribe to Devices
-        API.graphql(
-            graphqlOperation(subscriptions.onDeltaDevice)
-        ).subscribe({
-            next: () => { 
-                // run get stations
-                onGetProcesses()
-        },
-            error: error => console.warn(error)
-        });
+        // Taking this out for now because sevices will be added later
+        // API.graphql(
+        //     graphqlOperation(subscriptions.onDeltaDevice)
+        // ).subscribe({
+        //     next: () => { 
+        //         // run get stations
+        //         onGetProcesses()
+        // },
+        //     error: error => console.warn(error)
+        // });
 
     }
 

@@ -91,6 +91,55 @@ export const listLotTemplates = /* GraphQL */ `
     }
   }
 `;
+export const getTaskQueue = /* GraphQL */ `
+  query GetTaskQueue($id: ID!) {
+    getTaskQueue(id: $id) {
+      id
+      _id
+      organizationId
+      device_type
+      mission_status
+      owner
+      task_id
+      custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lot_id
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listTaskQueues = /* GraphQL */ `
+  query ListTaskQueues(
+    $filter: ModelTaskQueueFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listTaskQueues(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        _id
+        organizationId
+        device_type
+        mission_status
+        owner
+        task_id
+        custom_task
+        dashboard
+        showModal
+        hil_response
+        quantity
+        lot_id
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
 export const getDashboard = /* GraphQL */ `
   query GetDashboard($id: ID!) {
     getDashboard(id: $id) {
@@ -635,6 +684,11 @@ export const taskQueueByOrgId = /* GraphQL */ `
         owner
         task_id
         custom_task
+        dashboard
+        showModal
+        hil_response
+        quantity
+        lot_id
         createdAt
         updatedAt
       }

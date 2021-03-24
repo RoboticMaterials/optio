@@ -77,6 +77,8 @@ const HILModals = (props) => {
     const dispatchLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
     const dispatchSetShowModalId = (id) => dispatch(setShowModalId(id))
 
+    const dispatchDeleteTaskQueueItem = async (id) => await dispatch(deleteTaskQueueItem(id))
+
     const hilTimers = useSelector(state => { return state.taskQueueReducer.hilTimers })
     const processes = useSelector(state => { return state.processesReducer.processes }) || {}
     const tasks = useSelector(state => { return state.tasksReducer.tasks })
@@ -475,7 +477,12 @@ const HILModals = (props) => {
         }
         delete newItem._id
 
-        await putTaskQueueItem(newItem, taskQueueID)
+        if(newItem.device_type === 'human'){
+            await dispatchDeleteTaskQueueItem(newItem.id)
+        }else{
+            await putTaskQueueItem(newItem, taskQueueID)
+        }
+        
         dispatchTaskQueueItemClicked('')
     }
 

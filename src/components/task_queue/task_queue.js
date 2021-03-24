@@ -34,8 +34,6 @@ const TaskQueueMenu = (props) => {
     const onDeleteTaskQueueAll = () => dispatch(deleteTaskQueueAll()) // Clear Task Q
     const onGetStatus = (props) => dispatch(getStatus(props))	// fetch update to status
 
-
-
     const taskQueue = useSelector(state => {
 
         const taskQueue = state.taskQueueReducer.taskQueue

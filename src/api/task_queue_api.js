@@ -44,9 +44,17 @@ export async function getTaskQueue() {
 
 export async function postTaskQueue(taskQueueItem) {
     try {
+        const orgId = await getUserOrgId()
+
+        const input = {
+            ...taskQueueItem,
+            organizationId: orgId,
+            id: taskQueueItem._id
+        }
+
         const dataJson = await API.graphql({
             query: createTaskQueue,
-            variables: { input: taskQueueItem }
+            variables: { input: input }
           })
           
         return dataJson.data.createTaskQueue;
@@ -77,6 +85,7 @@ export async function deleteTaskQueueAll() {
 
 
 export async function deleteTaskQueueItem(id) {
+
     try {
 
         await API.graphql({
@@ -94,6 +103,9 @@ export async function deleteTaskQueueItem(id) {
 
 export async function putTaskQueueItem(item, ID) {
     try {
+
+        delete item.createdAt
+        delete item.updatedAt
 
         const dataJson = await API.graphql({
             query: updateTaskQueue,

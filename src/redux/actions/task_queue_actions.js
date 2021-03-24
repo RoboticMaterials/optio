@@ -151,7 +151,6 @@ export const deleteTaskQueueAll = () => {
 // ******************************
 export const deleteTaskQueueItem = (id) => {
     return async dispatch => {
-
         function onStart() {
             dispatch({ type: DELETE_ + TASK_QUEUE_ITEM + _STARTED });
         }

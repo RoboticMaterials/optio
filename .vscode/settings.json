@@ -8,8 +8,8 @@
     "amplify/backend/amplify-meta.json": true,
     "amplify/backend/awscloudformation": true
   },
-    "ros.distro": "melodic",
-    "python.autoComplete.extraPaths": [
-        "/opt/ros/melodic/lib/python2.7/dist-packages"
-    ]
+  "ros.distro": "melodic",
+  "python.autoComplete.extraPaths": [
+    "/opt/ros/melodic/lib/python2.7/dist-packages"
+  ]
 }

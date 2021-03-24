@@ -159,9 +159,9 @@ export const onDeltaStatus = /* GraphQL */ `
     }
   }
 `;
-export const onDeltaTasQueue = /* GraphQL */ `
-  subscription OnDeltaTasQueue($id: ID) {
-    onDeltaTasQueue(id: $id) {
+export const onDeltaTaskQueue = /* GraphQL */ `
+  subscription OnDeltaTaskQueue($id: ID) {
+    onDeltaTaskQueue(id: $id) {
       id
       _id
       organizationId
@@ -170,6 +170,11 @@ export const onDeltaTasQueue = /* GraphQL */ `
       owner
       task_id
       custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lot_id
       createdAt
       updatedAt
     }
@@ -888,6 +893,11 @@ export const onCreateTaskQueue = /* GraphQL */ `
       owner
       task_id
       custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lot_id
       createdAt
       updatedAt
     }
@@ -904,6 +914,11 @@ export const onUpdateTaskQueue = /* GraphQL */ `
       owner
       task_id
       custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lot_id
       createdAt
       updatedAt
     }
@@ -920,6 +935,11 @@ export const onDeleteTaskQueue = /* GraphQL */ `
       owner
       task_id
       custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lot_id
       createdAt
       updatedAt
     }

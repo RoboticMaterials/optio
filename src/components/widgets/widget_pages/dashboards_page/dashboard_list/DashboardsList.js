@@ -70,8 +70,6 @@ const DashboardsList = (props) => {
     // redux state
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
 
-    console.log(dashboards);
-
     const stations = useSelector(state => state.stationsReducer.stations)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const devices = useSelector(state => state.devicesReducer.devices)
