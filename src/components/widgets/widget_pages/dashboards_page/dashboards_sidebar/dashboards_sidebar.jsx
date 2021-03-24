@@ -123,14 +123,6 @@ const DashboardsSidebar = (props) => {
     const [availableReportButtons, setAvailableReportButtons] = useState([])
 
     useEffect(() => {
-        console.log('QQQQ available buttons', availableButtons)
-        console.log('QQQQ available tasks', availableTasks)
-        return () => {
-            
-        }
-    }, [availableButtons, availableTasks])
-
-    useEffect(() => {
         setFinishEnabled(getIsFinishEnabled(availableFinishProcesses))
     }, [availableFinishProcesses])
 
