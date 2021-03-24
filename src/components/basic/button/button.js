@@ -13,6 +13,7 @@ const Button = (props) => {
       tertiary,
       children,
       label,
+      type,
     } = props
 
 
@@ -24,6 +25,7 @@ const Button = (props) => {
             style={style}
             secondary={secondary}
             tertiary={tertiary}
+            type = {type}
             {...props} >
 
         {children ?
@@ -38,7 +40,8 @@ const Button = (props) => {
 
 Button.defaultProps = {
     secondary : false,
-    disabled: false
+    disabled: false,
+    type: "button"
 };
 
 export default Button;

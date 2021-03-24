@@ -5,6 +5,7 @@ import TaskField from "../task_field/route_field";
 import {deleteRouteClean, saveFormRoute, setSelectedTask} from "../../../../../redux/actions/tasks_actions";
 import {useDispatch, useSelector} from "react-redux";
 import * as taskActions from "../../../../../redux/actions/tasks_actions";
+import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 
 const TaskForm = (props) => {
 
@@ -20,8 +21,11 @@ const TaskForm = (props) => {
 	const dispatchRemoveTask = async (taskId) => await dispatch(taskActions.removeTask(taskId))
 	const dispatchDeleteRouteClean = async (routeId) => await dispatch(taskActions.deleteRouteClean(routeId))
 	const onEditing = async (props) => await dispatch(taskActions.editingTask(props))
+	const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
+
 
 	const tasks = useSelector(state => state.tasksReducer.tasks)
+	const editing = useSelector(state => state.tasksReducer.editingTask) //Moved to redux so the variable can be accesed in the sideBar files for confirmation modal
 
 	useEffect(() => {
 		return () => {
@@ -86,8 +90,13 @@ const TaskForm = (props) => {
 			{formikProps => {
 
 				const {
-					submitForm
+					submitForm,
+					touched
 				} = formikProps
+
+				if(Object.keys(touched).length!==0 && !editing){
+					dispatchPageDataChanged(true)
+				}
 
 				return(
 					<TaskField

@@ -77,7 +77,7 @@ const TaskField = (props) => {
         onRemove,
         validateForm,
         onDelete,
-        isNew
+        isNew,
     } = props
 
     const fieldMeta = getFieldMeta(fieldParent)
@@ -112,6 +112,7 @@ const TaskField = (props) => {
     // const touchedCount = Object.values(touched).length // number of touched fields
     const submitDisabled = ((errorCount > 0) || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
 
+    const params = useParams()
     const dispatch = useDispatch()
     const dispatchPutStation = (station, ID) => dispatch(putStation(station, ID))
     const dispatchPutDashboard = (dashboard, ID) => dispatch(putDashboard(dashboard, ID))
@@ -141,9 +142,11 @@ const TaskField = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
     const routeObject = useSelector(state=>state.objectsReducer.routeObject)
     const editingObject = useSelector(state=> state.objectsReducer.editingObject)
+    const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
 
     const [showEditor, setShowEditor] = useState(false);
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
+    const [confirmExitModal, setConfirmExitModal] = useState(false);
     const [confirmDeleteObjectModal, setConfirmDeleteObjectModal] = useState(false);
     const [needsValidate, setNeedsValidate] = useState(false);
     const [didSetHandoff, setDidSetHandoff] = useState(false);
@@ -274,12 +277,6 @@ const TaskField = (props) => {
             setNeedsValidate(false)
         }
     }, [needsValidate])
-
-    useEffect(() => {
-      if(!!values.changed){
-        dispatchPageDataChanged(true)
-      }
-    },[values])
 
 
     useEffect(() => {
@@ -441,6 +438,23 @@ const TaskField = (props) => {
                         }}
                     />
 
+                    <ConfirmDeleteModal
+                        isOpen={!!confirmExitModal}
+                        title={"Are you sure you want to go back? Any progress will not be saved"}
+                        button_1_text={"Yes"}
+                        button_2_text={"No"}
+                        handleClose={() => setConfirmExitModal(null)}
+                        handleOnClick1={() => {
+                          onBackClick(routeId)
+                          dispatchSetEditingObject(false)
+                          dispatchPageDataChanged(false)
+
+                        }}
+                        handleOnClick2={() => {
+                            setConfirmExitModal(null)
+                        }}
+                    />
+
                     {confirmDeleteModal &&
                         <ConfirmDeleteModal
                             isOpen={!!confirmDeleteModal}
@@ -490,8 +504,7 @@ const TaskField = (props) => {
                                     content={'tasks'}
                                     mode={'create'}
                                     onClickBack={() => {
-                                        onBackClick(routeId)
-                                        dispatchSetEditingObject(false)
+                                      setConfirmExitModal(true)
                                     }}
                                 />
                             </div>
@@ -598,8 +611,13 @@ const TaskField = (props) => {
                                 content={'tasks'}
                                 mode={'create'}
                                 onClickBack={() => {
-                                    onBackClick(routeId)
-                                    dispatchSetEditingObject(false)
+                                  if(!!pageInfoChanged){
+                                    setConfirmExitModal(true)
+                                  }
+                                  else{
+                                      onBackClick(routeId)
+                                      dispatchSetEditingObject(false)
+                                    }
                                 }}
                             />
                         </div>
@@ -614,7 +632,7 @@ const TaskField = (props) => {
                         name={fieldParent ? `${fieldParent}.name` : "name"}
                         placeholder={"New Route Name"}
                         schema={'tasks'}
-                        focus={!name}
+                        focus={params.page === "tasks" ? !name : name}
                         style={{ fontSize: '1.2rem', fontWeight: '600' }}
                     />
 
