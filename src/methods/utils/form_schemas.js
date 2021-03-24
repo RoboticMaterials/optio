@@ -741,7 +741,7 @@ export const deviceSchema = Yup.object().shape({
     schedules: Yup.array()
         .of(
             Yup.object().shape({
-                scheduleName: Yup.string().required('Required'),
+                name: Yup.string().required('Required'),
             })
         )
         // .required('Must have friends')

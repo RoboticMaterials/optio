@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
-import { FieldArray } from 'formik'
+import { FieldArray, useField, useFormikContext } from 'formik'
 import moment from 'moment';
 import uuid from 'uuid';
 
@@ -14,6 +14,9 @@ import DropDownSearchField from '../../../../../basic/form/drop_down_search_fiel
 import TimePickerField from '../../../../../basic/form/time_picker_field/time_picker_field'
 import Textbox from '../../../../../basic/textbox/textbox'
 import TextField from '../../../../../basic/form/text_field/text_field'
+
+// Import Componenets
+import DayOfTheWeekButton from './day_of_the_week_button'
 
 // Import Actions
 import { setSelectedDevice } from '../../../../../../redux/actions/devices_actions'
@@ -29,6 +32,8 @@ const DeviceSchedule = (props) => {
 
     const {
     } = props
+
+    const { setFieldValue, setFieldTouched } = useFormikContext();
 
     const dispatch = useDispatch()
     const dispatchSetSelectedDevice = (selectedDevice) => dispatch(setSelectedDevice(selectedDevice))
@@ -107,28 +112,11 @@ const DeviceSchedule = (props) => {
 
             return daysOfTheWeek.map((day, ind2) => {
                 return (
-                    <styled.DayOfTheWeekContainer
+                    <DayOfTheWeekButton
                         name={`schedules.${ind1}.${day}`}
+                        key={`day.${ind2}`}
                         checked={selectedDevice.schedules[id].days_on.includes(day)}
-                        onClick={() => {
-                            let newDaysOn = deepCopy(selectedDevice.schedules[id].days_on)
-
-                            // If day is in days array, remove
-                            if (newDaysOn.includes(day)) {
-                                const index = newDaysOn.indexOf(day)
-                                newDaysOn.splice(index, 1)
-                            }
-                            // Else add
-                            else {
-                                newDaysOn.push(day)
-                            }
-
-                            newDaysOn = { days_on: newDaysOn }
-                            onUpdateSchedule(id, newDaysOn)
-                        }}
-                    >
-                        <styled.DayOfTheWeekText>{day}</styled.DayOfTheWeekText>
-                    </styled.DayOfTheWeekContainer>
+                    />
                 )
             })
         }
@@ -140,11 +128,13 @@ const DeviceSchedule = (props) => {
                 render={arrayHelpers => (
                     Object.values(selectedDevice.schedules).map((schedule, ind) => {
                         return (
-                            <styled.ScheduleContainer>
+                            <styled.ScheduleContainer
+                                key={`schedule.${ind}`}
+                            >
 
                                 <styled.RowContainer>
                                     <TextField
-                                        name={`schedules.${ind}.scheduleName`}
+                                        name={`schedules.${ind}.name`}
                                         placeholder='Schedule Name'
                                         InputComponent={Textbox}
                                         ContentContainer={styled.RowContainer}
@@ -155,7 +145,7 @@ const DeviceSchedule = (props) => {
                                         }}
                                     />
                                     <Switch
-                                        name={`schedules.${ind}.chargeLevelSwitch`}
+                                        name={`schedules.${ind}.enabled`}
                                         onColor='red'
                                         checked={schedule.enabled}
                                         onChange={() => {
@@ -171,15 +161,19 @@ const DeviceSchedule = (props) => {
 
                                 <styled.RowContainer style={{ marginTop: '.5rem' }}>
                                     <DropDownSearchField
-                                        name={`schedules.${ind}.moveLocation`}
+                                        name={`schedules.${ind}.position`}
                                         containerSyle={{ flex: '9', marginRight: '1rem' }}
                                         pattern={null}
                                         labelField={'name'}
                                         options={Object.values(positions)}
                                         valueField={"_id"}
+                                        mapOutput={(val) => {
+                                            console.log('QQQQ val', val[0]._id)
+                                            return val[0]._id
+                                        }}
                                     />
                                     <TimePickerField
-                                        name={`schedules.${ind}.endOfShift`}
+                                        name={`schedules.${ind}.time`}
                                         mapInput={
                                             (value) => {
                                                 if (value) {
