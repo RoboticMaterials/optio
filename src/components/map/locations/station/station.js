@@ -97,7 +97,7 @@ function Station(props) {
 
         // Disables when adding a task to the beginning of a process. 
         // To tell if a task is being added to the beginning of a process is when the task has a temp insert index at 0
-        else if (selectedTask?.temp?.insertIndex === 0) {
+        else if (selectedTask?.temp?.insertIndex === 0 && !!selectedProcess && selectedProcess.routes.length > 0) {
             // Find the station at the beginning of process
             const firstStation = selectedProcess.routes[0].load.station
 
