@@ -187,6 +187,7 @@ const DeviceSchedule = (props) => {
                                     schema={'devices'}
                                     type={'button'}
                                     style={{ display: 'inline-block', float: 'right', maxWidth: '25rem', boxSizing: 'border-box' }}
+                                    secondary
                                     onClick={() => {
                                         onDeleteSchedule(schedule)
                                         // Removes the values from formik. 

@@ -459,7 +459,7 @@ const DeviceEdit = (props) => {
                         errors,
                     } = formikProps
                     return (
-                        <Form>
+                        <Form style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', alignItems: 'center' }}>
 
                             <styled.SectionsContainer>
 
@@ -498,7 +498,7 @@ const DeviceEdit = (props) => {
                                 Edit Dashboard
                             </Button>
 
-                            <Button schema={'devices'} secondary style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: '2rem', boxSizing: 'border-box' }}
+                            <Button schema={'devices'} style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: 'auto', boxSizing: 'border-box' }}
                             // onClick={() => {
                             //     submitForm()
                             // }}

@@ -5,6 +5,7 @@ import * as stylel from '../../locations/edit_location/location_button/location_
 import { columnContainer } from '../../../../../common_css/common_css'
 
 export const Container = styled(style.SettingsContainer)`
+    height: 100%;
 `
 
 export const SectionsContainer = styled(style.SettingsSectionsContainer)`
@@ -25,6 +26,7 @@ export const RowContainer = styled(style.RowContainer)`
 export const ColumnContainer = styled.div`
     ${columnContainer}
     align-items: center;
+    width: 100%;
 `
 
 export const ConnectionButton = styled(styles.ConnectionButton)`
