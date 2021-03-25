@@ -289,19 +289,19 @@ const StatisticsOverview = (props) => {
                 break;
 
             case 'week':
-                const firstDate = getDateFromString(Object.values(throughPut)[0].x)
-                const lastDate = getDateFromString(Object.values(throughPut)[Object.values(throughPut).length - 1].x)
+                const firstDate = getDateFromString(Object.values(throughPut)[0].lable)
+                const lastDate = getDateFromString(Object.values(throughPut)[Object.values(throughPut).length - 1].lable)
                 dateSelectorTitle = `${firstDate.toDateString()} - ${lastDate.toDateString()}`
                 break;
 
             case 'month':
-                date = getDateFromString(Object.values(throughPut)[0].x)
+                date = getDateFromString(Object.values(throughPut)[0].lable)
                 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                 dateSelectorTitle = `${months[date.getMonth()]} ${date.getFullYear()}`
                 break;
 
             case 'year':
-                date = getDateFromString(Object.values(throughPut)[0].x)
+                date = getDateFromString(Object.values(throughPut)[0].lable)
                 dateSelectorTitle = `${date.getFullYear()}`
                 break;
 
