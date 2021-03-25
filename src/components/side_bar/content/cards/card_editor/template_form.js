@@ -308,7 +308,6 @@ const FormComponent = (props) => {
 
 					const promise = submitForm()
 					promise.then(result => {
-						console.log(result)
 						if(!(result instanceof Error) && result !== undefined) {
 							close()
 						}
