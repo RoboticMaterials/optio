@@ -28,6 +28,10 @@ const CalendarPlaceholder = (props) => {
 			<styled.DateItem onClick={onEndClick}>
 				<styled.DateText>{endText}</styled.DateText>
 			</styled.DateItem>
+
+			<Popup open={showCalendarPopup} closeOnDocumentClick={true} onClose={() => setShowCalendarPopup(false)}>
+				{!!calendarContent && calendarContent()}
+			</Popup>
 		</styled.DatesContainer>
 	)
 
