@@ -532,9 +532,6 @@ export const ProcessField = (props) => {
             setFieldValue("newRoute", newTask)
             dispatchSetSelectedTask(newTask)
             setEditingTask("newRoute")
-
-            console.log('QQQQ new task', newTask)
-            console.log('QQQQ selected proc', selectedProcess)
         }
 
         return (
