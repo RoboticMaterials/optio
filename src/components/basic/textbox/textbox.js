@@ -30,6 +30,7 @@ export default function Textbox(props) {
                     ref={inputRef}
                     className={"form-control " + props.className}
                     placeholder={props.placeholder}
+                    style={{...props.inputStyle}}
                     value={props.value}
                     onChange={props.onChange}
                     onKeyPress={props.onKeyPress}

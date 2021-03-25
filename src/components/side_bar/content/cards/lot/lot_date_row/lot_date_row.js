@@ -8,6 +8,7 @@ import * as styled from "./lot_date_row.style"
 
 // utils
 import {jsDateToString} from "../../../../../../methods/utils/card_utils"
+import { capitalizeFirstLetter } from '../../../../../../methods/utils/string_utils'
 
 const LotDateRow = (props) => {
 
@@ -26,7 +27,7 @@ const LotDateRow = (props) => {
 
 	return (
 		<styled.Row isLast={isLast}>
-			<styled.Label>{label}</styled.Label>
+			<styled.Label>{capitalizeFirstLetter(label)}</styled.Label>
 
 				<styled.DateItem>
 					<styled.DateText>{dateText ? dateText : defaultDateText}</styled.DateText>

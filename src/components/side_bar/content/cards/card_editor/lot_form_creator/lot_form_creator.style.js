@@ -21,15 +21,6 @@ export const ColumnContainer = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  //overflow: auto;
-  //min-height: 100%;
-  //align-self: stretch;
-  //padding: .5rem;
-  //padding: 1rem;
-
-  //background: #cc14ff;
-
-  // margin-bottom: 1rem;
 `
 
 export const ExtraStyledContainer = styled.div`
