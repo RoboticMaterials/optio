@@ -13,6 +13,7 @@ import {ThemeContext} from "styled-components";
 import {useSelector} from "react-redux";
 import {getAllTemplateFields} from "../../../../../methods/utils/lot_utils";
 import Portal from "../../../../../higher_order_components/portal";
+import RotateButton from "../../../../basic/rotate_button/rotate_button";
 
 const LotSortBar = (props) => {
 
@@ -128,104 +129,19 @@ const LotSortBar = (props) => {
                         minWidth: "10rem",
                     }}
                 />
-
-                <DropDownSearch
-                    maxDropdownWidth={`3.5rem` }
-                    // portal={document.getElementById("root")}
-                    dropdownCss={props.dropdownCss}
-                    options={Object.values(SORT_DIRECTIONS)}
-                    values={[sortDirection]}
-                    onChange={(values) => {
-                        setSortDirection(values[0])
-                    }}
-                    labelField={"id"}
-                    valueField={"id"}
+                <RotateButton
                     schema={"lots"}
-                    contentRenderer={({ props, state, methods }) => {
+                    iconName1={"fas fa-arrow-up"}
+                    containerCss={styled.rotateButtonContainerCss}
+                    iconCss={styled.rotateButtonIconCss}
 
-                        const {
-                            values = []
-                        } = state || {}
-
-                        if(isArray(values) && values.length > 0) {
-                            return (
-                                <>
-                                    <styled.ArrowContainer>
-                                        {values.map((currItem) => {
-                                            const {
-                                                iconClassName,
-                                                id: currItemId
-                                            } = currItem
-
-                                            const isSelected = methods.isSelected(currItem)
-
-                                            return(
-                                                <styled.ArrowButton
-                                                    style={{
-                                                        // paddingTop: ".5rem",
-                                                        // paddingBottom: ".5rem",
-                                                        margin: "auto",
-                                                        fontSize: '1rem',
-                                                    }}
-                                                    selected={isSelected}
-                                                    key={currItemId}
-                                                    type={"button"}
-                                                    color={themeContext.bg.octonary}
-                                                    role="option"
-                                                    tabIndex="-1"
-                                                    onClick={(event) => {
-                                                        event.stopPropagation();
-                                                        methods.dropDown('open');
-                                                    }}
-                                                    // onKeyPress={item.disabled ? undefined : () => methods.addItem(item)}
-                                                    schema={props.schema}
-                                                    className={iconClassName}
-                                                />
-                                            )
-                                        })}
-                                    </styled.ArrowContainer>
-                                    <styled.Spacer/>
-                                </>
-                            )
-                        }
-
-                        return(
-                            null
-                        )
+                    onStateOne={() => {
+                        setSortDirection(SORT_DIRECTIONS.ASCENDING)
                     }}
-                    itemRenderer={({ item, itemIndex, props, state, methods }) => {
-                        const {
-                            iconClassName,
-                            id: currItemId
-                        } = item
-
-                        const isSelected = methods.isSelected(item)
-
-                        return(
-                            <styled.ArrowButton
-                                style={{
-                                    paddingTop: ".5rem",
-                                    paddingBottom: ".5rem",
-                                }}
-                                selected={isSelected}
-                                key={currItemId}
-                                type={"button"}
-                                color={themeContext.bg.octonary}
-                                role="option"
-                                tabIndex="-1"
-                                onClick={item.disabled ? undefined : () => methods.addItem(item)}
-                                onKeyPress={item.disabled ? undefined : () => methods.addItem(item)}
-                                schema={props.schema}
-                                className={iconClassName}
-                            />
-                        )
-                    }}
-
-                    style={{
-                        width: '3.5rem'
+                    onStateTwo={() => {
+                        setSortDirection(SORT_DIRECTIONS.DESCENDING)
                     }}
                 />
-
             </styled.ItemContainer>
         </styled.ColumnContainer>
     );

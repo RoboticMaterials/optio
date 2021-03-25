@@ -133,7 +133,8 @@ const ZoneHeader = (props) => {
 
 	const themeContext = useContext(ThemeContext)
 
-	const processes = useSelector(state => { return Object.values(state.processesReducer.processes) })
+	const processes = useSelector(state => { return Object.values(state.processesReducer.processes) }) || []
+	const currentMap = useSelector(state => state.mapReducer.currentMap)
 
 	return (
 		<styled.Container>
@@ -168,7 +169,7 @@ const ZoneHeader = (props) => {
 					}}
 					multi
 					values={selectedProcesses}
-					options={processes}
+					options={processes.filter((currProcess) => currProcess.map_id === currentMap._id)}
 					onChange={values => {
 						setSelectedProcesses(values)
 					}}
