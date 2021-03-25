@@ -52,3 +52,10 @@ export const ConnectionText = styled.p`
     font-size: ${props => props.theme.fontSize.sz3};
     user-select: none;
 `
+
+export const ToolTip = styled.i`
+    margin-bottom: 1rem;
+    margin-left: .5rem;
+    color: ${props => props.theme.bg.quaternary};
+
+`

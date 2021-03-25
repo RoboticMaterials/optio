@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useHistory, useParams } from 'react-router-dom'
 import { Formik, Form } from 'formik'
+import uuid from 'uuid';
 
 // Import Style
 import * as styled from './device_edit.style'
+
+// external components
+import ReactTooltip from "react-tooltip";
 
 // Import basic components
 import { deepCopy } from '../../../../../methods/utils/utils'
@@ -20,6 +24,9 @@ import { deviceSchema } from '../../../../../methods/utils/form_schemas'
 
 // Import Components
 import DeviceSchedule from './device_schedule/device_schedule'
+
+// Import Constants
+import { deviceSchedule } from '../../../../../constants/scheduler_constants'
 
 // Import actions
 import { setSelectedDevice, putDevices } from '../../../../../redux/actions/devices_actions'
@@ -75,7 +82,6 @@ const DeviceEdit = (props) => {
 
         // Sets the type of device, unknown devic defaults to an RM logo while known devices use their own custom SVGs
         if (selectedDevice.device_model === 'MiR100') setDeviceType('cart')
-        console.log('QQQQ selected device', selectedDevice)
 
     }, [])
 
@@ -91,6 +97,27 @@ const DeviceEdit = (props) => {
 
     const onBack = () => {
         dispatchSetSelectedDevice(null)
+    }
+
+    const renderDeviceName = () => {
+
+        return (
+            <styled.SectionsContainer>
+
+                <styled.Label schema={'devices'} >Device Name</styled.Label>
+
+                <Textbox
+                    defaultValue={selectedDevice.device_name}
+                    placeholder={'Enter Device Name'}
+                    onChange={(event) => {
+                        onSetDeviceName(event.target.value)
+                    }}
+                    style={{ fontWeight: '600', fontSize: '1.5rem' }}
+                    inputStyle={{ backgroundColor: 'white' }}
+                />
+
+            </styled.SectionsContainer>
+        )
     }
 
     const renderMIRIP = () => {
@@ -130,10 +157,16 @@ const DeviceEdit = (props) => {
 
                 <styled.RowContainer style={{ position: 'relative', justifyContent: 'space-between' }}>
                     <styled.Label schema={'devices'}>MIR IP</styled.Label>
-                    <styled.ConnectionButton onClick={() => onMirConnection()} disabled={(connectionText === 'Connecting')}>
+                    <Button
+                        style={{ margin: '0', marginBottom: '1rem', height: '1.5rem', width: '10rem', display: 'flex', fontSize: '1rem', alignItems: 'center', justifyContent: 'space-evenly' }}
+                        schema={'devices'}
+                        onClick={() => onMirConnection()}
+                        type='button'
+                        disabled={(connectionText === 'Connecting')}
+                    >
                         {connectionText}
                         <styled.ConnectionIcon className={connectionIcon} />
-                    </styled.ConnectionButton>
+                    </Button>
 
                 </styled.RowContainer>
 
@@ -149,6 +182,7 @@ const DeviceEdit = (props) => {
 
                     }}
                     style={{ width: '100%' }}
+                    inputStyle={{ backgroundColor: 'white' }}
 
                 />
 
@@ -202,6 +236,7 @@ const DeviceEdit = (props) => {
                 <DropDownSearch
                     placeholder="Select Location"
                     label="Idle Location for MiR Cart"
+                    style={{ backgroundColor: 'white' }}
                     labelField="name"
                     valueField="_id"
                     options={locationsSortedAlphabetically(Object.values(positions))}
@@ -230,8 +265,8 @@ const DeviceEdit = (props) => {
 
         return (
             <styled.SectionsContainer>
-                <styled.RowContainer style={{ justifyContent: 'space-around', alignItems: 'center', marginBottom: '.5rem' }}>
-                    <styled.Label schema={'devices'} style={{ marginBottom: '0rem', fontWeight: 'bold' }} >Charge Levels</styled.Label>
+                <styled.RowContainer style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: '.5rem' }}>
+                    <styled.Label schema={'devices'} style={{ marginBottom: '0rem' }} >Charge Levels</styled.Label>
                     <Switch
                         name={'charge_level.chargeEnabled'}
                         schema={'devices'}
@@ -239,13 +274,19 @@ const DeviceEdit = (props) => {
                 </styled.RowContainer>
                 <styled.RowContainer style={{ justifyContent: 'space-between' }}>
                     <styled.ColumnContainer>
-                        <styled.Label schema={'devices'}>
-                            Min Level
-                    </styled.Label>
+                        <styled.RowContainer>
+                            <styled.Label schema={'devices'} style={{ fontSize: '1.2rem' }}>
+                                Min Percent
+                        </styled.Label>
+                            <styled.ToolTip data-for='1q' data-tip="Level the cart will go to the charger" className={'fas fa-info-circle'} />
+                            <ReactTooltip effect='solid' multiline={true} id='1q' offset={{'top':60, 'left': 100}}/>
+                        </styled.RowContainer>
+
                         <TextField
                             name={"charge_level.min"}
                             placeholder='Min %'
                             InputComponent={Textbox}
+                            inputStyle={{ backgroundColor: 'white' }}
                             ContentContainer={styled.RowContainer}
                             style={{
                                 'marginBottom': '.5rem',
@@ -255,13 +296,18 @@ const DeviceEdit = (props) => {
                         />
                     </styled.ColumnContainer>
                     <styled.ColumnContainer>
-                        <styled.Label schema={'devices'}>
-                            Max Level
-                    </styled.Label>
+                        <styled.RowContainer>
+                            <styled.Label schema={'devices'} style={{ fontSize: '1.2rem' }}>
+                                Max Percent
+                        </styled.Label>
+                            <styled.ToolTip data-tip="Level the cart will leave the charger" className={'fas fa-info-circle'} />
+                            <ReactTooltip effect='solid' offset={{'top':60, 'left': 100}}/>
+                        </styled.RowContainer>
                         <TextField
                             name={"charge_level.max"}
                             placeholder='Max %'
                             InputComponent={Textbox}
+                            inputStyle={{ backgroundColor: 'white' }}
                             ContentContainer={styled.RowContainer}
                             style={{
                                 'marginBottom': '.5rem',
@@ -374,26 +420,11 @@ const DeviceEdit = (props) => {
                 // Put the dashboard
                 await dispatchPutDashboard(dashboard, dashboard._id.$oid)
             }
-
             // Handle Values Passed in through Formik
             if (Object.values(values).length > 0) {
-                let updatedSchedules = {}
-
-                if (!!deviceCopy.schedules) {
-                    Object.values(deviceCopy.schedules).forEach((schedule, ind) => {
-                        updatedSchedules[schedule.id] = {
-                            ...schedule,
-                            ...values['schedules'][ind]
-                        }
-                    })
-
-                    updatedSchedules = { schedules: updatedSchedules }
-                }
-
                 deviceCopy = {
                     ...deviceCopy,
                     ...values,
-                    ...updatedSchedules,
                 }
             }
 
@@ -407,15 +438,15 @@ const DeviceEdit = (props) => {
 
     const onInitialValues = () => {
         let initialValues = {}
-        if (!!selectedDevice.schedules) {
+        if (!!selectedDevice.schedules && Object.values(selectedDevice.schedules).length > 0) {
             initialValues['schedules'] = Object.values(selectedDevice.schedules)
-
         }
         if (!!selectedDevice.charge_level) {
             initialValues['charge_level'] = selectedDevice.charge_level
 
+        } else {
+            initialValues['charge_level'] = { chargeEnabled: false, min: '10', max: '80' }
         }
-
         return initialValues
     }
 
@@ -436,15 +467,13 @@ const DeviceEdit = (props) => {
 
             <Formik
                 initialValues={onInitialValues()}
-
-                // validation control
+                enableReinitialize
                 validationSchema={deviceSchema}
                 validateOnChange={true}
                 validateOnMount={false}
-                validateOnBlur={false}
+                validateOnBlur={true}
 
                 onSubmit={async (values, { setSubmitting, setTouched, validateForm }) => {
-                    validateForm()
                     setSubmitting(true)
                     onSaveDevice(values)
                     setSubmitting(false)
@@ -457,26 +486,14 @@ const DeviceEdit = (props) => {
                         setValidationSchema,
                         values,
                         errors,
+                        validateForm,
                     } = formikProps
                     return (
                         <Form style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', alignItems: 'center' }}>
 
-                            <styled.SectionsContainer>
+                            {renderDeviceName()}
 
-                                {renderMIRIP()}
-
-                                <styled.Label schema={'devices'} >Device Name</styled.Label>
-
-                                <Textbox
-                                    defaultValue={selectedDevice.device_name}
-                                    onChange={(event) => {
-                                        onSetDeviceName(event.target.value)
-                                    }}
-                                    style={{ fontWeight: '600', fontSize: '1.5rem' }}
-                                    labelStyle={{ color: 'black' }}
-                                />
-
-                            </styled.SectionsContainer>
+                            {renderMIRIP()}
 
 
                             {selectedDevice.device_model !== 'MiR100' ?
@@ -485,7 +502,7 @@ const DeviceEdit = (props) => {
                                 <styled.ColumnContainer>
                                     {renderAMRIdleLocation()}
                                     {renderChargeLevels()}
-                                    <DeviceSchedule selectedDevice={selectedDevice} />
+                                    <DeviceSchedule values={values} />
                                 </styled.ColumnContainer>
 
                             }

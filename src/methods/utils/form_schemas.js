@@ -614,6 +614,24 @@ Yup.addMethod(Yup.string, 'lessThan', function (input2Path, message) {
     })
 })
 
+// Sees if input1 is less than input2. If so then through error
+Yup.addMethod(Yup.number, 'lessThanInt', function (input2Path, message) {
+    return this.test('lessThanInt', message, function (input1) {
+        const { parent, path, createError } = this
+        const input2 = parent[input2Path]
+
+        if (!input2 || !input1) return true
+        if (input1 < input2) return true
+        else {
+            return this.createError({
+                path: this.path,
+                message: message,
+            })
+        }
+
+    })
+})
+
 export const throughputSchema = Yup.object().shape({
     expectedOutput: Yup.number()
         .required('Required')
@@ -726,15 +744,16 @@ export const deviceSchema = Yup.object().shape({
     schedules: Yup.array()
         .of(
             Yup.object().shape({
-                name: Yup.string().required('Required'),
-                position: Yup.string().required('Required'),
-                time: Yup.string().required('Required')
+                name: Yup.string().required('Required').nullable(),
+                position: Yup.string().required('Required').nullable(),
+                time: Yup.string().required('Required').nullable()
             })
         ),
 
     charge_level: Yup.object().shape({
         chargeEnabled: Yup.bool(),
         min: Yup.number()
+            .lessThanInt("max", 'Min Percent must be less then Max percent')
             // Only validate when true
             .when('chargeEnabled', {
                 is: true,

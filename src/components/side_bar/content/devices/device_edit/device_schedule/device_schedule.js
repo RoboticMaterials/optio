@@ -31,63 +31,13 @@ import { deviceSchedule } from '../../../../../../constants/scheduler_constants'
 const DeviceSchedule = (props) => {
 
     const {
+        values
     } = props
 
     const dispatch = useDispatch()
-    const dispatchSetSelectedDevice = (selectedDevice) => dispatch(setSelectedDevice(selectedDevice))
 
     const selectedDevice = useSelector(state => state.devicesReducer.selectedDevice)
     const positions = useSelector(state => state.positionsReducer.positions)
-
-    const onAddSchedule = () => {
-
-        let newSchedule = deepCopy(deviceSchedule)
-        newSchedule.id = uuid.v4()
-
-        let schedulesCopy = {}
-        if (!!selectedDevice.schedules) {
-            schedulesCopy = deepCopy(selectedDevice.schedules)
-        }
-        schedulesCopy = {
-            ...schedulesCopy,
-            [newSchedule.id]: newSchedule
-        }
-
-        dispatchSetSelectedDevice({
-            ...selectedDevice,
-            schedules: schedulesCopy
-        })
-    }
-
-    const onDeleteSchedule = (schedule) => {
-        let schedulesCopy = deepCopy(selectedDevice.schedules)
-        delete schedulesCopy[schedule.id]
-        dispatchSetSelectedDevice({
-            ...selectedDevice,
-            schedules: schedulesCopy
-        })
-    }
-
-    const renderPositionSchedule = () => {
-        return (
-            <styled.SectionsContainer>
-                <styled.Label schema={'devices'} >Position Schedule</styled.Label>
-
-                {!!selectedDevice.schedules && renderSchedules()}
-
-                <Button
-                    schema={'devices'}
-                    type={'button'}
-                    style={{ display: 'inline-block', float: 'right', maxWidth: '25rem', boxSizing: 'border-box' }}
-                    onClick={() => {
-                        onAddSchedule()
-                    }}
-                >
-                    Add Schedule
-                </Button>
-            </styled.SectionsContainer>
-        )
-    }
 
     const renderSchedules = () => {
 
@@ -111,105 +61,127 @@ const DeviceSchedule = (props) => {
                 name={'schedules'}
                 validateOnChange={true}
                 render={arrayHelpers => (
-                    Object.values(selectedDevice.schedules).map((schedule, ind) => {
-                        return (
-                            <styled.ScheduleContainer
-                                key={`schedule.${ind}`}
-                            >
+                    <styled.SectionsContainer>
+                        <styled.Label schema={'devices'} >Position Schedule</styled.Label>
+                        {!!values.schedules && values.schedules.map((schedule, ind) => {
+                            return (
+                                <styled.ScheduleContainer
+                                    key={`schedule.${ind}`}
+                                >
 
-                                <styled.RowContainer>
-                                    <TextField
-                                        name={`schedules.${ind}.name`}
-                                        placeholder='Schedule Name'
-                                        InputComponent={Textbox}
-                                        ContentContainer={styled.RowContainer}
-                                        style={{
-                                            'marginBottom': '.5rem',
-                                            'marginTop': '0',
-                                            'width': '10rem',
-                                        }}
-                                    />
-                                    <Switch
-                                        name={`schedules.${ind}.enabled`}
-                                        schema={'devices'}
+                                    <styled.RowContainer>
+                                        <TextField
+                                            name={`schedules.${ind}.name`}
+                                            placeholder='Schedule Name'
+                                            InputComponent={Textbox}
+                                            ContentContainer={styled.RowContainer}
+                                            style={{
+                                                'marginBottom': '.5rem',
+                                                'marginTop': '0',
+                                                'width': '10rem',
+                                            }}
+                                        />
+                                        <Switch
+                                            name={`schedules.${ind}.enabled`}
+                                            schema={'devices'}
                                         // onColor='red'
-                                    />
-                                </styled.RowContainer>
+                                        />
+                                    </styled.RowContainer>
 
-                                <styled.RowContainer style={{ margin: '.2rem' }}>
-                                    {renderDaySelector(schedule.id, ind)}
-                                </styled.RowContainer>
+                                    <styled.RowContainer style={{ margin: '.2rem' }}>
+                                        {renderDaySelector(schedule.id, ind)}
+                                    </styled.RowContainer>
 
-                                <styled.RowContainer style={{ marginTop: '.5rem' }}>
-                                    <DropDownSearchField
-                                        name={`schedules.${ind}.position`}
-                                        containerSyle={{ flex: '9', marginRight: '1rem' }}
-                                        placeholder="Select Position"
-                                        pattern={null}
-                                        labelField={'name'}
-                                        valueField={"_id"}
-                                        options={Object.values(positions)}
-                                        mapInput={(val) => {
-                                            return [positions[val]]
-                                        }}
-                                        mapOutput={(val) => {
-                                            return val[0]._id
-                                        }}
-                                    />
-                                    <TimePickerField
-                                        name={`schedules.${ind}.time`}
-                                        mapInput={
-                                            (value) => {
-                                                if (value) {
-                                                    const splitVal = value.split(':')
-                                                    return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                    <styled.RowContainer style={{ marginTop: '.5rem' }}>
+                                        <DropDownSearchField
+                                            name={`schedules.${ind}.position`}
+                                            containerSyle={{ flex: '9', marginRight: '1rem' }}
+                                            placeholder="Select Position"
+                                            pattern={null}
+                                            labelField={'name'}
+                                            valueField={"_id"}
+                                            options={Object.values(positions)}
+                                            mapInput={(val) => {
+                                                return [positions[val]]
+                                            }}
+                                            mapOutput={(val) => {
+                                                return val[0]._id
+                                            }}
+                                        />
+                                        <TimePickerField
+                                            name={`schedules.${ind}.time`}
+                                            mapInput={
+                                                (value) => {
+                                                    if (value) {
+                                                        const splitVal = value.split(':')
+                                                        return moment().set({ 'hour': splitVal[0], 'minute': splitVal[1] })
+                                                    }
                                                 }
                                             }
-                                        }
-                                        mapOutput={(value) => {
-                                            return convert12hto24h(value.format('hh:mm a'))
-                                        }}
-                                        containerStyle={{ width: '6rem' }}
-                                        style={{ flex: '1', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                                        showHour={true}
-                                        showSecond={false}
-                                        className="xxx"
-                                        use12Hours
-                                        format={'hh:mm a'}
-                                        autocomplete={"off"}
-                                        allowEmpty={false}
-                                        defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                                        defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                                    />
+                                            mapOutput={(value) => {
+                                                return convert12hto24h(value.format('hh:mm a'))
+                                            }}
+                                            containerStyle={{ width: '6rem' }}
+                                            style={{ flex: '1', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                                            showHour={true}
+                                            showSecond={false}
+                                            className="xxx"
+                                            use12Hours
+                                            format={'hh:mm a'}
+                                            autocomplete={"off"}
+                                            allowEmpty={false}
+                                            defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                                            defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                                        />
 
-                                </styled.RowContainer>
-                                <Button
-                                    schema={'devices'}
-                                    type={'button'}
-                                    style={{ display: 'inline-block', float: 'right', maxWidth: '25rem', boxSizing: 'border-box' }}
-                                    secondary
-                                    onClick={() => {
-                                        onDeleteSchedule(schedule)
-                                        // Removes the values from formik. 
-                                        // Otherwise you would delete and schedule and then when re-adding a new one, it owuld use the old valus
-                                        arrayHelpers.remove(ind)
-                                    }}
-                                >
-                                    Delete Schedule
+                                    </styled.RowContainer>
+                                    <Button
+                                        schema={'devices'}
+                                        type={'button'}
+                                        style={{ display: 'inline-block', float: 'right', maxWidth: '25rem', boxSizing: 'border-box' }}
+                                        secondary
+                                        onClick={() => {
+                                            // onDeleteSchedule(schedule)
+                                            // Removes the values from formik. 
+                                            // Otherwise you would delete and schedule and then when re-adding a new one, it owuld use the old valus
+                                            arrayHelpers.remove(ind)
+                                        }}
+                                    >
+                                        Delete Schedule
                                 </Button>
 
-                            </styled.ScheduleContainer>
+                                </styled.ScheduleContainer>
 
+                            )
+                        }
                         )
-                    })
-                )}
+                        }
+
+
+
+                        <Button
+                            schema={'devices'}
+                            type={'button'}
+                            style={{ display: 'inline-block', float: 'right', maxWidth: '25rem', boxSizing: 'border-box' }}
+                            onClick={() => {
+                                // onAddSchedule()
+                                arrayHelpers.push(deepCopy(deviceSchedule))
+
+                            }}
+                        >
+                            Add Schedule
+                            </Button>
+                    </styled.SectionsContainer>
+
+                )
+                }
             />
         )
     }
 
     return (
         <>
-            {renderPositionSchedule()}
+            {renderSchedules()}
         </>
     )
 }
