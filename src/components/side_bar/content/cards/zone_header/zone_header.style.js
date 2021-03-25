@@ -32,43 +32,35 @@ const scrollCss = css`
 `
 
 export const Container = styled.div`
-	display: flex;
+	  display: flex;
     flex-direction: row;
-  align-items: center;
-    width: 100vw;
-    padding: .5rem 1rem; 
-    background: ${props => props.theme.bg.quaternary};
-    border-bottom: 1px solid ${props => props.theme.bg.secondary};
+    flex-grow: 1;
     z-index: 20;
-  position: relative;
+    position: relative;
 
   @media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
     flex-direction: column;
     //align-items: center;
-    //max-width: 30rem;
+    // max-width: 30rem;
   }
 `
 
 export const ColumnContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  //margin-right: 1rem;
-  align-self: stretch;
-  flex: 1;
   
   @media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
     flex-direction: row;
-	align-items: center;
-	margin: .5rem 0;
+    align-items: center;
+    margin: .5rem 0;
   }
   
   ${props => props.css && props.css};
 `
 
 export const Description = styled.span`
-  color: white;
-  margin-bottom: .25rem;
+  color: ${props => props.theme.bg.octonary};
   white-space: nowrap;
+  margin-right: 0.5rem;
 
   @media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
     margin-right: .5rem;
@@ -84,14 +76,12 @@ export const ItemContainer = styled.div`
 	position: relative;
 	
 	flex: 1;
-	overflow: hidden;
-	align-items: center;
 
 	@media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
-	height: fit-content;
+	  // height: fit-content;
 	}
 	@media (min-width: ${props => props.theme.widthBreakpoint.laptop}) {
-	align-self: stretch;
+	  // align-self: stretch;
 	}
 `
 

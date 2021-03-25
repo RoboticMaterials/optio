@@ -126,15 +126,7 @@ const LotSortBar = (props) => {
                     valueField={"label"}
                     schema={"lots"}
                     style={{
-                        background: themeContext.bg.secondary,
-                        borderTopRightRadius: 0,
-                        borderBottomRightRadius: 0,
-                        borderTopLeftRadius: "1rem",
-                        borderBottomLeftRadius: "1rem",
-                        overflow: "hidden",
-                        // minWidth: "10rem",
-                        flex: 1,
-                        borderBottom: `1px solid ${themeContext.bg.quinary}`,
+                        minWidth: "10rem",
                     }}
                 />
                 <RotateButton

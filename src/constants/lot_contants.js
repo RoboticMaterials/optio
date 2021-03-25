@@ -157,24 +157,28 @@ export const defaultBins = {
 
 export const FLAG_OPTIONS = {
 	0: {
-		color: "#db2100",
+		color: "#876CDD",
 		id: 0
 	},
 	1:{
-		color: "#1a00c2",
+		color: "#6ca6dd",
 		id: 1
 	},
 	2: {
-		color: "#13a600",
+		color: "#53e690",
 		id: 2
 	},
 	3: {
-		color: "#d800db",
+		color: "#fff047",
 		id: 3
 	},
 	4: {
-		color: "#e3a600",
+		color: "#ff9e54",
 		id: 4
+	},
+	5: {
+		color: "#ff5454",
+		id: 5
 	},
 }
 

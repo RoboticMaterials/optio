@@ -21,7 +21,7 @@ const StationsColumn = ((props) => {
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
-
+	
 	return(
 		<Column
 			setSelectedCards={setSelectedCards}
