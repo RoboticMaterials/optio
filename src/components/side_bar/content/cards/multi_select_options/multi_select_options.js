@@ -30,10 +30,12 @@ const MultiSelectOptions = (props) => {
 				style={{margin: "0 1rem 0 0"}}
 				type={"button"}
 				schema={"delete"}
-				secondary
+				tertiary
 				onClick={onDeleteClick}
-				label={`Delete (${selectedLotsCount})`}
-			/>
+			>
+				<i style={{marginRight: ".5rem"}} className="fa fa-trash" aria-hidden="true"/>
+				Delete ({selectedLotsCount})
+			</Button>
 			<Button
 				style={{margin: "0 1rem 0 0"}}
 				type={"button"}
@@ -44,6 +46,7 @@ const MultiSelectOptions = (props) => {
 			<Button
 				style={{margin: 0}}
 				type={"button"}
+				secondary
 				schema={"lots"}
 				onClick={onClearClick}
 				label={`Clear Selected`}
