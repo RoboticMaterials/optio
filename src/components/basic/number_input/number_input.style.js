@@ -16,20 +16,20 @@ export const Input = styled.input`
   transition: all 0.30s ease-in-out;
   transition: all 0.30s ease-in-out;
   
-  margin: 1rem 1rem;
-  border-radius: .5rem;
+  margin: 1rem 0rem;
+  border-radius: 0rem;
   text-align: center;
   width: 10rem;
   font-size: 2rem;
-  color: white;
-  background: ${props => props.theme.bg.quinary};
+  color: ${props => props.theme.bg.octonary};
+  background: ${props => props.theme.bg.tertiary};
+  border: none;
   
   //-webkit-appearance: none !important;
   &:focus{
     outline: 0 !important;
-    box-shadow: 0 0 5px #56d5f5;
-    border: 1px solid #56d5f5;
-    filter: brightness(120%);
+    box-shadow: 0 0 5px 2px ${props => props.theme.fg.primary};
+    background: ${props => props.theme.bg.secondary};
   }
 
   /* Chrome, Safari, Edge, Opera */
@@ -44,12 +44,12 @@ export const Input = styled.input`
     -moz-appearance: textfield;
   }
   
-  ${props => props.inputCss && props.inputCss};
+  // ${props => props.inputCss && props.inputCss};
 `
 
 export const Button = styled.button`
-  font-size: 5rem;
-  text-shadow: 0.05rem 0.05rem 0.2rem #303030;
+  font-size: 3.5rem;
+  // text-shadow: 0.05rem 0.05rem 0.2rem #303030;
   transition: text-shadow 0.1s ease, filter 0.1s ease;
   color: ${props => props.color};
   background: transparent;
@@ -72,4 +72,7 @@ export const Button = styled.button`
 
 const disabledCss = css`
   color: ${props => props.theme.disabled};
+  &:hover {
+    cursor: default !important;
+  }
 `
