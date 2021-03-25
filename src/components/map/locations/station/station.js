@@ -222,6 +222,10 @@ function Station(props) {
     // Used to see if a widget Page is opened
     let params = useParams()
     useEffect(() => {
+        // if (station._id === "deb8a7af-06ed-47d5-a9f1-4c8f7869dcf7") {
+        //     dispatchHoverStationInfo(handleWidgetHover())
+        //     dispatchSetSelectedStation(station)
+        // }
         window.addEventListener("mouseup", onSetListener)
         return () => {
             window.removeEventListener("mouseup", onSetListener)

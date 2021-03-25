@@ -65,7 +65,10 @@ export const handleWidgetHoverCoord = (location, rd3tClassName, d3) => {
         }
 
         widgetInfo.scale = 1.3
-        widgetInfo.yPosition = location.y + bBox.height / 2 - 75
+
+        // If going back to widget buttons, then just delete the turnery statement and keep the expression with -75
+        widgetInfo.yPosition = location.schema === 'station' ? location.y + bBox.height / 2 - 55 : location.y + bBox.height / 2 - 75
+        // If going back to widget buttons, then just delete the turnery statement and keep the expression with -75
         widgetInfo.xPosition = location.schema === 'station' ? location.x + 45 : location.x + 12
 
         // Stops the widget from getting to small and keeping the widget relative to the location size

@@ -208,6 +208,11 @@ const Widgets = (props) => {
             else {
                 return (
                     <>
+                        <styled.EmptySpaceContainer />
+                    </>
+                )
+                return (
+                    <>
                         <WidgetButton
                             id={stationID}
                             type={'statistics'}

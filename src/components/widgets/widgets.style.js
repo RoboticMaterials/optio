@@ -46,7 +46,7 @@ export const WidgetContainer = styled.div`
     width: ${props => !!props.widgetPage ? '20rem' : 'fit-content'};
     max-width: ${props => props.type == 'cart_position' || props.type == 'shelf_position' ? '13rem' : '30rem'};
 
-    height: ${props => !!props.widgetPage ? 'auto' : '6rem'};
+    height: ${props => !!props.widgetPage ? 'auto' : 'fit-content'};
 
     box-shadow: ${props => !!props.widgetPage ? 'none' : '0 0.1rem 0.2rem 0rem #303030'};
 
@@ -64,7 +64,7 @@ export const WidgetContainer = styled.div`
         /* width: ${props => !!props.widgetPage ? '22rem' : '20rem'}; */
         width: ${props => !!props.widgetPage ? '15rem' : 'fit-content'};
 
-        height: ${props => !!props.widgetPage ? 'auto' : '6rem'};
+        height: ${props => !!props.widgetPage ? 'auto' : 'fit-content'};
 
         /* padding: .5rem .5rem .5rem .5rem; */
         margin-top: ${props => !!props.widgetPage && '0rem'};
@@ -270,3 +270,9 @@ export const CloseButton = styled.i`
     z-index: 10000;
 
 `;
+
+
+export const EmptySpaceContainer = styled.div`
+    height: 1.5rem;
+    width: 3rem;
+`
