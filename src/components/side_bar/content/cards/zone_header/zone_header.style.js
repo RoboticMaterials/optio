@@ -103,6 +103,14 @@ export const FlagsContainer = styled.div`
   ${scrollCss};
 `
 
+export const rotateButtonContainerCss = css`
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+`
+
+export const rotateButtonIconCss = css`
+`
+
 export const ArrowContainer = styled.div`
 	display: flex;
 	flex: 4;
