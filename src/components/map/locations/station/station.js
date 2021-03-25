@@ -15,6 +15,7 @@ import { handleWidgetHoverCoord } from '../../../../methods/utils/widget_utils'
 import { deepCopy } from '../../../../methods/utils/utils'
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 import { editing } from '../../../../methods/utils/locations_utils'
+import { getProcessStationsWhileEditing } from '../../../../methods/utils/processes_utils'
 
 // Import Constants
 import { StationTypes } from '../../../../constants/station_constants'
@@ -90,6 +91,11 @@ function Station(props) {
     else if (!!selectedTask && selectedTask?.load?.station !== null && selectedTask?.unload?.station === null) {
         // Disable making a task this station if the selected position is the stations children (cant make a route to the same parent/child)
         if (station.children.includes(selectedTask?.load?.position) && selectedTask?.unload?.station === null) disabled = true
+        // Disable making a task to this station if it is already used in the process
+        else if (!!selectedProcess) {
+            const processesStations = getProcessStationsWhileEditing(selectedProcess, tasks)
+            if (processesStations.includes(station._id)) disabled = true
+        }
         // Disable station if the selected task load position is a position (cant go from station to position or vice versa)
         else if (!!positions[selectedTask?.load?.position]) disabled = true
         // Disable station if its the load station. Cant make a task to itself

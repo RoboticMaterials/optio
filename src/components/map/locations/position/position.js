@@ -7,6 +7,7 @@ import { deepCopy } from '../../../../methods/utils/utils'
 import { handleWidgetHoverCoord } from '../../../../methods/utils/widget_utils'
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 import { editing } from '../../../../methods/utils/locations_utils'
+import { getProcessStationsWhileEditing } from '../../../../methods/utils/processes_utils'
 
 // Import Constants
 import { PositionTypes } from '../../../../constants/position_constants'
@@ -88,6 +89,9 @@ function Position(props) {
     // Disable if the selectedPosition is not this position
     if (!!selectedPosition && selectedPosition._id !== positionId) disabled = true
 
+    // Disable if making a task and this position does not have a parent
+    else if(!!selectedTask && !position.parent) disabled = true
+
     // Disable if the position does not belong to the children copy
     else if (!!selectedStationChildrenCopy && !(positionId in selectedStationChildrenCopy)) disabled = true
 
@@ -98,13 +102,18 @@ function Position(props) {
     else if (!!selectedTask && selectedTask?.load?.station !== null && selectedTask?.unload?.station === null) {
         // Disable making a task to this position if the select tasks station is this positions parent (cant make a route to the same parent/child)
         if (position?.parent === selectedTask?.load?.station) disabled = true
+        // Disable making a task to this position if it or its siblings are already used in the process
+        else if (!!selectedProcess) {
+            const processesStations = getProcessStationsWhileEditing(selectedProcess, tasks)
+            if(processesStations.includes(position?.parent)) disabled = true
+        }
         // Disable position if the selected task load position is a station (cant go from station to position or vice versa)
         else if (!!stations[selectedTask?.load?.position]) disabled = true
         // Disable position if its the load position. Cant make a task to itself
         else if (selectedTask.load.position === position._id) disabled = true
 
         // Disables when adding a task to the beginning of a process. 
-        // To tell if a task is being added to the beginning of a process is when the task has a temp insert index at 0
+        // To tell if a task is being added to the beginning of a process is when the task has a temp insert index at 0 and the process contains more then 1 route
         else if (selectedTask?.temp?.insertIndex === 0 && !!selectedProcess && selectedProcess.routes.length > 0) {
             // Find the station at the beginning of process
             const firstPosition = selectedProcess.routes[0].load.position
