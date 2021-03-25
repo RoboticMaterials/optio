@@ -508,6 +508,7 @@ const TaskField = (props) => {
                                     Object.values(routes)
 
                                         .filter(task => {
+                                            if(task.map_id !== currentMap._id) return false
 
                                             // This filters out tasks when fixing a process
                                             // If the process is broken, then you can only select tasks that are associated with the last route before break's unload station
