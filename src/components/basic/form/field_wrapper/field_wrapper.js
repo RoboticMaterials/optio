@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState, useContext} from "react";
 import PropTypes from 'prop-types';
 import { useField, useFormikContext } from "formik";
 
@@ -7,7 +7,8 @@ import * as styled from './field_wrapper.style'
 import NumberInput from "../../number_input/number_input";
 import TextField from "../text_field/text_field";
 import Textbox from "../../textbox/textbox";
-
+import { ThemeContext } from "styled-components";
+import { LightenDarkenColor } from '../../../../methods/utils/color_utils'
 
 const FieldWrapper = (props) => {
 
@@ -24,6 +25,8 @@ const FieldWrapper = (props) => {
 	// const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext();
 	// const [field, meta] = useField(props);
 	const [updateColor, setUpdateColor] = useState(false)
+
+	const themeContext = useContext(ThemeContext);
 
 
 	// extract field data
@@ -59,23 +62,25 @@ const FieldWrapper = (props) => {
 					placeholder={"Field name..."}
 					InputComponent={Textbox}
 					name={name}
-					style={{width: "8rem"}}
+					style={{}}
 					textboxContainerStyle={{zIndex: 5}}
+					inputStyle={{fontSize: '1rem', flex: 1, textAlign: 'center', background: LightenDarkenColor(themeContext.bg.secondary, 10)}}
 				/>
 				{/*</div>*/}
+				<styled.DeleteIcon
+					onClick={() => {
+						onDeleteClick()
+					}}
+					color={LightenDarkenColor(themeContext.bad, 30)}
+					className={"fas fa-trash"}
+				/>
 			</styled.LabelContainer>
 
 			<styled.FieldComponentContainer updateColor={updateColor}>
 
 				{children}
 
-				<styled.DeleteIcon
-					onClick={() => {
-						onDeleteClick()
-					}}
-					color={"#EC0000"}
-					className={"fas fa-trash"}
-				/>
+				
 
 				{/*<styled.StyleContainer>*/}
 				{/*	<styled.AlignIcon color={"black"} className="fas fa-align-left"></styled.AlignIcon>*/}

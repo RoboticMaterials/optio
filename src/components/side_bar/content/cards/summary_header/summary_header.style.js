@@ -44,10 +44,10 @@ export const InvisibleItem = styled.div`
 `
 
 export const Title = styled.span`
-	font-size: ${props => props.theme.fontSize.sz2};
-	color: white;
+	font-size: 1.6rem;
+	color: ${props => props.theme.bg.octonary};
 	font-weight: ${props => props.theme.fontWeight.bold};
-  margin-bottom: .5rem;
+  margin: 0.2rem 0;
 `
 
 export const TitleContainer = styled.div`
@@ -56,4 +56,6 @@ export const TitleContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  align-content: center;
+  vertical-align: center;
 `

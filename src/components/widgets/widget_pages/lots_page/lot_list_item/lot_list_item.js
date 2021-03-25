@@ -76,21 +76,21 @@ const LotListItem = props => {
 			</styled.RowContainer>
 
 			<styled.ContentRowContainer style = {{backgroundColor: 'white'}}>
-					<styled.TextContent style = {{fontWeight: 'bold'}}>Quantity</styled.TextContent>
-					<styled.TextContent>{quantity}</styled.TextContent>
+				<styled.TextContent style = {{fontWeight: 'bold'}}>Quantity</styled.TextContent>
+				<styled.TextContent>{quantity}</styled.TextContent>
 			</styled.ContentRowContainer>
 
 			<styled.ContentRowContainer style = {{backgroundColor: 'white'}}>
-					<styled.TextContent style = {{fontWeight: 'bold'}}>Description</styled.TextContent>
-					<styled.TextContent>{description}</styled.TextContent>
+				<styled.TextContent style = {{fontWeight: 'bold'}}>Description</styled.TextContent>
+				<styled.TextContent>{description}</styled.TextContent>
 			</styled.ContentRowContainer>
 
 			<styled.ContentRowContainer style = {{backgroundColor: 'white', borderBottomColor: 'transparent'}}>
-					<styled.TextContent style = {{fontWeight: 'bold'}}>End Date</styled.TextContent>
-					{!!endDateText &&
-					<styled.TextContent>{endDateText}</styled.TextContent>
-					}
-					</styled.ContentRowContainer>
+				<styled.TextContent style = {{fontWeight: 'bold'}}>End Date</styled.TextContent>
+				{!!endDateText &&
+				<styled.TextContent>{endDateText}</styled.TextContent>
+				}
+			</styled.ContentRowContainer>
 
 		</styled.ListItemRect>
 	)

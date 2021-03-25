@@ -42,11 +42,9 @@ export const StationHeader = styled.div`
     width: 100%;
     justify-content: center;
     align-items: center;
-    background: ${props => props.theme.bg.quinary};
+    background: ${props => props.theme.bg.secondary};
     padding: 0.5rem 1rem;
-    
-    // border-top-right-radius: 1rem;
-	// border-top-left-radius: 1rem;  
+
 `
 
 

@@ -29,11 +29,19 @@ export const Header = styled(pageStyle.Header)`
     justify-content: center;
 `
 
+export const TitleText = styled.h1`
+  font-family: ${props => props.theme.font.primary};
+  color: ${props => props.theme.bg.octonary};
+  font-size: 1.2rem;
+  margin-top: 1.5rem;
+`
+
 export const Container = styled.div`
 
     
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
     align-items: center;
     z-index: 1;
     overflow: hidden;
@@ -59,46 +67,38 @@ export const CloseButton = styled(CloseOutlinedIcon)`
 `
 
 export const LotTemplateButton = styled.div`
-  position: relative;
-  
+
   display: flex;
-  flex-direction: column;
   align-items: center;
+  width: auto;
+  height: 3rem;
+  text-overflow: ellipsis;
+  justify-content:  flex-start;
+  background: transparent;
+  padding: 0rem 1rem;
 
-  //margin-left: auto;
-  //margin-right: auto;
-  margin-bottom: 1.5rem;
-  padding: 1rem 2rem;
-  
-  
-  border-radius: 1rem;
-  
-  border: 1px solid white;
+  border-radius: 0.5rem;
+  border: ${props =>  props.error ? '0.1rem solid red' : 'none'};
 
-  &:hover {
-    ${glow("white")};
-	cursor: pointer;
-      filter: brightness(1.75);
-    ${props => props.isSelected && glow("cyan")};
-  }
+  box-shadow: ${props => props.theme.cardShadow};
+  cursor: pointer;
 
-    border-color: ${props => props.isSelected && "cyan"};
+  background: ${props => props.isSelected ? props.theme.schema.lots.solid : props.theme.bg.primary};
+
+  margin-bottom: 1rem;
 `
 export const TemplateIcon = styled.div`
-	font-size: 6rem;
+	font-size: 1.6rem;
   	position: relative;
-  	color: ${props => props.isSelected && "cyan"};
+  	color: ${props => props.isSelected ? props.theme.bg.primary : props.theme.bg.octonary};
+    margin-right: 1rem;
   
 `
 export const EditTemplateIcon = styled.button`
-    color: ${props => props.isSelected ? "cyan" : "white"};
+  color: ${props => props.theme.bg.tertiary};
 	background: none;
 	outline: none !important;
-	font-size: 2rem;
-  margin-left: 1rem;
-	position: absolute;
-	top: 50%;
-  transform: translateY(-50%);
+	font-size: 1.6rem;
 	right: 1rem;
 	border: none;
 `
@@ -110,8 +110,9 @@ export const Row = styled.div`
 export const TemplateName = styled.span`
 	font-size: 1.5rem;
   align-self: center;
-  margin-top: .5rem;
-  color: ${props => props.isSelected && "cyan"};
+  color: ${props => props.isSelected ? props.theme.bg.primary : props.theme.bg.octonary};
+  flex-grow: 1;
+  user-select: none;
   
 	//color: black;
   //position: absolute;
@@ -123,31 +124,28 @@ export const TemplateName = styled.span`
 export const ListContainer = styled.div`
 
   position: relative;
-    padding: 1rem;
-  vertical-align:middle;
+  padding: 1rem;
+  vertical-align: middle;
   display: inline-block;
-    
-    display: flex;
-    flex-direction: column;
-    align-self: stretch;
-    flex: 1;
-  align-items: stretch;
   
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 
-    overflow-y: auto;
-    overflow-x: hidden;
-    //z-index: 1;
-    
-    background: ${props => props.theme.bg.secondary};
-   
-    // hide scroll bar
-    ::-webkit-scrollbar {
-        width: 0px;  /* Remove scrollbar space */
-        background: transparent;  /* Optional: just make scrollbar invisible */
-    }
-    ::-webkit-scrollbar-thumb {
-        background: transparent;
-    }
+  overflow-y: auto;
+  overflow-x: hidden;
+  //z-index: 1;
+  
+  background: ${props => props.theme.bg.primary};
+  
+  // hide scroll bar
+  ::-webkit-scrollbar {
+      width: 0px;  /* Remove scrollbar space */
+      background: transparent;  /* Optional: just make scrollbar invisible */
+  }
+  ::-webkit-scrollbar-thumb {
+      background: transparent;
+  }
     
 `
 
@@ -203,7 +201,7 @@ export const ResizeBar = styled.div`
     width: 8px;
     // margin-right: -8px;
     background: transparent;
-    background: ${props => LightenDarkenColor(props.theme.bg.quinary,20)};
+    background: ${props => props.theme.bg.tertiary};
     display: flex;
     z-index: 20;
     align-items: center ;
@@ -215,7 +213,7 @@ export const ResizeHandle = styled.div`
     cursor: ew-resize;
     width: 4px;
     height: 30px;
-    background: ${props => props.theme.bg.secondary};
+    background: ${props => props.theme.fg.primary};
     border-radius: 8px;
     text-align: center;
     z-index: 2;

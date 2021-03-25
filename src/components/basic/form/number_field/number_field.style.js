@@ -14,12 +14,12 @@ export const IconContainerComponent = styled.div`
 `;
 
 export const errorCss = css`
-    box-shadow: 0 0 5px red;
-    border: 1px solid red;
+    box-shadow: 0 0 5px 2px red;
+    // border: 1px solid red;
     
     &:focus{
         outline: 0 !important;
-        box-shadow: 0 0 5px red;
-        border: 1px solid red;
+        box-shadow: 0 0 5px 2px red;
+        // border: 1px solid red;
     }
 `
