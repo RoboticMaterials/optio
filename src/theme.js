@@ -14,7 +14,7 @@ export const size = {
 
 const light = {
     primary: '#FFFFFF',  // White
-    secondary: '#f5f5fa',
+    secondary: '#f0f0f5',
     tertiary: '#dedfe3',
     quaternary: '#b8b9bf',  // light light grey
     quinary: '#79797d',   // light grey
@@ -147,7 +147,7 @@ export const theme = {
             },
             lots: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(167, 114, 252, 0.95) 0%, rgba(251, 0, 255, 0.95) 100%)',
-                solid: '#9e64fc',
+                solid: '#b385ff',
                 iconName: "fas fa-play"
             },
             charts: {
@@ -168,8 +168,8 @@ export const theme = {
                 solid: '#FF4B4B'
             },
             ok: {
-                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(10, 189, 0, 0.95) 0%, rgba(77, 196, 71, 0.95) 100%)',
-                solid: '#0dff00'
+                gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(31, 255, 94, 0.95) 0%, rgba(0, 126, 237, 0.95) 100%)',
+                solid: '#2ed182',
             },
             operations: {
                 gradient: 'radial-gradient(171.57% 115.09% at 100% 0%, rgba(121, 217, 155, 0.95) 0%, rgba(0, 162, 132, 0.95) 100%)',

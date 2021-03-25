@@ -38,7 +38,8 @@ export const TextboxInput = styled.input`
     border-bottom: 2px solid ${props => props.theme.bg.secondary};
 
     &:focus {
-        border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
+        background-color: ${props => props.theme.bg.secondary};
+        border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.schema.default.solid};
         color: ${props => props.theme.bg.octonary};
         outline: none !important;
     }
@@ -88,8 +89,8 @@ export const TextboxArea = styled.textarea`
     border-bottom: 2px solid ${props => props.theme.bg.secondary};
 
     &:focus {
-        background-color: ${props => LightenDarkenColor(props.theme.bg.secondary, 3)};
-        border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
+        background-color: ${props => props.theme.bg.secondary};
+        border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.schema.default.solid};
         color: ${props => props.theme.bg.octonary};
         outline: none !important;
     }

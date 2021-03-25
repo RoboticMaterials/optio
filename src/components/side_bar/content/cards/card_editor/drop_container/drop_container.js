@@ -1,6 +1,7 @@
 import {Container, Draggable} from "react-smooth-dnd";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useContext} from "react";
 import * as styled from "./drop_container.style"
+import { ThemeContext } from 'styled-components'
 import FieldWrapper from "../../../../../basic/form/field_wrapper/field_wrapper";
 import Textbox from "../../../../../basic/textbox/textbox";
 import ContainerWrapper from "../../../../../basic/container_wrapper/container_wrapper";
@@ -52,6 +53,8 @@ const DropContainer = (props) => {
 	const [hoveringBottom, setHoveringBottom] = useState(false)
 	const [hoveringLeft, setHoveringLeft] = useState(false)
 	const [hoveringRight, setHoveringRight] = useState(false)
+
+	const themeContext = useContext(ThemeContext);
 
 	useEffect(() => {
 		const topRowIndex = currRowIndex-1
@@ -198,7 +201,7 @@ const DropContainer = (props) => {
 						>
 							<div style={{position: "relative", display: "flex", justifyContent: "center" }}>
 								{(draggingFieldId !== null) &&
-								<div style={{position: "absolute", display: "flex", flexDirection: "column", alignItems: "stretch", left: 0, bottom: 0, top: 0, right: 0}}>
+								<div style={{border: `2px solid ${themeContext.bg.secondary}`, position: "absolute", display: "flex", flexDirection: "column", alignItems: "stretch", left: 0, bottom: 0, top: 0, right: 0}}>
 									<ContainerWrapper
 										onHoverChange={(hoverState) => setHoveringTop(hoverState)}
 										showHighlight={false}
@@ -261,7 +264,7 @@ const DropContainer = (props) => {
 							<FieldComponentMapper
 								component={component}
 								fieldName={fieldName}
-								containerStyle={{width: "100%",}}
+								containerStyle={{width: "100%", height: '100%'}}
 								usable={false}
 							/>
 							:
@@ -271,6 +274,7 @@ const DropContainer = (props) => {
 								onDeleteClick={() => setDeleted(true)}
 							>
 								<FieldComponentMapper
+									style={{flex: 1}}
 									// fieldName={fieldName}
 									component={component}
 									usable={false}
