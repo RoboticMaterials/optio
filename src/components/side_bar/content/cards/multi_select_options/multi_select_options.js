@@ -30,7 +30,7 @@ const MultiSelectOptions = (props) => {
 				style={{margin: "0 1rem 0 0"}}
 				type={"button"}
 				schema={"delete"}
-				secondary
+				tertiary
 				onClick={onDeleteClick}
 				label={`Delete (${selectedLotsCount})`}
 			/>
@@ -44,6 +44,7 @@ const MultiSelectOptions = (props) => {
 			<Button
 				style={{margin: 0}}
 				type={"button"}
+				secondary
 				schema={"lots"}
 				onClick={onClearClick}
 				label={`Clear Selected`}
