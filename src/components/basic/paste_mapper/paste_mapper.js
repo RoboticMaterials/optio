@@ -128,8 +128,9 @@ const PasteMapper = (props) => {
 				fieldName: currAvailableFieldName = "",
 				dataType: currAvailableDataType = FIELD_DATA_TYPES.STRING,
 				index: currAvailableIndex,
-				displayName: currAvailableDisplayName,
+				displayName: currAvailableDisplayName = "",
 			} = currField || {}
+
 
 			tempUsedFieldNames[currIndex] = false
 			for(const selectedField of selectedFieldNames) {
@@ -137,24 +138,36 @@ const PasteMapper = (props) => {
 					fieldName: currSelectedFieldName = "",
 					dataType: currSelectedDataType = FIELD_DATA_TYPES.STRING,
 					index: currSelectedIndex,
-					displayName: currSelectedDisplayName,
+					displayName: currSelectedDisplayName = "",
 				} = selectedField || {}
 
 				if(currAvailableDataType === FIELD_DATA_TYPES.DATE_RANGE) {
-					if(currAvailableIndex === currSelectedIndex && currSelectedDisplayName === currAvailableDisplayName) {
+					if(currAvailableIndex === currSelectedIndex && isEqualCI(currSelectedDisplayName.trim(),currAvailableDisplayName.trim())) {
 						tempUsedFieldNames[currIndex] = true
 						break // no need to keep looping
 					}
 
 				}
+
 				else {
-					if(currSelectedDisplayName === currAvailableDisplayName) {
+					if(isEqualCI(currSelectedDisplayName.trim(), currAvailableDisplayName.trim())) {
 						tempUsedFieldNames[currIndex] = true
 						break // no need to keep looping
 					}
 				}
 			}
 		})
+
+		// for(const availableField of availableFieldNames) {
+		// 	const {
+		// 		displayName: availableDisplayName = "",
+		// 	} = availableField
+		//
+		// 	if(isEqualCI(outputVal, availableDisplayName)) {
+		// 		mappedOutputVal = {...availableField}
+		// 		break	// quit looping
+		// 	}
+		// }
 
 		setUsedAvailableFieldNames(tempUsedFieldNames)
 	}, [availableFieldNames, selectedFieldNames])
@@ -170,7 +183,18 @@ const PasteMapper = (props) => {
 					return true
 				})
 				.forEach((currItem, currItemIndex) => {
-					const label = selectedFieldNames[currColIndex]
+					let label = selectedFieldNames[currColIndex]
+
+					for(const availableField of availableFieldNames) {
+						const {
+							fieldName: currAvailableFieldName = "",
+							dataType: currAvailableDataType = FIELD_DATA_TYPES.STRING,
+							index: currAvailableIndex,
+							displayName: currAvailableDisplayName = "",
+						} = availableField || {}
+
+						if(isEqualCI(label?.displayName.trim(), currAvailableDisplayName)) label = {...availableField}
+					}
 
 					let finalValue = currItem
 

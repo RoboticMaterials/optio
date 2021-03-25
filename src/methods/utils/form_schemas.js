@@ -6,6 +6,7 @@ import { get } from "lodash"
 import { isArray } from "./array_utils";
 import { LOT_TEMPLATES_RESERVED_FIELD_NAMES } from "../../constants/form_constants";
 import {convertCardDate} from "./card_utils";
+import {isEqualCI} from "./string_utils";
 
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
@@ -293,7 +294,8 @@ Yup.addMethod(Yup.array, "nestedUnique", function (message, path) {
             idx = 0
 
             for (const item of sublist) {
-                if (!err && mapper(item) !== set[i]) {
+                console.log("item",item)
+                if (!err && isEqualCI(mapper(item).trim(), set[i].trim())) {
                     err = this.createError({ path: `fields[${rowIdx}][${idx}].${path}`, message })
                 }
 
@@ -311,7 +313,10 @@ Yup.addMethod(Yup.array, "nestedUnique", function (message, path) {
 Yup.addMethod(Yup.string, "notIn", function (message, arr) {
     return this.test("notIn", message, function (value) {
         const { path, createError } = this;
-        if (arr.includes(value)) return createError({ path, message })
+
+        for(const item in arr) {
+            if(isEqualCI(item.trim(), value.trim())) return createError({ path, message })
+        }
         return true
     });
 });
