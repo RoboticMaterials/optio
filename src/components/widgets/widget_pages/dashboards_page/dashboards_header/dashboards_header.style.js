@@ -7,16 +7,17 @@ export const Header = styled.div`
     display: flex;
 
     flex-direction: row;
-    // align-items: center;
-    justify-content: flex-start;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 
-    margin: 0rem 5rem 0rem 5rem;
+    width: calc(90% - 1rem);
+    margin: 0 calc(5% + 0.5rem) 0 calc(5% + 0.5rem);
 
     height: 6rem;
     max-height: 6rem;
     min-height: 6rem;
     line-height: 6rem;
-
 `
 
 export const Title = styled.h2`
@@ -35,6 +36,8 @@ export const Title = styled.h2`
     }
     user-select: none;
 
+    position: absolute;
+
     pointer-events: none;
     white-space: nowrap;
     overflow: hidden;
@@ -50,6 +53,13 @@ export const LotsTitle = styled.h2`
 
 `
 
+export const MoreIcon = styled.i`
+    font-size: 1.3rem;
+    color: ${props => props.theme.bg.quinary};
+    cursor: pointer;
+    margin-top: 1.8rem;
+`
+
 export const SidebarButton = styled(AssignmentOutlinedIcon)`
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz1};
@@ -61,11 +71,19 @@ export const SidebarButton = styled(AssignmentOutlinedIcon)`
     background: transparent;
 `
 
+export const LotsContainer = styled.div`
+    margin-right: calc(5% + 0.5rem);
+    display: flex; 
+    align-items: flex-start;
+    justify-content: space-between;
+    height: ${props => props.moreLots ? '' : '3.8rem'};
+    transition: height 0.5s;
+`
 
 export const RowContainer = styled.div`
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     justify-content: flex-start;
 
     margin-left:2rem;
@@ -74,8 +92,8 @@ export const RowContainer = styled.div`
     padding-right:2rem;
     padding-bottom: 1rem;
     width: 90%;
-    height: 3.5rem;
-    overflow:hidden;
+    // height: 3.5rem;
+    overflow: hidden;
     flex-wrap: wrap;
 
 
@@ -84,6 +102,8 @@ export const RowContainer = styled.div`
         margin-left: 2rem;
         margin-right: 2rem;
     }
+
+    transition: height 0.5s;
 `
 
 export const ColumnContainer = styled.div`

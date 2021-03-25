@@ -50,10 +50,23 @@ const DashboardButtonList = ((props) => {
         const currentButton = buttons[index]
 
         let broken = false
-        let name = currentButton.name
+
         const type = currentButton?.type
-        let taskID = currentButton.task_id
+        const taskID = currentButton.task_id
         const task = tasks[taskID]
+        const {
+            name: taskName = ""
+        } = task || {}
+
+        const name = currentButton.name
+
+        const displayName = name ? name :
+            (type === TYPES.ROUTES.key) ? taskName
+                :
+                (Object.keys(OPERATION_TYPES).includes(type)) ? OPERATION_TYPES[type].name
+                    :
+                    "Unnamed"
+
         // const associatedTaskId = task?.associated_task
         const deviceTypes = task?.device_types || []
 
@@ -120,13 +133,13 @@ const DashboardButtonList = ((props) => {
 
         if (deviceTypes.length > 1) return (
             <DashboardSplitButton
-                title={name}
+                title={displayName}
                 iconColor={"black"}
                 iconClassName={iconClassName}
                 key={index}
                 type={type}
                 onClick={onClick}
-                containerStyle={{ height: '4rem', lineHeight: '3rem', marginBottom: '0.5rem', minWidth: '80%' }}
+                containerStyle={{ }}
                 hoverable={false}
                 taskID={taskID}
                 color={currentButton.color}
@@ -140,13 +153,13 @@ const DashboardButtonList = ((props) => {
         return (
             <DashboardButton
                 deviceType={deviceTypes[0]}
-                title={name}
+                title={displayName}
                 iconColor={iconColor}
                 iconClassName={iconClassName}
                 key={index}
                 type={type}
                 onClick={onClick}
-                containerStyle={{ height: '4rem', lineHeight: '3rem', marginBottom: '0.5rem', minWidth: '80%' }}
+                containerStyle={{  }}
                 hoverable={false}
                 taskID={taskID}
                 color={currentButton.color}

@@ -14,6 +14,7 @@ const MultiSelectOptions = (props) => {
 	const {
 		selectedLots,
 		onDeleteClick,
+		onMoveClick,
 		onClearClick
 	} = props
 
@@ -29,13 +30,21 @@ const MultiSelectOptions = (props) => {
 				style={{margin: "0 1rem 0 0"}}
 				type={"button"}
 				schema={"delete"}
-				secondary
+				tertiary
 				onClick={onDeleteClick}
 				label={`Delete (${selectedLotsCount})`}
 			/>
 			<Button
+				style={{margin: "0 1rem 0 0"}}
+				type={"button"}
+				schema={"lots"}
+				onClick={onMoveClick}
+				label={`Move (${selectedLotsCount})`}
+			/>
+			<Button
 				style={{margin: 0}}
 				type={"button"}
+				secondary
 				schema={"lots"}
 				onClick={onClearClick}
 				label={`Clear Selected`}
@@ -49,12 +58,14 @@ MultiSelectOptions.propTypes = {
 	selectedLots: PropTypes.array,
 	onDeleteClick: PropTypes.func,
 	onClearClick: PropTypes.func,
+	onMoveClick: PropTypes.func,
 }
 
 MultiSelectOptions.defaultProps = {
 	selectedLots: [],
 	onDeleteClick: () => {},
 	onClearClick: () => {},
+	onMoveClick: () => {},
 }
 
 export default MultiSelectOptions

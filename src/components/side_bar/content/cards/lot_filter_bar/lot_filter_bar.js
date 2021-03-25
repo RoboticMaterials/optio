@@ -133,8 +133,8 @@ const LotFilterBar = (props) => {
                 {/*<div style={{flex: 1}}>*/}
                 <DropDownSearch
                     maxDropdownWidth={`${size.width}px` }
-                    portal={document.getElementById("root")}
-                    containerCss={props.containerCss}
+                    // portal={document.getElementById("root")}
+                    // containerCss={props.containerCss}
                     reactDropdownSelectCss={props.reactDropdownSelectCss}
                     dropdownCss={props.dropdownCss}
                     valueCss={props.valueCss}
@@ -149,16 +149,8 @@ const LotFilterBar = (props) => {
                     valueField={"label"}
                     schema={"lots"}
                     style={{
-                        background: themeContext.bg.tertiary,
-                        borderTopRightRadius: 0,
-                        borderBottomRightRadius: 0,
-                        fontSize: "2px",
-                        borderTopLeftRadius: "1rem",
-                        borderBottomLeftRadius: "1rem",
-                        flex: 1,
-                        overflow: "hidden",
-                        // minWidth: "10rem",
-                        borderBottom: `1px solid ${themeContext.bg.quinary}`,
+                        minWidth: "10rem",
+                        overflow: 'visible'
                     }}
                 />
                 {/*</div>*/}
@@ -168,14 +160,13 @@ const LotFilterBar = (props) => {
                         style={{flex: 3}}
                     >
                     <DropDownSearch
-
-                        containerCss={props.containerCss}
+                        // containerCss={props.containerCss}
                         dropdownCss={props.dropdownCss}
                         maxDropdownWidth={`${flagsSize.width}px` }
                         reactDropdownSelectCss={props.reactDropdownSelectCss}
-                        portal={document.getElementById("root")}
+                        // portal={document.getElementById("root")}
                         {...valueProps}
-                        clearable={true}
+                        // clearable={true}
                         multi={true}
                         options={Object.values(FLAG_OPTIONS)}
                         onChange={(values) => {
@@ -209,7 +200,7 @@ const LotFilterBar = (props) => {
                                             return (
                                                 <styled.FlagButton
                                                     style={{
-                                                        margin: "0 .5rem",
+                                                        margin: "0 .1rem",
                                                     }}
                                                     key={currColorId}
                                                     type={"button"}
@@ -219,7 +210,7 @@ const LotFilterBar = (props) => {
                                                         methods.dropDown('open');
                                                     }}
                                                     schema={props.schema}
-                                                    className="fas fa-flag"
+                                                    className="fas fa-square"
                                                 />
                                             )
                                         })}
@@ -254,21 +245,13 @@ const LotFilterBar = (props) => {
                                     onClick={item.disabled ? undefined : () => methods.addItem(item)}
                                     onKeyPress={item.disabled ? undefined : () => methods.addItem(item)}
                                     schema={props.schema}
-                                    className="fas fa-flag"
+                                    className={isSelected ? "fas fa-check-square" : "fas fa-square"}
                                 />
                             )
                         }}
 
                         style={{
-                            background: themeContext.bg.tertiary,
-                            // width: "15rem",
-                            borderTopLeftRadius: 0,
-                            borderBottomLeftRadius: 0,
-                            borderTopRightRadius: "1rem",
-                            borderBottomRightRadius: "1rem",
-                            borderLeft: `1px solid ${themeContext.bg.quaternary}`,
-                            borderBottom: `1px solid ${themeContext.bg.quinary}`,
-                            flex: 3,
+                            minWidth: `${flagsSize.width}px`
                         }}
                     />
                     </div>
@@ -281,7 +264,7 @@ const LotFilterBar = (props) => {
                         }}
                         focus={shouldFocusLotFilter}
                         style={{
-                            background: themeContext.bg.tertiary,
+                            background: themeContext.bg.secondary,
                             height: "100%",
                             flex: 1,
                             borderTopLeftRadius: 0,
@@ -292,12 +275,7 @@ const LotFilterBar = (props) => {
 
                         }}
                         textboxContainerStyle={{
-                            flex: 1,
-                            // height: "100%",
-                            alignSelf: "stretch",
-                            // background: "blue",
-                            margin: 0,
-                            padding: 0
+
                         }}
                         schema={"lots"}
                     />

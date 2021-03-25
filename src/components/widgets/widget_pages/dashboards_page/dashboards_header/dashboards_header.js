@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 
 // functions external
 import { useSelector } from 'react-redux';
@@ -41,6 +41,8 @@ const DashboardsHeader = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
     const positions = useSelector(state => state.positionsReducer.positions)
 
+    const [moreLots, setMoreLots] = useState(false);
+
     const locations = {
         ...positions,
         ...stations
@@ -70,32 +72,36 @@ const DashboardsHeader = (props) => {
 
         if (!!hasLot) {
             return (
-                <style.RowContainer windowWidth={windowWidth}>
-                    <style.LotsTitle>Lots:</style.LotsTitle>
-                    {Object.values(cards)
-                        .filter((card, ind) => {
-                            return getIsCardAtBin(card, location?._id)
-                        })
-                        .map((card) => {
-                            const {
-                                name,
-                                lotNumber,
-                                bins,
-                                _id
-                            } = card || {}
+                <style.LotsContainer moreLots={moreLots}>
+                    <style.RowContainer windowWidth={windowWidth} style={{height: moreLots ? '' : '3.8rem'}}>
+                        <style.LotsTitle>Lots:</style.LotsTitle>
+                        {Object.values(cards)
+                            .filter((card, ind) => {
+                                return getIsCardAtBin(card, location?._id)
+                            })
+                            .map((card) => {
+                                const {
+                                    name,
+                                    lotNumber,
+                                    bins,
+                                    _id
+                                } = card || {}
 
-                            const quantity = getBinQuantity({bins}, location?._id)
+                                const quantity = getBinQuantity({bins}, location?._id)
 
-                            return(
-                                <SimpleLot
-                                    key={_id}
-                                    name={name}
-                                    lotNumber={lotNumber}
-                                    quantity={quantity}
-                                />
-                            )
-                        })}
-                </style.RowContainer>
+                                return(
+                                    <SimpleLot
+                                        key={_id}
+                                        name={name}
+                                        lotNumber={lotNumber}
+                                        quantity={quantity}
+                                    />
+                                )
+                            })}
+                            
+                    </style.RowContainer>
+                    <style.MoreIcon className='fas fa-ellipsis-h' onClick={() => setMoreLots(!moreLots)}/>
+                </style.LotsContainer>
             )
         }
 
@@ -116,7 +122,7 @@ const DashboardsHeader = (props) => {
             <style.Header>
 
                 {showBackButton &&
-                <BackButton style={{ order: '1' }} containerStyle={{ marginTop: '1.8rem' }}
+                <BackButton style={{ order: '1' }} containerStyle={{  }}
                             onClick={onBack}
                 />
                 }
@@ -126,18 +132,20 @@ const DashboardsHeader = (props) => {
                 }
 
                 {showEditButton && !mobileMode &&
-                <Button style={{ order: '3', marginTop: '1.8rem' }}
+                <Button style={{ order: '3', position: 'absolute', right: '0', marginRight: '0' }}
                         onClick={setEditingDashboard}
+                        secondary
                 >
-                    Edit
+                    Edit Dashboard
                 </Button>
                 }
 
                 {showSaveButton &&
                 <>
-                    <Button style={{ order: '3', marginTop: '1.8rem' }}
+                    <Button style={{ order: '3' }}
                             type='submit'
                             disabled={saveDisabled}
+                            secondary
                     >
                         Save
                     </Button>

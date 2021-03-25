@@ -1,26 +1,24 @@
 import styled, {css} from 'styled-components'
-import {hexToRGBA, RGB_Linear_Shade} from "../../../methods/utils/color_utils";
+import {hexToRGBA, RGB_Linear_Shade, LightenDarkenColor} from "../../../methods/utils/color_utils";
 
 const activeStyle = css`
 	box-shadow: none;
-	transform: translateY(4px);
+	transform: translateY(0px);
 	color:  ${props => RGB_Linear_Shade(-0.1, hexToRGBA(props.color))};
 	background-color:  ${props => RGB_Linear_Shade(-0.1, hexToRGBA(props.backgroundColor))};
 `
 
 const hoverStyle = css`
-	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+	box-shadow: 0px 5px 2px -2px rgba(0, 0, 0, 0.3);
 	transform: translateY(-1px);
 	color:  ${props => RGB_Linear_Shade(0.01, hexToRGBA(props.color))};
 	background-color:  ${props => RGB_Linear_Shade(0.01, hexToRGBA(props.backgroundColor))};
 `
 
-
-
 export const Container = styled.button`
   width: ${props => props.width};
   height: ${props => props.height};
-  color: ${props => props.color};
+  color: ${props => props.theme.fg.red};
   
   // flex layout
   display: flex;
@@ -35,9 +33,9 @@ export const Container = styled.button`
 	outline: none;
   }
   
-	border: thin solid ${props => props.theme.bg.secondary};
+	border: thin solid ${props => props.theme.bg.tertiary};
 	border-radius: .5rem;
-	box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+	// box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
 	transition: all 0.2s ease 0s;
 	cursor: pointer;
 	outline: none;
@@ -52,7 +50,7 @@ export const Container = styled.button`
 	${props => props.clickable && activeStyle}
   }
   
-  ${props=> props.active && activeStyle}
+//   ${props=> props.active && activeStyle}
   
   &:focus {
     outline: none;
@@ -67,6 +65,6 @@ export const Container = styled.button`
 	
 }
   
-	backgroundColor: ${props => props.backgroundColor};
+	background-color: ${props => LightenDarkenColor(props.theme.bg.tertiary,20)};
 	padding: .5rem;
 `

@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-
+import { hexToRGBA } from '../../methods/utils/color_utils';
 
 export const SideBarOpenCloseButton = styled.button`
     position: absolute;
@@ -12,9 +12,8 @@ export const SideBarOpenCloseButton = styled.button`
 
     border-radius: .5rem;
 
-    box-shadow: 0 0.1rem 0.2rem 0rem #303030;
-    /* background-color: ${props => props.showSideBar ? 'rgba(255,255,255,0.2)' : props.theme.bg.secondary} ; */
-    background: rgba(97, 98, 109, 0.97);
+    box-shadow: 0 0 4px 1.5px rgba(0, 0, 0, 0.1);
+    background-color: ${props => hexToRGBA(props.theme.bg.primary, 0.97)};
     
     transition: background-color 0.25s ease, box-shadow 0.1s ease;
 
@@ -35,6 +34,7 @@ export const SideBarOpenCloseButton = styled.button`
     //     margin-left: .5rem;
 
     // }
+
 `
 
 // export const HamburgerInner = styled.span`
@@ -54,8 +54,8 @@ export const SidebarWrapper = styled.div`
     // width: auto;
     // flex-grow: 0;
 
-    background: rgba(46, 47, 58, 0.97);
-    overflow: auto;
+    background-color: ${props => hexToRGBA(props.theme.bg.secondary, 0.97)};
+    overflow: hidden;
 `
 
 export const SidebarContent = styled.div`
@@ -70,14 +70,13 @@ export const SidebarContent = styled.div`
     border-radius: 0 0 8px 0;
     // border-right: 8px solid ${props => props.theme.bg.quinary};
 
-    background-color: rgba(255, 255, 255, 0.1);
-
+    background-color: ${props => hexToRGBA(props.theme.bg.primary, 0.97)};
     overflow: auto;
 
 `
 
 export const ResizeBar = styled.div`
-	background-color: rgba(97, 98, 109, 0.97);
+	background-color: ${props => hexToRGBA(props.theme.bg.secondary, 0.97)};
     cursor: ew-resize;
     width: 8px;
     min-width: 8px;

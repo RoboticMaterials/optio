@@ -129,7 +129,10 @@ const DashboardsPage = (props) => {
 
             // if dashboard doesn't already contain kickoff button, add it
             if(!containsKickoffButton) {
-                const kickOffButton = getOperationButton(OPERATION_TYPES.KICK_OFF.key)
+                const kickOffButton = {
+                    ...getOperationButton(OPERATION_TYPES.KICK_OFF.key),
+                    name: ""
+                }
 
                 await dispatchPutDashboardAttributes({
                     buttons: [...buttons, kickOffButton]
@@ -146,7 +149,10 @@ const DashboardsPage = (props) => {
 
             // add finish button
             if(!containsFinishButton) {
-                const finishButton = getOperationButton(OPERATION_TYPES.FINISH.key)
+                const finishButton = {
+                    ...getOperationButton(OPERATION_TYPES.FINISH.key),
+                    name: ""
+                }
 
                 await dispatchPutDashboardAttributes({
                     buttons: [...buttons, finishButton]

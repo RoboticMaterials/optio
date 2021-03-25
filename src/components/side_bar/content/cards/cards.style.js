@@ -22,7 +22,8 @@ export const Body = styled.div`
 	position: relative;
 	
 	
-	background: ${props => props.theme.bg.tertiary};
+	background: ${props => props.theme.bg.secondary};
+  box-shadow: inset 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
 `
 
 export const CardZoneContainer = styled.div`
@@ -35,6 +36,8 @@ export const CardZoneContainer = styled.div`
   //padding: 1rem;
 	//width: 100%;
 	//height: 100%;
+
+  // border: 1px solid green;
 `
 
 

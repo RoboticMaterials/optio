@@ -17,6 +17,7 @@ import {getLoadStationId, getUnloadStationId} from "../../../../../methods/utils
 import * as styled from "./card_zone.style"
 import {isObject} from "../../../../../methods/utils/object_utils";
 import {isArray} from "../../../../../methods/utils/array_utils";
+import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../../constants/lot_contants";
 
 
 const CardZone = ((props) => {
@@ -33,7 +34,8 @@ const CardZone = ((props) => {
 		sortMode,
 		sortDirection,
 		selectedCards,
-		setSelectedCards
+		setSelectedCards,
+		handleAddLotClick,
 	} = props
 
 	// redux state
@@ -219,14 +221,14 @@ const CardZone = ((props) => {
 					processId={processId}
 					route_id={route_id}
 					cards={cardsArr}
-					handleCardClick={handleCardClick}
+					onCardClick={handleCardClick}
 				/>
 			)
 		})
 	}
 
 	return(
-		<styled.Container>
+		<styled.Container style={{background: 'white'}}>
 			<LotQueue
 				setSelectedCards={setSelectedCards}
 				selectedCards={selectedCards}
@@ -240,7 +242,8 @@ const CardZone = ((props) => {
 				stationName={"Queue"}
 				processId={processId}
 				cards={queue}
-				handleCardClick={handleCardClick}
+				onCardClick={handleCardClick}
+				onAddLotClick={() => handleAddLotClick(processId)}
 			/>
 
 			{renderStationColumns()}
@@ -258,7 +261,7 @@ const CardZone = ((props) => {
 				stationName={"Finished"}
 				processId={processId}
 				cards={finished}
-				handleCardClick={handleCardClick}
+				onCardClick={handleCardClick}
 			/>
 		</styled.Container>
 	)
@@ -281,7 +284,10 @@ CardZone.defaultProps = {
 	setShowCardEditor: () => {},
 	showCardEditor: false,
 	maxHeight: "30rem",
-	lotFilterValue: ""
+	lotFilterValue: "",
+	selectedFilterOption: LOT_FILTER_OPTIONS.name,
+	sortMode: LOT_FILTER_OPTIONS.name,
+	sortDirection: SORT_DIRECTIONS.ASCENDING,
 }
 
 export default memo(CardZone)
