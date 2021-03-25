@@ -515,7 +515,7 @@ const DeviceEdit = (props) => {
                                 Edit Dashboard
                             </Button>
 
-                            <Button schema={'devices'} style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: 'auto', boxSizing: 'border-box' }}
+                            <Button schema={'devices'} type={'submit'} style={{ display: 'inline-block', float: 'right', width: '100%', maxWidth: '25rem', marginTop: 'auto', boxSizing: 'border-box' }}
                             // onClick={() => {
                             //     submitForm()
                             // }}
