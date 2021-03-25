@@ -24,6 +24,7 @@ import * as styled from "./list_view.style"
 
 // import logger
 import log from '../../logger.js';
+import ProgressCircle from "../basic/progress_circle/progress_circle";
 
 const logger = log.getLogger("ListView")
 
@@ -41,6 +42,8 @@ const SCREENS = {
         schema: "locations"
     },
 }
+
+const CLICK_TIMEOUT = 2000
 
 const ListView = (props) => {
     const {
@@ -68,6 +71,29 @@ const ListView = (props) => {
     const [showDashboards, setShowDashboards] = useState(false)
     const [showSettings, setShowSettings] = useState(false)
     const [confirmExitModal, setConfirmExitModal] = useState(false);
+    const [clickProgress, setClickProgress] = useState(0);
+    const [clickInterval, setClickInterval] = useState(null)
+    const [clicking, setClicking] = useState(false)
+
+    useEffect(() => {
+        if(!clicking || !(clickProgress < 100)) clearInterval(clickInterval)
+    }, [clicking, clickProgress])
+
+    const beginClickCounter = () => {
+        const timeout = 50
+        clearInterval(clickInterval)
+        setClickInterval(setInterval(() => {
+            setClickProgress((previous)=> {
+                if((previous + 100 * ((timeout) / CLICK_TIMEOUT)) < 100) {
+                    return previous + 100 * ((timeout) / CLICK_TIMEOUT)
+                }
+                else {
+                    clearInterval(clickInterval)
+                    return 100
+                }
+            })
+        }, timeout))
+    }
 
     const CURRENT_SCREEN = (showDashboards) ? SCREENS.DASHBOARDS :
         showSettings ? SCREENS.SETTINGS : SCREENS.LOCATIONS
@@ -153,6 +179,8 @@ const ListView = (props) => {
         })
     }
 
+    console.log("clickProgress",clickProgress)
+
 
     return (
         <styled.Container>
@@ -173,8 +201,24 @@ const ListView = (props) => {
 
             <styled.Header>
                 {(showDashboards) ?
+                    <div>
+                        {clicking &&
+                        <ProgressCircle
+                            progress={clickProgress}
+
+                        />
+                        }
+
                   <ClickNHold
                     time = {2}
+                    onStart={()=> {
+                        setClicking(true)
+                        beginClickCounter()
+                    }}
+                    onEnd={()=> {
+                        setClicking(false)
+                        setClickProgress(0)
+                    }}
                     onClickNHold={() => {
                       setConfirmExitModal(true)
                     }}
@@ -192,6 +236,7 @@ const ListView = (props) => {
                         />
                     </BounceButton>
                     </ClickNHold>
+                    </div>
 
                     :
                       <BounceButton
