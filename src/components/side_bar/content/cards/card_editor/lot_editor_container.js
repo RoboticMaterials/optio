@@ -813,7 +813,7 @@ const LotEditorContainer = (props) => {
                     title={"Paste Event Detected"}
                     onRequestClose={() => setShowSimpleModal(false)}
                     onCloseButtonClick={() => setShowSimpleModal(false)}
-                    handleOnClick1={() => {
+                    handleOnClick2={() => {
                         setShowPasteMapper(true)
                         setPasteMapperHidden(false)
                         setShowSimpleModal(false)
@@ -825,12 +825,12 @@ const LotEditorContainer = (props) => {
                         setDisablePasteModal(false)
 
                     }}
-                    handleOnClick2={() => {
+                    handleOnClick1={() => {
                         setShowSimpleModal(false)
                         setDisablePasteModal(true)
                     }}
-                    button_1_text={"Yes"}
-                    button_2_text={"No"}
+                    button_2_text={"Yes"}
+                    button_1_text={"No"}
 
                 >
                     <styled.SimpleModalText>A paste event was detected. Would you like to use pasted data to create lots?</styled.SimpleModalText>
