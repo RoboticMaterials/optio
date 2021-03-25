@@ -154,6 +154,7 @@ const LotEditorSidebar = (props) => {
                             <div style={{width: "fit-content"}}>
                                 <FieldComponentMapper
                                     component={value.component}
+                                    usable={false}
                                 />
                             </div>
                         </Draggable>

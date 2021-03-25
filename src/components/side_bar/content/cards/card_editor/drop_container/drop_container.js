@@ -262,6 +262,7 @@ const DropContainer = (props) => {
 								component={component}
 								fieldName={fieldName}
 								containerStyle={{width: "100%",}}
+								usable={false}
 							/>
 							:
 							<FieldWrapper
@@ -272,6 +273,7 @@ const DropContainer = (props) => {
 								<FieldComponentMapper
 									// fieldName={fieldName}
 									component={component}
+									usable={false}
 								/>
 							</FieldWrapper>
 						}

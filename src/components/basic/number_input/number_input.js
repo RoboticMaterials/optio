@@ -6,7 +6,6 @@ import PropTypes from 'prop-types'
 // styles
 import * as styled from './number_input.style'
 
-
 export const NUMBER_INPUT_BUTTON_TYPES = {
 	PLUS: "PLUS",
 	MINUS: "MINUS"
@@ -23,9 +22,10 @@ const NumberInput = ({
 	inputDisabled,
 	value,
 	plusDisabled,
-						 inputCss,
-						 longPlusPressEvent,
-						 longMinusPressEvent,
+	inputCss,
+	longPlusPressEvent,
+	longMinusPressEvent,
+	usable,
 	inputChildren,
 	...props }) => {
 
@@ -35,6 +35,7 @@ const NumberInput = ({
 			<styled.Button
 				color={'#ff1818'}
 				className='fas fa-minus-circle'
+				usable={usable}
 				onClick={(e) => {
 					e.stopPropagation()
 					e.preventDefault()
@@ -45,7 +46,9 @@ const NumberInput = ({
 			/>
 			<div style={{position: "relative"}}>
 				<styled.Input
-					disabled={inputDisabled}
+					usable={usable}
+					readOnly={props.readOnly || !usable}
+					disabled={props.inputDisabled || !usable}
 					inputCss={inputCss}
 					type="number"
 					onChange={onInputChange}
@@ -55,6 +58,7 @@ const NumberInput = ({
 				{inputChildren}
 			</div>
 			<styled.Button
+				usable={usable}
 				className='fas fa-plus-circle'
 				color={'#1c933c'}
 				disabled={plusDisabled}
@@ -79,6 +83,7 @@ NumberInput.propTypes = {
 NumberInput.defaultProps = {
 	plusDisabled: false,
 	inputDisabled: false,
+	usable: true,
 	onMinusClick: () => {},
 	onPlusClick: () => {}
 }

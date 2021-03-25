@@ -230,8 +230,8 @@ const FormComponent = (props) => {
 									}}
 								>
 									<Textbox
-										textboxContainerStyle={{flex: 1}}
-										// disabled={true}
+										style={{flex: 1}}
+										usable={false}
 										type="text"
 										placeholder="Enter name..."
 										InputComponent={Textbox}

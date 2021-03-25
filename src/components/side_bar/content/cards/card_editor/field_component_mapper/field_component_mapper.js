@@ -19,9 +19,9 @@ const FieldComponentMapper = (props) => {
 		preview,
 		onCalendarClick,
 		value,
-		displayName
+		displayName,
+		usable
 	} = props
-
 
 	switch(component) {
 		case FIELD_COMPONENT_NAMES.TEXT_BOX: {
@@ -40,14 +40,15 @@ const FieldComponentMapper = (props) => {
 					{preview ?
 						<styled.TextContainer>
 						<Textbox
-							// style={{width: "15rem"}}
+							usable={usable}
 							placeholder="Enter text..."
-							textboxContainerStyle={{display: "flex", flex: 1}}
+							style={{display: "flex", flex: 1}}
 							schema={"lots"}
 						/>
 						</styled.TextContainer>
 						:
 						<TextField
+							usable={usable}
 							name={fieldName}
 							type="text"
 							placeholder="Enter text..."
@@ -75,17 +76,18 @@ const FieldComponentMapper = (props) => {
 					{preview ?
 						<styled.TextContainer>
 						<Textbox
+							usable={usable}
 							type="text"
 							placeholder="Enter text..."
 							InputComponent={Textbox}
 							lines={5}
-							// style={{display: "flex", flex: 1}}
-							textboxContainerStyle={{display: "flex", flex: 1}}
+							style={{display: "flex", flex: 1}}
 							schema={"lots"}
 						/>
 						</styled.TextContainer>
 						:
 						<TextField
+							usable={usable}
 							name={fieldName}
 							type="text"
 							placeholder="Enter text..."
@@ -113,12 +115,14 @@ const FieldComponentMapper = (props) => {
 						fieldName && <styled.Label>{fieldName}:</styled.Label>
 					}
 					{preview ?
-						<NumberInput/>
+						<NumberInput
+							usable={usable}
+						/>
 						:
 						<NumberField
+							usable={usable}
 							name={fieldName}
 							minValue={0}
-							// maxValue={100000000}
 						/>
 					}
 				</styled.Container>
@@ -141,6 +145,7 @@ const FieldComponentMapper = (props) => {
 						fieldName && <styled.Label>{fieldName}:</styled.Label>
 					}
 						<CalendarPlaceholder
+							usable={usable}
 							containerStyle={{width: "6rem"}}
 							onClick={() => onCalendarClick(CALENDAR_FIELD_MODES.SINGLE)}
 							text={dateText ? dateText : "Date"}
@@ -185,6 +190,7 @@ const FieldComponentMapper = (props) => {
 						fieldName && <styled.Label>{fieldName}:</styled.Label>
 					}
 						<CalendarPlaceholder
+							usable={usable}
 							selectRange={true}
 							startText={(startDay && startMonth && startYear) ? `${startMonth}/${startDay}/${startYear}` : "Start"}
 							endText={(endDay && endMonth && endYear) ? `${endMonth}/${endDay}/${endYear}` : "End"}
@@ -202,13 +208,15 @@ const FieldComponentMapper = (props) => {
 
 // Specifies propTypes
 FieldComponentMapper.propTypes = {
-	preview: PropTypes.bool
+	preview: PropTypes.bool,
+	usable: PropTypes.bool
 };
 
 // Specifies the default values for props:
 FieldComponentMapper.defaultProps = {
 	preview: true,
-	onCalendarClick: () => {}
+	onCalendarClick: () => {},
+	usable: true
 };
 
 
