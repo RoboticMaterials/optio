@@ -21,7 +21,6 @@ export const RowContainer = styled.div`
 	display: flex;
 	flex: 1;
 	align-items: center;
-  
 `
 
 const hoverCss = css`
