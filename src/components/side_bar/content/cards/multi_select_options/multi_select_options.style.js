@@ -8,5 +8,5 @@ export const Container = styled.div`
 	align-items: center;
 	padding: .5rem 1rem;
 	
-	background: ${props => props.theme.bg.quaternary};
+	background: ${props => props.theme.bg.primary};
 `

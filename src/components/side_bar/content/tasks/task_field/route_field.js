@@ -608,6 +608,7 @@ const TaskField = (props) => {
                         InputComponent={Textbox}
                         name={fieldParent ? `${fieldParent}.name` : "name"}
                         placeholder={"New Route Name"}
+                        label={"Route Name"}
                         schema={'tasks'}
                         focus={!name}
                         style={{ fontSize: '1.2rem', fontWeight: '600' }}

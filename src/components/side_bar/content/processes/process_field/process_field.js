@@ -653,6 +653,7 @@ export const ProcessField = (props) => {
                         focus={!values.name}
                         placeholder='Process Name'
                         defaultValue={values.name}
+                        label='Process Name'
                         schema={'processes'}
                         name={`name`}
                         InputComponent={Textbox}

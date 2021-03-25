@@ -344,26 +344,28 @@ const Cards = (props) => {
                 showBackButton={isProcessView}
                 title={title}
             />
-            <ZoneHeader
-                sortDirection={sortDirection}
-                setSortDirection={setSortDirection}
-                sortMode={sortMode}
-                setSortMode={setSortMode}
-                setLotFilterValue={setLotFilterValue}
-                selectedFilterOption={selectedFilterOption}
-                setSelectedFilterOption={setSelectedFilterOption}
-                selectedProcesses={selectedProcesses}
-                setSelectedProcesses={setSelectedProcesses}
-                zone={id}
-            />
-            {selectedCards.length > 0 &&
-            <MultiSelectOptions
-                selectedLots={selectedCards}
-                onDeleteClick={handleDeleteClick}
-                onMoveClick={handleMoveClick}
-                onClearClick={()=>setSelectedCards([])}
-            />
-            }
+            <div style={{display: 'flex', flexDirection: 'row', margin: '1rem 1rem'}}>
+                <ZoneHeader
+                    sortDirection={sortDirection}
+                    setSortDirection={setSortDirection}
+                    sortMode={sortMode}
+                    setSortMode={setSortMode}
+                    setLotFilterValue={setLotFilterValue}
+                    selectedFilterOption={selectedFilterOption}
+                    setSelectedFilterOption={setSelectedFilterOption}
+                    selectedProcesses={selectedProcesses}
+                    setSelectedProcesses={setSelectedProcesses}
+                    zone={id}
+                />
+                {selectedCards.length > 0 &&
+                <MultiSelectOptions
+                    selectedLots={selectedCards}
+                    onDeleteClick={handleDeleteClick}
+                    onMoveClick={handleMoveClick}
+                    onClearClick={()=>setSelectedCards([])}
+                />
+                }
+            </div>
 
             <styled.Body
                 id={"cards-body"}
