@@ -478,10 +478,8 @@ const HILModals = (props) => {
         }
         delete newItem._id
 
+        dispatchGetTaskQueue()
         await putTaskQueueItem(newItem, taskQueueID)
-        await dispatchGetTaskQueue()
-
-        dispatchPutTaskQueue(newItem, taskQueueID)
         dispatchTaskQueueItemClicked('')
     }
 

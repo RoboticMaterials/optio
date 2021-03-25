@@ -32,7 +32,6 @@ const HILModal = () => {
     const localHumanTask = useSelector(state => state.taskQueueReducer.localHumanTask)
     const showModalId = useSelector(state => state.taskQueueReducer.showModalID)
     const [statusTimerIntervals, setStatusTimerIntervals] = useState({})
-
     const dashboardID = params.dashboardID
     const stationID = params.stationID
     const deviceDashboard = !!devices ? !!devices[stationID] : false

@@ -88,19 +88,19 @@ export default function taskQueueReducer(state = defaultState, action) {
         // ***************
         case GET_TASK_QUEUE_SUCCESS:
 
-            const taskQueue = {
-              ...action.payload
-            }
+          let taskQueue = {}
 
-            Object.values(action.payload).forEach((item)=> {
-              if(item.hil_response===false){
-                delete taskQueue[item._id]
-              }
-            })
+          if (action.payload === undefined) {
+              taskQueue = {}
+          }
+          else taskQueue = Object.assign(taskQueue, action.payload)
 
-            if (action.payload === undefined) {
-                taskQueue = {}
-            }
+
+        Object.values(taskQueue).forEach((item)=> {
+          if(item.hil_response===false){
+            delete taskQueue[item._id]
+          }
+        })
 
             return Object.assign({}, state, {
                 taskQueue: taskQueue,
@@ -168,16 +168,6 @@ export default function taskQueueReducer(state = defaultState, action) {
                   error: '',
                   pending: false,
               }
-
-            return {
-                ...state,
-                taskQueue: {
-                    ...state.taskQueue,
-                    [action.payload.ID]: forceUpdate,
-                },
-                error: '',
-                pending: false,
-            }
 
         case PUT_TASK_QUEUE_FAILURE:
             return Object.assign({}, state, {
