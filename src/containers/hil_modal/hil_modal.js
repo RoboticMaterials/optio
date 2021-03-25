@@ -318,7 +318,7 @@ const HILModal = () => {
         <>
             {handleHilsInTaskQueue}
             {handleHILTimers}
-            {renderHIL()}
+            {renderHIL}
         </>
     )
 }
