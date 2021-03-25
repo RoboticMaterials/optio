@@ -83,10 +83,8 @@ export const Container = styled(Modal)`
 
 	z-index: 50;
 
-	min-width: 95%;
-	max-width: 95%;
-	max-height: 95%;
-	// height: 95%;
+	width: 60rem;
+  min-height: 30rem;
 
 	color: ${props => props.theme.bg.octonary};
 
