@@ -170,51 +170,53 @@ const SignInUpPage = (props) => {
 
                 return (
                     <Form>
-                        <TextField
-                            name={"email"}
-                            placeholder='Enter Email'
-                            type='text'
-                            InputComponent={Textbox}
-                            style={{
-                                marginBottom: '.5em',
-                                height: '3rem'
-                            }}
-                        />
-
-                        <TextField
-                            name={"password"}
-                            placeholder='Enter Password'
-                            type='password'
-                            InputComponent={Textbox}
-                            style={{
-                                marginBottom: '.5rem',
-                                height: '3rem'
-                            }}
-                        />
-
-                        {/* If sign in hasn't been selected show a confirm password for sign up */}
-                        {!signIn &&
+                        <styled.Container>
                             <TextField
-                                name={"confirmPassword"}
+                                name={"email"}
+                                placeholder='Enter Email'
+                                type='text'
+                                InputComponent={Textbox}
+                                style={{
+                                    marginBottom: '.5em',
+                                    height: '3rem',
+                                    width: '25rem'
+                                }}
+                            />
+
+                            <TextField
+                                name={"password"}
                                 placeholder='Enter Password'
                                 type='password'
                                 InputComponent={Textbox}
                                 style={{
                                     marginBottom: '.5rem',
-                                    height: '3rem'
+                                    height: '3rem',
+                                    width: '25rem'
                                 }}
                             />
-                        }
 
-                        {!signIn &&
+                            {/* If sign in hasn't been selected show a confirm password for sign up */}
+                            {!signIn &&
+                                <TextField
+                                    name={"confirmPassword"}
+                                    placeholder='Enter Password'
+                                    type='password'
+                                    InputComponent={Textbox}
+                                    style={{
+                                        marginBottom: '.5rem',
+                                        height: '3rem',
+                                        width: '25rem'
+                                    }}
+                                />
+                            }
+
+                            {!signIn &&
                                 <styled.NoteText>
                                     Note: Your password must be 8 charaters long and contain 1 upper case letter, 1 lower case letter, 1 number and 1 special character
                                 </styled.NoteText>
-                        }
+                            }
 
-
-
-                        <styled.Container>
+                        
                             <styled.Button type="submit">{signIn ? 'Sign In' : 'Sign Up'}</styled.Button>
                         </styled.Container>
                     </Form>

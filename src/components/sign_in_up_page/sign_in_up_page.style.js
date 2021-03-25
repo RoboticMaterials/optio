@@ -1,11 +1,11 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-display:flex;
-flex-direction:column;
-grid-template-columns: 1fr;
-grid-gap: 0.1rem;
-align-content: center;
+    display:flex;
+    flex-direction:column;
+    grid-template-columns: 1fr;
+    grid-gap: 0.1rem;
+    align-content: center;
 `
 
 
@@ -32,12 +32,11 @@ export const Button = styled.button`
     margin: 0.5rem;
     border: none;
     box-shadow: 0 0.05rem 0.1rem 0rem #303030
-
 `
-
 export const NoteText = styled.h4`
     font-size: ${props => props.theme.fontSize.sz4};
     font-family: ${props => props.theme.font.primary};
     color: ${props => props.theme.bg.quaternary};
     text-align: center;
+    width: 25rem;
 `

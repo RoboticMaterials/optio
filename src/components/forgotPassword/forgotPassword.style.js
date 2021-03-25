@@ -1,7 +1,6 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-    // width: 35%;
     width: 40rem;
     position: absolute;
     top: 50%;
@@ -11,7 +10,7 @@ export const Container = styled.div`
 
     display: flex;
     flex-direction: column;
-    // justify-content: center;
+    justify-content: center;
     align-items: center;
 
     box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.1);
@@ -64,20 +63,21 @@ export const LogoWelcome = styled.h1`
 `;
 
 export const SignInUpContainer = styled.div`
+    font-family: 'Montserrat';
+    font-size: 1.25rem;
+    margin: 0.5rem;
+    width: 20rem;
+
+    font-size: ${props => props.theme.fontSize.sz4};
+    font-family: ${props => props.theme.font.primary};
+    color: ${props => props.theme.bg.senary};
+    text-align: center;
     
 `
 
-export const CheckBoxWrapper = styled.div`
-    position: relative;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    margin: .5rem 0rem;
-`;
-
 export const Button = styled.button`
     cursor: 'pointer';
-    width: 10rem;
+    width: 20rem;
     border-radius: 0.5rem;
     background-color: #FF4B4B;
     color: white;
@@ -85,8 +85,6 @@ export const Button = styled.button`
     align-self: center;
     justify-content: center;
     padding: 0.5rem;
-    margin: 0.5rem;
     border: none;
     box-shadow: 0 0.05rem 0.1rem 0rem #303030
-
 `

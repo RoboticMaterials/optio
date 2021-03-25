@@ -25,7 +25,7 @@ export const LogoContainer = styled.div`
     align-items: center;
     justify-content: center;
     position: relative;
-    margin-bottom: 5%;
+    margin-bottom: 8%;
     margin-top: 5%;
 `
 

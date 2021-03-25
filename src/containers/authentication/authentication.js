@@ -13,8 +13,11 @@ import configData from '../../settings/config'
 // import 'cross-fetch/polyfill';
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 
+import { useHistory, useParams } from 'react-router-dom'
+
 // Import actions
 import { postLocalSettings, getLocalSettings } from '../../redux/actions/local_actions'
+import ForgotPassword from '../../components/forgotPassword/forgotPassword'
 
 /**
  * After the APIs have been loaded in the api_container this container is loaded
@@ -37,10 +40,13 @@ const Authentication = (props) => {
         authenticated
     } = props
 
+    const history = useHistory()
+    const params = useParams()
 
     const dispatch = useDispatch()
 
     const [signIn, setSignIn] = useState(true)
+    const [forgotPassword, setForgotPassword] = useState(false)
 
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
@@ -48,6 +54,18 @@ const Authentication = (props) => {
     useEffect(() => {
         handleInitialLoad()
     }, [])
+
+    useEffect(() => {
+        if(history.location.pathname === '/'){
+            setSignIn(true)
+            setForgotPassword(false)
+        }else if(history.location.pathname === '/forgot-password'){
+            setForgotPassword(true)
+        }else if(history.location.pathname === '/create-account'){
+            setSignIn(false)
+            setForgotPassword(false)
+        }
+    }, [params])
 
     const handleSignInChange = (value) => {
         setSignIn(value)
@@ -87,7 +105,7 @@ const Authentication = (props) => {
                             dispatchPostLocalSettings({
                                 ...response,
                                 authenticated:true,
-                                non_local_api_ip: window.location.hostname,
+                                non_local_api_ip: window.location.hostname === 'localhost' ? 'demo.rm.studio' : window.location.hostname,
                                 non_local_api: true,
                             })
                         }
@@ -104,25 +122,8 @@ const Authentication = (props) => {
                 <styled.LogoIcon className='icon-rmLogo' />
                 <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
             </styled.LogoContainer>
-
-            {/* <styled.CheckBoxWrapper>
-                <styled.Button
-                    onClick={() => setSignIn(true)}
-                    selected={signIn}
-                    style={{borderRadius: '.5rem 0  0 .5rem'}}
-                >
-                    Sign In
-                </styled.Button>
-
-                <styled.Button
-                    onClick={() => setSignIn(false)}
-                    selected={!signIn}
-                    style={{borderRadius: '0 .5rem .5rem 0'}}
-                >
-                    Sign Up
-                </styled.Button>
-            </styled.CheckBoxWrapper> */}
-
+        
+            { !forgotPassword &&
             <styled.SignInUpContainer>
 
                 <SignInUpPage
@@ -130,23 +131,42 @@ const Authentication = (props) => {
                     onChange={handleSignInChange} />
 
             </styled.SignInUpContainer>
+            }
+
+            { forgotPassword &&
+            <styled.SignInUpContainer>
+
+                <ForgotPassword />
+
+            </styled.SignInUpContainer>
+            }
 
             <styled.LogoContainer>
-
-            <Link to="/forgot-password">Forgot Password? </Link>
             
-            <Link to="/login" style={{
-                marginLeft: '.5rem', 
-                marginRight: '.5rem',
-                textDecoration: 'none',
-                cursor: 'default'
-                }}> • </Link>
+            {!forgotPassword && 
+            <div>
 
-            <Link to="/about"> Create an account </Link>
+                <Link to="/forgot-password">Forgot Password? </Link>
+                
+                <Link to="/login" style={{
+                    marginLeft: '.5rem', 
+                    marginRight: '.5rem',
+                    textDecoration: 'none',
+                    cursor: 'default'
+                    }}> • </Link>
+
+                {signIn &&
+                    <Link to="/create-account"> Create an account </Link>
+                }
+
+                {!signIn &&
+                    <Link to="/"> Sign in </Link>
+                }
+
+            </div>
+            }
 
             </styled.LogoContainer>
-            
-
             
         </styled.Container>
     )

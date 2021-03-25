@@ -54,7 +54,6 @@ const ForgotPassword = (props) => {
         // call forgotPassword on cognitoUser
         cognitoUser.forgotPassword({
             onSuccess: function(result) {
-                console.log('call result: ', result);
                 setResetPasswordVal(true)
             },
             onFailure: function(err) {
@@ -72,8 +71,6 @@ const ForgotPassword = (props) => {
             password
         } = values
 
-        console.log('here', values);
-
         try {
 
             var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
@@ -86,19 +83,17 @@ const ForgotPassword = (props) => {
             // setup cognitoUser first
             const cognitoUser = new CognitoUser(userData);
     
-            // await cognitoUser.confirmPassword(verification, password)
-
             // call confirmPassword on cognitoUser
             cognitoUser.confirmPassword(verification, password, {
                 onFailure(err) {
                     console.log(err);
+                    alert(err.message)
                 },
                 onSuccess() {
-                    console.log('sucess');
-                    history.push('/login')
+                    alert('You have sucessfully changed your password!')
+                    history.push('/')
                 },
             });
-
         } catch (error) {
             console.log(error);
         }
@@ -128,116 +123,93 @@ const ForgotPassword = (props) => {
             }}
 
             validateOnBlur={false}
-            validateOnChange={true}
+            validateOnChange={false}
 
             // Chooses what schema to use based on whether it's a sign in or sign up
             validationSchema={resetPasswordVal ? passwordResetSchema : emailSchema }
 
             onSubmit={async (values, { setSubmitting }) => {
-
                 setSubmitting(true)
 
                 await handleSubmit(values)
 
                 setSubmitting(false)
-
             }}
-
         >
             {(formikProps) => {
 
                 return (
-                  
                     <Form>
-                            <styled.Container>
 
-                                <styled.LogoContainer>
-                                    <styled.LogoIcon className='icon-rmLogo' />
-                                    <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
-                                </styled.LogoContainer>
+                        <styled.SignInUpContainer>
+                            {resetPasswordVal ? 
+                            'Please fill this form to reset your password:' 
+                            : 
+                            'Please provide your email. You will recieve a verification code there shortly.'}
+                        </styled.SignInUpContainer>
 
-                                {!resetPasswordVal &&
-                                <div>
-
-                                    <styled.SignInUpContainer>
-                                        Please provide your Email
-                                    </styled.SignInUpContainer>
-                                
-                                    <styled.SignInUpContainer>
-                                    You will get an email with a verification code to your email
-                                    </styled.SignInUpContainer>
-
-                                </div>
-                                }
-
-                                {resetPasswordVal &&
-                                    <styled.SignInUpContainer>
-                                        Please fill this out to reset your password:
-                                    </styled.SignInUpContainer>
-                                }
-                                
-                                    <TextField
-                                        name={"email"}
-                                        placeholder='Enter Email'
-                                        type='text'
-                                        InputComponent={Textbox}
-                                        style={{
-                                            marginBottom: '.5rem',
-                                            height: '3rem',
-                                            width: '20rem'
-                                        }}
-                                    />
-                                
-                                {resetPasswordVal &&
-                                    <TextField
-                                        name={"verification"}
-                                        placeholder='Verification Code'
-                                        type='text'
-                                        InputComponent={Textbox}
-                                        style={{
-                                            marginBottom: '.5rem',
-                                            height: '3rem',
-                                            width: '20rem'
-                                        }}
-                                    />
-                                }
-
-                                {resetPasswordVal &&
-                                    <TextField
-                                        name={"password"}
-                                        placeholder='Enter Password'
-                                        type='password'
-                                        InputComponent={Textbox}
-                                        style={{
-                                            marginBottom: '.5rem',
-                                            height: '3rem',
-                                            width: '20rem'
-                                        }}
-                                    />
-                                }
-
-                                {resetPasswordVal &&
-                                    <TextField
-                                        name={"checkPassword"}
-                                        placeholder='Check Password'
-                                        type='password'
-                                        InputComponent={Textbox}
-                                        style={{
-                                            marginBottom: '.5rem',
-                                            height: '3rem',
-                                            width: '20rem'
-                                        }}
-                                    />
-                                }
-
-                                <styled.Button type="submit" style={{width: '20rem', margin: 0}}>Submit</styled.Button>
-
-                            </styled.Container>
-                        
+                        <styled.SignInUpContainer>
                     
-                        </Form>                        
+                        <TextField
+                            name={"email"}
+                            placeholder='Enter Email'
+                            type='text'
+                            InputComponent={Textbox}
+                            style={{
+                                marginBottom: '.5rem',
+                                height: '3rem',
+                                width: '20rem'
+                            }}
+                        />
 
-                
+                        {resetPasswordVal &&
+                            <TextField
+                                name={"verification"}
+                                placeholder='Verification Code'
+                                type='text'
+                                InputComponent={Textbox}
+                                style={{
+                                    marginBottom: '.5rem',
+                                    height: '3rem',
+                                    width: '20rem'
+                                }}
+                            />
+                        }
+
+                        {resetPasswordVal &&
+                            <TextField
+                                name={"password"}
+                                placeholder='Enter Password'
+                                type='password'
+                                InputComponent={Textbox}
+                                style={{
+                                    marginBottom: '.5rem',
+                                    height: '3rem',
+                                    width: '20rem'
+                                }}
+                            />
+                        }
+
+                        {resetPasswordVal &&
+                            <TextField
+                                name={"checkPassword"}
+                                placeholder='Check Password'
+                                type='password'
+                                InputComponent={Textbox}
+                                style={{
+                                    marginBottom: '.5rem',
+                                    height: '3rem',
+                                    width: '20rem'
+                                }}
+                            />
+                        }  
+
+                        <styled.Button type="submit">Submit</styled.Button>
+
+                        </styled.SignInUpContainer>
+
+
+                    </Form>                        
                 )
             }   
         }

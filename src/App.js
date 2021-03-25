@@ -129,20 +129,11 @@ const App = () => {
                     />
                     <BrowserRouter>
                         {/* Authentication */}
-                        <Route exact path="/login" >
-                            <Authentication />
-                        </Route>
-
-                        {/* Redirect if needed */}
-                        <Redirector
-                            condition={(authenticated === null) || !authenticated}
-                            endpoint={"/login"}
-                        />
-
-                        {/* If user has never signed in */}
-                        <Route path="/forgot-password" >
-                            <ForgotPassword />
-                        </Route>
+                        {!authenticated &&
+                            <Route path="/" >
+                                <Authentication />
+                            </Route>
+                        }
 
                         {authenticated &&
                             <Route
