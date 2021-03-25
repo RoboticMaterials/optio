@@ -10,6 +10,7 @@ const Button = (props) => {
       schema,
       style,
       secondary,
+      type,
       tertiary,
       children,
       label,
@@ -38,7 +39,8 @@ const Button = (props) => {
 
 Button.defaultProps = {
     secondary : false,
-    disabled: false
+    disabled: false,
+    type: 'button'
 };
 
 export default Button;
