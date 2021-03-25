@@ -6,7 +6,6 @@ import PropTypes from 'prop-types'
 // styles
 import * as styled from './number_input.style'
 
-
 export const NUMBER_INPUT_BUTTON_TYPES = {
 	PLUS: "PLUS",
 	MINUS: "MINUS"
@@ -21,20 +20,25 @@ const NumberInput = ({
 	hasError,
 	onInputChange,
 	inputDisabled,
+	themeContext,
 	value,
 	plusDisabled,
-						 inputCss,
-						 longPlusPressEvent,
-						 longMinusPressEvent,
+	inputCss,
+	longPlusPressEvent,
+	longMinusPressEvent,
 	inputChildren,
+	inputStyle,
+	buttonStyle,
+	containerStyle,
 	...props }) => {
 
 
 	return (
-		<styled.Container>
+		<styled.Container style={containerStyle}>
 			<styled.Button
-				color={'#ff1818'}
-				className='fas fa-minus-circle'
+				// color={'#ff1818'}
+				color={themeContext.fg.primary}
+				className='fas fa-minus-square'
 				onClick={(e) => {
 					e.stopPropagation()
 					e.preventDefault()
@@ -42,6 +46,7 @@ const NumberInput = ({
 				}}
 				{...longMinusPressEvent}
 				disabled={minusDisabled}
+				style={buttonStyle}
 			/>
 			<div style={{position: "relative"}}>
 				<styled.Input
@@ -50,13 +55,15 @@ const NumberInput = ({
 					type="number"
 					onChange={onInputChange}
 					value={value}
+					style={inputStyle}
 				>
 				</styled.Input>
 				{inputChildren}
 			</div>
 			<styled.Button
-				className='fas fa-plus-circle'
-				color={'#1c933c'}
+				className='fas fa-plus-square'
+				// color={'#1c933c'}
+				color={themeContext.fg.primary}
 				disabled={plusDisabled}
 				onClick={(e) => {
 					e.stopPropagation()
@@ -64,6 +71,7 @@ const NumberInput = ({
 					onPlusClick()
 				}}
 				{...longPlusPressEvent}
+				style={buttonStyle}
 			/>
 		</styled.Container>
 	)

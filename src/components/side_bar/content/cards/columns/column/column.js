@@ -337,8 +337,6 @@ const Column = ((props) => {
 								...rest
 							} = card
 
-							console.log('CARD', card)
-
 							const templateValues = getLotTemplateData(lotTemplateId, card)
 
 							// const lotName = lots[lot_id] ? lots[lot_id].name : null

@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-
+import React, {useState, useEffect} from "react";
+import Popup from 'reactjs-popup'
 import * as styled from "./calendar_placeholder.style"
 
 const CalendarPlaceholder = (props) => {
@@ -9,6 +9,9 @@ const CalendarPlaceholder = (props) => {
 		onEndClick,
 		text,
 		selectRange,
+		calendarContent,
+		showCalendarPopup,
+		setShowCalendarPopup, 
 		endText,
 		startText,
 		containerStyle
@@ -29,8 +32,11 @@ const CalendarPlaceholder = (props) => {
 	)
 
 	return (
-		<styled.DateItem style={containerStyle} onClick={onClick}>
+		<styled.DateItem style={containerStyle} onClick={() => {onClick(); setShowCalendarPopup(true)}}>
 			<styled.DateText>{text}</styled.DateText>
+			<Popup open={showCalendarPopup} closeOnDocumentClick={true} onClose={() => setShowCalendarPopup(false)}>
+				{!!calendarContent && calendarContent()}
+			</Popup>
 		</styled.DateItem>
 	)
 }

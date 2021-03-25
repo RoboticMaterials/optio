@@ -34,7 +34,8 @@ const ConfirmDeleteModal = (props) => {
             onRequestClose={close}
             style={{
                 overlay: {
-                    zIndex: 500
+                    zIndex: 500,
+                    backgroundColor: 'rgba(0, 0, 0, 0.4)' 
                 },
                 content: {
 
