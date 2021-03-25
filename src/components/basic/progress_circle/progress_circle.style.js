@@ -1,19 +1,15 @@
 import styled, {css} from "styled-components";
 
-export const Thingy = styled.div`
-  // transform: rotate(-90deg);
-  // transform-origin: 100% 100%;
-  // ${props => (props.angle) && `transform: rotate(${props.angle}deg)`};
-`
-
 export const Container = styled.div`
     transition: all 1s ease;
+    width: 100%;
+    height: 100%;
     
   .loader {
     position: relative;
-    width: 50px;
-    height: 50px;
-    float: left;
+    width: 100%;
+    height: 100%;
+    //float: left;
     user-select: none;
     box-sizing: border-box;
   }
@@ -22,7 +18,7 @@ export const Container = styled.div`
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    border: 5px solid rgb(10, 246, 218);
+    border: 5px solid ${props => props.inactiveColor ? props.inactiveColor : props.theme.bg.quaternary};
     box-sizing: border-box;
   }
 
@@ -33,7 +29,7 @@ export const Container = styled.div`
     overflow: hidden;
     width: 50%;
     height: 50%;
-    background: transparent;
+    //background: transparent;
     box-sizing: border-box;
   }
 
@@ -52,7 +48,7 @@ export const Container = styled.div`
     width: 200%;
     height: 200%;
     border-radius: 50%;
-    border: 5px solid rgba(255, 8, 8, 1);
+    border: 5px solid ${props => props.activeColor ? props.activeColor : props.theme.fg.secondary};
     box-sizing: border-box;
   }
 

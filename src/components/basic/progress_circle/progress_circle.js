@@ -7,7 +7,8 @@ const ProgressCircle = (props) => {
 
 	const {
 		progress,
-		loadingBackgroundColor,
+		inactiveColor,
+		activeColor
 	} = props
 
 	const [firstQuarterAngle, setFirstQuarterAngle] = useState(null)
@@ -24,7 +25,6 @@ const ProgressCircle = (props) => {
 	}, [progress])
 
 	const updateProgress = () => {
-		console.log("updateProgress progress",progress)
 		let tempProgress = Math.floor(progress);
 		if(tempProgress<25){
 			var angle = -90 + (tempProgress/100)*360;
@@ -69,6 +69,8 @@ const ProgressCircle = (props) => {
 			secondQuarterAngle={secondQuarterAngle}
 			thirdQuarterAngle={thirdQuarterAngle}
 			fourthQuarterAngle={fourthQuarterAngle}
+			inactiveColor={inactiveColor}
+			activeColor={activeColor}
 		>
 		<div
 			className="loader"
@@ -82,24 +84,24 @@ const ProgressCircle = (props) => {
 				<div className="text"></div>
 			</div>
 			<div angle={firstQuarterAngle} className="spiner-holder-one animate-0-25-a">
-				<styled.Thingy angle={firstQuarterAngle} className="spiner-holder-two animate-0-25-b">
+				<div angle={firstQuarterAngle} className="spiner-holder-two animate-0-25-b">
 					<div className="loader-spiner"></div>
-				</styled.Thingy>
+				</div>
 			</div>
 			<div angle={secondQuarterAngle} className="spiner-holder-one animate-25-50-a">
-				<styled.Thingy angle={secondQuarterAngle} className="spiner-holder-two animate-25-50-b">
+				<div angle={secondQuarterAngle} className="spiner-holder-two animate-25-50-b">
 					<div className="loader-spiner"></div>
-				</styled.Thingy>
+				</div>
 			</div>
 			<div angle={thirdQuarterAngle} className="spiner-holder-one animate-50-75-a">
-				<styled.Thingy angle={thirdQuarterAngle} className="spiner-holder-two animate-50-75-b">
+				<div angle={thirdQuarterAngle} className="spiner-holder-two animate-50-75-b">
 					<div className="loader-spiner"></div>
-				</styled.Thingy>
+				</div>
 			</div>
 			<div angle={fourthQuarterAngle} className="spiner-holder-one animate-75-100-a">
-				<styled.Thingy angle={fourthQuarterAngle} className="spiner-holder-two animate-75-100-b">
+				<div angle={fourthQuarterAngle} className="spiner-holder-two animate-75-100-b">
 					<div className="loader-spiner"></div>
-				</styled.Thingy>
+				</div>
 			</div>
 		</div>
 		</styled.Container>
@@ -108,11 +110,15 @@ const ProgressCircle = (props) => {
 };
 
 ProgressCircle.propTypes = {
-	progress: PropTypes.number
+	progress: PropTypes.number,
+	inactiveColor: PropTypes.string,
+	activeColor: PropTypes.string,
 };
 
 ProgressCircle.defaultProps = {
-	progress: 30
+	progress: 30,
+	inactiveColor: "",
+	activeColor: "",
 };
 
 export default ProgressCircle;

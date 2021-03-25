@@ -21,6 +21,7 @@ const BounceButton = (props => {
         Component,
         backgroundColor,
         active,
+        onlongPress,
         onClickOutside
     } = props
 
@@ -40,6 +41,7 @@ const BounceButton = (props => {
             style={containerStyle}
             active={active}
             ref={ref}
+            {...onlongPress}
         >
             { children}
         </style.Container>
