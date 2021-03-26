@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react"
+import React, {useEffect, useRef, useState, useContext } from "react"
 
 // components internal
 import ErrorTooltip from '../error_tooltip/error_tooltip'
@@ -13,6 +13,7 @@ import useLongPress from "../../../../hooks/useLongPress"
 
 // styles
 import * as styled from './number_field.style'
+import { ThemeContext } from 'styled-components'
 
 // utils
 import {setAcceleratingInterval} from "../../../../methods/utils/utils"
@@ -45,6 +46,8 @@ const NumberField = ({
 
 	// does the field contain an error?
 	const hasError = touched && error
+
+	const themeContext = useContext(ThemeContext);
 
 	useEffect(() => {
 		setFieldValue(fieldName, valueState)
@@ -133,6 +136,7 @@ const NumberField = ({
 				longPlusPressEvent={longPlusPressEvent}
 				longMinusPressEvent={longMinusPressEvent}
 				inputCss={hasError ? styled.errorCss : null}
+				themeContext={themeContext}
 				onMinusClick={() => {
 					if(!touched) {
 						setFieldTouched(fieldName, true)
@@ -212,6 +216,7 @@ const NumberField = ({
 				inputChildren={<ErrorTooltip
 					visible={hasError}
 					text={error}
+					color={themeContext.bad}
 					ContainerComponent={styled.IconContainerComponent}
 				/>}
 

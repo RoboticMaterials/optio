@@ -18,28 +18,18 @@ export const IconContainerComponent = styled.div`
 export const DefaultContainerComponent = styled.div`
   display: flex;
   align-items: flex-start;
-  position: relative;
   flex-direction: column;
-  //background: pink;
-  //flex: 1;
-  //align-items
-  
+
+  width: 100%;
+  height: 100%;
 `
 
-
 export const FieldComponentContainer = styled.div`
-  //background: white;
   display: flex;
   align-self: stretch;
-  //padding: 1rem;
-  //padding-bottom: 1.75rem;
-  //padding-left: .5rem;
-  padding-left: .5rem;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  padding-right: 2.5rem;
+  padding: 0 1rem 1rem 1rem;
   
-  border-radius: 0rem 1rem 1rem 1rem;
+  border-radius: 0rem 0rem 0.5rem 0.5rem;
   z-index: 5;
   transition: all ease 0.5s;
   align-items: center;
@@ -48,13 +38,12 @@ export const FieldComponentContainer = styled.div`
   align-items: center;
   justify-content: center;
   
-  background: ${props => props.updateColor ? "linear-gradient(0deg, rgb(152, 152, 152) 0%, rgb(227, 227, 227) 100%)" : "transparent"};
-
+  background: ${props => props.updateColor ? props.theme.bg.secondary : "transparent"};
 
 `
 
 export const DeleteContainer = styled.div`
-  background: ${props => props.updateColor ? "linear-gradient(0deg, rgb(227, 227, 227) 0%, rgb(152, 152, 152) 100%)" : "transparent"};
+  background: ${props => props.updateColor ? "red" : "transparent"};
   padding: .5rem 1rem;
   border-top-right-radius: 1rem;
   border-bottom-right-radius: 1rem;
@@ -62,10 +51,7 @@ export const DeleteContainer = styled.div`
 
 export const DeleteIcon = styled.i`
   ${commonClickableIcon};
-  //color: #ec0000;
-  margin-left: 1rem;
-  position: absolute;
-  right: 1rem;
+  margin: 0 1rem;
 `
 
 export const AlignIcon = styled.i`
@@ -83,15 +69,17 @@ export const StyleContainer = styled.div`
 `
 
 export const LabelContainer = styled.div`
-  //left: .2rem;
-  padding: .5rem;
-  //padding: .45rem;
-  //padding-right: .5rem;
-  border-top-left-radius: 1rem;
-  border-top-right-radius: 1rem;
+  padding: 1rem 1rem 0.5rem 1rem;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
   position: relative;
   transition: all 1s ease;
-  background: ${props => props.updateColor ? "linear-gradient(0deg, rgb(215, 215, 215) 0%, rgb(152, 152, 152) 100%)" : "transparent"};
+  width: 100%;
+  background: ${props => props.updateColor ? props.theme.bg.secondary : "transparent"};
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `
 
 export const GapFiller = styled.div`

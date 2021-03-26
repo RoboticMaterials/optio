@@ -16,6 +16,8 @@ export const Row = styled.div`
 export const Label = styled.span`
     font-size: ${props => props.theme.fontSize.sz4};
     font-weight: 600;
+	color:  ${props => props.theme.bg.septenary};
+	font-family: ${props => props.theme.font.primary};
 `
 
 export const DatesContainer = styled.span`
@@ -40,13 +42,14 @@ export const DateItem = styled.div`
 `
 
 export const DateText = styled.span`
-
+color:  ${props => props.theme.bg.septenary};
 font-size: ${props => props.theme.fontSize.sz4};
-
+font-family: ${props => props.theme.font.primary};
 `
 
 export const DateArrow = styled.i`
 	margin-left: .35rem;
 	margin-right: .35rem;
-	color: ${props => props.theme.bg.tertiary};
+	color: ${props => props.theme.bg.secondary};
+	font-family: ${props => props.theme.font.primary};
 `
