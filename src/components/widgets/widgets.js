@@ -101,6 +101,10 @@ const Widgets = (props) => {
         }
     }
 
+    const onOpenWidget = () => {
+        history.push('/locations/' + stationID + '/' + 'dashboards')
+    }
+
     const onClickLocation = async () => {
 
 
@@ -207,63 +211,66 @@ const Widgets = (props) => {
             }
             else {
                 return (
-                    <>
-                        {/* <styled.EmptySpaceContainer /> */}
-                        <styled.RowContainer style={{display: 'flex', width: '150rem', alignItems:'center', alignContent:'center', width: '100%', justifyContent:'space-between'}}>
-                            <styled.WidgetStationName style={{marginBottom:'0rem'}}>{selectedLocation.name}</styled.WidgetStationName>
-                            <styled.EditIcon
-                                className='fas fa-edit'
-                                styled={{ color: '#ff1818' }}
-                                onClick={() => onClickLocation()}
+                    !widgetPage ?
+                        <>
+                            {/* <styled.EmptySpaceContainer /> */}
+                            <styled.RowContainer
+                                style={{ display: 'flex', width: '150rem', alignItems: 'center', alignContent: 'center', width: '100%', justifyContent: 'space-between' }}
+                                onClick={() => onOpenWidget()}
+                            >
+                                <styled.WidgetStationName style={{ marginBottom: '0rem' }}>{selectedLocation.name}</styled.WidgetStationName>
+                                <styled.EditIcon
+                                    className='fas fa-edit'
+                                    styled={{ color: '#ff1818' }}
+                                    onClick={() => onClickLocation()}
+                                />
+                            </styled.RowContainer>
+                        </>
+                        :
+                        <>
+                            <WidgetButton
+                                id={stationID}
+                                type={'statistics'}
+                                label={'Statistics'}
+                                currentPage={widgetPage}
+
                             />
-                        </styled.RowContainer>
-                    </>
-                )
-                return (
-                    <>
-                        <WidgetButton
-                            id={stationID}
-                            type={'statistics'}
-                            label={'Statistics'}
-                            currentPage={widgetPage}
 
-                        />
+                            <WidgetButton
+                                id={stationID}
+                                type={'dashboards'}
+                                label={'Dashboards'}
+                                currentPage={widgetPage}
 
-                        <WidgetButton
-                            id={stationID}
-                            type={'dashboards'}
-                            label={'Dashboards'}
-                            currentPage={widgetPage}
+                            />
 
-                        />
+                            <WidgetButton
+                                id={stationID}
+                                type={'lots'}
+                                label={'Lots'}
+                                currentPage={widgetPage}
 
-                        <WidgetButton
-                            id={stationID}
-                            type={'lots'}
-                            label={'Lots'}
-                            currentPage={widgetPage}
+                            />
 
-                        />
-
-                        {/* Commented out for now, these widgets aren't working as of Sept. 1 2020. Once re-implemented make sure to update CSS */}
-                        {/* <WidgetButton
+                            {/* Commented out for now, these widgets aren't working as of Sept. 1 2020. Once re-implemented make sure to update CSS */}
+                            {/* <WidgetButton
                     id={stationID}
                     type={'tasks'}
                     currentPage={widgetPage}
                 /> */}
 
-                        {/* <WidgetButton
+                            {/* <WidgetButton
                             id={stationID}
                             type={'objects'}
                             currentPage={widgetPage}
                         /> */}
 
-                        {/* <WidgetButton
+                            {/* <WidgetButton
                     id={stationID}
                     type={'view'}
                     currentPage={widgetPage}
                 /> */}
-                    </>
+                        </>
 
                 )
             }
