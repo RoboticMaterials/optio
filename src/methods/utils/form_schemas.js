@@ -257,13 +257,13 @@ Yup.addMethod(Yup.object, "dopeUnique", function (message, fieldPath, pathToArr)
         for (const currItem of arr.flat()) {
             if (parseInt(currIndex) !== parseInt(megaIndex)) {
                 if (mapper) {
-                    if (compareItem === mapper(currItem)) {
+                    if (isString(compareItem) && isString(mapper(currItem)) && isEqualCI(compareItem.trim(),mapper(currItem).trim())) {
                         isUnique = false
                         return createError({ path: `${path}.${fieldPath}`, message })
                     }
                 }
                 else {
-                    if (item === currItem) {
+                    if (isString(item) && isString(currItem) && isEqualCI(item.trim(), currItem.trim())) {
                         isUnique = false
                         return createError({ path: `${path}.${fieldPath}`, message })
                     }
@@ -303,7 +303,6 @@ Yup.addMethod(Yup.array, "nestedUnique", function (message, path) {
             idx = 0
 
             for (const item of sublist) {
-                console.log("item",item)
                 if (!err && isEqualCI(mapper(item).trim(), set[i].trim())) {
                     err = this.createError({ path: `fields[${rowIdx}][${idx}].${path}`, message })
                 }

@@ -2,7 +2,7 @@ import React, {useState, useEffect, useContext} from "react";
 
 // external functions
 import PropTypes from "prop-types";
-import {Formik} from "formik";
+import {Formik, setNestedObjectValues} from "formik";
 import {useDispatch, useSelector} from "react-redux";
 import FadeLoader from "react-spinners/FadeLoader"
 
@@ -133,20 +133,11 @@ const FormComponent = (props) => {
 		};
 	}, [])
 
-	// useEffect(() => {
-	//
-	// 	if(!isOpen && content) setContent(null)
-	//
-	// 	return () => {
-	// 	}
-	// }, [isOpen])
-
+	/*
+	* resert form if template id changes
+	* */
 	useEffect(() => {
-
-		//
-		// setFieldValue("changed", false)
 		formikProps.resetForm()
-
 	}, [lotTemplateId])
 
 	return(
