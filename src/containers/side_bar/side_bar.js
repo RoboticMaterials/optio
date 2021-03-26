@@ -69,6 +69,7 @@ const SideBar = (props) => {
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const taskQueue = useSelector(state=>state.taskQueueReducer.taskQueue)
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
+    let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
 
     const history = useHistory()
     const url = useLocation().pathname
