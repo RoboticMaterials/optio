@@ -224,17 +224,28 @@ export const dashboardSchema = Yup.object().shape({
 });
 
 // returns error if any item in nested array is duplicate
-Yup.addMethod(Yup.object, "unique", function (message, fieldPath) {
+Yup.addMethod(Yup.object, "dopeUnique", function (message, fieldPath, pathToArr) {
     let mapper
     if (fieldPath) mapper = x => get(x, fieldPath)
 
-    return this.test("unique", message, function (item) {
-        const { path, createError, parent } = this
-        var index = path.match(/\[(.*?)\]/);
+    return this.test("dopeUnique", message, function (item) {
+        const { path, createError, parent, options } = this
+        const {
+            context
+        } = options || {}
+        const {
+            [pathToArr]: arr
+        } = context || {}
 
-        if (index) {
-            index = index[1];
-        }
+        let rx = /\[(-?\d+)\]/g
+        const reg2 = /[\[\]']+/g
+
+        var index = path.match(rx);
+        let megaIndex = 0
+        index.forEach((currItem) => {
+
+            megaIndex = megaIndex + parseInt(currItem.replace(reg2,''))
+        })
 
         let compareItem
         if (mapper) compareItem = mapper(item)
@@ -243,18 +254,16 @@ Yup.addMethod(Yup.object, "unique", function (message, fieldPath) {
         let isUnique = true
 
         let currIndex = 0
-        for (const currString of parent) {
-            const mapped = mapper(currString)
-            if (parseInt(currIndex) !== parseInt(index)) {
-
+        for (const currItem of arr.flat()) {
+            if (parseInt(currIndex) !== parseInt(megaIndex)) {
                 if (mapper) {
-                    if (compareItem === mapper(currString)) {
+                    if (compareItem === mapper(currItem)) {
                         isUnique = false
                         return createError({ path: `${path}.${fieldPath}`, message })
                     }
                 }
                 else {
-                    if (item === currString) {
+                    if (item === currItem) {
                         isUnique = false
                         return createError({ path: `${path}.${fieldPath}`, message })
                     }
@@ -316,8 +325,6 @@ Yup.addMethod(Yup.string, "notIn", function (message, arr) {
 
 
         for(const item of arr) {
-            console.log("notIn item",item)
-            console.log("notIn value",value)
             if(isString(value) && isString(item) && isEqualCI(item.trim(), value.trim())) return createError({ path, message })
         }
         return true
@@ -447,8 +454,7 @@ export const LotFormSchema = Yup.object().shape({
                     .notIn("This field name is reserved.", Object.values(LOT_TEMPLATES_RESERVED_FIELD_NAMES))
                     .required('Please enter a name for this field.'),
                 style: Yup.object()
-            })
-                .unique("Field names must be unique", "fieldName")
+            }).dopeUnique("Field names must be unique", "fieldName", "fields")
         )
     ),
     name: Yup.string()
@@ -464,7 +470,7 @@ export const templateMapperSchema = Yup.object().shape({
                 .min(1, '1 character minimum.')
                 .max(255, '50 character maximum.')
                 .required('Please enter field name.'),
-        }).unique("Field names must be unique", "fieldName")
+        }).dopeUnique("Field names must be unique", "fieldName", "selectedFieldNames")
     )
 })
 

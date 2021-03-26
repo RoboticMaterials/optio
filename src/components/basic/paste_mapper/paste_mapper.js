@@ -9,7 +9,7 @@ import {ThemeContext} from "styled-components";
 import {
 	CARD_SCHEMA_MODES,
 	getCardSchema,
-	getTemplateMapperSchema,
+	getTemplateMapperSchema, LotFormSchema,
 	templateMapperSchema
 } from "../../../methods/utils/form_schemas";
 import {
@@ -26,6 +26,7 @@ import ContainerWrapper from "../container_wrapper/container_wrapper";
 import {isObject} from "../../../methods/utils/object_utils";
 import {isEqualCI} from "../../../methods/utils/string_utils";
 import {BASIC_FIELD_DEFAULTS} from "../../../constants/form_constants";
+import set from "lodash/set";
 
 const PasteMapper = (props) => {
 
@@ -736,7 +737,23 @@ export const PasteForm = (props) => {
 				table: props.table
 			}}
 
-			validationSchema={templateMapperSchema}
+			validate={(values, props) => {
+				try {
+					templateMapperSchema.validateSync(values, {
+						abortEarly: false,
+						context: values
+					});
+				} catch (error) {
+					if (error.name !== "ValidationError") {
+						throw error;
+					}
+
+					return error.inner.reduce((errors, currentError) => {
+						errors = set(errors, currentError.path, currentError.message)
+						return errors;
+					}, {});
+				}
+			}}
 			validateOnChange={true}
 			validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
 			validateOnBlur={true}
