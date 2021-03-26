@@ -282,6 +282,34 @@ type TaskQueue
   hil_message: String
 }
 
+type TaskQueueEvents
+  @model
+  @auth(rules: [{ allow: private }])
+  # @key(name: "TaskQueueByOrgId", fields: ["organizationId"], queryField: "TaskQueueByOrgId" )
+{
+  # IDs
+  id: ID!
+  _id: String!
+  organizationId: ID!
+  
+  # Data
+  device_type: String!
+  mission_status: String
+  owner: String
+  task_id: String!
+  custom_task: AWSJSON
+  dashboard: String
+  showModal: Boolean
+  hil_response: Boolean
+  quantity: Int
+  lot_id: String
+  start_time: AWSTimestamp
+  end_time: AWSTimestamp
+
+  hil_station_id: String
+  hil_message: String
+}
+
 type Dashboard 
   @model
   @auth(rules: [{ allow: private }])

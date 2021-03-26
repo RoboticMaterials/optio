@@ -895,6 +895,90 @@ export const deleteTaskQueue = /* GraphQL */ `
     }
   }
 `;
+export const createTaskQueueEvents = /* GraphQL */ `
+  mutation CreateTaskQueueEvents(
+    $input: CreateTaskQueueEventsInput!
+    $condition: ModelTaskQueueEventsConditionInput
+  ) {
+    createTaskQueueEvents(input: $input, condition: $condition) {
+      id
+      _id
+      organizationId
+      device_type
+      mission_status
+      owner
+      task_id
+      custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lot_id
+      start_time
+      end_time
+      hil_station_id
+      hil_message
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateTaskQueueEvents = /* GraphQL */ `
+  mutation UpdateTaskQueueEvents(
+    $input: UpdateTaskQueueEventsInput!
+    $condition: ModelTaskQueueEventsConditionInput
+  ) {
+    updateTaskQueueEvents(input: $input, condition: $condition) {
+      id
+      _id
+      organizationId
+      device_type
+      mission_status
+      owner
+      task_id
+      custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lot_id
+      start_time
+      end_time
+      hil_station_id
+      hil_message
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteTaskQueueEvents = /* GraphQL */ `
+  mutation DeleteTaskQueueEvents(
+    $input: DeleteTaskQueueEventsInput!
+    $condition: ModelTaskQueueEventsConditionInput
+  ) {
+    deleteTaskQueueEvents(input: $input, condition: $condition) {
+      id
+      _id
+      organizationId
+      device_type
+      mission_status
+      owner
+      task_id
+      custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lot_id
+      start_time
+      end_time
+      hil_station_id
+      hil_message
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const createDashboard = /* GraphQL */ `
   mutation CreateDashboard(
     $input: CreateDashboardInput!

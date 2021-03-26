@@ -148,6 +148,67 @@ export const listTaskQueues = /* GraphQL */ `
     }
   }
 `;
+export const getTaskQueueEvents = /* GraphQL */ `
+  query GetTaskQueueEvents($id: ID!) {
+    getTaskQueueEvents(id: $id) {
+      id
+      _id
+      organizationId
+      device_type
+      mission_status
+      owner
+      task_id
+      custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lot_id
+      start_time
+      end_time
+      hil_station_id
+      hil_message
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listTaskQueueEventss = /* GraphQL */ `
+  query ListTaskQueueEventss(
+    $filter: ModelTaskQueueEventsFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listTaskQueueEventss(
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        _id
+        organizationId
+        device_type
+        mission_status
+        owner
+        task_id
+        custom_task
+        dashboard
+        showModal
+        hil_response
+        quantity
+        lot_id
+        start_time
+        end_time
+        hil_station_id
+        hil_message
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
 export const getDashboard = /* GraphQL */ `
   query GetDashboard($id: ID!) {
     getDashboard(id: $id) {

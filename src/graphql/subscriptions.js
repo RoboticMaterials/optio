@@ -961,6 +961,81 @@ export const onDeleteTaskQueue = /* GraphQL */ `
     }
   }
 `;
+export const onCreateTaskQueueEvents = /* GraphQL */ `
+  subscription OnCreateTaskQueueEvents {
+    onCreateTaskQueueEvents {
+      id
+      _id
+      organizationId
+      device_type
+      mission_status
+      owner
+      task_id
+      custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lot_id
+      start_time
+      end_time
+      hil_station_id
+      hil_message
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateTaskQueueEvents = /* GraphQL */ `
+  subscription OnUpdateTaskQueueEvents {
+    onUpdateTaskQueueEvents {
+      id
+      _id
+      organizationId
+      device_type
+      mission_status
+      owner
+      task_id
+      custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lot_id
+      start_time
+      end_time
+      hil_station_id
+      hil_message
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteTaskQueueEvents = /* GraphQL */ `
+  subscription OnDeleteTaskQueueEvents {
+    onDeleteTaskQueueEvents {
+      id
+      _id
+      organizationId
+      device_type
+      mission_status
+      owner
+      task_id
+      custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lot_id
+      start_time
+      end_time
+      hil_station_id
+      hil_message
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const onCreateDashboard = /* GraphQL */ `
   subscription OnCreateDashboard {
     onCreateDashboard {

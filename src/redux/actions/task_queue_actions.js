@@ -149,7 +149,7 @@ export const deleteTaskQueueAll = () => {
 
 // delete all
 // ******************************
-export const deleteTaskQueueItem = (id) => {
+export const deleteTaskQueueItem = (id, item) => {
     return async dispatch => {
         function onStart() {
             dispatch({ type: DELETE_ + TASK_QUEUE_ITEM + _STARTED });
@@ -166,7 +166,7 @@ export const deleteTaskQueueItem = (id) => {
 
         try {
             onStart();
-            const response = await api.deleteTaskQueueItem(id);
+            const response = await api.deleteTaskQueueItem(id, item);
             return onSuccess(response, id);
         } catch (error) {
             return onError(error);

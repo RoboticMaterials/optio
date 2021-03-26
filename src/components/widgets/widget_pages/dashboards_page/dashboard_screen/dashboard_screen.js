@@ -90,7 +90,7 @@ const DashboardScreen = (props) => {
     const onLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
     const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
 
-    const onDeleteTaskQueueItem = async (id) => await dispatch(deleteTaskQueueItem(id))
+    const onDeleteTaskQueueItem = async (id, item) => await dispatch(deleteTaskQueueItem(id, item))
 
     const dispatchStopAPICalls = (bool) => dispatch(localActions.stopAPICalls(bool))
 
@@ -403,7 +403,7 @@ const DashboardScreen = (props) => {
         onHILResponse(ID)
         setTimeout(() => onHILResponse(''), 2000)
 
-        await onDeleteTaskQueueItem(item.id)
+        await onDeleteTaskQueueItem(item.id, item)
         //await onPutTaskQueue(newItem, ID)
 
     }

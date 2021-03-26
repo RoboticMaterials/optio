@@ -423,11 +423,12 @@ const ApiContainer = (props) => {
                     const diff = lot.bins[task.load.station].count - taskQueueItem.quantity
 
                     if(diff === 0){
-                        // move the whole lot 
+
+                        // move the res of the lot 
                         delete lot.bins[task.load.station]
 
                         lot.bins[task.unload.station] = {
-                            count: taskQueueItem.quantity
+                            count: lot.bins[task.unload.station] ? taskQueueItem.quantity + lot.bins[task.unload.station].count : taskQueueItem.quantity
                         }
                     }else{
                         lot.bins[task.load.station].count = diff
@@ -441,10 +442,13 @@ const ApiContainer = (props) => {
                 // disatch update to the card
                 await onPutCard(lot)
 
-            }else{
-                console.log('no lot');
-            }
+                // delete task from Q
+                await onDeleteTaskQItem(taskQueueItem.id, 'load')
 
+            }else{
+                // delete task from Q
+                await onDeleteTaskQItem(taskQueueItem.id, 'load')
+            }
         }else{
             if(taskQueueItem.start_time === null){
                 taskQueueItem.start_time = Math.round(Date.now() / 1000)
@@ -1065,7 +1069,7 @@ const ApiContainer = (props) => {
             if (tasks[Q.task_id] === undefined) {
                 console.log('QQQQ TaskQ associated task has been deleted')
                 alert('TaskQ associated task has been deleted')
-                await onDeleteTaskQItem(Q._id)
+                await onDeleteTaskQItem(Q._id, Q)
             }
         })
     }
