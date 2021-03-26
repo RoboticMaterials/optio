@@ -30,10 +30,6 @@ import Widgets from './components/widgets/widgets'
 import ListView from "./components/list_view/list_view";
 import ConfirmDeleteModal from './components/basic/modals/confirm_delete_modal/confirm_delete_modal'
 
-import ForgotPassword from './components/forgotPassword/forgotPassword'
-import Redirector from './components/redirector/redirector'
-
-
 const widthBreakPoint = 1000;
 
 const App = () => {
