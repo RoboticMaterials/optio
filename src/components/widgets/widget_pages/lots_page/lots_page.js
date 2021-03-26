@@ -13,6 +13,7 @@ import { useParams, useHistory } from 'react-router-dom'
 import Button from '../../../../components/basic/button/button'
 import LotEditorContainer from "../../../side_bar/content/cards/card_editor/lot_editor_container"
 import LotListItem from "./lot_list_item/lot_list_item"
+import Lot from '../../../side_bar/content/cards/lot/lot'
 
 // utils
 import {getBinQuantity, getIsCardAtBin} from "../../../../methods/utils/lot_utils"
@@ -119,26 +120,49 @@ const LotsPage = (props) => {
                         lotNumber,
                         bins,
                         dates,
+                        totalQuantity,
+                        flags,
                         description,
-                        _id: currCardId,
+                        currCardId,
                         process_id: currCardProcessId
                     } = card || {}
 
+                    console.log(card)
+
                     const quantity = getBinQuantity({bins}, location?._id)
 
-                    return (
-                        <LotListItem
-                            key={currCardId}
-                            name={name}
-                            lotNumber={lotNumber}
-                            quantity={quantity}
-                            dates={dates}
-                            description = {description}
-                            onClick={() => {
-                                openEditor(currCardId, currCardProcessId, location._id)
-                            }}
-                        />
-                    )
+                    return <Lot
+                        // templateValues={templateValues}
+                        key={currCardId}
+                        // processName={processName}
+                        totalQuantity={totalQuantity || ""}
+                        lotNumber={lotNumber}
+                        name={name}
+                        // objectName={objectName}
+                        count={quantity}
+                        id={currCardId}
+                        flags={flags || []}
+                        onClick={() => {
+                            openEditor(currCardId, currCardProcessId, location._id)
+                        }}
+                        containerStyle={{
+                            marginBottom: "0.5rem",
+                        }}
+                    />
+
+                    // return (
+                    //     <LotListItem
+                    //         key={currCardId}
+                    //         name={name}
+                    //         lotNumber={lotNumber}
+                    //         quantity={quantity}
+                    //         dates={dates}
+                    //         description = {description}
+                    //         onClick={() => {
+                    //             openEditor(currCardId, currCardProcessId, location._id)
+                    //         }}
+                    //     />
+                    // )
                 })}
         </styled.LotsContainer>
     )

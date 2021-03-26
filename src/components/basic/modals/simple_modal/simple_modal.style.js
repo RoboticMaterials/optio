@@ -156,6 +156,8 @@ export const TextContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	margin-bottom: 1.5rem;
+
+  align-content: center;
 `;
 
 export const BodyContainer = styled.div`
@@ -165,6 +167,8 @@ export const BodyContainer = styled.div`
 	flex: 1;
 	justify-content: space-between;
 	overflow: hidden;
+
+  
 
 	background: ${props => props.theme.bg.primary};
 `
@@ -216,8 +220,9 @@ export const ContentContainer = styled.div`
 	overflow: hidden;
 	align-items: center;
   justify-content: flex-start;
-  align-items: flex-start;
+  // align-items: flex-start;
   margin: 1rem;
+  align-items: center;
 `
 export const ReportButtonsContainer = styled.div`
 	display: flex;
