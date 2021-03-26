@@ -13,7 +13,7 @@ export const Container = styled.div`
 export const RowTitles = styled.div`
   display: flex;
   align-self: stretch;
-  background: ${props => props.theme.bg.secondary};
+  background: ${props => props.theme.bg.tertiary};
   padding: 1rem;
   justify-content: space-between;
   //border: 1px solid blueviolet;

@@ -489,7 +489,7 @@ const EditLocation = (props) => {
 
 
                                 {/* Delete Location Button */}
-                                <Button schema={'locations'} onClick={() => {}} >Save Location</Button>
+                                <Button type={'submit'} schema={'locations'} onClick={() => {}} >Save Location</Button>
                                 <Button schema={'locations'} secondary disabled = {selectedLocation === null || !!selectedLocation.new} onClick={() => setConfirmDeleteModal(true)} >Delete</Button>
                                 </styled.ContentContainer>
                             </Form>
