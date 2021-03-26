@@ -113,7 +113,6 @@ function Position(props) {
         else if (selectedTask?.temp?.insertIndex === 0 && !!selectedProcess && selectedProcess.routes.length > 0) {
             // Find the station at the beginning of process
             const firstStation = selectedProcess.routes[0].load.station
-
             if (position.parent !== firstStation && selectedTask.load.position !== null) disabled = true
         }
 
@@ -122,6 +121,20 @@ function Position(props) {
             const processesStations = getProcessStationsWhileEditing(selectedProcess, tasks)
             if (processesStations.includes(position?.parent) && selectedTask?.temp?.insertIndex !== 0) disabled = true
         }
+    }
+
+    // Disables for when adding to the beginning of the process
+    else if (selectedTask?.temp?.insertIndex === 0 && !!selectedProcess && selectedProcess.routes.length > 0) {
+        const firstStation = selectedProcess.routes[0].load.station
+        const hasChildren = stations[firstStation].children.length > 0
+        const processesStations = getProcessStationsWhileEditing(selectedProcess, tasks)
+
+        // If adding to the beginning of a process and the first station in the process doesnt have a position, then you cant select a position
+        // Also if this positions parent is the first station, then you can start at the first station
+        if(!hasChildren || position?.parent === firstStation) disabled = true
+
+        // If adding to the beginning of a process and the first location hasnt been selected, disable the ability to use a positon whos sibling is already used
+        else if(processesStations.includes(position?.parent) && selectedTask?.load?.station === null) disabled = true
     }
 
     // This filters out positions when fixing a process
