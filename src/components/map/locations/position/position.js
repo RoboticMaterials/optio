@@ -90,7 +90,7 @@ function Position(props) {
     if (!!selectedPosition && selectedPosition._id !== positionId) disabled = true
 
     // Disable if making a task and this position does not have a parent
-    else if(!!selectedTask && !position.parent) disabled = true
+    else if (!!selectedTask && !position.parent) disabled = true
 
     // Disable if the position does not belong to the children copy
     else if (!!selectedStationChildrenCopy && !(positionId in selectedStationChildrenCopy)) disabled = true
@@ -98,15 +98,11 @@ function Position(props) {
     // Disbale if the selected stations children does not include this station
     else if (!!selectedStation && !selectedStation.children.includes(positionId)) disabled = true
 
-    // Disables while making task (IE no unload station)
-    else if (!!selectedTask && selectedTask?.load?.station !== null && selectedTask?.unload?.station === null) {
+    // Disables while making task (IE no unload station) and not fixing a process
+    else if (!!selectedTask && selectedTask?.load?.station !== null && selectedTask?.unload?.station === null && !fixingProcess) {
         // Disable making a task to this position if the select tasks station is this positions parent (cant make a route to the same parent/child)
         if (position?.parent === selectedTask?.load?.station) disabled = true
-        // Disable making a task to this position if it or its siblings are already used in the process
-        else if (!!selectedProcess) {
-            const processesStations = getProcessStationsWhileEditing(selectedProcess, tasks)
-            if(processesStations.includes(position?.parent)) disabled = true
-        }
+
         // Disable position if the selected task load position is a station (cant go from station to position or vice versa)
         else if (!!stations[selectedTask?.load?.position]) disabled = true
         // Disable position if its the load position. Cant make a task to itself
@@ -119,6 +115,12 @@ function Position(props) {
             const firstPosition = selectedProcess.routes[0].load.position
 
             if (position._id !== firstPosition && selectedTask.load.position !== null) disabled = true
+        }
+
+        // Disable making a task to this position if it or its siblings are already used in the process and its not adding to the beginnig of the process
+        else if (!!selectedProcess) {
+            const processesStations = getProcessStationsWhileEditing(selectedProcess, tasks)
+            if (processesStations.includes(position?.parent) && selectedTask?.temp?.insertIndex !== 0) disabled = true
         }
     }
 
