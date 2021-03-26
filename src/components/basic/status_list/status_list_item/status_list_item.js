@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useContext } from 'react'
 
 // components external
 import MoonLoader from "react-spinners/MoonLoader"
@@ -20,6 +20,7 @@ import * as styled from "./status_list_item.style"
 // utils
 import {isEmpty, isObject} from "../../../../methods/utils/object_utils"
 import {getMessageFromError} from "../../../../methods/utils/form_utils"
+import { ThemeContext } from 'styled-components'
 
 const FADE_LOADER_COLORS = {
 	red: "#f01000",
@@ -48,6 +49,8 @@ const StatusListItem = (props) => {
 		onCreateClick,
 		displayNames
 	} = props
+
+	const themeContext = useContext(ThemeContext)
 
 	const [mappedErrors, setMappedErrors] = useState({})
 	const [hasErrors, setHasErrors] = useState(false)
@@ -106,6 +109,7 @@ const StatusListItem = (props) => {
 	const submitDisabled = (validationCode !== FORM_STATUS.VALIDATION_SUCCESS) || (resourceCode === FORM_STATUS.CREATE_SUCCESS)
 
 	const renderErrorTooltip = (mappedErrors) => {
+
 		return(
 			<styled.InsideTooltipContainer>
 
@@ -172,6 +176,7 @@ const StatusListItem = (props) => {
 						[FORM_STATUS.VALIDATION_ERROR]:
 							<ErrorTooltip
 								visible={true}
+								color={themeContext.bad}
 								// text={validationMessage}
 								tooltip={renderErrorTooltip(mappedErrors)}
 								ContainerComponent={styled.TooltipContainer}

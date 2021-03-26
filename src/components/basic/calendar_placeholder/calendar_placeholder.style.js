@@ -24,9 +24,7 @@ export const DateItem = styled.div`
 	align-items: center;
 	justify-content: center;
 	
-	&:hover {
-		cursor: pointer;
-	}
+	cursor: pointer !important;
 	
 `
 

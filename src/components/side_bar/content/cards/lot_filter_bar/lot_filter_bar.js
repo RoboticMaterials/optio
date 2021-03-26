@@ -162,7 +162,7 @@ const LotFilterBar = (props) => {
                     <DropDownSearch
                         // containerCss={props.containerCss}
                         dropdownCss={props.dropdownCss}
-                        maxDropdownWidth={`${flagsSize.width}px` }
+                        // maxDropdownWidth={`${flagsSize.width}px` }
                         reactDropdownSelectCss={props.reactDropdownSelectCss}
                         // portal={document.getElementById("root")}
                         {...valueProps}
@@ -188,38 +188,33 @@ const LotFilterBar = (props) => {
                             } = state || {}
                             const value = state.values[0]
 
-                            if(isArray(values) && values.length > 0) {
-                                return (
-                                    <styled.FlagsContainer>
-                                        {values.map((currVal) => {
-                                            const {
-                                                color: currColor,
-                                                id: currColorId
-                                            } = currVal || {}
-
-                                            return (
-                                                <styled.FlagButton
-                                                    style={{
-                                                        margin: "0 .1rem",
-                                                    }}
-                                                    key={currColorId}
-                                                    type={"button"}
-                                                    color={currColor}
-                                                    onClick={(event) => {
-                                                        event.stopPropagation();
-                                                        methods.dropDown('open');
-                                                    }}
-                                                    schema={props.schema}
-                                                    className="fas fa-square"
-                                                />
-                                            )
-                                        })}
-                                    </styled.FlagsContainer>
-                                )
-                            }
-
-                            return(
-                                null
+                            return (
+                                <styled.FlagsContainer style={{minWidth: '4rem', paddingRight: '1rem'}}>
+                                    {isArray(values) && values.map(currVal => {
+                                                const {
+                                                    color: currColor,
+                                                    id: currColorId
+                                                } = currVal || {}
+    
+                                                return (
+                                                    <styled.FlagButton
+                                                        style={{
+                                                            margin: "0rem .1rem",
+                                                        }}
+                                                        key={currColorId}
+                                                        type={"button"}
+                                                        color={currColor}
+                                                        onClick={(event) => {
+                                                            event.stopPropagation();
+                                                            methods.dropDown('open');
+                                                        }}
+                                                        schema={props.schema}
+                                                        className="fas fa-square"
+                                                    />
+                                                )
+                                            })}
+                                
+                            </styled.FlagsContainer>
                             )
                         }}
                         itemRenderer={({ item, itemIndex, props, state, methods }) => {
@@ -229,6 +224,7 @@ const LotFilterBar = (props) => {
                             } = item
 
                             const isSelected = methods.isSelected(item)
+                            
 
                             return(
                                 <styled.FlagButton
