@@ -406,7 +406,7 @@ const FormComponent = (props) => {
 			<styled.BodyContainer>
 				<styled.ContentHeader style={{}}>
 					<styled.ContentTitle>Select Start and End Date</styled.ContentTitle>
-					<i className="fas fa-times" onClick={() => setShowCalendarPopup(false)}/>
+					<i className="fas fa-times" style={{cursor: 'pointer'}} onClick={() => setShowCalendarPopup(false)}/>
 				</styled.ContentHeader>
 
 				<styled.CalendarContainer>
