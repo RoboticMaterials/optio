@@ -180,7 +180,7 @@ const FormComponent = (props) => {
 					schema={'error'}
 				>
 				</BackButton>
-				
+
 				<div style={{marginRight: "auto"}}/>
 
 				<styled.TemplateNameContainer>
@@ -195,13 +195,13 @@ const FormComponent = (props) => {
 				</styled.TemplateNameContainer>
 				{/*</styled.Title>*/}
 
-				
+
 			</styled.Header>
 
 			<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
 				<LotEditorSidebar/>
 
-				<styled.SuperContainer>
+				<styled.ScrollContainer>
 					<styled.SectionContainer>
 						<styled.FieldsHeader
 							style={disabledStyle}
@@ -233,10 +233,11 @@ const FormComponent = (props) => {
 									}}
 								>
 									<Textbox
+										style={{flex: 1}}
+										usable={false}
 										schema='lots'
 										textboxContainerStyle={{flex: 1}}
-										inputStyle={{width: '20rem', pointerEvents: 'none'}}
-										// disabled={true}
+										inputStyle={{flex: 1, pointerEvents: 'none'}}
 										type="text"
 										placeholder="Enter name..."
 										InputComponent={Textbox}
@@ -288,7 +289,7 @@ const FormComponent = (props) => {
 							</styled.ObjectInfoContainer>
 						</div>
 					</styled.BodyContainer>
-				</styled.SuperContainer>
+				</styled.ScrollContainer>
 			</styled.RowContainer>
 
 
@@ -493,7 +494,7 @@ const LotCreatorForm = (props) => {
 			style={{
 				overlay: {
                     zIndex: 500,
-                    backgroundColor: 'rgba(0, 0, 0, 0.4)' 
+                    backgroundColor: 'rgba(0, 0, 0, 0.4)'
                 },
 				content: {
 

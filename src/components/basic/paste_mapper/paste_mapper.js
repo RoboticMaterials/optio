@@ -318,6 +318,18 @@ const PasteMapper = (props) => {
 												{/*<div>Field Names</div>*/}
 											</styled.ItemContainer>
 											<styled.ItemContainer style={{background: "transparent", border: "none", alignSelf: "flex-end"}}>
+												
+												<styled.SelectButton
+													type={"button"}
+													onClick={(e) => {
+														e.preventDefault()
+														isSelected ? setFieldLabelsIndex(null) : setFieldLabelsIndex(currIndex)
+													}}
+													style={{marginRight: 0}}
+													color={'#57afff'}
+													selected={isSelected}
+													className={isSelected ? "fas fa-times-circle" : "fas fa-arrow-circle-right"}
+												/>
 												<styled.SelectButton
 													className={"fas fa-minus-circle"}
 													type={"button"}
@@ -327,16 +339,7 @@ const PasteMapper = (props) => {
 														onMinusClick(currIndex)
 													}}
 												/>
-												<styled.SelectButton
-													type={"button"}
-													onClick={(e) => {
-														e.preventDefault()
-														isSelected ? setFieldLabelsIndex(null) : setFieldLabelsIndex(currIndex)
-													}}
-													color={isSelected ? themeContext.schema.error.solid : themeContext.schema.ok.solid}
-													selected={isSelected}
-													className={isSelected ? "fas fa-times-circle" : "fas fa-arrow-circle-right"}
-												/>
+												
 											</styled.ItemContainer>
 										</>
 									)
@@ -344,6 +347,17 @@ const PasteMapper = (props) => {
 								else {
 									return(
 										<styled.ItemContainer style={{background: "transparent", border: "none", alignSelf: "flex-end"}}>
+											
+											{/* <styled.SelectButton
+												className={isSelected ? "fas fa-times-circle" : "fas fa-arrow-circle-right"}
+												type={"button"}
+												selected={isSelected}
+												color={'#57afff'}
+												onClick={(e) => {
+													e.preventDefault()
+													isSelected ? setFieldLabelsIndex(null) : setFieldLabelsIndex(currIndex)
+												}}
+											/> */}
 											<styled.SelectButton
 												className={"fas fa-minus-circle"}
 												color={themeContext.schema.error.solid}
@@ -353,16 +367,7 @@ const PasteMapper = (props) => {
 													onMinusClick(currIndex)
 												}}
 											/>
-											<styled.SelectButton
-												className={isSelected ? "fas fa-times-circle" : "fas fa-arrow-circle-right"}
-												type={"button"}
-												selected={isSelected}
-												color={isSelected ? themeContext.schema.error.solid : themeContext.schema.ok.solid}
-												onClick={(e) => {
-													e.preventDefault()
-													isSelected ? setFieldLabelsIndex(null) : setFieldLabelsIndex(currIndex)
-												}}
-											/>
+											
 										</styled.ItemContainer>
 									)
 								}
@@ -449,9 +454,12 @@ const PasteMapper = (props) => {
 												}}
 												style={{minHeight: "4rem"}}
 											>
+												<styled.Receptacle></styled.Receptacle>
+												
 												<Draggable>
 													<styled.FieldNameTab>
-														<styled.Trapezoid/>
+														{/* <styled.Trapezoid/> */}
+														<styled.ReceptacleInner filled={!!values.selectedFieldNames[currRowIndex] && values.selectedFieldNames[currRowIndex].fieldName !== ""}/>
 														<TextField
 															inputComponent={"input"}
 															containerStyle={{
@@ -484,12 +492,17 @@ const PasteMapper = (props) => {
 
 																return mappedOutputVal
 															}}
-															placeholder={"Field name..."}
+															disabled
+															placeholder={"Field"}
 															style={{
-																background: themeContext.bg.secondary,
+																background: 'transparent',
+																border: 'none !important',
 																maxHeight: "2rem",
-																color: "white",
+																color: themeContext.bg.octonary,
+																textAlign: 'center',
+																textDecoration: 'none !important'
 															}}
+															
 															textboxContainerStyle={{
 																maxHeight: "2rem",
 															}}
@@ -513,9 +526,10 @@ const PasteMapper = (props) => {
 														alignItems: "center",
 														justifyContent: "center",
 														background: "transparent",
-														color: "white"
+														fontSize: '0.8rem',
+														color: themeContext.bg.octonary
 													}}
-
+													inputComponent={"input"}
 												/>
 												{/*<styled.Cell cell={true}>*/}
 												{/*	{currItem}*/}
@@ -548,6 +562,7 @@ const PasteMapper = (props) => {
 					{/*	buttonViewSelectedCss={styled.buttonViewSelectedCss}*/}
 					{/*	buttonCss={styled.buttonCss}*/}
 					{/*/>*/}
+					<styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={onCancel}/>
 				</styled.Header>
 
 				<styled.Body>
@@ -618,7 +633,7 @@ const PasteMapper = (props) => {
 											disabled={isUsed}
 											style={{
 												// display: "table-cell",
-												verticalAlign: "middle",
+												// verticalAlign: "middle",
 											}}
 										>
 											<styled.FieldName>{currDisplayName ? currDisplayName : currFieldName}</styled.FieldName>
@@ -665,11 +680,12 @@ const PasteMapper = (props) => {
 					<Button
 						type={"button"}
 						schema={schema}
-						label={"Create Lots"}
+						label={"Preview Lots"}
 						onClick={()=>{
 							const payload = createPayload()
 							onCreateClick(payload)
 						}}
+						style={{minWidth: '14rem', minHeight: '3rem'}}
 					/>
 					{/*<Button*/}
 					{/*	type={"button"}*/}
@@ -680,12 +696,12 @@ const PasteMapper = (props) => {
 					{/*		onPreviewClick(payload)*/}
 					{/*	}}*/}
 					{/*/>*/}
-					<Button
+					{/* <Button
 						schema={schema}
 						type={"button"}
 						label={"Cancel"}
 						onClick={onCancel}
-					/>
+					/> */}
 				</styled.Footer>
 			</styled.Container>
 
