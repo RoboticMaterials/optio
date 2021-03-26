@@ -453,9 +453,9 @@ export const ProcessField = (props) => {
                     <Button
                         schema={'devices'}
                         // disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
-                        style={{margin: 0, marginBottom: '1rem', width: "100%", textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden'}}
-                        secondary
+                        style={{margin: '0 0.5rem', width: 'calc(100% - 1rem)', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden'}}
                         disabled={selectedTask?.new}
+                        tertiary
                         onClick={() => {
                             let prevObj
                             if(values.routes.length > 0) {
@@ -511,7 +511,10 @@ export const ProcessField = (props) => {
                     <path fill="url(#processGrad)" d={AddRouteButtonPath} />
                 </svg>
                 <g fill={theme.main.bg.octonary} viewBox="0 0 300 68.5" height="3.5rem" width="100%" style={{border: '1px solid blue', transformOrigin: 'center'}} transform="rotate(180) translate(-60, 0)">
-                    <styled.SVGText x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">Add to End</styled.SVGText>
+                    {/* <styled.SVGText x="50%" y="50%" width="20%" dominant-baseline="middle" text-anchor="middle">Add new route to End</styled.SVGText> */}
+                    <foreignObject x="50%" y="5%" height="8rem" width="8rem">
+                        <p style={{textAlign: 'center'}} xmlns="http://www.w3.org/1999/xhtml">Add new route to end</p>
+                    </foreignObject>
                 </g>
             </svg>
         )
@@ -540,7 +543,10 @@ export const ProcessField = (props) => {
                     <path fill="url(#processGrad)" d={AddRouteButtonPath} />
                 </svg>
                 <g fill={theme.main.bg.octonary} viewBox="0 0 300 68.5" height="3.5rem" width="100%" style={{border: '1px solid blue', transformOrigin: 'center'}} transform="translate(-60, 10)">
-                    <styled.SVGText x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">Add to Start</styled.SVGText>
+                    {/* <styled.SVGText x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">Add new route to Start</styled.SVGText> */}
+                    <foreignObject x="50%" y="5%" height="8rem" width="8rem">
+                        <p style={{textAlign: 'center'}} xmlns="http://www.w3.org/1999/xhtml">Add new <br/> route to start</p>
+                    </foreignObject>
                 </g>
             </svg>
         )
