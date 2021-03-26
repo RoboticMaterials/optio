@@ -111,13 +111,14 @@ export const TheBody = styled.div`
 
 `
 
-export const SuperContainer = styled.div`
+export const ScrollContainer = styled.div`
   position: relative;
   overflow: auto;
   flex: 1;
   display: flex;
-  height: 50rem;
+  //height: 50rem;
   flex-direction: column;
+  //background: blue;
   
 
 `
