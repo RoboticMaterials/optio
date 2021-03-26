@@ -162,7 +162,6 @@ export const ProcessField = (props) => {
     }, [values.routes])
 
     const handleAddTask = async () => {
-
         // contains new route
         if(values.newRoute) {
             // extract newRoute values
@@ -187,7 +186,6 @@ export const ProcessField = (props) => {
                 // task doesn't exist, add unsaved key
                 newRoute = {...remainingRoute, new: isNew}
             }
-
             // make copy of routes
             let updatedRoutes = [...values.routes]
 
@@ -218,6 +216,7 @@ export const ProcessField = (props) => {
 
             // if it only belongs to one process, go ahead and update it
             else {
+
                 updateExistingRoute()
             }
 
@@ -241,9 +240,8 @@ export const ProcessField = (props) => {
             needsSubmit,
             ...remainingValues
         } = currRouteValue || {}
-
         setFieldValue("broken", isBrokenProcess(values.routes, tasks))
-        setFieldValue(editingTask, {remainingValues})
+        setFieldValue(editingTask, remainingValues)
         setEditingTask(false)
         dispatchSetSelectedTask(null)
     }
@@ -700,7 +698,7 @@ export const ProcessField = (props) => {
                             </>
                         </styled.SectionContainer>
 
-                        
+
                         {/* Delete Task Button */}
                         <Button
                             schema={'processes'}

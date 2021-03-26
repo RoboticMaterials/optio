@@ -748,13 +748,7 @@ const FormComponent = (props) => {
 					}
 					
 
-					<Button
-						secondary
-						onClick={close}
-						schema={'error'}
-					>
-						<i className="fa fa-times" aria-hidden="true"/>
-					</Button>
+					<styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={close}/>
 				</styled.Header>
 
 				<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
@@ -772,7 +766,7 @@ const FormComponent = (props) => {
 					/>
 					}
 
-					<styled.SuperContainer>
+					<styled.ScrollContainer>
 
 						<styled.FieldsHeader>
 
@@ -848,7 +842,7 @@ const FormComponent = (props) => {
 							renderMoveContent()
 						}
 
-					</styled.SuperContainer>
+					</styled.ScrollContainer>
 				</styled.RowContainer>
 
 				<styled.Footer>

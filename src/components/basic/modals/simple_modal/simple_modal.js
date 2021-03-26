@@ -43,14 +43,8 @@ const SimpleModal = (props) => {
         >
             <styled.Header>
                 <styled.HeaderRow>
-                <styled.Title>{title}</styled.Title>
-
-                <Button
-                    onClick={onCloseButtonClick}
-                    schema={'error'}
-                >
-                    <i className="fa fa-times" aria-hidden="true"/>
-                </Button>
+                    <styled.Title>{title}</styled.Title>
+                    <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={onCloseButtonClick}/>
                 </styled.HeaderRow>
 
             </styled.Header>
@@ -64,16 +58,15 @@ const SimpleModal = (props) => {
                             {FooterContent}
                             <styled.ButtonContainers>
                                 <Button
-                                    tertiary
-                                    schema={"ok"}
+                                    style={{minWidth: '10rem'}}
+                                    secondary
                                     onClick={handleOnClick1}
                                     label={button_1_text}
                                     type="button"
                                     disabled={button_1_disabled}
                                 />
                                 <Button
-                                    tertiary
-                                    schema={"delete"}
+                                    style={{minWidth: '10rem'}}
                                     onClick={handleOnClick2}
                                     label={button_2_text}
                                     type="button"

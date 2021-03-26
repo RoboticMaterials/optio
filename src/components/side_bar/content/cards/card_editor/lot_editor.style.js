@@ -23,6 +23,14 @@ export const Header = styled.div`
 	box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
 `
 
+export const CloseIcon = styled.i`
+    font-size: 1.4rem;
+    margin: 2rem;
+    color: ${props => props.theme.bg.quaternary};
+    cursor: pointer;
+	
+`
+
 export const LotNumberContainer = styled.div`
   background: ${props => props.theme.bg.quinary};
 `
@@ -103,13 +111,14 @@ export const TheBody = styled.div`
 
 `
 
-export const SuperContainer = styled.div`
+export const ScrollContainer = styled.div`
   position: relative;
   overflow: auto;
   flex: 1;
   display: flex;
-  height: 50rem;
+  //height: 50rem;
   flex-direction: column;
+  //background: blue;
   
 
 `
