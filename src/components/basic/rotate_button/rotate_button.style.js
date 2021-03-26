@@ -9,7 +9,7 @@ export const Container = styled.button`
   width: 3.5rem;
   border: none;
   border-left: 1px solid ${props => props.theme.bg.quaternary};
-  border-bottom: 1px solid ${props => props.theme.bg.quinary};
+  //border-bottom: 1px solid ${props => props.theme.bg.quinary};
   outline: none !important;
   
   color: ${props => props.theme.textColor};

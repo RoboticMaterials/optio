@@ -12,6 +12,19 @@ export const DatesContainer = styled.span`
 	
 `
 
+const usableCss = css`
+  &:hover {
+    cursor: pointer !important;
+    filter: brightness(105%);
+  }
+`
+
+const notUsableCss = css`
+  &:hover {
+    cursor: default;
+  }
+`
+
 export const DateItem = styled.div`
 	display: flex;
 	flex-direction: column;
@@ -23,6 +36,9 @@ export const DateItem = styled.div`
 	padding: .5rem 1rem;
 	align-items: center;
 	justify-content: center;
+  
+  ${props => props.usable ? usableCss : notUsableCss};
+	
 	
 	cursor: pointer !important;
 	

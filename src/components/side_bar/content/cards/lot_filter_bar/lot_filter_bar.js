@@ -13,6 +13,7 @@ import {ThemeContext} from "styled-components";
 import {useSelector} from "react-redux";
 import {getAllTemplateFields} from "../../../../../methods/utils/lot_utils";
 import Textbox from "../../../../basic/textbox/textbox";
+import FlagButton from "./flag_button/flag_button";
 
 const LotFilterBar = (props) => {
 
@@ -30,6 +31,13 @@ const LotFilterBar = (props) => {
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
 
     const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])
+    const [shouldRenderInvisibleFlags, setShouldRenderInvisibleFlags] = useState(true)
+    const [maxFlagsSize, setMaxFlagsSize] = useState({
+        offsetWidth: undefined,
+        offsetHeight: undefined,
+        offsetLeft: undefined,
+        offsetTop: undefined,
+    })
     const [size, setSize] = useState({
         width: undefined,
         height: undefined,
@@ -45,6 +53,54 @@ const LotFilterBar = (props) => {
 
     const sizeRef = useRef(null)
     const flagsSizeRef = useRef(null)
+    const maxFlagsSizeRef = useRef(null)
+    const {
+        offsetHeight: maxFlagsOffsetHeight,
+        offsetWidth: maxFlagsOffsetWidth,
+        offsetTop: maxFlagsOffsetTop,
+        offsetLeft: maxFlagsOffsetLeft,
+    } = maxFlagsSizeRef?.current || {}
+
+
+
+    const renderInvisibleFlags = () => {
+        return(
+            <styled.FlagsContainer
+                style={{
+                    position: "absolute"
+                }}
+                ref={maxFlagsSizeRef}
+            >
+            {Object.values(FLAG_OPTIONS).map((currVal) => {
+                const {
+                    color: currColor,
+                    id: currColorId
+                } = currVal || {}
+
+                return (
+                    <FlagButton
+                        style={{
+                            margin: "0 .1rem",
+                        }}
+                        key={currColorId}
+                        color={currColor}
+                        schema={props.schema}
+                    />
+                )
+            })}
+        </styled.FlagsContainer>
+        )
+    }
+
+    useEffect(() => {
+        if(maxFlagsSizeRef.current && Number.isInteger(maxFlagsOffsetWidth)) {
+            setMaxFlagsSize({
+                offsetWidth: maxFlagsOffsetWidth
+            })
+
+            setShouldRenderInvisibleFlags(false)
+        }
+    }, [maxFlagsOffsetWidth, maxFlagsSizeRef.current])
 
     useEffect(() => {
 
@@ -130,6 +186,9 @@ const LotFilterBar = (props) => {
             <styled.ItemContainer
                 ref={sizeRef}
             >
+                {shouldRenderInvisibleFlags &&
+                    renderInvisibleFlags()
+                }
                 {/*<div style={{flex: 1}}>*/}
                 <DropDownSearch
                     maxDropdownWidth={`${size.width}px` }
@@ -150,7 +209,9 @@ const LotFilterBar = (props) => {
                     schema={"lots"}
                     style={{
                         minWidth: "10rem",
-                        overflow: 'visible'
+                        overflow: 'visible',
+                        borderTopRightRadius: 0,
+                        borderBottomRightRadius: 0,
                     }}
                 />
                 {/*</div>*/}
@@ -160,13 +221,10 @@ const LotFilterBar = (props) => {
                         style={{flex: 3}}
                     >
                     <DropDownSearch
-                        // containerCss={props.containerCss}
-                        dropdownCss={props.dropdownCss}
+                        // dropdownCss={props.dropdownCss}
                         // maxDropdownWidth={`${flagsSize.width}px` }
-                        reactDropdownSelectCss={props.reactDropdownSelectCss}
-                        // portal={document.getElementById("root")}
+                        // reactDropdownSelectCss={props.reactDropdownSelectCss}
                         {...valueProps}
-                        // clearable={true}
                         multi={true}
                         options={Object.values(FLAG_OPTIONS)}
                         onChange={(values) => {
@@ -227,7 +285,7 @@ const LotFilterBar = (props) => {
                             
 
                             return(
-                                <styled.FlagButton
+                                <FlagButton
                                     style={{
                                         paddingTop: ".5rem",
                                         paddingBottom: ".5rem",
@@ -247,31 +305,35 @@ const LotFilterBar = (props) => {
                         }}
 
                         style={{
-                            minWidth: `${flagsSize.width}px`
+                            minWidth: `${maxFlagsSize.offsetWidth}px`,
+                            width: `${maxFlagsSize.offsetWidth}px`,
+                            borderTopLeftRadius: 0,
+                            borderBottomLeftRadius: 0,
+                            alignSelf: "stretch",
+                            borderLeft: `1px solid ${themeContext.bg.quaternary}`
+
                         }}
                     />
                     </div>
                     :
                     <Textbox
-
                         placeholder='Filter lots...'
                         onChange={(e) => {
                             setLotFilterValue(e.target.value)
                         }}
                         focus={shouldFocusLotFilter}
-                        style={{
-                            background: themeContext.bg.secondary,
-                            height: "100%",
-                            flex: 1,
+                        inputStyle={{
                             borderTopLeftRadius: 0,
                             borderBottomLeftRadius: 0,
-                            borderTopRightRadius: "1rem",
-                            borderBottomRightRadius: "1rem",
-                            borderLeft: `1px solid ${themeContext.bg.quaternary}`,
-
+                            borderTopRightRadius: "0.2rem",
+                            borderBottomRightRadius: "0.2rem",
+                            height: "100%",
                         }}
-                        textboxContainerStyle={{
-
+                        style={{
+                            background: themeContext.bg.secondary,
+                            borderTopRightRadius: "0.2rem",
+                            borderBottomRightRadius: "0.2rem",
+                            borderLeft: `1px solid ${themeContext.bg.quaternary}`,
                         }}
                         schema={"lots"}
                     />
