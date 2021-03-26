@@ -114,7 +114,6 @@ const LotSortBar = (props) => {
                     maxDropdownWidth={`${size.width}px` }
                     portal={document.getElementById("root")}
                     containerCss={props.containerCss}
-                    // reactDropdownSelectCss={props.reactDropdownSelectCss}
                     dropdownCss={props.dropdownCss}
                     valueCss={props.valueCss}
                     options={lotSortOptions}
@@ -126,6 +125,8 @@ const LotSortBar = (props) => {
                     valueField={"label"}
                     schema={"lots"}
                     style={{
+                        borderTopRightRadius: 0,
+                        borderBottomRightRadius: 0,
                         minWidth: "10rem",
                     }}
                 />
