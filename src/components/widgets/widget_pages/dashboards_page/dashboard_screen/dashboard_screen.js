@@ -218,7 +218,7 @@ const DashboardScreen = (props) => {
             } = currButton
 
             // Dont add duplicate buttons, delete if they're are any
-            if (task_id && taskIds.includes(task_id)) {
+            if (task_id && taskIds.includes(task_id) && task_id !== 'custom_task') {
                 logger.error(`Button with duplicate task_id found in dashboard. {dashboardId: ${dashboardID}, task_id:${task_id}`)
                 return false // don't add duplicate tasks
             }
