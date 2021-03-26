@@ -32,6 +32,8 @@ const ForgotPassword = (props) => {
     const [password, setPassword] = useState('')
     const [checkPassword, setCheckPassword] = useState('')
 
+    const [enableValidation, setEnableValidation] = useState(false);
+
     const [resetPasswordVal, setResetPasswordVal] = useState(false)
 
     var poolData = {
@@ -115,15 +117,18 @@ const ForgotPassword = (props) => {
                 password: password,
                 checkPassword: checkPassword
             }}
+
             initialTouched={{
-                email: true,
-                verificationCode: true,
-                password: true,
-                checkPassword: true
+                email: false,
+                verificationCode: false,
+                password: false,
+                checkPassword: false
             }}
 
-            validateOnBlur={false}
-            validateOnChange={false}
+            enableReinitialize
+
+            validateOnBlur={enableValidation}
+            validateOnChange={enableValidation}
 
             // Chooses what schema to use based on whether it's a sign in or sign up
             validationSchema={resetPasswordVal ? passwordResetSchema : emailSchema }
@@ -134,9 +139,14 @@ const ForgotPassword = (props) => {
                 await handleSubmit(values)
 
                 setSubmitting(false)
+                setEnableValidation(false)
             }}
         >
             {(formikProps) => {
+
+                if(formikProps.errors.email || formikProps.errors.verificationCode || formikProps.errors.password || formikProps.errors.checkPassword){
+                    setEnableValidation(true)
+                }
 
                 return (
                     <Form>
@@ -157,7 +167,6 @@ const ForgotPassword = (props) => {
                             InputComponent={Textbox}
                             style={{
                                 marginBottom: '.5rem',
-                                height: '3rem',
                                 width: '20rem'
                             }}
                         />
@@ -170,7 +179,6 @@ const ForgotPassword = (props) => {
                                 InputComponent={Textbox}
                                 style={{
                                     marginBottom: '.5rem',
-                                    height: '3rem',
                                     width: '20rem'
                                 }}
                             />
@@ -184,7 +192,6 @@ const ForgotPassword = (props) => {
                                 InputComponent={Textbox}
                                 style={{
                                     marginBottom: '.5rem',
-                                    height: '3rem',
                                     width: '20rem'
                                 }}
                             />
@@ -198,7 +205,6 @@ const ForgotPassword = (props) => {
                                 InputComponent={Textbox}
                                 style={{
                                     marginBottom: '.5rem',
-                                    height: '3rem',
                                     width: '20rem'
                                 }}
                             />
