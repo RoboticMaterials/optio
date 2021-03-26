@@ -89,7 +89,7 @@ function Station(props) {
 
     // Disables while making task (IE no unload station) and not fixing a process
     else if (!!selectedTask && selectedTask?.load?.station !== null && selectedTask?.unload?.station === null && !fixingProcess) {
-        // Disable making a task this station if the selected position is the stations children (cant make a route to the same parent/child)
+        // Disable making a task to this station if the selected position is the stations children (cant make a route to the same parent/child)
         if (station.children.includes(selectedTask?.load?.position) && selectedTask?.unload?.station === null) disabled = true
 
         // Disable station if the selected task load position is a position (cant go from station to position or vice versa)
