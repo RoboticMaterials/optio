@@ -13,6 +13,7 @@ export const Container = styled.div`
   position: relative;
   
   ${props => props.greyed && lotsContainerGreyedCss};
+  
 `
 
 export const ContainerWrapper = styled.div`
@@ -48,13 +49,17 @@ const lotsContainerGreyedCss = css`
 `
 
 export const LotWrapper = styled.div`
-  justify-content: center;
   display: flex;
+  align-items: center;
+	overflow: auto;
 `
 
 export const lotContainerStyle = {
-	flex: 1,
-	maxWidth: "40rem",
+	marginBottom: "0.5rem", 
+  width: "80%", 
+  flex: 1,
+  margin: '.5rem auto .5rem auto', 
+  border: '1px solid red'
 }
 
 export const Containerrr = styled.div`
@@ -63,6 +68,7 @@ export const Containerrr = styled.div`
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  width: 100%;
 `
 
 
