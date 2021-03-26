@@ -184,6 +184,7 @@ const PasteMapper = (props) => {
 				})
 				.forEach((currItem, currItemIndex) => {
 					let label = selectedFieldNames[currColIndex]
+					let tempDisplayName = label?.displayName || ""
 
 					for(const availableField of availableFieldNames) {
 						const {
@@ -193,7 +194,7 @@ const PasteMapper = (props) => {
 							displayName: currAvailableDisplayName = "",
 						} = availableField || {}
 
-						if(isEqualCI(label?.displayName.trim(), currAvailableDisplayName)) label = {...availableField}
+						if(isEqualCI(tempDisplayName.trim(), currAvailableDisplayName)) label = {...availableField}
 					}
 
 					let finalValue = currItem

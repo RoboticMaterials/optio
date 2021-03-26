@@ -314,7 +314,8 @@ Yup.addMethod(Yup.string, "notIn", function (message, arr) {
     return this.test("notIn", message, function (value) {
         const { path, createError } = this;
 
-        for(const item in arr) {
+
+        for(const item of arr) {
             if(isEqualCI(item.trim(), value.trim())) return createError({ path, message })
         }
         return true
@@ -445,8 +446,9 @@ export const LotFormSchema = Yup.object().shape({
                     .required('Please enter a name for this field.'),
                 style: Yup.object()
             })
+                .unique("Field names must be unique", "fieldName")
         )
-    ).nestedUnique('Field names must be unique.', "fieldName"), //message, path
+    ),
     name: Yup.string()
         .min(1, '1 character minimum.')
         .max(50, '50 character maximum.')

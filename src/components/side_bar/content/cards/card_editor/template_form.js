@@ -527,7 +527,7 @@ const LotCreatorForm = (props) => {
 				validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
 				validateOnBlur={true}
 
-				enableReinitialize={true} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
+				enableReinitialize={false} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
 				onSubmit={(values, { setSubmitting, setTouched, resetForm }) => {
 					// set submitting to true, handle submit, then set submitting to false
 					// the submitting property is useful for eg. displaying a loading indicator
