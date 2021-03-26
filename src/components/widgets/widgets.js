@@ -208,7 +208,15 @@ const Widgets = (props) => {
             else {
                 return (
                     <>
-                        <styled.EmptySpaceContainer />
+                        {/* <styled.EmptySpaceContainer /> */}
+                        <styled.RowContainer style={{display: 'flex', width: '150rem', alignItems:'center', alignContent:'center', width: '100%', justifyContent:'space-between'}}>
+                            <styled.WidgetStationName style={{marginBottom:'0rem'}}>{selectedLocation.name}</styled.WidgetStationName>
+                            <styled.EditIcon
+                                className='fas fa-edit'
+                                styled={{ color: '#ff1818' }}
+                                onClick={() => onClickLocation()}
+                            />
+                        </styled.RowContainer>
                     </>
                 )
                 return (
@@ -431,14 +439,16 @@ const Widgets = (props) => {
                                     {!!selectedLocation.parent ?
                                         <styled.WidgetPositionName>{selectedLocation.name}</styled.WidgetPositionName>
                                         :
-                                        <styled.RowContainer>
-                                            <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>
-                                            <styled.EditIcon
-                                                className='fas fa-edit'
-                                                styled={{ color: '#ff1818' }}
-                                                onClick={() => onClickLocation()}
-                                            />
-                                        </styled.RowContainer>
+                                        <>
+                                        </>
+                                        // <styled.RowContainer>
+                                        //     <styled.WidgetStationName>{selectedLocation.name}</styled.WidgetStationName>
+                                        //     <styled.EditIcon
+                                        //         className='fas fa-edit'
+                                        //         styled={{ color: '#ff1818' }}
+                                        //         onClick={() => onClickLocation()}
+                                        //     />
+                                        // </styled.RowContainer>
 
                                     }
                                 </>

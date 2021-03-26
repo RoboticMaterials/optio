@@ -1,15 +1,15 @@
 import {
-  WIDGET_PAGE_LOADED,
-  WIDGET_XY_COORDINATES,
-  WIDGET_LOADED,
-  HOVER_STATION_INFO,
+    WIDGET_PAGE_LOADED,
+    WIDGET_XY_COORDINATES,
+    WIDGET_LOADED,
+    HOVER_STATION_INFO,
 
 } from '../types/widget_types'
 
 
-  const defaultState = {
+const defaultState = {
     widgetPageLoaded: false,
-    widgetXYCoordinates: {x: '', y: ''},
+    widgetXYCoordinates: { x: '', y: '' },
     widgetLoaded: false,
     hoverStationInfo: null,
 };
@@ -30,17 +30,18 @@ const widgetReducer = (state = defaultState, action) => {
                 widgetXYCoordinates: action.payload
             }
 
-          case WIDGET_LOADED:
-              return {
-                  ...state,
-                  widgetLoaded: action.payload,
-              }
+        case WIDGET_LOADED:
+            return {
+                ...state,
+                widgetLoaded: action.payload,
+            }
 
-          case HOVER_STATION_INFO:
-              return {
-                  ...state,
-                  hoverStationInfo: action.payload.info,
-              }
+        case HOVER_STATION_INFO:
+            console.log('QQQQ hover', action.payload)
+            return {
+                ...state,
+                hoverStationInfo: action.payload.info,
+            }
 
 
         default:

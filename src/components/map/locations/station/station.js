@@ -94,8 +94,6 @@ function Station(props) {
         else if (!!positions[selectedTask?.load?.position]) disabled = true
     }
 
-
-
     // This filters out stations when fixing a process
     // If the process is broken, then you can only start the task at the route before break's unload location
     else if (!!selectedTask && !!selectedProcess && !!fixingProcess) {

@@ -34,7 +34,7 @@ export const WidgetLocationContainer = styled.div`
 `
 
 export const WidgetContainer = styled.div`
-    justify-content:center;
+    justify-content:space-between;
     margin: ${props => !!props.widgetPage ? '.25rem auto' : 'auto'};
     padding-top:.3rem;
     padding-bottom:.3rem;
@@ -50,7 +50,7 @@ export const WidgetContainer = styled.div`
 
     box-shadow: ${props => !!props.widgetPage ? 'none' : '0 0.1rem 0.2rem 0rem #303030'};
 
-    border-radius: 1rem;
+    border-radius: .5rem;
 
     z-index: 1000;
 
