@@ -21,7 +21,11 @@ const buttonTheme = (props) => {
             border: 0.15rem solid ${props.theme.bg.octonary};
             color: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
             border-color: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
-            box-sizing: content-box;
+            box-sizing: border-box;
+
+            align-content: center;
+            align-items: center;
+            justify-content: center;
             
             &:hover {
                 background-color: ${hexToRGBA(props.theme.bg.octonary, 0.03)}
@@ -83,8 +87,8 @@ const buttonTheme = (props) => {
 
 export const SmallButton = styled.button`
     display: inline-block;
-    height: 2rem;
-    line-height: 2rem;
+    min-height: 2rem;
+    line-height: 1.8rem;
     text-align: center;
     margin: 0.3rem 0.5rem 0.3rem 0.5rem;
     user-select: none;

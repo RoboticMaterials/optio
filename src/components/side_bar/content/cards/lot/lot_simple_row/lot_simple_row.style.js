@@ -7,7 +7,6 @@ export const lastItemCss = css`
 export const Row = styled.div`
     display: flex;
     width: 100%;
-    border-bottom: 1px solid ${props => props.theme.bg.quaternary};
     justify-content: space-between;
     padding: .25rem 0 .25rem 0;
   
@@ -17,8 +16,16 @@ export const Row = styled.div`
 export const Label = styled.span`
     font-size: ${props => props.theme.fontSize.sz4};
     font-weight: 600;
+    margin-right: 0.5rem;
+    color:  ${props => props.theme.bg.septenary};
+    font-family: ${props => props.theme.font.primary};
 `
 
 export const Count = styled.span`
 	font-size: ${props => props.theme.fontSize.sz4};
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color:  ${props => props.theme.bg.septenary};
+    font-family: ${props => props.theme.font.primary};
 `

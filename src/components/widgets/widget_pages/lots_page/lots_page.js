@@ -75,17 +75,17 @@ const LotsPage = (props) => {
         <styled.LotsContainer>
 
             {showCardEditor &&
-            <LotEditorContainer
-                isOpen={showCardEditor}
-                onAfterOpen={null}
-                cardId={selectedCard ? selectedCard.cardId : null}
-                processId={selectedCard ? selectedCard.processId : null}
-                binId={selectedCard ? selectedCard.binId : null}
-                close={()=>{
-                    onShowCardEditor(false)
-                    setSelectedCard(null)
-                }}
-            />
+                <LotEditorContainer
+                    isOpen={showCardEditor}
+                    onAfterOpen={null}
+                    cardId={selectedCard ? selectedCard.cardId : null}
+                    processId={selectedCard ? selectedCard.processId : null}
+                    binId={selectedCard ? selectedCard.binId : null}
+                    close={()=>{
+                        onShowCardEditor(false)
+                        setSelectedCard(null)
+                    }}
+                />
             }
 
             <styled.HeaderContainer>

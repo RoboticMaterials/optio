@@ -12,15 +12,15 @@ export const columnRowLayout = css`
 `
 
 export const bodyStyle = css`
-  background: ${props => props.theme.bg.quaternary};
+  background: ${props => props.theme.bg.primary};
 `
 
 export const headerStyle = css`
-  background: ${props => props.theme.bg.quinary};
+  background: ${props => props.theme.bg.primary};
 `
 
 export const footerStyle = css`
-  background: ${props => props.theme.bg.quinary};
+  background: ${props => props.theme.bg.secondary};
 `
 
 export const textSpanStyle = css`
