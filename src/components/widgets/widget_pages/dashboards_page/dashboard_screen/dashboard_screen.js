@@ -43,11 +43,11 @@ import * as style from './dashboard_screen.style'
 
 // import logging
 import log from "../../../../../logger";
-import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
+import { isEmpty, isObject } from "../../../../../methods/utils/object_utils";
 import { isRouteInQueue } from "../../../../../methods/utils/task_queue_utils";
 import { isDeviceConnected } from "../../../../../methods/utils/device_utils";
 import { DEVICE_CONSTANTS } from "../../../../../constants/device_constants";
-import {immutableDelete, isArray, isNonEmptyArray} from "../../../../../methods/utils/array_utils";
+import { immutableDelete, isArray, isNonEmptyArray } from "../../../../../methods/utils/array_utils";
 
 
 
@@ -101,7 +101,7 @@ const DashboardScreen = (props) => {
     const windowWidth = size.width
 
     const mobileMode = windowWidth < widthBreakPoint;
-    const showTaskQueueButton = !mapViewEnabled? true: mobileMode ? true: false
+    const showTaskQueueButton = !mapViewEnabled ? true : mobileMode ? true : false
 
     /**
      * When a dashboard screen is loaded, tell redux that its open
@@ -120,7 +120,7 @@ const DashboardScreen = (props) => {
 
     useEffect(() => {
         checkButtons()
-    },[currentDashboard.buttons])
+    }, [currentDashboard.buttons])
 
     const checkButtons = async () => {
         const { buttons } = currentDashboard	// extract buttons from dashboard
@@ -136,48 +136,48 @@ const DashboardScreen = (props) => {
                 type
             } = currButton
 
-            if(type === OPERATION_TYPES.KICK_OFF.key) {
+            if (type === OPERATION_TYPES.KICK_OFF.key) {
                 // if button type is kick off, but dashboard has no available kick off processes, remove the kick off button
-                if(!isNonEmptyArray(availableKickOffProcesses)) {
+                if (!isNonEmptyArray(availableKickOffProcesses)) {
                     const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
-                    if(index !== -1) {
+                    if (index !== -1) {
                         updatedButtons = immutableDelete(updatedButtons, index)
                     }
                     madeUpdate = true
                 }
             }
-            else if(type === OPERATION_TYPES.FINISH.key) {
+            else if (type === OPERATION_TYPES.FINISH.key) {
                 // if button type is finish, but dashboard has no available finish processes, remove the finish button
-                if(!isNonEmptyArray(availableFinishProcesses)) {
+                if (!isNonEmptyArray(availableFinishProcesses)) {
                     const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
-                    if(index !== -1) {
+                    if (index !== -1) {
                         updatedButtons = immutableDelete(updatedButtons, index)
                     }
                     madeUpdate = true
                 }
             }
             // Dont add duplicate buttons, delete if they're are any
-            else if (task_id && taskIds.includes(task_id)) {
+            else if (task_id && task_id !== 'custom_task' && taskIds.includes(task_id)) {
                 const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
-                if(index !== -1) {
+                if (index !== -1) {
                     updatedButtons = immutableDelete(updatedButtons, index)
                 }
                 madeUpdate = true
             }
 
             // If task does not exist, delete task
-            else if (task_id && !(isObject(tasks[task_id]))) {
-                    const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
-                    if(index !== -1) {
-                        updatedButtons = immutableDelete(updatedButtons, index)
-                    }
-                    madeUpdate = true
+            else if (task_id && task_id !== 'custom_task' && !(isObject(tasks[task_id]))) {
+                const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
+                if (index !== -1) {
+                    updatedButtons = immutableDelete(updatedButtons, index)
+                }
+                madeUpdate = true
             }
 
             taskIds.push(task_id)
         })
 
-        if(madeUpdate) {
+        if (madeUpdate) {
             await dispatchPutDashboardAttributes({
                 buttons: updatedButtons
             }, dashboardId)
@@ -218,7 +218,7 @@ const DashboardScreen = (props) => {
             } = currButton
 
             // Dont add duplicate buttons, delete if they're are any
-            if (task_id && taskIds.includes(task_id)) {
+            if (task_id && taskIds.includes(task_id) && task_id !== 'custom_task') {
                 logger.error(`Button with duplicate task_id found in dashboard. {dashboardId: ${dashboardID}, task_id:${task_id}`)
                 return false // don't add duplicate tasks
             }
