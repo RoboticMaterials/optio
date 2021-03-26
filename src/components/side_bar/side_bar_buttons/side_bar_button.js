@@ -85,24 +85,29 @@ const SideBarButton = (props) => {
         return (
             <>
                 {handleConfirmationModal()}
-                <style.SideBarButtonIcon
-                    className='fas fa-map-marker-alt'
-                    onClick={() => {
-                        if (currentMode === 'lots') {
-                            props.setShowSideBarPage(mode)
-                            dispatchSetPageDataChanged(false)
-                        }
-
-                        else if (pageInfoChanged) {
-                            setConfirmDeleteModal(true)
-                        }
-                        else { props.setShowSideBarPage(mode) }
-                    }}
+                <style.SideBarButtonWrapper 
                     currentMode={currentMode}
                     mode={mode}
                 >
-                    <style.SideBarButtonText>Locations</style.SideBarButtonText>
-                </style.SideBarButtonIcon>
+                    <style.SideBarButtonIcon
+                        className='fas fa-map-marker-alt'
+                        onClick={() => {
+                            if (currentMode === 'lots') {
+                                props.setShowSideBarPage(mode)
+                                dispatchSetPageDataChanged(false)
+                            }
+
+                            else if (pageInfoChanged) {
+                                setConfirmDeleteModal(true)
+                            }
+                            else { props.setShowSideBarPage(mode) }
+                        }}
+                        currentMode={currentMode}
+                        mode={mode}
+                    >
+                        <style.SideBarButtonText>Locations</style.SideBarButtonText>
+                    </style.SideBarButtonIcon>
+                </style.SideBarButtonWrapper>
             </>
         )
     }
@@ -111,24 +116,29 @@ const SideBarButton = (props) => {
         return (
             <>
                 {handleConfirmationModal()}
-                <style.SideBarButtonIcon
-                    className={'icon-rmLogo'}
-                    onClick={() => {
-                        if (currentMode === 'lots') {
-                            props.setShowSideBarPage(mode)
-                            dispatchSetPageDataChanged(false)
-                        }
-
-                        else if (pageInfoChanged) {
-                            setConfirmDeleteModal(true)
-                        }
-                        else { props.setShowSideBarPage(mode) }
-                    }}
+                <style.SideBarButtonWrapper 
                     currentMode={currentMode}
                     mode={mode}
                 >
-                    <style.SideBarButtonText>Devices</style.SideBarButtonText>
-                </style.SideBarButtonIcon>
+                    <style.SideBarButtonIcon
+                        className={'icon-rmLogo'}
+                        onClick={() => {
+                            if (currentMode === 'lots') {
+                                props.setShowSideBarPage(mode)
+                                dispatchSetPageDataChanged(false)
+                            }
+
+                            else if (pageInfoChanged) {
+                                setConfirmDeleteModal(true)
+                            }
+                            else { props.setShowSideBarPage(mode) }
+                        }}
+                        currentMode={currentMode}
+                        mode={mode}
+                    >
+                        <style.SideBarButtonText>Devices</style.SideBarButtonText>
+                    </style.SideBarButtonIcon>
+                </style.SideBarButtonWrapper>
             </>
         )
     }
@@ -137,27 +147,32 @@ const SideBarButton = (props) => {
         return (
             <>
                 {handleConfirmationModal()}
-                <style.SideBarButtonIcon
-                    className={'fas fa-layer-group'}
-                    onClick={() => {
-                        if (currentMode === 'lots') {
-                            props.setShowSideBarPage(mode)
-                            dispatchSetPageDataChanged(false)
-                        }
-
-                        else if (pageInfoChanged) {
-                            setConfirmDeleteModal(true)
-                        }
-                        else {
-                            const currentPath = history.location.pathname
-                            history.push('/lots/summary')
-                        }
-                    }}
+                <style.SideBarButtonWrapper 
                     currentMode={currentMode}
                     mode={mode}
                 >
-                    <style.SideBarButtonText>Lot Summary</style.SideBarButtonText>
-                </style.SideBarButtonIcon>
+                    <style.SideBarButtonIcon
+                        className={'fas fa-layer-group'}
+                        onClick={() => {
+                            if (currentMode === 'lots') {
+                                props.setShowSideBarPage(mode)
+                                dispatchSetPageDataChanged(false)
+                            }
+
+                            else if (pageInfoChanged) {
+                                setConfirmDeleteModal(true)
+                            }
+                            else {
+                                const currentPath = history.location.pathname
+                                history.push('/lots/summary')
+                            }
+                        }}
+                        currentMode={currentMode}
+                        mode={mode}
+                    >
+                        <style.SideBarButtonText>Lots</style.SideBarButtonText>
+                    </style.SideBarButtonIcon>
+                </style.SideBarButtonWrapper>
             </>
         )
     }
@@ -166,24 +181,29 @@ const SideBarButton = (props) => {
         return (
             <>
                 {handleConfirmationModal()}
-                <style.SideBarButtonIcon
-                    className={'fas fa-route'}
-                    onClick={() => {
-                        if (currentMode === 'lots') {
-                            props.setShowSideBarPage(mode)
-                            dispatchSetPageDataChanged(false)
-                        }
-
-                        else if (pageInfoChanged) {
-                            setConfirmDeleteModal(true)
-                        }
-                        else { props.setShowSideBarPage(mode) }
-                    }}
+                <style.SideBarButtonWrapper 
                     currentMode={currentMode}
                     mode={mode}
                 >
-                    <style.SideBarButtonText>Processes</style.SideBarButtonText>
-                </style.SideBarButtonIcon>
+                    <style.SideBarButtonIcon
+                        className={'fas fa-route'}
+                        onClick={() => {
+                            if (currentMode === 'lots') {
+                                props.setShowSideBarPage(mode)
+                                dispatchSetPageDataChanged(false)
+                            }
+
+                            else if (pageInfoChanged) {
+                                setConfirmDeleteModal(true)
+                            }
+                            else { props.setShowSideBarPage(mode) }
+                        }}
+                        currentMode={currentMode}
+                        mode={mode}
+                    >
+                        <style.SideBarButtonText>Processes</style.SideBarButtonText>
+                    </style.SideBarButtonIcon>
+                </style.SideBarButtonWrapper>
             </>
         )
     }
@@ -191,24 +211,29 @@ const SideBarButton = (props) => {
     else if (mode === 'scheduler') {
         return (
             <>
-                <style.SideBarButtonIcon
-                    className={'far fa-calendar-alt'}
-                    onClick={() => {
-                        if (currentMode === 'lots') {
-                            props.setShowSideBarPage(mode)
-                            dispatchSetPageDataChanged(false)
-                        }
-
-                        else if (pageInfoChanged) {
-                            setConfirmDeleteModal(true)
-                        }
-                        else { props.setShowSideBarPage(mode) }
-                    }}
+                <style.SideBarButtonWrapper 
                     currentMode={currentMode}
                     mode={mode}
                 >
-                    <style.SideBarButtonText>Schedules</style.SideBarButtonText>
-                </style.SideBarButtonIcon>
+                    <style.SideBarButtonIcon
+                        className={'far fa-calendar-alt'}
+                        onClick={() => {
+                            if (currentMode === 'lots') {
+                                props.setShowSideBarPage(mode)
+                                dispatchSetPageDataChanged(false)
+                            }
+
+                            else if (pageInfoChanged) {
+                                setConfirmDeleteModal(true)
+                            }
+                            else { props.setShowSideBarPage(mode) }
+                        }}
+                        currentMode={currentMode}
+                        mode={mode}
+                    >
+                        <style.SideBarButtonText>Schedules</style.SideBarButtonText>
+                    </style.SideBarButtonIcon>
+                </style.SideBarButtonWrapper>
             </>
         )
     }
@@ -217,24 +242,29 @@ const SideBarButton = (props) => {
         return (
             <>
                 {handleConfirmationModal()}
-                <style.SideBarButtonIcon
-                    className={'fa fa-tasks'}
-                    onClick={() => {
-                        if (currentMode === 'lots') {
-                            props.setShowSideBarPage(mode)
-                            dispatchSetPageDataChanged(false)
-                        }
-
-                        else if (pageInfoChanged) {
-                            setConfirmDeleteModal(true)
-                        }
-                        else { props.setShowSideBarPage(mode) }
-                    }}
+                <style.SideBarButtonWrapper 
                     currentMode={currentMode}
                     mode={mode}
                 >
-                    <style.SideBarButtonText>Routes</style.SideBarButtonText>
-                </style.SideBarButtonIcon>
+                    <style.SideBarButtonIcon
+                        className={'fa fa-tasks'}
+                        onClick={() => {
+                            if (currentMode === 'lots') {
+                                props.setShowSideBarPage(mode)
+                                dispatchSetPageDataChanged(false)
+                            }
+
+                            else if (pageInfoChanged) {
+                                setConfirmDeleteModal(true)
+                            }
+                            else { props.setShowSideBarPage(mode) }
+                        }}
+                        currentMode={currentMode}
+                        mode={mode}
+                    >
+                        <style.SideBarButtonText>Routes</style.SideBarButtonText>
+                    </style.SideBarButtonIcon>
+                </style.SideBarButtonWrapper>
             </>
         )
     }
@@ -243,25 +273,32 @@ const SideBarButton = (props) => {
         return (
             <>
                 {handleConfirmationModal()}
-                <style.SideBarButtonIcon
-                    className={'fas fa-cog'}
-                    onClick={() => {
-                        if (currentMode === 'lots') {
-                            props.setShowSideBarPage(mode)
-                            dispatchSetPageDataChanged(false)
-                        }
-
-                        else if (pageInfoChanged) {
-                            setConfirmDeleteModal(true)
-                        }
-                        else { props.setShowSideBarPage(mode) }
-                    }}
+                <div style={{justifyContent: 'flex-end',  flexGrow: '1'}}/>
+                <style.SideBarButtonWrapper 
                     currentMode={currentMode}
                     mode={mode}
-
                 >
-                    <style.SideBarButtonText>Settings</style.SideBarButtonText>
-                </style.SideBarButtonIcon>
+                    <style.SideBarButtonIcon
+                        
+                        className={'fas fa-cog'}
+                        onClick={() => {
+                            if (currentMode === 'lots') {
+                                props.setShowSideBarPage(mode)
+                                dispatchSetPageDataChanged(false)
+                            }
+
+                            else if (pageInfoChanged) {
+                                setConfirmDeleteModal(true)
+                            }
+                            else { props.setShowSideBarPage(mode) }
+                        }}
+                        currentMode={currentMode}
+                        mode={mode}
+
+                    >
+                        <style.SideBarButtonText>Settings</style.SideBarButtonText>
+                    </style.SideBarButtonIcon>
+                </style.SideBarButtonWrapper>
             </>
         )
     }

@@ -1,42 +1,45 @@
-import React from "react";
-import PropTypes from 'prop-types';
-import { useField, useFormikContext } from "formik";
+import React, {useEffect, useRef, useState, useContext } from "react"
 
-import ErrorTooltip from '../error_tooltip/error_tooltip';
+// components internal
+import ErrorTooltip from '../error_tooltip/error_tooltip'
+import NumberInput, {NUMBER_INPUT_BUTTON_TYPES} from "../../number_input/number_input"
+
+// functions external
+import PropTypes from 'prop-types'
+import { useField, useFormikContext } from "formik"
+
+// hooks
+import useLongPress from "../../../../hooks/useLongPress"
+
+// styles
 import * as styled from './number_field.style'
-import useLongPress from "../../../../hooks/useLongPress";
-import NumberInput from "../../number_input/number_input";
+import { ThemeContext } from 'styled-components'
 
-// function setDeceleratingTimeout(callback, factor, initialRate, times, minRate)
-// {
-// 	var internalCallback = function(tick, counter) {
-//
-// 		const newRate = (initialRate) - (++counter * factor)
-//
-// 		return function() {
-// 			if (--tick >= 0) {
-// 				window.setTimeout(internalCallback, (newRate > minRate) ? newRate : minRate);
-// 				callback();
-// 			}
-// 		}
-// 	}(times, 0);
-//
-// 	window.setTimeout(internalCallback, factor);
-// };
+// utils
+import {setAcceleratingInterval} from "../../../../methods/utils/utils"
+
+// options for useLongPress hook
+const longPressOptions = {
+	shouldPreventDefault: true,
+	delay: 500,
+}
 
 const NumberField = ({
 						maxValue,
 						minValue,
 					   ...props }) => {
 
-	const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext();
-	const [field, meta] = useField(props);
-
-	// extract field data
+	const { setFieldValue, setFieldTouched, validateOnChange, validateOnBlur, validateField, validateForm, ...context } = useFormikContext()
+	const [field, meta] = useField(props)
 	const {
 		value: fieldValue,
 		name: fieldName
 	} = field
+
+	const timeoutRef = useRef(null)
+
+	const [longPressing, setLongPressing] = useState(false)	// is button being long pressed??
+	const [valueState, setValueState] = useState(fieldValue)			// temp stores field value for long press. Necessary because useState allows for using callback with previous value, which setFieldValue does not
 
 	// extract meta data
 	const { touched, error } = meta
@@ -44,35 +47,96 @@ const NumberField = ({
 	// does the field contain an error?
 	const hasError = touched && error
 
-	// const onLongPress = () => {
-	//
-	// 	console.log('longpress is triggered');
-	// 	setDeceleratingTimeout(
-	// 		() => {
-	// 			console.log("CALLBACK")
-	// 			setFieldValue(fieldName, parseInt(fieldValue) - 1)
-	// 		},
-	// 		50,
-	// 		500,
-	// 		300,
-	// 		10)
-	//
-	// };
-	//
-	// const onClick = () => {
-	// 	console.log('click is triggered')
-	// }
-	//
-	// const defaultOptions = {
-	// 	shouldPreventDefault: true,
-	// 	delay: 500,
-	// };
-	// const longPressEvent = useLongPress(onLongPress, onClick, defaultOptions);
+	const themeContext = useContext(ThemeContext);
 
+	useEffect(() => {
+		setFieldValue(fieldName, valueState)
+	}, [valueState])
+
+	const createLongPressHandler = (buttonType) => {
+		return () => {
+			setLongPressing(true)
+			setValueState(parseInt(fieldValue))
+
+			setAcceleratingInterval(
+				() => {
+
+					// evaluate as plus press
+					if(buttonType === NUMBER_INPUT_BUTTON_TYPES.PLUS) {
+
+						// if maxValue is provided, value must not exceed maxValue
+						if(maxValue !== null) {
+							setValueState((previous) => {
+								// if previous value is less than maxValue, go ahead and increment
+								if(previous < maxValue) {
+									return previous + 1
+								}
+
+								// *** OTHERWISE ***
+								timeoutRef.current && clearTimeout(timeoutRef.current)	// clear timeout to cancel callback
+								return previous	// return previous value
+							})
+						}
+
+						// otherwise, value can be anything
+						else {
+							setValueState((previous) => {
+								return previous + 1
+							})
+						}
+					}
+
+					// evaluate as minus press
+					else {
+						// if min value is provided, value cannot be set lower than minValue
+						if(minValue !== null) {
+							setValueState((previous) => {
+								// if previous is still greater than minValue, go ahead and decrement
+								if(previous > minValue) {
+									return previous - 1
+								}
+
+								// *** otherwise ***
+								timeoutRef.current && clearTimeout(timeoutRef.current)	// clear timeout to cancel callback
+								return previous		// return previous value
+							})
+						}
+
+						// otherwise value can be anything
+						else {
+							setValueState((previous) => {
+								return previous - 1
+							})
+						}
+					}
+				},
+				50,
+				500,
+				99999999,
+				25,
+				timeoutRef
+			)
+		}
+	}
+
+	const onLongPressEnd = () => {
+		setLongPressing(false)	// set pressing to false
+		timeoutRef.current && clearTimeout(timeoutRef.current)	// clear timeout to stop callback
+	}
+
+	// filler func for useLongPress
+	const dummyFunc = () => {}
+
+	// create events for long press (plus and minus)
+	const longPlusPressEvent = useLongPress(createLongPressHandler(NUMBER_INPUT_BUTTON_TYPES.PLUS), onLongPressEnd, dummyFunc, longPressOptions)
+	const longMinusPressEvent = useLongPress(createLongPressHandler(NUMBER_INPUT_BUTTON_TYPES.MINUS), onLongPressEnd, dummyFunc, longPressOptions)
 
 	return (
 			<NumberInput
+				longPlusPressEvent={longPlusPressEvent}
+				longMinusPressEvent={longMinusPressEvent}
 				inputCss={hasError ? styled.errorCss : null}
+				themeContext={themeContext}
 				onMinusClick={() => {
 					if(!touched) {
 						setFieldTouched(fieldName, true)
@@ -123,7 +187,7 @@ const NumberField = ({
 
 
 				}}
-				value={fieldValue}
+				value={longPressing ? valueState : fieldValue}
 				plusDisabled={(maxValue) && !(fieldValue < maxValue)}
 				onPlusClick={() => {
 
@@ -152,21 +216,24 @@ const NumberField = ({
 				inputChildren={<ErrorTooltip
 					visible={hasError}
 					text={error}
+					color={themeContext.bad}
 					ContainerComponent={styled.IconContainerComponent}
 				/>}
 
 			/>
-	);
-};
+	)
+}
 
 // Specifies propTypes
 NumberField.propTypes = {
-
-};
+	maxValue: PropTypes.number,
+	minValue: PropTypes.number,
+}
 
 // Specifies the default values for props:
 NumberField.defaultProps = {
+	maxValue: null,
+	minValue: null,
+}
 
-};
-
-export default NumberField;
+export default NumberField

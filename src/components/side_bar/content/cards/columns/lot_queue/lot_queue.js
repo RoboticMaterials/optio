@@ -13,20 +13,25 @@ const LotQueue = ((props) => {
 	const {
 		station_id = "QUEUE",
 		stationName = "Unnamed",
-		handleCardClick,
+		onCardClick,
 		cards,
+		onAddLotClick,
 		processId,
 		setShowCardEditor,
 		showCardEditor,
 		maxHeight,
 		sortMode,
-		sortDirection
+		sortDirection,
+		selectedCards,
+		setSelectedCards
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
 
 	return(
 		<Column
+			setSelectedCards={setSelectedCards}
+			selectedCards={selectedCards}
 			sortDirection={sortDirection}
 			sortMode={sortMode}
 			maxHeight={maxHeight}
@@ -43,11 +48,7 @@ const LotQueue = ((props) => {
 						</styled.LabelContainer>
 
 						<Button
-							onClick={()=> {
-								handleCardClick(null, processId)
-								setShowCardEditor(!showCardEditor)
-
-							}}
+							onClick={onAddLotClick}
 							schema={'lots'}
 						>
 							+ Lot
@@ -62,7 +63,7 @@ const LotQueue = ((props) => {
 			}
 			station_id={station_id}
 			stationName = {stationName}
-			handleCardClick={handleCardClick}
+			onCardClick={onCardClick}
 			cards = {cards}
 			processId={processId}
 			isCollapsed={isCollapsed}
@@ -75,8 +76,8 @@ const LotQueue = ((props) => {
 // Specifies propTypes
 LotQueue.propTypes = {
 	stationName: PropTypes.string,
-	handleCardClick: PropTypes.func,
-	// cards: [],
+	onCardClick: PropTypes.func,
+	onAddLotClick: PropTypes.func,
 	setShowCardEditor: PropTypes.func,
 	showCardEditor: PropTypes.bool
 };
@@ -84,7 +85,8 @@ LotQueue.propTypes = {
 // Specifies the default values for props:
 LotQueue.defaultProps = {
 	stationName: "Unnamed",
-	handleCardClick: ()=>{},
+	onCardClick: ()=>{},
+	onAddLotClick: ()=>{},
 	cards: [],
 	setShowCardEditor: ()=>{},
 	showCardEditor: false

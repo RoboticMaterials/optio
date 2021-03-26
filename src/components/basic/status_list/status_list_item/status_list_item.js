@@ -1,19 +1,25 @@
-import React, {useEffect, useState} from 'react';
-import PropTypes from 'prop-types';
+import React, {useEffect, useState} from 'react'
 
+// components external
+import MoonLoader from "react-spinners/MoonLoader"
+import PulseLoader from "react-spinners/PulseLoader"
+
+// components internal
+import Button from "../../button/button"
+import ErrorTooltip from "../../form/error_tooltip/error_tooltip"
+
+// constants
+import {FORM_STATUS} from "../../../../constants/lot_contants"
+
+// functions external
+import PropTypes from 'prop-types'
+
+// styles
 import * as styled from "./status_list_item.style"
-import TextField from "../../form/text_field/text_field";
-import ErrorTooltip from "../../form/error_tooltip/error_tooltip";
-import {isEmpty} from "../../../../methods/utils/object_utils";
-import MoonLoader from "react-spinners/MoonLoader";
-import PulseLoader from "react-spinners/PulseLoader";
-import {CONTENT, FORM_BUTTON_TYPES, FORM_STATUS} from "../../../../constants/lot_contants";
-import {yellow} from "@material-ui/core/colors";
-import Button from "../../button/button";
-import {FORM_MODES} from "../../../../constants/scheduler_constants";
-import {isArray} from "../../../../methods/utils/array_utils";
-import {themeContext} from "@nivo/core";
-import {getMessageFromError} from "../../../../methods/utils/form_utils";
+
+// utils
+import {isEmpty, isObject} from "../../../../methods/utils/object_utils"
+import {getMessageFromError} from "../../../../methods/utils/form_utils"
 
 const FADE_LOADER_COLORS = {
 	red: "#f01000",
@@ -28,6 +34,7 @@ const StatusListItem = (props) => {
 	const {
 		title,
 		errors,
+		warnings,
 		resourceCode,
 		resourceMessage,
 		validationCode,
@@ -38,30 +45,67 @@ const StatusListItem = (props) => {
 		showTopBorder,
 		showBottomBorer,
 		created,
-		onCreateClick
+		onCreateClick,
+		displayNames
 	} = props
 
 	const [mappedErrors, setMappedErrors] = useState({})
+	const [hasErrors, setHasErrors] = useState(false)
+	const [mappedWarnings, setMappedWarnings] = useState({})
+	const [hasWarnings, setHasWarnings] = useState(false)
 
 	useEffect(() => {
-		// setMappedErrors(
 		let tempMappedErrors = {}
 
-		Object.entries(errors).forEach((currErr) => {
-			const [ currKey, currVal] = currErr
-			const split = currKey.split(".")
-			const newKey = split[split.length - 1]
+		Object.keys(errors).forEach((currKey) => {
+			let tempCurrKey = currKey
+			let currErrCopy = errors[currKey]
 
-			tempMappedErrors[newKey] = [getMessageFromError(currVal)]
+			while(isObject(currErrCopy)) {
+				tempCurrKey = Object.keys(currErrCopy)[0]
+				currErrCopy = currErrCopy[tempCurrKey]
+			}
+
+			if(Object.keys(displayNames).includes(tempCurrKey)) {
+				tempCurrKey = displayNames[tempCurrKey]
+			}
+
+			tempMappedErrors[tempCurrKey] = [getMessageFromError(currErrCopy)]
 		})
 
 		setMappedErrors(tempMappedErrors)
+		setHasErrors(!isEmpty(tempMappedErrors))
 
 	}, [errors])
 
+	useEffect(() => {
+		// setMappedErrors(
+		let tempMappedWarnings = {}
+
+		Object.keys(warnings).forEach((currKey) => {
+			let tempCurrKey = currKey
+			let currErrCopy = warnings[currKey]
+
+			while(isObject(currErrCopy)) {
+				tempCurrKey = Object.keys(currErrCopy)[0]
+				currErrCopy = currErrCopy[tempCurrKey]
+			}
+
+			if(Object.keys(displayNames).includes(tempCurrKey)) {
+				tempCurrKey = displayNames[tempCurrKey]
+			}
+
+			tempMappedWarnings[tempCurrKey] = [getMessageFromError(currErrCopy)]
+		})
+
+		setMappedWarnings(tempMappedWarnings)
+		setHasWarnings(!isEmpty(tempMappedWarnings))
+
+	}, [warnings])
+
 	const submitDisabled = (validationCode !== FORM_STATUS.VALIDATION_SUCCESS) || (resourceCode === FORM_STATUS.CREATE_SUCCESS)
 
-	const renderErrorTooltip = () => {
+	const renderErrorTooltip = (mappedErrors) => {
 		return(
 			<styled.InsideTooltipContainer>
 
@@ -102,7 +146,7 @@ const StatusListItem = (props) => {
 			showBottomBorer={showBottomBorer}
 		>
 			<styled.NameContainer>
-				<styled.Index>{index}.</styled.Index>
+				<styled.Index>{index + 1}.</styled.Index>
 				<styled.Name>{title}</styled.Name>
 			</styled.NameContainer>
 
@@ -129,7 +173,7 @@ const StatusListItem = (props) => {
 							<ErrorTooltip
 								visible={true}
 								// text={validationMessage}
-								tooltip={renderErrorTooltip()}
+								tooltip={renderErrorTooltip(mappedErrors)}
 								ContainerComponent={styled.TooltipContainer}
 							/>,
 						[FORM_STATUS.WAITING]:
@@ -150,6 +194,18 @@ const StatusListItem = (props) => {
 						color={FADE_LOADER_COLORS.grey}
 						size={10}
 					/>
+				}
+
+				{hasWarnings &&
+				<ErrorTooltip
+					visible={true}
+					containerStyle={{
+						marginLeft: ".5rem"
+					}}
+					color={"yellow"}
+					tooltip={renderErrorTooltip(mappedWarnings)}
+					ContainerComponent={styled.TooltipContainer}
+				/>
 				}
 			</styled.StatusContainer>
 
@@ -219,18 +275,41 @@ const StatusListItem = (props) => {
 			</styled.ColumnWrapper>
 
 		</styled.Container>
-	);
-};
+	)
+}
 
 StatusListItem.propTypes = {
-
-};
+	showTopBorder: PropTypes.bool,
+	showBottomBorer: PropTypes.bool,
+	title: PropTypes.string,
+	errors: PropTypes.object,
+	warnings: PropTypes.object,
+	resourceCode: PropTypes.number,
+	resourceMessage: PropTypes.string,
+	validationCode: PropTypes.number,
+	validationMessage: PropTypes.string,
+	onEditClick: PropTypes.func,
+	item: PropTypes.object,
+	index: PropTypes.number,
+	created: PropTypes.bool,
+	onCreateClick: PropTypes.func,
+}
 
 StatusListItem.defaultProps = {
 	showTopBorder: true,
 	showBottomBorer: true,
-};
+	title: "",
+	errors: {},
+	warnings: {},
+	resourceCode: 0,
+	resourceMessage: "",
+	validationCode: 0,
+	validationMessage: "",
+	onEditClick: () => {},
+	item: {},
+	index: 0,
+	created: false,
+	onCreateClick: () => {}
+}
 
-
-
-export default StatusListItem;
+export default StatusListItem

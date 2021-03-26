@@ -1,57 +1,47 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react'
 
-import PropTypes from 'prop-types';
+// functions external
+import PropTypes from 'prop-types'
 
-import * as styled from "./lot_date_row.style";
-import {isArray} from "../../../../../../methods/utils/array_utils";
-import {dateRangeToStrings} from "../../../../../../methods/utils/card_utils";
+// styles
+import * as styled from "./lot_date_row.style"
 
-const LotDateRangeRow = (props) => {
+// utils
+import {jsDateToString} from "../../../../../../methods/utils/card_utils"
+import { capitalizeFirstLetter } from '../../../../../../methods/utils/string_utils'
+
+const LotDateRow = (props) => {
 
 	const {
-		dateRange,
+		date,
 		label,
 		isLast,
-		defaultStartText,
-		defaultEndText,
+		defaultDateText,
 	} = props
 
-	const [startDateText, setStartDateText] = useState("Start")
-	const [endDateText, setEndDateText] = useState("End")
+	const [dateText, setDateText] = useState("Date")
 
 	useEffect(() => {
-		const [tempStartDateText, tempEndDateText] = dateRangeToStrings(dateRange)
-		setStartDateText(tempStartDateText)
-		setEndDateText(tempEndDateText)
-	}, [dateRange])
+		setDateText(jsDateToString(date))
+	}, [date])
 
 	return (
 		<styled.Row isLast={isLast}>
-			<styled.Label>{label}</styled.Label>
-			<styled.DatesContainer>
-				<styled.DateItem>
-					<styled.DateText>{startDateText ? startDateText : defaultStartText}</styled.DateText>
-				</styled.DateItem>
-
-				<styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
+			<styled.Label>{capitalizeFirstLetter(label)}</styled.Label>
 
 				<styled.DateItem>
-					<styled.DateText>{endDateText ? endDateText : defaultEndText}</styled.DateText>
+					<styled.DateText>{dateText ? dateText : defaultDateText}</styled.DateText>
 				</styled.DateItem>
-			</styled.DatesContainer>
 		</styled.Row>
-	);
-};
+	)
+}
 
-LotDateRangeRow.propTypes = {
+LotDateRow.propTypes = {
+	defaultDateText: PropTypes.string
+}
 
-};
+LotDateRow.defaultProps = {
+	defaultDateText: "Date",
+}
 
-LotDateRangeRow.defaultProps = {
-	defaultStartText: "Start",
-	defaultEndText: "End",
-};
-
-
-
-export default LotDateRangeRow;
+export default LotDateRow

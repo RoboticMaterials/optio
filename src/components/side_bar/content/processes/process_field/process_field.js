@@ -39,6 +39,7 @@ import useChange from "../../../../basic/form/useChange";
 
 // styles
 import * as styled from './process_field.style'
+import theme from '../../../../../theme'
 import {DEVICE_CONSTANTS} from "../../../../../constants/device_constants";
 import {throttle} from "../../../../../methods/utils/function_utils";
 import {ADD_TASK_ALERT_TYPE} from "../../../../../constants/dashboard_contants";
@@ -46,6 +47,7 @@ import TaskAddedAlert
     from "../../../../widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
 import {getSidebarDeviceType, isRouteInQueue} from "../../../../../methods/utils/task_queue_utils";
 import {isDeviceConnected} from "../../../../../methods/utils/device_utils";
+import AddRouteButtonPath from '../../../../../graphics/svg/add_route_button_path'
 
 export const ProcessField = (props) => {
     const {
@@ -146,6 +148,19 @@ export const ProcessField = (props) => {
     useEffect(() => {
       dispatchPageDataChanged(values.changed)
     }, [values.changed])
+
+    useEffect(() => {
+        // When there are no routes, automatically add the first one
+        if (values.routes.length === 0) {
+            let prevObj
+
+            const newTask = {...generateDefaultRoute(prevObj), temp: {insertIndex: values.routes.length}}
+            setFieldValue("newRoute", newTask)
+            dispatchSetSelectedTask(newTask)
+            setEditingTask("newRoute")
+        }
+    }, [values.routes])
+
     const handleAddTask = async () => {
 
         // contains new route
@@ -227,9 +242,8 @@ export const ProcessField = (props) => {
             ...remainingValues
         } = currRouteValue || {}
 
-
         setFieldValue("broken", isBrokenProcess(values.routes, tasks))
-        setFieldValue(editingTask, {...remainingValues})
+        setFieldValue(editingTask, {remainingValues})
         setEditingTask(false)
         dispatchSetSelectedTask(null)
     }
@@ -403,7 +417,8 @@ export const ProcessField = (props) => {
                 <div key={`li-${currIndex}`}>
                     <ListItemField
                         playDisabled={inQueue || addTaskAlert}
-                        containerStyle={{marginBottom: isLast ? 0 : "1rem"}}
+                        showPlay={inQueue || addTaskAlert}
+                        containerStyle={{margin: '0.5rem'}}
                         name={fieldName}
                         onMouseEnter={() => {
                             if (!selectedTask && !editingTask) {
@@ -470,61 +485,64 @@ export const ProcessField = (props) => {
 
     const handleAddRoute = () => {
 
+        const onAddToEndClick = () => {
+
+            let prevObj
+            if(values.routes.length > 0) {
+                prevObj = values.routes[values.routes.length - 1].obj
+            }
+
+            const newTask = {...generateDefaultRoute(prevObj), temp: {insertIndex: values.routes.length}}
+            setFieldValue("newRoute", newTask)
+            dispatchSetSelectedTask(newTask)
+            setEditingTask("newRoute")
+        }
+
         return (
-            <>
-                <Button
-                    schema={'processes'}
-                    // disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
-                    secondary
-                    disabled={editingTask}
-                    onClick={() => {
-
-                        let prevObj
-                        if(values.routes.length > 0) {
-                            prevObj = values.routes[values.routes.length - 1].obj
-                        }
-
-                        const newTask = {...generateDefaultRoute(prevObj), temp: {insertIndex: values.routes.length}}
-                        setFieldValue("newRoute", newTask)
-                        dispatchSetSelectedTask(newTask)
-                        setEditingTask("newRoute")
-                    }}
-                >
-                    Add Route
-                </Button>
-
-            </>
+            <svg transform="rotate(180)" height="3.8rem" style={{margin: '0.5rem 2rem 0.5rem 2rem', transformOrigin: 'center', cursor: 'pointer'}} onClick={onAddToEndClick}>
+                <svg style={{overflow: 'visible'}} viewBox="0 0 300 68.5" preserveAspectRatio="none"  >
+                    <defs>
+                        <linearGradient id="processGrad" x1="50%" y1="100%" x2="50%" y2="0%">
+                            <stop offset="0%" stopColor="rgba(255, 196, 0, 1)"/>
+                            <stop offset="50%" stopColor="rgba(255, 204, 0, 1)" />
+                            <stop offset="100%" stopColor="rgba(255, 196, 0, 1)"/>
+                        </linearGradient>
+                    </defs>
+                    <path fill="url(#processGrad)" d={AddRouteButtonPath} />
+                </svg>
+                <g fill={theme.main.bg.octonary} viewBox="0 0 300 68.5" height="3.5rem" width="100%" style={{border: '1px solid blue', transformOrigin: 'center'}} transform="rotate(180) translate(-60, 0)">
+                    <styled.SVGText x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">Add to End</styled.SVGText>
+                </g>
+            </svg>
         )
+
     }
 
     const handleAddBeginningRoute = () => {
 
+        const onAddToBeginningClick = () => {
+
+            let prevObj
+            if(values.routes.length > 0) {
+                prevObj = values.routes[values.routes.length - 1].obj
+            }
+
+            const newTask = {...generateDefaultRoute(prevObj), temp: {insertIndex: 0}}
+
+            setFieldValue("newRoute", newTask)
+            dispatchSetSelectedTask(newTask)
+            setEditingTask("newRoute")
+        }
+
         return (
-            <>
-                <Button
-                    schema={'processes'}
-                    // disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
-                    secondary
-                    style = {{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}
-                    disabled={editingTask}
-                    onClick={() => {
-
-                        let prevObj
-                        if(values.routes.length > 0) {
-                            prevObj = values.routes[values.routes.length - 1].obj
-                        }
-
-                        const newTask = {...generateDefaultRoute(prevObj), temp: {insertIndex: 0}}
-
-                        setFieldValue("newRoute", newTask)
-                        dispatchSetSelectedTask(newTask)
-                        setEditingTask("newRoute")
-                    }}
-                >
-                    Add Route To Beginning
-                </Button>
-
-            </>
+            <svg height="3.8rem" style={{margin: '0.5rem 2rem 0.5rem 2rem', transformOrigin: 'center', cursor: 'pointer'}} onClick={onAddToBeginningClick}>
+                <svg style={{overflow: 'visible'}} viewBox="0 0 300 68.5" preserveAspectRatio="none"  >
+                    <path fill="url(#processGrad)" d={AddRouteButtonPath} />
+                </svg>
+                <g fill={theme.main.bg.octonary} viewBox="0 0 300 68.5" height="3.5rem" width="100%" style={{border: '1px solid blue', transformOrigin: 'center'}} transform="translate(-60, 10)">
+                    <styled.SVGText x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">Add to Start</styled.SVGText>
+                </g>
+            </svg>
         )
     }
 
@@ -635,6 +653,7 @@ export const ProcessField = (props) => {
                         focus={!values.name}
                         placeholder='Process Name'
                         defaultValue={values.name}
+                        label='Process Name'
                         schema={'processes'}
                         name={`name`}
                         InputComponent={Textbox}
@@ -644,55 +663,65 @@ export const ProcessField = (props) => {
                 </div>
 
                 {editingTask && selectedTask ?
-                <styled.TaskContainer schema={'processes'}>
-                    <TaskField
-                        {...formikProps}
-                        isNew={editingTask === "newRoute"}
-                        onRemove={handleRemoveRoute}
-                        onDelete={handleDeleteRoute}
-                        onBackClick={handleTaskBack}
-                        onSave={handleAddTask}
-                        fieldParent={editingTask}
-                        shift={shift}
-                        isTransportTask={isTransportTask}
-                        isProcessTask={true}
-                        toggleEditing={(props) => {
-                            setEditingTask(props)
-                        }}
-                    />
-                </styled.TaskContainer>
+                    <styled.TaskContainer schema={'processes'}>
+                        <TaskField
+                            {...formikProps}
+                            isNew={editingTask === "newRoute"}
+                            onRemove={handleRemoveRoute}
+                            onDelete={handleDeleteRoute}
+                            onBackClick={handleTaskBack}
+                            onSave={handleAddTask}
+                            fieldParent={editingTask}
+                            shift={shift}
+                            isTransportTask={isTransportTask}
+                            isProcessTask={true}
+                            toggleEditing={(props) => {
+                                setEditingTask(props)
+                            }}
+                        />
+                    </styled.TaskContainer>
                     :
                     <>
                         <styled.Title schema={'processes'}>Associated Routes</styled.Title>
 
-                        {values.routes.length > 0 && handleAddBeginningRoute()}
+                        <styled.SectionContainer>
+                            <>
+                                {handleAddBeginningRoute()}
 
-                        <styled.SectionContainer
-                            showTopBorder={values.routes.length > 0}
-                        >
-                            {values.routes.length > 0 ?
-                                renderRoutes(values.routes)
-                                :
-                                <styled.InfoText></styled.InfoText>
+                                {values.routes.length > 0 ?
+                                    renderRoutes(values.routes)
+                                    :
+                                    <styled.InfoText></styled.InfoText>
 
-                            }
+                                }
+
+                                {handleAddRoute()}
+
+                            </>
                         </styled.SectionContainer>
 
-                        {handleAddRoute()}
-
-                        {/*<div style={{ height: "100%", paddingTop: "1rem" }} />*/}
+                        
+                        {/* Delete Task Button */}
+                        <Button
+                            schema={'processes'}
+                            disabled={!!selectedTask && !!editingTask || submitDisabled}
+                            onClick={() => {
+                                onSave(values, true)
+                            }}
+                        >
+                            Save Process
+                        </Button>
 
                         {/* Delete Task Button */}
                         <Button
-                            schema={'delete'}
+                            schema={'error'}
                             disabled={!!selectedProcess && !!selectedProcess._id && !!selectedProcess.new}
-                            style={{ marginBottom: '0rem', borderColor: 'red' }}
                             secondary
                             onClick={() => {
                                 setConfirmDeleteModal(true)
                             }}
                         >
-                            Delete
+                            Delete Process
                         </Button>
                     </>
                 }

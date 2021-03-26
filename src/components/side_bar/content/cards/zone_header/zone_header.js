@@ -133,12 +133,13 @@ const ZoneHeader = (props) => {
 
 	const themeContext = useContext(ThemeContext)
 
-	const processes = useSelector(state => { return Object.values(state.processesReducer.processes) })
+	const processes = useSelector(state => { return Object.values(state.processesReducer.processes) }) || []
+	const currentMap = useSelector(state => state.mapReducer.currentMap)
 
 	return (
 		<styled.Container>
 
-			{zone === "summary" &&
+			{/* {zone === "summary" &&
 			<styled.ColumnContainer
 				css={columnCss3}
 			>
@@ -159,7 +160,7 @@ const ZoneHeader = (props) => {
 					schema={"lots"}
 					placeholder='Select processes...'
 					style={{
-						background: themeContext.bg.tertiary,
+						background: themeContext.bg.secondary,
 						flex: 1,
 						overflow: "hidden"
 					}}
@@ -168,7 +169,7 @@ const ZoneHeader = (props) => {
 					}}
 					multi
 					values={selectedProcesses}
-					options={processes}
+					options={processes.filter((currProcess) => currProcess.map_id === currentMap._id)}
 					onChange={values => {
 						setSelectedProcesses(values)
 					}}
@@ -184,7 +185,7 @@ const ZoneHeader = (props) => {
 				/>
 				</div>
 			</styled.ColumnContainer>
-			}
+			} */}
 
 			<LotSortBar
 				sortMode={sortMode}

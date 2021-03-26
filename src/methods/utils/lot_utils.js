@@ -2,14 +2,15 @@ import {isObject} from "./object_utils";
 import {capitalizeFirstLetter, isEqualCI, isString} from "./string_utils";
 import {
 	BASIC_LOT_TEMPLATE,
-	BASIC_LOT_TEMPLATE_ID,
+	BASIC_LOT_TEMPLATE_ID, BIN_IDS,
 	FIELD_DATA_TYPES,
 	LOT_FILTER_OPTIONS
 } from "../../constants/lot_contants";
-import {isArray} from "./array_utils";
+import {immutableDelete, immutableReplace, isArray} from "./array_utils";
 import store from '../../redux/store/index'
 import lotTemplatesReducer from "../../redux/reducers/lot_templates_reducer";
 import {toIntegerOrZero} from "./number_utils";
+import {useSelector} from "react-redux";
 
 export const getDisplayName = (lotTemplate, fieldName, fallback) => {
 	let returnVal
@@ -18,6 +19,25 @@ export const getDisplayName = (lotTemplate, fieldName, fallback) => {
 	}
 
 	return isString(returnVal) ? returnVal : fallback ? fallback : ""
+}
+
+export const getBinName = (binId) => {
+	const stations = store.getState().stationsReducer.stations || {}
+
+	if(binId === BIN_IDS.QUEUE) {
+		return "Queue"
+	}
+	else if(binId === BIN_IDS.FINISH) {
+		return "Finish"
+	}
+	else {
+		const station = stations[binId] || {}
+		const {
+			name = ""
+		} = station
+
+		return name
+	}
 }
 
 export const getMatchesFilter = (lot, filterValue, filterMode) => {
@@ -250,6 +270,52 @@ export const convertDataTypeContantToDisplay = (dataTypeContant) => {
 		}
 		default: {
 			return null
+		}
+	}
+}
+
+export const getLotAfterBinMerge = (lotToMove, currentBinId, destinationBinId) => {
+	const {
+		bins: oldBins,
+		...unchangedLotAttributes
+	} = lotToMove || {}
+
+	const {
+		[currentBinId]: movedBin,
+		[destinationBinId]: destinationBin,
+		...unchangedBins
+	} = oldBins || {}
+
+	if(movedBin) {
+		// already contains items in destinationBin
+		if (destinationBin && movedBin) {
+			const oldCount = parseInt(destinationBin?.count || 0)
+			const movedCount = parseInt(movedBin?.count || 0)
+
+			return {
+				...unchangedLotAttributes,
+				bins: {
+					...unchangedBins,
+					[destinationBinId]: {
+						...destinationBin,
+						count: oldCount + movedCount
+					}
+				}
+
+			}
+		}
+
+		// no items in bin
+		else {
+			return {
+				...unchangedLotAttributes,
+				bins: {
+					...unchangedBins,
+					[destinationBinId]: {
+						...movedBin,
+					}
+				}
+			}
 		}
 	}
 }

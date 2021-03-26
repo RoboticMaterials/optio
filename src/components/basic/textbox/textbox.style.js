@@ -10,20 +10,22 @@ export const TextboxContainer = styled.div`
 
     padding: 0;
     margin: 0;
+
+    position: relative;
 `
 
 
 export const TextboxLabel = styled.h1`
     font-size: ${props => props.theme.fontSize.sz2};
     font-family: ${props => props.theme.font.primary};
-    color: ${props => props.theme.bg.septenary};
+    color: ${props => props.theme.bg.octonary};
     margin-top: .6rem;
     margin-right: 0.5rem;
     line-height: 1rem;
 `;
 
 export const TextboxInput = styled.input`
-    background-color: ${props => props.theme.bg.quinary};
+    background-color: ${props => props.theme.bg.secondary};
     border: none;
     font-size: ${props => props.theme.fontSize.sz4};
     font-family: ${props => props.theme.font.primary};
@@ -33,11 +35,11 @@ export const TextboxInput = styled.input`
     color: ${props => props.theme.bg.octonary};
 
     box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1) !important;
-    border-bottom: 2px solid ${props => props.theme.bg.quinary};
+    border-bottom: 2px solid ${props => props.theme.bg.secondary};
 
     &:focus {
-        background-color: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};
-        border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
+        background-color: ${props => props.theme.bg.secondary};
+        border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.schema.default.solid};
         color: ${props => props.theme.bg.octonary};
         outline: none !important;
     }
@@ -49,7 +51,7 @@ export const TextboxInput = styled.input`
 `;
 
 export const TextboxArea = styled.textarea`
-    background-color: ${props => props.theme.bg.quinary};
+    background-color: ${props => props.theme.bg.secondary};
     border: none;
     font-size: ${props => props.theme.fontSize.sz4};
     font-family: ${props => props.theme.font.primary};
@@ -59,11 +61,11 @@ export const TextboxArea = styled.textarea`
     color: ${props => props.theme.bg.octonary};
 
     box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1) !important;
-    border-bottom: 2px solid ${props => props.theme.bg.quinary};
+    border-bottom: 2px solid ${props => props.theme.bg.secondary};
 
     &:focus {
-        background-color: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};
-        border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
+        background-color: ${props => props.theme.bg.secondary};
+        border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.schema.default.solid};
         color: ${props => props.theme.bg.octonary};
         outline: none !important;
     }

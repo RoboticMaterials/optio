@@ -13,7 +13,7 @@ export const Container = styled.div`
     max-height: 100%;
     // overflow: hidden;
     
-    background: ${props => props.theme.bg.quaternary};
+    background: ${props => props.theme.bg.secondary};
     
 `
 

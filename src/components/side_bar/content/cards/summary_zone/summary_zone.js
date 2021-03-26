@@ -23,7 +23,10 @@ const SummaryZone = ((props) => {
 		selectedFilterOption,
 		selectedProcesses,
 		sortMode,
-		sortDirection
+		sortDirection,
+		selectedCards,
+		setSelectedCards,
+		handleAddLotClick
 	} = props
 
 	/*
@@ -53,6 +56,9 @@ const SummaryZone = ((props) => {
 						<styled.ProcessName>{processName}</styled.ProcessName>
 
 						<CardZone
+							handleAddLotClick={handleAddLotClick}
+							setSelectedCards={setSelectedCards}
+							selectedCards={selectedCards}
 							sortMode={sortMode}
 							sortDirection={sortDirection}
 							lotFilterValue={lotFilterValue}
@@ -82,6 +88,7 @@ const SummaryZone = ((props) => {
 SummaryZone.propTypes = {
 	handleCardClick: PropTypes.func,
 	setShowCardEditor: PropTypes.func,
+	handleAddLotClick: PropTypes.func,
 	showCardEditor: PropTypes.bool,
 	lotFilterValue: PropTypes.string
 }
@@ -90,6 +97,7 @@ SummaryZone.propTypes = {
 SummaryZone.defaultProps = {
 	handleCardClick: () => {},
 	setShowCardEditor: () => {},
+	handleAddLotClick: () => {},
 	showCardEditor: false,
 	lotFilterValue: "",
 	selectedFilterOption: null

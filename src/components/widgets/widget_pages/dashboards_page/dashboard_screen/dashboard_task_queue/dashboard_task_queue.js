@@ -1,11 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import * as styled from './dashboard_task_queue.style'
+import { ThemeContext } from 'styled-components'
 
 import useOnClickOutside from '../../../../../../hooks/useOnClickOutside'
 
-import theme from '../../../../../../theme'
 
 import TaskQueue from '../../../../../task_queue/task_queue'
 
@@ -19,6 +19,8 @@ const DashboardTaskQueue = () => {
 
     useOnClickOutside(ref, () => setShowTaskQ(false))
 
+    const theme = useContext(ThemeContext);
+
     const path = `
         M 1000 0
         Q 1000 80 910 140
@@ -30,10 +32,10 @@ const DashboardTaskQueue = () => {
             {!showTaskQ ?
 
                 <styled.ExpandContainer showTaskQ={showTaskQ}>
-                    <styled.ExpandIcon mapViewEnabled = {mapViewEnabled} className={'fa fa-tasks'} onClick={() => { setShowTaskQ(!showTaskQ) }} />
+                    <styled.ExpandIcon mapViewEnabled = {mapViewEnabled} style={{color: theme.bg.primary}} className={'fa fa-tasks'} onClick={() => { setShowTaskQ(!showTaskQ) }} />
 
                     <styled.ExpandSVG mapViewEnabled = {mapViewEnabled} viewBox='0 0 1000 1000'>
-                        <styled.ExpandPath d={path} fill={theme.main.bg.quinary} onClick={() => { setShowTaskQ(!showTaskQ) }} />
+                        <styled.ExpandPath d={path} fill={theme.bg.quinary} onClick={() => { setShowTaskQ(!showTaskQ) }} />
                     </styled.ExpandSVG>
 
 

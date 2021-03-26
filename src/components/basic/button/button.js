@@ -10,6 +10,8 @@ const Button = (props) => {
       schema,
       style,
       secondary,
+      type,
+      tertiary,
       children,
       label,
     } = props
@@ -22,6 +24,7 @@ const Button = (props) => {
             schema={schema}
             style={style}
             secondary={secondary}
+            tertiary={tertiary}
             {...props} >
 
         {children ?
@@ -36,7 +39,8 @@ const Button = (props) => {
 
 Button.defaultProps = {
     secondary : false,
-    disabled: false
+    disabled: false,
+    type: 'button'
 };
 
 export default Button;

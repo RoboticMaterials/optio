@@ -1,5 +1,33 @@
 
+export const QUEUE_BIN_ID = "QUEUE"
+export const FINISH_BIN_ID = "FINISH"
 
+export const QUEUE_BIN_DISPLAY_NAME = "Queue"
+export const FINISH_BIN_DISPLAY_NAME = "Finish"
+
+export const BIN_IDS = {
+	QUEUE: QUEUE_BIN_ID,
+	FINISH: FINISH_BIN_ID
+}
+
+export const QUEUE_THEME = {
+	ICON: "fas fa-ellipsis-h",
+	COLOR: "#b642f5",
+	ID: QUEUE_BIN_ID,
+	DISPLAY_NAME: QUEUE_BIN_DISPLAY_NAME
+
+}
+export const FINISH_THEME = {
+	ICON: "fas fa-box",
+	COLOR: "#ff8605",
+	ID: FINISH_BIN_ID,
+	DISPLAY_NAME: FINISH_BIN_DISPLAY_NAME,
+}
+
+export const BIN_THEMES = {
+	QUEUE: QUEUE_THEME,
+	FINISH: FINISH_THEME
+}
 
 export const FIELD_COMPONENT_NAMES = {
 	TEXT_BOX: "TEXT_BOX",
@@ -57,10 +85,10 @@ export const LOT_EDITOR_SIDEBAR_OPTIONS = {
 		component: FIELD_COMPONENT_NAMES.NUMBER_INPUT,
 		dataType: FIELD_DATA_TYPES.INTEGER
 	},
-	// CALENDAR_SINGLE: {
-	// 	component: FIELD_COMPONENT_NAMES.CALENDAR_SINGLE
-	// 	dataType: FIELD_DATA_TYPES.DATE
-	// },
+	CALENDAR_SINGLE: {
+		component: FIELD_COMPONENT_NAMES.CALENDAR_SINGLE,
+		dataType: FIELD_DATA_TYPES.DATE
+	},
 	CALENDAR_START_END: {
 		component: FIELD_COMPONENT_NAMES.CALENDAR_START_END,
 		dataType: FIELD_DATA_TYPES.DATE_RANGE
@@ -89,7 +117,7 @@ export const EMPTY_DEFAULT_FIELDS =  [
 
 export const BASIC_LOT_TEMPLATE = {
 	fields: EMPTY_DEFAULT_FIELDS,
-	name: BASIC_LOT_TEMPLATE_ID,
+	name: "Basic",
 	_id: BASIC_LOT_TEMPLATE_ID
 }
 
@@ -129,24 +157,28 @@ export const defaultBins = {
 
 export const FLAG_OPTIONS = {
 	0: {
-		color: "#db2100",
+		color: "#876CDD",
 		id: 0
 	},
 	1:{
-		color: "#1a00c2",
+		color: "#6ca6dd",
 		id: 1
 	},
 	2: {
-		color: "#13a600",
+		color: "#53e690",
 		id: 2
 	},
 	3: {
-		color: "#d800db",
+		color: "#fff047",
 		id: 3
 	},
 	4: {
-		color: "#e3a600",
+		color: "#ff9e54",
 		id: 4
+	},
+	5: {
+		color: "#ff5454",
+		id: 5
 	},
 }
 

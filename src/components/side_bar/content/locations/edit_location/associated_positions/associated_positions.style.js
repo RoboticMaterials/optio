@@ -7,58 +7,71 @@ export const PositionsContainer = styled.div`
     height: 100%;
 
     user-select: none;
+
 `
 
 export const Label = styled.h1`
     font-family: ${props => props.theme.font.primary};
     font-size: 1.5rem;
     font-weight: 500;
-    /* color: ${props => props.theme.schema.locations.solid}; */
-    color: ${props => props.theme.bg.octonary};
+    color: ${props => props.theme.bg.septenary};
     text-align: center;
     user-select: none;
 `
 
 export const LocationTypeGraphic = styled.svg`
-    height: 2.5rem;
+    height: 4.5rem;
 
     position: absolute;
-    top: 40%;
+    top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, calc(-50% + 0.3rem));
+
+    fill: ${props => props.isNotSelected && 'gray'};
+    stroke: ${props => props.isNotSelected && 'gray'};
 `
 
 export const LocationTypeLabel = styled.p`
-    margin-bottom: 0rem;
+    font-family: ${props => props.theme.font.primary};
+    font-size: ${props => props.theme.fontSize.sz4};
+    color: ${props => props.theme.bg.quaternary};
+    margin-bottom: auto;
+    user-select: none;
+    text-align: center;
 `
 
 export const Card = styled.div`
-    height: 5rem;
-    width: 100%;
-    position:relative;
-    margin: 0rem .5rem;
-
+    height: 4.5rem;
+    width: 6rem;
+    position: relative;
+    margin: 0rem 1rem;
 `
 
 export const CardContainer = styled.div`
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+
     display: flex;
-    margin-top: 1rem;
-    
+    flex-grow: 1;
+    flex-direction: row;
+
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+
 `
 
 export const NewPositionCard = styled.div`
 
-    max-height: 4rem;
+    max-height: 4.5rem;
     max-width: 6rem;
     
-    display: flex;
-
     height: 100%;
     width: 100%;
 
     border-radius: 0.5rem;
 
-    background: ${props => props.theme.bg.octonary};
+    background: ${props => props.theme.bg.secondary};
     opacity: 0.999;
 
     position: absolute;
@@ -74,6 +87,8 @@ export const NewPositionCard = styled.div`
     &:active {
         cursor: grabbing;
     }
+
+    cursor: url(https://ssl.gstatic.com/ui/v1/icons/mail/images/2/openhand.cur), grab;
 `
 
 export const ListContainer = styled.div`
@@ -85,8 +100,8 @@ export const PositionList = styled.div`
 `
 
 export const PositionListItem = styled.div`
-    border: .25rem solid ${props => props.background};
-    border-radius: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.1);
 
     padding: .25rem;
     padding-top: .35rem;
@@ -125,7 +140,7 @@ export const SortIcon = styled.i`
 
 export const CartIcon = styled.i`
     font-size: .8rem;
-    color: ${props => props.theme.bg.octonary};
+    // color: ${props => props.theme.bg.octonary};
 
     margin: 0.4rem;
     margin-left: 0.6rem;

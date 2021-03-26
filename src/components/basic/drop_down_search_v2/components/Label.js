@@ -16,11 +16,10 @@ function Label(props) {
 const DefaultLabelComponent = styled.div`
     width: 100%;
     text-align: center;
-    color: #999;
     font-weight: 200;
 
-    background: ${props => LightenDarkenColor(props.theme.bg.quinary, -10)};
-    color: ${props => props.theme.bg.septenary};
+    background: ${props => LightenDarkenColor(props.theme.bg.secondary, -10)};
+    color: ${props => props.theme.bg.quinary};
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz5};
 `

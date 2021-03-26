@@ -18,7 +18,7 @@ const DefaultNoDataComponent = styled.div`
   text-align: center;
   font-size: 1rem;
   color: #FF4B4B;
-  background-color: rgba(0,0,0,0.2);
+  background-color: #f5f5fa;
 
 `;
 

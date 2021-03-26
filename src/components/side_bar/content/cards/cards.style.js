@@ -11,14 +11,7 @@ export const Container = styled.div`
     font-style: ${props => props.theme.font.primary};
 `
 
-// HEADER
-export const Header = styled.div`
-	display: flex;
-	justify-content: space-around;
-	align-items: center;
-	padding: 1rem;
-	background: ${props => props.theme.bg.quinary};
-`
+
 
 export const Body = styled.div`
 	display: flex;
@@ -29,7 +22,8 @@ export const Body = styled.div`
 	position: relative;
 	
 	
-	background: ${props => props.theme.bg.tertiary};
+	background: ${props => props.theme.bg.secondary};
+  box-shadow: inset 2px 2px 4px 1px rgba(0, 0, 0, 0.1);
 `
 
 export const CardZoneContainer = styled.div`
@@ -42,51 +36,19 @@ export const CardZoneContainer = styled.div`
   //padding: 1rem;
 	//width: 100%;
 	//height: 100%;
+
+  // border: 1px solid green;
 `
 
-export const MenuButton = styled.i`
-	font-size: 2rem;
-	padding: 0;
-	margin: 0;
-	color: white;
-	
-	text-shadow: 0.05rem 0.05rem 0.2rem #303030;
-    //transition: text-shadow 0.1s ease, filter 0.1s ease;
-    &:hover {
-        cursor: pointer;
-        filter: brightness(85%);
-    }
 
-    &:active{
-        filter: brightness(85%);
-        text-shadow: none;
-    }
 
-    background: none;
-    outline: none;
-    border: none;
 
-    &:focus {
-        outline: none;
-    }
-`
-
-export const Title = styled.span`
-	font-size: ${props => props.theme.fontSize.sz2};
-	color: white;
-	font-weight: ${props => props.theme.fontWeight.bold};
-  margin-bottom: .5rem;
-`
 
 export const AddCardButton = styled.button`
 
 `
 
-export const InvisibleItem = styled.div`
-    visibility: hidden;
-    height: 1rem;
-    width: 1rem;
-`
+
 
 // LIST
 export const RoutesListContainer = styled.div`
