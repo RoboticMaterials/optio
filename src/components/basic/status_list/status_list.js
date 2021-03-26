@@ -23,7 +23,7 @@ const StatusList = (props) => {
 	return (
 		<styled.Container>
 			<StatusListHeader
-
+				onCanceleClick={onCanceleClick}
 			/>
 
 			<StatusListBody

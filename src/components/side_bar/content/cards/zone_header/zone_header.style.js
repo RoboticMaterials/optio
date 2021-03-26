@@ -94,8 +94,8 @@ export const FlagsContainer = styled.div`
 `
 
 export const rotateButtonContainerCss = css`
-  border-top-right-radius: 1rem;
-  border-bottom-right-radius: 1rem;
+  border-top-right-radius: 0.2rem;
+  border-bottom-right-radius: 0.2rem;
 `
 
 export const rotateButtonIconCss = css`
