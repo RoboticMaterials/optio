@@ -6,7 +6,7 @@ import { get } from "lodash"
 import { isArray } from "./array_utils";
 import { LOT_TEMPLATES_RESERVED_FIELD_NAMES } from "../../constants/form_constants";
 import {convertCardDate} from "./card_utils";
-import {isEqualCI} from "./string_utils";
+import {isEqualCI, isString} from "./string_utils";
 
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
@@ -316,7 +316,9 @@ Yup.addMethod(Yup.string, "notIn", function (message, arr) {
 
 
         for(const item of arr) {
-            if(isEqualCI(item.trim(), value.trim())) return createError({ path, message })
+            console.log("notIn item",item)
+            console.log("notIn value",value)
+            if(isString(value) && isString(item) && isEqualCI(item.trim(), value.trim())) return createError({ path, message })
         }
         return true
     });
