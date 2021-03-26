@@ -175,6 +175,10 @@ export const onDeltaTaskQueue = /* GraphQL */ `
       hil_response
       quantity
       lot_id
+      start_time
+      end_time
+      hil_station_id
+      hil_message
       createdAt
       updatedAt
     }
@@ -898,6 +902,10 @@ export const onCreateTaskQueue = /* GraphQL */ `
       hil_response
       quantity
       lot_id
+      start_time
+      end_time
+      hil_station_id
+      hil_message
       createdAt
       updatedAt
     }
@@ -919,6 +927,10 @@ export const onUpdateTaskQueue = /* GraphQL */ `
       hil_response
       quantity
       lot_id
+      start_time
+      end_time
+      hil_station_id
+      hil_message
       createdAt
       updatedAt
     }
@@ -940,6 +952,10 @@ export const onDeleteTaskQueue = /* GraphQL */ `
       hil_response
       quantity
       lot_id
+      start_time
+      end_time
+      hil_station_id
+      hil_message
       createdAt
       updatedAt
     }

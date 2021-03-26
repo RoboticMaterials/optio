@@ -85,7 +85,6 @@ export async function deleteTaskQueueAll() {
 
 
 export async function deleteTaskQueueItem(id) {
-
     try {
 
         await API.graphql({

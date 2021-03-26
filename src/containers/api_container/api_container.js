@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 
 // Import Actions
 import { getMaps } from '../../redux/actions/map_actions'
-import { getTaskQueue, deleteTaskQueueItem } from '../../redux/actions/task_queue_actions'
+import { getTaskQueue, deleteTaskQueueItem, putTaskQueue } from '../../redux/actions/task_queue_actions'
 import { getObjects } from '../../redux/actions/objects_actions'
 import { getTasks, deleteTask, putTask } from '../../redux/actions/tasks_actions'
 import { getDashboards, deleteDashboard, postDashboard } from '../../redux/actions/dashboards_actions'
@@ -33,7 +33,7 @@ import SplashScreen from "../../components/misc/splash_screen/splash_screen";
 
 // import utils
 import { isEquivalent, deepCopy } from '../../methods/utils/utils'
-import { getCards, getProcessCards } from "../../redux/actions/card_actions";
+import { getCards, getProcessCards, putCard } from "../../redux/actions/card_actions";
 
 // Amplify and GQL
 import { API, graphqlOperation } from 'aws-amplify';
@@ -59,11 +59,14 @@ const ApiContainer = (props) => {
     const onGetSounds = (api) => dispatch(getSounds(api))
     const onGetTaskQueue = () => dispatch(getTaskQueue())
 
-    const dispatchGetDataStream = () => dispatch(getDataStream())
+    // const dispatchGetDataStream = () => dispatch(getDataStream())
 
     const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
     // const dispatchGetLots = () => dispatch(getLots())
     const onGetCards = () => dispatch(getCards())
+    const onPutCard = (card) => dispatch(putCard(card))
+
+    const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
 
     const onGetProcesses = () => dispatch(getProcesses());
 
@@ -390,12 +393,72 @@ const ApiContainer = (props) => {
     */
 
     // Handle task being created
-    const handleTaskCreation = (task) => {
-        console.log(task);
+    const handleTaskUpdate = async (taskQueueItem) => {
+        // get the task 
 
-        // do all the thinking here
-        
-        
+        const tasks = await onGetTasks()
+
+        const task = tasks[taskQueueItem.task_id]
+
+        // Unload?
+        if(task && task.handoff){
+            // get lot
+            const cards = await onGetCards()
+            let lot = cards.cards[taskQueueItem.lot_id]
+
+            // is there a lot
+            if(lot){
+
+                // are we moving the whole lot?
+                if(taskQueueItem.quantity === task.totalQuantity){
+                    // move the whole lot 
+                    delete lot.bins[task.load.station]
+
+                    lot.bins[task.unload.station] = {
+                        count: taskQueueItem.quantity
+                    }  
+
+                }else{
+                    //check how much they want to move and update it accordingly
+                    const diff = lot.bins[task.load.station].count - taskQueueItem.quantity
+
+                    if(diff === 0){
+                        // move the whole lot 
+                        delete lot.bins[task.load.station]
+
+                        lot.bins[task.unload.station] = {
+                            count: taskQueueItem.quantity
+                        }
+                    }else{
+                        lot.bins[task.load.station].count = diff
+
+                        lot.bins[task.unload.station] = {
+                            count: taskQueueItem.quantity
+                        }
+                    }
+                }
+                
+                // disatch update to the card
+                await onPutCard(lot)
+
+            }else{
+                console.log('no lot');
+            }
+
+        }else{
+            if(taskQueueItem.start_time === null){
+                taskQueueItem.start_time = Math.round(Date.now() / 1000)
+
+                taskQueueItem.hil_station_id = task.unload.station
+
+                taskQueueItem.hil_message = 'Unload'
+
+                console.log(taskQueueItem, task);
+
+                // put a start time on th taskQueueItem
+                await onPutTaskQueue(taskQueueItem)
+            }
+        }
     }
 
     const loadCriticalData = async () => {
@@ -407,25 +470,26 @@ const ApiContainer = (props) => {
         // Dont need to clean this one up because we always need it
 
         // Subscribe to status
-        API.graphql(
-            graphqlOperation(subscriptions.onDeltaStatus)
-        ).subscribe({
-            next: () => { 
-                // run get stations
-                onGetStatus()
-        },
-            error: error => console.warn(error)
-        });
+        // API.graphql(
+        //     graphqlOperation(subscriptions.onDeltaStatus)
+        // ).subscribe({
+        //     next: () => { 
+        //         // run get stations
+        //         onGetStatus()
+        // },
+        //     error: error => console.warn(error)
+        // });
 
         // Subscribe to taskQueue
+        // Only need this one for now
         API.graphql(
             graphqlOperation(subscriptions.onDeltaTaskQueue)
         ).subscribe({
             next: ({ provider, value }) => {  
                 
-                handleTaskCreation(value.data.onDeltaTaskQueue)
+                handleTaskUpdate(value.data.onDeltaTaskQueue)
                 // run get queue
-                onGetTaskQueue()
+                // onGetTaskQueue()
         },
             error: error => console.warn(error)
         });

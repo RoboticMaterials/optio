@@ -107,6 +107,10 @@ export const getTaskQueue = /* GraphQL */ `
       hil_response
       quantity
       lot_id
+      start_time
+      end_time
+      hil_station_id
+      hil_message
       createdAt
       updatedAt
     }
@@ -133,6 +137,10 @@ export const listTaskQueues = /* GraphQL */ `
         hil_response
         quantity
         lot_id
+        start_time
+        end_time
+        hil_station_id
+        hil_message
         createdAt
         updatedAt
       }
@@ -689,6 +697,10 @@ export const taskQueueByOrgId = /* GraphQL */ `
         hil_response
         quantity
         lot_id
+        start_time
+        end_time
+        hil_station_id
+        hil_message
         createdAt
         updatedAt
       }

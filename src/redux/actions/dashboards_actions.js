@@ -67,7 +67,6 @@ export const getDashboards = () => {
         }
         function onError(error) {
             dispatch({ type: GET_DASHBOARDS_FAILURE, payload: error });
-            console.log(error)
 
             return error;
         }
@@ -227,8 +226,6 @@ export const addRouteToDashboards = (route) => {
             name: routeName
         } = route
 
-        console.log(route);
-
         // get station for route button (load if push, unload if pull)
         let stationId
         if(routeType === ROUTE_TYPES.PULL) {
@@ -248,8 +245,6 @@ export const addRouteToDashboards = (route) => {
             task_id: route._id,
             type: TYPES.ROUTES.key,
         }
-
-        console.log(newDashboardButton);
 
         if (dashboard === undefined) {
             const defaultDashboard = {

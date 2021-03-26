@@ -180,7 +180,6 @@ export const removeRouteFromAllProcesses = (routeId) => {
 
             // will removing route break the process?
             const willBreak = willRouteDeleteBreakProcess(processRoutes, routeId)
-            console.log("willBreak",willBreak)
 
             // dispatch update
             await dispatch(putProcesses({

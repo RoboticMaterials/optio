@@ -57,7 +57,7 @@ const TaskQueueListItem = (props) => {
     }, [id, selectedTaskId])
 
     const handleClick = async () => {
-        await dispatch(deleteTaskQueueItem(id))
+        await dispatch(deleteTaskQueueItem(id['$oid']))
         dispatch(getStatus(props.statusApi))
     }
 

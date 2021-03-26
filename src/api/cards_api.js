@@ -202,7 +202,7 @@ export async function putCard(card, ID) {
             variables: { input: input }
         })
 
-        return dataJson;
+        return dataJson.data.updateCard;
 
     } catch (error) {
         // Error 😨

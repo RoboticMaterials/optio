@@ -276,6 +276,7 @@ const KickOffModal = (props) => {
         console.log(cardsResult,processesResult );
 
         if(!(cardsResult instanceof Error) && !(processesResult instanceof Error)) {
+            console.log('loadDataTrue')
             setDidLoadData(true)
         }
     }

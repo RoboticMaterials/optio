@@ -275,6 +275,11 @@ type TaskQueue
   hil_response: Boolean
   quantity: Int
   lot_id: String
+  start_time: AWSTimestamp
+  end_time: AWSTimestamp
+
+  hil_station_id: String
+  hil_message: String
 }
 
 type Dashboard 
@@ -319,7 +324,7 @@ type Subscription {
       @aws_subscribe(mutations: ["createStatus","updateStatus","deleteStatus"])
 
     onDeltaTaskQueue(id: ID): TaskQueue
-      @aws_subscribe(mutations: ["createTaskQueue"])
+      @aws_subscribe(mutations: ["updateTaskQueue"])
 }
 
 # Analysis Queries

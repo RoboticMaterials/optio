@@ -35,7 +35,9 @@ import {
 } from '../../../../../redux/actions/dashboards_actions'
 import * as localActions from '../../../../../redux/actions/local_actions'
 import { getProcesses } from "../../../../../redux/actions/processes_actions";
-import { getTasks } from '../../../../../redux/actions/tasks_actions'
+import { getTasks, deleteTask} from '../../../../../redux/actions/tasks_actions'
+
+import { deleteTaskQueueItem } from '../../../../../redux/actions/task_queue_actions'
 
 // Import styles
 import * as pageStyle from '../dashboards_header/dashboards_header.style'
@@ -48,8 +50,6 @@ import { isRouteInQueue } from "../../../../../methods/utils/task_queue_utils";
 import { isDeviceConnected } from "../../../../../methods/utils/device_utils";
 import { DEVICE_CONSTANTS } from "../../../../../constants/device_constants";
 import {immutableDelete, isArray, isNonEmptyArray} from "../../../../../methods/utils/array_utils";
-
-
 
 const logger = log.getLogger("DashboardsPage");
 
@@ -89,6 +89,9 @@ const DashboardScreen = (props) => {
     const onHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
     const onLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
     const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
+
+    const onDeleteTaskQueueItem = async (id) => await dispatch(deleteTaskQueueItem(id))
+
     const dispatchStopAPICalls = (bool) => dispatch(localActions.stopAPICalls(bool))
 
     const history = useHistory()
@@ -242,7 +245,7 @@ const DashboardScreen = (props) => {
             // Map through each item and see if it's showing a station, station Id is matching the current station and a human task
             Object.values(taskQueue).forEach((item, ind) => {
                 // If it is matching, add a button the the dashboard for unloading
-                if (!!item.hil_station_id && item.hil_station_id === stationID && hilResponse !== item._id && item?.device_type === 'human') {
+                if (!!item.hil_station_id && item.hil_station_id === stationID && hilResponse !== item?.id && item?.device_type === 'human') {
                     filteredButtons = [
                         ...filteredButtons,
                         {
@@ -400,7 +403,8 @@ const DashboardScreen = (props) => {
         onHILResponse(ID)
         setTimeout(() => onHILResponse(''), 2000)
 
-        await onPutTaskQueue(newItem, ID)
+        await onDeleteTaskQueueItem(item.id)
+        //await onPutTaskQueue(newItem, ID)
 
     }
 
