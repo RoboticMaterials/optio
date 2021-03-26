@@ -112,9 +112,9 @@ function Position(props) {
         // To tell if a task is being added to the beginning of a process is when the task has a temp insert index at 0 and the process contains more then 1 route
         else if (selectedTask?.temp?.insertIndex === 0 && !!selectedProcess && selectedProcess.routes.length > 0) {
             // Find the station at the beginning of process
-            const firstPosition = selectedProcess.routes[0].load.position
+            const firstStation = selectedProcess.routes[0].load.station
 
-            if (position._id !== firstPosition && selectedTask.load.position !== null) disabled = true
+            if (position.parent !== firstStation && selectedTask.load.position !== null) disabled = true
         }
 
         // Disable making a task to this position if it or its siblings are already used in the process and its not adding to the beginnig of the process
