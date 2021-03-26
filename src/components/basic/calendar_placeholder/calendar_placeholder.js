@@ -32,7 +32,7 @@ const CalendarPlaceholder = (props) => {
 				<styled.DateText>{endText}</styled.DateText>
 			</styled.DateItem>
 
-			<Popup open={showCalendarPopup} closeOnDocumentClick={true} onClose={() => setShowCalendarPopup(false)}>
+			<Popup open={showCalendarPopup} closeOnDocumentClick={false} onClose={() => setShowCalendarPopup(false)}>
 				{!!calendarContent && calendarContent()}
 			</Popup>
 		</styled.DatesContainer>
@@ -47,7 +47,7 @@ const CalendarPlaceholder = (props) => {
 	return (
 		<styled.DateItem usable={usable} style={containerStyle} onClick={() => {onClick(); setShowCalendarPopup(true)}}>
 			<styled.DateText>{text}</styled.DateText>
-			<Popup open={showCalendarPopup} closeOnDocumentClick={true} onClose={() => setShowCalendarPopup(false)}>
+			<Popup open={showCalendarPopup} closeOnDocumentClick={false} onClose={() => setShowCalendarPopup(false)}>
 				{!!calendarContent && calendarContent()}
 			</Popup>
 		</styled.DateItem>
@@ -60,6 +60,8 @@ CalendarPlaceholder.propTypes = {
 
 // Specifies the default values for props:
 CalendarPlaceholder.defaultProps = {
+	setShowCalendarPopup: () => {},
+	usable: true
 }
 
 export default CalendarPlaceholder

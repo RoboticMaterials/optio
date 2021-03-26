@@ -772,7 +772,7 @@ const FormComponent = (props) => {
 					/>
 					}
 
-					<styled.SuperContainer>
+					<styled.ScrollContainer>
 
 						<styled.FieldsHeader>
 
@@ -848,7 +848,7 @@ const FormComponent = (props) => {
 							renderMoveContent()
 						}
 
-					</styled.SuperContainer>
+					</styled.ScrollContainer>
 				</styled.RowContainer>
 
 				<styled.Footer>

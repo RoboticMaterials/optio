@@ -201,7 +201,7 @@ const FormComponent = (props) => {
 			<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
 				<LotEditorSidebar/>
 
-				<styled.SuperContainer>
+				<styled.ScrollContainer>
 					<styled.SectionContainer>
 						<styled.FieldsHeader
 							style={disabledStyle}
@@ -237,7 +237,7 @@ const FormComponent = (props) => {
 										usable={false}
 										schema='lots'
 										textboxContainerStyle={{flex: 1}}
-										inputStyle={{width: '20rem', pointerEvents: 'none'}}
+										inputStyle={{flex: 1, pointerEvents: 'none'}}
 										type="text"
 										placeholder="Enter name..."
 										InputComponent={Textbox}
@@ -289,7 +289,7 @@ const FormComponent = (props) => {
 							</styled.ObjectInfoContainer>
 						</div>
 					</styled.BodyContainer>
-				</styled.SuperContainer>
+				</styled.ScrollContainer>
 			</styled.RowContainer>
 
 

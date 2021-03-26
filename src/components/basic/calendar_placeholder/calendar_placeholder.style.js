@@ -14,7 +14,8 @@ export const DatesContainer = styled.span`
 
 const usableCss = css`
   &:hover {
-    cursor: pointer;
+    cursor: pointer !important;
+    filter: brightness(105%);
   }
 `
 
