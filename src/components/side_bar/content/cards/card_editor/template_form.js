@@ -2,7 +2,7 @@ import React, {useState, useEffect, useContext} from "react";
 
 // external functions
 import PropTypes from "prop-types";
-import {Formik} from "formik";
+import {Formik, setNestedObjectValues} from "formik";
 import {useDispatch, useSelector} from "react-redux";
 import FadeLoader from "react-spinners/FadeLoader"
 
@@ -12,6 +12,7 @@ import TextField from "../../../../basic/form/text_field/text_field";
 import Textbox from "../../../../basic/textbox/textbox";
 import DropDownSearchField from "../../../../basic/form/drop_down_search_field/drop_down_search_field";
 import Button from "../../../../basic/button/button";
+import BackButton from '../../../../basic/back_button/back_button';
 import ButtonGroup from "../../../../basic/button_group/button_group";
 import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
 
@@ -26,7 +27,7 @@ import {parseMessageFromEvent} from "../../../../../methods/utils/card_utils";
 import {CARD_SCHEMA_MODES, cardSchema, getCardSchema, LotFormSchema} from "../../../../../methods/utils/form_schemas";
 import {getProcessStations} from "../../../../../methods/utils/processes_utils";
 import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
-
+import set from "lodash/set";
 // import styles
 import * as styled from "./lot_editor.style"
 
@@ -87,9 +88,7 @@ const FormComponent = (props) => {
 		submitForm,
 		formikProps,
 		loaded
-
 	} = props
-
 
 	const themeContext = useContext(ThemeContext)
 
@@ -134,20 +133,11 @@ const FormComponent = (props) => {
 		};
 	}, [])
 
-	// useEffect(() => {
-	//
-	// 	if(!isOpen && content) setContent(null)
-	//
-	// 	return () => {
-	// 	}
-	// }, [isOpen])
-
+	/*
+	* resert form if template id changes
+	* */
 	useEffect(() => {
-
-		//
-		// setFieldValue("changed", false)
 		formikProps.resetForm()
-
 	}, [lotTemplateId])
 
 	return(
@@ -161,6 +151,7 @@ const FormComponent = (props) => {
 					handleOnClick1={() => {
 							setConfirmDeleteTemplateModal(null)
 							onDeleteClick()
+							close()
 					}}
 					handleOnClick2={() => {
 							setConfirmDeleteTemplateModal(null)
@@ -174,6 +165,13 @@ const FormComponent = (props) => {
 			/>
 			<styled.Header>
 				{/*<styled.Title>*/}
+				<BackButton
+					secondary
+					onClick={close}
+					schema={'error'}
+				>
+				</BackButton>
+
 				<div style={{marginRight: "auto"}}/>
 
 				<styled.TemplateNameContainer>
@@ -182,25 +180,19 @@ const FormComponent = (props) => {
 						name={"name"}
 						placeholder={"Enter template name..."}
 						InputComponent={Textbox}
-						style={{background: themeContext.bg.quaternary, minWidth: "25rem", fontSize: themeContext.fontSize.sz2}}
+						style={{minWidth: "25rem", fontSize: themeContext.fontSize.sz2}}
+						inputStyle={{background: themeContext.bg.tertiary}}
 					/>
 				</styled.TemplateNameContainer>
 				{/*</styled.Title>*/}
 
-				<Button
-					secondary
-					onClick={close}
-					schema={'error'}
-					style={{marginLeft: "auto"}}
-				>
-					<i className="fa fa-times" aria-hidden="true"/>
-				</Button>
+
 			</styled.Header>
 
 			<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
 				<LotEditorSidebar/>
 
-				<styled.SuperContainer>
+				<styled.ScrollContainer>
 					<styled.SectionContainer>
 						<styled.FieldsHeader
 							style={disabledStyle}
@@ -215,8 +207,10 @@ const FormComponent = (props) => {
 										whiteSpace: "nowrap" ,
 										marginRight: "2rem",
 										marginBottom: ".5rem",
-										maxWidth: "10rem"
+										width: "20rem"
 									}}
+										schema='lots'
+									inputStyle={{fontSize: '1rem'}}
 									name={"displayNames.name"}
 									InputComponent={Textbox}
 								/>
@@ -230,8 +224,11 @@ const FormComponent = (props) => {
 									}}
 								>
 									<Textbox
+										style={{flex: 1}}
+										usable={false}
+										schema='lots'
 										textboxContainerStyle={{flex: 1}}
-										// disabled={true}
+										inputStyle={{flex: 1, pointerEvents: 'none'}}
 										type="text"
 										placeholder="Enter name..."
 										InputComponent={Textbox}
@@ -276,20 +273,21 @@ const FormComponent = (props) => {
 								/>
 								<NumberInput
 									inputDisabled={true}
+									themeContext={themeContext}
 									minusDisabled={true}
 									plusDisabled={true}
 								/>
 							</styled.ObjectInfoContainer>
 						</div>
 					</styled.BodyContainer>
-				</styled.SuperContainer>
+				</styled.ScrollContainer>
 			</styled.RowContainer>
 
 
 
 		<styled.ButtonContainer style={{width: "100%"}}>
 			<Button
-				style={{...buttonStyle, width: "8rem"}}
+				style={{...buttonStyle}}
 				onClick={async () => {
 
 					// set touched to true for all fields to show errors
@@ -300,30 +298,33 @@ const FormComponent = (props) => {
 					})
 					setFieldTouched("name", true)
 
-
-					submitForm()
+					const promise = submitForm()
+					promise.then(result => {
+						if(!(result instanceof Error) && result !== undefined) {
+							close()
+						}
+					})
 				}}
 				schema={"ok"}
 				disabled={submitDisabled}
-				secondary
 			>
-				{formMode === FORM_MODES.UPDATE ? "Save" : "Create"}
+				{formMode === FORM_MODES.UPDATE ? "Save Template" : "Create Template"}
 			</Button>
-			<Button
+			{/* <Button
 				style={buttonStyle}
 				onClick={()=>close()}
 				// schema={"error"}
 			>
 				Close
-			</Button>
+			</Button> */}
 
-			<Button
+			{/* <Button
 				style={buttonStyle}
 				onClick={()=>setPreview(!preview)}
 				schema={"error"}
 			>
 				{preview ? "Show Editor" : "Show Preview"}
-			</Button>
+			</Button> */}
 			{formMode === FORM_MODES.UPDATE &&
 			<Button
 				style={buttonStyle}
@@ -334,7 +335,7 @@ const FormComponent = (props) => {
 			</Button>
 			}
 
-		</styled.ButtonContainer>,
+		</styled.ButtonContainer>
 
 
 		</styled.StyledForm>
@@ -365,7 +366,6 @@ const LotCreatorForm = (props) => {
 	const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
 
 	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
-
 
 	const [loaded, setLoaded] = useState(false)
 	const [formMode, setFormMode] = useState(props.lotTemplateId ? FORM_MODES.UPDATE : FORM_MODES.CREATE) // if cardId was passed, update existing. Otherwise create new
@@ -443,15 +443,16 @@ const LotCreatorForm = (props) => {
 			displayNames
 		} = values
 
+		let response
 
 		// update (PUT)
 		if(formMode === FORM_MODES.UPDATE) {
-			dispatchPutLotTemplate({fields, name, displayNames}, lotTemplateId)
+			response = await dispatchPutLotTemplate({fields, name, displayNames}, lotTemplateId)
 		}
 
 		// // create (POST)
 		else {
-			const response = await dispatchPostLotTemplate({fields, name, displayNames})
+			response = await dispatchPostLotTemplate({fields, name, displayNames})
 			//
 			if(!(response instanceof Error)) {
 				const {
@@ -468,6 +469,8 @@ const LotCreatorForm = (props) => {
 				console.error("postResult",response)
 			}
 		}
+
+		return response;
 	}
 
 	return(
@@ -481,8 +484,9 @@ const LotCreatorForm = (props) => {
 			contentLabel="Lot Editor Form"
 			style={{
 				overlay: {
-					zIndex: 500
-				},
+                    zIndex: 500,
+                    backgroundColor: 'rgba(0, 0, 0, 0.4)'
+                },
 				content: {
 
 				},
@@ -510,13 +514,30 @@ const LotCreatorForm = (props) => {
 				}}
 
 				// validation control
-				validationSchema={LotFormSchema}
+				// validationSchema={LotFormSchema}
+				validate={(values, props) => {
+					try {
+						LotFormSchema.validateSync(values, {
+							abortEarly: false,
+							context: values
+						});
+					} catch (error) {
+						if (error.name !== "ValidationError") {
+							throw error;
+						}
+
+						return error.inner.reduce((errors, currentError) => {
+							errors = set(errors, currentError.path, currentError.message)
+							return errors;
+						}, {});
+					}
+				}}
 				validateOnChange={true}
 				validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
 				validateOnBlur={true}
 
-				enableReinitialize={true} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
-				onSubmit={async (values, { setSubmitting, setTouched, resetForm }) => {
+				enableReinitialize={false} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
+				onSubmit={(values, { setSubmitting, setTouched, resetForm }) => {
 					// set submitting to true, handle submit, then set submitting to false
 					// the submitting property is useful for eg. displaying a loading indicator
 					const {
@@ -524,9 +545,9 @@ const LotCreatorForm = (props) => {
 					} = values
 
 					setSubmitting(true)
-					await handleSubmit(values, formMode)
-					setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
-					setSubmitting(false)
+					const submitPromise = handleSubmit(values, formMode)
+					// setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
+					return submitPromise;
 				}}
 			>
 				{formikProps => {

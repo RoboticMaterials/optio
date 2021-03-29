@@ -74,7 +74,7 @@ export const TaskName = styled.span`
   font: ${props => props.theme.font.primary};
   font-size: ${props => props.theme.fontSize.sz3};
 
-  color: ${props => props.theme.bg.tertiary};
+  color: ${props => props.theme.bg.secondary};
 
 `
 

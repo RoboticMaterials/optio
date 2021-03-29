@@ -47,6 +47,7 @@ const DashboardReportField = props => {
 				<buttonFieldStyles.CenterContainer>
 					<TextField
 						name={`buttons[${ind}].name`}
+                        placeholder='Enter New Button Name'
 						InputComponent={buttonFieldStyles.TransparentTextBox}
 						styled={{textAlign: 'center'}}
 						type='text'

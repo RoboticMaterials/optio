@@ -1,9 +1,9 @@
 import { deepCopy } from './utils'
-import {isObject} from "./object_utils";
+import { isObject } from "./object_utils";
 import store from "../../redux/store";
-import {getLoadStationId, getUnloadStationId} from "./route_utils";
-import {useSelector} from "react-redux";
-import {isArray, isNonEmptyArray} from "./array_utils";
+import { getLoadStationId, getUnloadStationId } from "./route_utils";
+import { useSelector } from "react-redux";
+import { isArray, isNonEmptyArray } from "./array_utils";
 
 /**
  * This function checks to see if a process is broken. 
@@ -16,7 +16,7 @@ import {isArray, isNonEmptyArray} from "./array_utils";
 export const isBrokenProcess = (routes) => {
 
     // can't be broken if there is only 1 route
-    if(routes.length > 1) {
+    if (routes.length > 1) {
         // Loops through and
         for (let i = 0; i < routes.length - 1; i++) {
             const currentRoute = routes[i]
@@ -88,7 +88,7 @@ export const willRouteAdditionFixProcess = (routes, brokenIndex, route) => {
     const routeBeforeBreak = routes[brokenIndex - 1]
     const routeAfterBreak = routes[brokenIndex]
 
-    if (getUnloadStationId(routeBeforeBreak) === getLoadStationId(route) && getLoadStationId(routeAfterBreak) === getUnloadStationId(route) ) {
+    if (getUnloadStationId(routeBeforeBreak) === getLoadStationId(route) && getLoadStationId(routeAfterBreak) === getUnloadStationId(route)) {
 
         copyRoutes.splice(brokenIndex, 0, route) // splice route into arr
 
@@ -159,11 +159,35 @@ export const getProcessStations = (process, routes) => {
         } = load
 
         // if unloadStationId and loadStationId exist, add to stationIds obj
-        if(unloadStationId) stationIds[unloadStationId] = true
-        if(loadStationId) stationIds[loadStationId] = true
+        if (unloadStationId) stationIds[unloadStationId] = true
+        if (loadStationId) stationIds[loadStationId] = true
     })
 
     // return stationIds obj
+    return stationIds
+}
+
+/**
+ * Gets all stations that belong to a process when editing that process
+ * Editing a process has the actual object vs the id of the route inside it's routes array
+ * @param {*} process 
+ * @returns 
+ */
+export const getProcessStationsWhileEditing = (process) => {
+    let stationIds = []
+    const { routes } = process || []
+    routes.forEach((route) => {
+        const loadStation = route.load.station
+        const unloadStation = route.unload.station
+        if (!stationIds.includes(loadStation)) {
+            stationIds.push(loadStation)
+        }
+
+        if (!stationIds.includes(unloadStation)) {
+            stationIds.push(unloadStation)
+        }
+    })
+
     return stationIds
 }
 
@@ -183,7 +207,7 @@ export const getPreviousRoute = (processRoutes, currentRouteId) => {
     var previousRoute
 
     const currentRouteindex = processRoutes.findIndex((currItem) => {
-        if(isObject(currItem)) {
+        if (isObject(currItem)) {
             return currItem._id === currentRouteId
         }
         else {
@@ -192,14 +216,14 @@ export const getPreviousRoute = (processRoutes, currentRouteId) => {
 
     })
 
-    if(currentRouteindex > 0 ) {
+    if (currentRouteindex > 0) {
         previousRoute = processRoutes[currentRouteindex - 1]
     }
     else {
         previousRoute = processRoutes[processRoutes.length - 1]
     }
 
-    if(!isObject(previousRoute)) {
+    if (!isObject(previousRoute)) {
         return routes[previousRoute]
     }
     else {
@@ -264,14 +288,14 @@ export const getStationAttributes = (processId, attributes) => {
 
         let currentStationAttributes
 
-        if(isAttributesNotEmpty) {
+        if (isAttributesNotEmpty) {
             currentStationAttributes = {}
             attributes.forEach((currAttribute) => {
                 currentStationAttributes[currAttribute] = station[currAttribute]
             })
         }
         else {
-            currentStationAttributes = {...station}
+            currentStationAttributes = { ...station }
         }
 
         stationAttributes.push(currentStationAttributes)

@@ -324,7 +324,7 @@ const onPostStation = (station) => {
     return async dispatch => {
         // Add dashboard
         let defaultDashboard = {
-            name: station.name + ' Dashboard',
+            name: "",
             buttons: [],
             station: station._id
         }

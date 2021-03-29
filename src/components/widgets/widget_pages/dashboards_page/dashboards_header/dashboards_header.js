@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 
 // functions external
 import { useSelector } from 'react-redux';
@@ -41,6 +41,8 @@ const DashboardsHeader = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
     const positions = useSelector(state => state.positionsReducer.positions)
 
+    const [moreLots, setMoreLots] = useState(false);
+
     const locations = {
         ...positions,
         ...stations
@@ -70,32 +72,36 @@ const DashboardsHeader = (props) => {
 
         if (!!hasLot) {
             return (
-                <style.RowContainer windowWidth={windowWidth}>
-                    <style.LotsTitle>Lots:</style.LotsTitle>
-                    {Object.values(cards)
-                        .filter((card, ind) => {
-                            return getIsCardAtBin(card, location?.id)
-                        })
-                        .map((card) => {
-                            const {
-                                name,
-                                lotNumber,
-                                bins,
-                                id
-                            } = card || {}
+                <style.LotsContainer moreLots={moreLots}>
+                    <style.RowContainer windowWidth={windowWidth} style={{height: moreLots ? '' : '3.8rem'}}>
+                        <style.LotsTitle>Lots:</style.LotsTitle>
+                        {Object.values(cards)
+                            .filter((card, ind) => {
+                                return getIsCardAtBin(card, location?.id)
+                            })
+                            .map((card) => {
+                                const {
+                                    name,
+                                    lotNumber,
+                                    bins,
+                                    id
+                                } = card || {}
 
-                            const quantity = getBinQuantity({bins}, location?.id)
+                                const quantity = getBinQuantity({bins}, location?.id)
 
-                            return(
-                                <SimpleLot
-                                    key={id}
-                                    name={name}
-                                    lotNumber={lotNumber}
-                                    quantity={quantity}
-                                />
-                            )
-                        })}
-                </style.RowContainer>
+                                return(
+                                    <SimpleLot
+                                        key={id}
+                                        name={name}
+                                        lotNumber={lotNumber}
+                                        quantity={quantity}
+                                    />
+                                )
+                            })}
+                            
+                    </style.RowContainer>
+                    <style.MoreIcon className='fas fa-ellipsis-h' onClick={() => setMoreLots(!moreLots)}/>
+                </style.LotsContainer>
             )
         }
 
@@ -136,10 +142,10 @@ const DashboardsHeader = (props) => {
 
                 {showSaveButton &&
                 <>
-                    <Button style={{ order: '3' }}
+                    <Button style={{ order: '3', minWidth: '10rem' }}
                             type='submit'
                             disabled={saveDisabled}
-                            secondary
+                            schema="dashboards"
                     >
                         Save
                     </Button>

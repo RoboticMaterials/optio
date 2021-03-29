@@ -30,8 +30,8 @@ export const ListItemIcon = styled.i`
 `
 
 export const Card = styled.div`
-    background: ${props => props.theme.bg.secondary};
-    box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.1);
+    background: ${props => props.dark ? props.theme.bg.tertiary : props.theme.bg.secondary};
+    // box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.1);
     padding: 0.5rem;
     border-radius: 0.4rem;
     
@@ -160,7 +160,7 @@ export const DualSelectionButton = styled.button`
 
     color: ${props => props.selected ? props.theme.bg.octonary : props.theme.bg.quinary};
 
-    background-color: ${props => props.selected ? props.theme.schema.tasks.solid : props.theme.bg.secondary};
+    background-color: ${props => props.selected ? props.theme.schema.tasks.solid : props.theme.bg.tertiary};
 
     transition: background-color 0.25s ease, box-shadow 0.1s ease;
 

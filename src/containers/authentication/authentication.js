@@ -3,11 +3,16 @@ import { useDispatch } from 'react-redux'
 
 import * as styled from './authentication.style'
 
+import { Link } from 'react-router-dom'
+
 // Import components
 import SignInUpPage from '../../components/sign_in_up_page/sign_in_up_page'
 
+import { useHistory, useParams } from 'react-router-dom'
+
 // Import actions
 import { postLocalSettings, getLocalSettings } from '../../redux/actions/local_actions'
+import ForgotPassword from '../../components/forgotPassword/forgotPassword'
 
 // Get Auth from amplify
 import { Auth } from "aws-amplify";
@@ -15,38 +20,53 @@ import { Auth } from "aws-amplify";
 /**
  * After the APIs have been loaded in the api_container this container is loaded
  * It checks to see if the user has already signed in based on whether or not a refresh token exists in cookies
- * If there is a token, it uses that to get a new JWT and uses that to make sure the session is valid, no reason to sign in if there's a valid session.
- * If the refresh token is expired, you have to sign in again
- * If there is no token, the user either has to sign in or sign up
- * Authenticated props is used for telling APP.js the user is authenticated
  *
- * TODO: Should show loading when there is a refresh token and its being used to get new JWT credntials
- * TODO: Styling updates
- * TODO: Forgot password
- * TODO: Add HTTPS connection to server which allows for the use of a secure cookie. Increases security a lot
  * @param {authenticated} props
  */
 const Authentication = (checkAuth) => {
 
-
+    // Get all the hooks 
+    const history = useHistory()
+    const params = useParams()
     const dispatch = useDispatch()
 
+    // Define state
     const [signIn, setSignIn] = useState(true)
-
+    const [forgotPassword, setForgotPassword] = useState(false)
     const [user, setUser] = useState(null);
 
+    // Define all dispatched
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
 
-    const handleSignInChange = (value) => {
-        setSignIn(value)
-    }
+    // Define all useEffects
 
     useEffect(() => {
         checkUser();
         setAuthenticated()
-      }, []);
-    
+    }, []);
+
+    useEffect(() => {
+        setAuthenticated()
+    }, [user])
+
+    useEffect(() => {
+        if(history.location.pathname === '/'){
+            setSignIn(true)
+            setForgotPassword(false)
+        }else if(history.location.pathname === '/forgot-password'){
+            setForgotPassword(true)
+        }else if(history.location.pathname === '/create-account'){
+            setSignIn(false)
+            setForgotPassword(false)
+        }
+    }, [params])
+
+    // Define all neccessary functions
+    const handleSignInChange = (value) => {
+        setSignIn(value)
+    }
+
    const checkUser = async () => {
        try{
         const user = await Auth.currentAuthenticatedUser();
@@ -66,53 +86,7 @@ const Authentication = (checkAuth) => {
         }
     }
 
-    useEffect(() => {
-        setAuthenticated()
-    }, [user])
-
-    
-
-    const handleInitialLoad = () => {
-        
-        return (
-            <styled.Container>
-
-                <styled.LogoContainer>
-                    <styled.LogoIcon className='icon-rmLogo' />
-                    <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
-                </styled.LogoContainer>
-
-                <styled.LogoWelcome> Wecome Back </styled.LogoWelcome>
-
-                <styled.CheckBoxWrapper>
-                    <styled.Button
-                        onClick={() => setSignIn(true)}
-                        selected={signIn}
-                        style={{borderRadius: '.5rem 0  0 .5rem'}}
-                    >
-                        Sign In
-                    </styled.Button>
-
-                    <styled.Button
-                        onClick={() => setSignIn(false)}
-                        selected={!signIn}
-                        style={{borderRadius: '0 .5rem .5rem 0'}}
-                    >
-                        Sign Up
-                    </styled.Button>
-                </styled.CheckBoxWrapper>
-
-                <styled.SignInUpContainer>
-
-                    <SignInUpPage
-                        signIn={signIn}
-                        onChange={handleSignInChange} />
-
-                </styled.SignInUpContainer>
-            </styled.Container>
-        )
-    }
-
+    // Return HTML
     return (
         <styled.Container>
 
@@ -120,27 +94,8 @@ const Authentication = (checkAuth) => {
                 <styled.LogoIcon className='icon-rmLogo' />
                 <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
             </styled.LogoContainer>
-
-            <styled.LogoWelcome> Wecome Back </styled.LogoWelcome>
-
-            <styled.CheckBoxWrapper>
-                <styled.Button
-                    onClick={() => setSignIn(true)}
-                    selected={signIn}
-                    style={{borderRadius: '.5rem 0  0 .5rem'}}
-                >
-                    Sign In
-                </styled.Button>
-
-                <styled.Button
-                    onClick={() => setSignIn(false)}
-                    selected={!signIn}
-                    style={{borderRadius: '0 .5rem .5rem 0'}}
-                >
-                    Sign Up
-                </styled.Button>
-            </styled.CheckBoxWrapper>
-
+        
+            { !forgotPassword &&
             <styled.SignInUpContainer>
 
                 <SignInUpPage
@@ -148,9 +103,45 @@ const Authentication = (checkAuth) => {
                     onChange={handleSignInChange} />
 
             </styled.SignInUpContainer>
+            }
+
+            { forgotPassword &&
+            <styled.SignInUpContainer>
+
+                <ForgotPassword />
+
+            </styled.SignInUpContainer>
+            }
+
+            <styled.LogoContainer>
+            
+            {!forgotPassword && 
+            <div>
+
+                <Link to="/forgot-password">Forgot Password? </Link>
+                
+                <Link to="/login" style={{
+                    marginLeft: '.5rem', 
+                    marginRight: '.5rem',
+                    textDecoration: 'none',
+                    cursor: 'default'
+                    }}> • </Link>
+
+                {signIn &&
+                    <Link to="/create-account"> Create an account </Link>
+                }
+
+                {!signIn &&
+                    <Link to="/"> Sign in </Link>
+                }
+
+            </div>
+            }
+
+            </styled.LogoContainer>
+            
         </styled.Container>
     )
-
 }
 
 export default Authentication

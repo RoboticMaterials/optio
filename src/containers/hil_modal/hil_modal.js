@@ -32,7 +32,6 @@ const HILModal = () => {
     const localHumanTask = useSelector(state => state.taskQueueReducer.localHumanTask)
     const showModalId = useSelector(state => state.taskQueueReducer.showModalID)
     const [statusTimerIntervals, setStatusTimerIntervals] = useState({})
-
     const dashboardID = params.dashboardID
     const stationID = params.stationID
     const deviceDashboard = !!devices ? !!devices[stationID] : false
@@ -139,7 +138,7 @@ const HILModal = () => {
     }, [taskQueue, dashboardID, taskQueueItemClicked, hilResponse, localHumanTask])
 
 
-    const renderHIL = () => {
+    const renderHIL = useMemo(() => {
         if (showModalId !== null && !!taskQueue && Object.values(taskQueue).length > 0 && taskQueue[showModalId] !== undefined) {
             const item = taskQueue[showModalId]
             let hilMessage = item.hil_message
@@ -164,7 +163,7 @@ const HILModal = () => {
             return null
         }
 
-    }
+    },[taskQueue])
 
     /**
      * Handles HIL timers and adds them to Redux
@@ -318,7 +317,7 @@ const HILModal = () => {
         <>
             {handleHilsInTaskQueue}
             {handleHILTimers}
-            {renderHIL()}
+            {renderHIL}
         </>
     )
 }

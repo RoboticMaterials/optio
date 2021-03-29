@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import * as buttonCss from '../../../../../../common_css/button_css'
 import * as commonCss from '../../../../../../common_css/common_css'
 import * as styles from '../../statistics_page.style'
+import { LightenDarkenColor } from '../../../../../../methods/utils/color_utils'
 
 export const PlotHeader = styled.div`
 	//height: 30rem;
@@ -12,7 +13,8 @@ export const SinglePlotContainer = styled.div`
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	background: ${props => props.theme.bg.tertiary};
+	background: ${props => props.theme.bg.primary};
+  box-shadow: ${props => props.theme.cardShadow};
 	border-radius: 1.5rem;
 	padding: 1rem;
 	min-width: 60rem;
@@ -43,6 +45,7 @@ export const SinglePlotContainer = styled.div`
 	// 	height: fit-content;
 	// 	min-height: fit-content;
 	// } */
+
 `
 
 export const PlotContainer = styled.div`
@@ -87,10 +90,15 @@ export const PlotTitle = styled.h2`
 
 export const ChartButton = styled.button`
     ${buttonCss.button};
-    background-color:${props => props.theme.bg.tertiary};
-    color: white;
-    margin-top: .25rem;
+    background-color:${props => props.theme.schema.charts.solid};
+    color: ${props => props.theme.bg.primary};
+    margin-top: .5rem;
+    margin-bottom: 0.1rem;
     font-size: 1.25rem;
+
+    &:hover {
+      background-color:${props => LightenDarkenColor(props.theme.schema.charts.solid, -5)};
+    }
 `
 
 export const RowContainer = styled.div`
@@ -100,13 +108,13 @@ export const RowContainer = styled.div`
 `
 
 export const ColumnContainer = styled.div`
-    ${commonCss.columnContainer}
+    ${commonCss.columnContainer};
 `
 
 export const Label = styled.label`
   font-size: ${props => props.theme.fontSize.sz3};
   font-family: ${props => props.theme.font.primary};
-  color: white;
+  color: ${props => props.theme.bg.octonary};
 `
 
 export const DatePickerLabel = styled.label`
@@ -135,17 +143,40 @@ export const BreakContainer = styled.div`
     flex-direction: column;
     align-items: center;
     height: fit-content;
-    background-color: ${props => props.theme.bg.quaternary};
+    background-color: ${props => props.theme.bg.secondary};
     border-radius: .5rem;
 `
 
-export const ChartTypeButton = styled(styles.StatisticsSectionsButton)`
+export const ChartTypeButton = styled.button`
     font-size: 1.25rem;
     width: 5rem;
+
+    font-size: 1rem;
+    width: 8rem;
+    border: none;
+    font-family: ${props => props.theme.font.primary};
+
+    color: ${props => props.selected ? props.theme.bg.primary : props.theme.bg.quinary};
+
+    background-color: ${props => props.selected ? props.theme.schema.charts.solid : props.theme.bg.tertiary};
+
+    transition: background-color 0.25s ease, box-shadow 0.1s ease;
+
+    &:focus{
+        outline: 0 !important
+    }
+
+    &:active{
+        box-shadow: none;
+    }
+
+    &:hover{
+        //background-color: ${props => props.theme.bg.quaternary};
+    }
 `
 
 export const BreakLabel = styled.label`
   font-size: ${props => props.theme.fontSize.sz4};
   font-family: ${props => props.theme.font.primary};
-  color: white;
+  color: ${props => props.theme.bg.senary};
 `

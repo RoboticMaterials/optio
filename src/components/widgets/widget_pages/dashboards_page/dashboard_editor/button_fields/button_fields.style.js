@@ -16,10 +16,10 @@ export const SchemaIcon = styled.i`
 
 // ===== Delete Button ===== //
 export const DeleteButtonIcon = styled(DeleteForeverIcon)`
-    color: white;
+    color: ${props => props.theme.bg.quaternary};
 
     &:hover {
-        color: ${LightenDarkenColor('#FFFFFF', -20)};
+        color: ${props => props.theme.bg.quinary};
     }
 
     width: 5rem;
@@ -62,9 +62,8 @@ export const RightContentContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    background: ${props => props.theme.bg.senary};
+    background: ${props => props.theme.bg.primary};
     width: 8rem;
-    border-left: 1px solid ${props => props.theme.bg.tertiary};
     // padding-left: 1rem;
     border-top-right-radius: 0.6rem;
     border-bottom-right-radius: 0.6rem;
@@ -75,7 +74,7 @@ export const TaskName = styled.span`
   font: ${props => props.theme.font.primary};
   font-size: ${props => props.theme.fontSize.sz3};
 
-  color: ${props => props.theme.bg.tertiary};
+  color: ${props => props.theme.bg.secondary};
 
 `
 
@@ -87,6 +86,10 @@ export const TransparentTextBox = styled(Textbox)`
         background-color: rgba(0 ,0 ,0 , 0.3);
         border-bottom: 2px solid white;
         outline: none !important;
+    }
+
+    ::placeholder{
+        color: ${props => props.theme.bg.primary};
     }
 
     text-align: center;

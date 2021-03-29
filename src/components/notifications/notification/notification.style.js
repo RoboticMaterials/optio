@@ -58,7 +58,7 @@ export const NotificationBody = styled.div`
 `
 
 export const NotificationLabel = styled.h4`
-    color: ${props => props.theme.bg.tertiary};
+    color: ${props => props.theme.bg.secondary};
     font-weight: 550;
     font-size: ${props => props.theme.fontSize.sz5};
     font-family: ${props => props.theme.font.primary};

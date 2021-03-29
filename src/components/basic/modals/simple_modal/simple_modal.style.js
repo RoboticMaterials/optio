@@ -58,7 +58,7 @@ export const TextboxDiv = styled.div`
     border-bottom: 2px solid ${props => props.theme.bg.quinary};
 
     &:focus {
-        background-color: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};
+        // background-color: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};
         border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
         color: ${props => props.theme.bg.octonary};
         outline: none !important;
@@ -83,18 +83,18 @@ export const Container = styled(Modal)`
 
 	z-index: 50;
 
-	min-width: 95%;
-	max-width: 95%;
-	max-height: 95%;
-	// height: 95%;
+	min-width: 30rem;
+  max-width: 95%;
+  min-height: 20rem;
+  max-height: 90%;
 
-	color: ${props => props.theme.bg.octonary};
+	background: ${props => props.theme.bg.primary};
 
 	display: flex;
 	flex-direction: column;
 
 	color: ${props => props.theme.bg.octonary};
-	border-radius: 1rem;
+	border-radius: 0.4rem;
 	overflow: hidden;
 `;
 
@@ -106,7 +106,7 @@ export const HeaderContainer = styled.div`
 	border-bottom-width: thin;
 	border-color: black;
 	border-style: solid;
-	margin-bottom: 2rem;
+  border-bottom: 1px solid ${props => props.theme.bg.secondary};
 `;
 
 export const Header = styled.div`
@@ -114,9 +114,11 @@ export const Header = styled.div`
 	justify-content: space-between;
 	align-items: center;
   flex-direction: column;
-	padding: 0;
+	padding: 0.2rem;
 	margin: 0;
-	background: #FF4B4B;
+	background: ${props => props.theme.bg.primary};
+  border-bottom: 2px solid ${props => props.theme.bg.secondary};
+
 `
 
 export const HeaderRow = styled.div`
@@ -140,11 +142,13 @@ export const Title = styled.h2`
 	min-height: 100%;
 	margin: 1rem;
 	padding: 0;
-	text-align: center;
+	text-align: left;
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
+  justify-content: flex-start;
 
+    font-family: ${props => props.theme.font.primary};
 	font-size: ${props => props.theme.fontSize.sz2};
 	font-weight: ${props => props.theme.fontWeight.bold};
 `;
@@ -154,6 +158,8 @@ export const TextContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	margin-bottom: 1.5rem;
+
+  align-content: center;
 `;
 
 export const BodyContainer = styled.div`
@@ -164,14 +170,17 @@ export const BodyContainer = styled.div`
 	justify-content: space-between;
 	overflow: hidden;
 
-	background: ${props => props.theme.bg.quaternary};
+  
+
+	background: ${props => props.theme.bg.primary};
 `
 
 export const ButtonForm = styled.div`
 
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
+	justify-content: flex-end;
+
 	min-height: fit-content;
 `;
 
@@ -179,10 +188,19 @@ export const ButtonContainers= styled.div`
 
 	display: flex;
 	flex-direction: row;
-	justify-content: center;
+	justify-content: flex-end;
 	min-height: fit-content;
-  margin: 1rem;
+  padding: 0.5rem;
+
+  background: ${props => props.theme.bg.secondary};
 `;
+
+export const CloseIcon = styled.i`
+    font-size: 1.4rem;
+    margin: 1rem;
+    color: ${props => props.theme.bg.quaternary};
+    cursor: pointer;
+`
 
 export const IconSelectorContainer = styled.div`
 	background: ${props => props.theme.bg.quinary};
@@ -198,15 +216,15 @@ export const IconSelectorContainer = styled.div`
 `
 
 export const ContentContainer = styled.div`
-	background: ${props => props.theme.bg.quinary};
-	border-radius: 1rem;
+	// border-radius: 1rem;
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
 	align-items: center;
-  	justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  // align-items: flex-start;
   margin: 1rem;
+  align-items: center;
 `
 export const ReportButtonsContainer = styled.div`
 	display: flex;
@@ -234,7 +252,7 @@ export const RightContentContainer = styled.div`
     justify-content: center;
     background: ${props => props.theme.bg.senary};
     width: 4rem;
-    border-left: 1px solid ${props => props.theme.bg.tertiary};
+    border-left: 1px solid ${props => props.theme.bg.secondary};
     height: 100%;
     // background-color: ${props => props.theme.bg.septenary};
 
@@ -327,7 +345,7 @@ export const AddNewButtonContainer = styled.div`
 	display: flex;
 	justify-content: center;
 	width: 100%;
-	border-bottom:  ${props => props.showBorder && `1px solid` + props.theme.bg.tertiary};
+	border-bottom:  ${props => props.showBorder && `1px solid` + props.theme.bg.secondary};
 `
 
 export const ColorFieldContainer = styled.div`

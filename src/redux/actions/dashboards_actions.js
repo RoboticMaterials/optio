@@ -248,7 +248,7 @@ export const addRouteToDashboards = (route) => {
 
         if (dashboard === undefined) {
             const defaultDashboard = {
-                name: station.name + ' Dashboard',
+                name: "",
                 buttons: [newDashboardButton],
                 station: station.id
             }

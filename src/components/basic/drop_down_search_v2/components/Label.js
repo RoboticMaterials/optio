@@ -18,7 +18,7 @@ const DefaultLabelComponent = styled.div`
     text-align: center;
     font-weight: 200;
 
-    background: ${props => LightenDarkenColor(props.theme.bg.tertiary, -10)};
+    background: ${props => LightenDarkenColor(props.theme.bg.secondary, -10)};
     color: ${props => props.theme.bg.quinary};
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz5};

@@ -15,7 +15,7 @@ import DropDownSearchField from "../basic/form/drop_down_search_field/drop_down_
 import Button from "../basic/button/button";
 
 // Import Actions
-import { postTaskQueue, putTaskQueue, deleteTaskQueueItem } from '../../redux/actions/task_queue_actions'
+import { postTaskQueue, putTaskQueue, deleteTaskQueueItem, getTaskQueue } from '../../redux/actions/task_queue_actions'
 import { postEvents } from '../../redux/actions/events_actions'
 import { getTasks } from '../../redux/actions/tasks_actions'
 import { setShowModalId } from '../../redux/actions/task_queue_actions'
@@ -75,7 +75,8 @@ const HILModals = (props) => {
     const dispatchPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
     const dispatchSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
     const dispatchLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
-    const dispatchSetShowModalId = (id) => dispatch(setShowModalId(id))
+    const dispatchSetShowModalId = (id) =>  dispatch(setShowModalId(id))
+    const dispatchGetTaskQueue = () => dispatch(getTaskQueue())
 
     const dispatchDeleteTaskQueueItem = async (id) => await dispatch(deleteTaskQueueItem(id))
 

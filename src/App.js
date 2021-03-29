@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Redirect } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 
 import { ThemeProvider } from "styled-components";
@@ -52,7 +52,6 @@ const App = (props) => {
     const getFailureCount = useSelector(state => state.taskQueueReducer.getFailureCount)
     const localSettings = useSelector(state => state.localReducer.localSettings)
     const authenticated = useSelector(state => state.localReducer.localSettings.authenticated)
-
 
     const dispatch = useDispatch()
     const dispatchStopAPICalls = (bool) => dispatch(stopAPICalls(bool))
@@ -149,22 +148,12 @@ const App = (props) => {
                         }}
                     />
                     <BrowserRouter>
-
                         {/* Authentication */}
-                        <Route exact path="/login" >
-                            <Authentication />
-                        </Route>
-
-                        {/* Redirect if needed */}
-                        <Redirector
-                            condition={(authenticated === null) || !authenticated}
-                            endpoint={"/login"}
-                        />
-
-                        {/* If user has never signed in */}
-                        <Route path="/login/organization" >
-                            <FirstSignIn />
-                        </Route>
+                        {!authenticated &&
+                            <Route path="/" >
+                                <Authentication />
+                            </Route>
+                        }
 
                         {authenticated &&
                             <Route
@@ -174,25 +163,28 @@ const App = (props) => {
                             </Route>
                         }
 
-                        {apiLoaded && loaded &&
-                            <styled.ContentContainer>
+                          {loaded && authenticated && apiLoaded &&
+                              <styled.ContentContainer>
 
-                                <styled.HeaderContainer>
-                                    {mapViewEnabled &&
-                                        <Route
-                                            path={["/locations/:stationID?/:widgetPage?", '/']}
-                                            component={StatusHeader}
-                                        />
-                                    }
-                                </styled.HeaderContainer>
+                                  <styled.HeaderContainer>
+                                      {mapViewEnabled ?
+                                          <Route
+                                              path={["/locations/:stationID?/:widgetPage?", '/']}
+                                              component={StatusHeader}
+                                          />
+                                          :
+                                          <> </>
+                                      }
+                                  </styled.HeaderContainer>
 
-                                <styled.BodyContainer>
-                                    {/* Hides Side bar when in a dashboard in mobile mode */}
-                                    {mapViewEnabled &&
-                                        <Route
-                                            path={["/:page?/:id?/:subpage?", '/']}
-                                        >
-                                            <SideBar
+                                  <styled.BodyContainer>
+                                      {/* Hides Side bar when in a dashboard in mobile mode */}
+                                    { mapViewEnabled && 
+
+                                          <Route
+                                              path={["/:page?/:id?/:subpage?", '/']}
+                                          >
+                                              <SideBar
                                                 showSideBar={sideBarOpen}
                                                 setShowSideBar={setShowSideBar}
                                             />

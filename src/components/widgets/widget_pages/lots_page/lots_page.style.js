@@ -15,7 +15,7 @@ export const LotsContainer = styled.div`
     justify-content: center;
     padding-bottom:1rem;
 
-    background: ${props => props.theme.bg.quaternary};
+    background: ${props => props.theme.bg.secondary};
 
     overflow: auto;
 
@@ -28,18 +28,14 @@ export const LotsContainer = styled.div`
 `
 
 
-
-
-
-
 export const StationName = styled.h1`
     color: ${props => props.theme.bg.septenary};
     font-family: ${props => props.theme.font.primary};
 `
 
 export const Header = styled.div`
-	  background: ${props => props.theme.bg.quinary};
-  	border-bottom: 1px solid black;
+    background: ${props => props.theme.bg.primary};
+    box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
   	width: 100%;
   	padding: 1rem;
 `
@@ -62,7 +58,3 @@ export const SubtitleContainer = styled.div`
     padding-bottom:.5rem;
     position: relative;
 `
-
-
-
-
