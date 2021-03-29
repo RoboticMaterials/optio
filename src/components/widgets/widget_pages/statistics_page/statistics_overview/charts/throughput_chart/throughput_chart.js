@@ -15,6 +15,7 @@ import BarChart from '../../../chart_types/bar_chart'
 import {useSelector} from "react-redux";
 import {isObject} from "../../../../../../../methods/utils/object_utils";
 import {capitalizeFirstLetter} from "../../../../../../../methods/utils/string_utils";
+import {TIME_SPANS} from "../../statistics_overview";
 
 const minHeight = 0
 
@@ -210,8 +211,10 @@ const ThroughputChart = (props) => {
                             enableGridY={isData ? true : false}
                             mainTheme={themeContext}
                             timeSpan={timeSpan}
+
                             axisBottom={{
-                                tickRotation: -90,
+                                legend: TIME_SPANS[timeSpan].displayName,
+                                tickRotation: timeSpan === TIME_SPANS.month.name ? 0 : -90,
                             }}
                             axisLeft={{
                                 enable: true,
