@@ -142,10 +142,10 @@ const DashboardsHeader = (props) => {
 
                 {showSaveButton &&
                 <>
-                    <Button style={{ order: '3' }}
+                    <Button style={{ order: '3', minWidth: '10rem' }}
                             type='submit'
                             disabled={saveDisabled}
-                            secondary
+                            schema="dashboards"
                     >
                         Save
                     </Button>

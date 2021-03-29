@@ -86,6 +86,7 @@ export const Container = styled(Modal)`
 
 	width: 60rem;
     min-height: 10rem;
+    max-height: 95%;
 
 	background: ${props => props.theme.bg.primary};
 
@@ -188,7 +189,7 @@ export const IconSelectorContainer = styled.div`
 
 export const ContentContainer = styled.div`
 	background: ${props => props.theme.bg.primary};
-	border-radius: 1rem;
+	// border-radius: 1rem;
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;

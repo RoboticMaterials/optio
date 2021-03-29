@@ -85,6 +85,7 @@ export const Container = styled(Modal)`
 
 	width: 60rem;
   min-height: 20rem;
+  max-height: 90%;
 
 	background: ${props => props.theme.bg.primary};
 
@@ -156,6 +157,8 @@ export const TextContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	margin-bottom: 1.5rem;
+
+  align-content: center;
 `;
 
 export const BodyContainer = styled.div`
@@ -165,6 +168,8 @@ export const BodyContainer = styled.div`
 	flex: 1;
 	justify-content: space-between;
 	overflow: hidden;
+
+  
 
 	background: ${props => props.theme.bg.primary};
 `
@@ -210,14 +215,15 @@ export const IconSelectorContainer = styled.div`
 `
 
 export const ContentContainer = styled.div`
-	border-radius: 1rem;
+	// border-radius: 1rem;
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
 	align-items: center;
   justify-content: flex-start;
-  align-items: flex-start;
+  // align-items: flex-start;
   margin: 1rem;
+  align-items: center;
 `
 export const ReportButtonsContainer = styled.div`
 	display: flex;

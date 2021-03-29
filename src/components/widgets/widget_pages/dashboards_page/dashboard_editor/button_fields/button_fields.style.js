@@ -16,10 +16,10 @@ export const SchemaIcon = styled.i`
 
 // ===== Delete Button ===== //
 export const DeleteButtonIcon = styled(DeleteForeverIcon)`
-    color: white;
+    color: ${props => props.theme.bg.quaternary};
 
     &:hover {
-        color: ${LightenDarkenColor('#FFFFFF', -20)};
+        color: ${props => props.theme.bg.quinary};
     }
 
     width: 5rem;
@@ -62,9 +62,8 @@ export const RightContentContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    background: ${props => props.theme.bg.senary};
+    background: ${props => props.theme.bg.primary};
     width: 8rem;
-    border-left: 1px solid ${props => props.theme.bg.secondary};
     // padding-left: 1rem;
     border-top-right-radius: 0.6rem;
     border-bottom-right-radius: 0.6rem;
