@@ -196,7 +196,7 @@ export async function getStationAnalytics(id, timeSpan) {
     try {
         const response = await axios({
             method: 'PUT',
-            url: apiIPAddress() + operator + '/' + id + '/analysis',
+            url: apiIPAddress() + operator + '/' + id + '/stats',
             headers: {
                 'Content-Type': 'application/json',
                 'X-API-Key': '123456',

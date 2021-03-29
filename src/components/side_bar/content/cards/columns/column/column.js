@@ -357,15 +357,10 @@ const Column = ((props) => {
 									onMouseEnter={(event) => onMouseEnter(event, cardId)}
 									onMouseLeave={onMouseLeave}
 									style={{
-
 									}}
 								>
 									<div
 										style={{
-											transform: isSelected && "rotate(2.5deg)",
-											// border: isLastSelected && "1px solid red",
-											// boxShadow: isLastSelected && "0 0 5px ${color}",
-
 										}}
 									>
 								<Lot
@@ -376,7 +371,7 @@ const Column = ((props) => {
 									selectable={selectable}
 									isSelected={isSelected}
 									key={cardId}
-									processName={processName}
+									// processName={processName}
 									totalQuantity={totalQuantity}
 									lotNumber={lotNumber}
 									name={name}
@@ -399,7 +394,6 @@ const Column = ((props) => {
 									}}
 									containerStyle={{
 										marginBottom: "0.5rem",
-
 									}}
 								/>
 									</div>

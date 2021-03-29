@@ -36,7 +36,7 @@ export const StationContainer = styled.div`
     margin-right: 1rem;
     max-height: ${props => props.maxHeight};
     
-    border-radius: 1rem;
+    border-radius: 0.5rem;
     overflow: hidden;
     
     color: ${props => props.theme.bg.octonary};
@@ -48,9 +48,7 @@ export const StationHeader = styled.div`
     width: 100%;
     justify-content: center;
     align-items: center;
-    background: ${props => props.theme.bg.quinary};
- 
-   
+    background: ${props => props.theme.bg.secondary};   
 `
 
 export const TitleContainer = styled.div`
@@ -74,9 +72,14 @@ export const BodyContainer = styled.div`
 	flex-direction: column;
 	min-height: ${minHeight};
 	overflow: hidden;
-	background: ${props => props.theme.bg.quaternary};
+	background: ${props => props.theme.bg.secondary};
 	opacity: ${props => props.dragEnter ? 0.75 : 1};
-	border-bottom-right-radius: 1rem;
-	border-bottom-left-radius: 1rem;
+	border-bottom-right-radius: 0.5rem;
+	border-bottom-left-radius: 0.5rem;
+
+  // border-left: 0.2rem solid ${props => props.theme.schema.lots.solid};
+  // border-bottom: 0.2rem solid ${props => props.theme.schema.lots.solid};
+  // border-right: 0.2rem solid ${props => props.theme.schema.lots.solid};
+
 	justify-content: center;
 `

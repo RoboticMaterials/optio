@@ -28,7 +28,7 @@ export const DefaultInputContainer = styled.div`
 `;
 
 export const DefaultInputComponent = styled.input`
-     // background: ${props =>  props.hasError && props.theme.bad};
+    //  background: ${props =>  props.hasError && props.theme.bad};
 `;
 
 export const IconContainerComponent = styled.div`
