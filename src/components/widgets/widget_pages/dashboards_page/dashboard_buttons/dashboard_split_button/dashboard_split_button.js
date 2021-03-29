@@ -52,6 +52,8 @@ const DashboardSplitButton = (props => {
                 type={"button"}
                 disabled={disabled}
                 height={height}
+                clickable={clickable}
+                hoverable={hoverable}
                 background={color}
                 borderGlow={taskID === 'hil_success'}
                 style={{ ...containerStyle, maxWidth: '20%', alignText: 'center', marginRight: '0.5rem' }}
@@ -71,6 +73,8 @@ const DashboardSplitButton = (props => {
                 disabled={disabled}
                 width={width}
                 height={height}
+                clickable={clickable}
+                hoverable={hoverable}
                 background={color}
                 borderGlow={taskID === 'hil_success'}
                 style={containerStyle}
