@@ -2,7 +2,7 @@ import React, {useState, useEffect, useContext} from "react";
 
 // external functions
 import PropTypes from "prop-types";
-import {Formik} from "formik";
+import {Formik, setNestedObjectValues} from "formik";
 import {useDispatch, useSelector} from "react-redux";
 import FadeLoader from "react-spinners/FadeLoader"
 
@@ -27,7 +27,7 @@ import {parseMessageFromEvent} from "../../../../../methods/utils/card_utils";
 import {CARD_SCHEMA_MODES, cardSchema, getCardSchema, LotFormSchema} from "../../../../../methods/utils/form_schemas";
 import {getProcessStations} from "../../../../../methods/utils/processes_utils";
 import {isEmpty, isObject} from "../../../../../methods/utils/object_utils";
-
+import set from "lodash/set";
 // import styles
 import * as styled from "./lot_editor.style"
 
@@ -133,20 +133,11 @@ const FormComponent = (props) => {
 		};
 	}, [])
 
-	// useEffect(() => {
-	//
-	// 	if(!isOpen && content) setContent(null)
-	//
-	// 	return () => {
-	// 	}
-	// }, [isOpen])
-
+	/*
+	* resert form if template id changes
+	* */
 	useEffect(() => {
-
-		//
-		// setFieldValue("changed", false)
 		formikProps.resetForm()
-
 	}, [lotTemplateId])
 
 	return(
@@ -523,12 +514,29 @@ const LotCreatorForm = (props) => {
 				}}
 
 				// validation control
-				validationSchema={LotFormSchema}
+				// validationSchema={LotFormSchema}
+				validate={(values, props) => {
+					try {
+						LotFormSchema.validateSync(values, {
+							abortEarly: false,
+							context: values
+						});
+					} catch (error) {
+						if (error.name !== "ValidationError") {
+							throw error;
+						}
+
+						return error.inner.reduce((errors, currentError) => {
+							errors = set(errors, currentError.path, currentError.message)
+							return errors;
+						}, {});
+					}
+				}}
 				validateOnChange={true}
 				validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
 				validateOnBlur={true}
 
-				enableReinitialize={true} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
+				enableReinitialize={false} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
 				onSubmit={(values, { setSubmitting, setTouched, resetForm }) => {
 					// set submitting to true, handle submit, then set submitting to false
 					// the submitting property is useful for eg. displaying a loading indicator
