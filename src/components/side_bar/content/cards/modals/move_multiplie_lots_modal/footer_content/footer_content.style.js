@@ -51,6 +51,10 @@ export const StationsScrollWrapper = styled.div`
 	overflow-x: auto;
   	align-self: stretch;
 
+  // max-width: 80%;
+  // box-shadow: inset 0 1px 4px 1px rgba(0, 0, 0, 0.2);
+  // border-radius: 1rem;
+
   /* width */
   ::-webkit-scrollbar {
 	height: 10px;
@@ -102,8 +106,6 @@ export const StationButton = styled.button`
 `
 
 export const StationContainer = styled.div`
-  height: fit-content;
-  min-height: fit-content;
   //padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -116,6 +118,9 @@ export const StationContainer = styled.div`
   &:hover {
 	cursor: pointer;
   }
+
+  // box-shadow: ${props => props.theme.cardShadow};
+  // border-radius: 0.5rem;
 
   ${props => props.isSelected && selectedCss};
 `

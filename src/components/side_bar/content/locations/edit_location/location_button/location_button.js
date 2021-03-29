@@ -23,7 +23,10 @@ const LocationButton = (props) => {
             string = 'cart'
         } else if (string === 'shelf_position') {
             string = 'shelf'
+        } else if (string === 'human') {
+            string = 'Work Station'
         }
+
 
         string = string.replace('_', ' ')
         return string.charAt(0).toUpperCase() + string.slice(1);

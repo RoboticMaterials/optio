@@ -15,7 +15,7 @@ export const LotsContainer = styled.div`
     justify-content: center;
     padding-bottom:1rem;
 
-    background: ${props => props.theme.bg.quaternary};
+    background: ${props => props.theme.bg.secondary};
 
     overflow: auto;
 
@@ -34,8 +34,8 @@ export const StationName = styled.h1`
 `
 
 export const Header = styled.div`
-	  background: ${props => props.theme.bg.quinary};
-  	border-bottom: 1px solid black;
+    background: ${props => props.theme.bg.primary};
+    box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
   	width: 100%;
   	padding: 1rem;
 `

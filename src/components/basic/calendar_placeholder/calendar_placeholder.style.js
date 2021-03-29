@@ -40,6 +40,7 @@ export const DateItem = styled.div`
   ${props => props.usable ? usableCss : notUsableCss};
 	
 	
+	cursor: pointer !important;
 	
 `
 
