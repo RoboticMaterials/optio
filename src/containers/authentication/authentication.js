@@ -60,9 +60,7 @@ const Authentication = (props) => {
 
                 dispatchPostLocalSettings({
                     ...response,
-                    authenticated: 'no',
-                    //non_local_api_ip: window.location.hostname,
-                    //non_local_api: true,
+                    authenticated: 'no'
                 })
 
             } else {
@@ -85,8 +83,6 @@ const Authentication = (props) => {
                             dispatchPostLocalSettings({
                                 ...response,
                                 authenticated:true,
-                                non_local_api_ip: window.location.hostname,
-                                non_local_api: true,
                             })
                         }
                     });
