@@ -72,7 +72,7 @@ const HILModals = (props) => {
     const dispatchGetLotTemplates = async () => await dispatch(getLotTemplates())
     const dispatchTaskQueueItemClicked = (id) => dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
     const disptachHILResponse = (response) => dispatch({ type: 'HIL_RESPONSE', payload: response })
-    const disptachPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
+    const dispatchPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
     const dispatchSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
     const dispatchLocalHumanTask = (bol) => dispatch({ type: 'LOCAL_HUMAN_TASK', payload: bol })
     const dispatchSetShowModalId = (id) => dispatch(setShowModalId(id))
@@ -415,13 +415,12 @@ const HILModals = (props) => {
     // Posts HIL Success to API
     const onHilSuccess = async (fraction) => {
 
-
         dispatchTaskQueueItemClicked('')
 
         let newItem = {
             ...item,
             hil_response: true,
-            lot_id: selectedLotId
+            lot_id: selectedLotId,
         }
 
         // If its a load, then add a quantity to the response
@@ -444,16 +443,14 @@ const HILModals = (props) => {
 
         const ID = deepCopy(taskQueueID)
 
-        delete newItem._id
+        // delete newItem._id
         delete newItem.dashboard
 
         // This is used to make the tap of the HIL button respond quickly
         disptachHILResponse(hilLoadUnload === 'load' ? 'load' : 'unload')
         setTimeout(() => disptachHILResponse(''), 2000)
 
-        await disptachPutTaskQueue(newItem, ID)
-
-        // onLogHumanEvent()
+        onLogHumanEvent({...newItem, _id: ID}, ID)
     }
 
     // Posts HIL Postpone to API
@@ -487,7 +484,7 @@ const HILModals = (props) => {
     }
 
     // Posts event to back end for stats and tracking
-    const onLogHumanEvent = () => {
+    const onLogHumanEvent = async (item, ID) => {
 
         let event = {
             object: null,
@@ -524,6 +521,9 @@ const HILModals = (props) => {
         event.quantity = eventQuantity
         event.outgoing = outgoing
         // dispatchPostEvents(event)
+
+        await dispatchPutTaskQueue(item, ID)
+
     }
 
     const renderSelectedLot = () => {

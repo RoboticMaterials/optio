@@ -141,8 +141,7 @@ export default function taskQueueReducer(state = defaultState, action) {
 
             const updatedTaskQ = deepCopy({
                 ...action.payload.item,
-                _id: { $oid: action.payload.ID }
-
+                _id: action.payload.ID
             })
 
             let forceUpdate = {}

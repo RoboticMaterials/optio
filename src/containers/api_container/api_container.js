@@ -394,6 +394,7 @@ const ApiContainer = (props) => {
 
     // Handle task being created
     const handleTaskUpdate = async (taskQueueItem) => {
+
         // get the task 
 
         const tasks = await onGetTasks()
@@ -451,16 +452,15 @@ const ApiContainer = (props) => {
             }
         }else{
             if(taskQueueItem.start_time === null){
+
                 taskQueueItem.start_time = Math.round(Date.now() / 1000)
 
                 taskQueueItem.hil_station_id = task.unload.station
 
                 taskQueueItem.hil_message = 'Unload'
 
-                console.log(taskQueueItem, task);
-
                 // put a start time on th taskQueueItem
-                await onPutTaskQueue(taskQueueItem)
+                await onPutTaskQueue(taskQueueItem, taskQueueItem.id)
             }
         }
     }
@@ -726,7 +726,6 @@ const ApiContainer = (props) => {
                 const newDashboard = onPostDashoard(newDeviceDashboard)
 
                 return newDashboard.then(async (dashPromise) => {
-                    console.log(dashPromise)
                     device.dashboards = [dashPromise._id]
                     await onPutDevice(device, device._id)
                 })

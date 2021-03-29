@@ -902,7 +902,6 @@ export const createTaskQueueEvents = /* GraphQL */ `
   ) {
     createTaskQueueEvents(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       device_type
       mission_status
@@ -930,7 +929,6 @@ export const updateTaskQueueEvents = /* GraphQL */ `
   ) {
     updateTaskQueueEvents(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       device_type
       mission_status
@@ -958,7 +956,6 @@ export const deleteTaskQueueEvents = /* GraphQL */ `
   ) {
     deleteTaskQueueEvents(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       device_type
       mission_status

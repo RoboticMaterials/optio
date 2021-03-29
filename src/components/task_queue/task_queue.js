@@ -41,6 +41,7 @@ const TaskQueueMenu = (props) => {
         var taskQueueClone = [];
         if (taskQueue) {
             Object.values(taskQueue).forEach((queueItem, index) => {
+
                 let queueItemClone = clone_object(queueItem);
                 // Sees if task is a custom task
                 let task = {}

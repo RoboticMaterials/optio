@@ -115,21 +115,18 @@ export async function deleteTaskQueueItem(id, taskQueueItem) {
         }
 
         if(taskQueueItem !== 'load'){
-            console.log('tqi', taskQueueItem);
-
+            
             taskQueueItem.end_time = Math.round(Date.now() / 1000)
 
             delete taskQueueItem.createdAt
             delete taskQueueItem.updatedAt
             delete taskQueueItem.id
+            delete taskQueueItem._id
 
-            // DO CHECKS TO MAKE SURE THAT WE ARE
+            // DO CHECKS HERE
 
             let lot = await getCard(taskQueueItem.lot_id) // get lot
             let task = await getTask(taskQueueItem.task_id) // get task
-
-            console.log('task', task)
-            console.log('lot', lot);
 
             // are we moving the whole lot?
             if(taskQueueItem.quantity === task.totalQuantity){
@@ -166,15 +163,12 @@ export async function deleteTaskQueueItem(id, taskQueueItem) {
 
         }    
 
-        
-
         // Add item to task events
         await API.graphql({
             query: createTaskQueueEvents,
             variables: { input: taskQueueItem }
         })
 
-        
 
         // Delete item after adding it to the event
         await API.graphql({
@@ -192,16 +186,17 @@ export async function deleteTaskQueueItem(id, taskQueueItem) {
 
 export async function putTaskQueueItem(item, ID) {
     try {
-
+        
         delete item.createdAt
         delete item.updatedAt
 
         const dataJson = await API.graphql({
             query: updateTaskQueue,
             variables: { input: item }
-          })
-          
-        return dataJson.data.updateTaskQueue;
+        })
+        
+        return dataJson.data.updateTaskQueue
+        
     } catch (error) {
         // Error 😨
         errorLog(error)

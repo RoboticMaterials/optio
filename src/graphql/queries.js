@@ -152,7 +152,6 @@ export const getTaskQueueEvents = /* GraphQL */ `
   query GetTaskQueueEvents($id: ID!) {
     getTaskQueueEvents(id: $id) {
       id
-      _id
       organizationId
       device_type
       mission_status
@@ -186,7 +185,6 @@ export const listTaskQueueEventss = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
         device_type
         mission_status

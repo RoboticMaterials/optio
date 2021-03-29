@@ -965,7 +965,6 @@ export const onCreateTaskQueueEvents = /* GraphQL */ `
   subscription OnCreateTaskQueueEvents {
     onCreateTaskQueueEvents {
       id
-      _id
       organizationId
       device_type
       mission_status
@@ -990,7 +989,6 @@ export const onUpdateTaskQueueEvents = /* GraphQL */ `
   subscription OnUpdateTaskQueueEvents {
     onUpdateTaskQueueEvents {
       id
-      _id
       organizationId
       device_type
       mission_status
@@ -1015,7 +1013,6 @@ export const onDeleteTaskQueueEvents = /* GraphQL */ `
   subscription OnDeleteTaskQueueEvents {
     onDeleteTaskQueueEvents {
       id
-      _id
       organizationId
       device_type
       mission_status

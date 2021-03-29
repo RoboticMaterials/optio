@@ -289,7 +289,6 @@ type TaskQueueEvents
 {
   # IDs
   id: ID!
-  _id: String!
   organizationId: ID!
   
   # Data
