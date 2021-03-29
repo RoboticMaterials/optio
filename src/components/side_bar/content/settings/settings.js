@@ -432,7 +432,6 @@ const Settings = () => {
             />
 
             <TaskAddedAlert
-                style = {{color: "green"}}
                 containerStyle={{
                     'position': 'absolute'
                 }}

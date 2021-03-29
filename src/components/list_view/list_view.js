@@ -8,7 +8,6 @@ import DashboardsPage from "../widgets/widget_pages/dashboards_page/dashboards_p
 import Settings from "../side_bar/content/settings/settings";
 import LocationList from './location_list/location_list'
 import BounceButton from "../basic/bounce_button/bounce_button";
-import ClickNHold from 'react-click-n-hold'
 import ConfirmDeleteModal from '../basic/modals/confirm_delete_modal/confirm_delete_modal'
 // Import hooks
 import useWindowSize from '../../hooks/useWindowSize'
@@ -106,7 +105,6 @@ const ListView = (props) => {
       Object.values(dashboards).forEach((dashboard) => {
         if(dashboard.station===params.stationID){
           setLocked(dashboard.locked)
-          console.log(dashboard.locked)
         }
       })
     }, [params.stationID])
