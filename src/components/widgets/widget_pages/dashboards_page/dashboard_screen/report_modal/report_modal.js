@@ -56,8 +56,6 @@ const NewButtonForm = (props) => {
 
     const formMode = _id ? FORM_MODES.UPDATE : FORM_MODES.CREATE
 
-    console.log('QQQQ Color', color)
-
     const handleSubmit = (values, formMode) => {
         // extract values and default values
         const description = values?.description || ""
