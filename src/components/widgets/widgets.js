@@ -215,7 +215,7 @@ const Widgets = (props) => {
                         <>
                             {/* <styled.EmptySpaceContainer /> */}
                             <styled.RowContainer
-                                style={{ display: 'flex', width: '150rem', alignItems: 'center', alignContent: 'center', width: '100%', justifyContent: 'space-between' }}
+                                style={{ display: 'flex', maxWidth: '15rem', alignItems: 'center', alignContent: 'center', justifyContent: 'space-between' }}
                                 onClick={() => onOpenWidget()}
                             >
                                 <styled.WidgetStationName style={{ marginBottom: '0rem' }}>{selectedLocation.name}</styled.WidgetStationName>
@@ -433,6 +433,7 @@ const Widgets = (props) => {
                         onMouseEnter={() => {
                             dispatchHoverStationInfo(hoveringInfo)
                         }}
+                        onClick={() => onOpenWidget()}
 
                     />
                 }
