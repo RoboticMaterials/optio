@@ -135,6 +135,7 @@ const SignInUpPage = (props) => {
                     } else {
                         alert('You have sucessfully signed up! Please check you email for a verification link.')
                         handleSignInChange(true)
+                        setLoading(false)
                     }
                 });
             } else {
