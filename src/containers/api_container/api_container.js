@@ -115,9 +115,9 @@ const ApiContainer = (props) => {
         setCriticalDataInterval(setInterval(() => loadCriticalData(), 500));
 
 
-        if(!!mapViewEnabled){
-            setMapDataInterval(setInterval(() => loadMapData(), 10000));
-        }
+        // if(!!mapViewEnabled){
+        setMapDataInterval(setInterval(() => loadMapData(), 10000));
+        // }
 
 
         return () => {
@@ -157,18 +157,18 @@ const ApiContainer = (props) => {
             })
 
             // only update if MiRMapEnabled isn't currently set or MiRMapEnabled needs to be updated because it isn't equal to containsMirCart
-            if ((MiRMapEnabled === undefined) || (MiRMapEnabled !== containsMirCart)){
+            if ((MiRMapEnabled === undefined) || (MiRMapEnabled !== containsMirCart)) {
 
-              const updatedLocalSettings = {
-                ...localReducer.localSettings,
-                MiRMapEnabled: containsMirCart,
-              }
+                const updatedLocalSettings = {
+                    ...localReducer.localSettings,
+                    MiRMapEnabled: containsMirCart,
+                }
 
-              onPostLocalSettings(updatedLocalSettings)
+                onPostLocalSettings(updatedLocalSettings)
             }
         }
 
-    }, [devices,MiRMapEnabled])
+    }, [devices, MiRMapEnabled])
 
     useEffect(() => {
 
@@ -363,7 +363,7 @@ const ApiContainer = (props) => {
     }
 
     const loadLocalData = async () => {
-      const localSettings = await onGetLocalSettings()
+        const localSettings = await onGetLocalSettings()
     }
 
 
@@ -527,13 +527,13 @@ const ApiContainer = (props) => {
                     const newDashboard = onPostDashoard(newDeviceDashboard)
 
                     return newDashboard.then(async (dashPromise) => {
-                        if (dashPromise._id !== undefined){
-                        // Add new dashboard
-                        device.dashboards.push(dashPromise._id.$oid)
+                        if (dashPromise._id !== undefined) {
+                            // Add new dashboard
+                            device.dashboards.push(dashPromise._id.$oid)
 
-                        // Delete old dashboard
-                        const index = device.dashboards.indexOf(dashboard)
-                        device.dashboards.splice(index, 1)
+                            // Delete old dashboard
+                            const index = device.dashboards.indexOf(dashboard)
+                            device.dashboards.splice(index, 1)
                         }
 
                         await onPutDevice(device, device._id)
