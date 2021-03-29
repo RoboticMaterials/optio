@@ -48,6 +48,7 @@ export const getDataStream = () => {
             return response;
         }
         function handleTaskQueueError(error) {
+
             dispatch({ type: GET_TASK_QUEUE_FAILURE, payload: error });
             dispatch({ type: INCREMENT_GET_DATA_FAILURE_COUNT, payload: null })
             return error;

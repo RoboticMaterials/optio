@@ -11,8 +11,10 @@ export const Container = styled(Modal)`
 	bottom: auto;
 	position: absolute;
 	z-index: 50;
-	min-width: 95%;
-	max-width: 95%;
+	
+	min-width: 30rem;
+    max-width: 95%;
+
 	height: 95%;
 	color: ${props => props.theme.bg.octonary};
 	display: flex;

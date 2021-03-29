@@ -43,7 +43,6 @@ const App = () => {
     const localSettings = useSelector(state => state.localReducer.localSettings)
     const authenticated = useSelector(state => state.localReducer.localSettings.authenticated)
 
-
     const dispatch = useDispatch()
     const dispatchStopAPICalls = (bool) => dispatch(stopAPICalls(bool))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
