@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Redirect } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 import ls from 'local-storage'
 
@@ -123,26 +123,20 @@ const App = () => {
                         }}
                     />
                     <BrowserRouter>
-                        {/* <Route
-                              exact path="/clear_local"
-                          >
-                              {
-                                  handleClearLocalSettings()
-                              }
-                          </Route> */}
+                        {/* Authentication */}
+                        {!authenticated &&
+                            <Route path="/" >
+                                <Authentication />
+                            </Route>
+                        }
 
-
-                          <Route
-                              path={["/locations/:stationID?/:widgetPage?", '/:sidebar?/:data1?/:data2?', '/',]}
-                          >
-                              {authenticated && <ApiContainer styleMode={null} apiMode={null} mode={null} logMode={"DEV"} onLoad={() => setLoaded(true)} apiLoaded={() => setApiLoaded(true)} isApiLoaded={apiLoaded} />}
-                          </Route>
-
-                          {/* If all the API's have been loaded, but the user has not been authenticate then show the Authentication Screen */}
-                          {authenticated === null &&
-                              <Authentication authenticated={authenticated}/>
-                          }
-
+                        {authenticated &&
+                            <Route
+                                path={["/locations/:stationID?/:widgetPage?", '/:sidebar?/:data1?/:data2?', '/',]}
+                            >
+                                <ApiContainer styleMode={null} apiMode={null} mode={null} logMode={"DEV"} onLoad={() => setLoaded(true)} apiLoaded={() => setApiLoaded(true)} isApiLoaded={apiLoaded} />
+                            </Route>
+                        }
 
                           {loaded && authenticated && apiLoaded &&
                               <styled.ContentContainer>
