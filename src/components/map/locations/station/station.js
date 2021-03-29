@@ -97,8 +97,6 @@ function Station(props) {
         // Disable station if its the load station. Cant make a task to itself
         else if (selectedTask.load.station === station._id) disabled = true
 
-<<<<<<< HEAD
-=======
         // Disables when adding a task to the beginning of a process. 
         // To tell if a task is being added to the beginning of a process is when the task has a temp insert index at 0
         else if (selectedTask?.temp?.insertIndex === 0 && !!selectedProcess && selectedProcess.routes.length > 0) {
@@ -116,7 +114,6 @@ function Station(props) {
     }
 
 
->>>>>>> development
     // This filters out stations when fixing a process
     // If the process is broken, then you can only start the task at the route before break's unload location
     else if (!!selectedTask && !!selectedProcess && !!fixingProcess) {
