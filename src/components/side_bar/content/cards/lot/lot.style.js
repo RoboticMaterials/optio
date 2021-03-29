@@ -49,8 +49,6 @@ export const Container = styled.div`
   // ${props => props.isFocused && focusedCss};
   // ${props => props.isSelected && selectedCss};
   // ${props => props.containerStyle};
-  
-  
 `
 
 const selectedCss = css`

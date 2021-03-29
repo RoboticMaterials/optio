@@ -9,7 +9,7 @@ import {ThemeContext} from "styled-components";
 import {
 	CARD_SCHEMA_MODES,
 	getCardSchema,
-	getTemplateMapperSchema,
+	getTemplateMapperSchema, LotFormSchema,
 	templateMapperSchema
 } from "../../../methods/utils/form_schemas";
 import {
@@ -26,6 +26,7 @@ import ContainerWrapper from "../container_wrapper/container_wrapper";
 import {isObject} from "../../../methods/utils/object_utils";
 import {isEqualCI} from "../../../methods/utils/string_utils";
 import {BASIC_FIELD_DEFAULTS} from "../../../constants/form_constants";
+import set from "lodash/set";
 
 const PasteMapper = (props) => {
 
@@ -128,8 +129,9 @@ const PasteMapper = (props) => {
 				fieldName: currAvailableFieldName = "",
 				dataType: currAvailableDataType = FIELD_DATA_TYPES.STRING,
 				index: currAvailableIndex,
-				displayName: currAvailableDisplayName,
+				displayName: currAvailableDisplayName = "",
 			} = currField || {}
+
 
 			tempUsedFieldNames[currIndex] = false
 			for(const selectedField of selectedFieldNames) {
@@ -137,24 +139,36 @@ const PasteMapper = (props) => {
 					fieldName: currSelectedFieldName = "",
 					dataType: currSelectedDataType = FIELD_DATA_TYPES.STRING,
 					index: currSelectedIndex,
-					displayName: currSelectedDisplayName,
+					displayName: currSelectedDisplayName = "",
 				} = selectedField || {}
 
 				if(currAvailableDataType === FIELD_DATA_TYPES.DATE_RANGE) {
-					if(currAvailableIndex === currSelectedIndex && currSelectedDisplayName === currAvailableDisplayName) {
+					if(currAvailableIndex === currSelectedIndex && isEqualCI(currSelectedDisplayName.trim(),currAvailableDisplayName.trim())) {
 						tempUsedFieldNames[currIndex] = true
 						break // no need to keep looping
 					}
 
 				}
+
 				else {
-					if(currSelectedDisplayName === currAvailableDisplayName) {
+					if(isEqualCI(currSelectedDisplayName.trim(), currAvailableDisplayName.trim())) {
 						tempUsedFieldNames[currIndex] = true
 						break // no need to keep looping
 					}
 				}
 			}
 		})
+
+		// for(const availableField of availableFieldNames) {
+		// 	const {
+		// 		displayName: availableDisplayName = "",
+		// 	} = availableField
+		//
+		// 	if(isEqualCI(outputVal, availableDisplayName)) {
+		// 		mappedOutputVal = {...availableField}
+		// 		break	// quit looping
+		// 	}
+		// }
 
 		setUsedAvailableFieldNames(tempUsedFieldNames)
 	}, [availableFieldNames, selectedFieldNames])
@@ -170,7 +184,19 @@ const PasteMapper = (props) => {
 					return true
 				})
 				.forEach((currItem, currItemIndex) => {
-					const label = selectedFieldNames[currColIndex]
+					let label = selectedFieldNames[currColIndex]
+					let tempDisplayName = label?.displayName || ""
+
+					for(const availableField of availableFieldNames) {
+						const {
+							fieldName: currAvailableFieldName = "",
+							dataType: currAvailableDataType = FIELD_DATA_TYPES.STRING,
+							index: currAvailableIndex,
+							displayName: currAvailableDisplayName = "",
+						} = availableField || {}
+
+						if(isEqualCI(tempDisplayName.trim(), currAvailableDisplayName)) label = {...availableField}
+					}
 
 					let finalValue = currItem
 
@@ -711,7 +737,23 @@ export const PasteForm = (props) => {
 				table: props.table
 			}}
 
-			validationSchema={templateMapperSchema}
+			validate={(values, props) => {
+				try {
+					templateMapperSchema.validateSync(values, {
+						abortEarly: false,
+						context: values
+					});
+				} catch (error) {
+					if (error.name !== "ValidationError") {
+						throw error;
+					}
+
+					return error.inner.reduce((errors, currentError) => {
+						errors = set(errors, currentError.path, currentError.message)
+						return errors;
+					}, {});
+				}
+			}}
 			validateOnChange={true}
 			validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
 			validateOnBlur={true}

@@ -359,7 +359,7 @@ const FormComponent = (props) => {
 
 						<NumberField
 							maxValue={maxValue}
-							minValue={0}
+							minValue={1}
 							name={"moveCount"}
 						/>
 					</div>

@@ -246,41 +246,68 @@ const LotFilterBar = (props) => {
                             } = state || {}
                             const value = state.values[0]
 
-                            if(isArray(values) && values.length > 0) {
-                                return (
-                                    <styled.FlagsContainer
-                                        style={{
-                                            minWidth: `${maxFlagsSize.offsetWidth}px`,
-                                            width: `${maxFlagsSize.offsetWidth}px`
-                                        }}
-                                    >
-                                        {values.map((currVal) => {
-                                            const {
-                                                color: currColor,
-                                                id: currColorId
-                                            } = currVal || {}
+                            return (
+                                <styled.FlagsContainer style={{minWidth: '4rem', paddingRight: '1rem'}}>
+                                    {isArray(values) && values.map(currVal => {
+                                                const {
+                                                    color: currColor,
+                                                    id: currColorId
+                                                } = currVal || {}
+    
+                                                return (
+                                                    <styled.FlagButton
+                                                        style={{
+                                                            margin: "0rem .1rem",
+                                                        }}
+                                                        key={currColorId}
+                                                        type={"button"}
+                                                        color={currColor}
+                                                        onClick={(event) => {
+                                                            event.stopPropagation();
+                                                            methods.dropDown('open');
+                                                        }}
+                                                        schema={props.schema}
+                                                        className="fas fa-square"
+                                                    />
+                                                )
+                                            })}
+                                
+                            </styled.FlagsContainer>
+                            // if(isArray(values) && values.length > 0) {
+                            //     return (
+                            //         <styled.FlagsContainer
+                            //             style={{
+                            //                 minWidth: `${maxFlagsSize.offsetWidth}px`,
+                            //                 width: `${maxFlagsSize.offsetWidth}px`
+                            //             }}
+                            //         >
+                            //             {values.map((currVal) => {
+                            //                 const {
+                            //                     color: currColor,
+                            //                     id: currColorId
+                            //                 } = currVal || {}
 
-                                            return (
-                                                <FlagButton
-                                                    style={{
-                                                        margin: "0 .1rem",
-                                                    }}
-                                                    key={currColorId}
-                                                    color={currColor}
-                                                    onClick={(event) => {
-                                                        event.stopPropagation();
-                                                        methods.dropDown('open');
-                                                    }}
-                                                    schema={props.schema}
-                                                />
-                                            )
-                                        })}
-                                    </styled.FlagsContainer>
-                                )
-                            }
+                            //                 return (
+                            //                     <FlagButton
+                            //                         style={{
+                            //                             margin: "0 .1rem",
+                            //                         }}
+                            //                         key={currColorId}
+                            //                         color={currColor}
+                            //                         onClick={(event) => {
+                            //                             event.stopPropagation();
+                            //                             methods.dropDown('open');
+                            //                         }}
+                            //                         schema={props.schema}
+                            //                     />
+                            //                 )
+                            //             })}
+                            //         </styled.FlagsContainer>
+                            //     )
+                            // }
 
-                            return(
-                                null
+                            // return(
+                            //     null
                             )
                         }}
                         itemRenderer={({ item, itemIndex, props, state, methods }) => {
