@@ -88,3 +88,14 @@ export const Button = styled.button`
     border: none;
     box-shadow: 0 0.05rem 0.1rem 0rem #303030
 `
+
+export const NoteText = styled.h4`
+    display: flex;
+    align-self: center;
+    justify-content: center;
+    font-size: ${props => props.theme.fontSize.sz4};
+    font-family: ${props => props.theme.font.primary};
+    color: ${props => props.theme.bg.quaternary};
+    text-align: center;
+    width: 20rem;
+`

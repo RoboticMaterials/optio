@@ -1,5 +1,8 @@
 import styled from 'styled-components'
 
+import { css } from "@emotion/react";
+
+
 export const Container = styled.div`
     display:flex;
     flex-direction:column;
@@ -40,3 +43,10 @@ export const NoteText = styled.h4`
     text-align: center;
     width: 25rem;
 `
+
+export const loaderCSS = css`
+margin: 1rem;
+display: flex;
+align-self: center;
+justify-content: center;
+`;

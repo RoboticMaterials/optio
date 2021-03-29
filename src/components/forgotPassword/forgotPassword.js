@@ -32,9 +32,12 @@ const ForgotPassword = (props) => {
     const [password, setPassword] = useState('')
     const [checkPassword, setCheckPassword] = useState('')
 
-    const [enableValidation, setEnableValidation] = useState(false);
+    const [enableValidation, setEnableValidation] = useState(false)
 
     const [resetPasswordVal, setResetPasswordVal] = useState(false)
+
+    const [warning, setWarning] = useState(false)
+
 
     var poolData = {
         UserPoolId: configData.UserPoolId,
@@ -149,7 +152,22 @@ const ForgotPassword = (props) => {
                 }
 
                 return (
-                    <Form>
+                    <Form
+                        onKeyDown={
+                            (keyEvent) => {
+                                if(keyEvent.keyCode === 20 || Event.KEY === "CapsLock") {
+                                    setWarning(!warning)
+                                }
+                                else {
+                                    if (keyEvent.getModifierState("CapsLock")) {
+                                        setWarning(true)
+                                    } else {
+                                        setWarning(false)
+                                    }
+                                }
+                            }
+                        }
+                    >
 
                         <styled.SignInUpContainer>
                             {resetPasswordVal ? 
@@ -208,7 +226,9 @@ const ForgotPassword = (props) => {
                                     width: '20rem'
                                 }}
                             />
-                        }  
+                        } 
+
+                        {warning && <styled.NoteText>Caps Lock On!</styled.NoteText>}
 
                         <styled.Button type="submit">Submit</styled.Button>
 
