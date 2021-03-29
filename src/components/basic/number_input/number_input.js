@@ -26,6 +26,7 @@ const NumberInput = ({
 	inputCss,
 	longPlusPressEvent,
 	longMinusPressEvent,
+	usable,
 	inputChildren,
 	inputStyle,
 	buttonStyle,
@@ -36,7 +37,7 @@ const NumberInput = ({
 	return (
 		<styled.Container style={containerStyle}>
 			<styled.Button
-				// color={'#ff1818'}
+				usable={usable}
 				color={themeContext.fg.primary}
 				className='fas fa-minus-square'
 				onClick={(e) => {
@@ -50,7 +51,9 @@ const NumberInput = ({
 			/>
 			<div style={{position: "relative"}}>
 				<styled.Input
-					disabled={inputDisabled}
+					usable={usable}
+					readOnly={props.readOnly || !usable}
+					disabled={props.inputDisabled || !usable}
 					inputCss={inputCss}
 					type="number"
 					onChange={onInputChange}
@@ -61,8 +64,8 @@ const NumberInput = ({
 				{inputChildren}
 			</div>
 			<styled.Button
+				usable={usable}
 				className='fas fa-plus-square'
-				// color={'#1c933c'}
 				color={themeContext.fg.primary}
 				disabled={plusDisabled}
 				onClick={(e) => {
@@ -87,6 +90,7 @@ NumberInput.propTypes = {
 NumberInput.defaultProps = {
 	plusDisabled: false,
 	inputDisabled: false,
+	usable: true,
 	onMinusClick: () => {},
 	onPlusClick: () => {}
 }

@@ -15,6 +15,7 @@ import { handleWidgetHoverCoord } from '../../../../methods/utils/widget_utils'
 import { deepCopy } from '../../../../methods/utils/utils'
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 import { editing } from '../../../../methods/utils/locations_utils'
+import { getProcessStationsWhileEditing } from '../../../../methods/utils/processes_utils'
 
 // Import Constants
 import { StationTypes } from '../../../../constants/station_constants'
@@ -86,14 +87,31 @@ function Station(props) {
     // Disable if theres a selected position and the station's children dont contain that position
     else if (!!selectedPosition && !station.children.includes(selectedPosition._id)) disabled = true
 
-    // Disables while making task (IE no unload station)
-    else if (!!selectedTask && selectedTask?.unload?.station === null) {
-        // Disable making a task this station if the selected position is the stations children (cant make a route to the same parent/child)
+    // Disables while making task (IE no unload station) and not fixing a process
+    else if (!!selectedTask && selectedTask?.load?.station !== null && selectedTask?.unload?.station === null && !fixingProcess) {
+        // Disable making a task to this station if the selected position is the stations children (cant make a route to the same parent/child)
         if (station.children.includes(selectedTask?.load?.position) && selectedTask?.unload?.station === null) disabled = true
+
         // Disable station if the selected task load position is a position (cant go from station to position or vice versa)
         else if (!!positions[selectedTask?.load?.position]) disabled = true
-    }
+        // Disable station if its the load station. Cant make a task to itself
+        else if (selectedTask.load.station === station._id) disabled = true
 
+        // Disables when adding a task to the beginning of a process. 
+        // To tell if a task is being added to the beginning of a process is when the task has a temp insert index at 0
+        else if (selectedTask?.temp?.insertIndex === 0 && !!selectedProcess && selectedProcess.routes.length > 0) {
+            // Find the station at the beginning of process
+            const firstStation = selectedProcess.routes[0].load.station
+
+            if (station._id !== firstStation && selectedTask.load.station !== null) disabled = true
+        }
+
+        // Disable making a task to this station if it is already used in the process and its not adding to the beginnig of the process
+        else if (!!selectedProcess) {
+            const processesStations = getProcessStationsWhileEditing(selectedProcess, tasks)
+            if (processesStations.includes(station._id) && selectedTask?.temp?.insertIndex !== 0) disabled = true
+        }
+    }
 
 
     // This filters out stations when fixing a process
