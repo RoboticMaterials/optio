@@ -363,13 +363,13 @@ export const signUpSchema = Yup.object().shape({
     password: Yup.string()
         .required('Please enter a password')
         .matches(
-            /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-            "Must Contain 8 characters, one uppercase, one lowercase, one number and one special character"
+            /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/,
+            "Must Contain 8 characters, one uppercase, one lowercase, and one number"
         ),
 
     confirmPassword: Yup.string()
         .oneOf([Yup.ref('password'), null], 'Passwords must match')
-        .required('Password confirm is required')
+        .required('Confirm password field cannot be left empty')
 })
 
 export const signInSchema = Yup.object().shape({

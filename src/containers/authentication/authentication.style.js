@@ -8,8 +8,8 @@ export const Page = styled.div`
 
 export const Container = styled.div`
     // width: 35%;
-    width: 35rem;
-    // height: 50rem;
+    min-width: 35rem;
+    // height: 80%;
 
     position: absolute;
     top: 50%;
