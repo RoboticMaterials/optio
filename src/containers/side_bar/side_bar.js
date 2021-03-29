@@ -68,6 +68,9 @@ const SideBar = (props) => {
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const taskQueue = useSelector(state=>state.taskQueueReducer.taskQueue)
+    const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
+
+console.log(dashboards)
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
 
     const history = useHistory()

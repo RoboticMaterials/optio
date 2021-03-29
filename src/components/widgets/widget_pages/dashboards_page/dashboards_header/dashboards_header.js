@@ -8,6 +8,9 @@ import { withRouter } from 'react-router-dom';
 import BackButton from '../../../../basic/back_button/back_button';
 import Button from '../../../../basic/button/button';
 import SimpleLot from "../dashboard_screen/simple_lot/simple_lot";
+import ReactTooltip from "react-tooltip";
+
+import uuid from 'uuid'
 
 // hooks internal
 import useWindowSize from '../../../../../hooks/useWindowSize';
@@ -32,7 +35,11 @@ const DashboardsHeader = (props) => {
         page,
         saveDisabled,
         onBack,
+        onLockClick,
+        locked
     } = props
+
+    const [toolTipId, ] = useState(`tooltip-${uuid.v4()}`)
 
     // extract url params
     const { stationID } = props.match.params
@@ -98,7 +105,7 @@ const DashboardsHeader = (props) => {
                                     />
                                 )
                             })}
-                            
+
                     </style.RowContainer>
                     <style.MoreIcon className='fas fa-ellipsis-h' onClick={() => setMoreLots(!moreLots)}/>
                 </style.LotsContainer>
@@ -119,7 +126,22 @@ const DashboardsHeader = (props) => {
 
             {renderLotsTitle}
 
+
             <style.Header>
+                {showBackButton &&
+                      <style.LockIcon
+                          style = {{marginRight: locked ? '1rem' : '.68rem',}}
+                          className= {!locked ? 'fas fa-lock-open' : 'fas fa-lock'}
+                          onClick={onLockClick}
+                          locked = {locked}
+                          data-tip
+                          data-for={toolTipId}
+                        >
+                          <ReactTooltip id={toolTipId}>
+                            <style.LockContainer>Click to toggle the lock. When the lock is enabled the "X" button on the dashsboards screen is hidden</style.LockContainer>
+                          </ReactTooltip>
+                        </style.LockIcon>
+                }
 
                 {showBackButton &&
                 <BackButton style={{ order: '1' }} containerStyle={{  }}

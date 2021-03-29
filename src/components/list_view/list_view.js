@@ -60,6 +60,7 @@ const ListView = (props) => {
     const devices = useSelector(state => state.devicesReducer.devices)
     const status = useSelector(state => state.statusReducer.status)
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
+    const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const settings = useSelector(state => state.settingsReducer.settings)
     const deviceEnabled = settings.deviceEnabled
 
@@ -68,12 +69,12 @@ const ListView = (props) => {
     const [showDashboards, setShowDashboards] = useState(false)
     const [showSettings, setShowSettings] = useState(false)
     const [confirmExitModal, setConfirmExitModal] = useState(false);
+    const [locked, setLocked] = useState(null);
 
     const CURRENT_SCREEN = (showDashboards) ? SCREENS.DASHBOARDS :
         showSettings ? SCREENS.SETTINGS : SCREENS.LOCATIONS
 
     const title = CURRENT_SCREEN.title
-
 
     let pause_status = ''
 
@@ -100,6 +101,17 @@ const ListView = (props) => {
         }
 
     }, [widgetPage])
+
+    useEffect(() => {
+      Object.values(dashboards).forEach((dashboard) => {
+        if(dashboard.station===params.stationID){
+          setLocked(dashboard.locked)
+          console.log(dashboard.locked)
+        }
+      })
+    }, [params.stationID])
+
+
 
     const onLocationClick = (item) => {
         history.push('/locations/' + item._id + '/' + "dashboards")
@@ -156,42 +168,30 @@ const ListView = (props) => {
 
     return (
         <styled.Container>
-
-            <ConfirmDeleteModal
-                isOpen={!!confirmExitModal}
-                title={"Are you sure you want to leave this page?"}
-                button_1_text={"Yes"}
-                handleOnClick1={() => {
-                  setShowDashboards(false)
-                  history.push('/locations')
-                  setConfirmExitModal(null)
-                }}
-                button_2_text={"No"}
-                handleOnClick2={() => setConfirmExitModal(null)}
-                handleClose={() => setConfirmExitModal(null)}
-            />
-
             <styled.Header>
+
+            {!locked &&
+              <>
                 {(showDashboards) ?
-                  <ClickNHold
-                    time = {2}
-                    onClickNHold={() => {
-                      setConfirmExitModal(true)
-                    }}
-                  >
+
                     <BounceButton
                         color={"black"}
+                        onClick = {()=>{
+                          setShowDashboards(false)
+                          history.push('/locations')
+                          setConfirmExitModal(null)
+                        }}
                         containerStyle={{
                             width: "3rem",
                             height: "3rem",
                             position: "relative"
                         }}
                     >
+
                         <styled.Icon
                             className={"fa fa-times"}
                         />
                     </BounceButton>
-                    </ClickNHold>
 
                     :
                       <BounceButton
@@ -210,8 +210,11 @@ const ListView = (props) => {
                             className={!showSettings ? "fa fa-cog" : "fa fa-times"}
                         />
                       </BounceButton>
-
                 }
+              </>
+            }
+
+
                 <styled.Title schema={CURRENT_SCREEN.schema}>{title}</styled.Title>
                 {handleTaskQueueStatus()}
 

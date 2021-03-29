@@ -52,7 +52,6 @@ const DashboardEditor = (props) => {
         dashboard,
         showSidebar,
     } = props
-
     const history = useHistory()
     const dispatch = useDispatch()
     const params = useParams()
@@ -67,14 +66,15 @@ const DashboardEditor = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
 
     const [sidebarWidth, setSidebarWidth] = useState(window.innerWidth < 2000 ? 400 : 700)
-
-    /*
+   /*
     * Returns initialValues object for Formik
     */
     const getInitialValues = () => {
         let initialValues = {
             name: "",
+            locked: true,
             buttons: []
+
         }
         let taskIds = []
 
@@ -103,6 +103,7 @@ const DashboardEditor = (props) => {
 
             initialValues = {
                 name: dashboard.name,
+                locked: dashboard.locked,
                 buttons: initialButtons
             }
         } catch (e) {
@@ -147,8 +148,7 @@ const DashboardEditor = (props) => {
     * */
     const handleSubmit = async (values) => {
         // destructure values
-        const { name, buttons } = values
-
+        const { name, locked, buttons } = values
         // clone dashboard
         const dashboardCopy = deepCopy(dashboard)
 
@@ -165,6 +165,7 @@ const DashboardEditor = (props) => {
 
         // update dashboard objects properties with submit values
         dashboardCopy.buttons = buttons
+        dashboardCopy.locked = locked
         dashboardCopy.name = name
 
         // if dashboard has id, it must already exist, so update with put
@@ -188,6 +189,7 @@ const DashboardEditor = (props) => {
             initialValues={getInitialValues()}
             initialTouched={{
                 name: false,
+                locked: false,
                 buttons: [false]
             }}
             initialErrors={getInitialErrors()}
@@ -208,6 +210,7 @@ const DashboardEditor = (props) => {
                 // disabled submission if there are any errors or not all fields have been touched
                 const allTouched = Object.values(touched).every((val) => val === true)
                 const submitDisabled = !(Object.values(errors).length === 0)
+
 
                 // adds a button to buttons key in Formik values
                 const handleDrop = (dropResult) => {
@@ -261,6 +264,7 @@ const DashboardEditor = (props) => {
                 const {
                     buttons: dashboardButtons,
                     name: dashboardName,
+                    locked: dashboardLocked,
                     station: dashboardStationId,
                     device: dashboardDeviceId,
                     _id: dashboardIdObject
@@ -283,6 +287,7 @@ const DashboardEditor = (props) => {
                             clickable={true}
                         />
                     <style.StyledForm>
+
                         <DashboardsHeader
                             showTitle={false}
                             showSidebar={showSidebar}
@@ -292,6 +297,10 @@ const DashboardEditor = (props) => {
                             onDelete={() => {
                                 handleDeleteDashboard()
                             }}
+                            onLockClick={() => {
+                              formikProps.setFieldValue("locked", !values.locked)
+                            }}
+                            locked = {values.locked}
                             saveDisabled={submitDisabled}
                             onBack={() => history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)}
                         >
@@ -312,6 +321,8 @@ const DashboardEditor = (props) => {
                                     }
                                 }}
                             />
+
+
                         </DashboardsHeader>
                         <style.BodyContainer>
                             <DashboardRenderer

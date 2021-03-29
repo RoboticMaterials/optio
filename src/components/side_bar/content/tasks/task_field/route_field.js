@@ -386,6 +386,7 @@ const TaskField = (props) => {
         if (updatedDashboard === undefined) {
             let defaultDashboard = {
                 name: updatedStation.name + ' Dashboard',
+                locked: true,
                 buttons: [],
                 station: updatedStation._id
             }
@@ -488,7 +489,7 @@ const TaskField = (props) => {
                                         dispatchSetEditingObject(false)
                                     }}
                                 />
-                            </div>   
+                            </div>
                             <styled.Label>
                                 <styled.LabelHighlight>Either</styled.LabelHighlight> choose an existing Route
                             </styled.Label>
@@ -582,7 +583,7 @@ const TaskField = (props) => {
                     }
 
                     {!!selectedTask && isProcessTask && !!selectedTask.new ?
-                    
+
                         <styled.Label style={{ marginTop: '1rem' }}>
                             <styled.LabelHighlight>Or</styled.LabelHighlight> make a new one
                         </styled.Label>
@@ -596,7 +597,7 @@ const TaskField = (props) => {
                                     dispatchSetEditingObject(false)
                                 }}
                             />
-                        </div>   
+                        </div>
 
                     }
 
@@ -627,7 +628,7 @@ const TaskField = (props) => {
                                             className='fas fa-box'
                                         />
                                         <styled.ListItemTitle>{routeObject ? objects[routeObject._id].name: ""}</styled.ListItemTitle>
-                                    
+
                                         <styled.Icon
                                             className='fas fa-exchange-alt'
                                             style={{ color: 'white', transform: 'rotate(-45deg)', fontSize: '1.1rem' }}
@@ -721,7 +722,7 @@ const TaskField = (props) => {
 
                     <hr />
 
-                    <Button 
+                    <Button
                         schema={'tasks'}
                         disabled={submitDisabled || editingObject}
                         onClick={async () => {
@@ -730,7 +731,7 @@ const TaskField = (props) => {
                     >{(!!isProcessTask ? 'Add' : (selectedTask.new ? 'Create' : 'Save'))} Route</Button>
 
                     {/* Remove Task From Process Button */}
-                    {!!isProcessTask && selectedProcess ? 
+                    {!!isProcessTask && selectedProcess ?
                         <Button
                             schema={'error'}
                             disabled={!!selectedTask && !!selectedTask._id && isNew}
@@ -749,7 +750,7 @@ const TaskField = (props) => {
                             onClick={() => {
                                 setConfirmDeleteModal(true)
                             }}
-                            
+
                         >
                             Delete Route
                         </Button>
