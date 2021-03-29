@@ -45,7 +45,7 @@ const NewButtonForm = (props) => {
 
 
     const dispatch = useDispatch()
-    const onPutDashboard = (dashboardCopy, dashboardId) => dispatch(putDashboard(dashboardCopy, dashboardId))
+    const dispatchPutDashboard = (dashboardCopy, dashboardId) => dispatch(putDashboard(dashboardCopy, dashboardId))
 
     const editingButton = report_buttons.find((currButton) => currButton._id === buttonId)
     const _id = editingButton?._id
@@ -56,7 +56,7 @@ const NewButtonForm = (props) => {
 
     const formMode = _id ? FORM_MODES.UPDATE : FORM_MODES.CREATE
 
-    const handleSubmit = (values, formMode) => {
+    const onSubmit = (values, formMode) => {
         // extract values and default values
         const description = values?.description || ""
         const iconClassName = values?.iconClassName
@@ -91,7 +91,7 @@ const NewButtonForm = (props) => {
                 }
 
                 // update dashboard
-                onPutDashboard(updatedDashboard, dashboard._id.$oid)
+                dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)
             }
 
             // create new button
@@ -113,7 +113,7 @@ const NewButtonForm = (props) => {
                 }
 
                 // update dashboard
-                onPutDashboard(updatedDashboard, dashboard._id.$oid)
+                dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)
             }
 
             // close form
@@ -126,7 +126,7 @@ const NewButtonForm = (props) => {
         }
     }
 
-    const handleDelete = () => {
+    const onDelete = () => {
         // remove button
         const updatedDashboard = {
             ...dashboard,
@@ -135,7 +135,7 @@ const NewButtonForm = (props) => {
         }
 
         // update dashboard
-        onPutDashboard(updatedDashboard, dashboard._id.$oid)
+        dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)
 
         // close form
         cancel()
@@ -160,7 +160,7 @@ const NewButtonForm = (props) => {
                 // set submitting to true, handle submit, then set submitting to false
                 // the submitting property is useful for eg. displaying a loading indicator
                 setSubmitting(true)
-                await handleSubmit(values, formMode)
+                await onSubmit(values, formMode)
                 setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
                 setSubmitting(false)
                 resetForm()
@@ -325,7 +325,7 @@ const NewButtonForm = (props) => {
                             <Button
                                 secondary
                                 schema={"dashboards"}
-                                onClick={handleDelete}
+                                onClick={onDelete}
                                 label={"Delete"}
                                 type="button"
                             />
@@ -358,7 +358,7 @@ const ReportModal = (props) => {
     const report_buttons = dashboard?.report_buttons || []
 
     const dispatch = useDispatch()
-    const onPutDashboard = (dashboardCopy, dashboardId) => dispatch(putDashboard(dashboardCopy, dashboardId))
+    const dispatchPutDashboard = (dashboardCopy, dashboardId) => dispatch(putDashboard(dashboardCopy, dashboardId))
     const onPostReportEvent = (reportEvent) => dispatch(postReportEvent(reportEvent))
     const onPutReportEvent = (id, reportEvent) => dispatch(putReportEvent(id, reportEvent))
 
@@ -516,7 +516,7 @@ const ReportModal = (props) => {
                                                             }
 
                                                             // update dashboard
-                                                            onPutDashboard(updatedDashboard, dashboard._id.$oid)
+                                                            dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)
                                                         }}
                                                     >
                                                         <i
@@ -581,7 +581,7 @@ const ReportModal = (props) => {
                                         //                     }
                                         //
                                         //                     // update dashboard
-                                        //                     onPutDashboard(updatedDashboard, dashboard._id.$oid)
+                                        //                     dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)
                                         //                 }}
                                         //             />
                                         //         }
@@ -623,7 +623,7 @@ const ReportModal = (props) => {
                                         //             {/*            }*/}
                                         //
                                         //             {/*            // update dashboard*/}
-                                        //             {/*            onPutDashboard(updatedDashboard, dashboard._id.$oid)*/}
+                                        //             {/*            dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)*/}
                                         //             {/*        }}*/}
                                         //             {/*    />*/}
                                         //             {/*    }*/}
