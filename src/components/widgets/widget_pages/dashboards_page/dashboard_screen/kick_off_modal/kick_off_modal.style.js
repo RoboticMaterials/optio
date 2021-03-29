@@ -13,13 +13,19 @@ export const Container = styled(Modal)`
 	z-index: 50;
 	min-width: 95%;
 	max-width: 95%;
-	max-height: 95%;
+	height: 95%;
 	color: ${props => props.theme.bg.octonary};
 	display: flex;
 	flex-direction: column;
-	color: ${props => props.theme.bg.octonary};
 	border-radius: 1rem;
 	overflow: hidden;
+`
+
+export const CloseIcon = styled.i`
+    font-size: 1.4rem;
+    margin: 1rem;
+    color: ${props => props.theme.bg.quaternary};
+    cursor: pointer;
 `
 
 export const HeaderMainContentContainer = styled.div`
@@ -35,9 +41,11 @@ export const Header = styled.div`
   justify-content: space-between;
   flex-direction: column;
   align-items: stretch;
+  align-content: center;
   margin: 0;
   padding: .5rem 1rem;
-  background: ${props => props.theme.bg.quinary};
+  background: ${props => props.theme.bg.primary};
+  box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
 `
 
 export const Title = styled.h2`
@@ -52,6 +60,7 @@ export const Title = styled.h2`
   font-size: ${props => props.theme.fontSize.sz2};
   font-weight: ${props => props.theme.fontWeight.bold};
   margin-bottom: 1rem;
+  flex-grow: 1;
 `;
 
 export const BodyContainer = styled.div`
@@ -61,7 +70,7 @@ export const BodyContainer = styled.div`
 	flex: 1;
 	justify-content: space-between;
 	overflow: hidden;
-	background: ${props => props.theme.bg.quaternary};
+	background: ${props => props.theme.bg.secondary};
 `
 
 export const ButtonsContainer = styled.div`
@@ -73,8 +82,8 @@ export const ButtonsContainer = styled.div`
 
 
 export const ContentContainer = styled.div`
-	background: ${props => props.theme.bg.quinary};
-	border-radius: 1rem;
+	background: ${props => props.theme.bg.secondary};
+	border-radius: 0rem;
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
