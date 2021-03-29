@@ -44,7 +44,6 @@ const defaultState = {
 
 export default function taskQueueReducer(state = defaultState, action) {
     let taskQueue = {}
-
     switch (action.type) {
 
         /**
@@ -88,11 +87,23 @@ export default function taskQueueReducer(state = defaultState, action) {
         // get
         // ***************
         case GET_TASK_QUEUE_SUCCESS:
-            if (action.payload === undefined) {
-                action.payload = {}
-            }
+
+          let taskQueue = {}
+
+          if (action.payload === undefined) {
+              taskQueue = {}
+          }
+          else taskQueue = Object.assign(taskQueue, action.payload)
+
+
+        Object.values(taskQueue).forEach((item)=> {
+          if(item.hil_response===false){
+            delete taskQueue[item._id]
+          }
+        })
+
             return Object.assign({}, state, {
-                taskQueue: action.payload,
+                taskQueue: taskQueue,
                 pending: false
             });
 
@@ -144,20 +155,19 @@ export default function taskQueueReducer(state = defaultState, action) {
                 _id: { $oid: action.payload.ID }
 
             })
-
             let forceUpdate = {}
 
             forceUpdate = Object.assign(forceUpdate, updatedTaskQ)
 
-            return {
-                ...state,
-                taskQueue: {
-                    ...state.taskQueue,
-                    [action.payload.ID]: forceUpdate,
-                },
-                error: '',
-                pending: false,
-            }
+              return {
+                  ...state,
+                  taskQueue: {
+                      ...state.taskQueue,
+                      [action.payload.ID]: forceUpdate,
+                  },
+                  error: '',
+                  pending: false,
+              }
 
         case PUT_TASK_QUEUE_FAILURE:
             return Object.assign({}, state, {

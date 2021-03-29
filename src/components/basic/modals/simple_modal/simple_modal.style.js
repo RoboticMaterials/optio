@@ -83,7 +83,8 @@ export const Container = styled(Modal)`
 
 	z-index: 50;
 
-	width: 60rem;
+	min-width: 30rem;
+  max-width: 95%;
   min-height: 20rem;
   max-height: 90%;
 
