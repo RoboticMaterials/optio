@@ -55,13 +55,6 @@ export const TIME_SPANS = {
     }
 }
 
-export const TIME_SPAN_INFOS = {
-    [TIME_SPANS.DAY]: {
-        displayName: "Time"
-    },
-    [TIME_SPANS.MONTH]: "Month"
-}
-
 // TODO: Commented out charts for the time being (See comments that start with TEMP)
 const StatisticsOverview = (props) => {
 
@@ -196,8 +189,6 @@ const StatisticsOverview = (props) => {
         const linspace = Math.round(array.length / N)
         return everyN(array, linspace)
     }
-
-    console.log("timeSpan",timeSpan)
 
     const ToolTipCallback = (props) => {
         setSlice(props.slice.points[0].data)
