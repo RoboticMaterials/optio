@@ -36,6 +36,7 @@ const LotQueue = ((props) => {
 			sortMode={sortMode}
 			maxHeight={maxHeight}
 			maxWidth={"20rem"}
+<<<<<<< HEAD
 			HeaderContent={
 				!isCollapsed ?
 					<styled.StationHeader>
@@ -61,6 +62,65 @@ const LotQueue = ((props) => {
 						/>
 					</styled.StationHeader>
 			}
+=======
+			HeaderContent={(numberOfLots = 0, lotQuantitySummation = 0) => {
+				if(isCollapsed) {
+					return(
+						<styled.StationHeader>
+							<i className="fa fa-chevron-right" aria-hidden="true"
+							   onClick={() => setCollapsed(false)}
+							/>
+						</styled.StationHeader>
+					)
+				}
+				else{
+					return(
+						<styled.StationHeader>
+							<styled.HeaderRow
+								style={{
+									marginBottom: "1rem"
+								}}
+							>
+								<i className="fa fa-chevron-down" aria-hidden="true"
+								   onClick={() => setCollapsed(true)}
+								/>
+
+
+								<styled.LabelContainer>
+									<styled.StationTitle>{stationName}</styled.StationTitle>
+								</styled.LabelContainer>
+
+								<Button
+									onClick={()=> {
+										handleCardClick(null, processId)
+										setShowCardEditor(!showCardEditor)
+
+									}}
+									schema={'lots'}
+								>
+									+ Lot
+								</Button>
+							</styled.HeaderRow>
+							<styled.HeaderRow
+								style={{justifyContent: "space-between"}}
+							>
+								<div>
+									<styled.QuantityText>Lots: </styled.QuantityText>
+									<styled.QuantityText>{numberOfLots}</styled.QuantityText>
+								</div>
+
+
+								<div>
+									<styled.QuantityText>Total Quantity: </styled.QuantityText>
+									<styled.QuantityText>{lotQuantitySummation}</styled.QuantityText>
+								</div>
+							</styled.HeaderRow>
+
+						</styled.StationHeader>
+					)
+				}
+			}}
+>>>>>>> master
 			station_id={station_id}
 			stationName = {stationName}
 			onCardClick={onCardClick}

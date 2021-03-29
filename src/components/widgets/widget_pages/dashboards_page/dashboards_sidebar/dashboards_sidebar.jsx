@@ -292,6 +292,7 @@ const DashboardsSidebar = (props) => {
                     <style.ListContainer>
                         {(type === TYPES.ROUTES.key) &&
 
+<<<<<<< HEAD
                         <Container
                             groupName="dashboard-buttons"
                             getChildPayload={index => {
@@ -363,6 +364,73 @@ const DashboardsSidebar = (props) => {
                                 )
                             })}
                         </Container>
+=======
+                            <Container
+                                groupName="dashboard-buttons"
+                                getChildPayload={index =>
+                                    availableButtons[index]
+                                }
+                            >
+                                {availableButtons.map((currButton, index) => {
+
+                                    const {
+                                        name: currButtonName,
+                                        color: currButtonColor,
+                                        task_id: currButtonTaskId,
+                                        id: currButtonId,
+                                        type: currButtonType
+                                    } = currButton || {}
+
+                                    const dashboardContainsTask = currButtonTaskId === 'custom_task' ? false : getDashboardContainsRouteButton({ buttons: existingButtons }, { task_id: currButtonTaskId })
+                                    return (
+                                        <DashboardSidebarButton
+                                            key={`dashboard-sidebar-button-${currButtonId}`}
+                                            name={currButtonName}
+                                            color={currButtonColor}
+                                            task_id={currButtonTaskId}
+                                            id={currButtonId}
+                                            clickable={clickable}
+                                            onTaskClick={handleTaskClick}
+                                            disabled={(!!addTaskAlert) || dashboardContainsTask}
+                                            dragDisabled={dashboardContainsTask}
+                                        />
+                                    )
+                                })}
+                            </Container>
+                        }
+
+                        {(type === TYPES.OPERATIONS.key) &&
+                            <Container
+                                groupName="dashboard-buttons"
+                                getChildPayload={index =>
+                                    availableReportButtons[index]
+                                }
+                            >
+                                {availableReportButtons.map((button, index) => {
+                                    const {
+                                        name: currButtonName,
+                                        color: currButtonColor,
+                                        id: currButtonId,
+                                        type: currButtonType
+                                    } = button || {}
+
+                                    const dashboardContainsButton = currButtonId === 'custom_task' ? false : getDashboardContainsOperationButton({ buttons: existingButtons }, { type: currButtonType })
+
+                                    return (
+                                        <DashboardSidebarButton
+                                            key={`dashboard-sidebar-button-${currButtonId}`}
+                                            name={currButtonName}
+                                            color={currButtonColor}
+                                            id={currButtonId}
+                                            clickable={clickable}
+                                            onTaskClick={handleReportClick}
+                                            disabled={!!addTaskAlert || dashboardContainsButton}
+                                            dragDisabled={dashboardContainsButton}
+                                        />
+                                    )
+                                })}
+                            </Container>
+>>>>>>> master
                         }
                     </style.ListContainer>
 

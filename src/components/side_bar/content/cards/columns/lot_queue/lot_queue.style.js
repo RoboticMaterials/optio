@@ -38,13 +38,24 @@ export const StationContainer = styled.div`
 
 export const StationHeader = styled.div`
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     width: 100%;
     justify-content: center;
     align-items: center;
     background: ${props => props.theme.bg.secondary};
     padding: 0.5rem 1rem;
+`
 
+export const HeaderRow = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-self: stretch;
+`
+
+export const QuantityText = styled.span`
+  color: white;
+    font-size: 1rem;
 `
 
 

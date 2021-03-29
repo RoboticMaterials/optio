@@ -43,7 +43,7 @@ import log from '../../../../../logger.js';
 import DashboardAddButton from "./dashboard_add_button/dashboard_add_button";
 import { useChange } from "../../../../basic/form/useChange";
 import { PAGES } from "../../../../../constants/dashboard_contants";
-import DashboardsSidebar, {TYPES} from "../dashboards_sidebar/dashboards_sidebar";
+import DashboardsSidebar, { TYPES } from "../dashboards_sidebar/dashboards_sidebar";
 
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
@@ -83,23 +83,23 @@ const DashboardEditor = (props) => {
 
             let initialButtons = [];
             buttons
-            .filter((currButton) => {
-                const {
-                    task_id,
-                    type
-                } = currButton
+                .filter((currButton) => {
+                    const {
+                        task_id,
+                        type
+                    } = currButton
 
-                if(task_id && taskIds.includes(task_id)) {
-                    logger.error(`Button with duplicate task_id found in dashboard. {task_id:${task_id}`)
-                    return false // don't add duplicate tasks
-                }
+                    if (task_id && taskIds.includes(task_id) && task_id !== 'custom_task') {
+                        logger.error(`Button with duplicate task_id found in dashboard. {task_id:${task_id}`)
+                        return false // don't add duplicate tasks
+                    }
 
-                taskIds.push(task_id)
-                return true
-            })
-            .map((value, index) => {
-                initialButtons.push(value)
-            })
+                    taskIds.push(task_id)
+                    return true
+                })
+                .map((value, index) => {
+                    initialButtons.push(value)
+                })
 
             initialValues = {
                 name: dashboard.name,
@@ -282,47 +282,47 @@ const DashboardEditor = (props) => {
                             minWidth={300}
                             clickable={true}
                         />
-                    <style.StyledForm>
-                        <DashboardsHeader
-                            showTitle={false}
-                            showSidebar={showSidebar}
-                            showBackButton={true}
-                            showSaveButton={true}
-                            page={PAGES.EDITING}
-                            onDelete={() => {
-                                handleDeleteDashboard()
-                            }}
-                            saveDisabled={submitDisabled}
-                            onBack={() => history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)}
-                        >
-                            <TextField
-                                name={"name"}
-                                disabled={dashboard.name === 'Robot Screen'}
-                                textStyle={{ fontWeight: 'Bold' }}
-                                placeholder='Enter Dashboard Name'
-                                type='text'
-                                InputComponent={Textbox}
-                                inputProps={{
-                                    style: {
-                                        fontSize: '1.2rem',
-                                        fontWeight: '600',
-                                        textAlign: 'center',
-                                        padding: '0 2rem 0 4rem',
-                                        marginTop: '0'
-                                    }
+                        <style.StyledForm>
+                            <DashboardsHeader
+                                showTitle={false}
+                                showSidebar={showSidebar}
+                                showBackButton={true}
+                                showSaveButton={true}
+                                page={PAGES.EDITING}
+                                onDelete={() => {
+                                    handleDeleteDashboard()
                                 }}
-                            />
-                        </DashboardsHeader>
-                        <style.BodyContainer>
-                            <DashboardRenderer
-                                buttons={values.buttons}
-                                onDrop={handleDrop}
+                                saveDisabled={submitDisabled}
+                                onBack={() => history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)}
+                            >
+                                <TextField
+                                    name={"name"}
+                                    disabled={dashboard.name === 'Robot Screen'}
+                                    textStyle={{ fontWeight: 'Bold' }}
+                                    placeholder='Enter Dashboard Name'
+                                    type='text'
+                                    InputComponent={Textbox}
+                                    inputProps={{
+                                        style: {
+                                            fontSize: '1.2rem',
+                                            fontWeight: '600',
+                                            textAlign: 'center',
+                                            padding: '0 2rem 0 4rem',
+                                            marginTop: '0'
+                                        }
+                                    }}
+                                />
+                            </DashboardsHeader>
+                            <style.BodyContainer>
+                                <DashboardRenderer
+                                    buttons={values.buttons}
+                                    onDrop={handleDrop}
 
-                                handleChangeButton={handleChangeButton}
-                                handleDeleteButton={handleDeleteButton}
-                            />
-                        </style.BodyContainer>
-                    </style.StyledForm>
+                                    handleChangeButton={handleChangeButton}
+                                    handleDeleteButton={handleDeleteButton}
+                                />
+                            </style.BodyContainer>
+                        </style.StyledForm>
                     </style.Container>
 
                 )
