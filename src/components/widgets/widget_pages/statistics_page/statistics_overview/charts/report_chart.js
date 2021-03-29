@@ -8,6 +8,7 @@ import { ThemeContext } from 'styled-components';
 
 // Import Charts
 import BarChart from '../../chart_types/bar_chart'
+import {TIME_SPANS} from "../statistics_overview";
 
 const ReportChart = (props) => {
 
@@ -97,7 +98,8 @@ const ReportChart = (props) => {
                         layout={"vertical"}
                         enableGridY={true}
                         axisBottom={{
-                            legend: 'Time',
+                            legend: TIME_SPANS[timeSpan].displayName,
+                            tickRotation: timeSpan === TIME_SPANS.month.name ? 0 : -90,
                         }}
                         axisLeft={{
                             legend: 'Count'
