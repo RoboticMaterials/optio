@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, useHistory, useParams } from 'react-router-dom'
+import ClickNHold from 'react-click-n-hold'
 
 // components
 import DashboardsPage from "../widgets/widget_pages/dashboards_page/dashboards_page";
@@ -9,6 +10,7 @@ import Settings from "../side_bar/content/settings/settings";
 import LocationList from './location_list/location_list'
 import BounceButton from "../basic/bounce_button/bounce_button";
 import ConfirmDeleteModal from '../basic/modals/confirm_delete_modal/confirm_delete_modal'
+
 // Import hooks
 import useWindowSize from '../../hooks/useWindowSize'
 
@@ -67,7 +69,6 @@ const ListView = (props) => {
 
     const [showDashboards, setShowDashboards] = useState(false)
     const [showSettings, setShowSettings] = useState(false)
-    const [confirmExitModal, setConfirmExitModal] = useState(false);
     const [locked, setLocked] = useState(null);
 
     const CURRENT_SCREEN = (showDashboards) ? SCREENS.DASHBOARDS :
@@ -166,6 +167,13 @@ const ListView = (props) => {
 
     return (
         <styled.Container>
+          <ClickNHold
+            time = {2}
+            onClickNHold = {()=>{
+            setShowDashboards(false)
+            history.push('/locations')
+          }}
+          >
             <styled.Header>
 
             {!locked &&
@@ -177,7 +185,6 @@ const ListView = (props) => {
                         onClick = {()=>{
                           setShowDashboards(false)
                           history.push('/locations')
-                          setConfirmExitModal(null)
                         }}
                         containerStyle={{
                             width: "3rem",
@@ -227,7 +234,7 @@ const ListView = (props) => {
                 }
 
             </styled.Header>
-
+            </ClickNHold>
 
             {(!showDashboards && !showSettings) &&
                 <LocationList
