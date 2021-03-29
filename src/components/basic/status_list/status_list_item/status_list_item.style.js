@@ -14,8 +14,7 @@ export const Container = styled.div`
 	//border: 1px solid black;
   justify-content: space-around;
 
-  border-bottom: 1px solid black;
-  //border-bottom: ${props => props.showBottomBorer && "1px solid black"};
+  border-bottom: 1px solid ${props => props.theme.bg.tertiary};
   
   padding: 1rem;
   
@@ -105,9 +104,9 @@ export const ListContainer = styled.ul`
 `
 
 export const InsideTooltipContainer = styled.div`
-	display: flex;
-  flex-direction: column;
-  align-items: stretch;
+	// display: flex;
+  // flex-direction: column;
+  // align-items: stretch;
 `
 
 export const ItemContainer = styled.li`
