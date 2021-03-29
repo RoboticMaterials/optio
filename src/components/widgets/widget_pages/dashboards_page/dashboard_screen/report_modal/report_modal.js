@@ -56,11 +56,13 @@ const NewButtonForm = (props) => {
 
     const formMode = _id ? FORM_MODES.UPDATE : FORM_MODES.CREATE
 
+    console.log('QQQQ Color', color)
+
     const handleSubmit = (values, formMode) => {
         // extract values and default values
         const description = values?.description || ""
         const iconClassName = values?.iconClassName
-        const color = values?.color || "red"
+        const color = values?.color || "#ff4b4b"
         const label = values?.label || ""
         const old_report_buttons = dashboard?.report_buttons || []
 
@@ -126,13 +128,28 @@ const NewButtonForm = (props) => {
         }
     }
 
+    const handleDelete = () => {
+        // remove button
+        const updatedDashboard = {
+            ...dashboard,
+            // filter through buttons, keep all but one with matching id of current button
+            report_buttons: report_buttons.filter((currOldButton) => currOldButton._id !== _id)
+        }
+
+        // update dashboard
+        onPutDashboard(updatedDashboard, dashboard._id.$oid)
+
+        // close form
+        cancel()
+    }
+
     return (
         <Formik
             initialValues={{
                 label: label ? label : "",
                 description: description ? description : "",
                 iconClassName: iconClassName ? iconClassName : null,
-                color: color ? color : "red"
+                color: color ? color : "#ff4b4b"
             }}
 
             // validation control
@@ -194,7 +211,6 @@ const NewButtonForm = (props) => {
                                     type="text"
                                     placeholder="Label..."
                                     InputComponent={Textbox}
-                                    lines={1}
                                     style={{ borderRadius: ".5rem" }}
                                 />
                                 // :
@@ -309,10 +325,10 @@ const NewButtonForm = (props) => {
 
                         <styled.ButtonForm>
                             <Button
-                                tertiary
+                                secondary
                                 schema={"dashboards"}
-                                onClick={cancel}
-                                label={"Cancel"}
+                                onClick={handleDelete}
+                                label={"Delete"}
                                 type="button"
                             />
 
@@ -404,7 +420,7 @@ const ReportModal = (props) => {
             style={{
                 overlay: {
                     zIndex: 500,
-                    backgroundColor: 'rgba(0, 0, 0, 0.4)' 
+                    backgroundColor: 'rgba(0, 0, 0, 0.4)'
                 },
                 content: {
 
