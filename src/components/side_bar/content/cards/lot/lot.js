@@ -214,7 +214,7 @@ const Lot = (props) => {
             selectable={selectable}
             isSelected={isSelected}
             onClick={onClick}
-            containerStyle={containerStyle}
+            style={containerStyle}
         >
 
             <styled.HeaderBar>
