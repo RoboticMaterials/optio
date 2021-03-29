@@ -268,7 +268,7 @@ const StatusListItem = (props) => {
 				</styled.StatusContainer>
 
 				<styled.EditButton
-					color={"white"}
+					color={themeContext.bg.quaternary}
 					type={"button"}
 					onClick={(e) => {
 						e.preventDefault()

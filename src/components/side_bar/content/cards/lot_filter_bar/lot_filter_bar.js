@@ -273,6 +273,41 @@ const LotFilterBar = (props) => {
                                             })}
                                 
                             </styled.FlagsContainer>
+                            // if(isArray(values) && values.length > 0) {
+                            //     return (
+                            //         <styled.FlagsContainer
+                            //             style={{
+                            //                 minWidth: `${maxFlagsSize.offsetWidth}px`,
+                            //                 width: `${maxFlagsSize.offsetWidth}px`
+                            //             }}
+                            //         >
+                            //             {values.map((currVal) => {
+                            //                 const {
+                            //                     color: currColor,
+                            //                     id: currColorId
+                            //                 } = currVal || {}
+
+                            //                 return (
+                            //                     <FlagButton
+                            //                         style={{
+                            //                             margin: "0 .1rem",
+                            //                         }}
+                            //                         key={currColorId}
+                            //                         color={currColor}
+                            //                         onClick={(event) => {
+                            //                             event.stopPropagation();
+                            //                             methods.dropDown('open');
+                            //                         }}
+                            //                         schema={props.schema}
+                            //                     />
+                            //                 )
+                            //             })}
+                            //         </styled.FlagsContainer>
+                            //     )
+                            // }
+
+                            // return(
+                            //     null
                             )
                         }}
                         itemRenderer={({ item, itemIndex, props, state, methods }) => {
@@ -282,7 +317,6 @@ const LotFilterBar = (props) => {
                             } = item
 
                             const isSelected = methods.isSelected(item)
-                            
 
                             return(
                                 <FlagButton
