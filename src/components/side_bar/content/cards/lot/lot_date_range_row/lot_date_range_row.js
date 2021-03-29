@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import * as styled from "./lot_date_range_row.style";
 import {isArray} from "../../../../../../methods/utils/array_utils";
 import {dateRangeToStrings} from "../../../../../../methods/utils/card_utils";
+import { capitalizeFirstLetter } from '../../../../../../methods/utils/string_utils'
 
 const LotDateRangeRow = (props) => {
 
@@ -27,7 +28,7 @@ const LotDateRangeRow = (props) => {
 
 	return (
 		<styled.Row isLast={isLast}>
-			<styled.Label>{label}</styled.Label>
+			<styled.Label>{capitalizeFirstLetter(label)}</styled.Label>
 			<styled.DatesContainer>
 				<styled.DateItem>
 					<styled.DateText>{startDateText ? startDateText : defaultStartText}</styled.DateText>

@@ -4,7 +4,7 @@ import {commonClickableIcon, iconButtonCss} from "../../../../../common_css/comm
 import {containerLayout} from "../../../../../common_css/layout";
 
 export const rowCss = css`
-	margin-bottom: 1rem;
+	// margin-bottom: 1rem;
 `
 
 export const Container = styled.div`
@@ -16,10 +16,19 @@ export const Header = styled.div`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 0;
+	padding: 0.5rem;
 	margin: 0;
-	background: ${props => props.theme.bg.quinary};
-  	border-bottom: 1px solid black;
+	background: ${props => props.theme.bg.secondary};
+	z-index: 10;
+	box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
+`
+
+export const CloseIcon = styled.i`
+    font-size: 1.4rem;
+    margin: 2rem;
+    color: ${props => props.theme.bg.quaternary};
+    cursor: pointer;
+	
 `
 
 export const LotNumberContainer = styled.div`
@@ -28,13 +37,14 @@ export const LotNumberContainer = styled.div`
 
 export const NameContainer = styled.div`
   align-self: stretch;
-  padding: 1rem;
-	background: ${props => props.theme.bg.quaternary};
+  padding: 1rem 1rem 1rem 0;
+	background: ${props => props.theme.bg.primary};
   flex-direction: column;
 	flex: 1;
   //align-self: center;
   display: flex;
   align-items: flex-start;
+  margin: 0.5rem 2rem;
 `
 
 export const NameLabel = styled.span`
@@ -60,9 +70,10 @@ export const Title = styled.div`
 	justify-content: center;
 	align-items: center;
 	display: flex;
-  flex-direction: column;
+  	flex-direction: column;
 	font-size: ${props => props.theme.fontSize.sz2};
 	font-weight: ${props => props.theme.fontWeight.bold};
+	font-family: ${props => props.theme.font.primary};
 	
 `
 export const TitleText = styled.span`
@@ -72,23 +83,23 @@ export const TitleText = styled.span`
 export const FieldTitle = styled.span`
   font-size: ${props => props.theme.fontSize.sz3};
   font-weight: ${props => props.theme.fontWeight.bold};
+  font-family: ${props => props.theme.font.primary};
   align-self: center;
 `
 
 export const InfoText = styled.span`
   font-size: ${props => props.theme.fontSize.sz3};
   // font-weight: ${props => props.theme.fontWeight.bold};
+  font-family: ${props => props.theme.font.primary};
   color: ${props => props.highlight ? props.theme.schema[props.schema].solid : "white"};
 `
 
 export const SectionContainer = styled.div`
-	border-bottom: 1px solid ${props => props.theme.bg.quinary};
+	border-bottom: 3px solid ${props => props.theme.bg.secondary};
   //padding: 0 1rem;
   flex: 1;
   display: flex;
-  flex-direction: column;
-  
-  
+  flex-direction: column;  
 `
 
 export const TheBody = styled.div`
@@ -96,20 +107,18 @@ export const TheBody = styled.div`
   overflow: auto;
   flex: 1;
   display: flex;
-  //min-height: 40rem;
-  flex-direction: column;
-  //width: 100%;
-  
+  flex-direction: column;  
 
 `
 
-export const SuperContainer = styled.div`
+export const ScrollContainer = styled.div`
   position: relative;
   overflow: auto;
   flex: 1;
   display: flex;
-  //min-height: 40rem;
+  //height: 50rem;
   flex-direction: column;
+  //background: blue;
   
 
 `
@@ -137,7 +146,7 @@ export const ProcessOptionsContainer = styled.div`
   
   box-shadow: ${props => props.hasError && "0 0 5px red"}; 
 
-  background: ${props => props.theme.bg.quinary}; 
+  background: ${props => props.theme.bg.primary}; 
   padding: 1rem;
   border-radius: 1rem;
   
@@ -214,6 +223,7 @@ export const ProcessOption = styled.div`
 	
 	font-size: ${props => props.theme.fontSize.sz3};
 	font-weight: ${props => props.theme.fontWeight.normal};
+	font-family: ${props => props.theme.font.primary};
   
 	overflow: hidden;
 	white-space: nowrap;
@@ -237,7 +247,7 @@ const mainCss = css`
 	position: relative;
 	
 	overflow: hidden;
-	background: ${props => props.theme.bg.quaternary};
+	background: ${props => props.theme.bg.primary};
 	flex: 1;
 	justify-content: space-between;
 `
@@ -275,7 +285,7 @@ export const BodyContainer = styled.div`
 	flex-direction: column;
   width: 100%;
   min-width: 100%;
-  background: ${props => props.theme.bg.quaternary};
+  background: ${props => props.theme.bg.primary};
 	padding: 1rem;
   align-self: stretch;
   
@@ -289,6 +299,10 @@ export const BodyContainer = styled.div`
 export const WidgetContainer = styled.div`
 	display: flex;
 	padding-left: 1rem;
+	color: ${props => props.theme.schema.lots.solid};
+	font-size: 1.4rem;
+	justify-content: center;
+	cursor: pointer;
 	
 	${rowCss};
 `
@@ -296,8 +310,8 @@ export const WidgetContainer = styled.div`
 export const Icon = styled.i`
 	font-size: 2rem;
 	color: ${props => props.color};
+	font-family: ${props => props.theme.font.primary};
 	margin-right: 1rem;
-	
 `
 
 export const ObjectInfoContainer = styled.div`
@@ -316,6 +330,7 @@ export const CountInput = styled.input`
 export const ObjectLabel = styled.span`
 	display: inline-flex;
 	margin-right: 1rem;
+	font-family: ${props => props.theme.font.primary};
 	font-weight: bold;
   align-items: center;
   text-align: center;
@@ -343,23 +358,22 @@ export const InputContainer = styled.div`
 
 
 export const Footer = styled.div`
-  background: ${props => props.theme.bg.quinary};
+  background: ${props => props.theme.bg.tertiary};
   display: flex;
   flex-direction: column;
 `
 
 export const ButtonContainer = styled.div`
 	display: flex;
-	//flex-direction: row;
 	align-items: center;
-  width: 100%;
-  justify-content: center;
-  align-self: center;
-	padding: 1rem;
-	margin: 0;
-  	margin: 0 .5rem;
-  
-  border-top: 1px solid black;
+	width: 100%;
+	justify-content: center;
+	align-self: center;
+	padding: 1.5rem;
+
+	background: ${props => props.theme.bg.secondary};
+	z-index: 10;
+	box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
 `
 
 export const DatesContainer = styled.span`
@@ -379,7 +393,7 @@ export const DatesContainer = styled.span`
 export const DateItem = styled.div`
 	display: flex;
 	flex-direction: column;
-	background: ${props => props.theme.bg.senary};
+	background: ${props => props.theme.bg.secondary};
 	border-radius: 1rem;
 	
 	padding: .5rem;
@@ -434,18 +448,20 @@ export const FieldsHeader = styled.div`
 	//justify-content: space-between;
 	width: 100%;
   	//margin-bottom: 1rem;
-  border-bottom: 1px solid ${props => props.theme.bg.secondary};
+  border-bottom: 2px solid ${props => props.theme.bg.secondary};
 	//padding: 1rem;
 `
 
 export const ContentTitle = styled.span`
 	font-size: ${props => props.theme.fontSize.sz3};
 	font-weight: ${props => props.theme.fontWeight.bold};
+	font-family: ${props => props.theme.font.primary};
 `
 
 export const ContentValue = styled.span`
   font-size: ${props => props.theme.fontSize.sz3};
   font-weight: ${props => props.theme.fontWeight.normal};
+  font-family: ${props => props.theme.font.primary};
 `
 
 // export const InfoText = styled.span`
@@ -456,6 +472,7 @@ export const ContentValue = styled.span`
 export const LotName = styled.span`
 	font-size: ${props => props.theme.fontSize.sz3};
 	font-weight: ${props => props.theme.fontWeight.bold};
+	font-family: ${props => props.theme.font.primary};
 	white-space: nowrap ;
 	margin-right: 2rem;
 	margin-bottom: .5rem;
@@ -500,6 +517,12 @@ export const CalendarContainer = styled.div`
 	
 	${rowCss};
 `
+export const PopupFooter = styled.div`
+  paddding: 1rem;
+  display: flex;
+  overflow: auto;
+  height: 3rem;
+`
 
 const rowCss2 = css`
   display: flex;
@@ -512,16 +535,14 @@ export const RowContainer = styled.div`
 
 export const SubHeader = styled.div`
 	display: flex;
-  justify-content: space-between;
   align-self: stretch;
   align-items: center;
-  padding: .25rem 1rem;
-  background: ${props => props.theme.bg.quinary};
+  background: ${props => props.theme.bg.primary};
+  padding: 0.5rem;
+  border-bottom: 3px solid ${props => props.theme.bg.secondary};
 `
 export const IconRow = styled.div`
   ${rowCss2};
-  background: ${props => props.theme.bg.secondary};
-  justify-content: flex-end;
   align-items: center;
   padding: .25rem;
 `
@@ -555,8 +576,8 @@ export const HistoryBodyContainer = styled.div`
 	overflow-y: auto;
 	overflow-x: hidden;
 	flex: 1;
-	border-bottom: 1px solid ${props => props.theme.bg.secondary};
-	border-top: 1px solid ${props => props.theme.bg.secondary};
+	border-bottom: 3px solid ${props => props.theme.bg.secondary};
+	border-top: 3px solid ${props => props.theme.bg.secondary};
 `
 
 export const HistoryItemContainer = styled.div`
@@ -565,8 +586,8 @@ export const HistoryItemContainer = styled.div`
 	background: rgba(200,0,200,0.2);
 	margin-bottom: 1rem;
 	border-radius: 1rem;
-	background: ${props => props.theme.bg.quinary};
-
+	background: ${props => props.theme.bg.primary};
+  	box-shadow: ${props => props.theme.cardShadow};
 `
 
 const textCommon = css`
@@ -580,12 +601,12 @@ const historyContainerCommon = css`
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
-	
 `
 
 export const HistoryDateContainer = styled.div`
 	${historyContainerCommon};
 	flex: 1;
+	align-items: flex-end;
 `
 
 
@@ -601,8 +622,8 @@ export const HistoryUserContainer = styled.div`
 `
 export const HistoryUserText = styled.span`
 	${textCommon};
-	background: ${props => props.theme.bg.senary};
-	padding: .5rem;
+	background: ${props => props.theme.bg.quaternary};
+	padding: .5rem 1rem;
 	border-radius: .5rem;
 	color: ${props => props.theme.bg.primary};
 
@@ -692,6 +713,7 @@ export const TemplateLabel = styled.span`
   white-space: nowrap ;
   width: fit-content;
   font-size: ${props => props.theme.fontSize.sz2};
+  font-family: ${props => props.theme.font.primary};
 `
 
 

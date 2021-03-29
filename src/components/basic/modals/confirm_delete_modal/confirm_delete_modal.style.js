@@ -41,8 +41,9 @@ const borderGlowCss = css`
 }
 `
 
+
 export const TextboxDiv = styled.div`
-    background-color: ${props => props.theme.bg.quinary};
+    background-color: ${props => props.theme.bg.primary};
     border: none;
     font-size: ${props => props.theme.fontSize.sz4};
     font-family: ${props => props.theme.font.primary};
@@ -58,7 +59,7 @@ export const TextboxDiv = styled.div`
     border-bottom: 2px solid ${props => props.theme.bg.quinary};
 
     &:focus {
-        background-color: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};
+        // background-color: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};
         border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
         color: ${props => props.theme.bg.octonary};
         outline: none !important;
@@ -83,18 +84,18 @@ export const Container = styled(Modal)`
 
 	z-index: 50;
 
-	min-width: 95%;
-	max-width: 95%;
-	max-height: 95%;
-	// height: 95%;
+	min-width: 30rem;
+    max-width: 95%;
+    min-height: 10rem;
+    max-height: 95%;
 
-	color: ${props => props.theme.bg.octonary};
+	background: ${props => props.theme.bg.primary};
 
 	display: flex;
 	flex-direction: column;
 
 	color: ${props => props.theme.bg.octonary};
-	border-radius: 1rem;
+	border-radius: 0.4rem;
 	overflow: hidden;
 `;
 
@@ -103,9 +104,7 @@ export const HeaderContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	border-width: 0;
-	border-bottom-width: thin;
-	border-color: black;
-	border-style: solid;
+	border-bottom: 2px solid ${props => props.theme.bg.quinary};
 	margin-bottom: 2rem;
 `;
 
@@ -116,13 +115,20 @@ export const Header = styled.div`
 	padding: 0;
 	margin: 0;
 	max-height: 5rem;
-	background: #FF4B4B;
+	background: ${props => props.theme.bg.primary};
+    border-bottom: 2px solid ${props => props.theme.bg.secondary};
 
 `
 export const Label = styled.span`
 	padding-left: 1rem;
 	font-size: ${props => props.theme.fontSize.sz3};
 	margin-bottom: .25rem;
+`
+export const CloseIcon = styled.i`
+    font-size: 1.4rem;
+    margin: 1rem;
+    color: ${props => props.theme.bg.quaternary};
+    cursor: pointer;
 `
 
 export const Title = styled.h2`
@@ -131,9 +137,9 @@ export const Title = styled.h2`
 	min-height: 100%;
 	margin: 1rem;
 	padding: 0;
-	text-align: center;
+	text-align: left;
 	display: inline-flex;
-	justify-content: center;
+	justify-content: flex-start;
 	align-items: center;
 
 	font-size: ${props => props.theme.fontSize.sz2};
@@ -153,9 +159,10 @@ export const BodyContainer = styled.div`
 	padding: 1rem;
 	flex: 1;
 	justify-content: space-between;
+    text-align: center;
 	overflow: hidden;
 
-	background: ${props => props.theme.bg.quaternary};
+	background: ${props => props.theme.bg.primary};
 `
 
 export const ButtonForm = styled.div`
@@ -164,10 +171,12 @@ export const ButtonForm = styled.div`
 	flex-direction: row;
 	justify-content: center;
 	min-height: fit-content;
+
+    margin-top: 2rem;
 `;
 
 export const IconSelectorContainer = styled.div`
-	background: ${props => props.theme.bg.quinary};
+	background: ${props => props.theme.bg.primary};
 	overflow: auto;
 	min-height: 2rem;
 	width: 100%;
@@ -180,8 +189,8 @@ export const IconSelectorContainer = styled.div`
 `
 
 export const ContentContainer = styled.div`
-	background: ${props => props.theme.bg.quinary};
-	border-radius: 1rem;
+	background: ${props => props.theme.bg.primary};
+	// border-radius: 1rem;
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
@@ -212,7 +221,7 @@ export const RightContentContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    background: ${props => props.theme.bg.senary};
+    background: ${props => props.theme.bg.primary};
     width: 4rem;
     border-left: 1px solid ${props => props.theme.bg.secondary};
     height: 100%;

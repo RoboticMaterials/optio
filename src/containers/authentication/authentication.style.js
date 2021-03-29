@@ -1,13 +1,21 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-    width: 35%;
-    min-width: 20rem;
+    // width: 35%;
+    width: 40rem;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%,-60%);
     border-radius: 10px;
+
+    display: flex;
+    flex-direction: column;
+    // justify-content: center;
+    align-items: center;
+
+    box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.1);
+    padding: 4rem 6rem;
 `
 
 export const LogoContainer = styled.div`
@@ -17,7 +25,7 @@ export const LogoContainer = styled.div`
     align-items: center;
     justify-content: center;
     position: relative;
-    margin-bottom: 5%;
+    margin-bottom: 8%;
     margin-top: 5%;
 `
 
