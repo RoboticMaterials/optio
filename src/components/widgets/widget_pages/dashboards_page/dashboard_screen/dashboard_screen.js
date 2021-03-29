@@ -217,11 +217,6 @@ const DashboardScreen = (props) => {
     /**
      * Handles buttons associated with selected dashboard
      *
-     * If it's a AMR device dashboard, add a extra buttons
-     * The extra buttons are:
-     * 'Send to charge location'
-     * 'Send to Idle Location'
-     *
      * If there's a human task in the human task Q (see human_task_queue_actions for more details)
      * and if the the tasks unload location is the dashboards station, then show a unload button
      */
@@ -365,6 +360,7 @@ const DashboardScreen = (props) => {
      * @param {*} custom
      */
     const handleTaskClick = async (type, Id, name, custom, deviceType) => {
+        console.log('QQQQ Task clicked')
         switch (type.toUpperCase()) {
             case TYPES.ROUTES.key:
                 if (!(Id === 'hil_success')) {
@@ -504,7 +500,6 @@ const DashboardScreen = (props) => {
 
             <DashboardButtonList
                 buttons={handleDashboardButtons()}
-                addedTaskAlert={addTaskAlert}
                 onTaskClick={handleTaskClick}
             />
 
