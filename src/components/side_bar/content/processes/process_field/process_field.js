@@ -697,7 +697,10 @@ export const ProcessField = (props) => {
 
                             </>
                         </styled.SectionContainer>
+                    </>
+                }
 
+                    <>
 
                         {/* Delete Task Button */}
                         <Button
@@ -722,7 +725,7 @@ export const ProcessField = (props) => {
                             Delete Process
                         </Button>
                     </>
-                }
+                {/*}*/}
 
 
 
