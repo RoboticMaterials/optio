@@ -311,20 +311,21 @@ const Settings = () => {
         return (
             <styled.SettingContainer>
             <styled.SwitchContainerLabel>Lock or Unlock Dashboards</styled.SwitchContainerLabel>
+            <styled.RowContainer>
+                <Button
+                  style = {{width: '100%', minHeight: '3rem'}}
+                  schema = {"settings"}
+                  onClick = {()=>setConfirmUnlock(true)}
+                  >Unlock All Dashboards
+                </Button>
 
-              <Button
-                style = {{width: '100%'}}
-                schema = {"settings"}
-                onClick = {()=>setConfirmUnlock(true)}
-                >Unlock All Dashboards
-              </Button>
-
-              <Button
-                style = {{width: '100%'}}
-                schema = {"settings"}
-                onClick = {()=>setConfirmLock(true)}
-                >Lock All Dashboards
-              </Button>
+                <Button
+                  style = {{width: '100%', minHeight: '3rem'}}
+                  schema = {"settings"}
+                  onClick = {()=>setConfirmLock(true)}
+                  >Lock All Dashboards
+                </Button>
+              </styled.RowContainer>
 
             </styled.SettingContainer>
         )
