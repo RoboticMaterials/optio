@@ -5,8 +5,8 @@ import {iconButtonCss} from "../../../../../common_css/common_css";
 export const Container = styled.div`
 	align-self: stretch;
 	flex: 1;
-	overflow-y: auto;
-  align-items: stretch;
+	overflow-y: scroll;
+  // align-items: stretch;
   display: flex;
   flex-direction: column;
   transition: all 0.2s ease;
@@ -19,7 +19,7 @@ export const Container = styled.div`
 export const ContainerWrapper = styled.div`
 	align-self: stretch;
 	flex: 1;
-	overflow-y: auto;
+	// overflow-y: auto;
 	align-items: stretch;
 	display: flex;
 	flex-direction: column;
@@ -51,7 +51,6 @@ const lotsContainerGreyedCss = css`
 export const LotWrapper = styled.div`
   display: flex;
   align-items: center;
-	overflow: auto;
 `
 
 export const lotContainerStyle = {
@@ -69,6 +68,7 @@ export const Containerrr = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+  // max-height: 20rem;
 `
 
 
