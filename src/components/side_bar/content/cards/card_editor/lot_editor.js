@@ -31,6 +31,8 @@ import ConfirmDeleteModal from '../../../../basic/modals/confirm_delete_modal/co
 import {deleteCard, getCard, postCard, putCard} from "../../../../../redux/actions/card_actions";
 import {getCardHistory} from "../../../../../redux/actions/card_history_actions";
 import {getLotTemplates, setSelectedLotTemplate} from "../../../../../redux/actions/lot_template_actions";
+import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions";
+
 
 // constants
 import {FORM_MODES} from "../../../../../constants/scheduler_constants";
@@ -118,6 +120,7 @@ const FormComponent = (props) => {
 	const dispatchSetSelectedLotTemplate = (id) => dispatch(setSelectedLotTemplate(id))
 	const dispatchPutCard = async (card, ID) => await dispatch(putCard(card, ID))
 	const dispatchDeleteCard = async (cardId, processId) => await dispatch(deleteCard(cardId, processId))
+	const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
 	// redux state
 	const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] })
@@ -319,6 +322,14 @@ const FormComponent = (props) => {
 		return () => {
 		}
 	}, [isOpen])
+
+	useEffect(() => {
+		
+		return() => {
+			dispatchPageDataChanged(false)
+		}
+
+	},[])
 
 	/*
 	* Renders content for moving some or all of a lot from one bin to another
@@ -974,6 +985,7 @@ const FormComponent = (props) => {
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
 											onClick={async () => {
 												onSubmit(values, FORM_BUTTON_TYPES.SAVE)
+
 											}}
 										>
 											Save

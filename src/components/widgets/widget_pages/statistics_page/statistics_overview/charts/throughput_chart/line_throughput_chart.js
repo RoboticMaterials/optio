@@ -544,12 +544,12 @@ const LineThroughputChart = (props) => {
                     validateOnMount={false}
                     validateOnBlur={false}
 
-                    onSubmit={async (values, { setSubmitting, setTouched, validateForm}) => {
+                    onSubmit={async (values, { setSubmitting, setTouched, validateForm, resetForm}) => {
 
                         setSubmitting(true)
                         onSubmitShift(values)
                         setSubmitting(false)
-
+                        resetForm()
                         setTouched({})
                         dispatchPageDataChanged(false)
                     }}
@@ -562,11 +562,15 @@ const LineThroughputChart = (props) => {
                             values,
                             errors,
                             touched,
+                            initialValues
                         } = formikProps
 
-                        if(Object.keys(touched).length!==0){
+
+                        if(JSON.stringify(initialValues)!==JSON.stringify(values)){
                           dispatchPageDataChanged(true)
+                          console.log('here')
                         }
+                        else{dispatchPageDataChanged(false)}
 
                         return (
                             <Form
