@@ -537,7 +537,6 @@ const TaskField = (props) => {
                                             onCreateNew={() => setShowEditor(true)}
                                             options={
                                                 Object.values(routes)
-
                                                     .filter(task => {
                                                         if (task.map_id !== currentMap._id) return false
 
