@@ -28,7 +28,32 @@ import { ResponsiveBar } from '@nivo/bar';
 import { getDateName, getDateFromString, convertArrayToObject } from '../../../../../methods/utils/utils'
 import { getReportAnalytics, getReportEvents } from "../../../../../redux/actions/report_event_actions";
 
-const tempColors = ['#FF4B4B', '#56d5f5', '#50de76', '#f2ae41', '#c7a0fa']
+export const TIME_SPANS = {
+    live: {
+        name: "live",
+        displayName: "Live",
+    },
+    day: {
+        name: "day",
+        displayName: "Time",
+    },
+    week: {
+        name: "week",
+        displayName: "Day"
+    },
+    month: {
+        name: "month",
+        displayName: "Week"
+    },
+    year: {
+        name: "year",
+        displayName: "Month"
+    },
+    all: {
+        name: "all",
+        displayName: "All"
+    }
+}
 
 // TODO: Commented out charts for the time being (See comments that start with TEMP)
 const StatisticsOverview = (props) => {

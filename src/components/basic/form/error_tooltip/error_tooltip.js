@@ -79,16 +79,7 @@ const ErrorTooltip = (props) => {
             }
 
             {/* only show on hover after initial display */}
-            {!autoFocus && visible &&
-                //wrap in portal to avoid clipping issues
-                // <Portal>
-                //     <ReactTooltip eventOff={'mouseout'} id={id} effect='solid' type={type} getContent={[() => {return <div>'hello'</div>}]}>
-                //         {/* {text &&
-                //             <span>{text}</span>
-                //         } */}
-                //     </ReactTooltip>
-                // </Portal>
-
+            {!autoFocus && visible && tooltip &&
                 // NOTE: portal does not allow dynamic content
                 <div>
                     <ReactTooltip eventOff={'mouseout'} id={id} effect='solid' type={type}>
@@ -98,6 +89,17 @@ const ErrorTooltip = (props) => {
                         {tooltip && tooltip}
                     </ReactTooltip>
                 </div>
+            }
+
+            {!autoFocus && visible && !tooltip &&
+                //wrap in portal to avoid clipping issues
+                <Portal>
+                    <ReactTooltip eventOff={'mouseout'} id={id} effect='solid' type={type}>
+                        {text &&
+                            <span>{text}</span>
+                        }
+                    </ReactTooltip>
+                </Portal> 
             }
 
             {autoFocus &&
