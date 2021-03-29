@@ -568,7 +568,6 @@ const LineThroughputChart = (props) => {
 
                         if(JSON.stringify(initialValues)!==JSON.stringify(values)){
                           dispatchPageDataChanged(true)
-                          console.log('here')
                         }
                         else{dispatchPageDataChanged(false)}
 
