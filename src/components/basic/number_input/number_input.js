@@ -27,6 +27,8 @@ const NumberInput = ({
 	longPlusPressEvent,
 	longMinusPressEvent,
 	usable,
+	onFocus,
+	onBlur,
 	inputChildren,
 	inputStyle,
 	buttonStyle,
@@ -59,6 +61,8 @@ const NumberInput = ({
 					onChange={onInputChange}
 					value={value}
 					style={inputStyle}
+					onFocus={onFocus}
+					onBlur={onBlur}
 				>
 				</styled.Input>
 				{inputChildren}
