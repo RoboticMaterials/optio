@@ -395,9 +395,9 @@ const Settings = () => {
 
         }
         return (
-            <styled.SettingContainer style={{display: 'flex', justifyContent: 'center'}}>
+            <styled.SettingContainer style={{display: 'flex', flexGrow: '1', justifyContent: 'center', alignItems: 'flex-end'}}>
 
-                {config.authenticationNeeded && <Button onClick={signOut}> Sign Out </Button>}
+                {config.authenticationNeeded && <Button style={{height: '2rem', flex: 1}} onClick={signOut}> Sign Out </Button>}
 
             </styled.SettingContainer>
         )
@@ -443,9 +443,9 @@ const Settings = () => {
             {MapViewEnabled()}
             {CurrentMap()}
             {TimeZone()}
+            {APIAddress()}
             {LockUnlockAllDashboards()}
             {SignOut()}
-            {APIAddress()}
 
             {/* {TimeZone()} */}
         </styled.SettingsContainer>

@@ -4,6 +4,7 @@ export const SettingsContainer = styled.div`
     flex-grow: 1;
     padding: 1rem;
     padding-top: 1.5rem;
+    padding-bottom: 0;
 
     display: flex;
     flex-direction: column;

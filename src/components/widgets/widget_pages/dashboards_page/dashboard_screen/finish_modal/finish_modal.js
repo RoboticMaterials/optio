@@ -300,21 +300,21 @@ const FinishModal = (props) => {
             <QuantityModal
                 validationSchema={quantityOneSchema}
                 maxValue={lotCount}
-                minValue={0}
+                minValue={1}
                 infoText={`${lotCount} items available.`}
                 isOpen={true}
                 title={"Select Quantity"}
                 onRequestClose={() => setShowQuantitySelector(false)}
                 onCloseButtonClick={() => setShowQuantitySelector(false)}
-                handleOnClick1={(quantity) => {
+                handleOnClick2={(quantity) => {
                     setShowQuantitySelector(false)
                     moveLot(selectedLot, quantity)
                 }}
-                handleOnClick2={() => {
+                handleOnClick1={() => {
                     setShowQuantitySelector(false)
                 }}
-                button_1_text={"Confirm"}
-                button_2_text={"Cancel"}
+                button_2_text={"Confirm"}
+                button_1_text={"Cancel"}
             />
         )
     }
@@ -336,16 +336,8 @@ const FinishModal = (props) => {
         >
             <styled.Header>
                 <styled.HeaderMainContentContainer>
-                    <div style={{marginRight: "auto", flex: 1}}/>
                     <styled.Title>{title}</styled.Title>
-                    <div style={{flex: 1, display: "flex", justifyContent: "flex-end"}}>
-                        <Button
-                            onClick={close}
-                            schema={'dashboards'}
-                        >
-                            <i className="fa fa-times" aria-hidden="true"/>
-                        </Button>
-                    </div>
+                    <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={close}/>
                 </styled.HeaderMainContentContainer>
 
                 <SortFilterContainer
@@ -372,16 +364,6 @@ const FinishModal = (props) => {
 
                             </styled.ReportButtonsContainer>
                         </styled.ContentContainer>
-
-                        <styled.ButtonsContainer>
-                            <Button
-                                tertiary
-                                schema={"dashboards"}
-                                onClick={close}
-                                label={"Close"}
-                                type="button"
-                            />
-                        </styled.ButtonsContainer>
                     </div>
             </styled.BodyContainer>
         </styled.Container>

@@ -77,6 +77,8 @@ const Lot = (props) => {
                 value
             } = currItem
 
+                const key = `${fieldName}+dataType`
+
             const isLast = currIndex === arr.length - 1
 
 
@@ -84,6 +86,7 @@ const Lot = (props) => {
                 case FIELD_DATA_TYPES.STRING: {
                     return(
                         <LotSimpleRow
+                            key={key}
                             label={fieldName}
                             value={value}
                             isLast={isLast}
@@ -93,6 +96,7 @@ const Lot = (props) => {
                 case FIELD_DATA_TYPES.EMAIL: {
                     return(
                         <LotSimpleRow
+                            key={key}
                             label={fieldName}
                             value={value}
                             isLast={isLast}
@@ -102,6 +106,7 @@ const Lot = (props) => {
                 case FIELD_DATA_TYPES.DATE: {
                     return(
                         <LotDateRow
+                            key={key}
                             label={fieldName}
                             isLast={isLast}
                             date={value}
@@ -112,6 +117,7 @@ const Lot = (props) => {
                 case FIELD_DATA_TYPES.DATE_RANGE: {
                     return(
                         <LotDateRangeRow
+                            key={key}
                             label={fieldName}
                             isLast={isLast}
                             dateRange={value}
@@ -121,6 +127,7 @@ const Lot = (props) => {
                 case FIELD_DATA_TYPES.URL: {
                     return(
                         <LotSimpleRow
+                            key={key}
                             label={fieldName}
                             value={value}
                             isLast={isLast}
@@ -130,6 +137,7 @@ const Lot = (props) => {
                 case FIELD_DATA_TYPES.INTEGER: {
                     return(
                         <LotSimpleRow
+                            key={key}
                             label={fieldName}
                             isLast={isLast}
                             value={value}
@@ -206,7 +214,7 @@ const Lot = (props) => {
             selectable={selectable}
             isSelected={isSelected}
             onClick={onClick}
-            containerStyle={containerStyle}
+            style={containerStyle}
         >
 
             <styled.HeaderBar>
@@ -243,7 +251,7 @@ const Lot = (props) => {
                                         color={currColor}
                                         selected={isSelected}
                                         className={isSelected ? "fas fa-check-square" : "fas fa-square"}
-                                        key={currIndex}
+                                        key={currColorId}
                                         type={"button"}
                                         onClick={(e) => {
                                             e.preventDefault()

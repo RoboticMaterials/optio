@@ -22,7 +22,8 @@ const FieldComponentMapper = (props) => {
 		onCalendarClick,
 		style,
 		value,
-		displayName
+		displayName,
+		usable
 	} = props
 
 	const themeContext = useContext(ThemeContext);
@@ -45,16 +46,17 @@ const FieldComponentMapper = (props) => {
 					{preview ?
 						<styled.TextContainer>
 							<Textbox
-								// style={{width: "15rem"}}
+								usable={usable}
 								placeholder="Enter text..."
-								textboxContainerStyle={{display: "flex", flex: 1}}
+								style={{}}
 								schema={"lots"}
-								style={{...style}}
+								style={{display: "flex", flex: 1, ...style}}
 								inputStyle={{flex: 1, background: LightenDarkenColor(themeContext.bg.secondary, 10), cursor: 'default', pointerEvents: 'none'}}
 							/>
 						</styled.TextContainer>
 						:
 						<TextField
+							usable={usable}
 							name={fieldName}
 							type="text"
 							placeholder="Enter text..."
@@ -85,6 +87,7 @@ const FieldComponentMapper = (props) => {
 						<styled.TextContainer>
 							<Textbox
 								type="text"
+								usable={usable}
 								placeholder="Enter text..."
 								InputComponent={Textbox}
 								lines={5}
@@ -97,6 +100,7 @@ const FieldComponentMapper = (props) => {
 						</styled.TextContainer>
 						:
 						<TextField
+							usable={usable}
 							name={fieldName}
 							type="text"
 							placeholder="Enter text..."
@@ -125,11 +129,17 @@ const FieldComponentMapper = (props) => {
 						fieldName && <styled.Label>{fieldName}:</styled.Label>
 					}
 					{preview ?
-						<NumberInput themeContext={themeContext} buttonStyle={{pointerEvents: 'none'}} inputStyle={{pointerEvents: 'none'}}/>
+						<NumberInput
+							usable={usable}
+							themeContext={themeContext}
+							buttonStyle={{pointerEvents: 'none'}}
+							inputStyle={{pointerEvents: 'none'}}
+						/>
 						:
 						<NumberField
+							usable={usable}
 							name={fieldName}
-							minValue={0}
+							minValue={1}
 							// maxValue={100000000}
 						/>
 					}
@@ -153,6 +163,7 @@ const FieldComponentMapper = (props) => {
 						fieldName && <styled.Label>{fieldName}:</styled.Label>
 					}
 						<CalendarPlaceholder
+							usable={usable}
 							containerStyle={{width: "8rem", cursor: 'default', userSelect: 'none'}}
 							calendarContent={props.calendarContent}
 							setShowCalendarPopup={props.setShowCalendarPopup}
@@ -200,6 +211,7 @@ const FieldComponentMapper = (props) => {
 						fieldName && <styled.Label>{fieldName}:</styled.Label>
 					}
 						<CalendarPlaceholder
+							usable={usable}
 							calendarContent={props.calendarContent}
 							setShowCalendarPopup={props.setShowCalendarPopup}
 							showCalendarPopup={props.showCalendarPopup}
@@ -220,13 +232,15 @@ const FieldComponentMapper = (props) => {
 
 // Specifies propTypes
 FieldComponentMapper.propTypes = {
-	preview: PropTypes.bool
+	preview: PropTypes.bool,
+	usable: PropTypes.bool
 };
 
 // Specifies the default values for props:
 FieldComponentMapper.defaultProps = {
 	preview: true,
-	onCalendarClick: () => {}
+	onCalendarClick: () => {},
+	usable: true
 };
 
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useContext } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 // Import Styles
@@ -22,6 +22,7 @@ import DropDownSearchField from "../../../../../basic/form/drop_down_search_fiel
 import {isArray} from "../../../../../../methods/utils/array_utils";
 import {isString} from "../../../../../../methods/utils/string_utils";
 import {isObject} from "../../../../../../methods/utils/object_utils";
+import { ThemeContext } from 'styled-components';
 
 
 const LoadUnloadFields = (props) => {
@@ -29,7 +30,8 @@ const LoadUnloadFields = (props) => {
     const {
         fieldParent,
         setFieldValue,
-        values
+        values,
+        isProcess
     } = props
 
     const dispatch = useDispatch()
@@ -40,6 +42,7 @@ const LoadUnloadFields = (props) => {
     const sounds = useSelector(state => state.soundsReducer.sounds)
     const stations = useSelector(state => state.stationsReducer.stations)
 
+    const themeContext = useContext(ThemeContext)
 
     // This handles if any position of a route is a human position, then it cant be done by a robot
     let humanLocation = false
@@ -96,7 +99,7 @@ const LoadUnloadFields = (props) => {
             {/*    </>*/}
             {/*}*/}
 
-            <styled.Card>
+            <styled.Card dark={isProcess}>
 
             <styled.RowContainer>
 
@@ -110,6 +113,7 @@ const LoadUnloadFields = (props) => {
                 focus={!!selectedTask && selectedTask.type == null}
                 lines={2}
                 InputComponent={Textbox}
+                inputStyle={!isProcess && {background: themeContext.bg.primary}}
             />
 
             {!humanLocation &&
@@ -172,6 +176,7 @@ const LoadUnloadFields = (props) => {
                         }}
                         // values={!!selectedTask.load.sound ? [sounds[selectedTask.load.sound]] : []}
                         dropdownGap={2}
+                        style={!isProcess && {background: themeContext.bg.primary}}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
                         className="w-100"
@@ -181,7 +186,7 @@ const LoadUnloadFields = (props) => {
 
             </styled.Card>
 
-            <styled.Card>
+            <styled.Card dark={isProcess}>
                 {/* If its a human task, then the task can also be defined as a handoff.
                     A handoff does not require unload confirmation.
                 */}
@@ -217,7 +222,7 @@ const LoadUnloadFields = (props) => {
             {/* Hides the unload field if its a handoff task */}
             {(!values.handoff || isMiRTask(selectedTask)) &&
 
-                <styled.Card>
+                <styled.Card dark={isProcess}>
                     <styled.Header>Unload</styled.Header>
                     <TextField
                         name={fieldParent ? `${fieldParent}.unload.instructions` : "unload.instructions"}
@@ -225,6 +230,7 @@ const LoadUnloadFields = (props) => {
                         focus={!!selectedTask && selectedTask.type == null}
                         lines={2}
                         InputComponent={Textbox}
+                        inputStyle={!isProcess && {background: themeContext.bg.primary}}
                     />
 
                     {/* If its a human task, then you shouldnt require people to make noises. I personally would though...  */}
@@ -255,6 +261,7 @@ const LoadUnloadFields = (props) => {
                                 }}
                                 className="w-100"
                                 schema="tasks"
+                                style={!isProcess && {background: themeContext.bg.primary}}
                             />
                         </div>
                     }
