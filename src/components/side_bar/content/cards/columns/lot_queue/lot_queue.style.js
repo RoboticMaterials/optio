@@ -56,6 +56,7 @@ export const HeaderRow = styled.div`
 export const QuantityText = styled.span`
   color: white;
     font-size: 1rem;
+
 `
 
 

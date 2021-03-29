@@ -21,7 +21,7 @@ const StationsColumn = ((props) => {
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
-	
+
 	return(
 		<Column
 			setSelectedCards={setSelectedCards}
@@ -43,40 +43,34 @@ const StationsColumn = ((props) => {
 				else {
 					return(
 						<styled.StationHeader>
-								<styled.HeaderRow
-									style={{
-										marginBottom: "1rem"
-									}}
-								>
-									<i className="fa fa-chevron-down" aria-hidden="true"
-									   onClick={() => setCollapsed(true)}
-									   style={{marginRight: "1rem"}}
-									/>
+							<styled.HeaderRow
+								style={{
+									marginBottom: "1rem"
+								}}
+							>
+								<i className="fa fa-chevron-down" aria-hidden="true"
+								   onClick={() => setCollapsed(true)}
+								   style={{marginRight: "1rem"}}
+								/>
 
-<<<<<<< HEAD
-						<styled.LabelContainer>
-							<styled.StationTitle>{stationName}</styled.StationTitle>
-						</styled.LabelContainer>
-=======
-									<styled.LabelContainer>
-										<styled.StationTitle>{stationName}</styled.StationTitle>
-									</styled.LabelContainer>
+								<styled.LabelContainer>
+									<styled.StationTitle>{stationName}</styled.StationTitle>
+								</styled.LabelContainer>
 
-									<i className="fas fa-ellipsis-h" style={{opacity: 0}}></i>
-								</styled.HeaderRow>
->>>>>>> master
+								<i className="fas fa-ellipsis-h" style={{opacity: 0}}></i>
+							</styled.HeaderRow>
 
-								<styled.HeaderRow>
-									<div>
-										<styled.QuantityText>Lots: </styled.QuantityText>
-										<styled.QuantityText>{numberOfLots}</styled.QuantityText>
-									</div>
+							<styled.HeaderRow>
+								<div>
+									<styled.QuantityText>Lots: </styled.QuantityText>
+									<styled.QuantityText>{numberOfLots}</styled.QuantityText>
+								</div>
 
-									<div>
-										<styled.QuantityText>Total Quantity: </styled.QuantityText>
-										<styled.QuantityText>{lotQuantitySummation}</styled.QuantityText>
-									</div>
-								</styled.HeaderRow>
+								<div>
+									<styled.QuantityText>Total Quantity: </styled.QuantityText>
+									<styled.QuantityText>{lotQuantitySummation}</styled.QuantityText>
+								</div>
+							</styled.HeaderRow>
 						</styled.StationHeader>
 					)
 				}

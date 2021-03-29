@@ -57,8 +57,26 @@ const Column = ((props) => {
 
 	// component state
 	const [dragEnter, setDragEnter] = useState(false)
-<<<<<<< HEAD
+	const [lotQuantitySummation, setLotQuantitySummation] = useState(0)
+	const [numberOfLots, setNumberOfLots] = useState(0)
 	const [cards, setCards] = useState([])
+
+	useEffect(() => {
+		let tempLotQuantitySummation = 0
+		let tempNumberOfLots = 0
+		cards.forEach((currLot) => {
+			const {
+				count = 0
+			} = currLot || {}
+
+			tempNumberOfLots = tempNumberOfLots + 1
+			tempLotQuantitySummation = tempLotQuantitySummation + count
+		})
+
+		setNumberOfLots(tempNumberOfLots)
+		setLotQuantitySummation(tempLotQuantitySummation)
+	}, [cards])
+
 	const [isSelectedCardsNotEmpty, setIsSelectedCardsNotEmpty] = useState(false)
 
 	useEffect(() => {
@@ -76,26 +94,6 @@ const Column = ((props) => {
 		}
 	}, [props.cards, sortMode, sortDirection])
 
-=======
-	const [lotQuantitySummation, setLotQuantitySummation] = useState(0)
-	const [numberOfLots, setNumberOfLots] = useState(0)
-
-	useEffect(() => {
-		let tempLotQuantitySummation = 0
-		let tempNumberOfLots = 0
-		cards.forEach((currLot) => {
-			const {
-				count = 0
-			} = currLot || {}
-
-			tempNumberOfLots = tempNumberOfLots + 1
-			tempLotQuantitySummation = tempLotQuantitySummation + count
-		})
-
-		setNumberOfLots(tempNumberOfLots)
-		setLotQuantitySummation(tempLotQuantitySummation)
-	}, [cards])
->>>>>>> master
 
 	const shouldAcceptDrop = (sourceContainerOptions, payload) => {
 		const {
@@ -343,84 +341,84 @@ const Column = ((props) => {
 					}
 					style={{overflow: "auto",height: "100%", padding: "1rem 1rem 2rem 1rem" }}
 				>
-						{cards.map((card, index) => {
-							const {
-								_id,
-								count = 0,
-								name,
-								object_id,
-								cardId,
-								flags,
-								lotNumber,
-								totalQuantity,
-								processName,
-								lotTemplateId,
-								...rest
-							} = card
+					{cards.map((card, index) => {
+						const {
+							_id,
+							count = 0,
+							name,
+							object_id,
+							cardId,
+							flags,
+							lotNumber,
+							totalQuantity,
+							processName,
+							lotTemplateId,
+							...rest
+						} = card
 
-							const templateValues = getLotTemplateData(lotTemplateId, card)
+						const templateValues = getLotTemplateData(lotTemplateId, card)
 
-							// const lotName = lots[lot_id] ? lots[lot_id].name : null
-							const objectName = objects[object_id] ? objects[object_id].name : null
+						// const lotName = lots[lot_id] ? lots[lot_id].name : null
+						const objectName = objects[object_id] ? objects[object_id].name : null
 
-							const isSelected = getIsSelected(cardId, station_id)
-							const isDragging = draggingLotId === cardId
-							const isHovering = hoveringLotId === cardId
+						const isSelected = getIsSelected(cardId, station_id)
+						const isDragging = draggingLotId === cardId
+						const isHovering = hoveringLotId === cardId
 
-							const isLastSelected = getIsLastSelected(cardId)
+						const isLastSelected = getIsLastSelected(cardId)
 
-							// const isSelected = (draggingLotId !== null) ? () : ()
-							const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
+						// const isSelected = (draggingLotId !== null) ? () : ()
+						const selectable = (hoveringLotId !== null) || (draggingLotId !== null) || isSelectedCardsNotEmpty
 
-							return(
-								<Draggable
-									key={cardId}
-									onMouseEnter={(event) => onMouseEnter(event, cardId)}
-									onMouseLeave={onMouseLeave}
+						return(
+							<Draggable
+								key={cardId}
+								onMouseEnter={(event) => onMouseEnter(event, cardId)}
+								onMouseLeave={onMouseLeave}
+								style={{
+								}}
+							>
+								<div
 									style={{
 									}}
 								>
-									<div
-										style={{
+									<Lot
+										glow={isLastSelected}
+										isFocused={isDragging || isHovering}
+										enableFlagSelector={true}
+										templateValues={templateValues}
+										selectable={selectable}
+										isSelected={isSelected}
+										key={cardId}
+										// processName={processName}
+										totalQuantity={totalQuantity}
+										lotNumber={lotNumber}
+										name={name}
+										objectName={objectName}
+										count={count}
+										id={cardId}
+										flags={flags || []}
+										index={index}
+										onClick={(e)=> {
+											const payload = getBetweenSelected(cardId)
+											onCardClick(
+												e,
+												{
+													lotId: cardId,
+													processId: processId,
+													binId: station_id
+												},
+												payload
+											)
 										}}
-									>
-								<Lot
-									glow={isLastSelected}
-									isFocused={isDragging || isHovering}
-									enableFlagSelector={true}
-									templateValues={templateValues}
-									selectable={selectable}
-									isSelected={isSelected}
-									key={cardId}
-									// processName={processName}
-									totalQuantity={totalQuantity}
-									lotNumber={lotNumber}
-									name={name}
-									objectName={objectName}
-									count={count}
-									id={cardId}
-									flags={flags || []}
-									index={index}
-									onClick={(e)=> {
-										const payload = getBetweenSelected(cardId)
-										onCardClick(
-											e,
-											{
-												lotId: cardId,
-												processId: processId,
-												binId: station_id
-											},
-											payload
-										)
-									}}
-									containerStyle={{
-										marginBottom: "0.5rem",
-									}}
-								/>
-									</div>
-								</Draggable>
-							)
-						})}
+										containerStyle={{
+											marginBottom: "0.5rem",
+										}}
+									/>
+								</div>
+							</Draggable>
+						)
+					})}
 
 				</Container>
 			</styled.BodyContainer>
