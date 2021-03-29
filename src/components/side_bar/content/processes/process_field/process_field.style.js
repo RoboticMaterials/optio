@@ -50,7 +50,7 @@ export const SectionContainer = styled.div`
   align-content: flex-end;
   align-items: stretch;
   justify-content: center;
-  
+
 	overflow-y: auto;
 	overflow-x: hidden;
 
