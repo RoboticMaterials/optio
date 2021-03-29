@@ -5,7 +5,7 @@ import {iconButtonCss} from "../../../../../common_css/common_css";
 export const Container = styled.div`
 	align-self: stretch;
 	flex: 1;
-	overflow-y: scroll;
+	overflow-y: auto;
   // align-items: stretch;
   display: flex;
   flex-direction: column;
@@ -20,6 +20,7 @@ export const ContainerWrapper = styled.div`
 	align-self: stretch;
 	flex: 1;
 	// overflow-y: auto;
+	overflow: hidden;
 	align-items: stretch;
 	display: flex;
 	flex-direction: column;
