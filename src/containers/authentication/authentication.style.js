@@ -13,8 +13,8 @@ export const Container = styled.div`
 
     position: absolute;
     top: 50%;
-    left: 20%;
-    transform: translate(-50%,-50%);
+    left: 5rem;
+    transform: translate(0, -50%);
     border-radius: 10px;
     background: white;
 
