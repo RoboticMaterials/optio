@@ -68,19 +68,22 @@ export async function getCard(cardId) {
             }
         })
 
+        if(res.data.CardsByOrgId.items[0]){
+            return {
+                ...res.data.CardsByOrgId.items[0],
+                bins: JSON.parse(res.data.CardsByOrgId.items[0].bins),
+                dates: JSON.parse(res.data.CardsByOrgId.items[0].dates),
+                flags: JSON.parse(res.data.CardsByOrgId.items[0].flags)
+            };
+        }else{
+            return null
+        }
+
         // This query doesnt want to work for some reason
         // const dataJson = await API.graphql({
         //     query: getCardById,
         //     variables: { id: cardId }
         // })
-
-        return {
-            ...res.data.CardsByOrgId.items[0],
-            bins: JSON.parse(res.data.CardsByOrgId.items[0].bins),
-            dates: JSON.parse(res.data.CardsByOrgId.items[0].dates),
-            flags: JSON.parse(res.data.CardsByOrgId.items[0].flags)
-        };
-
     } catch (error) {
         // Error 😨
         errorLog(error)
@@ -187,11 +190,16 @@ export async function deleteCard(ID) {
 
 export async function putCard(card, ID) {
     try {
+
         const input = {
             ...card,
             bins: JSON.stringify(card.bins),
             dates: JSON.stringify(card.dates),
             flags: JSON.stringify(card.flags)
+        }
+
+        if(ID){
+            input.id = ID
         }
 
         delete input.createdAt

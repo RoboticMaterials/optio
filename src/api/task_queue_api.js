@@ -128,40 +128,45 @@ export async function deleteTaskQueueItem(id, taskQueueItem) {
             let lot = await getCard(taskQueueItem.lot_id) // get lot
             let task = await getTask(taskQueueItem.task_id) // get task
 
-            // are we moving the whole lot?
-            if(taskQueueItem.quantity === task.totalQuantity){
-                // move the whole lot 
-                delete lot.bins[task.load.station]
-
-                lot.bins[task.unload.station] = {
-                    count: taskQueueItem.quantity
-                }  
-
-            }else{
-                //check how much they want to move and update it accordingly
-                const diff = lot.bins[task.load.station].count - taskQueueItem.quantity
-
-                if(diff === 0){
-
-                    // move the res of the lot 
+            if(lot && task){
+                // are we moving the whole lot?
+                if(taskQueueItem.quantity === lot.totalQuantity){
+                    // move the whole lot 
                     delete lot.bins[task.load.station]
 
                     lot.bins[task.unload.station] = {
-                        count: lot.bins[task.unload.station] ? taskQueueItem.quantity + lot.bins[task.unload.station].count : taskQueueItem.quantity
-                    }
-                }else{
-                    lot.bins[task.load.station].count = diff
-
-                    lot.bins[task.unload.station] = {
                         count: taskQueueItem.quantity
+                    }  
+
+                }else{
+                    //check how much they want to move and update it accordingly
+                    const diff = lot.bins[task.load.station].count - taskQueueItem.quantity
+
+                    if(diff === 0){
+
+                        // move the res of the lot 
+                        delete lot.bins[task.load.station]
+
+                        lot.bins[task.unload.station].count = lot.bins[task.unload.station] ? taskQueueItem.quantity + lot.bins[task.unload.station].count : taskQueueItem.quantity
+                        
+                    }else{
+                        lot.bins[task.load.station].count = diff
+
+                        if(lot.bins[task.unload.station]){
+                            lot.bins[task.unload.station].count +=  taskQueueItem.quantity
+                        }else{
+                            lot.bins[task.unload.station] = {
+                                count: taskQueueItem.quantity
+                            }
+                        }
                     }
                 }
-            }
-            
-            // update to the card
-            await putCard(lot)
+                
+                // update to the card
+                await putCard(lot)
 
-        }    
+            }
+        }
 
         // Add item to task events
         await API.graphql({

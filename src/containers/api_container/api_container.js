@@ -428,14 +428,17 @@ const ApiContainer = (props) => {
                         // move the res of the lot 
                         delete lot.bins[task.load.station]
 
-                        lot.bins[task.unload.station] = {
-                            count: lot.bins[task.unload.station] ? taskQueueItem.quantity + lot.bins[task.unload.station].count : taskQueueItem.quantity
-                        }
+                        lot.bins[task.unload.station].count = lot.bins[task.unload.station] ? taskQueueItem.quantity + lot.bins[task.unload.station].count : taskQueueItem.quantity
+                        
                     }else{
                         lot.bins[task.load.station].count = diff
 
-                        lot.bins[task.unload.station] = {
-                            count: taskQueueItem.quantity
+                        if(lot.bins[task.unload.station]){
+                            lot.bins[task.unload.station].count +=  taskQueueItem.quantity
+                        }else{
+                            lot.bins[task.unload.station] = {
+                                count: taskQueueItem.quantity
+                            }
                         }
                     }
                 }
