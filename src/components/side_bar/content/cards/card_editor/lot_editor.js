@@ -113,8 +113,6 @@ const FormComponent = (props) => {
 
 	const formMode = cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE
 
-	useWarn(uniqueNameSchema, formikProps)
-
 	const themeContext = useContext(ThemeContext);
 
 	// actions
