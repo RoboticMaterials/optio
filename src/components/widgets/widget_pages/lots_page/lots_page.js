@@ -20,6 +20,7 @@ import {getBinQuantity, getIsCardAtBin} from "../../../../methods/utils/lot_util
 
 // styles
 import * as styled from './lots_page.style'
+import LotContainer from "../../../side_bar/content/cards/lot/lot_container";
 
 // TODO: Commented out charts for the time being (See comments that start with TEMP)
 const LotsPage = (props) => {
@@ -32,11 +33,11 @@ const LotsPage = (props) => {
     const onWidgetLoaded = (bool) => dispatch(widgetLoaded(bool))
     const onShowSideBar = (bool) => dispatch(sidebarActions.setOpen(bool))
     const onHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
-    const onShowCardEditor = (bool) => dispatch(showEditor(bool))
+    const onShowCardEditor = (bool) => dispatch(showEditor(bool)) // <-- why is redux being used for this?
 
     const stations = useSelector(state => state.stationsReducer.stations)
     const cards = useSelector(state=>state.cardsReducer.cards)
-    const showCardEditor = useSelector(state=>state.cardsReducer.showEditor)
+    const showCardEditor = useSelector(state=>state.cardsReducer.showEditor) // <-- why is redux being used for this?
     const [locationName, setLocationName] = useState("")
     const [selectedCard, setSelectedCard] = useState(null)
     const [lotsPresent, setLotsPresent] = useState(false)
@@ -116,32 +117,15 @@ const LotsPage = (props) => {
                 })
                 .map((card, ind) => {
                     const {
-                        name,
-                        lotNumber,
-                        bins,
-                        dates,
-                        totalQuantity,
-                        flags,
-                        description,
-                        currCardId,
+                        _id: currCardId,
                         process_id: currCardProcessId
                     } = card || {}
 
-                    console.log(card)
-
-                    const quantity = getBinQuantity({bins}, location?._id)
-
-                    return <Lot
-                        // templateValues={templateValues}
+                    return <LotContainer
+                        lotId={currCardId}
+                        binId={stationID}
+                        enableFlagSelector={false}
                         key={currCardId}
-                        // processName={processName}
-                        totalQuantity={totalQuantity || ""}
-                        lotNumber={lotNumber}
-                        name={name}
-                        // objectName={objectName}
-                        count={quantity}
-                        id={currCardId}
-                        flags={flags || []}
                         onClick={() => {
                             openEditor(currCardId, currCardProcessId, location._id)
                         }}
@@ -149,20 +133,6 @@ const LotsPage = (props) => {
                             marginBottom: "0.5rem",
                         }}
                     />
-
-                    // return (
-                    //     <LotListItem
-                    //         key={currCardId}
-                    //         name={name}
-                    //         lotNumber={lotNumber}
-                    //         quantity={quantity}
-                    //         dates={dates}
-                    //         description = {description}
-                    //         onClick={() => {
-                    //             openEditor(currCardId, currCardProcessId, location._id)
-                    //         }}
-                    //     />
-                    // )
                 })}
         </styled.LotsContainer>
     )
