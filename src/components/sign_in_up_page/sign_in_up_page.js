@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
+
+import {useHistory} from 'react-router-dom'
 
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -23,7 +25,6 @@ import PropagateLoader from "react-spinners/PropagateLoader";
 import { postLocalSettings, getLocalSettings, } from '../../redux/actions/local_actions'
 
 import configData from '../../settings/config'
-import { Block } from '@material-ui/icons'
 
 /**
  * This page handles both sign in and sign up for RMStudio
@@ -31,7 +32,11 @@ import { Block } from '@material-ui/icons'
  */
 const SignInUpPage = (props) => {
 
+    // Hooks
     const dispatch = useDispatch()
+    const history = useHistory()
+
+    // Dispatches
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = (settings) => dispatch(getLocalSettings(settings))
 
@@ -59,8 +64,9 @@ const SignInUpPage = (props) => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+    const [errorText, setErrorText] = useState('')
 
-    const [warning, setWarning] = useState(false)
+    const [capsLock, setCapsLock] = useState(false)
     const [loading, setLoading] = useState(false)
 
     function handleSignInChange(event) {
@@ -117,7 +123,7 @@ const SignInUpPage = (props) => {
                 },
 
                 onFailure: function (err) {
-                    alert(err.message)
+                    setErrorText(err.message)
                     setLoading(false)
                 },
 
@@ -127,19 +133,20 @@ const SignInUpPage = (props) => {
                 userPool.signUp(email, password, [], null, (err, data) => {
                     if (err) {
                         if (err.message === 'Invalid version. Version should be 1') {
-                            alert('Invalid email. Please use a valid email.')
+                            setErrorText('Invalid email. Please use a valid email.')
                         } else {
-                            alert(err.message)
+                            setErrorText(err.message)
                             setLoading(false)
                         }
                     } else {
-                        alert('You have sucessfully signed up! Please check you email for a verification link.')
+                        setErrorText('You have successfully signed up! Please check you email for a verification link.')
+                        history.push('/')
                         handleSignInChange(true)
                         setLoading(false)
                     }
                 });
             } else {
-                alert('Passwords must match!')
+                setErrorText('Passwords must match!')
                 setLoading(false)
             }
         }
@@ -186,19 +193,22 @@ const SignInUpPage = (props) => {
                         onKeyDown={
                             (keyEvent) => {
                                 if(keyEvent.keyCode === 20 || Event.KEY === "CapsLock") {
-                                    setWarning(!warning)
+                                    setCapsLock(!capsLock)
                                 }
                                 else {
                                     if (keyEvent.getModifierState("CapsLock")) {
-                                        setWarning(true)
+                                        setCapsLock(true)
                                     } else {
-                                        setWarning(false)
+                                        setCapsLock(false)
                                     }
                                 }
                             }
                         }
                     >
                         <styled.Container>
+                            <styled.ErrorText>
+                                {errorText}
+                            </styled.ErrorText>
                             <TextField
                                 name={"email"}
                                 placeholder='Enter Email'
@@ -210,16 +220,19 @@ const SignInUpPage = (props) => {
                                 }}
                             />
 
-                            <TextField
-                                name={"password"}
-                                placeholder='Enter Password'
-                                type='password'
-                                InputComponent={Textbox}
-                                style={{
-                                    marginBottom: '.5rem',
-                                    width: '25rem'
-                                }}
-                            />
+                            <div style={{display: 'flex', flexDirection: 'row'}}>
+                                {capsLock && <styled.CapsIconContainer><styled.CapsIcon className="fas fa-arrow-alt-circle-up" /></styled.CapsIconContainer>}
+                                <TextField
+                                    name={"password"}
+                                    placeholder='Enter Password'
+                                    type='password'
+                                    InputComponent={Textbox}
+                                    style={{
+                                        marginBottom: '.5rem',
+                                        flexGrow: 1
+                                    }}
+                                />
+                            </div>
 
                             {/* If sign in hasn't been selected show a confirm password for sign up */}
                             {!signIn &&
@@ -237,14 +250,12 @@ const SignInUpPage = (props) => {
 
                             {!signIn &&
                                 <styled.NoteText>
-                                    Note: Your password must be 8 charaters long and contain 1 upper case letter, 1 lower case letter, 1 number and 1 special character
+                                    Note: Your password must be 8 charaters long and contain 1 upper case letter, 1 lower case letter, and 1 number
                                 </styled.NoteText>
                             }
 
-                            {warning && <styled.NoteText>Caps Lock On!</styled.NoteText>}
-
                             {!loading &&
-                                <styled.Button type="submit">{signIn ? 'Sign In' : 'Sign Up'}</styled.Button>
+                                <styled.Button isSignIn={signIn} type="submit">{signIn ? 'Sign In' : 'Sign Up'}</styled.Button>
                             }
 
                             {loading &&
