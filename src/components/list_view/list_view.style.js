@@ -8,7 +8,7 @@ export const Container = styled.div`
     flex: 1;
     flex-direction: column;
     max-height: 100%;
-    
+
     // padding-top: 4rem;
 `
 
@@ -28,6 +28,7 @@ export const Header = styled.div`
 	width: 100%;
 	padding: 1rem;
 	align-items: center;
+  height: 5rem;
 	display: flex;
     // box-shadow: 0px 2px 4px 2px rgba(0, 0, 0, 0.3);
 `
@@ -36,7 +37,7 @@ export const Title = styled.span`
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    
+
     font-family: ${props => props.theme.font.primary};
     font-size: ${props => props.theme.fontSize.sz1};
     font-weight: 500;
@@ -49,7 +50,7 @@ export const ListScrollContainer = styled.ul`
     overflow-y: scroll;
     flex: 1;
     padding: 1rem;
-    
+
 `
 export const ListItem = styled.div`
     display: flex;
@@ -58,7 +59,7 @@ export const ListItem = styled.div`
     height: 4rem;
     background: transparent;
     margin-bottom: 1rem;
-    
+
 `
 
 export const ListItemRect = styled.div`
@@ -96,7 +97,7 @@ export const ListItemTitle = styled.div`
     font-size: ${props => props.theme.fontSize.sz4};
     font-weight: 500;
     color: ${props => props.theme.bg.octonary};
-    
+
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -127,7 +128,7 @@ export const StatusContainer = styled.div`
     height: 2.5rem;
     max-width: 35rem;
     min-width: 10rem;
-    
+
     padding: 0rem 2rem;
     padding-top: .5rem;
 

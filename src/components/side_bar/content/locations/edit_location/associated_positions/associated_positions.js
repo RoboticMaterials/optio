@@ -179,7 +179,7 @@ export default function Positions(props) {
                             {PositionTypes[positionType].svgPath}
                         </styled.LocationTypeGraphic>
 
-                        
+
 
                     </styled.NewPositionCard>
                 </styled.Card>
