@@ -286,49 +286,6 @@ const DashboardEditor = (props) => {
                             minWidth={300}
                             clickable={true}
                         />
-<<<<<<< HEAD
-                        <style.StyledForm>
-                            <DashboardsHeader
-                                showTitle={false}
-                                showSidebar={showSidebar}
-                                showBackButton={true}
-                                showSaveButton={true}
-                                page={PAGES.EDITING}
-                                onDelete={() => {
-                                    handleDeleteDashboard()
-                                }}
-                                saveDisabled={submitDisabled}
-                                onBack={() => history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)}
-                            >
-                                <TextField
-                                    name={"name"}
-                                    disabled={dashboard.name === 'Robot Screen'}
-                                    textStyle={{ fontWeight: 'Bold' }}
-                                    placeholder='Enter Dashboard Name'
-                                    type='text'
-                                    InputComponent={Textbox}
-                                    inputProps={{
-                                        style: {
-                                            fontSize: '1.2rem',
-                                            fontWeight: '600',
-                                            textAlign: 'center',
-                                            padding: '0 2rem 0 4rem',
-                                            marginTop: '0'
-                                        }
-                                    }}
-                                />
-                            </DashboardsHeader>
-                            <style.BodyContainer>
-                                <DashboardRenderer
-                                    buttons={values.buttons}
-                                    onDrop={handleDrop}
-
-                                    handleChangeButton={handleChangeButton}
-                                    handleDeleteButton={handleDeleteButton}
-                                />
-                            </style.BodyContainer>
-                        </style.StyledForm>
-=======
                     <style.StyledForm>
 
                         <DashboardsHeader
@@ -377,7 +334,6 @@ const DashboardEditor = (props) => {
                             />
                         </style.BodyContainer>
                     </style.StyledForm>
->>>>>>> development
                     </style.Container>
 
                 )
