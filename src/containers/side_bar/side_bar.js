@@ -67,7 +67,7 @@ const SideBar = (props) => {
     const confirmDeleteCallback = useSelector(state => state.sidebarReducer.confirmDeleteCallback)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
-    const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
+
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
 
     const history = useHistory()
