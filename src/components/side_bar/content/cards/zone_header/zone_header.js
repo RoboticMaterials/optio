@@ -43,6 +43,7 @@ const ZoneHeader = (props) => {
 		sortDirection,
 		setSortDirection,
 		zone,
+		lotFilterValue,
 		setLotFilterValue,
 		setSortMode,
 		sortMode,
@@ -199,6 +200,7 @@ const ZoneHeader = (props) => {
 			/>
 
 			<LotFilterBar
+				lotFilterValue={lotFilterValue}
 				setLotFilterValue={setLotFilterValue}
 				selectedFilterOption={selectedFilterOption}
 				setSelectedFilterOption={setSelectedFilterOption}

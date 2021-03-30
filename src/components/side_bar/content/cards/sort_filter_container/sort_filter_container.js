@@ -21,7 +21,8 @@ const SortFilterContainer = (props) => {
 		shouldFocusLotFilter,
 		setLotFilterValue,
 		selectedFilterOption,
-		setSelectedFilterOption
+		setSelectedFilterOption,
+		lotFilterValue
 	} = props
 
 	return (
@@ -39,6 +40,7 @@ const SortFilterContainer = (props) => {
 				setSortDirection={setSortDirection}
 			/>
 			<LotFilterBar
+				lotFilterValue={lotFilterValue}
 				columnCss={columnCss}
 				containerCss={containerCss}
 				descriptionCss={descriptionCss}

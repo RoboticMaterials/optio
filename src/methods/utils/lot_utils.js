@@ -96,6 +96,16 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
 						}
 						case FIELD_DATA_TYPES.DATE: {
 							// not implemented yet
+							console.log("filterValue",filterValue)
+							console.log("filterValue",filterValue.toDateString())
+							console.log("lot[fieldName]",lot[fieldName])
+							console.log("new Date(lot[fieldName])",new Date(lot[fieldName]))
+
+							// return lot[fieldName] === filterValue.toDateString()
+
+							if(lot[fieldName]) {
+								return new Date(lot[fieldName]).toDateString() === filterValue.toDateString()
+							}
 							return true
 						}
 						case FIELD_DATA_TYPES.DATE_RANGE: {

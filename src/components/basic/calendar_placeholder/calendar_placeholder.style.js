@@ -1,4 +1,5 @@
 import styled, {css} from "styled-components";
+import {rowCss} from "../../side_bar/content/cards/card_editor/lot_editor.style";
 export const DatesContainer = styled.span`
 	display: inline-flex;
 	align-items: center;
@@ -30,17 +31,18 @@ export const DateItem = styled.div`
 	flex-direction: column;
 	background: ${props => props.theme.bg.tertiary};
 	border-radius: 0.2rem;
-  width: fit-content;
-  position: relative;
-	
-	padding: .5rem 1rem;
-	align-items: center;
-	justify-content: center;
+    width: fit-content;
+    position: relative;
+    
+    padding: .5rem 1rem;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
   
   ${props => props.usable ? usableCss : notUsableCss};
 	
 	
-	cursor: pointer !important;
+	
 	
 `
 
@@ -54,4 +56,38 @@ export const DateTitle = styled.span``
 
 export const DateText = styled.span`
 
+`
+
+export const BodyContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+  width: 100%;
+  min-width: 100%;
+  background: ${props => props.theme.bg.primary};
+	padding: 1rem;
+  align-self: stretch;
+  
+	//flex: 1;
+	justify-content: space-between;
+  min-height: ${props => props.minHeight};
+  
+`
+
+export const ContentHeader = styled.div`
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+  	margin-bottom: 1rem;
+	//padding: 1rem;
+`
+
+export const ContentTitle = styled.span`
+	font-size: ${props => props.theme.fontSize.sz3};
+	font-weight: ${props => props.theme.fontWeight.bold};
+	font-family: ${props => props.theme.font.primary};
+`
+
+export const CalendarContainer = styled.div`
+	overflow: auto;
+	
 `

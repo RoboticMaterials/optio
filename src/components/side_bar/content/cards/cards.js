@@ -346,6 +346,7 @@ const Cards = (props) => {
             />
             <div style={{display: 'flex', flexDirection: 'row', margin: '1rem 1rem'}}>
                 <ZoneHeader
+                    lotFilterValue={lotFilterValue}
                     sortDirection={sortDirection}
                     setSortDirection={setSortDirection}
                     sortMode={sortMode}
