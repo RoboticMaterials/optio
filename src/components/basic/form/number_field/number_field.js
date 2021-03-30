@@ -7,6 +7,9 @@ import NumberInput, {NUMBER_INPUT_BUTTON_TYPES} from "../../number_input/number_
 // functions external
 import PropTypes from 'prop-types'
 import { useField, useFormikContext } from "formik"
+import {
+	isMobile
+} from "react-device-detect";
 
 // hooks
 import useLongPress from "../../../../hooks/useLongPress"
@@ -40,6 +43,8 @@ const NumberField = ({
 
 	const [longPressing, setLongPressing] = useState(false)	// is button being long pressed??
 	const [valueState, setValueState] = useState(fieldValue)			// temp stores field value for long press. Necessary because useState allows for using callback with previous value, which setFieldValue does not
+	const [previousValue, setPreviousValue] = useState(fieldValue)
+	const [focused, setFocused] = useState(false)
 
 	// extract meta data
 	const { touched, error } = meta
@@ -50,13 +55,13 @@ const NumberField = ({
 	const themeContext = useContext(ThemeContext);
 
 	useEffect(() => {
-		setFieldValue(fieldName, valueState)
+		setFieldValue(fieldName, parseInt(valueState))
 	}, [valueState])
 
 	const createLongPressHandler = (buttonType) => {
 		return () => {
 			setLongPressing(true)
-			setValueState(parseInt(fieldValue))
+			setValueState(parseInt(fieldValue) ||  0)
 
 			setAcceleratingInterval(
 				() => {
@@ -69,19 +74,19 @@ const NumberField = ({
 							setValueState((previous) => {
 								// if previous value is less than maxValue, go ahead and increment
 								if(previous < maxValue) {
-									return previous + 1
+									return parseInt(previous) + 1
 								}
 
 								// *** OTHERWISE ***
 								timeoutRef.current && clearTimeout(timeoutRef.current)	// clear timeout to cancel callback
-								return previous	// return previous value
+								return parseInt(previous)	// return previous value
 							})
 						}
 
 						// otherwise, value can be anything
 						else {
 							setValueState((previous) => {
-								return previous + 1
+								return parseInt(previous) + 1
 							})
 						}
 					}
@@ -93,7 +98,7 @@ const NumberField = ({
 							setValueState((previous) => {
 								// if previous is still greater than minValue, go ahead and decrement
 								if(previous > minValue) {
-									return previous - 1
+									return parseInt(previous) - 1
 								}
 
 								// *** otherwise ***
@@ -105,7 +110,7 @@ const NumberField = ({
 						// otherwise value can be anything
 						else {
 							setValueState((previous) => {
-								return previous - 1
+								return parseInt(previous) - 1
 							})
 						}
 					}
@@ -124,6 +129,30 @@ const NumberField = ({
 		timeoutRef.current && clearTimeout(timeoutRef.current)	// clear timeout to stop callback
 	}
 
+	const handleFocus = () => {
+		if(isMobile) {
+			setFocused(true)
+			setPreviousValue(parseInt(fieldValue))
+			setFieldValue(fieldName, "")
+		}
+
+	}
+
+
+	const handleBlur = () => {
+		if(isMobile) {
+			setTimeout(() => {
+				setFocused(false)
+				if(!longPressing)
+					setFieldValue(fieldName,
+						Number.isInteger(parseInt(fieldValue)) ? parseInt(fieldValue) :
+							Number.isInteger(parseInt(previousValue)) ? parseInt(previousValue) :
+								0
+					)
+			}, 500)
+		}
+	}
+
 	// filler func for useLongPress
 	const dummyFunc = () => {}
 
@@ -133,6 +162,8 @@ const NumberField = ({
 
 	return (
 			<NumberInput
+				onBlur={handleBlur}
+				onFocus={handleFocus}
 				longPlusPressEvent={longPlusPressEvent}
 				longMinusPressEvent={longMinusPressEvent}
 				inputCss={hasError ? styled.errorCss : null}
@@ -146,12 +177,12 @@ const NumberField = ({
 						if (fieldValue > maxValue) {
 							// fieldValue should not exceed count, it may have been set higher before a lot was selected
 							// reduce fieldValue to lot count
-							setFieldValue(fieldName, maxValue)
+							setFieldValue(fieldName, parseInt(maxValue))
 						}
 					}
 
 					// fieldValue cannot be negative
-					if (fieldValue > minValue) setFieldValue(fieldName,fieldValue - 1)
+					if (fieldValue > minValue) setFieldValue(fieldName,parseInt(fieldValue - 1))
 					// setFieldValue(fieldName,fieldValue - 1)
 				}}
 				minusDisabled={!(fieldValue > minValue)}
@@ -198,7 +229,7 @@ const NumberField = ({
 					// if there is a maxValue, fieldValue cannot exceed maxValue
 					if (maxValue) {
 						if (fieldValue < maxValue) {
-							setFieldValue(fieldName,fieldValue + 1)
+							setFieldValue(fieldName,parseInt(fieldValue + 1))
 						}
 
 						// fieldValue is greater than count (probably was set before lot was selected), reduce to count
@@ -209,12 +240,12 @@ const NumberField = ({
 					}
 					// otherwise fieldValue can be anything
 					else {
-						setFieldValue(fieldName,fieldValue + 1)
+						setFieldValue(fieldName,parseInt(fieldValue + 1))
 					}
 
 				}}
 				inputChildren={<ErrorTooltip
-					visible={hasError}
+					visible={hasError && !focused}
 					text={error}
 					color={themeContext.bad}
 					ContainerComponent={styled.IconContainerComponent}
