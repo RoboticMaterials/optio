@@ -67,10 +67,10 @@ const SignInUpPage = (props) => {
             if(data.data.UsersbyId.items.length){
                 return true
             }else{
-                dispatchPostLocalSettings({
-                    ...localReducer,
-                    authenticated: true,
-                });
+                // dispatchPostLocalSettings({
+                //     ...localReducer,
+                //     authenticated: true,
+                // });
 
                 history.push('/organization');
             }

@@ -155,7 +155,7 @@ const App = (props) => {
                             </Route>
                         }
 
-                        {authenticated &&
+                        {!authenticated &&
                             <Route exact path="/organization" >
                                 <FirstSignIn />
                             </Route>

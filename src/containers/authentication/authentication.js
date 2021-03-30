@@ -33,6 +33,8 @@ const Authentication = (checkAuth) => {
     // Define state
     const [signIn, setSignIn] = useState(true)
     const [forgotPassword, setForgotPassword] = useState(false)
+
+    const [organization, setOrganization] = useState(false)
     const [user, setUser] = useState(null);
 
     // Define all dispatched
@@ -59,6 +61,11 @@ const Authentication = (checkAuth) => {
         }else if(history.location.pathname === '/create-account'){
             setSignIn(false)
             setForgotPassword(false)
+        }else if(history.location.pathname === '/organization'){
+            setSignIn(false)
+            setForgotPassword(false)
+
+            setOrganization(true)
         }
     }, [params])
 
@@ -88,59 +95,63 @@ const Authentication = (checkAuth) => {
 
     // Return HTML
     return (
-        <styled.Container>
+        <>
+            { !organization &&
+                <styled.Container>
 
-            <styled.LogoContainer>
-                <styled.LogoIcon className='icon-rmLogo' />
-                <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
-            </styled.LogoContainer>
-        
-            { !forgotPassword &&
-            <styled.SignInUpContainer>
-
-                <SignInUpPage
-                    signIn={signIn}
-                    onChange={handleSignInChange} />
-
-            </styled.SignInUpContainer>
-            }
-
-            { forgotPassword &&
-            <styled.SignInUpContainer>
-
-                <ForgotPassword />
-
-            </styled.SignInUpContainer>
-            }
-
-            <styled.LogoContainer>
-            
-            {!forgotPassword && 
-            <div>
-
-                <Link to="/forgot-password">Forgot Password? </Link>
+                    <styled.LogoContainer>
+                        <styled.LogoIcon className='icon-rmLogo' />
+                        <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
+                    </styled.LogoContainer>
                 
-                <Link to="/login" style={{
-                    marginLeft: '.5rem', 
-                    marginRight: '.5rem',
-                    textDecoration: 'none',
-                    cursor: 'default'
-                    }}> • </Link>
+                    { !forgotPassword && 
+                        <styled.SignInUpContainer>
 
-                {signIn &&
-                    <Link to="/create-account"> Create an account </Link>
-                }
+                            <SignInUpPage
+                                signIn={signIn}
+                                onChange={handleSignInChange} />
 
-                {!signIn &&
-                    <Link to="/"> Sign in </Link>
-                }
+                        </styled.SignInUpContainer>
+                    }
 
-            </div>
+                    { forgotPassword &&
+                        <styled.SignInUpContainer>
+
+                            <ForgotPassword />
+
+                        </styled.SignInUpContainer>
+                    }
+
+                    <styled.LogoContainer>
+                    
+                    {!forgotPassword && 
+                    <div>
+
+                        <Link to="/forgot-password">Forgot Password? </Link>
+                        
+                        <Link to="/login" style={{
+                            marginLeft: '.5rem', 
+                            marginRight: '.5rem',
+                            textDecoration: 'none',
+                            cursor: 'default'
+                            }}> • </Link>
+
+                        {signIn &&
+                            <Link to="/create-account"> Create an account </Link>
+                        }
+
+                        {!signIn &&
+                            <Link to="/"> Sign in </Link>
+                        }
+
+                    </div>
+                    }
+
+                    </styled.LogoContainer>
+                    
+                </styled.Container>
             }
-
-            </styled.LogoContainer>
-            
-        </styled.Container>
+        </>
     )
 }
 

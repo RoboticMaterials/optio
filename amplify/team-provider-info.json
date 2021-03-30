@@ -19,7 +19,7 @@
       "function": {
         "handleTaskQueue": {
           "deploymentBucketName": "amplify-rmstudiocloud-dev-112632-deployment",
-          "s3Key": "amplify-builds/handleTaskQueue-6d624a77706a49594958-build.zip"
+          "s3Key": "amplify-builds/handleTaskQueue-414c7a596f474c4d6265-build.zip"
         }
       }
     }

@@ -12,6 +12,8 @@ type User
 {
   id: ID!
   organizationId: ID!
+createdAt: AWSDateTime
+updatedAt: AWSDateTime
   username: String!
   organization: Organization @connection(fields: ["organizationId"])
 }
@@ -26,12 +28,14 @@ type Organization
 {
   id: ID!
   organizationId: ID!
+createdAt: AWSDateTime
+updatedAt: AWSDateTime
   name: String!
   key: String!
   users: [User] @connection(keyName: "UsersbyOrg", fields: ["organizationId"])
 
   # Organization's data
-  stations: [Station] @connection(keyName: "StationsByOrgId", fields: ["organizationId"])
+  # stations: [Station] @connection(keyName: "StationsByOrgId", fields: ["organizationId"])
 }
 
 # Data related
@@ -45,6 +49,8 @@ type Station
   id: ID!
   _id: String!
   organizationId: ID!
+createdAt: AWSDateTime
+updatedAt: AWSDateTime
 
   # Data
   name: String!
@@ -69,6 +75,8 @@ type Position
   id: ID!
   _id: String!
   organizationId: ID!
+createdAt: AWSDateTime
+updatedAt: AWSDateTime
   
   # Data
   change_key: String!
@@ -94,6 +102,8 @@ type Task
   id: ID!
   _id: String!
   organizationId: ID!
+createdAt: AWSDateTime
+updatedAt: AWSDateTime
 
   # Data
   device_types: AWSJSON!
@@ -119,6 +129,8 @@ type Process
   id: ID!
   _id: String!
   organizationId: ID!
+createdAt: AWSDateTime
+updatedAt: AWSDateTime
   
   # Data
   name: String!
@@ -136,6 +148,8 @@ type Object
   id: ID!
   _id: String!
   organizationId: ID!
+createdAt: AWSDateTime
+updatedAt: AWSDateTime
   
   # Data
   description: String!
@@ -156,6 +170,8 @@ type Card
   id: ID!
   _id: ID!
   organizationId: ID!
+createdAt: AWSDateTime
+updatedAt: AWSDateTime
 
   # Data
   bins: AWSJSON!
@@ -180,6 +196,8 @@ type Settings
   id: ID!
   _id: String
   organizationId: ID!
+createdAt: AWSDateTime
+updatedAt: AWSDateTime
 
   MiRMapEnabled: Boolean
   accessToken: String
@@ -206,6 +224,8 @@ type LotTemplate
   id: ID!
   _id: String
   organizationId: ID!
+createdAt: AWSDateTime
+updatedAt: AWSDateTime
 
   # Data
   name: String!
@@ -223,6 +243,8 @@ type Device
   id: ID!
   _id: String!
   organizationId: ID!
+createdAt: AWSDateTime
+updatedAt: AWSDateTime
   
   # Data
   battery_percentage: Int!
@@ -248,6 +270,8 @@ type Status
   id: ID!
   _id: String!
   organizationId: ID!
+createdAt: AWSDateTime
+updatedAt: AWSDateTime
   
   # Data
   active_map: Boolean
@@ -264,6 +288,8 @@ type TaskQueue
   id: ID!
   _id: String!
   organizationId: ID!
+createdAt: AWSDateTime
+updatedAt: AWSDateTime
   
   # Data
   device_type: String!
@@ -291,6 +317,8 @@ type TaskQueueEvents
   # IDs
   id: ID!
   organizationId: ID!
+createdAt: AWSDateTime
+updatedAt: AWSDateTime
   
   # Data
   device_type: String!
@@ -318,6 +346,8 @@ type Dashboard
   # IDs
   id: ID!
   organizationId: ID!
+createdAt: AWSDateTime
+updatedAt: AWSDateTime
   
   # Data
   data: AWSJSON!

@@ -26,7 +26,7 @@ import { usersbyId } from '../graphql/queries'
             variables: { id: user.attributes.sub }
         })
 
-        return 'r0b0t1c' //data.data.UsersbyId.items[0].organizationId
+        return data.data.UsersbyId.items[0].organizationId
 
     } catch (error) {
         console.log(error)
