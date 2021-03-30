@@ -1286,9 +1286,7 @@ const LotEditor = (props) => {
 									setSubmitting(false)
 									return false
 								}
-
-								console.log("HANDLESUBMIT")
-
+                                
 								let requestResult
 
 								const {
