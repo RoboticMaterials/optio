@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useRef} from "react"
 
 // functions external
 import PropTypes from 'prop-types'
@@ -27,11 +27,18 @@ const NumberInput = ({
 	longPlusPressEvent,
 	longMinusPressEvent,
 	usable,
+	onFocus,
+	onBlur,
 	inputChildren,
 	inputStyle,
 	buttonStyle,
 	containerStyle,
 	...props }) => {
+
+	const inputRef = useRef(null)
+	const onWheel = () => {
+		inputRef?.current && inputRef.current.blur();
+	};
 
 
 	return (
@@ -51,6 +58,7 @@ const NumberInput = ({
 			/>
 			<div style={{position: "relative"}}>
 				<styled.Input
+					ref={inputRef}
 					usable={usable}
 					readOnly={props.readOnly || !usable}
 					disabled={props.inputDisabled || !usable}
@@ -59,6 +67,17 @@ const NumberInput = ({
 					onChange={onInputChange}
 					value={value}
 					style={inputStyle}
+					onFocus={onFocus}
+					onBlur={onBlur}
+					onScroll={(e)=>{
+						e.preventDefault()
+						return false
+					}}
+					onWheel={onWheel}
+					onMouseWheel={(e) => {
+						e.preventDefault()
+						return false
+					}}
 				>
 				</styled.Input>
 				{inputChildren}
