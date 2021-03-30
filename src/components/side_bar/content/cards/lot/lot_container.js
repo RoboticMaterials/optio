@@ -12,7 +12,6 @@ const LotContainer = (props) => {
         lotId,
         binId,
         enableFlagSelector,
-        // processId,
         ...rest
     } = props
 

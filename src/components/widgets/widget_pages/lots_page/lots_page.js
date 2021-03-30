@@ -68,7 +68,6 @@ const LotsPage = (props) => {
     }
 
     const openEditor = (cardId, processId, binId) => {
-        console.log("openEditor", {cardId, processId, binId})
         onShowCardEditor(true)
         setSelectedCard({cardId, processId, binId})
     }
@@ -118,35 +117,15 @@ const LotsPage = (props) => {
                 })
                 .map((card, ind) => {
                     const {
-                        name,
-                        lotNumber,
-                        bins,
-                        dates,
-                        totalQuantity,
-                        flags,
-                        description,
                         _id: currCardId,
                         process_id: currCardProcessId
                     } = card || {}
-
-                    console.log(card)
-
-                    const quantity = getBinQuantity({bins}, location?._id)
 
                     return <LotContainer
                         lotId={currCardId}
                         binId={stationID}
                         enableFlagSelector={false}
-                        // templateValues={templateValues}
                         key={currCardId}
-                        // processName={processName}
-                        // totalQuantity={totalQuantity || ""}
-                        // lotNumber={lotNumber}
-                        // name={name}
-                        // objectName={objectName}
-                        // count={quantity}
-                        // id={currCardId}
-                        // flags={flags || []}
                         onClick={() => {
                             openEditor(currCardId, currCardProcessId, location._id)
                         }}
@@ -154,20 +133,6 @@ const LotsPage = (props) => {
                             marginBottom: "0.5rem",
                         }}
                     />
-
-                    // return (
-                    //     <LotListItem
-                    //         key={currCardId}
-                    //         name={name}
-                    //         lotNumber={lotNumber}
-                    //         quantity={quantity}
-                    //         dates={dates}
-                    //         description = {description}
-                    //         onClick={() => {
-                    //             openEditor(currCardId, currCardProcessId, location._id)
-                    //         }}
-                    //     />
-                    // )
                 })}
         </styled.LotsContainer>
     )
