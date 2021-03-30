@@ -158,7 +158,7 @@ const WidgetButton = (props) => {
             // dashboardInfo
             let defaultDashboard = {
                 name: selectedLocation.name + ' Dashboard',
-                locked: true,
+                locked: false,
                 buttons: [],
                 station: selectedLocation._id
             }

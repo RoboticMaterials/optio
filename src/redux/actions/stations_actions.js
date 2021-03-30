@@ -324,9 +324,8 @@ const onPostStation = (station) => {
         // Add dashboard
         let defaultDashboard = {
             name: "",
-            locked: true,
+            locked: false,
             buttons: [],
-            locked: true,
             station: station._id
         }
 

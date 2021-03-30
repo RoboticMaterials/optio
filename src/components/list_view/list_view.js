@@ -52,7 +52,6 @@ const ListView = (props) => {
     const history = useHistory()
     const params = useParams()
     const { widgetPage } = props.match.params
-
     const size = useWindowSize()
     const windowWidth = size.width
     const widthBreakPoint = 1025
@@ -108,7 +107,7 @@ const ListView = (props) => {
           setLocked(dashboard.locked)
         }
       })
-    }, [params.stationID])
+    }, [params.stationID, dashboards])
 
 
 

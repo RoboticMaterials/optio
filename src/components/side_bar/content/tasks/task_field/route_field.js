@@ -391,7 +391,7 @@ const TaskField = (props) => {
         if (updatedDashboard === undefined) {
             let defaultDashboard = {
                 name: updatedStation.name + ' Dashboard',
-                locked: true,
+                locked: false,
                 buttons: [],
                 station: updatedStation._id
             }

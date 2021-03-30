@@ -72,7 +72,7 @@ const DashboardEditor = (props) => {
     const getInitialValues = () => {
         let initialValues = {
             name: "",
-            locked: true,
+            locked: false,
             buttons: []
 
         }
