@@ -45,7 +45,7 @@ const NewButtonForm = (props) => {
 
 
     const dispatch = useDispatch()
-    const onPutDashboard = (dashboardCopy, dashboardId) => dispatch(putDashboard(dashboardCopy, dashboardId))
+    const dispatchPutDashboard = (dashboardCopy, dashboardId) => dispatch(putDashboard(dashboardCopy, dashboardId))
 
     const editingButton = report_buttons.find((currButton) => currButton._id === buttonId)
     const _id = editingButton?._id
@@ -56,11 +56,11 @@ const NewButtonForm = (props) => {
 
     const formMode = _id ? FORM_MODES.UPDATE : FORM_MODES.CREATE
 
-    const handleSubmit = (values, formMode) => {
+    const onSubmit = (values, formMode) => {
         // extract values and default values
         const description = values?.description || ""
         const iconClassName = values?.iconClassName
-        const color = values?.color || "red"
+        const color = values?.color || "#ff4b4b"
         const label = values?.label || ""
         const old_report_buttons = dashboard?.report_buttons || []
 
@@ -91,7 +91,7 @@ const NewButtonForm = (props) => {
                 }
 
                 // update dashboard
-                onPutDashboard(updatedDashboard, dashboard._id.$oid)
+                dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)
             }
 
             // create new button
@@ -113,7 +113,7 @@ const NewButtonForm = (props) => {
                 }
 
                 // update dashboard
-                onPutDashboard(updatedDashboard, dashboard._id.$oid)
+                dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)
             }
 
             // close form
@@ -126,13 +126,28 @@ const NewButtonForm = (props) => {
         }
     }
 
+    const onDelete = () => {
+        // remove button
+        const updatedDashboard = {
+            ...dashboard,
+            // filter through buttons, keep all but one with matching id of current button
+            report_buttons: report_buttons.filter((currOldButton) => currOldButton._id !== _id)
+        }
+
+        // update dashboard
+        dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)
+
+        // close form
+        cancel()
+    }
+
     return (
         <Formik
             initialValues={{
                 label: label ? label : "",
                 description: description ? description : "",
                 iconClassName: iconClassName ? iconClassName : null,
-                color: color ? color : "red"
+                color: color ? color : "#ff4b4b"
             }}
 
             // validation control
@@ -145,7 +160,7 @@ const NewButtonForm = (props) => {
                 // set submitting to true, handle submit, then set submitting to false
                 // the submitting property is useful for eg. displaying a loading indicator
                 setSubmitting(true)
-                await handleSubmit(values, formMode)
+                await onSubmit(values, formMode)
                 setTouched({}) // after submitting, set touched to empty to reflect that there are currently no new changes to save
                 setSubmitting(false)
                 resetForm()
@@ -194,7 +209,6 @@ const NewButtonForm = (props) => {
                                     type="text"
                                     placeholder="Label..."
                                     InputComponent={Textbox}
-                                    lines={1}
                                     style={{ borderRadius: ".5rem" }}
                                 />
                                 // :
@@ -309,10 +323,10 @@ const NewButtonForm = (props) => {
 
                         <styled.ButtonForm>
                             <Button
-                                tertiary
+                                secondary
                                 schema={"dashboards"}
-                                onClick={cancel}
-                                label={"Cancel"}
+                                onClick={onDelete}
+                                label={"Delete"}
                                 type="button"
                             />
 
@@ -344,7 +358,7 @@ const ReportModal = (props) => {
     const report_buttons = dashboard?.report_buttons || []
 
     const dispatch = useDispatch()
-    const onPutDashboard = (dashboardCopy, dashboardId) => dispatch(putDashboard(dashboardCopy, dashboardId))
+    const dispatchPutDashboard = (dashboardCopy, dashboardId) => dispatch(putDashboard(dashboardCopy, dashboardId))
     const onPostReportEvent = (reportEvent) => dispatch(postReportEvent(reportEvent))
     const onPutReportEvent = (id, reportEvent) => dispatch(putReportEvent(id, reportEvent))
 
@@ -404,7 +418,7 @@ const ReportModal = (props) => {
             style={{
                 overlay: {
                     zIndex: 500,
-                    backgroundColor: 'rgba(0, 0, 0, 0.4)' 
+                    backgroundColor: 'rgba(0, 0, 0, 0.4)'
                 },
                 content: {
 
@@ -502,7 +516,7 @@ const ReportModal = (props) => {
                                                             }
 
                                                             // update dashboard
-                                                            onPutDashboard(updatedDashboard, dashboard._id.$oid)
+                                                            dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)
                                                         }}
                                                     >
                                                         <i
@@ -567,7 +581,7 @@ const ReportModal = (props) => {
                                         //                     }
                                         //
                                         //                     // update dashboard
-                                        //                     onPutDashboard(updatedDashboard, dashboard._id.$oid)
+                                        //                     dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)
                                         //                 }}
                                         //             />
                                         //         }
@@ -609,7 +623,7 @@ const ReportModal = (props) => {
                                         //             {/*            }*/}
                                         //
                                         //             {/*            // update dashboard*/}
-                                        //             {/*            onPutDashboard(updatedDashboard, dashboard._id.$oid)*/}
+                                        //             {/*            dispatchPutDashboard(updatedDashboard, dashboard._id.$oid)*/}
                                         //             {/*        }}*/}
                                         //             {/*    />*/}
                                         //             {/*    }*/}
