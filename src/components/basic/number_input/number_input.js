@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useRef} from "react"
 
 // functions external
 import PropTypes from 'prop-types'
@@ -35,6 +35,11 @@ const NumberInput = ({
 	containerStyle,
 	...props }) => {
 
+	const inputRef = useRef(null)
+	const onWheel = () => {
+		inputRef?.current && inputRef.current.blur();
+	};
+
 
 	return (
 		<styled.Container style={containerStyle}>
@@ -53,6 +58,7 @@ const NumberInput = ({
 			/>
 			<div style={{position: "relative"}}>
 				<styled.Input
+					ref={inputRef}
 					usable={usable}
 					readOnly={props.readOnly || !usable}
 					disabled={props.inputDisabled || !usable}
@@ -63,6 +69,15 @@ const NumberInput = ({
 					style={inputStyle}
 					onFocus={onFocus}
 					onBlur={onBlur}
+					onScroll={(e)=>{
+						e.preventDefault()
+						return false
+					}}
+					onWheel={onWheel}
+					onMouseWheel={(e) => {
+						e.preventDefault()
+						return false
+					}}
 				>
 				</styled.Input>
 				{inputChildren}

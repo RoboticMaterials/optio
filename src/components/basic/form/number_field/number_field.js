@@ -7,6 +7,9 @@ import NumberInput, {NUMBER_INPUT_BUTTON_TYPES} from "../../number_input/number_
 // functions external
 import PropTypes from 'prop-types'
 import { useField, useFormikContext } from "formik"
+import {
+	isMobile
+} from "react-device-detect";
 
 // hooks
 import useLongPress from "../../../../hooks/useLongPress"
@@ -17,7 +20,6 @@ import { ThemeContext } from 'styled-components'
 
 // utils
 import {setAcceleratingInterval} from "../../../../methods/utils/utils"
-import {set} from "ramda";
 
 // options for useLongPress hook
 const longPressOptions = {
@@ -128,26 +130,27 @@ const NumberField = ({
 	}
 
 	const handleFocus = () => {
-		setFocused(true)
-		setPreviousValue(parseInt(fieldValue))
-		setFieldValue(fieldName, "")
+		if(isMobile) {
+			setFocused(true)
+			setPreviousValue(parseInt(fieldValue))
+			setFieldValue(fieldName, "")
+		}
+
 	}
 
 
 	const handleBlur = () => {
-		setFocused(false)
-
-		setTimeout(() => {
-			if(!longPressing)
-				setFieldValue(fieldName,
-					Number.isInteger(parseInt(fieldValue)) ? parseInt(fieldValue) :
-						Number.isInteger(parseInt(previousValue)) ? parseInt(previousValue) :
-							0
-				)
-		}, 500)
-
-
-
+		if(isMobile) {
+			setTimeout(() => {
+				setFocused(false)
+				if(!longPressing)
+					setFieldValue(fieldName,
+						Number.isInteger(parseInt(fieldValue)) ? parseInt(fieldValue) :
+							Number.isInteger(parseInt(previousValue)) ? parseInt(previousValue) :
+								0
+					)
+			}, 500)
+		}
 	}
 
 	// filler func for useLongPress
