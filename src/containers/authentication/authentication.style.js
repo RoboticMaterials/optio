@@ -1,13 +1,22 @@
 import styled from 'styled-components'
 
+export const Page = styled.div`
+    width: 100%;
+    height: 100%;
+    background-color: red;
+`
+
 export const Container = styled.div`
     // width: 35%;
-    width: 40rem;
+    min-width: 35rem;
+    // height: 80%;
+
     position: absolute;
     top: 50%;
-    left: 50%;
-    transform: translate(-50%,-60%);
+    left: 5rem;
+    transform: translate(0, -50%);
     border-radius: 10px;
+    background: white;
 
     display: flex;
     flex-direction: column;

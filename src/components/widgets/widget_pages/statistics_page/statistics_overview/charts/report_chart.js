@@ -98,7 +98,7 @@ const ReportChart = (props) => {
                         layout={"vertical"}
                         enableGridY={true}
                         axisBottom={{
-                            legend: TIME_SPANS[timeSpan].displayName,
+                            legend: TIME_SPANS[timeSpan]?.displayName || TIME_SPANS.day.displayName,
                             tickRotation: timeSpan === TIME_SPANS.month.name ? 0 : -90,
                         }}
                         axisLeft={{

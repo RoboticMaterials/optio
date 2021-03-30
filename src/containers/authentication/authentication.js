@@ -112,6 +112,7 @@ const Authentication = (props) => {
     }
 
     return (
+        <styled.Page className="signin-page">
         <styled.Container>
 
             <styled.LogoContainer>
@@ -165,6 +166,7 @@ const Authentication = (props) => {
             </styled.LogoContainer>
             
         </styled.Container>
+        </styled.Page>
     )
 
 }
