@@ -44,9 +44,18 @@ export const StationHeader = styled.div`
     align-items: center;
     background: ${props => props.theme.bg.secondary};
     padding: .5rem 1rem;
-    
- 
-   
+`
+
+export const HeaderRow = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-self: stretch;
+`
+
+export const QuantityText = styled.span`
+    font-size: 1rem;
+    color: ${props => props.theme.textColor};
 `
 
 export const HeaderContent = styled.div`
@@ -94,6 +103,7 @@ export const StationTitle = styled.span`
     display: -webkit-box;
     -webkit-line-clamp: 2; /* number of lines to show */
     -webkit-box-orient: vertical;
+    color: ${props => props.theme.textColor};
 `
 
 
