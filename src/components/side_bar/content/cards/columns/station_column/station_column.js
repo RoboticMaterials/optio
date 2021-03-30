@@ -21,7 +21,7 @@ const StationsColumn = ((props) => {
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
-	
+
 	return(
 		<Column
 			setSelectedCards={setSelectedCards}
@@ -36,7 +36,7 @@ const StationsColumn = ((props) => {
 					<styled.HeaderContent>
 						<i className="fa fa-chevron-down" aria-hidden="true"
 						   onClick={() => setCollapsed(true)}
-						   style={{marginRight: "1rem"}}
+						   style={{marginRight: "1rem", cursor: 'pointer'}}
 						/>
 
 						<styled.LabelContainer>
@@ -50,6 +50,7 @@ const StationsColumn = ((props) => {
 					<styled.StationHeader>
 						<i className="fa fa-chevron-right" aria-hidden="true"
 							onClick={() => setCollapsed(false)}
+							style = {{cursor: 'pointer'}}
 						/>
 					</styled.StationHeader>
 			}
