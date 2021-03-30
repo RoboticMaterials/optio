@@ -328,7 +328,6 @@ const LineThroughputChart = (props) => {
 
         },
         ]
-        console.log('QQQQ line data', lineData)
         return lineData
     }, [shiftDetails])
 
