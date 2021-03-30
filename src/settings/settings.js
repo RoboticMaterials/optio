@@ -23,7 +23,6 @@ export const apiIPAddress = () => {
      */
 
     if (!!hostServerIpAddress) {
-
         // If there is no api use the local host
         if (nonLocalIp===false) {
             return apiIPAddress = 'http://' + 'localhost' + ':5000/api/'
@@ -34,6 +33,7 @@ export const apiIPAddress = () => {
     } else {
         return 'http://' + window.location.hostname + ':5000/api/'
     }
+
 };
 
 store.subscribe(apiIPAddress);

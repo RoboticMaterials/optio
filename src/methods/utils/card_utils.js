@@ -243,7 +243,23 @@ export const sortBy = (arr, sortMode, sortDirection) => {
 			break
 		}
 		case FIELD_DATA_TYPES.DATE: {
-			// not yet implemented
+			arr.sort((itemA, itemB) => {
+				const {
+					[fieldName]: valA
+				} = itemA
+				const {
+					[fieldName]: valB
+				} = itemB
+
+				if(!valA) return 1
+				if(!valB) return -1
+				if(isAscending) {
+					return new Date(valA) - new Date(valB);
+				}
+				else {
+					return new Date(valB) - new Date(valA);
+				}
+			})
 			break
 
 		}
@@ -257,7 +273,7 @@ export const sortBy = (arr, sortMode, sortDirection) => {
 				} = itemB
 
 				if(!rangeA) return 1
-				// if(!rangeB) return -1
+				if(!rangeB) return -1
 
 				const valA = rangeA[index]
 				const valB = rangeB[index]
