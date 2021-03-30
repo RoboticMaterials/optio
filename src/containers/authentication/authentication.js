@@ -27,8 +27,6 @@ const Authentication = (props) => {
         mobileMode
     } = props
 
-    console.log(mobileMode);
-
     const history = useHistory()
     const params = useParams()
 
