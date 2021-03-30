@@ -15,6 +15,12 @@
       "auth": {
         "rmstudiocloud9f9c02e1": {},
         "rmstudiocloud298656c6": {}
+      },
+      "function": {
+        "handleTaskQueue": {
+          "deploymentBucketName": "amplify-rmstudiocloud-dev-112632-deployment",
+          "s3Key": "amplify-builds/handleTaskQueue-6d624a77706a49594958-build.zip"
+        }
       }
     }
   }

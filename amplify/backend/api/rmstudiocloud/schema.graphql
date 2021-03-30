@@ -88,6 +88,7 @@ type Task
   @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "TasksByOrgId", fields: ["organizationId"], queryField: "TasksByOrgId" )
+  @key(name: "TaskById", fields: ["id"], queryField: "TaskById" )
 {
   # IDs
   id: ID!
@@ -355,6 +356,6 @@ type Subscription {
 }
 
 # Analysis Queries
-# type Query {
-#     taskAnalysis(id: ID): Task @function
-# }
+type Mutation {
+  manageTaskQueue(id: ID!, task_id: ID!, lot_id: ID!, quantity: Int!): TaskQueue @function(name: "handleTaskQueue-${env}")
+}

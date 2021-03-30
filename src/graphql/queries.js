@@ -456,6 +456,44 @@ export const tasksByOrgId = /* GraphQL */ `
     }
   }
 `;
+export const taskById = /* GraphQL */ `
+  query TaskById(
+    $id: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelTaskFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    TaskById(
+      id: $id
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        _id
+        organizationId
+        device_types
+        handoff
+        load
+        map_id
+        name
+        processes
+        quantity
+        track_quantity
+        type
+        unload
+        obj
+        route_object
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
 export const processesByOrgId = /* GraphQL */ `
   query ProcessesByOrgId(
     $organizationId: ID

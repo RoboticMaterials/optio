@@ -67,7 +67,12 @@ const SignInUpPage = (props) => {
             if(data.data.UsersbyId.items.length){
                 return true
             }else{
-                history.push('/login/organization');
+                dispatchPostLocalSettings({
+                    ...localReducer,
+                    authenticated: true,
+                });
+
+                history.push('/organization');
             }
         }catch(err){
             console.log(err)

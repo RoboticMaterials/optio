@@ -38,7 +38,7 @@ import { getCards, getProcessCards, putCard } from "../../redux/actions/card_act
 // Amplify and GQL
 import { API, graphqlOperation } from 'aws-amplify';
 import * as subscriptions from '../../graphql/subscriptions';
-import { Unsubscribe } from '@material-ui/icons';
+import { manageTaskQueue } from '../../graphql/mutations';
 
 const ApiContainer = (props) => {
 
@@ -403,56 +403,16 @@ const ApiContainer = (props) => {
 
         // Unload?
         if(task && task.handoff){
-            // get lot
-            const cards = await onGetCards()
-            let lot = cards.cards[taskQueueItem.lot_id]
 
-            // is there a lot
-            if(lot){
-
-                // are we moving the whole lot?
-                if(taskQueueItem.quantity === task.totalQuantity){
-                    // move the whole lot 
-                    delete lot.bins[task.load.station]
-
-                    lot.bins[task.unload.station] = {
-                        count: taskQueueItem.quantity
-                    }  
-
-                }else{
-                    //check how much they want to move and update it accordingly
-                    const diff = lot.bins[task.load.station].count - taskQueueItem.quantity
-
-                    if(diff === 0){
-
-                        // move the res of the lot 
-                        delete lot.bins[task.load.station]
-
-                        lot.bins[task.unload.station].count = lot.bins[task.unload.station] ? taskQueueItem.quantity + lot.bins[task.unload.station].count : taskQueueItem.quantity
-                        
-                    }else{
-                        lot.bins[task.load.station].count = diff
-
-                        if(lot.bins[task.unload.station]){
-                            lot.bins[task.unload.station].count +=  taskQueueItem.quantity
-                        }else{
-                            lot.bins[task.unload.station] = {
-                                count: taskQueueItem.quantity
-                            }
-                        }
-                    }
+            await API.graphql({
+                query: manageTaskQueue,
+                variables: { 
+                    id: taskQueueItem.id,
+                    task_id: taskQueueItem.task_id,
+                    lot_id: taskQueueItem.lot_id,
                 }
-                
-                // disatch update to the card
-                await onPutCard(lot)
+              });
 
-                // delete task from Q
-                await onDeleteTaskQItem(taskQueueItem.id, 'load')
-
-            }else{
-                // delete task from Q
-                await onDeleteTaskQItem(taskQueueItem.id, 'load')
-            }
         }else{
             if(taskQueueItem.start_time === null){
 

@@ -1,6 +1,41 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const manageTaskQueue = /* GraphQL */ `
+  mutation ManageTaskQueue(
+    $id: ID!
+    $task_id: ID!
+    $lot_id: ID!
+    $quantity: Int!
+  ) {
+    manageTaskQueue(
+      id: $id
+      task_id: $task_id
+      lot_id: $lot_id
+      quantity: $quantity
+    ) {
+      id
+      _id
+      organizationId
+      device_type
+      mission_status
+      owner
+      task_id
+      custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lot_id
+      start_time
+      end_time
+      hil_station_id
+      hil_message
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const createUser = /* GraphQL */ `
   mutation CreateUser(
     $input: CreateUserInput!

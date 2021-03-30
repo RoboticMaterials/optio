@@ -156,6 +156,12 @@ const App = (props) => {
                         }
 
                         {authenticated &&
+                            <Route exact path="/organization" >
+                                <FirstSignIn />
+                            </Route>
+                        }
+
+                        {authenticated &&
                             <Route
                                 path={["/locations/:stationID?/:widgetPage?", '/:sidebar?/:data1?/:data2?', '/',]}
                             >

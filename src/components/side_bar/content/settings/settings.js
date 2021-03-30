@@ -318,7 +318,7 @@ const Settings = () => {
             authenticated: false,
           });
     
-          history.push('/login')
+          history.push('/')
 
           window.location.reload()
 
