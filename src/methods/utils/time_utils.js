@@ -37,8 +37,14 @@ export const convert24hto12h = (time24h) => {
     hours = parseInt(hours)
 
     if (hours >= 12) {
-        hours = hours - 12
+        if (hours > 12) {
+            hours = hours - 12
+        }
         modifier = 'pm'
+    }
+
+    if (minutes.length === 1) {
+        minutes = `${minutes}0`
     }
 
     return `${hours}:${minutes} ${modifier}`
@@ -146,6 +152,10 @@ export const convertIntto24h = (int) => {
  */
 export const convert24htoEpoch = (time24h, date) => {
     const epochTime = Date.parse(`${date} ${time24h}`)
-    
+
     return epochTime
-}  
+}
+
+export const convertDateto12h = (date) => {
+    return convert24hto12h(`${date.getHours()}:${date.getMinutes()}`)
+}

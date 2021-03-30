@@ -18,13 +18,11 @@ import { ResponsiveLine, Line } from '@nivo/line'
 
 // Import utils
 import { throughputSchema } from '../../../../../../../methods/utils/form_schemas'
-import { convert12hto24h, convert24hto12h, convertTimeStringto24h, convert24htoInt, convertIntto24h, convert24htoEpoch } from '../../../../../../../methods/utils/time_utils'
+import { convert12hto24h, convert24htoEpoch, convertDateto12h } from '../../../../../../../methods/utils/time_utils'
 import { deepCopy } from '../../../../../../../methods/utils/utils';
 
 // Import actions
 import { postSettings } from '../../../../../../../redux/actions/settings_actions'
-import { convertData } from '../../../../../../../redux/actions/report_event_actions';
-import { LightenDarkenColor, hexToRGBA } from '../../../../../../../methods/utils/color_utils';
 
 const LineThroughputChart = (props) => {
 
@@ -330,7 +328,6 @@ const LineThroughputChart = (props) => {
 
         },
         ]
-
         return lineData
     }, [shiftDetails])
 
@@ -682,13 +679,14 @@ const LineThroughputChart = (props) => {
                     colors={line => colors[line.id]}
 
                     xScale={{ type: "time" }}
-                    xFormat="time:%H:%M"
+                    xFormat={(value) => convertDateto12h(value)}
                     yFormat={value => Math.round(value)}
                     yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
 
                     axisTop={null}
                     axisRight={null}
-                    axisBottom={{ format: "%H:%M", tickRotation: 45 }}
+                    axisBottom={{ format: (value) => convertDateto12h(value)}}
+                    
                     axisLeft={{
                         orient: 'left',
                         tickSize: 5,
@@ -704,10 +702,10 @@ const LineThroughputChart = (props) => {
                     useMesh={true}
 
                     enablePoints={true}
+                    // pointLabel={(value) => `${convertDateto12h(value.x)}:${value.y}`}
                     pointSize={5}
                     pointBorderWidth={1}
                     pointBorderColor={{ from: 'white' }}
-                    pointLabel="y"
                     pointLabelYOffset={-12}
 
                     margin={{ top: 22, left: 70, right: 70, bottom: 32 }}
@@ -741,6 +739,7 @@ const LineThroughputChart = (props) => {
                             ]
                         }]}
                     theme={{
+                        
                         textColor: themeContext.bg.octonary,
                         axis: {
                             ticks: {
