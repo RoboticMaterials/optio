@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import * as buttonCss from '../../../../../../common_css/button_css'
 import * as commonCss from '../../../../../../common_css/common_css'
 import * as styles from '../../statistics_page.style'
+import { LightenDarkenColor } from '../../../../../../methods/utils/color_utils'
 
 export const PlotHeader = styled.div`
 	//height: 30rem;
@@ -94,6 +95,10 @@ export const ChartButton = styled.button`
     margin-top: .5rem;
     margin-bottom: 0.1rem;
     font-size: 1.25rem;
+
+    &:hover {
+      background-color:${props => LightenDarkenColor(props.theme.schema.charts.solid, -5)};
+    }
 `
 
 export const RowContainer = styled.div`

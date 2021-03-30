@@ -18,7 +18,6 @@ export async function getTaskQueue() {
         });
         // Success 🎉
         const data = response.data;
-
         const dataJson = JSON.parse(data)
 
         return dataJson;
@@ -195,8 +194,6 @@ export async function deleteTaskQueueItem(id) {
         }
         throw error
     }
-
-
 }
 
 export async function putTaskQueueItem(item, ID) {
@@ -212,7 +209,6 @@ export async function putTaskQueueItem(item, ID) {
             },
             data: item
         });
-
         // Success 🎉
         const data = response.data;
         const dataJson = JSON.parse(data)

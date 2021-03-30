@@ -82,7 +82,10 @@ const TemplateSelectorSidebar = (props) => {
                 }
                 <style.LotTemplateButton
                     isSelected={selectedLotTemplatesId === BASIC_LOT_TEMPLATE_ID}
-                    onClick={() => dispatchSetSelectedLotTemplate(BASIC_LOT_TEMPLATE_ID)}
+                    onClick={() => {
+                        dispatchSetSelectedLotTemplate(BASIC_LOT_TEMPLATE_ID)
+                        isMobile && onCloseClick()
+                    }}
                 >
                     <style.TemplateIcon
                         isSelected={selectedLotTemplatesId === BASIC_LOT_TEMPLATE_ID}
@@ -109,6 +112,7 @@ const TemplateSelectorSidebar = (props) => {
                             isSelected={isSelected}
                             onClick={() => {
                                 dispatchSetSelectedLotTemplate(currTemplateId)
+                                isMobile && onCloseClick()
                             }}
                         >
                             <style.TemplateIcon

@@ -7,6 +7,9 @@ import {getCardsCount} from "../../../../../api/cards_api";
 import PropTypes from "prop-types";
 import {Formik, setNestedObjectValues} from "formik";
 import {useDispatch, useSelector} from "react-redux";
+import {
+	isMobile
+} from "react-device-detect";
 
 // external components
 import FadeLoader from "react-spinners/FadeLoader"
@@ -112,8 +115,6 @@ const FormComponent = (props) => {
 	} = values || {}
 
 	const formMode = cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE
-
-	useWarn(uniqueNameSchema, formikProps)
 
 	const themeContext = useContext(ThemeContext);
 
@@ -359,7 +360,7 @@ const FormComponent = (props) => {
 
 						<NumberField
 							maxValue={maxValue}
-							minValue={0}
+							minValue={1}
 							name={"moveCount"}
 						/>
 					</div>
@@ -847,6 +848,19 @@ const FormComponent = (props) => {
 
 				<styled.Footer>
 					{/* render buttons for appropriate content */}
+					{(isMobile && showTemplateSelector) ?
+					<styled.ButtonContainer>
+						<Button
+							type={"button"}
+							style={{...buttonStyle, }}
+							onClick={() => setShowTemplateSelector(false)}
+							schema={"lots"}
+							// secondary
+						>
+							Back to Editor
+						</Button>
+					</styled.ButtonContainer>
+					:
 					<styled.ButtonContainer>
 						{
 							{
@@ -1025,6 +1039,7 @@ const FormComponent = (props) => {
 						}
 
 					</styled.ButtonContainer>
+					}
 
 
 					{footerContent()}

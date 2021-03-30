@@ -125,13 +125,13 @@ const MoveMultipleLotsModal = (props) => {
 
 					return(
 						<sharedStyles.LotWrapper key={cardId}>
-						<LotContainer
-							lotId={cardId}
-							binId={binId}
-							processId={processId}
-							enableFlagSelector={false}
-							containerStyle={lotContainerStyle}
-						/>
+							<LotContainer
+								lotId={cardId}
+								binId={binId}
+								processId={processId}
+								enableFlagSelector={false}
+								containerStyle={lotContainerStyle}
+							/>
 						</sharedStyles.LotWrapper>
 					)
 				})}
@@ -207,13 +207,13 @@ const MoveMultipleLotsModal = (props) => {
 			isOpen={isOpen}
 			close={handleClose}
 			title={"Move Lots"}
-			button_1_text={"Move"}
-			button_1_disabled={isMoving || selectedStationId === null}
-			button_2_text={"Cancel"}
+			button_2_text={"Move"}
+			button_2_disabled={isMoving || selectedStationId === null}
+			button_1_text={"Cancel"}
 			onCloseButtonClick={handleClose}
 			onRequestClose={handleClose}
-			handleOnClick1={onMoveClick}
-			handleOnClick2={() => {
+			handleOnClick2={onMoveClick}
+			handleOnClick1={() => {
 				setShowConfirmDeleteModal(false)
 			}}
 			PreBodyContent={

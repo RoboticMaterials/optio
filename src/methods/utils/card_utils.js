@@ -252,8 +252,6 @@ export const sortBy = (arr, sortMode, sortDirection) => {
 				} = itemB
 
 				if(!valA) return 1
-
-				if(!valA) return 1
 				if(!valB) return -1
 				if(isAscending) {
 					return new Date(valA) - new Date(valB);

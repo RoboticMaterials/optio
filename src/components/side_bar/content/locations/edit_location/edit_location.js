@@ -410,6 +410,7 @@ const EditLocation = (props) => {
                                     placeholder='Enter Location Name'
                                     type='text'
                                     label='Location Name'
+                                    schema='locations'
                                     InputComponent={Textbox}
                                     style={{
                                         'fontSize': '1.2rem',
@@ -495,10 +496,10 @@ const EditLocation = (props) => {
                             </Form>
                         )
                     }}
-            
+
                 </Formik>
             </styled.ContentContainer>
-            
+
         </>
     )
 }
