@@ -43,7 +43,7 @@ import log from '../../../../../logger.js';
 import DashboardAddButton from "./dashboard_add_button/dashboard_add_button";
 import { useChange } from "../../../../basic/form/useChange";
 import { PAGES } from "../../../../../constants/dashboard_contants";
-import DashboardsSidebar, {TYPES} from "../dashboards_sidebar/dashboards_sidebar";
+import DashboardsSidebar, { TYPES } from "../dashboards_sidebar/dashboards_sidebar";
 
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
@@ -83,23 +83,23 @@ const DashboardEditor = (props) => {
 
             let initialButtons = [];
             buttons
-            .filter((currButton) => {
-                const {
-                    task_id,
-                    type
-                } = currButton
+                .filter((currButton) => {
+                    const {
+                        task_id,
+                        type
+                    } = currButton
 
-                if(task_id && taskIds.includes(task_id)) {
-                    logger.error(`Button with duplicate task_id found in dashboard. {task_id:${task_id}`)
-                    return false // don't add duplicate tasks
-                }
+                    if (task_id && taskIds.includes(task_id) && task_id !== 'custom_task') {
+                        logger.error(`Button with duplicate task_id found in dashboard. {task_id:${task_id}`)
+                        return false // don't add duplicate tasks
+                    }
 
-                taskIds.push(task_id)
-                return true
-            })
-            .map((value, index) => {
-                initialButtons.push(value)
-            })
+                    taskIds.push(task_id)
+                    return true
+                })
+                .map((value, index) => {
+                    initialButtons.push(value)
+                })
 
             initialValues = {
                 name: dashboard.name,
