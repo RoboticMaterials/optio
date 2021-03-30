@@ -157,6 +157,5 @@ export const convert24htoEpoch = (time24h, date) => {
 }
 
 export const convertDateto12h = (date) => {
-    console.log('QQQQ herp', convert24hto12h(`${date.getHours()}:${date.getMinutes()}`))
     return convert24hto12h(`${date.getHours()}:${date.getMinutes()}`)
 }
