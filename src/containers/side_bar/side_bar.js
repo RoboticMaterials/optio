@@ -157,7 +157,6 @@ const SideBar = (props) => {
      * Handles the hamburger icon transformation
      */
     const handleSideBarOpenCloseButtonClick = () => {
-        console.log('QQQQ herp', params)
 
         if (!!showSideBar) {
             if (!!selectedLocation && !selectedLocation.new) {
