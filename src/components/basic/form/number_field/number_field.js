@@ -153,12 +153,50 @@ const NumberField = ({
 		}
 	}
 
-	// filler func for useLongPress
-	const dummyFunc = () => {}
+	const handleMinusClick = () => {
+		if(!touched) {
+			setFieldTouched(fieldName, true)
+		}
+
+		if (maxValue) {
+			if (fieldValue > maxValue) {
+				// fieldValue should not exceed count, it may have been set higher before a lot was selected
+				// reduce fieldValue to lot count
+				setFieldValue(fieldName, parseInt(maxValue))
+			}
+		}
+
+		// fieldValue cannot be negative
+		if (fieldValue > minValue) setFieldValue(fieldName,parseInt(fieldValue - 1))
+		// setFieldValue(fieldName,fieldValue - 1)
+	}
+
+	const handlePlusClick = () => {
+		if(!touched) {
+			setFieldTouched(fieldName, true)
+		}
+
+		// if there is a maxValue, fieldValue cannot exceed maxValue
+		if (maxValue) {
+			if (fieldValue < maxValue) {
+				setFieldValue(fieldName,parseInt(fieldValue + 1))
+			}
+
+			// fieldValue is greater than count (probably was set before lot was selected), reduce to count
+			else {
+				setFieldValue(fieldName, parseInt(maxValue))
+			}
+
+		}
+		// otherwise fieldValue can be anything
+		else {
+			setFieldValue(fieldName,parseInt(fieldValue + 1))
+		}
+	}
 
 	// create events for long press (plus and minus)
-	const longPlusPressEvent = useLongPress(createLongPressHandler(NUMBER_INPUT_BUTTON_TYPES.PLUS), onLongPressEnd, dummyFunc, longPressOptions)
-	const longMinusPressEvent = useLongPress(createLongPressHandler(NUMBER_INPUT_BUTTON_TYPES.MINUS), onLongPressEnd, dummyFunc, longPressOptions)
+	const longPlusPressEvent = useLongPress(createLongPressHandler(NUMBER_INPUT_BUTTON_TYPES.PLUS), onLongPressEnd, handlePlusClick, longPressOptions)
+	const longMinusPressEvent = useLongPress(createLongPressHandler(NUMBER_INPUT_BUTTON_TYPES.MINUS), onLongPressEnd, handleMinusClick, longPressOptions)
 
 	return (
 			<NumberInput
@@ -168,23 +206,7 @@ const NumberField = ({
 				longMinusPressEvent={longMinusPressEvent}
 				inputCss={hasError ? styled.errorCss : null}
 				themeContext={themeContext}
-				onMinusClick={() => {
-					if(!touched) {
-						setFieldTouched(fieldName, true)
-					}
-
-					if (maxValue) {
-						if (fieldValue > maxValue) {
-							// fieldValue should not exceed count, it may have been set higher before a lot was selected
-							// reduce fieldValue to lot count
-							setFieldValue(fieldName, parseInt(maxValue))
-						}
-					}
-
-					// fieldValue cannot be negative
-					if (fieldValue > minValue) setFieldValue(fieldName,parseInt(fieldValue - 1))
-					// setFieldValue(fieldName,fieldValue - 1)
-				}}
+				// onMinusClick={handleMinusClick}
 				minusDisabled={!(fieldValue > minValue)}
 				hasError={hasError}
 				onInputChange={(e) => {
@@ -220,30 +242,7 @@ const NumberField = ({
 				}}
 				value={longPressing ? valueState : fieldValue}
 				plusDisabled={(maxValue) && !(fieldValue < maxValue)}
-				onPlusClick={() => {
-
-					if(!touched) {
-						setFieldTouched(fieldName, true)
-					}
-
-					// if there is a maxValue, fieldValue cannot exceed maxValue
-					if (maxValue) {
-						if (fieldValue < maxValue) {
-							setFieldValue(fieldName,parseInt(fieldValue + 1))
-						}
-
-						// fieldValue is greater than count (probably was set before lot was selected), reduce to count
-						else {
-							setFieldValue(fieldName, parseInt(maxValue))
-						}
-
-					}
-					// otherwise fieldValue can be anything
-					else {
-						setFieldValue(fieldName,parseInt(fieldValue + 1))
-					}
-
-				}}
+				// onPlusClick={handlePlusClick}
 				inputChildren={<ErrorTooltip
 					visible={hasError && !focused}
 					text={error}
