@@ -54,8 +54,8 @@ export const HeaderRow = styled.div`
 `
 
 export const QuantityText = styled.span`
-  color: white;
     font-size: 1rem;
+    color: ${props => props.theme.textColor};
 `
 
 export const HeaderContent = styled.div`
@@ -98,6 +98,7 @@ export const StationLabel = styled.span`
 export const StationTitle = styled.span`
     text-align: center;
     font-size: ${props => props.theme.fontSize.sz3};
+    color: ${props => props.theme.textColor};
 `
 
 
