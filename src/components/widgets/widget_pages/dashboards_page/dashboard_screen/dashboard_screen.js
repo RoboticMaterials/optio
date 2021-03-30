@@ -360,7 +360,6 @@ const DashboardScreen = (props) => {
      * @param {*} custom
      */
     const handleTaskClick = async (type, Id, name, custom, deviceType) => {
-        console.log('QQQQ Task clicked')
         switch (type.toUpperCase()) {
             case TYPES.ROUTES.key:
                 if (!(Id === 'hil_success')) {

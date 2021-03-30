@@ -67,13 +67,13 @@ const SideBar = (props) => {
     const confirmDeleteCallback = useSelector(state => state.sidebarReducer.confirmDeleteCallback)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
-    const taskQueue = useSelector(state=>state.taskQueueReducer.taskQueue)
-    const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
 
     const history = useHistory()
     const url = useLocation().pathname
+
+    const pageNames = ['locations', 'tasks', 'routes', 'processes', 'lots', 'devices', 'settings',]
 
     const boundToWindowSize = () => {
         const newWidth = Math.min(window.innerWidth, Math.max(360, pageWidth))
@@ -178,7 +178,14 @@ const SideBar = (props) => {
             dispatchSetSelectedStation(null)
             dispatchSetSelectedPosition(null)
             dispatchHoverStationInfo(null)
-        } else {
+        } 
+        // Else handle when the sidebar is closed and clicked to open
+        else {
+
+            // If the url doesnt contain a defined page then switch it back to locations
+            if (!pageNames.includes(page)) {
+                history.push(`/locations`)
+            }
             const newSideBarState = !showSideBar
             setShowSideBar(newSideBarState)
             dispatchSetOpen(newSideBarState)
@@ -254,7 +261,7 @@ const SideBar = (props) => {
                 button_2_text={"No"}
                 handleClose={() => setConfirmDeleteModal(null)}
                 handleOnClick1={() => {
-                    if(showConfirmDeleteModal) {
+                    if (showConfirmDeleteModal) {
                         confirmDeleteCallback()
                     }
                     else {
@@ -284,7 +291,7 @@ const SideBar = (props) => {
             // showSideBar={showSideBar}
             >
                 <span className='hamburger-box' id='sideBarButton' style={{ display: 'flex', justifyContent: 'center', width: 'auto', color: 'red' }}>
-                    <span className='hamburger-inner' id='sideBarButton' style={{color: 'red'}}/>
+                    <span className='hamburger-inner' id='sideBarButton' style={{ color: 'red' }} />
                 </span>
             </styled.SideBarOpenCloseButton>
 
