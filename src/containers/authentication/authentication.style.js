@@ -3,27 +3,21 @@ import styled from 'styled-components'
 export const Page = styled.div`
     width: 100%;
     height: 100%;
-    background-color: red;
+    background-color: white;
 `
 
 export const Container = styled.div`
-    // width: 35%;
     min-width: 35rem;
-    // height: 80%;
-
     position: absolute;
     top: 50%;
-    left: 5rem;
+    left: ${props => !props.mobileMode && '5rem'};
     transform: translate(0, -50%);
     border-radius: 10px;
     background: white;
-
     display: flex;
     flex-direction: column;
-    // justify-content: center;
     align-items: center;
-
-    box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.1);
+    box-shadow: ${props => !props.mobileMode && '0px 0px 6px 1px rgba(0,0,0,0.1)'};
     padding: 4rem 6rem;
 `
 

@@ -99,3 +99,12 @@ export const NoteText = styled.h4`
     text-align: center;
     width: 20rem;
 `
+
+export const ErrorText = styled.p`
+    font-size: ${props => props.theme.fontSize.sz4};
+    font-family: ${props => props.theme.font.primary};
+    color: ${props => props.theme.bad};
+    width: 20rem;
+    margin-top: 0.5rem;
+    text-align: center;
+`
