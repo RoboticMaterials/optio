@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
+
+import {useHistory} from 'react-router-dom'
 
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -23,7 +25,6 @@ import PropagateLoader from "react-spinners/PropagateLoader";
 import { postLocalSettings, getLocalSettings, } from '../../redux/actions/local_actions'
 
 import configData from '../../settings/config'
-import { Block } from '@material-ui/icons'
 
 /**
  * This page handles both sign in and sign up for RMStudio
@@ -31,7 +32,11 @@ import { Block } from '@material-ui/icons'
  */
 const SignInUpPage = (props) => {
 
+    // Hooks
     const dispatch = useDispatch()
+    const history = useHistory()
+
+    // Dispatches
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = (settings) => dispatch(getLocalSettings(settings))
 
@@ -135,6 +140,7 @@ const SignInUpPage = (props) => {
                         }
                     } else {
                         setErrorText('You have sucessfully signed up! Please check you email for a verification link.')
+                        history.push('/')
                         handleSignInChange(true)
                         setLoading(false)
                     }

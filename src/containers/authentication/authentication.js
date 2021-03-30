@@ -1,44 +1,33 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-
-import * as styled from './authentication.style'
-
-import { Link } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { useHistory, useParams } from 'react-router-dom'
 
 // Import components
 import SignInUpPage from '../../components/sign_in_up_page/sign_in_up_page'
+import ForgotPassword from '../../components/forgotPassword/forgotPassword'
+import { Link } from 'react-router-dom'
+import * as styled from './authentication.style'
 
+// Authentication
 import configData from '../../settings/config'
-
-// import 'cross-fetch/polyfill';
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
-
-import { useHistory, useParams } from 'react-router-dom'
 
 // Import actions
 import { postLocalSettings, getLocalSettings } from '../../redux/actions/local_actions'
-import ForgotPassword from '../../components/forgotPassword/forgotPassword'
+
 
 /**
  * After the APIs have been loaded in the api_container this container is loaded
  * It checks to see if the user has already signed in based on whether or not a refresh token exists in cookies
- * If there is a token, it uses that to get a new JWT and uses that to make sure the session is valid, no reason to sign in if there's a valid session.
- * If the refresh token is expired, you have to sign in again
- * If there is no token, the user either has to sign in or sign up
- * Authenticated props is used for telling APP.js the user is authenticated
- *
- * TODO: Should show loading when there is a refresh token and its being used to get new JWT credntials
- * TODO: Styling updates
- * TODO: Forgot password
- * TODO: Add HTTPS connection to server which allows for the use of a secure cookie. Increases security a lot
- * @param {authenticated} props
+ * @param {mobileMode} props
  */
 const Authentication = (props) => {
 
-
     const {
-        authenticated
+        mobileMode
     } = props
+
+    console.log(mobileMode);
 
     const history = useHistory()
     const params = useParams()
@@ -112,60 +101,60 @@ const Authentication = (props) => {
     }
 
     return (
-        <styled.Page className="signin-page">
-        <styled.Container>
+        <styled.Page className={mobileMode ? '' : 'signin-page'}>
+            <styled.Container mobileMode={mobileMode}>
 
-            <styled.LogoContainer>
-                <styled.LogoIcon className='icon-rmLogo' />
-                <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
-            </styled.LogoContainer>
-        
-            { !forgotPassword &&
-            <styled.SignInUpContainer>
-
-                <SignInUpPage
-                    signIn={signIn}
-                    onChange={handleSignInChange} />
-
-            </styled.SignInUpContainer>
-            }
-
-            { forgotPassword &&
-            <styled.SignInUpContainer>
-
-                <ForgotPassword />
-
-            </styled.SignInUpContainer>
-            }
-
-            <styled.LogoContainer>
+                <styled.LogoContainer>
+                    <styled.LogoIcon className='icon-rmLogo' />
+                    <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
+                </styled.LogoContainer>
             
-            {!forgotPassword && 
-            <div>
+                { !forgotPassword &&
+                <styled.SignInUpContainer>
 
-                <Link to="/forgot-password">Forgot Password? </Link>
+                    <SignInUpPage
+                        signIn={signIn}
+                        onChange={handleSignInChange} />
+
+                </styled.SignInUpContainer>
+                }
+
+                { forgotPassword &&
+                <styled.SignInUpContainer>
+
+                    <ForgotPassword />
+
+                </styled.SignInUpContainer>
+                }
+
+                <styled.LogoContainer>
                 
-                <Link to="/login" style={{
-                    marginLeft: '.5rem', 
-                    marginRight: '.5rem',
-                    textDecoration: 'none',
-                    cursor: 'default'
-                    }}> • </Link>
+                {!forgotPassword && 
+                <div>
 
-                {signIn &&
-                    <Link to="/create-account"> Create an account </Link>
+                    <Link to="/forgot-password">Forgot Password? </Link>
+                    
+                    <Link to="/login" style={{
+                        marginLeft: '.5rem', 
+                        marginRight: '.5rem',
+                        textDecoration: 'none',
+                        cursor: 'default'
+                        }}> • </Link>
+
+                    {signIn &&
+                        <Link to="/create-account"> Create an account </Link>
+                    }
+
+                    {!signIn &&
+                        <Link to="/"> Sign in </Link>
+                    }
+
+                </div>
                 }
 
-                {!signIn &&
-                    <Link to="/"> Sign in </Link>
-                }
-
-            </div>
-            }
-
-            </styled.LogoContainer>
-            
-        </styled.Container>
+                </styled.LogoContainer>
+                
+            </styled.Container>
         </styled.Page>
     )
 
