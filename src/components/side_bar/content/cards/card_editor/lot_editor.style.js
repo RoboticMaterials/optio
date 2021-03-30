@@ -479,17 +479,17 @@ export const LotName = styled.span`
 `
 
 export const LotNumber = styled.div`
-  background-color: ${props => props.theme.bg.secondary};
+  /* background-color: ${props => props.theme.bg.secondary}; */
   border: none;
   font-size: ${props => props.theme.fontSize.sz4};
   font-family: ${props => props.theme.font.primary};
-  font-weight: 500;
+  font-weight: bold;
   
   flex-grow: 1;
   color: ${props => props.theme.textColor};
 
-  box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1) !important;
-  border-bottom: 2px solid ${props => props.theme.bg.secondary};
+  /* box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1) !important; */
+  /* border-bottom: 2px solid ${props => props.theme.bg.secondary}; */
   
   cursor: default;
   display: flex;
