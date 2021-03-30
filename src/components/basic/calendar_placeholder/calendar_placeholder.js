@@ -105,6 +105,7 @@ const CalendarPlaceholder = (props) => {
 				<styled.DateText>{endText}</styled.DateText>
 			</styled.DateItem>
 
+			{showCalendarPopup &&
 			<Popup
 				open={showCalendarPopup}
 				closeOnDocumentClick={true}
@@ -112,6 +113,7 @@ const CalendarPlaceholder = (props) => {
 			>
 				{renderCalendar()}
 			</Popup>
+			}
 		</styled.DatesContainer>
 	)
 
@@ -127,6 +129,7 @@ const CalendarPlaceholder = (props) => {
 			}}
 		>
 			<styled.DateText>{text}</styled.DateText>
+			{showCalendarPopup &&
 			<Popup
 				open={showCalendarPopup}
 				closeOnDocumentClick={true}
@@ -134,6 +137,7 @@ const CalendarPlaceholder = (props) => {
 			>
 				{renderCalendar()}
 			</Popup>
+			}
 		</styled.DateItem>
 	)
 }
