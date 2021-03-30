@@ -139,7 +139,7 @@ const SignInUpPage = (props) => {
                             setLoading(false)
                         }
                     } else {
-                        setErrorText('You have sucessfully signed up! Please check you email for a verification link.')
+                        setErrorText('You have successfully signed up! Please check you email for a verification link.')
                         history.push('/')
                         handleSignInChange(true)
                         setLoading(false)
