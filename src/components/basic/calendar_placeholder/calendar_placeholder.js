@@ -3,13 +3,17 @@ import React, {useState, useEffect} from "react"
 // components internal
 import Calendar from "../calendar/calendar"
 
+// constants
+import {BASIC_FIELD_DEFAULTS} from "../../../constants/form_constants"
+
 // functions external
 import Popup from 'reactjs-popup'
 import PropTypes from "prop-types"
 
 // styles
 import * as styled from "./calendar_placeholder.style"
-import {BASIC_FIELD_DEFAULTS} from "../../../constants/form_constants";
+import {immutableSet, isNonEmptyArray} from "../../../methods/utils/array_utils";
+
 
 const CalendarPlaceholder = (props) => {
 	const {
@@ -26,7 +30,10 @@ const CalendarPlaceholder = (props) => {
 		CalendarComponent,
 		onChange,
 		closeOnSelect,
-		calendarProps
+		calendarProps,
+		minDate,
+		maxDate,
+		value
 	} = props
 
 	const [showCalendarPopup, setShowCalendarPopup] = useState(false)
@@ -53,17 +60,14 @@ const CalendarPlaceholder = (props) => {
 
 				<styled.CalendarContainer>
 					<CalendarComponent
-						{...calendarProps}
+						minDate={Number.isInteger(rangeIndex) ? (rangeIndex === 1 ? minDate : null) : minDate}
+						maxDate={Number.isInteger(rangeIndex) ? (rangeIndex === 0 ? maxDate : null) : maxDate}
 						selectRange={false}
 						index={rangeIndex}
 						name={name}
 						onChange={(val) => {
-							const {
-								value
-							} = calendarProps || {}
 
-							let tempVal = value || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE
-							if(Number.isInteger(rangeIndex)) tempVal[rangeIndex] = val
+							let tempVal = Number.isInteger(rangeIndex) ? immutableSet((isNonEmptyArray(value) && value.length > 0) ? value : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE, val, rangeIndex) || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE
 							onChange(selectRange ? tempVal : val)
 							closeOnSelect && closePopup()
 						}}
@@ -157,6 +161,8 @@ CalendarPlaceholder.defaultProps = {
 	closeOnSelect: true,
 	onEndClick: () => {},
 	onStartClick: () => {},
+	minDate: null,
+	maxDate: null
 }
 
 export default CalendarPlaceholder

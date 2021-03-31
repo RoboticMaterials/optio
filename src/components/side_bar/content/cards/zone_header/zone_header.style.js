@@ -74,6 +74,7 @@ export const Description = styled.span`
 export const ItemContainer = styled.div`
 	display: flex;
 	position: relative;
+  height: fit-content;
 	
 	flex: 1;
 
@@ -83,6 +84,8 @@ export const ItemContainer = styled.div`
 	@media (min-width: ${props => props.theme.widthBreakpoint.laptop}) {
 	  // align-self: stretch;
 	}
+  
+  background: red;
 `
 
 export const FlagsContainer = styled.div`

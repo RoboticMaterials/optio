@@ -42,7 +42,8 @@ export const StyledCalendar = styled(Calendar)`
   }
   .react-calendar__navigation {
     height: 44px;
-    margin: 0 16em 1em 16em;
+	margin-bottom: 1em;
+    //margin: 0 16em 1em 16em;
   }
   .react-calendar__navigation button {
     min-width: 44px;

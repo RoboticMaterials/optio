@@ -45,8 +45,6 @@ const LotFilterBar = (props) => {
         valueProps
     } = props
 
-    console.log("lotFilterValue",lotFilterValue)
-
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
 
     const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])
@@ -248,9 +246,17 @@ const LotFilterBar = (props) => {
                     schema={"lots"}
                     style={{
                         minWidth: "10rem",
+                        alignSelf: "stretch",
                         overflow: 'visible',
                         borderTopRightRadius: 0,
                         borderBottomRightRadius: 0,
+                        // height: "100%",
+                        // padding: 0,
+                        // margin: 0,
+                    }}
+                    containerStyle={{
+                        height: "100%",
+                        alignSelf: "stretch"
                     }}
                 />
                 {/*</div>*/}
@@ -382,17 +388,15 @@ const LotFilterBar = (props) => {
                         [VALUE_MODES.DATE_RANGE]:
                             <CalendarPlaceholder
                                 // text={lotFilterValue ? jsDateToString(lotFilterValue) : "Select Date"}
-                                calendarProps={{
-                                    value: isNonEmptyArray(lotFilterValue) ? lotFilterValue : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE
-                                }}
+                                minDate={isNonEmptyArray(lotFilterValue) ? lotFilterValue[0] : null}
+                                maxDate={isNonEmptyArray(lotFilterValue) ? lotFilterValue[1] : null}
+                                value={isNonEmptyArray(lotFilterValue) ? lotFilterValue : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE}
                                 containerStyle={{
                                     overflow: "hidden",
-                                    // width: "8rem",
                                     borderTopLeftRadius: 0,
                                     borderBottomLeftRadius: 0,
                                     borderLeft: `1px solid ${themeContext.bg.quaternary}`,
                                     background: themeContext.bg.secondary,
-                                    // height: "36px",
                                     boxShadow: "0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1)",
                                 }}
                                 onChange={(val) => {
