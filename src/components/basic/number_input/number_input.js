@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useRef} from "react"
 
 // functions external
 import PropTypes from 'prop-types'
@@ -26,17 +26,25 @@ const NumberInput = ({
 	inputCss,
 	longPlusPressEvent,
 	longMinusPressEvent,
+	usable,
+	onFocus,
+	onBlur,
 	inputChildren,
 	inputStyle,
 	buttonStyle,
 	containerStyle,
 	...props }) => {
 
+	const inputRef = useRef(null)
+	const onWheel = () => {
+		inputRef?.current && inputRef.current.blur();
+	};
+
 
 	return (
 		<styled.Container style={containerStyle}>
 			<styled.Button
-				// color={'#ff1818'}
+				usable={usable}
 				color={themeContext.fg.primary}
 				className='fas fa-minus-square'
 				onClick={(e) => {
@@ -50,19 +58,33 @@ const NumberInput = ({
 			/>
 			<div style={{position: "relative"}}>
 				<styled.Input
-					disabled={inputDisabled}
+					ref={inputRef}
+					usable={usable}
+					readOnly={props.readOnly || !usable}
+					disabled={props.inputDisabled || !usable}
 					inputCss={inputCss}
 					type="number"
 					onChange={onInputChange}
 					value={value}
 					style={inputStyle}
+					onFocus={onFocus}
+					onBlur={onBlur}
+					onScroll={(e)=>{
+						e.preventDefault()
+						return false
+					}}
+					onWheel={onWheel}
+					onMouseWheel={(e) => {
+						e.preventDefault()
+						return false
+					}}
 				>
 				</styled.Input>
 				{inputChildren}
 			</div>
 			<styled.Button
+				usable={usable}
 				className='fas fa-plus-square'
-				// color={'#1c933c'}
 				color={themeContext.fg.primary}
 				disabled={plusDisabled}
 				onClick={(e) => {
@@ -87,6 +109,7 @@ NumberInput.propTypes = {
 NumberInput.defaultProps = {
 	plusDisabled: false,
 	inputDisabled: false,
+	usable: true,
 	onMinusClick: () => {},
 	onPlusClick: () => {}
 }

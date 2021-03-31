@@ -33,6 +33,7 @@
     "ramda": "^0.27.1",
     "rc-time-picker": "^3.7.3",
     "react-calendar": "^3.3.1",
+    "react-click-n-hold": "^1.0.7",
     "react-color": "^2.19.3",
     "react-d3-tree": "^1.16.1",
     "react-datepicker": "^2.11.0",

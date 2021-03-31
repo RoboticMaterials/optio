@@ -37,7 +37,8 @@ export default function Textbox(props) {
                     rows={props.lines}
                     type={props.type}
                     defaultValue={props.defaultValue}
-                    disabled={props.disabled}
+                    disabled={props.disabled || !props.usable}
+                    readOnly={props.readOnly || !props.usable}
                     schema={props.schema}
                     onBlur={props.onBlur}
                     onFocus={props.onFocus}
@@ -55,6 +56,7 @@ Textbox.defaultProps = {
     inputComponent: styled.TextboxInput,
     autofocus: false,
     flex: false,
+    usable: true,
     inline: false,
     labelStyle: null,
     onBlur: () => { },

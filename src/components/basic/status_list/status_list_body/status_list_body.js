@@ -59,10 +59,10 @@ const StatusListBody = (props) => {
 		<styled.Container>
 			<styled.RowTitles>
 				{/*<styled.IndexTitle></styled.IndexTitle>*/}
-				<styled.NameTitle>Lot Name</styled.NameTitle>
-				<styled.StatusMessageTitle>Validation Status</styled.StatusMessageTitle>
+				<styled.NameTitle style={{fontWeight: 'bold'}}>Lot Name</styled.NameTitle>
+				<styled.StatusMessageTitle style={{fontWeight: 'bold'}}>Validation Status</styled.StatusMessageTitle>
 				<styled.Filler/>
-				<styled.StatusMessageTitle>Creation Status</styled.StatusMessageTitle>
+				<styled.StatusMessageTitle style={{fontWeight: 'bold'}}>Creation Status</styled.StatusMessageTitle>
 
 
 			</styled.RowTitles>

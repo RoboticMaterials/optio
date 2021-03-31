@@ -75,6 +75,7 @@ const DeviceEdit = (props) => {
     const positions = useSelector(state => state.positionsReducer.positions)
     const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const status = useSelector(state => state.statusReducer.status)
+    const currentMap = useSelector(state => state.mapReducer.currentMap)
 
     // On page load, see if the device is a new device or existing device
     // TODO: This is going to fundementally change with how devices 'connect' to the cloud.
@@ -239,7 +240,7 @@ const DeviceEdit = (props) => {
                     style={{ backgroundColor: 'white' }}
                     labelField="name"
                     valueField="_id"
-                    options={locationsSortedAlphabetically(Object.values(positions))}
+                    options={locationsSortedAlphabetically(Object.values(positions)).filter(pos => pos.map_id === currentMap._id)}
                     values={!!selectedDevice.idle_location ? [positions[selectedDevice.idle_location]] : []}
                     dropdownGap={2}
                     noDataLabel="No matches found"

@@ -1,6 +1,8 @@
 import styled, {css} from "styled-components"
 import {commonClickableIcon, disabledButtonCss, iconButtonCss, newGlow, trapezoidCss} from "../../../common_css/common_css";
 import {containerLayout} from "../../../common_css/layout";
+import theme from "../../../theme";
+import { LightenDarkenColor } from '../../../methods/utils/color_utils'
 
 const scrollCss = css`
 ::-webkit-scrollbar {
@@ -43,14 +45,15 @@ export const Container = styled.div`
     overflow: hidden;
     height: 90vh;
     width: 90vw;
-    background: ${props => props.theme.bg.quaternary};
+    background: ${props => props.theme.bg.primary};
 `
 
 export const Header = styled.div`
-    background: ${props => props.theme.bg.quinary};
+    background: ${props => props.theme.bg.secondary};
+    box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
     align-items: center;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     padding: 1rem;
 `
 
@@ -63,10 +66,12 @@ export const Body = styled.div`
 `
 
 export const Footer = styled.div`
-    background: ${props => props.theme.bg.quinary};
+    background: ${props => props.theme.bg.secondary};
     display: flex;
     justify-content: center;
     align-items: center;
+    box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
+    padding: 1rem;
 `
 
 export const Title = styled.div`
@@ -90,7 +95,7 @@ export const TitleText = styled.span`
 `
 
 export const SectionBreak = styled.hr`
-    border-top: 1px solid ${props => props.theme.bg.tertiary};
+    border-top: 2px solid ${props => props.theme.bg.secondary};
     width: 100%;
     margin: 0;
     
@@ -104,7 +109,11 @@ export const TableContainer = styled.div`
     overflow: auto;
     flex: 1;
 
+    
+
     ${scrollCss};
+
+    
     
 `
 export const Table = styled.div`
@@ -118,16 +127,19 @@ export const Column = styled.div`
     align-self:stretch;
     flex: 1;
     display: flex;
-    background: ${props => props.theme.bg.quaternary};
+    background: ${props => props.theme.bg.primary};
     min-width: 13rem;
     align-items: stretch;
+
+    // border-right: 1px solid ${props => props.theme.bg.quaternary};
+    // border-bottom: 1px solid ${props => props.theme.bg.quaternary};
 `
 
 export const Row = styled.div`
     align-self:stretch;
     flex: 1;
     display: flex;
-    border: 1px solid ${props => props.theme.bg.tertiary};
+    border: 1px solid ${props => props.theme.bg.primary};
 `
 
 export const cellCss = css`
@@ -144,7 +156,7 @@ export const FieldNameTab = styled.div`
 `
 export const Trapezoid = styled.div`
     position: absolute;
-    transform: translate(-50%, -50%);
+    // transform: translate(-50%, -50%);
     z-index: 0;
     background: ${props => props.theme.bg.secondary};
     ${trapezoidCss};
@@ -153,28 +165,66 @@ export const Trapezoid = styled.div`
     border: none;
 `
 
+export const Receptacle = styled.div`
+    position: absolute;
+    bottom: 0;
+    // transform: translate(-50%, -50%);
+    width: 100%;
+    height: 50%;
+    background: ${props => props.theme.bg.tertiary};
+    padding: 0.2rem 0;
+`
+
+export const CloseIcon = styled.i`
+    font-size: 1.4rem;
+    margin: 1rem;
+    color: ${props => props.theme.bg.quaternary};
+    cursor: pointer;
+`
+
+export const ReceptacleInner = styled.div`
+    position: absolute;
+    // transform: translate(-50%, -50%);
+    width: 99%;
+    height: 90%;
+    bottom: 2px;
+    border-radius: 1.8rem;
+
+    ${props => props.filled ? `
+        background: ${props.theme.bg.primary};
+        box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.3);
+        `
+        :
+        `
+        background: ${LightenDarkenColor(props.theme.bg.secondary, 10)};
+        box-shadow: inset 0 1px 4px 1px rgba(0, 0, 0, 0.1);
+        `
+    }
+    
+`
+
 export const ItemContainer = styled.div`
     overflow: hidden;
     position: relative;
-    border-left: 1px solid ${props => props.theme.bg.quinary};
-    border-right: 1px solid ${props => props.theme.bg.quinary};
-    
+
+    // border-left: 1px solid ${props => props.theme.bg.quaternary};
+    border-right: 1px solid ${props => props.theme.bg.quaternary};
+    // border-top: 1px solid ${props => props.theme.bg.quaternary};
+    border-bottom: 1px solid ${props => props.theme.bg.quaternary};
     
     text-align: center;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: ${props => props.theme.bg.secondary};
     
     min-height: 2rem;
     max-height: 2rem;
     
     
     
-    border-top: .5px solid ${props => props.theme.bg.senary};
-    border-bottom: .5px solid ${props => props.theme.bg.senary};
     
-    background: ${props => props.selected && "blue"}
+    
+    background: ${props => props.selected && LightenDarkenColor(props.theme.fg.primary, 50)}
 `
 
 export const Cell = styled.div`
@@ -242,24 +292,26 @@ export const SectionDescription = styled.span`
 `
 
 export const FieldButton = styled.div`
-    margin: 0 1rem;
-    background: ${props => props.disabled ? "pink" : props.theme.bg.secondary};
+    background: ${props => props.disabled ? props.theme.bg.secondary : props.theme.bg.primary};
+    box-shadow: ${props => props.disabled ? 'none' : '0 2px 4px 0px rgba(0, 0, 0, 0.3)'};
+    margin: 0.5rem;
     //padding: 1rem;
-    border-radius: 1rem;
+    border-radius: 1.4rem;
     min-width: fit-content;
     display: flex;
     flex-direction: column;
-    color: white;
+    color: ${props => props.disabled ? props.theme.bg.quaternary : props.theme.bg.octonary};
     overflow: hidden;
     align-items: stretch;
-
-    ${props => props.disabled && disabledButtonCss};
+    pointer: grabbing;
+    height: 2.8rem;
 `
 
 export const FieldName = styled.div`
     font-size: ${props => props.theme.fontSize.sz3};
     min-width: fit-content;
     padding: .5rem 1rem;
+    pointer: grabbing;
 `
 
 export const FieldDescription = styled.div`
@@ -314,7 +366,7 @@ export const buttonViewCss = css`
 
 export const buttonViewSelectedCss = css`
     background: ${props => props.theme.bg.tertiary};
-    color: white;
+    color: ${props => props.theme.bg.octonary};
 `
 export const buttonCss = css`
 	margin: 0;

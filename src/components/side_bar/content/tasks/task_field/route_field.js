@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import * as styled from '../tasks_content.style'
 import { useSelector, useDispatch } from 'react-redux'
 import { useLocation, useParams } from 'react-router-dom'
+import { ThemeContext } from 'styled-components'
 
-
+import Portal from '../../../../../higher_order_components/portal'
 /*
 *
 * Should track quantity / fraction option only display if there is an obj? in master it always displays
@@ -42,7 +43,7 @@ import { setSelectedStation } from '../../../../../redux/actions/stations_action
 import { setSelectedPosition } from '../../../../../redux/actions/positions_actions'
 import { setSelectedHoveringTask, editingTask } from '../../../../../redux/actions/tasks_actions'
 import { processHover } from '../../../../../redux/actions/widget_actions'
-import { putObject, postObject, deleteObject, setSelectedObject, setRouteObject, setEditingObject} from '../../../../../redux/actions/objects_actions'
+import { putObject, postObject, deleteObject, setSelectedObject, setRouteObject, setEditingObject } from '../../../../../redux/actions/objects_actions'
 
 import {
     buildDefaultRouteName,
@@ -91,6 +92,8 @@ const TaskField = (props) => {
     // sets values.changed to true when a change occurs
     useChange(fieldParent)
 
+    const themeContext = useContext(ThemeContext)
+
     const {
         name,
         obj,
@@ -120,12 +123,12 @@ const TaskField = (props) => {
     const dispatchSetEditing = async (props) => await dispatch(editingTask(props))
     const dispatchSetSelectedHoveringTask = async (task) => await dispatch(setSelectedHoveringTask(task))
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
-    const dispatchPutObject = (object, id) => dispatch(putObject(object,id))
-    const dispatchPostObject = (object, id) => dispatch(postObject(object,id))
+    const dispatchPutObject = (object, id) => dispatch(putObject(object, id))
+    const dispatchPostObject = (object, id) => dispatch(postObject(object, id))
     const dispatchSetSelectedObject = (object) => dispatch(setSelectedObject(object))
     const dispatchDeleteObject = (id) => dispatch(deleteObject(id))
-    const dispatchSetRouteObject = (object)=> dispatch(setRouteObject(object))
-    const dispatchSetEditingObject = (bool)=>dispatch(setEditingObject(bool))
+    const dispatchSetRouteObject = (object) => dispatch(setRouteObject(object))
+    const dispatchSetEditingObject = (bool) => dispatch(setEditingObject(bool))
 
     let routes = useSelector(state => state.tasksReducer.tasks)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
@@ -137,8 +140,8 @@ const TaskField = (props) => {
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
     const hoveringTask = useSelector(state => state.tasksReducer.selectedHoveringTask)
     const stations = useSelector(state => state.stationsReducer.stations)
-    const routeObject = useSelector(state=>state.objectsReducer.routeObject)
-    const editingObject = useSelector(state=> state.objectsReducer.editingObject)
+    const routeObject = useSelector(state => state.objectsReducer.routeObject)
+    const editingObject = useSelector(state => state.objectsReducer.editingObject)
 
     const [showEditor, setShowEditor] = useState(false);
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
@@ -146,7 +149,8 @@ const TaskField = (props) => {
     const [needsValidate, setNeedsValidate] = useState(false);
     const [didSetHandoff, setDidSetHandoff] = useState(false);
     const [showObjectSelector, setShowObjectSelector] = useState(false);
-    const [objectSaveDisabled, setObjectSaveDisabled] = useState(true)
+    const [objectSaveDisabled, setObjectSaveDisabled] = useState(true);
+    const [contentType, setContentType] = useState('new')
 
     const previousLoadStationId = usePrevious(getLoadStationId(values))
     const previousUnloadStationId = usePrevious(getUnloadStationId(values))
@@ -174,31 +178,31 @@ const TaskField = (props) => {
             setFieldValue(fieldParent ? `${fieldParent}.device_types` : "device_types", selectedTask.device_types, false)
         }
 
-        if(isMiRTask(selectedTask)) {
-            if(values.handoff) setFieldValue(fieldParent ? `${fieldParent}.handoff` : "handoff", false)
+        if (isMiRTask(selectedTask)) {
+            if (values.handoff) setFieldValue(fieldParent ? `${fieldParent}.handoff` : "handoff", false)
         }
 
-        else if(isOnlyHumanTask(selectedTask)) {
-            if(!values.handoff && !didSetHandoff && isNew) {
+        else if (isOnlyHumanTask(selectedTask)) {
+            if (!values.handoff && !didSetHandoff && isNew) {
                 setDidSetHandoff(true)
                 setFieldValue(fieldParent ? `${fieldParent}.handoff` : "handoff", true)
             }
         }
 
-        const loadStation = stations[loadStationId] || {name: ""}
+        const loadStation = stations[loadStationId] || { name: "" }
         const {
             name: loadName
         } = loadStation
-        const prevLoadStation = stations[previousLoadStationId] || {name: ""}
+        const prevLoadStation = stations[previousLoadStationId] || { name: "" }
         const {
             name: prevLoadName
         } = prevLoadStation
 
-        const unloadStation = stations[unloadStationId] || {name: ""}
+        const unloadStation = stations[unloadStationId] || { name: "" }
         const {
             name: unloadName
         } = unloadStation
-        const prevUnloadStation = stations[previousUnloadStationId] || {name: ""}
+        const prevUnloadStation = stations[previousUnloadStationId] || { name: "" }
         const {
             name: prevUnloadName
         } = prevUnloadStation
@@ -207,7 +211,7 @@ const TaskField = (props) => {
         const newName = buildDefaultRouteName(loadName, unloadName)
         const newObj = ""
 
-        if((name === prevName) || !name) {
+        if ((name === prevName) || !name) {
             setFieldValue(fieldParent ? `${fieldParent}.name` : "name", newName, false)
         }
 
@@ -252,10 +256,10 @@ const TaskField = (props) => {
         }
 
         if (!selectedObject) {
-            setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", null , false)
+            setFieldValue(fieldParent ? `${fieldParent}.obj` : "obj", null, false)
         }
 
-    },[selectedObject])
+    }, [selectedObject])
 
 
     // calls save function when values.needsSubmit is true - used for auto submit when selecting route from existing
@@ -272,19 +276,19 @@ const TaskField = (props) => {
     }, [needsValidate])
 
     useEffect(() => {
-      dispatchPageDataChanged(changed)
+        dispatchPageDataChanged(changed)
     }, [changed])
 
 
     useEffect(() => {
-      if(!!obj && !!selectedObject){
-        if((obj.name!==selectedObject.name || obj.description!==selectedObject.description) && obj.name!==""){
-          setObjectSaveDisabled(false)
+        if (!!obj && !!selectedObject) {
+            if ((obj.name !== selectedObject.name || obj.description !== selectedObject.description) && obj.name !== "") {
+                setObjectSaveDisabled(false)
+            }
+            else {
+                setObjectSaveDisabled(true)
+            }
         }
-        else{
-          setObjectSaveDisabled(true)
-          }
-      }
     }, [obj?.description, obj?.name])
 
     const renderLoadUnloadParameters = () => {
@@ -315,6 +319,7 @@ const TaskField = (props) => {
                     fieldParent={fieldParent}
                     values={values}
                     setFieldValue={setFieldValue}
+                    isProcess={isProcessTask}
                 />
 
             }
@@ -322,58 +327,58 @@ const TaskField = (props) => {
 
     }
 
-    const onSaveObject = async() =>{
+    const onSaveObject = async () => {
         const object = {
-          name: obj.name,
-          description: obj.description,
-          modelName: "",
-          dimensions: null,
-          map_id: currentMap._id,
-          _id: !!selectedObject.new ? uuid.v4() : obj._id,
+            name: obj.name,
+            description: obj.description,
+            modelName: "",
+            dimensions: null,
+            map_id: currentMap._id,
+            _id: !!selectedObject.new ? uuid.v4() : obj._id,
         }
 
-      if(!selectedObject.new){
-        await dispatchPutObject(object, obj._id)
-      }
-      else{
-        await dispatchPostObject(object)
-      }
+        if (!selectedObject.new) {
+            await dispatchPutObject(object, obj._id)
+        }
+        else {
+            await dispatchPostObject(object)
+        }
 
-      dispatchSetEditingObject(false)
-      await dispatchSetSelectedObject(null)
+        dispatchSetEditingObject(false)
+        await dispatchSetSelectedObject(null)
     }
 
-    const onAddObject = async() =>{
+    const onAddObject = async () => {
         const object = {
-          name: "",
-          description: "",
-          modelName: "",
-          dimensions: null,
-          map_id: currentMap._id,
-          _id: uuid.v4(),
-          new: true,
+            name: "",
+            description: "",
+            modelName: "",
+            dimensions: null,
+            map_id: currentMap._id,
+            _id: uuid.v4(),
+            new: true,
         }
 
         dispatchSetSelectedObject(object)
     }
 
     const onSelectObject = () => {
-      dispatchSetRouteObject(selectedObject)
-      setShowObjectSelector(false)
-      setFieldValue(fieldParent ? `${fieldParent}.route_object` : "route_object", selectedObject, false)
+        dispatchSetRouteObject(selectedObject)
+        setShowObjectSelector(false)
+        setFieldValue(fieldParent ? `${fieldParent}.route_object` : "route_object", selectedObject, false)
     }
 
     const onObjectBackClick = () => {
-      if(!!editingObject){
-        dispatchSetEditingObject(false)
-        dispatchSetSelectedObject(routeObject)
-        setFieldTouched(fieldParent ? `${fieldParent}.obj` : "obj", false)
+        if (!!editingObject) {
+            dispatchSetEditingObject(false)
+            dispatchSetSelectedObject(routeObject)
+            setFieldTouched(fieldParent ? `${fieldParent}.obj` : "obj", false)
 
-      }
-      else{
-        setShowObjectSelector(false)
-        dispatchSetSelectedObject(selectedTask.route_object)
-      }
+        }
+        else {
+            setShowObjectSelector(false)
+            dispatchSetSelectedObject(selectedTask.route_object)
+        }
     }
 
     const updateDashboard = () => {
@@ -386,6 +391,7 @@ const TaskField = (props) => {
         if (updatedDashboard === undefined) {
             let defaultDashboard = {
                 name: updatedStation.name + ' Dashboard',
+                locked: false,
                 buttons: [],
                 station: updatedStation._id
             }
@@ -426,8 +432,8 @@ const TaskField = (props) => {
                         button_2_text={"No"}
                         handleClose={() => setConfirmDeleteObjectModal(null)}
                         handleOnClick1={() => {
-                          dispatchDeleteObject(selectedObject._id)
-                          setConfirmDeleteObjectModal(null)
+                            dispatchDeleteObject(selectedObject._id)
+                            setConfirmDeleteObjectModal(null)
 
                         }}
                         handleOnClick2={() => {
@@ -488,271 +494,310 @@ const TaskField = (props) => {
                                         dispatchSetEditingObject(false)
                                     }}
                                 />
-                            </div>   
-                            <styled.Label>
-                                <styled.LabelHighlight>Either</styled.LabelHighlight> choose an existing Route
-                            </styled.Label>
-                            <DropDownSearch
-                                placeholder="Select Existing Route"
-                                label="Choose An Existing Route"
-                                labelField="name"
-                                create={true}
-                                valueField="name"
-                                onMouseEnter = {(item) => {
-                                  dispatchSetSelectedHoveringTask(item)
-                                }}
-                                onMouseLeave = {(item) => dispatchSetSelectedHoveringTask(null)}
-                                onCreateNew={() => setShowEditor(true)}
-                                options={
-
-                                    Object.values(routes)
-
-                                        .filter(task => {
-
-                                            // This filters out tasks when fixing a process
-                                            // If the process is broken, then you can only select tasks that are associated with the last route before break's unload station
-                                            if (fixingProcess) {
-
-                                                // Gets the route before break
-                                                const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
-
-                                                if (!!routeBeforeBreak.unload) {
-                                                    const unloadStationID = routeBeforeBreak.unload.station
-
-                                                    if (task.load.station === unloadStationID) {
-                                                        return true
-
-                                                    }
-                                                }
-                                            }
-
-                                            // If the selected process has routes, then filter out tasks that have load stations that arent the last route's unload station
-                                            // This eliminates 'broken' processes with tasks that are between non-connected stations
-                                            else if (selectedProcess.routes.length > 0) {
-                                                if(insertIndex === 0) {
-                                                    const firstTask = selectedProcess.routes[0]
-                                                    return isNextRouteViable(task, firstTask)
-                                                }
-                                                else {
-                                                    // Gets the previous route
-                                                    const previousRoute = getPreviousRoute(selectedProcess.routes, values._id)
-                                                    return isNextRouteViable(previousRoute, task)
-                                                }
-                                            }
-
-                                            else {
-                                                return true
-                                            }
-                                        })
-                                }
-                                // values={!!selectedTask.idle_location ? [positions[selectedTask.idle_location]] : []}
-                                dropdownGap={2}
-                                noDataLabel="No matches found"
-                                closeOnSelect="true"
-                                name={fieldParent ? `${fieldParent}.existingRoute` : "existingRoute"}
-                                onChange={async (dropdownValues) => {
-
-                                    const selectedValue = dropdownValues[0] || {}
-
-                                    const {
-                                        obj: selectedObjId = "",
-                                        _id: selectedRouteId = ""
-                                    } = selectedValue || {}
-
-                                    const selectedObj = selectedObjId ? (objects[selectedObjId] || null) : null
-
-                                    // If this task is part of a process and not already in the array of routes, then add the task to the selected process
-                                    if (!selectedProcess.routes.includes(selectedRouteId)) {
-
-                                        var selectedRoute = { ...selectedValue, needsSubmit: true, obj: selectedObject ? selectedObject : null, temp: values.temp }
-                                        // setFieldValue
-                                        if (fieldParent) {
-                                            setFieldValue(fieldParent, selectedRoute)
-                                        }
-                                        else {
-                                            await setValues(selectedRoute)
-                                        }
-
-                                    }
-                                }}
-                                className="w-100"
-                                schema="tasks"
-                            />
-                        </>
-                    }
-
-                    {!!selectedTask && isProcessTask && !!selectedTask.new ?
-                    
-                        <styled.Label style={{ marginTop: '1rem' }}>
-                            <styled.LabelHighlight>Or</styled.LabelHighlight> make a new one
-                        </styled.Label>
-                        :
-                        <div style={{ marginBottom: '1rem' }}>
-                            <ContentHeader
-                                content={'tasks'}
-                                mode={'create'}
-                                onClickBack={() => {
-                                    onBackClick(routeId)
-                                    dispatchSetEditingObject(false)
-                                }}
-                            />
-                        </div>   
-
-                    }
-
-                    {/* Task Title */}
-                    {/* <styled.Header style={{ marginTop: '0rem',marginRight: ".5rem", fontSize: '1.2rem' }}>Route Name</styled.Header> */}
-
-                    <TextField
-                        InputComponent={Textbox}
-                        name={fieldParent ? `${fieldParent}.name` : "name"}
-                        placeholder={"New Route Name"}
-                        label={"Route Name"}
-                        schema={'tasks'}
-                        focus={!name}
-                        style={{ fontSize: '1.2rem', fontWeight: '600' }}
-                    />
-
-                    {isTransportTask &&
-                        <>
-                        <styled.Header style={{ marginTop: '1.5rem',marginRight: ".5rem", fontSize: '1.2rem' }}>Object</styled.Header>
-
-                        {!showObjectSelector &&
-                          <>
-                          {!!routeObject && !!objects[routeObject?._id] ?
-                            <>
-                                <styled.ListItem> {/* style = {{height: url==='/tasks' ? '4rem': '2.5rem', marginBottom: '0rem;'}}> */}
-                                    <styled.ItemContainer>
-                                        <styled.ListItemIcon
-                                            className='fas fa-box'
-                                        />
-                                        <styled.ListItemTitle>{routeObject ? objects[routeObject._id].name: ""}</styled.ListItemTitle>
-                                    
-                                        <styled.Icon
-                                            className='fas fa-exchange-alt'
-                                            style={{ color: 'white', transform: 'rotate(-45deg)', fontSize: '1.1rem' }}
-                                            onClick={() => setShowObjectSelector(!showObjectSelector)}
-                                        />
-                                        <styled.Icon
-                                            className='far fa-minus-square'
-                                            style={{ color: 'white', marginLeft: '0.5rem' }}
-                                            onClick = {()=>{
-                                                dispatchSetRouteObject(null)
-                                                dispatchSetSelectedObject(null)
-                                                setFieldValue(fieldParent ? `${fieldParent}.route_object` : "route_object", null, false)
-                                            }}
-                                        />
-                                    </styled.ItemContainer>
-                                </styled.ListItem>
-
-                                </>
-                              :
-                              <Button
-                                style={{marginRight: '0', marginLeft: '0'}}
-                                schema={'objects'}
-                                secondary
-                                // disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
-                                onClick={() => setShowObjectSelector(!showObjectSelector)}
+                            </div>
+                            <styled.RowContainer style={{ justifyContent: 'center', marginBottom: '1rem' }}>
+                                <styled.DualSelectionButton
+                                    style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                                    onClick={() => {
+                                        setContentType('existing')
+                                    }}
+                                    selected={contentType === 'existing'}
                                 >
-                                Choose an Object...
-                                </Button>
-                          }
-                            </>
-                          }
+                                    Existing
+                                </styled.DualSelectionButton>
 
-                            {!!showObjectSelector &&
-                              <ObjectEditor
-                                onBackClick = {()=>onObjectBackClick()}
-                                name = {fieldParent ? `${fieldParent}.obj.name` : "obj.name"}
-                                description = {fieldParent ? `${fieldParent}.obj.description` : "obj.description"}
-                                focus = {!obj}
-                                onSaveObject = {()=>onSaveObject()}
-                                onAddObject = {()=>onAddObject()}
-                                onDeleteObject = {()=> {
-                                  setConfirmDeleteObjectModal(true)
-                                }}
-                                onSelectObject = {()=>onSelectObject()}
-                                deleteDisabled = {!!selectedObject?.new}
-                                saveDisabled = {objectSaveDisabled}
-                              />
-                            }
+                                <styled.DualSelectionButton
+                                    style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                                    onClick={() => {
+                                        setContentType('new')
+                                    }}
+                                    selected={contentType === 'new'}
 
-                            {!showObjectSelector &&
-                              <styled.HelpText style = {{fontSize: '.8rem', marginBottom: '1rem'}}>
-                                  Select or create an object to be transported
-                              </styled.HelpText>
-                            }
+                                >
+                                    New Route
+                                </styled.DualSelectionButton>
 
-                            {isProcessRoute &&
-                            <>
-                                <styled.Label style = {{fontSize:'1.2rem',alignSelf: 'center'}}>Tracking Type</styled.Label>
-                                <styled.RowContainer style={{justifyContent: 'center'}}>
-                                    <styled.DualSelectionButton
-                                        style={{borderRadius: '.5rem 0rem 0rem .5rem'}}
-                                        onClick={() => {
-                                            setFieldValue(fieldParent ? `${fieldParent}.track_quantity` : "track_quantity", true)
-                                        }}
-                                        selected={values.track_quantity}
-                                    >
-                                        Quantity
-                                    </styled.DualSelectionButton>
+                            </styled.RowContainer>
 
-                                    <styled.DualSelectionButton
-                                        style={{borderRadius: '0rem .5rem .5rem 0rem'}}
-                                        onClick={() => {
-                                            setFieldValue(fieldParent ? `${fieldParent}.track_quantity` : "track_quantity", false)
-                                        }}
-                                        selected={!values.track_quantity}
+                            {contentType === 'existing' &&
+                                <div style={{ marginBottom: '1rem', paddingBottom: '2rem', borderBottom: `2px solid ${themeContext.bg.tertiary}` }}>
+                                    <styled.Label>
+                                        Select an <styled.LabelHighlight>existing</styled.LabelHighlight> Route
+                                    </styled.Label>
+                                    <div style={{ height: 'fit-content' }}>
+                                        <DropDownSearch
+                                            placeholder="Select Existing Route"
+                                            label="Choose An Existing Route"
+                                            labelField="name"
+                                            create={true}
+                                            valueField="name"
+                                            onMouseEnter={(item) => {
+                                                dispatchSetSelectedHoveringTask(item)
+                                            }}
+                                            onMouseLeave={(item) => dispatchSetSelectedHoveringTask(null)}
+                                            onCreateNew={() => setShowEditor(true)}
+                                            options={
+                                                Object.values(routes)
+                                                    .filter(task => {
+                                                        if (task.map_id !== currentMap._id) return false
 
-                                    >
-                                        Fraction
-                                    </styled.DualSelectionButton>
+                                                        // This filters out tasks when fixing a process
+                                                        // If the process is broken, then you can only select tasks that are associated with the last route before break's unload station
+                                                        if (fixingProcess) {
 
-                                </styled.RowContainer>
-                            </>
+                                                            // Gets the route before break
+                                                            const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
+
+                                                            if (!!routeBeforeBreak.unload) {
+                                                                const unloadStationID = routeBeforeBreak.unload.station
+
+                                                                if (task.load.station === unloadStationID) {
+                                                                    return true
+
+                                                                }
+                                                            }
+                                                        }
+
+                                                        // If the selected process has routes, then filter out tasks that have load stations that arent the last route's unload station
+                                                        // This eliminates 'broken' processes with tasks that are between non-connected stations
+                                                        else if (selectedProcess.routes.length > 0) {
+                                                            if (insertIndex === 0) {
+                                                                const firstTask = selectedProcess.routes[0]
+                                                                return isNextRouteViable(task, firstTask)
+                                                            }
+                                                            else {
+                                                                // Gets the previous route
+                                                                const previousRoute = getPreviousRoute(selectedProcess.routes, values._id)
+                                                                return isNextRouteViable(previousRoute, task)
+                                                            }
+                                                        }
+
+                                                        else {
+                                                            return true
+                                                        }
+                                                    })
+                                            }
+                                            // values={!!selectedTask.idle_location ? [positions[selectedTask.idle_location]] : []}
+                                            dropdownGap={2}
+                                            noDataLabel="No matches found"
+                                            closeOnSelect="true"
+                                            name={fieldParent ? `${fieldParent}.existingRoute` : "existingRoute"}
+                                            onChange={async (dropdownValues) => {
+
+                                                const selectedValue = dropdownValues[0] || {}
+
+                                                const {
+                                                    obj: selectedObjId = "",
+                                                    _id: selectedRouteId = ""
+                                                } = selectedValue || {}
+
+                                                const selectedObj = selectedObjId ? (objects[selectedObjId] || null) : null
+
+                                                // If this task is part of a process and not already in the array of routes, then add the task to the selected process
+                                                if (!selectedProcess.routes.includes(selectedRouteId)) {
+
+                                                    var selectedRoute = { ...selectedValue, needsSubmit: true, obj: selectedObject ? selectedObject : null, temp: values.temp }
+                                                    // setFieldValue
+                                                    if (fieldParent) {
+                                                        setFieldValue(fieldParent, selectedRoute)
+                                                    }
+                                                    else {
+                                                        await setValues(selectedRoute)
+                                                    }
+
+                                                }
+                                            }}
+                                            className="w-100"
+                                            schema="tasks"
+                                            style={{ background: themeContext.bg.primary, zIndex: 100 }}
+                                        />
+                                    </div>
+                                </div>
                             }
                         </>
                     }
 
-                    {/* Load and Unload Parameters */}
-                    <div style={{ height: "100%", paddingTop: "1rem" }}>
-                        {renderLoadUnloadParameters()}
-                    </div>
+                    {contentType === 'new' &&
+                        <div>
+                            {!!selectedTask && isProcessTask && !!selectedTask.new ?
 
-                    <hr />
+                                <styled.Label style={{ marginTop: '1rem' }}>
+                                    Make a <styled.LabelHighlight>new</styled.LabelHighlight> Route
+                            </styled.Label>
+                                :
+                                <div style={{ marginBottom: '1rem' }}>
+                                    <ContentHeader
+                                        content={'tasks'}
+                                        mode={'create'}
+                                        onClickBack={() => {
+                                            onBackClick(routeId)
+                                            dispatchSetEditingObject(false)
+                                        }}
+                                    />
+                                </div>
 
-                    <Button 
-                        schema={'tasks'}
-                        disabled={submitDisabled || editingObject}
-                        onClick={async () => {
-                            await onSave()
-                       }}
-                    >{(!!isProcessTask ? 'Add' : (selectedTask.new ? 'Create' : 'Save'))} Route</Button>
+                            }
 
-                    {/* Remove Task From Process Button */}
-                    {!!isProcessTask && selectedProcess ? 
-                        <Button
-                            schema={'error'}
-                            disabled={!!selectedTask && !!selectedTask._id && isNew}
-                            secondary
-                            onClick={() => {
-                                onRemove(routeId)
-                            }}
-                        >
-                            Remove Route
-                        </Button>
-                        :
-                        <Button
-                            schema={'error'}
-                            secondary
-                            disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
-                            onClick={() => {
-                                setConfirmDeleteModal(true)
-                            }}
-                            
-                        >
-                            Delete Route
-                        </Button>
+                            {/* Task Title */}
+                            {/* <styled.Header style={{ marginTop: '0rem',marginRight: ".5rem", fontSize: '1.2rem' }}>Route Name</styled.Header> */}
+
+                            <TextField
+                                InputComponent={Textbox}
+                                name={fieldParent ? `${fieldParent}.name` : "name"}
+                                placeholder={"New Route Name"}
+                                label={"Route Name"}
+                                schema={'tasks'}
+                                focus={!name}
+                                inputStyle={{ background: isProcessTask ? themeContext.bg.primary : themeContext.bg.secondary }}
+                                style={{ fontSize: '1.2rem', fontWeight: '600' }}
+                            />
+
+                            {isTransportTask &&
+                                <>
+                                    <styled.Header style={{ marginTop: '1.5rem', marginRight: ".5rem", fontSize: '1.2rem' }}>Object</styled.Header>
+
+                                    {!showObjectSelector &&
+                                        <>
+                                            {!!routeObject && !!objects[routeObject?._id] ?
+                                                <>
+                                                    <styled.ListItem> {/* style = {{height: url==='/tasks' ? '4rem': '2.5rem', marginBottom: '0rem;'}}> */}
+                                                        <styled.ItemContainer>
+                                                            <styled.ListItemIcon
+                                                                className='fas fa-box'
+                                                            />
+                                                            <styled.ListItemTitle>{routeObject ? objects[routeObject._id].name : ""}</styled.ListItemTitle>
+
+                                                            <styled.Icon
+                                                                className='fas fa-exchange-alt'
+                                                                style={{ color: 'white', transform: 'rotate(-45deg)', fontSize: '1.1rem' }}
+                                                                onClick={() => setShowObjectSelector(!showObjectSelector)}
+                                                            />
+                                                            <styled.Icon
+                                                                className='far fa-minus-square'
+                                                                style={{ color: 'white', marginLeft: '0.5rem' }}
+                                                                onClick={() => {
+                                                                    dispatchSetRouteObject(null)
+                                                                    dispatchSetSelectedObject(null)
+                                                                    setFieldValue(fieldParent ? `${fieldParent}.route_object` : "route_object", null, false)
+                                                                }}
+                                                            />
+                                                        </styled.ItemContainer>
+                                                    </styled.ListItem>
+
+                                                </>
+                                                :
+                                                <Button
+                                                    style={{ marginRight: '0', marginLeft: '0', width: '100%' }}
+                                                    schema={'objects'}
+                                                    secondary
+                                                    // disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
+                                                    onClick={() => setShowObjectSelector(!showObjectSelector)}
+                                                >
+                                                    Choose an Object...
+                                    </Button>
+                                            }
+                                        </>
+                                    }
+
+                                    {!!showObjectSelector &&
+                                        <ObjectEditor
+                                            onBackClick={() => onObjectBackClick()}
+                                            name={fieldParent ? `${fieldParent}.obj.name` : "obj.name"}
+                                            description={fieldParent ? `${fieldParent}.obj.description` : "obj.description"}
+                                            focus={!obj}
+                                            onSaveObject={() => onSaveObject()}
+                                            onAddObject={() => onAddObject()}
+                                            onDeleteObject={() => {
+                                                setConfirmDeleteObjectModal(true)
+                                            }}
+                                            onSelectObject={() => onSelectObject()}
+                                            deleteDisabled={!!selectedObject?.new}
+                                            saveDisabled={objectSaveDisabled}
+                                        />
+                                    }
+
+                                    {!showObjectSelector &&
+                                        <styled.HelpText style={{ fontSize: '.8rem', marginBottom: '1rem' }}>
+                                            Select or create an object to be transported
+                                </styled.HelpText>
+                                    }
+
+                                    {isProcessRoute &&
+                                        <>
+                                            <styled.Label style={{ fontSize: '1.2rem', alignSelf: 'center' }}>Tracking Type</styled.Label>
+                                            <styled.RowContainer style={{ justifyContent: 'center' }}>
+                                                <styled.DualSelectionButton
+                                                    style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                                                    onClick={() => {
+                                                        setFieldValue(fieldParent ? `${fieldParent}.track_quantity` : "track_quantity", true)
+                                                    }}
+                                                    selected={values.track_quantity}
+                                                >
+                                                    Quantity
+                                        </styled.DualSelectionButton>
+
+                                                <styled.DualSelectionButton
+                                                    style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                                                    onClick={() => {
+                                                        setFieldValue(fieldParent ? `${fieldParent}.track_quantity` : "track_quantity", false)
+                                                    }}
+                                                    selected={!values.track_quantity}
+
+                                                >
+                                                    Fraction
+                                        </styled.DualSelectionButton>
+
+                                            </styled.RowContainer>
+                                        </>
+                                    }
+                                </>
+                            }
+
+                            {/* Load and Unload Parameters */}
+                            <div style={{ height: "100%", paddingTop: "1rem" }}>
+                                {renderLoadUnloadParameters()}
+                            </div>
+
+                            <hr />
+                        </div>
+                    }
+                    {contentType === 'new' &&
+                        <>
+                            <Button
+                                schema={'tasks'}
+                                disabled={submitDisabled || editingObject}
+                                onClick={async () => {
+                                    await onSave()
+                                }}
+                            >{(!!isProcessTask ? 'Add' : (selectedTask.new ? 'Create' : 'Save'))} Route</Button>
+
+
+                            {/* Remove Task From Process Button */}
+                            {!!isProcessTask && selectedProcess ?
+                                <Button
+                                    schema={'error'}
+                                    disabled={!!selectedTask && !!selectedTask._id && isNew}
+                                    secondary
+                                    onClick={() => {
+                                        onRemove(routeId)
+                                    }}
+                                >
+                                    Remove Route
+                            </Button>
+                                :
+                                <Button
+                                    schema={'error'}
+                                    secondary
+                                    disabled={!!selectedTask && !!selectedTask._id && !!selectedTask.new}
+                                    onClick={() => {
+                                        setConfirmDeleteModal(true)
+                                    }}
+
+                                >
+                                    Delete Route
+                            </Button>
+                            }
+                        </>
                     }
 
                 </styled.ContentContainer>
