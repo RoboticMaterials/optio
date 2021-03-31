@@ -50,6 +50,7 @@ const DashboardTaskQueue = () => {
                     <styled.CloseButton
                         className={'fas fa-times'}
                         onClick={() => { setShowTaskQ(!showTaskQ) }}
+                        style = {{cursor: 'pointer'}}
                     />
 
 
