@@ -30,29 +30,51 @@ const StationsColumn = ((props) => {
 			maxWidth={"20rem"}
 			sortMode={sortMode}
 			maxHeight={maxHeight}
-			HeaderContent={
-				!isCollapsed ?
-				<styled.StationHeader>
-					<styled.HeaderContent>
-						<i className="fa fa-chevron-down" aria-hidden="true"
-						   onClick={() => setCollapsed(true)}
-						   style={{marginRight: "1rem"}}
-						/>
+			HeaderContent={(numberOfLots = 0, lotQuantitySummation = 0) => {
+				if(isCollapsed) {
+					return(
+						<styled.StationHeader>
+							<i className="fa fa-chevron-right" aria-hidden="true"
+							   onClick={() => setCollapsed(false)}
+							/>
+						</styled.StationHeader>
+					)
+				}
+				else {
+					return(
+						<styled.StationHeader>
+							<styled.HeaderRow
+								style={{
+									marginBottom: "1rem"
+								}}
+							>
+								<i className="fa fa-chevron-down" aria-hidden="true"
+								   onClick={() => setCollapsed(true)}
+								   style={{marginRight: "1rem"}}
+								/>
 
-						<styled.LabelContainer>
-							<styled.StationTitle>{stationName}</styled.StationTitle>
-						</styled.LabelContainer>
+								<styled.LabelContainer>
+									<styled.StationTitle>{stationName}</styled.StationTitle>
+								</styled.LabelContainer>
 
-						<i className="fas fa-ellipsis-h" style={{opacity: 0}}></i>
-					</styled.HeaderContent>
-				</styled.StationHeader>
-					:
-					<styled.StationHeader>
-						<i className="fa fa-chevron-right" aria-hidden="true"
-							onClick={() => setCollapsed(false)}
-						/>
-					</styled.StationHeader>
-			}
+								<i className="fas fa-ellipsis-h" style={{opacity: 0}}></i>
+							</styled.HeaderRow>
+
+							<styled.HeaderRow>
+								<div>
+									<styled.QuantityText>Lots: </styled.QuantityText>
+									<styled.QuantityText>{numberOfLots}</styled.QuantityText>
+								</div>
+
+								<div>
+									<styled.QuantityText>Total Quantity: </styled.QuantityText>
+									<styled.QuantityText>{lotQuantitySummation}</styled.QuantityText>
+								</div>
+							</styled.HeaderRow>
+						</styled.StationHeader>
+					)
+				}
+			}}
 			station_id={station_id}
 			stationName = {stationName}
 			onCardClick={onCardClick}

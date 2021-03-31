@@ -13,12 +13,14 @@ import { useParams, useHistory } from 'react-router-dom'
 import Button from '../../../../components/basic/button/button'
 import LotEditorContainer from "../../../side_bar/content/cards/card_editor/lot_editor_container"
 import LotListItem from "./lot_list_item/lot_list_item"
+import Lot from '../../../side_bar/content/cards/lot/lot'
 
 // utils
 import {getBinQuantity, getIsCardAtBin} from "../../../../methods/utils/lot_utils"
 
 // styles
 import * as styled from './lots_page.style'
+import LotContainer from "../../../side_bar/content/cards/lot/lot_container";
 
 // TODO: Commented out charts for the time being (See comments that start with TEMP)
 const LotsPage = (props) => {
@@ -31,11 +33,11 @@ const LotsPage = (props) => {
     const onWidgetLoaded = (bool) => dispatch(widgetLoaded(bool))
     const onShowSideBar = (bool) => dispatch(sidebarActions.setOpen(bool))
     const onHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
-    const onShowCardEditor = (bool) => dispatch(showEditor(bool))
+    const onShowCardEditor = (bool) => dispatch(showEditor(bool)) // <-- why is redux being used for this?
 
     const stations = useSelector(state => state.stationsReducer.stations)
     const cards = useSelector(state=>state.cardsReducer.cards)
-    const showCardEditor = useSelector(state=>state.cardsReducer.showEditor)
+    const showCardEditor = useSelector(state=>state.cardsReducer.showEditor) // <-- why is redux being used for this?
     const [locationName, setLocationName] = useState("")
     const [selectedCard, setSelectedCard] = useState(null)
     const [lotsPresent, setLotsPresent] = useState(false)
@@ -75,17 +77,17 @@ const LotsPage = (props) => {
         <styled.LotsContainer>
 
             {showCardEditor &&
-            <LotEditorContainer
-                isOpen={showCardEditor}
-                onAfterOpen={null}
-                cardId={selectedCard ? selectedCard.cardId : null}
-                processId={selectedCard ? selectedCard.processId : null}
-                binId={selectedCard ? selectedCard.binId : null}
-                close={()=>{
-                    onShowCardEditor(false)
-                    setSelectedCard(null)
-                }}
-            />
+                <LotEditorContainer
+                    isOpen={showCardEditor}
+                    onAfterOpen={null}
+                    cardId={selectedCard ? selectedCard.cardId : null}
+                    processId={selectedCard ? selectedCard.processId : null}
+                    binId={selectedCard ? selectedCard.binId : null}
+                    close={()=>{
+                        onShowCardEditor(false)
+                        setSelectedCard(null)
+                    }}
+                />
             }
 
             <styled.HeaderContainer>
@@ -115,30 +117,22 @@ const LotsPage = (props) => {
                 })
                 .map((card, ind) => {
                     const {
-                        name,
-                        lotNumber,
-                        bins,
-                        dates,
-                        description,
                         _id: currCardId,
                         process_id: currCardProcessId
                     } = card || {}
 
-                    const quantity = getBinQuantity({bins}, location?._id)
-
-                    return (
-                        <LotListItem
-                            key={currCardId}
-                            name={name}
-                            lotNumber={lotNumber}
-                            quantity={quantity}
-                            dates={dates}
-                            description = {description}
-                            onClick={() => {
-                                openEditor(currCardId, currCardProcessId, location._id)
-                            }}
-                        />
-                    )
+                    return <LotContainer
+                        lotId={currCardId}
+                        binId={stationID}
+                        enableFlagSelector={false}
+                        key={currCardId}
+                        onClick={() => {
+                            openEditor(currCardId, currCardProcessId, location._id)
+                        }}
+                        containerStyle={{
+                            marginBottom: "0.5rem",
+                        }}
+                    />
                 })}
         </styled.LotsContainer>
     )

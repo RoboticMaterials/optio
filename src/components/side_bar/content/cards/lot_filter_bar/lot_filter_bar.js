@@ -13,6 +13,7 @@ import {ThemeContext} from "styled-components";
 import {useSelector} from "react-redux";
 import {getAllTemplateFields} from "../../../../../methods/utils/lot_utils";
 import Textbox from "../../../../basic/textbox/textbox";
+import FlagButton from "./flag_button/flag_button";
 
 const LotFilterBar = (props) => {
 
@@ -30,6 +31,13 @@ const LotFilterBar = (props) => {
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
 
     const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])
+    const [shouldRenderInvisibleFlags, setShouldRenderInvisibleFlags] = useState(true)
+    const [maxFlagsSize, setMaxFlagsSize] = useState({
+        offsetWidth: undefined,
+        offsetHeight: undefined,
+        offsetLeft: undefined,
+        offsetTop: undefined,
+    })
     const [size, setSize] = useState({
         width: undefined,
         height: undefined,
@@ -45,6 +53,54 @@ const LotFilterBar = (props) => {
 
     const sizeRef = useRef(null)
     const flagsSizeRef = useRef(null)
+    const maxFlagsSizeRef = useRef(null)
+    const {
+        offsetHeight: maxFlagsOffsetHeight,
+        offsetWidth: maxFlagsOffsetWidth,
+        offsetTop: maxFlagsOffsetTop,
+        offsetLeft: maxFlagsOffsetLeft,
+    } = maxFlagsSizeRef?.current || {}
+
+
+
+    const renderInvisibleFlags = () => {
+        return(
+            <styled.FlagsContainer
+                style={{
+                    position: "absolute"
+                }}
+                ref={maxFlagsSizeRef}
+            >
+            {Object.values(FLAG_OPTIONS).map((currVal) => {
+                const {
+                    color: currColor,
+                    id: currColorId
+                } = currVal || {}
+
+                return (
+                    <FlagButton
+                        style={{
+                            margin: "0 .1rem",
+                        }}
+                        key={currColorId}
+                        color={currColor}
+                        schema={props.schema}
+                    />
+                )
+            })}
+        </styled.FlagsContainer>
+        )
+    }
+
+    useEffect(() => {
+        if(maxFlagsSizeRef.current && Number.isInteger(maxFlagsOffsetWidth)) {
+            setMaxFlagsSize({
+                offsetWidth: maxFlagsOffsetWidth
+            })
+
+            setShouldRenderInvisibleFlags(false)
+        }
+    }, [maxFlagsOffsetWidth, maxFlagsSizeRef.current])
 
     useEffect(() => {
 
@@ -130,11 +186,14 @@ const LotFilterBar = (props) => {
             <styled.ItemContainer
                 ref={sizeRef}
             >
+                {shouldRenderInvisibleFlags &&
+                    renderInvisibleFlags()
+                }
                 {/*<div style={{flex: 1}}>*/}
                 <DropDownSearch
                     maxDropdownWidth={`${size.width}px` }
-                    portal={document.getElementById("root")}
-                    containerCss={props.containerCss}
+                    // portal={document.getElementById("root")}
+                    // containerCss={props.containerCss}
                     reactDropdownSelectCss={props.reactDropdownSelectCss}
                     dropdownCss={props.dropdownCss}
                     valueCss={props.valueCss}
@@ -149,16 +208,10 @@ const LotFilterBar = (props) => {
                     valueField={"label"}
                     schema={"lots"}
                     style={{
-                        background: themeContext.bg.secondary,
+                        minWidth: "10rem",
+                        overflow: 'visible',
                         borderTopRightRadius: 0,
                         borderBottomRightRadius: 0,
-                        fontSize: "2px",
-                        borderTopLeftRadius: "1rem",
-                        borderBottomLeftRadius: "1rem",
-                        flex: 1,
-                        overflow: "hidden",
-                        // minWidth: "10rem",
-                        borderBottom: `1px solid ${themeContext.bg.quinary}`,
                     }}
                 />
                 {/*</div>*/}
@@ -168,14 +221,10 @@ const LotFilterBar = (props) => {
                         style={{flex: 3}}
                     >
                     <DropDownSearch
-
-                        containerCss={props.containerCss}
-                        dropdownCss={props.dropdownCss}
-                        maxDropdownWidth={`${flagsSize.width}px` }
-                        reactDropdownSelectCss={props.reactDropdownSelectCss}
-                        portal={document.getElementById("root")}
+                        // dropdownCss={props.dropdownCss}
+                        // maxDropdownWidth={`${flagsSize.width}px` }
+                        // reactDropdownSelectCss={props.reactDropdownSelectCss}
                         {...valueProps}
-                        clearable={true}
                         multi={true}
                         options={Object.values(FLAG_OPTIONS)}
                         onChange={(values) => {
@@ -197,38 +246,68 @@ const LotFilterBar = (props) => {
                             } = state || {}
                             const value = state.values[0]
 
-                            if(isArray(values) && values.length > 0) {
-                                return (
-                                    <styled.FlagsContainer>
-                                        {values.map((currVal) => {
-                                            const {
-                                                color: currColor,
-                                                id: currColorId
-                                            } = currVal || {}
+                            return (
+                                <styled.FlagsContainer style={{minWidth: '4rem', paddingRight: '1rem'}}>
+                                    {isArray(values) && values.map(currVal => {
+                                                const {
+                                                    color: currColor,
+                                                    id: currColorId
+                                                } = currVal || {}
+    
+                                                return (
+                                                    <styled.FlagButton
+                                                        style={{
+                                                            margin: "0rem .1rem",
+                                                        }}
+                                                        key={currColorId}
+                                                        type={"button"}
+                                                        color={currColor}
+                                                        onClick={(event) => {
+                                                            event.stopPropagation();
+                                                            methods.dropDown('open');
+                                                        }}
+                                                        schema={props.schema}
+                                                        className="fas fa-square"
+                                                    />
+                                                )
+                                            })}
+                                
+                            </styled.FlagsContainer>
+                            // if(isArray(values) && values.length > 0) {
+                            //     return (
+                            //         <styled.FlagsContainer
+                            //             style={{
+                            //                 minWidth: `${maxFlagsSize.offsetWidth}px`,
+                            //                 width: `${maxFlagsSize.offsetWidth}px`
+                            //             }}
+                            //         >
+                            //             {values.map((currVal) => {
+                            //                 const {
+                            //                     color: currColor,
+                            //                     id: currColorId
+                            //                 } = currVal || {}
 
-                                            return (
-                                                <styled.FlagButton
-                                                    style={{
-                                                        margin: "0 .5rem",
-                                                    }}
-                                                    key={currColorId}
-                                                    type={"button"}
-                                                    color={currColor}
-                                                    onClick={(event) => {
-                                                        event.stopPropagation();
-                                                        methods.dropDown('open');
-                                                    }}
-                                                    schema={props.schema}
-                                                    className="fas fa-flag"
-                                                />
-                                            )
-                                        })}
-                                    </styled.FlagsContainer>
-                                )
-                            }
+                            //                 return (
+                            //                     <FlagButton
+                            //                         style={{
+                            //                             margin: "0 .1rem",
+                            //                         }}
+                            //                         key={currColorId}
+                            //                         color={currColor}
+                            //                         onClick={(event) => {
+                            //                             event.stopPropagation();
+                            //                             methods.dropDown('open');
+                            //                         }}
+                            //                         schema={props.schema}
+                            //                     />
+                            //                 )
+                            //             })}
+                            //         </styled.FlagsContainer>
+                            //     )
+                            // }
 
-                            return(
-                                null
+                            // return(
+                            //     null
                             )
                         }}
                         itemRenderer={({ item, itemIndex, props, state, methods }) => {
@@ -240,7 +319,7 @@ const LotFilterBar = (props) => {
                             const isSelected = methods.isSelected(item)
 
                             return(
-                                <styled.FlagButton
+                                <FlagButton
                                     style={{
                                         paddingTop: ".5rem",
                                         paddingBottom: ".5rem",
@@ -254,50 +333,41 @@ const LotFilterBar = (props) => {
                                     onClick={item.disabled ? undefined : () => methods.addItem(item)}
                                     onKeyPress={item.disabled ? undefined : () => methods.addItem(item)}
                                     schema={props.schema}
-                                    className="fas fa-flag"
+                                    className={isSelected ? "fas fa-check-square" : "fas fa-square"}
                                 />
                             )
                         }}
 
                         style={{
-                            background: themeContext.bg.secondary,
-                            // width: "15rem",
+                            minWidth: `${maxFlagsSize.offsetWidth}px`,
+                            width: `${maxFlagsSize.offsetWidth}px`,
                             borderTopLeftRadius: 0,
                             borderBottomLeftRadius: 0,
-                            borderTopRightRadius: "1rem",
-                            borderBottomRightRadius: "1rem",
-                            borderLeft: `1px solid ${themeContext.bg.quaternary}`,
-                            borderBottom: `1px solid ${themeContext.bg.quinary}`,
-                            flex: 3,
+                            alignSelf: "stretch",
+                            borderLeft: `1px solid ${themeContext.bg.quaternary}`
+
                         }}
                     />
                     </div>
                     :
                     <Textbox
-
                         placeholder='Filter lots...'
                         onChange={(e) => {
                             setLotFilterValue(e.target.value)
                         }}
                         focus={shouldFocusLotFilter}
-                        style={{
-                            background: themeContext.bg.secondary,
-                            height: "100%",
-                            flex: 1,
+                        inputStyle={{
                             borderTopLeftRadius: 0,
                             borderBottomLeftRadius: 0,
-                            borderTopRightRadius: "1rem",
-                            borderBottomRightRadius: "1rem",
-                            borderLeft: `1px solid ${themeContext.bg.quaternary}`,
-
+                            borderTopRightRadius: "0.2rem",
+                            borderBottomRightRadius: "0.2rem",
+                            height: "100%",
                         }}
-                        textboxContainerStyle={{
-                            flex: 1,
-                            // height: "100%",
-                            alignSelf: "stretch",
-                            // background: "blue",
-                            margin: 0,
-                            padding: 0
+                        style={{
+                            background: themeContext.bg.secondary,
+                            borderTopRightRadius: "0.2rem",
+                            borderBottomRightRadius: "0.2rem",
+                            borderLeft: `1px solid ${themeContext.bg.quaternary}`,
                         }}
                         schema={"lots"}
                     />

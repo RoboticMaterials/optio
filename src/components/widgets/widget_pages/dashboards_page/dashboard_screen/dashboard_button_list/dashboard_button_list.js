@@ -19,7 +19,13 @@ import { deepCopy } from "../../../../../../methods/utils/utils";
 import { OPERATION_TYPES, TYPES } from "../../dashboards_sidebar/dashboards_sidebar";
 import { theme } from "../../../../../../theme";
 import DashboardSplitButton from "../../dashboard_buttons/dashboard_split_button/dashboard_split_button";
-import {getCanDeleteDashboardButton} from "../../../../../../methods/utils/dashboards_utils";
+import { getCanDeleteDashboardButton } from "../../../../../../methods/utils/dashboards_utils";
+import {
+    CUSTOM_CHARGE_TASK_ID, CUSTOM_IDLE_TASK_ID,
+    CUSTOM_IDLE_TASK_NAME,
+    CUSTOM_TASK_ID
+} from "../../../../../../constants/route_constants";
+import {getPositionAttributes} from "../../../../../../methods/utils/stations_utils";
 const logger = log.getLogger("Dashboards")
 
 
@@ -51,8 +57,29 @@ const DashboardButtonList = ((props) => {
 
         let broken = false
 
-        const type = currentButton?.type
-        const taskID = currentButton.task_id
+        const {
+            type,
+            task_id: taskID,
+            id: buttonId,
+            custom_task
+        } = currentButton || {}
+        const {
+            position: positionId
+        } = custom_task || {}
+
+        let customTaskName
+        if(taskID === CUSTOM_TASK_ID) {
+            if(buttonId === CUSTOM_IDLE_TASK_ID) {
+                customTaskName = CUSTOM_IDLE_TASK_NAME
+            }
+            else if(buttonId === CUSTOM_CHARGE_TASK_ID) {
+                const {
+                    name: positionName = ""
+                } = getPositionAttributes(positionId, ["name"]) || {}
+                customTaskName = positionName
+            }
+        }
+
         const task = tasks[taskID]
         const {
             name: taskName = ""
@@ -61,7 +88,7 @@ const DashboardButtonList = ((props) => {
         const name = currentButton.name
 
         const displayName = name ? name :
-            (type === TYPES.ROUTES.key) ? taskName
+            (type === TYPES.ROUTES.key) ? (taskID === CUSTOM_TASK_ID ? customTaskName : taskName)
                 :
                 (Object.keys(OPERATION_TYPES).includes(type)) ? OPERATION_TYPES[type].name
                     :
@@ -136,10 +163,10 @@ const DashboardButtonList = ((props) => {
                 title={displayName}
                 iconColor={"black"}
                 iconClassName={iconClassName}
-                key={index}
+                key={`${taskID}-${buttonId}`}
                 type={type}
                 onClick={onClick}
-                containerStyle={{ }}
+                containerStyle={{}}
                 hoverable={false}
                 taskID={taskID}
                 color={currentButton.color}
@@ -156,10 +183,10 @@ const DashboardButtonList = ((props) => {
                 title={displayName}
                 iconColor={iconColor}
                 iconClassName={iconClassName}
-                key={index}
+                key={`${taskID}-${buttonId}`}
                 type={type}
                 onClick={onClick}
-                containerStyle={{  }}
+                containerStyle={{}}
                 hoverable={false}
                 taskID={taskID}
                 color={currentButton.color}

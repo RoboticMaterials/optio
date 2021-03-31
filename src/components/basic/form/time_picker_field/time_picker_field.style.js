@@ -12,7 +12,7 @@ export const DefaultErrorContainerComponent = styled.div`
     height: auto;
     position: absolute;
     top: 50%;
-    right: 2rem;
+    right: 0.5rem;
     transform: translateY(-50%);
     margin: 0;
     padding: 0;

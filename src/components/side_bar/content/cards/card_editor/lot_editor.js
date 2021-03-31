@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef, useCallback} from "react";
+import React, {useState, useEffect, useRef, useContext, useCallback} from "react";
 
 // api
 import {getCardsCount} from "../../../../../api/cards_api";
@@ -7,9 +7,13 @@ import {getCardsCount} from "../../../../../api/cards_api";
 import PropTypes from "prop-types";
 import {Formik, setNestedObjectValues} from "formik";
 import {useDispatch, useSelector} from "react-redux";
+import {
+	isMobile
+} from "react-device-detect";
 
 // external components
 import FadeLoader from "react-spinners/FadeLoader"
+import Popup from 'reactjs-popup';
 
 // internal components
 import CalendarField, {CALENDAR_FIELD_MODES} from "../../../../basic/form/calendar_field/calendar_field";
@@ -17,6 +21,7 @@ import TextField from "../../../../basic/form/text_field/text_field";
 import Textbox from "../../../../basic/textbox/textbox";
 import DropDownSearchField from "../../../../basic/form/drop_down_search_field/drop_down_search_field";
 import Button from "../../../../basic/button/button";
+import BackButton from '../../../../basic/back_button/back_button'
 import ButtonGroup from "../../../../basic/button_group/button_group";
 import ScrollingButtonField from "../../../../basic/form/scrolling_buttons_field/scrolling_buttons_field";
 import NumberField from "../../../../basic/form/number_field/number_field";
@@ -64,6 +69,7 @@ import useWarn from "../../../../basic/form/useWarn";
 
 // logger
 import log from '../../../../../logger'
+import { ThemeContext } from "styled-components";
 
 
 const logger = log.getLogger("CardEditor")
@@ -112,7 +118,7 @@ const FormComponent = (props) => {
 
 	const formMode = cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE
 
-	useWarn(uniqueNameSchema, formikProps)
+	const themeContext = useContext(ThemeContext);
 
 	// actions
 	const dispatch = useDispatch()
@@ -136,6 +142,7 @@ const FormComponent = (props) => {
 	const [finalProcessOptions, setFinalProcessOptions] = useState([])
 	const [showProcessSelector, setShowProcessSelector] = useState(props.showProcessSelector)
 	const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
+	const [showCalendarPopup, setShowCalendarPopup] = useState(false);
 
 	const [warningValues, setWarningValues] = useState()
 
@@ -364,7 +371,7 @@ const FormComponent = (props) => {
 
 						<NumberField
 							maxValue={maxValue}
-							minValue={0}
+							minValue={1}
 							name={"moveCount"}
 						/>
 					</div>
@@ -411,10 +418,12 @@ const FormComponent = (props) => {
 			<styled.BodyContainer>
 				<styled.ContentHeader style={{}}>
 					<styled.ContentTitle>Select Start and End Date</styled.ContentTitle>
+					<i className="fas fa-times" style={{cursor: 'pointer'}} onClick={() => setShowCalendarPopup(false)}/>
 				</styled.ContentHeader>
 
 				<styled.CalendarContainer>
 					<CalendarField
+						onChange={() => setShowCalendarPopup(false)}
 						minDate={calendarFieldMode === CALENDAR_FIELD_MODES.END && fieldValue[0]}
 						maxDate={calendarFieldMode === CALENDAR_FIELD_MODES.START && fieldValue[1]}
 						selectRange={false}
@@ -465,29 +474,11 @@ const FormComponent = (props) => {
 						<styled.ObjectInfoContainer>
 							<styled.ObjectLabel>{getDisplayName(lotTemplate, "count", DEFAULT_COUNT_DISPLAY_NAME)}</styled.ObjectLabel>
 							<NumberField
-								minValue={0}
+								minValue={1}
 								name={`bins.${binId}.count`}
 							/>
 						</styled.ObjectInfoContainer>
 					</div>
-
-					{formMode === FORM_MODES.UPDATE &&
-					<styled.WidgetContainer>
-						<styled.Icon
-							className="fas fa-history"
-							color={"red"}
-							onClick={()=> {
-								if(content !== CONTENT.HISTORY) {
-									onGetCardHistory(cardId)
-									setContent(CONTENT.HISTORY)
-								}
-								else {
-									setContent(null)
-								}
-							}}
-						/>
-					</styled.WidgetContainer>
-					}
 				</styled.BodyContainer>
 			</>
 		)
@@ -646,11 +637,13 @@ const FormComponent = (props) => {
 													newName = fullFieldName
 												}
 											}
-
-											setContent(CONTENT.CALENDAR)
+											setShowCalendarPopup(true)
 											setCalendarFieldName({fullFieldName: newName, fieldName})
 											setCalendarFieldMode(mode)
 										}}
+										calendarContent={showCalendarPopup && renderCalendarContent}
+										showCalendarPopup={showCalendarPopup}
+										setShowCalendarPopup={setShowCalendarPopup}
 										displayName={fieldName}
 										preview={false}
 										component={component}
@@ -719,30 +712,55 @@ const FormComponent = (props) => {
 				/>
 				<styled.Header>
 					{((content === CONTENT.CALENDAR) || (content === CONTENT.HISTORY) || (content === CONTENT.MOVE))  &&
-					<Button
-						onClick={()=>setContent(null)}
-						schema={'error'}
-						// secondary
-					>
-						<styled.Icon className="fas fa-arrow-left"></styled.Icon>
-					</Button>
+						<BackButton
+							onClick={()=>setContent(null)}
+							schema={'error'}
+							secondary
+						>
+						</BackButton>
 					}
 
-					<styled.Title>
-						{formMode === FORM_MODES.CREATE ?
-							"Create Lot"
-							:
-							"Edit Lot"
-						}
-					</styled.Title>
+					{formMode === FORM_MODES.UPDATE && ((content !== CONTENT.CALENDAR) && (content !== CONTENT.HISTORY) && (content !== CONTENT.MOVE)) &&
+						<styled.WidgetContainer onClick={()=> {
+							if(content !== CONTENT.HISTORY) {
+								onGetCardHistory(cardId)
+								setContent(CONTENT.HISTORY)
+							}
+							else {
+								setContent(null)
+							}
+						}}>
+							<i
+								className="fas fa-history"
+								color={themeContext.schema.lots.solid}
+								style={{fontSize: '2rem', marginRight: '0.5rem', zIndex: 20, color: themeContext.schema.lots.solid, cursor: 'pointer'}}
+							/>
+							Lot History
+						</styled.WidgetContainer>
+					}
 
-					<Button
-						secondary
-						onClick={close}
-						schema={'error'}
-					>
-						<i className="fa fa-times" aria-hidden="true"/>
-					</Button>
+					{content === CONTENT.HISTORY &&
+						<styled.Title>
+							Lot History
+						</styled.Title>
+					}
+					{content === CONTENT.MOVE &&
+						<styled.Title>
+							Move Lot
+						</styled.Title>
+					}
+					{content !== CONTENT.HISTORY && content !== CONTENT.MOVE &&
+						<styled.Title>
+							{formMode === FORM_MODES.CREATE ?
+								"Create Lot"
+								:
+								"Edit Lot"
+							}
+						</styled.Title>
+					}
+					
+
+					<styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={close}/>
 				</styled.Header>
 
 				<styled.RowContainer style={{flex: 1, alignItems: "stretch", overflow: "hidden"}}>
@@ -760,41 +778,43 @@ const FormComponent = (props) => {
 					/>
 					}
 
-					<styled.SuperContainer>
+					<styled.ScrollContainer>
 
 						<styled.FieldsHeader>
 
 							<styled.SubHeader>
-								<div>
-									<styled.ContentTitle>Selected Template: </styled.ContentTitle>
-									<styled.ContentValue>{lotTemplate.name}</styled.ContentValue>
-								</div>
-
 								<styled.IconRow>
 									{showPasteIcon &&
-									<styled.PasteIcon
-										type={"button"}
-										className="fas fa-paste"
-										color={"#ffc20a"}
-										onClick={onPasteIconClick}
-									/>
+										<styled.PasteIcon
+											type={"button"}
+											className="fas fa-paste"
+											color={"#ffc20a"}
+											onClick={onPasteIconClick}
+										/>
 									}
 
 									<styled.TemplateButton
 										type={"button"}
-										className={SIDE_BAR_MODES.TEMPLATES.iconName}
-										color={SIDE_BAR_MODES.TEMPLATES.color}
+										className={showTemplateSelector ? "fas fa-times" : SIDE_BAR_MODES.TEMPLATES.iconName}
+										color={themeContext.schema.lots.solid}
 										onClick={() => {
 											setShowTemplateSelector(!showTemplateSelector)
 											dispatchSetSelectedLotTemplate(lotTemplateId)
 										}}
 									/>
 								</styled.IconRow>
+
+								<div>
+									<styled.ContentTitle>Selected Template: </styled.ContentTitle>
+									<styled.ContentValue>{lotTemplate.name}</styled.ContentValue>
+								</div>
+
+								
 							</styled.SubHeader>
 
 							{(showProcessSelector || !values.processId) && renderProcessSelector()}
 
-							<styled.RowContainer>
+							<styled.RowContainer >
 								<styled.NameContainer style={{flex: 0}}>
 									<styled.LotName>Lot Number</styled.LotName>
 										<Textbox
@@ -809,8 +829,6 @@ const FormComponent = (props) => {
 								</styled.NameContainer>
 
 								<styled.NameContainer>
-
-
 									<styled.LotName>{getDisplayName(lotTemplate, "name", DEFAULT_NAME_DISPLAY_NAME)}</styled.LotName>
 									<TextField
 										name={"name"}
@@ -824,23 +842,36 @@ const FormComponent = (props) => {
 						</styled.FieldsHeader>
 
 						{(content === null) &&
-						renderMainContent()
+							renderMainContent()
 						}
-						{(content === CONTENT.CALENDAR) &&
-						renderCalendarContent()
-						}
+						{/* {(content === CONTENT.CALENDAR) &&
+							renderCalendarContent()
+						} */}
 						{(content === CONTENT.HISTORY) &&
-						renderHistory()
+							renderHistory()
 						}
 						{(content === CONTENT.MOVE) &&
-						renderMoveContent()
+							renderMoveContent()
 						}
 
-					</styled.SuperContainer>
+					</styled.ScrollContainer>
 				</styled.RowContainer>
 
 				<styled.Footer>
 					{/* render buttons for appropriate content */}
+					{(isMobile && showTemplateSelector) ?
+					<styled.ButtonContainer>
+						<Button
+							type={"button"}
+							style={{...buttonStyle, }}
+							onClick={() => setShowTemplateSelector(false)}
+							schema={"lots"}
+							// secondary
+						>
+							Back to Editor
+						</Button>
+					</styled.ButtonContainer>
+					:
 					<styled.ButtonContainer>
 						{
 							{
@@ -883,7 +914,7 @@ const FormComponent = (props) => {
 											style={{...buttonStyle}}
 											onClick={() => setContent(null)}
 											schema={"error"}
-											// secondary
+											secondary
 										>
 											Go Back
 										</Button>
@@ -953,6 +984,7 @@ const FormComponent = (props) => {
 										<Button
 											schema={'lots'}
 											type={"button"}
+											secondary
 											disabled={submitDisabled}
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
 											onClick={async () => {
@@ -978,6 +1010,7 @@ const FormComponent = (props) => {
 									</>
 									:
 									<>
+										
 										<Button
 											schema={'lots'}
 											type={"button"}
@@ -988,7 +1021,7 @@ const FormComponent = (props) => {
 
 											}}
 										>
-											Save
+											Save Lot
 										</Button>
 
 										<Button
@@ -998,19 +1031,19 @@ const FormComponent = (props) => {
 											onClick={async () => {
 												setContent(CONTENT.MOVE)
 											}}
+											secondary
 										>
-											Move
+											Move Lot
 										</Button>
 										<Button
 											schema={'delete'}
 											style={{...buttonStyle, marginBottom: '0rem', marginTop: 0}}
 											type={"button"}
 											onClick={() => setConfirmDeleteModal(true)}
-											secondary
+											tertiary
 										>
 											<i style={{marginRight: ".5rem"}} className="fa fa-trash" aria-hidden="true"/>
-
-											Delete
+											Delete Lot
 										</Button>
 									</>
 								}
@@ -1018,6 +1051,7 @@ const FormComponent = (props) => {
 						}
 
 					</styled.ButtonContainer>
+					}
 
 
 					{footerContent()}
@@ -1204,14 +1238,14 @@ const LotEditor = (props) => {
 		return(
 			<>
 				{showLotTemplateEditor &&
-				<LotCreatorForm
-					isOpen={true}
-					onAfterOpen={null}
-					lotTemplateId={selectedLotTemplatesId}
-					close={()=>{
-						setShowLotTemplateEditor(false)
-					}}
-				/>
+					<LotCreatorForm
+						isOpen={true}
+						onAfterOpen={null}
+						lotTemplateId={selectedLotTemplatesId}
+						close={()=>{
+							setShowLotTemplateEditor(false)
+						}}
+					/>
 				}
 				<styled.Container>
 					<Formik
@@ -1265,6 +1299,7 @@ const LotEditor = (props) => {
 									return false
 								}
 
+								console.log("HANDLESUBMIT")
 
 								let requestResult
 
@@ -1279,8 +1314,6 @@ const LotEditor = (props) => {
 									processId: selectedProcessId,
 									[lotTemplateId]: templateValues,
 								} = values || {}
-
-
 
 
 								if(content === CONTENT.MOVE) {
@@ -1410,6 +1443,7 @@ const LotEditor = (props) => {
 										}
 
 									}
+
 
 								}
 

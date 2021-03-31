@@ -347,7 +347,7 @@ const KickOffModal = (props) => {
             <QuantityModal
                 validationSchema={quantityOneSchema}
                 maxValue={lotCount}
-                minValue={0}
+                minValue={1}
                 infoText={`${lotCount} items available.`}
                 isOpen={true}
                 title={"Select Quantity"}
@@ -355,13 +355,14 @@ const KickOffModal = (props) => {
                 onCloseButtonClick={() => setShowQuantitySelector(false)}
                 handleOnClick1={(quantity) => {
                     setShowQuantitySelector(false)
+
+                }}
+                handleOnClick2={(quantity) => {
+                    setShowQuantitySelector(false)
                     moveLot(selectedLot, quantity)
                 }}
-                handleOnClick2={() => {
-                    setShowQuantitySelector(false)
-                }}
-                button_1_text={"Confirm"}
-                button_2_text={"Cancel"}
+                button_1_text={"Cancel"}
+                button_2_text={"Confirm"}
             />
         )
     }
@@ -373,7 +374,8 @@ const KickOffModal = (props) => {
             onRequestClose={close}
             style={{
                 overlay: {
-                    zIndex: 500
+                    zIndex: 500,
+                    backgroundColor: 'rgba(0, 0, 0, 0.4)' 
                 },
                 content: {
 
@@ -397,16 +399,8 @@ const KickOffModal = (props) => {
             }
             <styled.Header>
                 <styled.HeaderMainContentContainer>
-                    <div style={{marginRight: "auto", flex: 1}}/>
                     <styled.Title>{title}</styled.Title>
-                    <div style={{flex: 1, display: "flex", justifyContent: "flex-end"}}>
-                        <Button
-                            onClick={close}
-                            schema={'dashboards'}
-                        >
-                            <i className="fa fa-times" aria-hidden="true"/>
-                        </Button>
-                    </div>
+                    <styled.CloseIcon className="fa fa-times" aria-hidden="true" onClick={close}/>
 
                 </styled.HeaderMainContentContainer>
                 <SortFilterContainer
@@ -445,21 +439,22 @@ const KickOffModal = (props) => {
                         </styled.ContentContainer>
 
                         <styled.ButtonsContainer>
-                            <Button
+                            {/* <Button
                                 tertiary
                                 schema={"dashboards"}
                                 onClick={close}
                                 label={"Close"}
                                 type="button"
-                            />
+                            /> */}
                             <Button
                                 // tertiary
                                 // secondary
                                 schema={"dashboards"}
                                 // onClick={close}
                                 onClick={()=>setShowLotEditor(true)}
-                                label={"Add Lot"}
+                                label={"Create New Lot"}
                                 type="button"
+                                style={{minWidth: '12rem', minHeight: '3rem'}}
                             />
                         </styled.ButtonsContainer>
                     </div>
