@@ -56,7 +56,7 @@ export const WidgetButtonText = styled.h4`
     text-align: center;
     align-self:center;
 
-    color: ${props => props.pageID === props.currentPage ? props.theme.fg.primary : props.theme.bg.quaternary};
+    color: ${props => props.pageID === props.currentPage ? props.theme.fg.primary : props.theme.bg.septenary};
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
 
@@ -80,7 +80,7 @@ export const WidgetButtonIcon = styled.i`
     font-size: 2.2rem;
     margin-bottom:0.3rem;
     align-self:center;
-    color: ${props => props.pageID === props.currentPage ? props.theme.fg.primary : props.theme.bg.quaternary};
+    color: ${props => props.pageID === props.currentPage ? props.theme.fg.primary : props.theme.bg.septenary};
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
         font-size: 2rem;
