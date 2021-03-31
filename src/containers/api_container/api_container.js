@@ -399,7 +399,7 @@ const ApiContainer = (props) => {
 
         const tasks = await onGetTasks()
 
-        const task = tasks[taskQueueItem.task_id]
+        const task = taskQueueItem ? tasks[taskQueueItem.task_id] : null
 
         // Unload?
         if(task && task.handoff){
@@ -408,23 +408,22 @@ const ApiContainer = (props) => {
                 query: manageTaskQueue,
                 variables: { 
                     id: taskQueueItem.id,
+                    quantity: taskQueueItem.quantity,
                     task_id: taskQueueItem.task_id,
                     lot_id: taskQueueItem.lot_id,
                 }
               });
 
-        }else{
-            if(taskQueueItem.start_time === null){
+        }else if(taskQueueItem && taskQueueItem.start_time === null){  
+ 
+            taskQueueItem.start_time = Math.round(Date.now() / 1000)
 
-                taskQueueItem.start_time = Math.round(Date.now() / 1000)
+            taskQueueItem.hil_station_id = task.unload.station
 
-                taskQueueItem.hil_station_id = task.unload.station
+            taskQueueItem.hil_message = 'Unload'
 
-                taskQueueItem.hil_message = 'Unload'
-
-                // put a start time on th taskQueueItem
-                await onPutTaskQueue(taskQueueItem, taskQueueItem.id)
-            }
+            // put a start time on th taskQueueItem
+            await onPutTaskQueue(taskQueueItem, taskQueueItem.id)
         }
     }
 
@@ -453,10 +452,13 @@ const ApiContainer = (props) => {
             graphqlOperation(subscriptions.onDeltaTaskQueue)
         ).subscribe({
             next: ({ provider, value }) => {  
+
+                console.log(provider ,value);
                 
                 handleTaskUpdate(value.data.onDeltaTaskQueue)
+
                 // run get queue
-                // onGetTaskQueue()
+                onGetTaskQueue()
         },
             error: error => console.warn(error)
         });
