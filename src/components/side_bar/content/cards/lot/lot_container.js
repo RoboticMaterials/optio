@@ -12,7 +12,6 @@ const LotContainer = (props) => {
         lotId,
         binId,
         enableFlagSelector,
-        processId,
         ...rest
     } = props
 
@@ -29,7 +28,8 @@ const LotContainer = (props) => {
         lotNumber,
         lotTemplateId,
         name,
-        flags
+        flags,
+        process_id: processId
     } = lot || {}
 
     useEffect(() => {

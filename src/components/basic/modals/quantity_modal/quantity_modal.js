@@ -13,7 +13,7 @@ const QuantityModal = (props) => {
 	const {
 		maxValue,
 		minValue,
-		handleOnClick1,
+		handleOnClick2,
 		infoText,
 		validationSchema,
 	} = props
@@ -28,7 +28,7 @@ const QuantityModal = (props) => {
 			validateOnMount={false} // leave false, if set to true it will generate a form error when new data is fetched
 			validateOnBlur={true}
 			onSubmit={(values)=>{
-				alert(JSON.stringify(values, null, 2));
+				// alert(JSON.stringify(values, null, 2));
 			}} // this is necessary
 
 		>
@@ -48,8 +48,8 @@ const QuantityModal = (props) => {
 				return(
 					<SimpleModal
 						{...props}
-						handleOnClick1={() => {
-							handleOnClick1(quantity)
+						handleOnClick2={() => {
+							handleOnClick2(quantity)
 						}}
 						button_1_disabled={submitDisabled}
 					>

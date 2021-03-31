@@ -176,7 +176,10 @@ export const getIsCardAtBin = ({bins}, binId) => {
 }
 
 export const getAllTemplateFields = () => {
-	const lotTemplates = store.getState().lotTemplatesReducer.lotTemplates
+	const lotTemplates = {
+		[BASIC_LOT_TEMPLATE_ID]: {...BASIC_LOT_TEMPLATE},
+		...(store.getState().lotTemplatesReducer.lotTemplates || {})
+	}
 
 	let templateFields = []
 
