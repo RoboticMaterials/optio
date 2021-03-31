@@ -313,10 +313,14 @@ const DashboardsSidebar = (props) => {
                                         color: currButtonColor,
                                         task_id: currButtonTaskId,
                                         id: currButtonId,
-                                        type: currButtonType
+                                        type: currButtonType,
+                                        custom_task
                                     } = currButton || {}
+                                    const {
+                                        position: positionId
+                                    } = custom_task || {}
 
-                                    const dashboardContainsTask = currButtonTaskId === 'custom_task' ? false : getDashboardContainsRouteButton({ buttons: existingButtons }, { task_id: currButtonTaskId })
+                                    const dashboardContainsTask = getDashboardContainsRouteButton({ buttons: existingButtons }, { task_id: currButtonTaskId, id: currButtonId, positionId })
                                     return (
                                         <DashboardSidebarButton
                                             key={`dashboard-sidebar-button-${currButtonId}`}
