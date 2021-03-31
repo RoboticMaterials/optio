@@ -383,7 +383,6 @@ type Subscription {
 
     onDeltaTaskQueue: TaskQueue
       @aws_subscribe(mutations: ["createTaskQueue","updateTaskQueue"])
-      
 }
 
 # Analysis Queries
