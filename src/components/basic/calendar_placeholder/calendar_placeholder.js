@@ -13,6 +13,7 @@ import PropTypes from "prop-types"
 // styles
 import * as styled from "./calendar_placeholder.style"
 import {immutableSet, isNonEmptyArray} from "../../../methods/utils/array_utils";
+import {dateRangeToStrings, jsDateToString} from "../../../methods/utils/card_utils";
 
 
 const CalendarPlaceholder = (props) => {
@@ -21,6 +22,9 @@ const CalendarPlaceholder = (props) => {
 		onStartClick,
 		onEndClick,
 		text,
+		defaultText,
+		defaultStartText,
+		defaultEndText,
 		name,
 		selectRange,
 		endText,
@@ -38,11 +42,39 @@ const CalendarPlaceholder = (props) => {
 
 	const [showCalendarPopup, setShowCalendarPopup] = useState(false)
 	const [rangeIndex, setRangeIndex] = useState(null)
+	const [currentVal, setCurrentVal] = useState(selectRange ? [null, null] : null)
+	const [displayName, setDisplayName] = useState(selectRange ? [defaultStartText, defaultEndText] : defaultText)
 
 	const closePopup = () => {
 		setShowCalendarPopup(false)
 		setRangeIndex(null)
 	}
+
+	useEffect(() => {
+		if(isNonEmptyArray(currentVal) && currentVal.length === 2) {
+			let tempDisplayName = []
+			if(currentVal[0]) {
+				tempDisplayName[0] = jsDateToString(currentVal[0])
+			}
+			else {
+				tempDisplayName[0] = defaultStartText
+			}
+			if(currentVal[1]) {
+				tempDisplayName[1] = jsDateToString(currentVal[1])
+			}
+			else {
+				tempDisplayName[1] = defaultEndText
+			}
+
+			setDisplayName(tempDisplayName)
+		}
+		else if(currentVal) {
+			setDisplayName(jsDateToString(currentVal))
+		}
+		else {
+			setDisplayName(defaultText)
+		}
+	}, [currentVal])
 
 	const renderCalendar = () => {
 
@@ -68,7 +100,9 @@ const CalendarPlaceholder = (props) => {
 						onChange={(val) => {
 
 							let tempVal = Number.isInteger(rangeIndex) ? immutableSet((isNonEmptyArray(value) && value.length > 0) ? value : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE, val, rangeIndex) || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE
+							let tempCurrVal = Number.isInteger(rangeIndex) ? immutableSet((isNonEmptyArray(currentVal) && currentVal.length > 0) ? currentVal : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE, val, rangeIndex) || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE
 							onChange(selectRange ? tempVal : val)
+							setCurrentVal(selectRange ? tempCurrVal : val)
 							closeOnSelect && closePopup()
 						}}
 					/>
@@ -91,7 +125,7 @@ const CalendarPlaceholder = (props) => {
 					}
 				}}
 			>
-				<styled.DateText>{startText}</styled.DateText>
+				<styled.DateText>{displayName[0]}</styled.DateText>
 			</styled.DateItem>
 
 			<styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
@@ -106,7 +140,7 @@ const CalendarPlaceholder = (props) => {
 					}
 				}}
 			>
-				<styled.DateText>{endText}</styled.DateText>
+				<styled.DateText>{displayName[1]}</styled.DateText>
 			</styled.DateItem>
 
 			{showCalendarPopup &&
@@ -132,7 +166,7 @@ const CalendarPlaceholder = (props) => {
 				}
 			}}
 		>
-			<styled.DateText>{text}</styled.DateText>
+			<styled.DateText>{displayName}</styled.DateText>
 			{showCalendarPopup &&
 			<Popup
 				open={showCalendarPopup}
@@ -162,7 +196,10 @@ CalendarPlaceholder.defaultProps = {
 	onEndClick: () => {},
 	onStartClick: () => {},
 	minDate: null,
-	maxDate: null
+	maxDate: null,
+	defaultStartText: "Select Start Date",
+	defaultEndText: "Select End Date",
+	defaultText: "Select Date",
 }
 
 export default CalendarPlaceholder

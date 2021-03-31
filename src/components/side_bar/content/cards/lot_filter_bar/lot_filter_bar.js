@@ -1,7 +1,12 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import PropTypes from 'prop-types';
-import * as styled from "../zone_header/zone_header.style";
+
+// components internal
 import DropDownSearch from "../../../../basic/drop_down_search_v2/drop_down_search";
+import Textbox from "../../../../basic/textbox/textbox";
+import FlagButton from "./flag_button/flag_button";
+import CalendarPlaceholder from "../../../../basic/calendar_placeholder/calendar_placeholder";
+
+// constants
 import {
     CONTENT,
     FIELD_DATA_TYPES, FLAG_OPTIONS, FORM_BUTTON_TYPES,
@@ -9,20 +14,20 @@ import {
     LOT_SORT_OPTIONS,
     SORT_DIRECTIONS
 } from "../../../../../constants/lot_contants";
-import {isArray, isNonEmptyArray} from "../../../../../methods/utils/array_utils";
+import {BASIC_FIELD_DEFAULTS} from "../../../../../constants/form_constants";
+
+// functions external
+import PropTypes from 'prop-types';
 import {ThemeContext} from "styled-components";
 import {useSelector} from "react-redux";
+
+// utils
+import {isArray, isNonEmptyArray} from "../../../../../methods/utils/array_utils";
 import {getAllTemplateFields} from "../../../../../methods/utils/lot_utils";
-import Textbox from "../../../../basic/textbox/textbox";
-import FlagButton from "./flag_button/flag_button";
-import Button from "../../../../basic/button/button";
-import {FORM_MODES} from "../../../../../constants/scheduler_constants";
-import CalendarField, {CALENDAR_FIELD_MODES} from "../../../../basic/form/calendar_field/calendar_field";
-import CalendarPlaceholder from "../../../../basic/calendar_placeholder/calendar_placeholder";
-import FieldComponentMapper from "../card_editor/field_component_mapper/field_component_mapper";
 import {jsDateToString} from "../../../../../methods/utils/card_utils";
-import Calendar from "../../../../basic/calendar/calendar";
-import {BASIC_FIELD_DEFAULTS} from "../../../../../constants/form_constants";
+
+// styles
+import * as styled from "../zone_header/zone_header.style";
 
 const VALUE_MODES = {
     TEXT_BOX: "TEXT_BOX",
@@ -38,8 +43,6 @@ const LotFilterBar = (props) => {
         lotFilterValue,
         selectedFilterOption,
         setSelectedFilterOption,
-        descriptionStyle,
-        containerStyle,
         shouldFocusLotFilter,
         labelDropdownProps,
         valueProps
@@ -113,11 +116,7 @@ const LotFilterBar = (props) => {
                 label
             } = currTemplateField
 
-
-            // currently don't have filter for dates implemented, so skip em
-            // if(dataType !== FIELD_DATA_TYPES.DATE_RANGE && dataType !== FIELD_DATA_TYPES.DATE) {
-                tempLotFilterOptions.push(currTemplateField)
-            // }
+            tempLotFilterOptions.push(currTemplateField)
 
         })
 
@@ -128,9 +127,6 @@ const LotFilterBar = (props) => {
 
     return (
         <styled.ColumnContainer
-
-            // style={containerStyle}
-            // css={props.columnCss}
         >
             <styled.Description
                 // style={descriptionStyle}
@@ -317,12 +313,13 @@ const LotFilterBar = (props) => {
                                 }}
                                 usable={true}
                                 selectRange={true}
-                                startText={(isNonEmptyArray(lotFilterValue) && lotFilterValue[0]) ? jsDateToString(lotFilterValue[0]) : "Select Start Date"}
-                                endText={(isNonEmptyArray(lotFilterValue) && lotFilterValue[1]) ? jsDateToString(lotFilterValue[1]) : "Select End Date"}
+                                // defaultStartText={"Select Start Date"} //(isNonEmptyArray(lotFilterValue) && lotFilterValue[0]) ? jsDateToString(lotFilterValue[0]) :
+                                // defaultEndText={} //(isNonEmptyArray(lotFilterValue) && lotFilterValue[1]) ? jsDateToString(lotFilterValue[1]) :
                             />,
                         [VALUE_MODES.SINGLE_DATE]:
                             <CalendarPlaceholder
-                                text={lotFilterValue ? jsDateToString(lotFilterValue) : "Select Date"}
+                                // defaultText={"Select Date"}
+                                // text={lotFilterValue ? jsDateToString(lotFilterValue) }
                                 calendarProps={{
                                     value: lotFilterValue
                                 }}

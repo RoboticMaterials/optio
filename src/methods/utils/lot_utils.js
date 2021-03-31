@@ -6,7 +6,7 @@ import {
 	FIELD_DATA_TYPES,
 	LOT_FILTER_OPTIONS
 } from "../../constants/lot_contants";
-import {immutableDelete, immutableReplace, isArray} from "./array_utils";
+import {immutableDelete, immutableReplace, isArray, isNonEmptyArray} from "./array_utils";
 import store from '../../redux/store/index'
 import lotTemplatesReducer from "../../redux/reducers/lot_templates_reducer";
 import {toIntegerOrZero} from "./number_utils";
@@ -95,21 +95,37 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
 							return true
 						}
 						case FIELD_DATA_TYPES.DATE: {
-							// not implemented yet
-							console.log("filterValue",filterValue)
-							console.log("filterValue",filterValue.toDateString())
-							console.log("lot[fieldName]",lot[fieldName])
-							console.log("new Date(lot[fieldName])",new Date(lot[fieldName]))
-
-							// return lot[fieldName] === filterValue.toDateString()
-
 							if(lot[fieldName]) {
 								return new Date(lot[fieldName]).toDateString() === filterValue.toDateString()
 							}
 							return true
 						}
 						case FIELD_DATA_TYPES.DATE_RANGE: {
-							// not implemented yet
+							const fieldValue = lot[fieldName]
+
+							if((isNonEmptyArray(filterValue) && filterValue.length > 0)) {
+								if(isNonEmptyArray(fieldValue) && fieldValue.length > 0) {
+									if(filterValue[0]) {
+										if(new Date(lot[fieldName][0]).toDateString() === filterValue[0].toDateString()) {
+											// return true
+										}
+										else {
+											return false
+										}
+									}
+									if(filterValue[1]) {
+										if(new Date(lot[fieldName][1]).toDateString() === filterValue[1].toDateString()) {
+											// return true
+										}
+										else {
+											return false
+										}
+									}
+								}
+								else {
+									return false
+								}
+							}
 							return true
 						}
 						case FIELD_DATA_TYPES.STRING: {
