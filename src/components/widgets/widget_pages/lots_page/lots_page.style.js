@@ -17,13 +17,7 @@ export const LotsContainer = styled.div`
 
     background: ${props => props.theme.bg.secondary};
 
-    overflow: auto;
 
-    // optionally style scroll bar
-    ::-webkit-scrollbar {
-    }
-    ::-webkit-scrollbar-thumb {
-    }
 
 `
 
@@ -57,4 +51,17 @@ export const SubtitleContainer = styled.div`
     padding-right:1.5rem;
     padding-bottom:.5rem;
     position: relative;
+`
+export const ContentContainer = styled.div`
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    padding-bottom:6rem;
+    overflow: auto;
+
+    // optionally style scroll bar
+    ::-webkit-scrollbar {
+    }
+    ::-webkit-scrollbar-thumb {
+    }
 `
