@@ -72,6 +72,7 @@ const TaskField = (props) => {
         setFieldValue,
         setValues,
         setFieldTouched,
+        setFieldError,
         getFieldMeta,
         onSave,
         onBackClick,
@@ -88,7 +89,7 @@ const TaskField = (props) => {
         error: errors = {},
         touched,
     } = fieldMeta || {}
-
+    console.log(touched)
     // sets values.changed to true when a change occurs
     useChange(fieldParent)
 
@@ -110,11 +111,9 @@ const TaskField = (props) => {
 
     const routeProcesses = getRouteProcesses(routeId) || []
     const isProcessRoute = routeProcesses.length > 0 || fieldParent
-
     const errorCount = Object.keys(errors).length // get number of field errors
     // const touchedCount = Object.values(touched).length // number of touched fields
     const submitDisabled = ((errorCount > 0) || (!changed)) //&& (submitCount > 0) // disable if there are errors or no touched field, and form has been submitted at least once
-
     const params = useParams()
     const dispatch = useDispatch()
     const dispatchPutStation = (station, ID) => dispatch(putStation(station, ID))
@@ -146,7 +145,6 @@ const TaskField = (props) => {
     const routeObject = useSelector(state=>state.objectsReducer.routeObject)
     const editingObject = useSelector(state=> state.objectsReducer.editingObject)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
-
     const [showEditor, setShowEditor] = useState(false);
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [confirmExitModal, setConfirmExitModal] = useState(false);
@@ -156,7 +154,6 @@ const TaskField = (props) => {
     const [showObjectSelector, setShowObjectSelector] = useState(false);
     const [objectSaveDisabled, setObjectSaveDisabled] = useState(true);
     const [contentType, setContentType] = useState('new')
-
     const previousLoadStationId = usePrevious(getLoadStationId(values))
     const previousUnloadStationId = usePrevious(getUnloadStationId(values))
     const url = useLocation().pathname
@@ -269,6 +266,8 @@ const TaskField = (props) => {
 
 
 
+
+
     // calls save function when values.needsSubmit is true - used for auto submit when selecting route from existing
     useEffect(() => {
         if (values.needsSubmit) onSave()
@@ -340,15 +339,18 @@ const TaskField = (props) => {
             _id: !!selectedObject.new ? uuid.v4() : obj._id,
         }
 
-        if (!selectedObject.new) {
-            await dispatchPutObject(object, obj._id)
+        if (!!selectedObject.new) {
+            dispatchPostObject(object)
         }
         else {
-            await dispatchPostObject(object)
+            await dispatchPutObject(object, obj._id)
         }
 
         dispatchSetEditingObject(false)
-        await dispatchSetSelectedObject(null)
+        dispatchSetSelectedObject(null)
+        setFieldTouched(fieldParent ? `${fieldParent}.obj` : "obj", false)
+
+
     }
 
     const onAddObject = async () => {
@@ -455,7 +457,6 @@ const TaskField = (props) => {
                           onBackClick(routeId)
                           dispatchSetEditingObject(false)
                           dispatchPageDataChanged(false)
-
                         }}
                         handleOnClick2={() => {
                             setConfirmExitModal(null)
@@ -511,7 +512,14 @@ const TaskField = (props) => {
                                     content={'tasks'}
                                     mode={'create'}
                                     onClickBack={() => {
-                                      setConfirmExitModal(true)
+                                      if(!!pageInfoChanged){
+                                        setConfirmExitModal(true)
+                                      }
+                                      else{
+                                        onBackClick(routeId)
+                                        dispatchSetEditingObject(false)
+                                        dispatchPageDataChanged(false)
+                                      }
                                     }}
                                 />
                             </div>
@@ -650,8 +658,14 @@ const TaskField = (props) => {
                                         content={'tasks'}
                                         mode={'create'}
                                         onClickBack={() => {
+                                          if(!!pageInfoChanged){
+                                            setConfirmExitModal(true)
+                                          }
+                                          else{
                                             onBackClick(routeId)
                                             dispatchSetEditingObject(false)
+                                            dispatchPageDataChanged(false)
+                                          }
                                         }}
                                     />
                                 </div>
@@ -667,7 +681,7 @@ const TaskField = (props) => {
                                 placeholder={"New Route Name"}
                                 label={"Route Name"}
                                 schema={'tasks'}
-                                focus={!name}
+                                focus={params.page === "tasks" ? !name : name}
                                 inputStyle={{ background: isProcessTask ? themeContext.bg.primary : themeContext.bg.secondary }}
                                 style={{ fontSize: '1.2rem', fontWeight: '600' }}
                             />
@@ -785,7 +799,7 @@ const TaskField = (props) => {
                         <>
                             <Button
                                 schema={'tasks'}
-                                disabled={submitDisabled || editingObject}
+                                disabled={submitDisabled || !!editingObject}
                                 onClick={async () => {
                                     await onSave()
                                 }}
