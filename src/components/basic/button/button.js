@@ -25,6 +25,7 @@ const Button = (props) => {
             style={style}
             secondary={secondary}
             tertiary={tertiary}
+            type = {type}
             {...props} >
 
         {children ?

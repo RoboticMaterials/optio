@@ -94,6 +94,7 @@ export const ProcessField = (props) => {
     const selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
+    const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
 
     const taskQueue = useSelector(state => state.taskQueueReducer.taskQueue)
 
@@ -104,6 +105,8 @@ export const ProcessField = (props) => {
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [showExistingTaskWarning, setShowExistingTaskWarning] = useState(false);
     const [addTaskAlert, setAddTaskAlert] = useState(null);
+    const [confirmExitModal, setConfirmExitModal] = useState(false);
+
 
     const valuesRef = useRef(values);
 
@@ -145,9 +148,6 @@ export const ProcessField = (props) => {
         }
     })
 
-    useEffect(() => {
-        dispatchPageDataChanged(values.changed)
-    }, [values.changed])
 
     useEffect(() => {
         // When there are no routes, automatically add the first one
@@ -579,38 +579,54 @@ export const ProcessField = (props) => {
                 {...addTaskAlert}
                 visible={!!addTaskAlert}
             />
-            {selectedProcess.routes.length !== 0 ?
-                <ConfirmDeleteModal
-                    isOpen={!!confirmDeleteModal}
-                    title={"Are you sure you want to delete this process?"}
-                    button_1_text={"Delete process and KEEP associated routes"}
-                    button_2_text={"Delete process and DELETE associated routes"}
-                    handleClose={() => setConfirmDeleteModal(null)}
-                    handleOnClick1={() => {
-                        onDelete(false)
-                        setConfirmDeleteModal(null)
-                    }}
-                    handleOnClick2={() => {
-                        onDelete(true)
-                        setConfirmDeleteModal(null)
-                    }}
-                />
-                :
-                <ConfirmDeleteModal
-                    isOpen={!!confirmDeleteModal}
-                    title={"Are you sure you want to delete this process?"}
-                    button_1_text={"Yes"}
-                    button_2_text={"No"}
-                    handleClose={() => setConfirmDeleteModal(null)}
-                    handleOnClick1={() => {
-                        onDelete(true)
-                        setConfirmDeleteModal(null)
-                    }}
-                    handleOnClick2={() => {
-                        setConfirmDeleteModal(null)
 
-                    }}
-                />
+            <ConfirmDeleteModal
+                isOpen={!!confirmExitModal}
+                title={"Are you sure you want to go back? Any progress will not be saved"}
+                button_1_text={"Yes"}
+                button_2_text={"No"}
+                handleClose={() => setConfirmExitModal(null)}
+                handleOnClick1={() => {
+                  onBack()
+                  dispatchPageDataChanged(false)
+                }}
+                handleOnClick2={() => {
+                    setConfirmExitModal(null)
+                }}
+            />
+
+          {selectedProcess.routes.length !==0 ?
+            <ConfirmDeleteModal
+                isOpen={!!confirmDeleteModal}
+                title={"Are you sure you want to delete this process?"}
+                button_1_text={"Delete process and KEEP associated routes"}
+                button_2_text={"Delete process and DELETE associated routes"}
+                handleClose={() => setConfirmDeleteModal(null)}
+                handleOnClick1={() => {
+                    onDelete(false)
+                    setConfirmDeleteModal(null)
+                }}
+                handleOnClick2={() => {
+                    onDelete(true)
+                    setConfirmDeleteModal(null)
+                }}
+            />
+            :
+            <ConfirmDeleteModal
+                isOpen={!!confirmDeleteModal}
+                title={"Are you sure you want to delete this process?"}
+                button_1_text={"Yes"}
+                button_2_text={"No"}
+                handleClose={() => setConfirmDeleteModal(null)}
+                handleOnClick1={() => {
+                  onDelete(true)
+                  setConfirmDeleteModal(null)
+                }}
+                handleOnClick2={() => {
+                  setConfirmDeleteModal(null)
+
+                }}
+            />
 
             }
 
@@ -646,7 +662,7 @@ export const ProcessField = (props) => {
                         }}
 
                         onClickBack={() => {
-                            onBack()
+                            pageInfoChanged ? setConfirmExitModal(true) : onBack()
                         }}
 
                     />
