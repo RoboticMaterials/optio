@@ -451,7 +451,11 @@ const HILModals = (props) => {
         disptachHILResponse(hilLoadUnload === 'load' ? 'load' : 'unload')
         setTimeout(() => disptachHILResponse(''), 2000)
 
-        onLogHumanEvent({...newItem, _id: ID}, ID)
+        console.log(newItem);
+
+        await dispatchPutTaskQueue({...newItem, _id: ID}, ID)
+
+        // onLogHumanEvent({...newItem, _id: ID}, ID)
     }
 
     // Posts HIL Postpone to API

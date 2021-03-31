@@ -166,7 +166,6 @@ export const deleteTaskQueueItem = (id, item) => {
 
         try {
             onStart();
-            console.log('actions',id, item);
             const response = await api.deleteTaskQueueItem(id, item);
             return onSuccess(response, id);
         } catch (error) {

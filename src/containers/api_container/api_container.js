@@ -396,13 +396,14 @@ const ApiContainer = (props) => {
     const handleTaskUpdate = async (taskQueueItem) => {
 
         // get the task 
-
         const tasks = await onGetTasks()
 
         const task = taskQueueItem ? tasks[taskQueueItem.task_id] : null
 
         // Unload?
-        if(task && task.handoff){
+        if(task && task.handoff && taskQueueItem.quantity){
+
+            console.log('management');
 
             await API.graphql({
                 query: manageTaskQueue,
@@ -414,7 +415,9 @@ const ApiContainer = (props) => {
                 }
               });
 
-        }else if(taskQueueItem && taskQueueItem.start_time === null){  
+        }else if(taskQueueItem && taskQueueItem.start_time === null && !task.handoff){  
+
+            console.log('unload');
 
             taskQueueItem.start_time = Math.round(Date.now() / 1000)
 
@@ -456,12 +459,15 @@ const ApiContainer = (props) => {
         ).subscribe({
             next: async ({ provider, value }) => {  
 
+                console.log('sub!');
+
                 // run get queue
                 const taskQ = await onGetTaskQueue()
 
-                if(value.data.onDeltaTaskQueue.start_time !== null){
+                if(value.data.onDeltaTaskQueue.start_time === null){
                     Object.values(taskQ).map((item) => {
                         if (item.task_id === value.data.onDeltaTaskQueue.task_id) {
+                                console.log('update!');
                                 handleTaskUpdate(value.data.onDeltaTaskQueue)
                             }
                     })
