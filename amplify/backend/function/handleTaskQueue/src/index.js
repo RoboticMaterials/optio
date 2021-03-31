@@ -22,7 +22,9 @@ const AWS = require("aws-sdk");
 
 const tableNames = {
 	task: process.env.API_RMSTUDIOCLOUD_TASKTABLE_NAME,
-	lots: process.env.API_RMSTUDIOCLOUD_CARDTABLE_NAME
+	lots: process.env.API_RMSTUDIOCLOUD_CARDTABLE_NAME,
+	taskQueueEvents: process.env.API_RMSTUDIOCLOUD_TASKQUEUEEVENTSTABLE_NAME,
+	taskQueue: process.env.API_RMSTUDIOCLOUD_TASKQUEUETABLE_NAME
 }
 
 const docClient = new AWS.DynamoDB.DocumentClient();
@@ -99,7 +101,7 @@ exports.handler = async (event) => {
 
 		// put the taskQI in the taskQevents
 		const taskQEventsParams = {
-			TableName: tableNames.lots,
+			TableName: tableNames.taskQueueEvents,
 			Item: {
 				taskQueueItem
 			}
@@ -109,7 +111,7 @@ exports.handler = async (event) => {
 
 		// delete from the TQ
 		const TQParams = {
-			TableName: tableNames.lots,
+			TableName: tableNames.taskQueue,
 			Key: {
 				'id': {S: taskQueueItem.id}
 			}
