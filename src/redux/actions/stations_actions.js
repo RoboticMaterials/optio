@@ -245,7 +245,7 @@ export const setEditingStation = (bool) => {
 /**
  * Removes Station that is not on the backend yet
  * If the station has children, it deletes those as well
- * @param {*} id 
+ * @param {*} id
  */
 const onRemoveStation = (id) => {
     const stationsState = store.getState().stationsReducer
@@ -259,7 +259,7 @@ const onRemoveStation = (id) => {
             station.children.forEach(async position => {
 
                 // Passes in true to tell that the deleted postion's associated station is being deleted too
-                // This way, it wont update the station 
+                // This way, it wont update the station
                 await dispatch(deletePosition(position, true))
             })
         }
@@ -285,7 +285,7 @@ const onDeleteStation = (id) => {
             station.children.forEach(async position => {
 
                 // Passes in true to tell that the deleted postion's associated station is being deleted too
-                // This way, it wont update the station 
+                // This way, it wont update the station
                 await dispatch(deletePosition(position, true))
             })
         }
@@ -325,6 +325,7 @@ const onPostStation = (station) => {
         // Add dashboard
         let defaultDashboard = {
             name: "",
+            locked: false,
             buttons: [],
             station: station._id
         }

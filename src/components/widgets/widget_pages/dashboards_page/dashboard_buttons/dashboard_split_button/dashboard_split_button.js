@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 // import components
 import ErrorTooltip from "../../../../../basic/form/error_tooltip/error_tooltip";
-import {SchemaIcon} from "../../dashboard_editor/button_fields/button_fields.style";
+import { SchemaIcon } from "../../dashboard_editor/button_fields/button_fields.style";
 
 // Import Styles
 import * as style from './dashboard_split_button.style'
@@ -13,7 +13,7 @@ import * as dashboard_buttons_style from '../dashboard_buttons.style'
 
 // import logging
 import log from '../../../../../../logger'
-import {DEVICE_CONSTANTS} from "../../../../../../constants/device_constants";
+import { DEVICE_CONSTANTS } from "../../../../../../constants/device_constants";
 
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
@@ -47,19 +47,21 @@ const DashboardSplitButton = (props => {
     const mobileMode = windowWidth < widthBreakPoint;
 
     return (
-        <div style={{display: 'flex', position: 'relative', flexDirection: 'row', minWidth: '80%', width: '100%'}}>
+        <div style={{ display: 'flex', position: 'relative', flexDirection: 'row', minWidth: '80%', width: '100%' }}>
             <style.Container
                 type={"button"}
                 disabled={disabled}
                 height={height}
+                clickable={clickable}
+                hoverable={hoverable}
                 background={color}
                 borderGlow={taskID === 'hil_success'}
-                style={{...containerStyle, maxWidth: '20%', alignText: 'center', marginRight: '0.5rem'}}
+                style={{ ...containerStyle, maxWidth: '20%', alignText: 'center', marginRight: '0.5rem' }}
                 css={containerCss}
                 onClick={clickable ? () => onClick(taskID, DEVICE_CONSTANTS.HUMAN) : null}
             >
-                <div style={{flexGrow: '1', display: 'flex', alignItems: 'center', alignContent: 'center', justifyContent: 'center', height: '100%'}}>
-                    <SchemaIcon className={"fas fa-user"} color={theme.bg.octonary} style={{margin: '0'}}></SchemaIcon>
+                <div style={{ flexGrow: '1', display: 'flex', alignItems: 'center', alignContent: 'center', justifyContent: 'center', height: '100%' }}>
+                    <SchemaIcon className={"fas fa-user"} color={theme.bg.octonary} style={{ margin: '0' }}></SchemaIcon>
                     {!mobileMode &&
                         <style.ConditionText style={{flexGrow: '0', marginLeft: '0.5rem'}}>Run as worker</style.ConditionText>
                     }
@@ -71,20 +73,23 @@ const DashboardSplitButton = (props => {
                 disabled={disabled}
                 width={width}
                 height={height}
+                clickable={clickable}
+                hoverable={hoverable}
                 background={color}
                 borderGlow={taskID === 'hil_success'}
                 style={containerStyle}
                 css={containerCss}
+                onClick={clickable ? () => onClick(taskID, DEVICE_CONSTANTS.MIR_100) : null}
             >
 
                 <style.ConditionText style={null}>{title}</style.ConditionText>
 
                 <>
-                    <svg viewBox="0 0 300 67" fill={theme.bg.primary} height='100%' width="12rem" preserveAspectRatio="none" style={{minWidth: '12rem'}}>
-                        <path d="M300,8v51c0,4.4-3.6,8-8,8H8.8L63.5,0H292C296.4,0,300,3.6,300,8z"/>
+                    <svg viewBox="0 0 300 67" fill={theme.bg.primary} height='100%' width="12rem" preserveAspectRatio="none" style={{ minWidth: '12rem' }}>
+                        <path d="M300,8v51c0,4.4-3.6,8-8,8H8.8L63.5,0H292C296.4,0,300,3.6,300,8z" />
                     </svg>
                     <style.IconContainer>
-                        <SchemaIcon className={"icon-cart"} style={{fontSize: "1rem"}} color={color}></SchemaIcon>
+                        <SchemaIcon className={"icon-cart"} style={{ fontSize: "1rem" }} color={color}></SchemaIcon>
                     </style.IconContainer>
                 </>
                 {/* <style.RobotButton
@@ -97,7 +102,7 @@ const DashboardSplitButton = (props => {
                     
                 </style.RobotButton> */}
 
-                
+
 
                 {/* {children && children}
                 <ErrorTooltip

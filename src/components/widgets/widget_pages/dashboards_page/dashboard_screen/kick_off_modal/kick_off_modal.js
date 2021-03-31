@@ -356,13 +356,14 @@ const KickOffModal = (props) => {
                 onCloseButtonClick={() => setShowQuantitySelector(false)}
                 handleOnClick1={(quantity) => {
                     setShowQuantitySelector(false)
+
+                }}
+                handleOnClick2={(quantity) => {
+                    setShowQuantitySelector(false)
                     moveLot(selectedLot, quantity)
                 }}
-                handleOnClick2={() => {
-                    setShowQuantitySelector(false)
-                }}
-                button_1_text={"Confirm"}
-                button_2_text={"Cancel"}
+                button_1_text={"Cancel"}
+                button_2_text={"Confirm"}
             />
         )
     }

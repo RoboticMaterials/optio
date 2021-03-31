@@ -17,6 +17,8 @@ export const manageTaskQueue = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       device_type
       mission_status
       owner
@@ -31,8 +33,6 @@ export const manageTaskQueue = /* GraphQL */ `
       end_time
       hil_station_id
       hil_message
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -44,17 +44,17 @@ export const createUser = /* GraphQL */ `
     createUser(input: $input, condition: $condition) {
       id
       organizationId
+      createdAt
+      updatedAt
       username
       organization {
         id
         organizationId
-        name
-        key
         createdAt
         updatedAt
+        name
+        key
       }
-      createdAt
-      updatedAt
       owner
     }
   }
@@ -67,17 +67,17 @@ export const updateUser = /* GraphQL */ `
     updateUser(input: $input, condition: $condition) {
       id
       organizationId
+      createdAt
+      updatedAt
       username
       organization {
         id
         organizationId
-        name
-        key
         createdAt
         updatedAt
+        name
+        key
       }
-      createdAt
-      updatedAt
       owner
     }
   }
@@ -90,17 +90,17 @@ export const deleteUser = /* GraphQL */ `
     deleteUser(input: $input, condition: $condition) {
       id
       organizationId
+      createdAt
+      updatedAt
       username
       organization {
         id
         organizationId
-        name
-        key
         createdAt
         updatedAt
+        name
+        key
       }
-      createdAt
-      updatedAt
       owner
     }
   }
@@ -113,16 +113,13 @@ export const createOrganization = /* GraphQL */ `
     createOrganization(input: $input, condition: $condition) {
       id
       organizationId
+      createdAt
+      updatedAt
       name
       key
       users {
         nextToken
       }
-      stations {
-        nextToken
-      }
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -134,16 +131,13 @@ export const updateOrganization = /* GraphQL */ `
     updateOrganization(input: $input, condition: $condition) {
       id
       organizationId
+      createdAt
+      updatedAt
       name
       key
       users {
         nextToken
       }
-      stations {
-        nextToken
-      }
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -155,16 +149,13 @@ export const deleteOrganization = /* GraphQL */ `
     deleteOrganization(input: $input, condition: $condition) {
       id
       organizationId
+      createdAt
+      updatedAt
       name
       key
       users {
         nextToken
       }
-      stations {
-        nextToken
-      }
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -177,6 +168,8 @@ export const createStation = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       name
       schema
       type
@@ -188,8 +181,6 @@ export const createStation = /* GraphQL */ `
       map_id
       children
       dashboards
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -202,6 +193,8 @@ export const updateStation = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       name
       schema
       type
@@ -213,8 +206,6 @@ export const updateStation = /* GraphQL */ `
       map_id
       children
       dashboards
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -227,6 +218,8 @@ export const deleteStation = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       name
       schema
       type
@@ -238,8 +231,6 @@ export const deleteStation = /* GraphQL */ `
       map_id
       children
       dashboards
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -252,6 +243,8 @@ export const createPosition = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       change_key
       map_id
       name
@@ -263,8 +256,6 @@ export const createPosition = /* GraphQL */ `
       type
       x
       y
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -277,6 +268,8 @@ export const updatePosition = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       change_key
       map_id
       name
@@ -288,8 +281,6 @@ export const updatePosition = /* GraphQL */ `
       type
       x
       y
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -302,6 +293,8 @@ export const deletePosition = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       change_key
       map_id
       name
@@ -313,8 +306,6 @@ export const deletePosition = /* GraphQL */ `
       type
       x
       y
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -327,6 +318,8 @@ export const createTask = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       device_types
       handoff
       load
@@ -339,8 +332,6 @@ export const createTask = /* GraphQL */ `
       unload
       obj
       route_object
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -353,6 +344,8 @@ export const updateTask = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       device_types
       handoff
       load
@@ -365,8 +358,6 @@ export const updateTask = /* GraphQL */ `
       unload
       obj
       route_object
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -379,6 +370,8 @@ export const deleteTask = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       device_types
       handoff
       load
@@ -391,8 +384,6 @@ export const deleteTask = /* GraphQL */ `
       unload
       obj
       route_object
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -405,12 +396,12 @@ export const createProcess = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       name
       broken
       routes
       map_id
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -423,12 +414,12 @@ export const updateProcess = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       name
       broken
       routes
       map_id
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -441,12 +432,12 @@ export const deleteProcess = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       name
       broken
       routes
       map_id
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -459,14 +450,14 @@ export const createObject = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       description
       map_id
       modelName
       name
       dimensions
       quantity
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -479,14 +470,14 @@ export const updateObject = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       description
       map_id
       modelName
       name
       dimensions
       quantity
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -499,14 +490,14 @@ export const deleteObject = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       description
       map_id
       modelName
       name
       dimensions
       quantity
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -519,6 +510,8 @@ export const createCard = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       bins
       dates
       description
@@ -530,8 +523,6 @@ export const createCard = /* GraphQL */ `
       totalQuantity
       processName
       count
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -544,6 +535,8 @@ export const updateCard = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       bins
       dates
       description
@@ -555,8 +548,6 @@ export const updateCard = /* GraphQL */ `
       totalQuantity
       processName
       count
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -569,6 +560,8 @@ export const deleteCard = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       bins
       dates
       description
@@ -580,8 +573,6 @@ export const deleteCard = /* GraphQL */ `
       totalQuantity
       processName
       count
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -594,6 +585,8 @@ export const createSettings = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       MiRMapEnabled
       accessToken
       authenticated
@@ -607,8 +600,6 @@ export const createSettings = /* GraphQL */ `
       shiftDetails
       toggleDevOptions
       timezone
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -621,6 +612,8 @@ export const updateSettings = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       MiRMapEnabled
       accessToken
       authenticated
@@ -634,8 +627,6 @@ export const updateSettings = /* GraphQL */ `
       shiftDetails
       toggleDevOptions
       timezone
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -648,6 +639,8 @@ export const deleteSettings = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       MiRMapEnabled
       accessToken
       authenticated
@@ -661,8 +654,6 @@ export const deleteSettings = /* GraphQL */ `
       shiftDetails
       toggleDevOptions
       timezone
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -675,11 +666,11 @@ export const createLotTemplate = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       name
       displayNames
       fields
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -692,11 +683,11 @@ export const updateLotTemplate = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       name
       displayNames
       fields
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -709,11 +700,11 @@ export const deleteLotTemplate = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       name
       displayNames
       fields
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -726,6 +717,8 @@ export const createDevice = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       battery_percentage
       connected
       current_task_queue_id
@@ -738,8 +731,6 @@ export const createDevice = /* GraphQL */ `
       position
       shelf_attached
       state_text
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -752,6 +743,8 @@ export const updateDevice = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       battery_percentage
       connected
       current_task_queue_id
@@ -764,8 +757,6 @@ export const updateDevice = /* GraphQL */ `
       position
       shelf_attached
       state_text
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -778,6 +769,8 @@ export const deleteDevice = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       battery_percentage
       connected
       current_task_queue_id
@@ -790,8 +783,6 @@ export const deleteDevice = /* GraphQL */ `
       position
       shelf_attached
       state_text
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -804,11 +795,11 @@ export const createStatus = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       active_map
       mir_connection
       pause_status
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -821,11 +812,11 @@ export const updateStatus = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       active_map
       mir_connection
       pause_status
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -838,11 +829,11 @@ export const deleteStatus = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       active_map
       mir_connection
       pause_status
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -855,6 +846,8 @@ export const createTaskQueue = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       device_type
       mission_status
       owner
@@ -869,8 +862,6 @@ export const createTaskQueue = /* GraphQL */ `
       end_time
       hil_station_id
       hil_message
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -883,6 +874,8 @@ export const updateTaskQueue = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       device_type
       mission_status
       owner
@@ -897,8 +890,6 @@ export const updateTaskQueue = /* GraphQL */ `
       end_time
       hil_station_id
       hil_message
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -911,6 +902,8 @@ export const deleteTaskQueue = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       device_type
       mission_status
       owner
@@ -925,8 +918,6 @@ export const deleteTaskQueue = /* GraphQL */ `
       end_time
       hil_station_id
       hil_message
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -938,6 +929,8 @@ export const createTaskQueueEvents = /* GraphQL */ `
     createTaskQueueEvents(input: $input, condition: $condition) {
       id
       organizationId
+      createdAt
+      updatedAt
       device_type
       mission_status
       owner
@@ -952,8 +945,6 @@ export const createTaskQueueEvents = /* GraphQL */ `
       end_time
       hil_station_id
       hil_message
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -965,6 +956,8 @@ export const updateTaskQueueEvents = /* GraphQL */ `
     updateTaskQueueEvents(input: $input, condition: $condition) {
       id
       organizationId
+      createdAt
+      updatedAt
       device_type
       mission_status
       owner
@@ -979,8 +972,6 @@ export const updateTaskQueueEvents = /* GraphQL */ `
       end_time
       hil_station_id
       hil_message
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -992,6 +983,8 @@ export const deleteTaskQueueEvents = /* GraphQL */ `
     deleteTaskQueueEvents(input: $input, condition: $condition) {
       id
       organizationId
+      createdAt
+      updatedAt
       device_type
       mission_status
       owner
@@ -1006,8 +999,6 @@ export const deleteTaskQueueEvents = /* GraphQL */ `
       end_time
       hil_station_id
       hil_message
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -1019,9 +1010,9 @@ export const createDashboard = /* GraphQL */ `
     createDashboard(input: $input, condition: $condition) {
       id
       organizationId
-      data
       createdAt
       updatedAt
+      data
     }
   }
 `;
@@ -1033,9 +1024,9 @@ export const updateDashboard = /* GraphQL */ `
     updateDashboard(input: $input, condition: $condition) {
       id
       organizationId
-      data
       createdAt
       updatedAt
+      data
     }
   }
 `;
@@ -1047,9 +1038,9 @@ export const deleteDashboard = /* GraphQL */ `
     deleteDashboard(input: $input, condition: $condition) {
       id
       organizationId
-      data
       createdAt
       updatedAt
+      data
     }
   }
 `;

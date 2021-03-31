@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
+
+import {useHistory} from 'react-router-dom'
 
 import { useDispatch, useSelector } from 'react-redux'
-
-import { useHistory } from 'react-router-dom'
 
 import { Formik, Form } from 'formik'
 
@@ -32,13 +32,15 @@ import { usersbyId } from "../../graphql/queries";
  */
 const SignInUpPage = (props) => {
 
+    // Hooks
     const dispatch = useDispatch()
+    const history = useHistory()
+
+    // Dispatches
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = (settings) => dispatch(getLocalSettings(settings))
 
     const localReducer = useSelector(state => state.localReducer.localSettings)
-
-    const history = useHistory()
 
     // signIn prop is passed from authentication container to tell this page to show sign in or sign up components
     const {
@@ -48,8 +50,9 @@ const SignInUpPage = (props) => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+    const [errorText, setErrorText] = useState('')
 
-    const [warning, setWarning] = useState(false)
+    const [capsLock, setCapsLock] = useState(false)
     const [loading, setLoading] = useState(false)
 
     function handleSignInChange(event) {
@@ -106,7 +109,7 @@ const SignInUpPage = (props) => {
 
             } catch (error) {
                 console.log("error signing in", error);
-                alert(error.message)
+                setErrorText(error.message)
             }
         } else {
             if (password === confirmPassword) {
@@ -127,10 +130,10 @@ const SignInUpPage = (props) => {
                     handleSignInChange(true);
                 } catch (error) {
                     console.log("error signing up:", error);
-                    alert(error.message);
+                    setErrorText(error.message);
                 }
             } else {
-                alert('Passwords must match!')
+                setErrorText('Passwords must match!')
                 setLoading(false)
             }
         }
@@ -177,19 +180,22 @@ const SignInUpPage = (props) => {
                         onKeyDown={
                             (keyEvent) => {
                                 if(keyEvent.keyCode === 20 || Event.KEY === "CapsLock") {
-                                    setWarning(!warning)
+                                    setCapsLock(!capsLock)
                                 }
                                 else {
                                     if (keyEvent.getModifierState("CapsLock")) {
-                                        setWarning(true)
+                                        setCapsLock(true)
                                     } else {
-                                        setWarning(false)
+                                        setCapsLock(false)
                                     }
                                 }
                             }
                         }
                     >
                         <styled.Container>
+                            <styled.ErrorText>
+                                {errorText}
+                            </styled.ErrorText>
                             <TextField
                                 name={"email"}
                                 placeholder='Enter Email'
@@ -201,16 +207,19 @@ const SignInUpPage = (props) => {
                                 }}
                             />
 
-                            <TextField
-                                name={"password"}
-                                placeholder='Enter Password'
-                                type='password'
-                                InputComponent={Textbox}
-                                style={{
-                                    marginBottom: '.5rem',
-                                    width: '25rem'
-                                }}
-                            />
+                            <div style={{display: 'flex', flexDirection: 'row'}}>
+                                {capsLock && <styled.CapsIconContainer><styled.CapsIcon className="fas fa-arrow-alt-circle-up" /></styled.CapsIconContainer>}
+                                <TextField
+                                    name={"password"}
+                                    placeholder='Enter Password'
+                                    type='password'
+                                    InputComponent={Textbox}
+                                    style={{
+                                        marginBottom: '.5rem',
+                                        flexGrow: 1
+                                    }}
+                                />
+                            </div>
 
                             {/* If sign in hasn't been selected show a confirm password for sign up */}
                             {!signIn &&
@@ -228,14 +237,12 @@ const SignInUpPage = (props) => {
 
                             {!signIn &&
                                 <styled.NoteText>
-                                    Note: Your password must be 8 charaters long and contain 1 upper case letter, 1 lower case letter, 1 number and 1 special character
+                                    Note: Your password must be 8 charaters long and contain 1 upper case letter, 1 lower case letter, and 1 number
                                 </styled.NoteText>
                             }
 
-                            {warning && <styled.NoteText>Caps Lock On!</styled.NoteText>}
-
                             {!loading &&
-                                <styled.Button type="submit">{signIn ? 'Sign In' : 'Sign Up'}</styled.Button>
+                                <styled.Button isSignIn={signIn} type="submit">{signIn ? 'Sign In' : 'Sign Up'}</styled.Button>
                             }
 
                             {loading &&

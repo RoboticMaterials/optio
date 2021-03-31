@@ -151,7 +151,7 @@ const App = (props) => {
                         {/* Authentication */}
                         {!authenticated &&
                             <Route path="/" >
-                                <Authentication />
+                                <Authentication mobileMode={mobileMode} />
                             </Route>
                         }
 

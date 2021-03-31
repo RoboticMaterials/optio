@@ -470,7 +470,7 @@ const EditLocation = (props) => {
                                 <AssociatedPositions handleSetChildPositionToCartCoords={handleSetChildPositionToCartCoords} />
                                 :
                                 <>
-                                    {!!deviceEnabled &&
+                                    {!!deviceEnabled && !!selectedLocation &&
                                         <Button
                                             schema={'locations'}
                                             secondary
@@ -496,10 +496,10 @@ const EditLocation = (props) => {
                             </Form>
                         )
                     }}
-            
+
                 </Formik>
             </styled.ContentContainer>
-            
+
         </>
     )
 }

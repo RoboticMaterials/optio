@@ -7,6 +7,8 @@ export const getSettings = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       MiRMapEnabled
       accessToken
       authenticated
@@ -20,8 +22,6 @@ export const getSettings = /* GraphQL */ `
       shiftDetails
       toggleDevOptions
       timezone
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -36,6 +36,8 @@ export const listSettingss = /* GraphQL */ `
         id
         _id
         organizationId
+        createdAt
+        updatedAt
         MiRMapEnabled
         accessToken
         authenticated
@@ -49,8 +51,6 @@ export const listSettingss = /* GraphQL */ `
         shiftDetails
         toggleDevOptions
         timezone
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -62,11 +62,11 @@ export const getLotTemplate = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       name
       displayNames
       fields
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -81,11 +81,11 @@ export const listLotTemplates = /* GraphQL */ `
         id
         _id
         organizationId
+        createdAt
+        updatedAt
         name
         displayNames
         fields
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -97,6 +97,8 @@ export const getTaskQueue = /* GraphQL */ `
       id
       _id
       organizationId
+      createdAt
+      updatedAt
       device_type
       mission_status
       owner
@@ -111,8 +113,6 @@ export const getTaskQueue = /* GraphQL */ `
       end_time
       hil_station_id
       hil_message
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -127,6 +127,8 @@ export const listTaskQueues = /* GraphQL */ `
         id
         _id
         organizationId
+        createdAt
+        updatedAt
         device_type
         mission_status
         owner
@@ -141,8 +143,6 @@ export const listTaskQueues = /* GraphQL */ `
         end_time
         hil_station_id
         hil_message
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -153,6 +153,8 @@ export const getTaskQueueEvents = /* GraphQL */ `
     getTaskQueueEvents(id: $id) {
       id
       organizationId
+      createdAt
+      updatedAt
       device_type
       mission_status
       owner
@@ -167,8 +169,6 @@ export const getTaskQueueEvents = /* GraphQL */ `
       end_time
       hil_station_id
       hil_message
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -186,6 +186,8 @@ export const listTaskQueueEventss = /* GraphQL */ `
       items {
         id
         organizationId
+        createdAt
+        updatedAt
         device_type
         mission_status
         owner
@@ -200,8 +202,6 @@ export const listTaskQueueEventss = /* GraphQL */ `
         end_time
         hil_station_id
         hil_message
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -212,9 +212,9 @@ export const getDashboard = /* GraphQL */ `
     getDashboard(id: $id) {
       id
       organizationId
-      data
       createdAt
       updatedAt
+      data
     }
   }
 `;
@@ -228,9 +228,9 @@ export const listDashboards = /* GraphQL */ `
       items {
         id
         organizationId
-        data
         createdAt
         updatedAt
+        data
       }
       nextToken
     }
@@ -254,9 +254,9 @@ export const usersbyOrg = /* GraphQL */ `
       items {
         id
         organizationId
-        username
         createdAt
         updatedAt
+        username
         owner
       }
       nextToken
@@ -281,9 +281,9 @@ export const usersbyId = /* GraphQL */ `
       items {
         id
         organizationId
-        username
         createdAt
         updatedAt
+        username
         owner
       }
       nextToken
@@ -308,10 +308,10 @@ export const orgsById = /* GraphQL */ `
       items {
         id
         organizationId
-        name
-        key
         createdAt
         updatedAt
+        name
+        key
       }
       nextToken
     }
@@ -335,10 +335,10 @@ export const orgsByKey = /* GraphQL */ `
       items {
         id
         organizationId
-        name
-        key
         createdAt
         updatedAt
+        name
+        key
       }
       nextToken
     }
@@ -363,6 +363,8 @@ export const stationsByOrgId = /* GraphQL */ `
         id
         _id
         organizationId
+        createdAt
+        updatedAt
         name
         schema
         type
@@ -374,8 +376,6 @@ export const stationsByOrgId = /* GraphQL */ `
         map_id
         children
         dashboards
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -400,6 +400,8 @@ export const positionsByOrgId = /* GraphQL */ `
         id
         _id
         organizationId
+        createdAt
+        updatedAt
         change_key
         map_id
         name
@@ -411,8 +413,6 @@ export const positionsByOrgId = /* GraphQL */ `
         type
         x
         y
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -437,6 +437,8 @@ export const tasksByOrgId = /* GraphQL */ `
         id
         _id
         organizationId
+        createdAt
+        updatedAt
         device_types
         handoff
         load
@@ -449,8 +451,6 @@ export const tasksByOrgId = /* GraphQL */ `
         unload
         obj
         route_object
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -475,6 +475,8 @@ export const taskById = /* GraphQL */ `
         id
         _id
         organizationId
+        createdAt
+        updatedAt
         device_types
         handoff
         load
@@ -487,8 +489,6 @@ export const taskById = /* GraphQL */ `
         unload
         obj
         route_object
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -513,12 +513,12 @@ export const processesByOrgId = /* GraphQL */ `
         id
         _id
         organizationId
+        createdAt
+        updatedAt
         name
         broken
         routes
         map_id
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -543,14 +543,14 @@ export const objectsByOrgId = /* GraphQL */ `
         id
         _id
         organizationId
+        createdAt
+        updatedAt
         description
         map_id
         modelName
         name
         dimensions
         quantity
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -575,6 +575,8 @@ export const cardsByOrgId = /* GraphQL */ `
         id
         _id
         organizationId
+        createdAt
+        updatedAt
         bins
         dates
         description
@@ -586,8 +588,6 @@ export const cardsByOrgId = /* GraphQL */ `
         totalQuantity
         processName
         count
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -612,6 +612,8 @@ export const getCardById = /* GraphQL */ `
         id
         _id
         organizationId
+        createdAt
+        updatedAt
         bins
         dates
         description
@@ -623,8 +625,6 @@ export const getCardById = /* GraphQL */ `
         totalQuantity
         processName
         count
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -649,6 +649,8 @@ export const settingsByOrgId = /* GraphQL */ `
         id
         _id
         organizationId
+        createdAt
+        updatedAt
         MiRMapEnabled
         accessToken
         authenticated
@@ -662,8 +664,6 @@ export const settingsByOrgId = /* GraphQL */ `
         shiftDetails
         toggleDevOptions
         timezone
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -688,11 +688,11 @@ export const lotTemplatesByOrgId = /* GraphQL */ `
         id
         _id
         organizationId
+        createdAt
+        updatedAt
         name
         displayNames
         fields
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -717,6 +717,8 @@ export const devicesByOrgId = /* GraphQL */ `
         id
         _id
         organizationId
+        createdAt
+        updatedAt
         battery_percentage
         connected
         current_task_queue_id
@@ -729,8 +731,6 @@ export const devicesByOrgId = /* GraphQL */ `
         position
         shelf_attached
         state_text
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -755,11 +755,11 @@ export const statusByOrgId = /* GraphQL */ `
         id
         _id
         organizationId
+        createdAt
+        updatedAt
         active_map
         mir_connection
         pause_status
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -784,6 +784,8 @@ export const taskQueueByOrgId = /* GraphQL */ `
         id
         _id
         organizationId
+        createdAt
+        updatedAt
         device_type
         mission_status
         owner
@@ -798,8 +800,6 @@ export const taskQueueByOrgId = /* GraphQL */ `
         end_time
         hil_station_id
         hil_message
-        createdAt
-        updatedAt
       }
       nextToken
     }
@@ -823,9 +823,9 @@ export const dashboardsByOrgId = /* GraphQL */ `
       items {
         id
         organizationId
-        data
         createdAt
         updatedAt
+        data
       }
       nextToken
     }

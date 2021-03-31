@@ -7,12 +7,13 @@ import { Link } from 'react-router-dom'
 
 // Import components
 import SignInUpPage from '../../components/sign_in_up_page/sign_in_up_page'
+import ForgotPassword from '../../components/forgotPassword/forgotPassword'
 
 import { useHistory, useParams } from 'react-router-dom'
 
 // Import actions
 import { postLocalSettings, getLocalSettings } from '../../redux/actions/local_actions'
-import ForgotPassword from '../../components/forgotPassword/forgotPassword'
+
 
 // Get Auth from amplify
 import { Auth } from "aws-amplify";
@@ -97,6 +98,7 @@ const Authentication = (checkAuth) => {
     return (
         <>
             { !organization &&
+            <styled.Page className='signin-page'>
                 <styled.Container>
 
                     <styled.LogoContainer>
@@ -150,6 +152,7 @@ const Authentication = (checkAuth) => {
                     </styled.LogoContainer>
                     
                 </styled.Container>
+                </styled.Page>
             }
         </>
     )

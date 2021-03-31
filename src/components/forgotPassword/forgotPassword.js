@@ -35,13 +35,15 @@ const ForgotPassword = (props) => {
 
     const [warning, setWarning] = useState(false)
 
+    const [errorText, setErrorText] = useState('')
+
     function resetPassword(email) {
         // Send confirmation code to user's email
         Auth.forgotPassword(email)
             .then(() => {
                 setResetPasswordVal(true)
             })
-            .catch(err => console.log(err));
+            .catch(err => setErrorText(err));
     }
     
     // confirmPassword can be separately built out as follows...  
@@ -57,7 +59,7 @@ const ForgotPassword = (props) => {
         // Collect confirmation code and new password, then
         Auth.forgotPasswordSubmit(email, verification, password)
             .then(() =>{
-                alert('You hav sucessfully changed your pasword!')
+                setErrorText('You hav sucessfully changed your pasword!')
                 history.push('/')
             })
             .catch(err => console.log(err));
@@ -136,22 +138,14 @@ const ForgotPassword = (props) => {
                         </styled.SignInUpContainer>
 
                         <styled.SignInUpContainer>
-                    
-                        <TextField
-                            name={"email"}
-                            placeholder='Enter Email'
-                            type='text'
-                            InputComponent={Textbox}
-                            style={{
-                                marginBottom: '.5rem',
-                                width: '20rem'
-                            }}
-                        />
 
-                        {resetPasswordVal &&
+                            <styled.ErrorText>
+                                {errorText}
+                            </styled.ErrorText>
+                        
                             <TextField
-                                name={"verification"}
-                                placeholder='Verification Code'
+                                name={"email"}
+                                placeholder='Enter Email'
                                 type='text'
                                 InputComponent={Textbox}
                                 style={{
@@ -159,37 +153,49 @@ const ForgotPassword = (props) => {
                                     width: '20rem'
                                 }}
                             />
-                        }
 
-                        {resetPasswordVal &&
-                            <TextField
-                                name={"password"}
-                                placeholder='Enter Password'
-                                type='password'
-                                InputComponent={Textbox}
-                                style={{
-                                    marginBottom: '.5rem',
-                                    width: '20rem'
-                                }}
-                            />
-                        }
+                            {resetPasswordVal &&
+                                <TextField
+                                    name={"verification"}
+                                    placeholder='Verification Code'
+                                    type='text'
+                                    InputComponent={Textbox}
+                                    style={{
+                                        marginBottom: '.5rem',
+                                        width: '20rem'
+                                    }}
+                                />
+                            }
 
-                        {resetPasswordVal &&
-                            <TextField
-                                name={"checkPassword"}
-                                placeholder='Check Password'
-                                type='password'
-                                InputComponent={Textbox}
-                                style={{
-                                    marginBottom: '.5rem',
-                                    width: '20rem'
-                                }}
-                            />
-                        } 
+                            {resetPasswordVal &&
+                                <TextField
+                                    name={"password"}
+                                    placeholder='Enter Password'
+                                    type='password'
+                                    InputComponent={Textbox}
+                                    style={{
+                                        marginBottom: '.5rem',
+                                        width: '20rem'
+                                    }}
+                                />
+                            }
 
-                        {warning && <styled.NoteText>Caps Lock On!</styled.NoteText>}
+                            {resetPasswordVal &&
+                                <TextField
+                                    name={"checkPassword"}
+                                    placeholder='Check Password'
+                                    type='password'
+                                    InputComponent={Textbox}
+                                    style={{
+                                        marginBottom: '.5rem',
+                                        width: '20rem'
+                                    }}
+                                />
+                            } 
 
-                        <styled.Button type="submit">Submit</styled.Button>
+                            {warning && <styled.NoteText>Caps Lock On!</styled.NoteText>}
+
+                            <styled.Button type="submit">Submit</styled.Button>
 
                         </styled.SignInUpContainer>
 

@@ -43,7 +43,7 @@ import log from '../../../../../logger.js';
 import DashboardAddButton from "./dashboard_add_button/dashboard_add_button";
 import { useChange } from "../../../../basic/form/useChange";
 import { PAGES } from "../../../../../constants/dashboard_contants";
-import DashboardsSidebar, {TYPES} from "../dashboards_sidebar/dashboards_sidebar";
+import DashboardsSidebar, { TYPES } from "../dashboards_sidebar/dashboards_sidebar";
 
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
@@ -52,7 +52,6 @@ const DashboardEditor = (props) => {
         dashboard,
         showSidebar,
     } = props
-
     const history = useHistory()
     const dispatch = useDispatch()
     const params = useParams()
@@ -67,14 +66,15 @@ const DashboardEditor = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
 
     const [sidebarWidth, setSidebarWidth] = useState(window.innerWidth < 2000 ? 400 : 700)
-
-    /*
+   /*
     * Returns initialValues object for Formik
     */
     const getInitialValues = () => {
         let initialValues = {
             name: "",
+            locked: false,
             buttons: []
+
         }
         let taskIds = []
 
@@ -83,26 +83,27 @@ const DashboardEditor = (props) => {
 
             let initialButtons = [];
             buttons
-            .filter((currButton) => {
-                const {
-                    task_id,
-                    type
-                } = currButton
+                .filter((currButton) => {
+                    const {
+                        task_id,
+                        type
+                    } = currButton
 
-                if(task_id && taskIds.includes(task_id)) {
-                    logger.error(`Button with duplicate task_id found in dashboard. {task_id:${task_id}`)
-                    return false // don't add duplicate tasks
-                }
+                    if (task_id && taskIds.includes(task_id) && task_id !== 'custom_task') {
+                        logger.error(`Button with duplicate task_id found in dashboard. {task_id:${task_id}`)
+                        return false // don't add duplicate tasks
+                    }
 
-                taskIds.push(task_id)
-                return true
-            })
-            .map((value, index) => {
-                initialButtons.push(value)
-            })
+                    taskIds.push(task_id)
+                    return true
+                })
+                .map((value, index) => {
+                    initialButtons.push(value)
+                })
 
             initialValues = {
                 name: dashboard.name,
+                locked: dashboard.locked,
                 buttons: initialButtons
             }
         } catch (e) {
@@ -147,8 +148,7 @@ const DashboardEditor = (props) => {
     * */
     const handleSubmit = async (values) => {
         // destructure values
-        const { name, buttons } = values
-
+        const { name, locked, buttons } = values
         // clone dashboard
         const dashboardCopy = deepCopy(dashboard)
 
@@ -165,6 +165,7 @@ const DashboardEditor = (props) => {
 
         // update dashboard objects properties with submit values
         dashboardCopy.buttons = buttons
+        dashboardCopy.locked = locked
         dashboardCopy.name = name
 
         // if dashboard has id, it must already exist, so update with put
@@ -188,6 +189,7 @@ const DashboardEditor = (props) => {
             initialValues={getInitialValues()}
             initialTouched={{
                 name: false,
+                locked: false,
                 buttons: [false]
             }}
             initialErrors={getInitialErrors()}
@@ -208,6 +210,7 @@ const DashboardEditor = (props) => {
                 // disabled submission if there are any errors or not all fields have been touched
                 const allTouched = Object.values(touched).every((val) => val === true)
                 const submitDisabled = !(Object.values(errors).length === 0)
+
 
                 // adds a button to buttons key in Formik values
                 const handleDrop = (dropResult) => {
@@ -261,6 +264,7 @@ const DashboardEditor = (props) => {
                 const {
                     buttons: dashboardButtons,
                     name: dashboardName,
+                    locked: dashboardLocked,
                     station: dashboardStationId,
                     device: dashboardDeviceId,
                     id: dashboardIdObject
@@ -283,6 +287,7 @@ const DashboardEditor = (props) => {
                             clickable={true}
                         />
                     <style.StyledForm>
+
                         <DashboardsHeader
                             showTitle={false}
                             showSidebar={showSidebar}
@@ -292,6 +297,10 @@ const DashboardEditor = (props) => {
                             onDelete={() => {
                                 handleDeleteDashboard()
                             }}
+                            onLockClick={() => {
+                              formikProps.setFieldValue("locked", !values.locked)
+                            }}
+                            locked = {values.locked}
                             saveDisabled={submitDisabled}
                             onBack={() => history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)}
                         >
@@ -312,6 +321,8 @@ const DashboardEditor = (props) => {
                                     }
                                 }}
                             />
+
+
                         </DashboardsHeader>
                         <style.BodyContainer>
                             <DashboardRenderer
