@@ -167,7 +167,6 @@ const DeviceSchedule = (props) => {
                                 // onAddSchedule()
                                 let newSchedule = deepCopy(deviceSchedule)
                                 newSchedule.id = uuid.v4()
-                                console.log('QQQQ pushing id', newSchedule)
                                 arrayHelpers.push(newSchedule)
 
                             }}
