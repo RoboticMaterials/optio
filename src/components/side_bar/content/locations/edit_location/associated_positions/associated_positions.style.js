@@ -65,7 +65,7 @@ export const NewPositionCard = styled.div`
 
     max-height: 4.5rem;
     max-width: 6rem;
-    
+
     height: 100%;
     width: 100%;
 
@@ -149,5 +149,9 @@ export const CartIcon = styled.i`
     border: none;
     text-align: center;
     box-sizing: border-box;
+
+    &:hover{
+        cursor: pointer;
+    }
 
 `
