@@ -66,6 +66,7 @@ export class MapView extends Component {
 
         this.d3 = {
             translate: [0, 0],
+            naturalDims: { height: 500, width: 500 },
             scale: 1,
             naturalScale: 1,
             boundingClientHeight: 0
@@ -748,22 +749,22 @@ export class MapView extends Component {
                     </svg>
 
                     {(!!this.props.selectedTask || !!this.props.selectedHoveringTask) &&
-                        <TaskStatistics d3={this.d3}/>
+                        <TaskStatistics d3={this.d3} />
                     }
 
                     {!!this.props.devices &&
-                      Object.values(this.props.devices).map((device) => {
-                        if(!!device.current_task_queue_id && !!this.props.taskQueue[device.current_task_queue_id] && !!this.props.taskQueue[device.current_task_queue_id].custom_task && !!this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate){
-                        const [x, y] = convertRealToD3([this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate.pos_x, this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate.pos_y], this.d3)
+                        Object.values(this.props.devices).map((device) => {
+                            if (!!device.current_task_queue_id && !!this.props.taskQueue[device.current_task_queue_id] && !!this.props.taskQueue[device.current_task_queue_id].custom_task && !!this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate) {
+                                const [x, y] = convertRealToD3([this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate.pos_x, this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate.pos_y], this.d3)
 
-                          return (
-                            <CartWaypoint
-                              x = {x}
-                              y = {y}
-                            />
-                          )
-                        }
-                      })
+                                return (
+                                    <CartWaypoint
+                                        x={x}
+                                        y={y}
+                                    />
+                                )
+                            }
+                        })
                     }
 
                     {/* Widgets are here when not in mobile mode. If mobile mode, then they are in App.js.
