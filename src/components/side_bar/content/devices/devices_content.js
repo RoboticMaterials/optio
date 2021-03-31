@@ -69,6 +69,7 @@ const DevicesContent = () => {
 
             // Maps through the existing devices
             return devicesValue.map((device, ind) => {
+                console.log('QQQQ device', device)
                 return (
                     <DeviceItem
                         key={ind}
