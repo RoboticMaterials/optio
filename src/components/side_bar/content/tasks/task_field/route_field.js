@@ -89,7 +89,6 @@ const TaskField = (props) => {
         error: errors = {},
         touched,
     } = fieldMeta || {}
-    console.log(touched)
     // sets values.changed to true when a change occurs
     useChange(fieldParent)
 
