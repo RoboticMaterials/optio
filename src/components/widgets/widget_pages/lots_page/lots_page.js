@@ -96,6 +96,7 @@ const LotsPage = (props) => {
                 </styled.Header>
             </styled.HeaderContainer>
 
+            <styled.ContentContainer>
             <styled.SubtitleContainer>
                 {!!lotsPresent ?
                     <styled.Subtitle>Lots at {locationName}:</styled.Subtitle>
@@ -110,6 +111,7 @@ const LotsPage = (props) => {
                     Go To Card View
                 </Button>
             </styled.SubtitleContainer>
+
 
             {Object.values(cards)
                 .filter((card, ind) => {
@@ -134,6 +136,7 @@ const LotsPage = (props) => {
                         }}
                     />
                 })}
+                </styled.ContentContainer>
         </styled.LotsContainer>
     )
 }
