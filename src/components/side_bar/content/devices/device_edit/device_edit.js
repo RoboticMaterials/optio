@@ -80,7 +80,7 @@ const DeviceEdit = (props) => {
     // On page load, see if the device is a new device or existing device
     // TODO: This is going to fundementally change with how devices 'connect' to the cloud.
     useEffect(() => {
-
+        console.log('QQQQ selected device', selectedDevice)
         // Sets the type of device, unknown devic defaults to an RM logo while known devices use their own custom SVGs
         if (selectedDevice.device_model === 'MiR100') setDeviceType('cart')
 
@@ -241,7 +241,7 @@ const DeviceEdit = (props) => {
                     labelField="name"
                     valueField="_id"
                     options={locationsSortedAlphabetically(Object.values(positions)).filter(pos => pos.map_id === currentMap._id)}
-                    values={!!selectedDevice.idle_location ? [positions[selectedDevice.idle_location]] : []}
+                    values={(!!selectedDevice.idle_location && !!positions[selectedDevice.idle_location])  ? [positions[selectedDevice.idle_location]] : []}
                     dropdownGap={2}
                     noDataLabel="No matches found"
                     closeOnSelect="true"
