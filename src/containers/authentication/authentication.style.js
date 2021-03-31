@@ -8,6 +8,7 @@ export const Page = styled.div`
 
 export const Container = styled.div`
     min-width: 35rem;
+    min-height: 35rem;
     position: absolute;
     top: 50%;
     left: ${props => !props.mobileMode && '5rem'};

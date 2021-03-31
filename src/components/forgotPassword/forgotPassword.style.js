@@ -66,7 +66,7 @@ export const SignInUpContainer = styled.div`
     font-family: 'Montserrat';
     font-size: 1.25rem;
     margin: 0.5rem;
-    width: 20rem;
+    width: 25rem;
 
     font-size: ${props => props.theme.fontSize.sz4};
     font-family: ${props => props.theme.font.primary};
@@ -77,7 +77,7 @@ export const SignInUpContainer = styled.div`
 
 export const Button = styled.button`
     cursor: 'pointer';
-    width: 20rem;
+    width: 25rem;
     border-radius: 0.5rem;
     background-color: #FF4B4B;
     color: white;
@@ -97,14 +97,14 @@ export const NoteText = styled.h4`
     font-family: ${props => props.theme.font.primary};
     color: ${props => props.theme.bg.quaternary};
     text-align: center;
-    width: 20rem;
+    width: 25rem;
 `
 
 export const ErrorText = styled.p`
     font-size: ${props => props.theme.fontSize.sz4};
     font-family: ${props => props.theme.font.primary};
     color: ${props => props.theme.bad};
-    width: 20rem;
+    width: 25rem;
     margin-top: 0.5rem;
     text-align: center;
 `

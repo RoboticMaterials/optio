@@ -45,8 +45,7 @@ const Authentication = (checkAuth) => {
     // Define all useEffects
 
     useEffect(() => {
-        checkUser();
-        setAuthenticated()
+        checkUser()
     }, []);
 
     useEffect(() => {
@@ -126,28 +125,40 @@ const Authentication = (checkAuth) => {
 
                     <styled.LogoContainer>
                     
-                    {!forgotPassword && 
                     <div>
 
-                        <Link to="/forgot-password">Forgot Password? </Link>
+                        { (!signIn || signIn) && (!forgotPassword) &&
+                            <Link to="/forgot-password">Forgot Password? </Link>
+                        }
                         
-                        <Link to="/login" style={{
-                            marginLeft: '.5rem', 
-                            marginRight: '.5rem',
-                            textDecoration: 'none',
-                            cursor: 'default'
-                            }}> • </Link>
+                        { (!signIn || signIn) && (!forgotPassword) &&
+                            <Link to="/login" style={{
+                                marginLeft: '.5rem', 
+                                marginRight: '.5rem',
+                                textDecoration: 'none',
+                                cursor: 'default'
+                                }}> • </Link>
+                        }
 
-                        {signIn &&
+                        { (signIn || forgotPassword) &&
                             <Link to="/create-account"> Create an account </Link>
                         }
 
-                        {!signIn &&
+                        { (forgotPassword || !signIn) && (signIn) &&
+                            <Link to="/login" style={{
+                                marginLeft: '.5rem', 
+                                marginRight: '.5rem',
+                                textDecoration: 'none',
+                                cursor: 'default'
+                                }}> • </Link>
+                        }
+
+                        { (forgotPassword || !signIn) &&
                             <Link to="/"> Sign in </Link>
                         }
 
                     </div>
-                    }
+                    
 
                     </styled.LogoContainer>
                     

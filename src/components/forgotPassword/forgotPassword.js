@@ -150,7 +150,7 @@ const ForgotPassword = (props) => {
                                 InputComponent={Textbox}
                                 style={{
                                     marginBottom: '.5rem',
-                                    width: '20rem'
+                                    width: '25rem'
                                 }}
                             />
 
@@ -162,7 +162,7 @@ const ForgotPassword = (props) => {
                                     InputComponent={Textbox}
                                     style={{
                                         marginBottom: '.5rem',
-                                        width: '20rem'
+                                        width: '25rem'
                                     }}
                                 />
                             }
@@ -175,7 +175,7 @@ const ForgotPassword = (props) => {
                                     InputComponent={Textbox}
                                     style={{
                                         marginBottom: '.5rem',
-                                        width: '20rem'
+                                        width: '25rem'
                                     }}
                                 />
                             }
@@ -188,7 +188,7 @@ const ForgotPassword = (props) => {
                                     InputComponent={Textbox}
                                     style={{
                                         marginBottom: '.5rem',
-                                        width: '20rem'
+                                        width: '25rem'
                                     }}
                                 />
                             } 
