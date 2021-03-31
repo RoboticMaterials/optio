@@ -20,6 +20,7 @@ import {
 import * as taskActions from "../../../../../redux/actions/tasks_actions";
 import {isObject} from "../../../../../methods/utils/object_utils";
 import {isArray} from "../../../../../methods/utils/array_utils";
+import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 
 const ProcessForm = (props) => {
 
@@ -42,11 +43,13 @@ const ProcessForm = (props) => {
 	const dispatchDeleteProcessClean = async (ID) => await dispatch(deleteProcessClean(ID))
 	const dispatchDeleteRouteClean = (routeId) => dispatch(deleteRouteClean(routeId))
 	const dispatchSaveFormRoute = async (formRoute) => await dispatch(saveFormRoute(formRoute))
+	const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
 	const objects = useSelector(state => state.objectsReducer.objects)
 	const currentMap = useSelector(state => state.mapReducer.currentMap)
+	const editing = useSelector(state => state.processesReducer.editingProcess)
 
 	useEffect(() => {
 		return () => {
@@ -241,9 +244,13 @@ const ProcessForm = (props) => {
 					submitForm,
 					setTouched,
 					resetForm,
-					setFieldValue
+					setFieldValue,
+					touched
 				} = formikProps
 
+				if(Object.keys(touched).length!==0 && !editing){
+					dispatchPageDataChanged(true)
+				}
 
 				return(
 					<ProcessField

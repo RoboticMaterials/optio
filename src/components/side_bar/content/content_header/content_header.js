@@ -79,7 +79,7 @@ const ContentHeader = (props) => {
         return (
             <styled.Header>
 
-                <BackButton schema={content} style={{ display: 'inline-block'}}
+                <BackButton schema={content} type = {"button"} style={{ display: 'inline-block'}}
                     onClick={onClickBack}
                 />
                 <styled.EditTitle schema={content}>{handleTitle()}</styled.EditTitle>
