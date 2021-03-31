@@ -806,15 +806,7 @@ const FormComponent = (props) => {
 							<styled.RowContainer >
 								<styled.NameContainer style={{flex: 0}}>
 									<styled.LotName>Lot Number</styled.LotName>
-										<Textbox
-											value={formatLotNumber(lotNumber)}
-											readOnly={true}
-											contentEditable={false}
-											style={{
-												cursor: "not-allowed"
-											}}
-											schema={"lots"}
-										/>
+									<styled.LotNumber>{formatLotNumber(lotNumber)}</styled.LotNumber>
 								</styled.NameContainer>
 
 								<styled.NameContainer>
