@@ -415,7 +415,7 @@ const ApiContainer = (props) => {
               });
 
         }else if(taskQueueItem && taskQueueItem.start_time === null){  
- 
+
             taskQueueItem.start_time = Math.round(Date.now() / 1000)
 
             taskQueueItem.hil_station_id = task.unload.station
@@ -428,6 +428,9 @@ const ApiContainer = (props) => {
     }
 
     const loadCriticalData = async () => {
+
+        // run get queue
+        onGetTaskQueue()
 
         // took this out so the loop doesnt run anymore
         // dispatchGetDataStream()
@@ -451,14 +454,18 @@ const ApiContainer = (props) => {
         API.graphql(
             graphqlOperation(subscriptions.onDeltaTaskQueue)
         ).subscribe({
-            next: ({ provider, value }) => {  
-
-                console.log(provider ,value);
-                
-                handleTaskUpdate(value.data.onDeltaTaskQueue)
+            next: async ({ provider, value }) => {  
 
                 // run get queue
-                onGetTaskQueue()
+                const taskQ = await onGetTaskQueue()
+
+                if(value.data.onDeltaTaskQueue.start_time !== null){
+                    Object.values(taskQ).map((item) => {
+                        if (item.task_id === value.data.onDeltaTaskQueue.task_id) {
+                                handleTaskUpdate(value.data.onDeltaTaskQueue)
+                            }
+                    })
+                }
         },
             error: error => console.warn(error)
         });

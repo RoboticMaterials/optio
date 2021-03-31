@@ -109,7 +109,6 @@ export async function deleteTaskQueueAll() {
 
 export async function deleteTaskQueueItem(id, taskQueueItem) {
     try {
-
         if(taskQueueItem === undefined){
             taskQueueItem = await getTaskQueueItem(id)
         }
@@ -118,10 +117,10 @@ export async function deleteTaskQueueItem(id, taskQueueItem) {
             
             taskQueueItem.end_time = Math.round(Date.now() / 1000)
 
-            delete taskQueueItem.createdAt
-            delete taskQueueItem.updatedAt
-            delete taskQueueItem.id
-            delete taskQueueItem._id
+            // delete taskQueueItem.createdAt
+            // delete taskQueueItem.updatedAt
+            // delete taskQueueItem.id
+            // delete taskQueueItem._id
 
             // DO CHECKS HERE
 

@@ -385,6 +385,7 @@ export const ProcessField = (props) => {
                 // clear alert after timeout
                 setTimeout(() => setAddTaskAlert(null), 1800)
             }
+            console.log('before post PF', { dashboardID, tasks, deviceType, taskQueue, Id: routeId, name: routeName, custom: false, fromSideBar: true });
             onHandlePostTaskQueue({ dashboardID, tasks, deviceType, taskQueue, Id: routeId, name: routeName, custom: false, fromSideBar: true })
         }
     }

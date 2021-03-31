@@ -2,8 +2,8 @@
 // this is an auto generated file. This will be overwritten
 
 export const onDeltaStation = /* GraphQL */ `
-  subscription OnDeltaStation($id: ID) {
-    onDeltaStation(id: $id) {
+  subscription OnDeltaStation {
+    onDeltaStation {
       id
       _id
       organizationId
@@ -24,8 +24,8 @@ export const onDeltaStation = /* GraphQL */ `
   }
 `;
 export const onDeltaPosition = /* GraphQL */ `
-  subscription OnDeltaPosition($id: ID) {
-    onDeltaPosition(id: $id) {
+  subscription OnDeltaPosition {
+    onDeltaPosition {
       id
       _id
       organizationId
@@ -46,8 +46,8 @@ export const onDeltaPosition = /* GraphQL */ `
   }
 `;
 export const onDeltaTask = /* GraphQL */ `
-  subscription OnDeltaTask($id: ID) {
-    onDeltaTask(id: $id) {
+  subscription OnDeltaTask {
+    onDeltaTask {
       id
       _id
       organizationId
@@ -69,8 +69,8 @@ export const onDeltaTask = /* GraphQL */ `
   }
 `;
 export const onDeltaProcess = /* GraphQL */ `
-  subscription OnDeltaProcess($id: ID) {
-    onDeltaProcess(id: $id) {
+  subscription OnDeltaProcess {
+    onDeltaProcess {
       id
       _id
       organizationId
@@ -84,8 +84,8 @@ export const onDeltaProcess = /* GraphQL */ `
   }
 `;
 export const onDeltaObject = /* GraphQL */ `
-  subscription OnDeltaObject($id: ID) {
-    onDeltaObject(id: $id) {
+  subscription OnDeltaObject {
+    onDeltaObject {
       id
       _id
       organizationId
@@ -101,8 +101,8 @@ export const onDeltaObject = /* GraphQL */ `
   }
 `;
 export const onDeltaCard = /* GraphQL */ `
-  subscription OnDeltaCard($id: ID) {
-    onDeltaCard(id: $id) {
+  subscription OnDeltaCard {
+    onDeltaCard {
       id
       _id
       organizationId
@@ -123,8 +123,8 @@ export const onDeltaCard = /* GraphQL */ `
   }
 `;
 export const onDeltaDevice = /* GraphQL */ `
-  subscription OnDeltaDevice($id: ID) {
-    onDeltaDevice(id: $id) {
+  subscription OnDeltaDevice {
+    onDeltaDevice {
       id
       _id
       organizationId
@@ -146,8 +146,8 @@ export const onDeltaDevice = /* GraphQL */ `
   }
 `;
 export const onDeltaStatus = /* GraphQL */ `
-  subscription OnDeltaStatus($id: ID) {
-    onDeltaStatus(id: $id) {
+  subscription OnDeltaStatus {
+    onDeltaStatus {
       id
       _id
       organizationId
@@ -160,8 +160,8 @@ export const onDeltaStatus = /* GraphQL */ `
   }
 `;
 export const onDeltaTaskQueue = /* GraphQL */ `
-  subscription OnDeltaTaskQueue($id: ID) {
-    onDeltaTaskQueue(id: $id) {
+  subscription OnDeltaTaskQueue {
+    onDeltaTaskQueue {
       id
       _id
       organizationId

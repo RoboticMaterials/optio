@@ -5,8 +5,8 @@ export const manageTaskQueue = /* GraphQL */ `
   mutation ManageTaskQueue(
     $id: ID!
     $task_id: ID!
-    $lot_id: ID!
-    $quantity: Int!
+    $lot_id: ID
+    $quantity: Int
   ) {
     manageTaskQueue(
       id: $id

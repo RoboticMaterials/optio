@@ -355,37 +355,38 @@ updatedAt: AWSDateTime
 
 # Subs
 type Subscription {
-    onDeltaStation(id: ID): Station
+    onDeltaStation: Station
       @aws_subscribe(mutations: ["createStation","updateStation","deleteStation"])
 
-    onDeltaPosition(id: ID): Position
+    onDeltaPosition: Position
       @aws_subscribe(mutations: ["createPosition","updatePosition","deletePosition"])
 
-    onDeltaTask(id: ID): Task
+    onDeltaTask: Task
       @aws_subscribe(mutations: ["createTask","updateTask","deleteTask"])
 
-    onDeltaProcess(id: ID): Process
+    onDeltaProcess: Process
       @aws_subscribe(mutations: ["createProcess","updateProcess","deleteProcess"])
 
-    onDeltaObject(id: ID): Object
+    onDeltaObject: Object
       @aws_subscribe(mutations: ["createObject","updateObject","deleteObject"])
 
-    onDeltaCard(id: ID): Card
+    onDeltaCard: Card
       @aws_subscribe(mutations: ["createCard","updateCard","deleteCard"])
 
     ## Data Stream Subscriptions  
 
-    onDeltaDevice(id: ID): Device
+    onDeltaDevice: Device
       @aws_subscribe(mutations: ["createDevice","updateDevice","deleteDevice"])
 
-    onDeltaStatus(id: ID): Status
+    onDeltaStatus: Status
       @aws_subscribe(mutations: ["createStatus","updateStatus","deleteStatus"])
 
-    onDeltaTaskQueue(id: ID): TaskQueue
-      @aws_subscribe(mutations: ["updateTaskQueue"])
+    onDeltaTaskQueue: TaskQueue
+      @aws_subscribe(mutations: ["createTaskQueue","updateTaskQueue"])
+      
 }
 
 # Analysis Queries
 type Mutation {
-  manageTaskQueue(id: ID!, task_id: ID!, lot_id: ID!, quantity: Int!): TaskQueue @function(name: "handleTaskQueue-${env}")
+  manageTaskQueue(id: ID!, task_id: ID!, lot_id: ID, quantity: Int): TaskQueue @function(name: "handleTaskQueue-${env}")
 }

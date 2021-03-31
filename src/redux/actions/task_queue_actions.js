@@ -166,6 +166,7 @@ export const deleteTaskQueueItem = (id, item) => {
 
         try {
             onStart();
+            console.log('actions',id, item);
             const response = await api.deleteTaskQueueItem(id, item);
             return onSuccess(response, id);
         } catch (error) {
@@ -179,7 +180,6 @@ export const deleteTaskQueueItem = (id, item) => {
  */
 
 export const handlePostTaskQueue = (props) => {
-
     const {
         dashboardID,
         tasks,
@@ -212,7 +212,10 @@ export const handlePostTaskQueue = (props) => {
             if (!!taskQueue) {
                 Object.values(taskQueue).map((item) => {
                     // If its in the Q and not a handoff, then alert the user saying its already there
-                    if (item.task_id === Id && !tasks[item.task_id].handoff && item.device_type === deviceType) inQueue = true
+                    if (item.task_id === Id 
+                        // && !tasks[item.task_id].handoff 
+                        // && item.device_type === deviceType
+                        ) inQueue = true
                 })
             }
 
