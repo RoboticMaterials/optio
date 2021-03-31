@@ -548,7 +548,6 @@ const LineThroughputChart = (props) => {
                         setSubmitting(true)
                         onSubmitShift(values)
                         setSubmitting(false)
-                        resetForm()
                         setTouched({})
                         dispatchPageDataChanged(false)
                     }}
@@ -565,10 +564,9 @@ const LineThroughputChart = (props) => {
                         } = formikProps
 
 
-                        if(JSON.stringify(initialValues)!==JSON.stringify(values)){
+                        if(Object.keys(touched).length>0){
                           dispatchPageDataChanged(true)
                         }
-                        else{dispatchPageDataChanged(false)}
 
                         return (
                             <Form
