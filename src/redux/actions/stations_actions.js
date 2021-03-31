@@ -247,6 +247,7 @@ export const setEditingStation = (bool) => {
  * @param {*} id
  */
 const onRemoveStation = (id) => {
+    console.log('QQQQ removing')
     const stationsState = store.getState().stationsReducer
     let station = !!stationsState.selectedStation ? stationsState.selectedStation : stationsState.stations[id]
 
@@ -268,6 +269,7 @@ const onRemoveStation = (id) => {
 
 
 const onDeleteStation = (id) => {
+    console.log('QQQQ deleting')
 
     return async dispatch => {
 
@@ -320,6 +322,7 @@ const onDeleteStation = (id) => {
 }
 
 const onPostStation = (station) => {
+    console.log('QQQQ saving this station', deepCopy(station))
     return async dispatch => {
         // Add dashboard
         let defaultDashboard = {
@@ -345,6 +348,7 @@ const onSaveChildren = () => {
     return async dispatch => {
         const positionsState = store.getState().positionsReducer
         const selectedStationChildrenCopy = positionsState.selectedStationChildrenCopy
+        console.log('QQQQ saving this children', deepCopy(selectedStationChildrenCopy))
 
         // If there children Children Position, save them
         if (!!selectedStationChildrenCopy) {

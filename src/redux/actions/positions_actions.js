@@ -237,6 +237,7 @@ export const setSelectedStationChildrenCopy = (positions) => {
 }
 
 const onDeletePosition = (id, stationDelete) => {
+    console.log('QQQQ deleting this pos', id, stationDelete)
     return async dispatch => {
         const stationsState = store.getState().stationsReducer
         const positionsState = store.getState().positionsReducer

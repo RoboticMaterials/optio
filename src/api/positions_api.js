@@ -95,6 +95,7 @@ export async function deletePosition(ID) {
 
 
 export async function postPosition(position) {
+    console.log('QQQQ position pos api', position)
     try {
         const response = await axios({
             method: 'POST',
@@ -116,7 +117,7 @@ export async function postPosition(position) {
 
 
     } catch (error) {
-
+        console.log('QQQQ error', error)
         // Error 😨
         if (error.response) {
             /*
