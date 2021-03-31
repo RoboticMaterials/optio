@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import { useSelector } from 'react-redux'
 
 // Import  Components
@@ -14,8 +14,16 @@ import { ThemeContext } from "styled-components";
 // import logging
 import log from '../../../../../../../logger'
 import { DASHBOARD_BUTTON_COLORS } from "../../../../../../../constants/dashboard_contants";
+import {
+    CUSTOM_CHARGE_TASK_ID,
+    CUSTOM_IDLE_TASK_ID,
+    CUSTOM_IDLE_TASK_NAME,
+    CUSTOM_TASK_ID
+} from "../../../../../../../constants/route_constants";
+import {getPositionAttributes} from "../../../../../../../methods/utils/stations_utils";
 const logger = log.getLogger("Dashboards", "EditDashboard");
 
+const DEFAULT_DISPLAY_NAME = "TASK NOT FOUND"
 
 const DashboardRouteField = props => {
 
@@ -24,17 +32,53 @@ const DashboardRouteField = props => {
         ind,
         taskId,
         color,
-        deletable
+        deletable,
+        buttonId,
+        customTask
     } = props
 
+    // destructure props
+    const {
+        position: positionId = ""
+    } = customTask || {}
+
+    // theme
     const themeContext = useContext(ThemeContext);
 
+    // redux state
     const tasks = useSelector(state => state.tasksReducer.tasks)
-    const taskName = tasks[taskId]?.name || "TASK NOT FOUND"
+
+    // component state
+    const [displayName, setDisplayName] = useState(DEFAULT_DISPLAY_NAME)
+
+    useEffect(() => {
+        if(taskId === CUSTOM_TASK_ID) {
+            if(buttonId === CUSTOM_IDLE_TASK_ID) {
+                setDisplayName(CUSTOM_IDLE_TASK_NAME || DEFAULT_DISPLAY_NAME)
+            }
+            else if(buttonId === CUSTOM_CHARGE_TASK_ID) {
+                const {
+                    name: positionName = ""
+                } = getPositionAttributes(positionId, ["name"]) || {}
+                setDisplayName(positionName || DEFAULT_DISPLAY_NAME)
+            }
+        }
+        else {
+            const task = tasks[taskId]
+            const {
+                name
+            } = task || {}
+
+            setDisplayName(name || DEFAULT_DISPLAY_NAME)
+        }
+
+        return () => {
+        }
+
+    }, [taskId, tasks, positionId, buttonId]);
 
     const schema = themeContext.schema.routes
     const iconClassName = schema.iconName
-
 
     return (
         // set zindex to make sure the dropdown from buttons above display on top of the buttons below it
@@ -57,7 +101,7 @@ const DashboardRouteField = props => {
                         type='text'
                         label={null}
                     />
-                    <buttonFieldStyles.TaskName>{taskName}</buttonFieldStyles.TaskName>
+                    <buttonFieldStyles.TaskName>{displayName}</buttonFieldStyles.TaskName>
                 </buttonFieldStyles.CenterContainer>
 
             </buttonFieldStyles.DashboardEditButton>
