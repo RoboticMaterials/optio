@@ -164,11 +164,9 @@ const DeviceSchedule = (props) => {
                             type={'button'}
                             style={{ display: 'inline-block', float: 'right', maxWidth: '25rem', boxSizing: 'border-box' }}
                             onClick={() => {
-                                // onAddSchedule()
                                 let newSchedule = deepCopy(deviceSchedule)
                                 newSchedule.id = uuid.v4()
                                 arrayHelpers.push(newSchedule)
-
                             }}
                         >
                             Add Schedule
