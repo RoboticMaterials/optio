@@ -49,20 +49,8 @@ const LotFilterBar = (props) => {
 
     const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])
     const [valueMode, setValueMode] = useState()
-    const [shouldRenderInvisibleFlags, setShouldRenderInvisibleFlags] = useState(true)
-    const [maxFlagsSize, setMaxFlagsSize] = useState({
-        offsetWidth: undefined,
-        offsetHeight: undefined,
-        offsetLeft: undefined,
-        offsetTop: undefined,
-    })
+
     const [size, setSize] = useState({
-        width: undefined,
-        height: undefined,
-        offsetLeft: undefined,
-        offsetTop: undefined,
-    })
-    const [flagsSize, setFlagsSize] = useState({
         width: undefined,
         height: undefined,
         offsetLeft: undefined,
@@ -70,45 +58,6 @@ const LotFilterBar = (props) => {
     })
 
     const sizeRef = useRef(null)
-    const flagsSizeRef = useRef(null)
-    const maxFlagsSizeRef = useRef(null)
-    const {
-        offsetHeight: maxFlagsOffsetHeight,
-        offsetWidth: maxFlagsOffsetWidth,
-        offsetTop: maxFlagsOffsetTop,
-        offsetLeft: maxFlagsOffsetLeft,
-    } = maxFlagsSizeRef?.current || {}
-
-
-
-    const renderInvisibleFlags = () => {
-        return(
-            <styled.FlagsContainer
-                style={{
-                    position: "absolute"
-                }}
-                ref={maxFlagsSizeRef}
-            >
-            {Object.values(FLAG_OPTIONS).map((currVal) => {
-                const {
-                    color: currColor,
-                    id: currColorId
-                } = currVal || {}
-
-                return (
-                    <FlagButton
-                        style={{
-                            margin: "0 .1rem",
-                        }}
-                        key={currColorId}
-                        color={currColor}
-                        schema={props.schema}
-                    />
-                )
-            })}
-        </styled.FlagsContainer>
-        )
-    }
 
     useEffect(() => {
         const {
@@ -132,16 +81,6 @@ const LotFilterBar = (props) => {
     }, [selectedFilterOption])
 
     useEffect(() => {
-        if(maxFlagsSizeRef.current && Number.isInteger(maxFlagsOffsetWidth)) {
-            setMaxFlagsSize({
-                offsetWidth: maxFlagsOffsetWidth
-            })
-
-            setShouldRenderInvisibleFlags(false)
-        }
-    }, [maxFlagsOffsetWidth, maxFlagsSizeRef.current])
-
-    useEffect(() => {
 
         // if sizeRef is assigned
         if (sizeRef.current) {
@@ -162,28 +101,6 @@ const LotFilterBar = (props) => {
         }
 
     }, [sizeRef, window.innerWidth])
-
-    useEffect(() => {
-
-        // if sizeRef is assigned
-        if (flagsSizeRef.current) {
-
-            // extract dimensions of flagsSizeRef
-            let height = flagsSizeRef.current.offsetHeight;
-            let width = flagsSizeRef.current.offsetWidth;
-            let offsetTop = flagsSizeRef.current.offsetTop;
-            let offsetLeft = flagsSizeRef.current.offsetLeft;
-
-            // set zoneSize
-            setFlagsSize({
-                width: width,
-                height: height,
-                offsetTop: offsetTop,
-                offsetLeft: offsetLeft,
-            });
-        }
-
-    }, [flagsSizeRef, window.innerWidth, selectedFilterOption])
 
     useEffect(() => {
         const templateFields = getAllTemplateFields()
@@ -212,11 +129,11 @@ const LotFilterBar = (props) => {
     return (
         <styled.ColumnContainer
 
-            style={containerStyle}
-            css={props.columnCss}
+            // style={containerStyle}
+            // css={props.columnCss}
         >
             <styled.Description
-                style={descriptionStyle}
+                // style={descriptionStyle}
                 css={props.descriptionCss}
             >
                 Filter lots:
@@ -225,10 +142,6 @@ const LotFilterBar = (props) => {
             <styled.ItemContainer
                 ref={sizeRef}
             >
-                {shouldRenderInvisibleFlags &&
-                    renderInvisibleFlags()
-                }
-                {/*<div style={{flex: 1}}>*/}
                 <DropDownSearch
                     maxDropdownWidth={`${size.width}px` }
                     reactDropdownSelectCss={props.reactDropdownSelectCss}
@@ -246,17 +159,18 @@ const LotFilterBar = (props) => {
                     schema={"lots"}
                     style={{
                         minWidth: "10rem",
-                        alignSelf: "stretch",
                         overflow: 'visible',
                         borderTopRightRadius: 0,
                         borderBottomRightRadius: 0,
-                        // height: "100%",
-                        // padding: 0,
-                        // margin: 0,
+                        height: "100%",
+                        alignSelf: "stretch",
+                        padding: ".5rem"
+
                     }}
                     containerStyle={{
                         height: "100%",
-                        alignSelf: "stretch"
+                        alignSelf: "stretch",
+
                     }}
                 />
                 {/*</div>*/}
@@ -265,7 +179,6 @@ const LotFilterBar = (props) => {
                     {
                         [VALUE_MODES.FLAGS]:
                             <div
-                                ref={flagsSizeRef}
                                 style={{flex: 3}}
                             >
                                 <DropDownSearch
@@ -352,8 +265,7 @@ const LotFilterBar = (props) => {
                                     }}
 
                                     style={{
-                                        minWidth: `${maxFlagsSize.offsetWidth}px`,
-                                        width: `${maxFlagsSize.offsetWidth}px`,
+                                        width: "10rem",
                                         borderTopLeftRadius: 0,
                                         borderBottomLeftRadius: 0,
                                         alignSelf: "stretch",
@@ -387,7 +299,6 @@ const LotFilterBar = (props) => {
                             />,
                         [VALUE_MODES.DATE_RANGE]:
                             <CalendarPlaceholder
-                                // text={lotFilterValue ? jsDateToString(lotFilterValue) : "Select Date"}
                                 minDate={isNonEmptyArray(lotFilterValue) ? lotFilterValue[0] : null}
                                 maxDate={isNonEmptyArray(lotFilterValue) ? lotFilterValue[1] : null}
                                 value={isNonEmptyArray(lotFilterValue) ? lotFilterValue : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE}
@@ -398,6 +309,7 @@ const LotFilterBar = (props) => {
                                     borderLeft: `1px solid ${themeContext.bg.quaternary}`,
                                     background: themeContext.bg.secondary,
                                     boxShadow: "0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1)",
+                                    padding: ".5rem"
                                 }}
                                 onChange={(val) => {
                                     console.log("onChangeonChangeonChange val",val)

@@ -111,10 +111,10 @@ const LotSortBar = (props) => {
                 ref={sizeRef}
             >
                 <DropDownSearch
-                    maxDropdownWidth={`${size.width}px` }
-                    portal={document.getElementById("root")}
-                    containerCss={props.containerCss}
-                    dropdownCss={props.dropdownCss}
+                    // maxDropdownWidth={`${size.width}px` }
+                    // portal={document.getElementById("root")}
+                    // containerCss={props.containerCss}
+                    // dropdownCss={props.dropdownCss}
                     valueCss={props.valueCss}
                     options={lotSortOptions}
                     onChange={(values) => {

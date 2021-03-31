@@ -47,6 +47,7 @@ export const Container = styled.div`
 
 export const ColumnContainer = styled.div`
   display: flex;
+  align-items: center;
   
   @media (max-width: ${props => props.theme.widthBreakpoint.laptop}) {
     flex-direction: row;
@@ -75,6 +76,7 @@ export const ItemContainer = styled.div`
 	display: flex;
 	position: relative;
   height: fit-content;
+  //align-items: center;
 	
 	flex: 1;
 
@@ -85,7 +87,6 @@ export const ItemContainer = styled.div`
 	  // align-self: stretch;
 	}
   
-  background: red;
 `
 
 export const FlagsContainer = styled.div`
@@ -99,6 +100,7 @@ export const FlagsContainer = styled.div`
 export const rotateButtonContainerCss = css`
   border-top-right-radius: 0.2rem;
   border-bottom-right-radius: 0.2rem;
+  box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1);
 `
 
 export const rotateButtonIconCss = css`
