@@ -66,6 +66,7 @@ const CalendarField = ({
 						if(!isTouched) {
 							setFieldTouched(true)
 						}
+
 						setFieldValue((index !== null) ? `${fieldName}[${index}]` : fieldName, mapOutput(value))
 
 						onChange && onChange(value)
@@ -83,6 +84,7 @@ const CalendarField = ({
 
 // Specifies propTypes
 CalendarField.propTypes = {
+	selectRange: PropTypes.bool
 }
 
 // Specifies the default values for props:

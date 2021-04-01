@@ -21,23 +21,19 @@ const CalendarPlaceholder = (props) => {
 		onClick,
 		onStartClick,
 		onEndClick,
-		text,
 		defaultText,
 		defaultStartText,
 		defaultEndText,
 		name,
 		selectRange,
-		endText,
-		startText,
 		containerStyle,
 		usable,
 		CalendarComponent,
 		onChange,
 		closeOnSelect,
-		calendarProps,
 		minDate,
 		maxDate,
-		value
+		// value
 	} = props
 
 	const [showCalendarPopup, setShowCalendarPopup] = useState(false)
@@ -77,7 +73,6 @@ const CalendarPlaceholder = (props) => {
 	}, [currentVal])
 
 	const renderCalendar = () => {
-
 		return(
 			<styled.BodyContainer>
 				<styled.ContentHeader
@@ -98,11 +93,9 @@ const CalendarPlaceholder = (props) => {
 						index={rangeIndex}
 						name={name}
 						onChange={(val) => {
-
-							let tempVal = Number.isInteger(rangeIndex) ? immutableSet((isNonEmptyArray(value) && value.length > 0) ? value : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE, val, rangeIndex) || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE
-							let tempCurrVal = Number.isInteger(rangeIndex) ? immutableSet((isNonEmptyArray(currentVal) && currentVal.length > 0) ? currentVal : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE, val, rangeIndex) || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE
-							onChange(selectRange ? tempVal : val)
+							let tempCurrVal = Number.isInteger(rangeIndex) ? immutableSet((isNonEmptyArray(currentVal) && currentVal.length > 0) ? currentVal : (BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE, val, rangeIndex) || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE) : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE
 							setCurrentVal(selectRange ? tempCurrVal : val)
+							onChange(val)
 							closeOnSelect && closePopup()
 						}}
 					/>

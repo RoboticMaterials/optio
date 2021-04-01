@@ -313,13 +313,9 @@ const LotFilterBar = (props) => {
                                 }}
                                 usable={true}
                                 selectRange={true}
-                                // defaultStartText={"Select Start Date"} //(isNonEmptyArray(lotFilterValue) && lotFilterValue[0]) ? jsDateToString(lotFilterValue[0]) :
-                                // defaultEndText={} //(isNonEmptyArray(lotFilterValue) && lotFilterValue[1]) ? jsDateToString(lotFilterValue[1]) :
                             />,
                         [VALUE_MODES.SINGLE_DATE]:
                             <CalendarPlaceholder
-                                // defaultText={"Select Date"}
-                                // text={lotFilterValue ? jsDateToString(lotFilterValue) }
                                 calendarProps={{
                                     value: lotFilterValue
                                 }}
