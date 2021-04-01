@@ -87,7 +87,6 @@ const TextField = ({
                             if (!touched) {
                                 setFieldTouched(fieldName, true)
                                 dispatchPageDataChanged(true)
-                                console.log('here')
                             }
 
                             setFieldValue(fieldName, mapOutput(event.target.value)) // update field value
