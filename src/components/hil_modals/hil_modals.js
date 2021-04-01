@@ -451,11 +451,7 @@ const HILModals = (props) => {
         disptachHILResponse(hilLoadUnload === 'load' ? 'load' : 'unload')
         setTimeout(() => disptachHILResponse(''), 2000)
 
-        console.log(newItem);
-
         await dispatchPutTaskQueue({...newItem, _id: ID}, ID)
-
-        // onLogHumanEvent({...newItem, _id: ID}, ID)
     }
 
     // Posts HIL Postpone to API
@@ -486,49 +482,6 @@ const HILModals = (props) => {
         }
         
         dispatchTaskQueueItemClicked('')
-    }
-
-    // Posts event to back end for stats and tracking
-    const onLogHumanEvent = async (item, ID) => {
-
-        let event = {
-            object: null,
-            outgoing: false,
-            quantity: 0,
-            station: null,
-            time: null,
-        }
-
-        //Get the time
-        const time = Date.now() / 1000
-        const object = tasks[item.task_id].obj
-        const station = item.hil_station_id
-
-        let eventQuantity = 0
-        if (!!item.quantity) {
-            eventQuantity = item.quantity
-        } else {
-            eventQuantity = quantity
-        }
-
-        let outgoing = null
-        if (hilLoadUnload === 'load') {
-            outgoing = true
-        } else if (hilLoadUnload === 'unload') {
-            outgoing = false
-        } else (
-            outgoing = 'Unknown'
-        )
-
-        event.time = time
-        event.object = object
-        event.station = station
-        event.quantity = eventQuantity
-        event.outgoing = outgoing
-        // dispatchPostEvents(event)
-
-        await dispatchPutTaskQueue(item, ID)
-
     }
 
     const renderSelectedLot = () => {

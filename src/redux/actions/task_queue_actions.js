@@ -202,9 +202,7 @@ export const handlePostTaskQueue = (props) => {
                     "device_type": deviceType
                 }
             ))
-        }
-
-        else {
+        }else {
 
             let inQueue = false
 

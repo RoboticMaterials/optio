@@ -16,17 +16,21 @@
 import errorLog from './errorLogging'
 
 // import the API category from Amplify library
-import { API, input } from 'aws-amplify'
+import { API } from 'aws-amplify'
 
 // import the GraphQL queries, mutations and subscriptions
 import { taskQueueByOrgId } from '../graphql/queries'
 import { createTaskQueue, deleteTaskQueue, updateTaskQueue, manageTaskQueue } from '../graphql/mutations'
 
-import {putCard, getCard} from './cards_api'
+// import {putCard, getCard} from './cards_api'
 
 // to get user org id
 import getUserOrgId from './user_api'
-import { getTask } from './tasks_api'
+// import { getTask } from './tasks_api'
+
+import store from '../redux/store/index'
+
+import { getObjects } from '../redux/actions/objects_actions'
 
 export async function getTaskQueue() {
     try {
@@ -108,91 +112,39 @@ export async function deleteTaskQueueAll() {
 
 
 export async function deleteTaskQueueItem(id, taskQueueItem) {
-    console.log('delete', taskQueueItem, id);
+    console.log('delete', id, taskQueueItem);
     try {
         if(taskQueueItem === undefined){
             taskQueueItem = await getTaskQueueItem(id)
         }
-
-        if(taskQueueItem !== 'load'){
             
-            taskQueueItem.end_time = Math.round(Date.now() / 1000)
+        taskQueueItem.end_time = Math.round(Date.now() / 1000)
 
-            // delete taskQueueItem.createdAt
-            // delete taskQueueItem.updatedAt
-            // delete taskQueueItem.id
-            // delete taskQueueItem._id
+        const ressss = await API.graphql({
+            query: manageTaskQueue,
+            variables: { 
+                id: taskQueueItem.id,
+                quantity: taskQueueItem.quantity,
+                task_id: taskQueueItem.task_id,
+                lot_id: taskQueueItem.lot_id,
+            }
+        });
 
-            // DO CHECKS HERE
+        console.log(ressss);
 
-            // let lot = await getCard(taskQueueItem.lot_id) // get lot
-            // let task = await getTask(taskQueueItem.task_id) // get task
+        const res = store.dispatch({ type: 'DELETE_TASK_QUEUE_ITEM_SUCCESS', id });
 
-            await API.graphql({
-                query: manageTaskQueue,
-                variables: { 
-                    id: taskQueueItem.id,
-                    quantity: taskQueueItem.quantity,
-                    task_id: taskQueueItem.task_id,
-                    lot_id: taskQueueItem.lot_id,
-                }
-              });
-        }
+        console.log(res);
 
-        //     if(lot && task){
-        //         // are we moving the whole lot?
-        //         if(taskQueueItem.quantity === lot.totalQuantity){
-        //             // move the whole lot 
-        //             delete lot.bins[task.load.station]
+        // const taskQ = await store.dispatch(getObjects()) //await getTaskQueue()
 
-        //             lot.bins[task.unload.station] = {
-        //                 count: taskQueueItem.quantity
-        //             }  
+        // const reduxTQ = store.getState().taskQueueReducer.taskQueue
 
-        //         }else{
-        //             //check how much they want to move and update it accordingly
-        //             const diff = lot.bins[task.load.station].count - taskQueueItem.quantity
+        // console.log('TQ', taskQ);
 
-        //             if(diff === 0){
+        // console.log('RTQ', reduxTQ);
 
-        //                 // move the res of the lot 
-        //                 delete lot.bins[task.load.station]
-
-        //                 lot.bins[task.unload.station].count = lot.bins[task.unload.station] ? taskQueueItem.quantity + lot.bins[task.unload.station].count : taskQueueItem.quantity
-                        
-        //             }else{
-        //                 lot.bins[task.load.station].count = diff
-
-        //                 if(lot.bins[task.unload.station]){
-        //                     lot.bins[task.unload.station].count +=  taskQueueItem.quantity
-        //                 }else{
-        //                     lot.bins[task.unload.station] = {
-        //                         count: taskQueueItem.quantity
-        //                     }
-        //                 }
-        //             }
-        //         }
-                
-        //         // update to the card
-        //         await putCard(lot)
-
-        //     }
-        // }
-
-        // // Add item to task events
-        // await API.graphql({
-        //     query: createTaskQueueEvents,
-        //     variables: { input: taskQueueItem }
-        // })
-
-
-        // // Delete item after adding it to the event
-        // await API.graphql({
-        //     query: deleteTaskQueue,
-        //     variables: { input: {id: id} }
-        // })
-
-        return 'data';
+        return 'Deleted TQ';
 
     } catch (error) {
         // Error 😨

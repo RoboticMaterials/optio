@@ -203,11 +203,11 @@ export default function taskQueueReducer(state = defaultState, action) {
         // delete
         // ***************
         case DELETE_ + TASK_QUEUE_ITEM + _SUCCESS:
-            taskQueue = clone_object(state.taskQueue);
-            delete taskQueue[action.payload.id];
+            let taskQueueClone = clone_object(state.taskQueue);
+            delete taskQueueClone[action.payload ? action.payload.id : action.id];
 
             return Object.assign({}, state, {
-                taskQueue: { ...taskQueue },
+                taskQueue: { ...taskQueueClone },
                 pending: false
             });
 
