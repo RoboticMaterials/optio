@@ -120,7 +120,7 @@ export async function deleteTaskQueueItem(id, taskQueueItem) {
             
         taskQueueItem.end_time = Math.round(Date.now() / 1000)
 
-        const ressss = await API.graphql({
+        await API.graphql({
             query: manageTaskQueue,
             variables: { 
                 id: taskQueueItem.id,
@@ -130,19 +130,7 @@ export async function deleteTaskQueueItem(id, taskQueueItem) {
             }
         });
 
-        console.log(ressss);
-
-        const res = store.dispatch({ type: 'DELETE_TASK_QUEUE_ITEM_SUCCESS', id });
-
-        console.log(res);
-
-        // const taskQ = await store.dispatch(getObjects()) //await getTaskQueue()
-
-        // const reduxTQ = store.getState().taskQueueReducer.taskQueue
-
-        // console.log('TQ', taskQ);
-
-        // console.log('RTQ', reduxTQ);
+        store.dispatch({ type: 'DELETE_TASK_QUEUE_ITEM_SUCCESS', id });
 
         return 'Deleted TQ';
 
