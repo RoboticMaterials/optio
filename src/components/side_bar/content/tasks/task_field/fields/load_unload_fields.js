@@ -113,7 +113,7 @@ const LoadUnloadFields = (props) => {
                 focus={!!selectedTask && selectedTask.type == null}
                 lines={2}
                 InputComponent={Textbox}
-                inputStyle={!isProcess && {background: themeContext.bg.primary}}
+                inputStyle={!isProcess ? {background: themeContext.bg.primary} : {}}
             />
 
             {!humanLocation &&
@@ -176,7 +176,7 @@ const LoadUnloadFields = (props) => {
                         }}
                         // values={!!selectedTask.load.sound ? [sounds[selectedTask.load.sound]] : []}
                         dropdownGap={2}
-                        style={!isProcess && {background: themeContext.bg.primary}}
+                        style={!isProcess ? {background: themeContext.bg.primary} : {}}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
                         className="w-100"
@@ -230,7 +230,7 @@ const LoadUnloadFields = (props) => {
                         focus={!!selectedTask && selectedTask.type == null}
                         lines={2}
                         InputComponent={Textbox}
-                        inputStyle={!isProcess && {background: themeContext.bg.primary}}
+                        inputStyle={!isProcess ? {background: themeContext.bg.primary} : {}}
                     />
 
                     {/* If its a human task, then you shouldnt require people to make noises. I personally would though...  */}
@@ -261,7 +261,7 @@ const LoadUnloadFields = (props) => {
                                 }}
                                 className="w-100"
                                 schema="tasks"
-                                style={!isProcess && {background: themeContext.bg.primary}}
+                                style={!isProcess ? {background: themeContext.bg.primary} : {}}
                             />
                         </div>
                     }

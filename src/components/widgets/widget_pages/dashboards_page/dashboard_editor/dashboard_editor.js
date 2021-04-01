@@ -222,7 +222,7 @@ const DashboardEditor = (props) => {
                         formikProps.setFieldValue("buttons", shiftedButtonsCopy)
                     } else { // New button
                         if (addedIndex !== null) {
-                            payload.id = randomHash()
+                            // payload.id = randomHash()
                             buttonsCopy.splice(addedIndex, 0, payload)
                             formikProps.setFieldValue("buttons", buttonsCopy)
                         }

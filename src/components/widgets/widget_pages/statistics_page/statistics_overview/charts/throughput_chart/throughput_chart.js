@@ -53,7 +53,7 @@ const ThroughputChart = (props) => {
                 const {
                     lable,
                     ...objectIds
-                } = currItem
+                } = currItem || {}
 
                 let updatedItem = {lable}   // used for changing keys from object ids to object names, keep label the same
 

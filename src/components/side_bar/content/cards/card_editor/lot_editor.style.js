@@ -477,6 +477,27 @@ export const LotName = styled.span`
 	margin-bottom: .5rem;
 `
 
+export const LotNumber = styled.div`
+  /* background-color: ${props => props.theme.bg.secondary}; */
+  border: none;
+  font-size: ${props => props.theme.fontSize.sz4};
+  font-family: ${props => props.theme.font.primary};
+  font-weight: bold;
+  
+  flex-grow: 1;
+  color: ${props => props.theme.textColor};
+
+  /* box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1) !important; */
+  /* border-bottom: 2px solid ${props => props.theme.bg.secondary}; */
+  
+  cursor: default;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  padding: 0 2rem;
+`
+
 export const TemplateButton = styled.button`
   ${iconButtonCss};
   ${commonClickableIcon};

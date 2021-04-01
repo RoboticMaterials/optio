@@ -39,13 +39,14 @@ const DashboardEditorButtonRenderer = SortableContainer((props) => {
                         id: buttonId,
                         name: buttonName,
                         task_id: buttonTaskId,
-                        type: buttonType
+                        type: buttonType,
+                        custom_task: customTask
                     } = button || {}
 
                     const isButtonDeletable = getCanDeleteDashboardButton({type: buttonType})
 
                     return(
-                        <Draggable key={button.id} index={ind} style={{ overflow: 'visible' }}>
+                        <Draggable key={buttonId} index={ind} style={{ overflow: 'visible' }}>
                             {/*{(button.type === OPERATION_TYPES.REPORT.key || button.type === OPERATION_TYPES.KICK_OFF.key) ?*/}
                             {(button.type === OPERATION_TYPES.REPORT.key) ?
                                 <DashboardReportField
@@ -53,14 +54,17 @@ const DashboardEditorButtonRenderer = SortableContainer((props) => {
                                     type={buttonType}
                                     deletable={isButtonDeletable}
                                     ind={ind}
+                                    buttonId={buttonId}
                                 />
                                 :
                                 ((button.type === TYPES.ROUTES.key) || (!button.type)) &&
                                 <DashboardRouteField
+                                    customTask={customTask}
                                     taskId={buttonTaskId}
                                     color={buttonColor}
                                     deletable={isButtonDeletable}
                                     ind={ind}
+                                    buttonId={buttonId}
                                 />
                             }
                             { (button.type === OPERATION_TYPES.KICK_OFF.key) &&
@@ -69,6 +73,7 @@ const DashboardEditorButtonRenderer = SortableContainer((props) => {
                                 type={buttonType}
                                 deletable={isButtonDeletable}
                                 ind={ind}
+                                buttonId={buttonId}
                             />
                             }
                             { (button.type === OPERATION_TYPES.FINISH.key) &&
@@ -77,6 +82,7 @@ const DashboardEditorButtonRenderer = SortableContainer((props) => {
                                 deletable={isButtonDeletable}
                                 type={buttonType}
                                 ind={ind}
+                                buttonId={buttonId}
                             />
                             }
                         </Draggable>
