@@ -396,7 +396,7 @@ export const passwordResetSchema = Yup.object().shape({
     password: Yup.string()
         .required('Please enter a password')
         .matches(
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$\-!%*#?&]{8,}$/,
             "Must Contain 8 characters, one uppercase, one lowercase, one number and one special character"
         ),
     checkPassword: Yup.string()
