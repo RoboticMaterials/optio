@@ -10,18 +10,22 @@ const StationsColumn = ((props) => {
 	const {
 		station_id,
 		stationName = "Unnamed",
-		handleCardClick,
+		onCardClick,
 		cards = [],
 		processId,
 		maxHeight,
 		sortMode,
-		sortDirection
+		sortDirection,
+		selectedCards,
+		setSelectedCards
 	} = props
 
 	const [isCollapsed, setCollapsed] = useState(false)
 
 	return(
 		<Column
+			setSelectedCards={setSelectedCards}
+			selectedCards={selectedCards}
 			sortDirection={sortDirection}
 			maxWidth={"20rem"}
 			sortMode={sortMode}
@@ -32,6 +36,7 @@ const StationsColumn = ((props) => {
 						<styled.StationHeader>
 							<i className="fa fa-chevron-right" aria-hidden="true"
 							   onClick={() => setCollapsed(false)}
+								 style={{cursor: 'pointer'}}
 							/>
 						</styled.StationHeader>
 					)
@@ -39,48 +44,46 @@ const StationsColumn = ((props) => {
 				else {
 					return(
 						<styled.StationHeader>
-								<styled.HeaderRow
-									style={{
-										marginBottom: "1rem"
-									}}
-								>
-									<i className="fa fa-chevron-down" aria-hidden="true"
-									   onClick={() => setCollapsed(true)}
-									   style={{marginRight: "1rem"}}
-									/>
+							<styled.HeaderRow
+								style={{
+									marginBottom: "1rem"
+								}}
+							>
+								<i className="fa fa-chevron-down" aria-hidden="true"
+								   onClick={() => setCollapsed(true)}
+								   style={{marginRight: "1rem", cursor: "pointer"}}
+								/>
 
-									<styled.LabelContainer>
-										<styled.StationTitle>{stationName}</styled.StationTitle>
-									</styled.LabelContainer>
+								<styled.LabelContainer>
+									<styled.StationTitle>{stationName}</styled.StationTitle>
+								</styled.LabelContainer>
 
-									<i className="fas fa-ellipsis-h" style={{opacity: 0}}></i>
-								</styled.HeaderRow>
+								<i className="fas fa-ellipsis-h" style={{opacity: 0}}></i>
+							</styled.HeaderRow>
 
-								<styled.HeaderRow>
-									<div>
-										<styled.QuantityText>Lots: </styled.QuantityText>
-										<styled.QuantityText>{numberOfLots}</styled.QuantityText>
-									</div>
+							<styled.HeaderRow>
+								<div>
+									<styled.QuantityText>Lots: </styled.QuantityText>
+									<styled.QuantityText>{numberOfLots}</styled.QuantityText>
+								</div>
 
-									<div>
-										<styled.QuantityText>Total Quantity: </styled.QuantityText>
-										<styled.QuantityText>{lotQuantitySummation}</styled.QuantityText>
-									</div>
-								</styled.HeaderRow>
+								<div>
+									<styled.QuantityText>Total Quantity: </styled.QuantityText>
+									<styled.QuantityText>{lotQuantitySummation}</styled.QuantityText>
+								</div>
+							</styled.HeaderRow>
 						</styled.StationHeader>
 					)
 				}
 			}}
 			station_id={station_id}
 			stationName = {stationName}
-			handleCardClick={handleCardClick}
+			onCardClick={onCardClick}
 			cards = {cards}
 			processId={processId}
 			isCollapsed={isCollapsed}
 		/>
 	)
-
-
 })
 
 export default StationsColumn

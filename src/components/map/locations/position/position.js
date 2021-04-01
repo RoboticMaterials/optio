@@ -7,12 +7,13 @@ import { deepCopy } from '../../../../methods/utils/utils'
 import { handleWidgetHoverCoord } from '../../../../methods/utils/widget_utils'
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 import { editing } from '../../../../methods/utils/locations_utils'
+import { getProcessStationsWhileEditing } from '../../../../methods/utils/processes_utils'
 
 // Import Constants
 import { PositionTypes } from '../../../../constants/position_constants'
 
 // Import Actions
-import { setTaskAttributes } from '../../../../redux/actions/tasks_actions'
+import { selectTask, setTaskAttributes } from '../../../../redux/actions/tasks_actions'
 import { setSelectedPosition, setPositionAttributes } from '../../../../redux/actions/positions_actions'
 import { hoverStationInfo } from '../../../../redux/actions/widget_actions'
 import { pageDataChanged } from '../../../../redux/actions/sidebar_actions'
@@ -38,6 +39,7 @@ function Position(props) {
         handleDisableDrag,
         mouseDown
     } = props
+
 
     const {
         _id: positionId
@@ -83,12 +85,57 @@ function Position(props) {
 
     // Used to disable the ability to add position as a task
     let disabled = false
+
     // Disable if the selectedPosition is not this position
     if (!!selectedPosition && selectedPosition._id !== positionId) disabled = true
+
+    // Disable if making a task and this position does not have a parent
+    else if (!!selectedTask && !position.parent) disabled = true
+
     // Disable if the position does not belong to the children copy
     else if (!!selectedStationChildrenCopy && !(positionId in selectedStationChildrenCopy)) disabled = true
+
     // Disbale if the selected stations children does not include this station
     else if (!!selectedStation && !selectedStation.children.includes(positionId)) disabled = true
+
+    // Disables while making task (IE no unload station) and not fixing a process
+    else if (!!selectedTask && selectedTask?.load?.station !== null && selectedTask?.unload?.station === null && !fixingProcess) {
+        // Disable making a task to this position if the select tasks station is this positions parent (cant make a route to the same parent/child)
+        if (position?.parent === selectedTask?.load?.station) disabled = true
+
+        // Disable position if the selected task load position is a station (cant go from station to position or vice versa)
+        else if (!!stations[selectedTask?.load?.position]) disabled = true
+        // Disable position if its the load position. Cant make a task to itself
+        else if (selectedTask.load.position === position._id) disabled = true
+
+        // Disables when adding a task to the beginning of a process. 
+        // To tell if a task is being added to the beginning of a process is when the task has a temp insert index at 0 and the process contains more then 1 route
+        else if (selectedTask?.temp?.insertIndex === 0 && !!selectedProcess && selectedProcess.routes.length > 0) {
+            // Find the station at the beginning of process
+            const firstStation = selectedProcess.routes[0].load.station
+            if (position.parent !== firstStation && selectedTask.load.position !== null) disabled = true
+        }
+
+        // Disable making a task to this position if it or its siblings are already used in the process and its not adding to the beginnig of the process
+        else if (!!selectedProcess) {
+            const processesStations = getProcessStationsWhileEditing(selectedProcess, tasks)
+            if (processesStations.includes(position?.parent) && selectedTask?.temp?.insertIndex !== 0) disabled = true
+        }
+    }
+
+    // Disables for when adding to the beginning of the process
+    else if (selectedTask?.temp?.insertIndex === 0 && !!selectedProcess && selectedProcess.routes.length > 0) {
+        const firstStation = selectedProcess.routes[0].load.station
+        const hasChildren = stations[firstStation].children.length > 0
+        const processesStations = getProcessStationsWhileEditing(selectedProcess, tasks)
+
+        // If adding to the beginning of a process and the first station in the process doesnt have a position, then you cant select a position
+        // Also if this positions parent is the first station, then you can start at the first station
+        if(!hasChildren || position?.parent === firstStation) disabled = true
+
+        // If adding to the beginning of a process and the first location hasnt been selected, disable the ability to use a positon whos sibling is already used
+        else if(processesStations.includes(position?.parent) && selectedTask?.load?.station === null) disabled = true
+    }
 
     // This filters out positions when fixing a process
     // If the process is broken, then you can only start the task at the route before break's unload location
@@ -336,7 +383,9 @@ function Position(props) {
 
     const onMouseDown = () => {
         if (!disabled) onSetPositionTask()
+        if(selectedPosition?.schema!=="temporary_position"){
         dispatchPageDataChanged(true)
+      }
     }
 
     const onTranslating = (bool) => {

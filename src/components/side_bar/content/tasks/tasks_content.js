@@ -172,7 +172,7 @@ export default function TaskContent(props) {
                 isNew={isNew}
                 initialValues={{
                     ...selectedTask,
-                    obj: selectedObject,
+                    obj: !!selectedTask.route_object ? selectedTask.route_object : null,
                 }}
                 shift={shift}
                 toggleEditing={props => onEditing(props)}

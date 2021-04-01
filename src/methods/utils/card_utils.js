@@ -5,6 +5,7 @@ import {isArray} from "./array_utils";
 import {defaultBins, FIELD_COMPONENT_NAMES, FIELD_DATA_TYPES, SORT_DIRECTIONS} from "../../constants/lot_contants";
 import {BASIC_FIELD_DEFAULTS} from "../../constants/form_constants";
 import {toIntegerOrZero} from "./number_utils";
+import {isValidDateString} from "./date_utils";
 
 const EVENT_NAMES = {
 	CREATE: "create",
@@ -134,10 +135,10 @@ export const getInitialValues = (lotTemplate, card) => {
 
 					case FIELD_COMPONENT_NAMES.CALENDAR_SINGLE: {
 						initialValues[fieldName] = isObject(card) ?
-							(card[fieldName] || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD)
+							((isValidDateString(card[fieldName]) ? new Date(card[fieldName]) : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD) || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD)
 							:
 							isObject(initialValues) ?
-								(initialValues[fieldName] || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD)
+								((isValidDateString(initialValues[fieldName]) ? new Date(initialValues[fieldName]) : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD) || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD)
 								:
 								BASIC_FIELD_DEFAULTS.CALENDAR_FIELD
 						break;
@@ -249,8 +250,6 @@ export const sortBy = (arr, sortMode, sortDirection) => {
 				const {
 					[fieldName]: valB
 				} = itemB
-
-				if(!valA) return 1
 
 				if(!valA) return 1
 				if(!valB) return -1

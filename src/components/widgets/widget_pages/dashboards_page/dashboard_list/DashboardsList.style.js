@@ -119,9 +119,9 @@ export const AddHeadContainer = styled.div`
     padding-bottom: 1rem;
     position: relative;
     
-    background-image: linear-gradient(${props => props.theme.bg.tertiary}, ${props => props.theme.bg.primary});
-    // background: ${props => props.theme.bg.secondary};
-    border-bottom: thin solid ${props => props.theme.bg.tertiary};
+    background-image: linear-gradient(${props => props.theme.bg.secondary}, ${props => props.theme.bg.primary});
+    // background: ${props => props.theme.bg.tertiary};
+    border-bottom: thin solid ${props => props.theme.bg.secondary};
     box-shadow: 0px 0px 15px black;
     
     z-index: 1;
@@ -192,7 +192,7 @@ export const UnstyledList = styled.ul`
 `
 
 export const TitleTextbox = styled.input`
-    background-color: ${props => props.theme.bg.secondary};
+    background-color: ${props => props.theme.bg.tertiary};
     border-color: ${props => props.theme.bg.primary};
     font-size: ${props => props.theme.fontSize.sz2};
     font-family: ${props => props.theme.font.primary};
@@ -203,7 +203,7 @@ export const TitleTextbox = styled.input`
         border: 1px solid ${props => props.theme.fg.primary};
         color: ${props => props.theme.bg.septenary};
         box-shadow: none;
-        background-color: ${props => props.theme.bg.secondary};
+        background-color: ${props => props.theme.bg.tertiary};
     }
 
     &::placeholder {

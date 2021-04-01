@@ -19,8 +19,7 @@ export const FooterContainer = styled.div`
     display: flex;
     justify-content: center;
     
-    background-image: linear-gradient(to top, ${props => props.theme.bg.tertiary}, ${props => props.theme.bg.primary});
-    border-top: thin solid ${props => props.theme.bg.tertiary};
+    background-image: linear-gradient(to top, ${props => props.theme.bg.secondary}, ${props => props.theme.bg.primary});
     box-shadow: 0px 0px 15px black;
     
     padding: 1rem;
@@ -46,7 +45,7 @@ export const StyledForm = styled(Form)`
     height: 100%;
     max-height: 100%;
 
-    background: ${props => props.theme.bg.quaternary};
+    background: ${props => props.theme.bg.primary};
     
 `
 

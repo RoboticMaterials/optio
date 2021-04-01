@@ -51,7 +51,6 @@ const WidgetButton = (props) => {
     const showSideBar = useSelector(state => state.sidebarReducer.open)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
     const stations = useSelector(state => state.stationsReducer.stations)
-
     const dashboardID = params.dashboardID
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
@@ -158,6 +157,7 @@ const WidgetButton = (props) => {
             // dashboardInfo
             let defaultDashboard = {
                 name: selectedLocation.name + ' Dashboard',
+                locked: false,
                 buttons: [],
                 station: selectedLocation._id
             }
@@ -199,18 +199,18 @@ const WidgetButton = (props) => {
                 type === 'cancel' ?
                     <>
                         <styled.WidgetButtonIcon className="fas fa-times" pageID={type} currentPage={currentPage} />
-                        <styled.WidgetButtonText>{"Cancel"}</styled.WidgetButtonText>
+                        <styled.WidgetButtonText pageID={type} currentPage={currentPage}>{"Cancel"}</styled.WidgetButtonText>
                     </>
                     :
                     type === 'lots' ?
                         <>
                             <styled.WidgetButtonIcon className="far fa-clone" pageID={type} currentPage={currentPage} />
-                            <styled.WidgetButtonText>{label}</styled.WidgetButtonText>
+                            <styled.WidgetButtonText pageID={type} currentPage={currentPage}>{label}</styled.WidgetButtonText>
                         </>
                         :
                         <>
                             <styled.WidgetButtonIcon style={{ fontSize: type === 'cart' && '1.2rem', paddingTop: type === 'cart' && '.8rem' }} className={"icon-" + type} pageID={type} currentPage={currentPage} />
-                            <styled.WidgetButtonText>{label}</styled.WidgetButtonText>
+                            <styled.WidgetButtonText pageID={type} currentPage={currentPage}>{label}</styled.WidgetButtonText>
                         </>
             }
             {/* <styled.ButtonText>{props.type}</styled.ButtonText> */}

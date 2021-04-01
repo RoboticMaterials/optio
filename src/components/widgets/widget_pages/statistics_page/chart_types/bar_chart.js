@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 
 // Import component
 import { ResponsiveBar } from '@nivo/bar'
+import { linearGradientDef } from '@nivo/core'
 
 // Import utils
 import { ThemeContext } from "styled-components";
@@ -10,6 +11,7 @@ const BarChart = (props) => {
 
     const {
         data,
+        colors,
         selector,
         mainTheme,
         timeSpan,
@@ -26,10 +28,9 @@ const BarChart = (props) => {
 
     const theme = {
         background: 'transparent',
-        // background: 'red',
         fontFamily: 'sans-serif',
-        fontSize: 11,
-        textColor: 'white',
+        fontSize: 14,
+        textColor: themeContext.bg.senary,
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis",
@@ -42,7 +43,7 @@ const BarChart = (props) => {
             },
             ticks: {
                 line: {
-                    stroke: themeContext.bg.septenary,
+                    stroke: themeContext.bg.senary,
                     strokeWidth: 1
                 },
                 text: {
@@ -51,13 +52,13 @@ const BarChart = (props) => {
             },
             legend: {
                 text: {
-                    fontSize: 12,
+                    fontSize: 14,
                 }
             }
         },
         grid: {
             line: {
-                stroke: themeContext.bg.senary,
+                stroke: themeContext.bg.tertiary,
                 strokeWidth: 1
             }
         },
@@ -77,25 +78,25 @@ const BarChart = (props) => {
         dots: {
             text: {}
         },
-        tooltip: {
-            container: {
-                background: 'white',
-                color: 'inherit',
-                fontSize: 'inherit',
-                borderRadius: '2px',
-                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.25)',
-                padding: '5px 9px'
-            },
-            basic: {
-                whiteSpace: 'pre',
-                display: 'flex',
-                alignItems: 'center'
-            },
-            table: {},
-            tableCell: {
-                padding: '3px 5px'
-            }
-        },
+        // tooltip: {
+        //     container: {
+        //         background: 'white',
+        //         color: 'inherit',
+        //         fontSize: 'inherit',
+        //         borderRadius: '2px',
+        //         boxShadow: '0 1px 2px rgba(0, 0, 0, 0.25)',
+        //         padding: '5px 9px'
+        //     },
+        //     basic: {
+        //         whiteSpace: 'pre',
+        //         display: 'flex',
+        //         alignItems: 'center'
+        //     },
+        //     table: {},
+        //     tableCell: {
+        //         padding: '3px 5px'
+        //     }
+        // },
         crosshair: {
             line: {
                 stroke: '#000000',
@@ -140,11 +141,9 @@ const BarChart = (props) => {
             // borderColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}
             indexBy='x'
             // indexScale={{ type: 'band', round: true }}
-            animate={false}
-            colors={{ scheme: 'nivo' }}
-            colorBy={"index"}
-            // colors={['#d177ed', "#eed312"]}
-            // color={['#d177ed', "#eed312"]}
+            animate={true}
+            // colors={{ scheme: 'nivo' }}
+            colors={colors}
             borderColor={{ from: 'color' }}
             // borderColor='#d177ed'
             // xScale={{ type: 'time', format: '%Y-%m-%d %H:%M:%S', useUTC: false, precision: 'second', }}
@@ -154,6 +153,7 @@ const BarChart = (props) => {
             margin={{ top: 20, left: 80, right: 80, bottom: 75 }}
             // padding={{ top: 5, left: 5, right: 5, bottom: 5 }}
             layout={layout}
+            labelTextColor={themeContext.bg.primary}
 
             axisTop={null}
             axisRight={null}
@@ -161,9 +161,9 @@ const BarChart = (props) => {
                 tickSize: 5,
                 // tickPadding: layout === "horizontal" ? 10 : -40,
                 // translateY: -25
-                legendOffset: 50,
+                legendOffset: 60,
                 tickRotation: 0,
-                legend: 'Time',
+                legend: '',
                 fontSize: "8rem",
                 legendPosition: 'middle',
                 // legendOffset: 50,
@@ -178,20 +178,40 @@ const BarChart = (props) => {
             axisLeft={{
                 tickSize: 5,
                 zIndex: 200,
+                tickValues: 5,
                 // anchor: "right",
                 // tickPadding: layout === "horizontal" ? 40 : 4,
                 tickRotation: 0,
                 legend: 'Units',
                 legendPosition: 'middle',
-                legendOffset: -70,
+                legendOffset: -50,
                 ...axisLeft
             }}
 
-            // enableGridX={false}
-            // enableGridY={false}
+            // defs={[
+            //     // using helpers
+            //     // will inherit colors from current element
+            //     linearGradientDef('gradientA', [
+            //         { offset: 0, color: 'inherit' },
+            //         { offset: 100, color: 'inherit', opacity: 0 },
+            //     ]),
+            //     linearGradientDef('gradientB', [
+            //         { offset: 0, color: '#000' },
+            //         { offset: 100, color: 'inherit' },
+            //     ]),
+            // ]}
+
+            // fill={[
+            //     // match using object query
+            //     { match: y => y < 10, id: 'gradientA' },
+            //     // match using function
+            //     { match: y => y >=, id: 'gradientB' }
+            // ]}
+
             theme={theme}
             enableGridY={enableGridY}
             enableGridX={enableGridX}
+            gridYValues={5}
             {...rest}
 
         // legends={[{

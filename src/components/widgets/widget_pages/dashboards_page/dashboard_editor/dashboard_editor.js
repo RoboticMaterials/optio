@@ -52,7 +52,6 @@ const DashboardEditor = (props) => {
         dashboard,
         showSidebar,
     } = props
-
     const history = useHistory()
     const dispatch = useDispatch()
     const params = useParams()
@@ -67,14 +66,15 @@ const DashboardEditor = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
 
     const [sidebarWidth, setSidebarWidth] = useState(window.innerWidth < 2000 ? 400 : 700)
-
-    /*
+   /*
     * Returns initialValues object for Formik
     */
     const getInitialValues = () => {
         let initialValues = {
             name: "",
+            locked: false,
             buttons: []
+
         }
         let taskIds = []
 
@@ -103,6 +103,7 @@ const DashboardEditor = (props) => {
 
             initialValues = {
                 name: dashboard.name,
+                locked: dashboard.locked,
                 buttons: initialButtons
             }
         } catch (e) {
@@ -147,8 +148,7 @@ const DashboardEditor = (props) => {
     * */
     const handleSubmit = async (values) => {
         // destructure values
-        const { name, buttons } = values
-
+        const { name, locked, buttons } = values
         // clone dashboard
         const dashboardCopy = deepCopy(dashboard)
 
@@ -165,6 +165,7 @@ const DashboardEditor = (props) => {
 
         // update dashboard objects properties with submit values
         dashboardCopy.buttons = buttons
+        dashboardCopy.locked = locked
         dashboardCopy.name = name
 
         // if dashboard has id, it must already exist, so update with put
@@ -188,6 +189,7 @@ const DashboardEditor = (props) => {
             initialValues={getInitialValues()}
             initialTouched={{
                 name: false,
+                locked: false,
                 buttons: [false]
             }}
             initialErrors={getInitialErrors()}
@@ -209,6 +211,7 @@ const DashboardEditor = (props) => {
                 const allTouched = Object.values(touched).every((val) => val === true)
                 const submitDisabled = !(Object.values(errors).length === 0)
 
+
                 // adds a button to buttons key in Formik values
                 const handleDrop = (dropResult) => {
                     const { removedIndex, addedIndex, payload, element } = dropResult;
@@ -219,7 +222,7 @@ const DashboardEditor = (props) => {
                         formikProps.setFieldValue("buttons", shiftedButtonsCopy)
                     } else { // New button
                         if (addedIndex !== null) {
-                            payload.id = randomHash()
+                            // payload.id = randomHash()
                             buttonsCopy.splice(addedIndex, 0, payload)
                             formikProps.setFieldValue("buttons", buttonsCopy)
                         }
@@ -261,6 +264,7 @@ const DashboardEditor = (props) => {
                 const {
                     buttons: dashboardButtons,
                     name: dashboardName,
+                    locked: dashboardLocked,
                     station: dashboardStationId,
                     device: dashboardDeviceId,
                     _id: dashboardIdObject
@@ -282,47 +286,54 @@ const DashboardEditor = (props) => {
                             minWidth={300}
                             clickable={true}
                         />
-                        <style.StyledForm>
-                            <DashboardsHeader
-                                showTitle={false}
-                                showSidebar={showSidebar}
-                                showBackButton={true}
-                                showSaveButton={true}
-                                page={PAGES.EDITING}
-                                onDelete={() => {
-                                    handleDeleteDashboard()
-                                }}
-                                saveDisabled={submitDisabled}
-                                onBack={() => history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)}
-                            >
-                                <TextField
-                                    name={"name"}
-                                    disabled={dashboard.name === 'Robot Screen'}
-                                    textStyle={{ fontWeight: 'Bold' }}
-                                    placeholder='Enter Dashboard Name'
-                                    type='text'
-                                    InputComponent={Textbox}
-                                    inputProps={{
-                                        style: {
-                                            fontSize: '1.2rem',
-                                            fontWeight: '600',
-                                            textAlign: 'center',
-                                            padding: '0 2rem 0 4rem',
-                                            marginTop: '0'
-                                        }
-                                    }}
-                                />
-                            </DashboardsHeader>
-                            <style.BodyContainer>
-                                <DashboardRenderer
-                                    buttons={values.buttons}
-                                    onDrop={handleDrop}
+                    <style.StyledForm>
 
-                                    handleChangeButton={handleChangeButton}
-                                    handleDeleteButton={handleDeleteButton}
-                                />
-                            </style.BodyContainer>
-                        </style.StyledForm>
+                        <DashboardsHeader
+                            showTitle={false}
+                            showSidebar={showSidebar}
+                            showBackButton={true}
+                            showSaveButton={true}
+                            page={PAGES.EDITING}
+                            onDelete={() => {
+                                handleDeleteDashboard()
+                            }}
+                            onLockClick={() => {
+                              formikProps.setFieldValue("locked", !values.locked)
+                            }}
+                            locked = {values.locked}
+                            saveDisabled={submitDisabled}
+                            onBack={() => history.push(`/locations/${params.stationID}/dashboards/${params.dashboardID}/`)}
+                        >
+                            <TextField
+                                name={"name"}
+                                disabled={dashboard.name === 'Robot Screen'}
+                                textStyle={{ fontWeight: 'Bold' }}
+                                placeholder='Enter Dashboard Name'
+                                type='text'
+                                InputComponent={Textbox}
+                                inputProps={{
+                                    style: {
+                                        fontSize: '1.2rem',
+                                        fontWeight: '600',
+                                        textAlign: 'center',
+                                        padding: '0 2rem 0 4rem',
+                                        marginTop: '0'
+                                    }
+                                }}
+                            />
+
+
+                        </DashboardsHeader>
+                        <style.BodyContainer>
+                            <DashboardRenderer
+                                buttons={values.buttons}
+                                onDrop={handleDrop}
+
+                                handleChangeButton={handleChangeButton}
+                                handleDeleteButton={handleDeleteButton}
+                            />
+                        </style.BodyContainer>
+                    </style.StyledForm>
                     </style.Container>
 
                 )

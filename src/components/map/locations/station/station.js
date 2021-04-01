@@ -15,6 +15,7 @@ import { handleWidgetHoverCoord } from '../../../../methods/utils/widget_utils'
 import { deepCopy } from '../../../../methods/utils/utils'
 import { convertD3ToReal } from '../../../../methods/utils/map_utils'
 import { editing } from '../../../../methods/utils/locations_utils'
+import { getProcessStationsWhileEditing } from '../../../../methods/utils/processes_utils'
 
 // Import Constants
 import { StationTypes } from '../../../../constants/station_constants'
@@ -22,7 +23,7 @@ import { StationTypes } from '../../../../constants/station_constants'
 // Import Components
 import LocationSvg from '../location_svg/location_svg'
 import DragEntityProto from '../drag_entity_proto'
-import {getPreviousRoute} from "../../../../methods/utils/processes_utils";
+import { getPreviousRoute } from "../../../../methods/utils/processes_utils";
 import {
     getRouteEnd,
     getRouteIndexInRoutes, getRouteStart,
@@ -55,6 +56,7 @@ function Station(props) {
     const hoveringInfo = useSelector(state => state.widgetReducer.hoverStationInfo)
     const tasks = useSelector(state => state.tasksReducer.tasks)
     const fixingProcess = useSelector(state => state.processesReducer.fixingProcess)
+    const positions = useSelector(state => state.positionsReducer.positions)
 
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
@@ -81,40 +83,68 @@ function Station(props) {
     let disabled = false
     // Disable if the selected station is not this station
     if (!!selectedStation && selectedStation._id !== station._id) disabled = true
+
     // Disable if theres a selected position and the station's children dont contain that position
     else if (!!selectedPosition && !station.children.includes(selectedPosition._id)) disabled = true
+
+    // Disables while making task (IE no unload station) and not fixing a process
+    else if (!!selectedTask && selectedTask?.load?.station !== null && selectedTask?.unload?.station === null && !fixingProcess) {
+        // Disable making a task to this station if the selected position is the stations children (cant make a route to the same parent/child)
+        if (station.children.includes(selectedTask?.load?.position) && selectedTask?.unload?.station === null) disabled = true
+
+        // Disable station if the selected task load position is a position (cant go from station to position or vice versa)
+        else if (!!positions[selectedTask?.load?.position]) disabled = true
+        // Disable station if its the load station. Cant make a task to itself
+        else if (selectedTask.load.station === station._id) disabled = true
+
+        // Disables when adding a task to the beginning of a process. 
+        // To tell if a task is being added to the beginning of a process is when the task has a temp insert index at 0
+        else if (selectedTask?.temp?.insertIndex === 0 && !!selectedProcess && selectedProcess.routes.length > 0) {
+            // Find the station at the beginning of process
+            const firstStation = selectedProcess.routes[0].load.station
+
+            if (station._id !== firstStation && selectedTask.load.station !== null) disabled = true
+        }
+
+        // Disable making a task to this station if it is already used in the process and its not adding to the beginnig of the process
+        else if (!!selectedProcess) {
+            const processesStations = getProcessStationsWhileEditing(selectedProcess, tasks)
+            if (processesStations.includes(station._id) && selectedTask?.temp?.insertIndex !== 0) disabled = true
+        }
+    }
+
 
     // This filters out stations when fixing a process
     // If the process is broken, then you can only start the task at the route before break's unload location
     else if (!!selectedTask && !!selectedProcess && !!fixingProcess) {
 
         // setting load
-        if(!routeStart || (routeStart && routeEnd)) {
+        if (!routeStart || (routeStart && routeEnd)) {
 
             // must start at unload station of route before the break
             const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
-            if(!isStationUnloadStation(routeBeforeBreak, station._id)) disabled = true
+            if (!isStationUnloadStation(routeBeforeBreak, station._id)) disabled = true
         }
 
         // setting unload
-        else if(!routeEnd) {
+        else if (!routeEnd) {
 
             // can't pick same station for load and unload
-            if(isStationLoadStation(selectedTask, station._id)) disabled = true
+            if (isStationLoadStation(selectedTask, station._id)) disabled = true
 
             // disable stations already in process
-            if(isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
+            if (isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
 
             // always allow picking load station of route after the break, as this would fix the break
             const routeAfterBreak = selectedProcess.routes[selectedProcess.broken] || {}
-            if(isStationLoadStation(routeAfterBreak, station._id)) disabled = false
+            if (isStationLoadStation(routeAfterBreak, station._id)) disabled = false
         }
     }
 
     // This filters stations when making a process
     // If the process has routes, and you're adding a new route, you should only be able to add a route starting at the last station
     // This eliminates process with gaps between stations
-    else if (!!selectedProcess && !!selectedTask  ) {
+    else if (!!selectedProcess && !!selectedTask) {
         const {
             temp
         } = selectedTask || {}
@@ -122,70 +152,70 @@ function Station(props) {
             insertIndex
         } = temp || {}
 
-        if(selectedProcess.routes.length > 0) {
+        if (selectedProcess.routes.length > 0) {
             const routeIndex = getRouteIndexInRoutes(selectedProcess.routes.map((currProcess) => currProcess._id), selectedTask?._id)
 
             // setting load station
-            if(!routeStart || (routeStart && routeEnd)) {
+            if (!routeStart || (routeStart && routeEnd)) {
 
                 // adding to beginning
-                if(insertIndex === 0 ) {
+                if (insertIndex === 0) {
                     // disable is station is already in process
-                    if(isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
+                    if (isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
                 }
 
 
-                else if(routeIndex === 0) {
-                    if(isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
-                    if(isStationLoadStation(selectedTask, station._id)) disabled = false
+                else if (routeIndex === 0) {
+                    if (isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
+                    if (isStationLoadStation(selectedTask, station._id)) disabled = false
                 }
 
                 else {
                     // must select unload station of previous route
                     const previousRoute = getPreviousRoute(selectedProcess.routes, selectedTask._id)
-                    if(!isStationUnloadStation(previousRoute, station._id)) disabled = true
+                    if (!isStationUnloadStation(previousRoute, station._id)) disabled = true
                 }
             }
 
-            else if(!routeEnd) {
+            else if (!routeEnd) {
 
                 // adding to beginning of process
-                if(insertIndex === 0 ) {
+                if (insertIndex === 0) {
 
                     // disable stations already in process
-                    if(isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
+                    if (isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
 
                     // don't allow selecting same station for load and unload
-                    if(isStationLoadStation(selectedTask, station._id)) disabled = true
+                    if (isStationLoadStation(selectedTask, station._id)) disabled = true
 
                     // always allow selecting load station of first route, as we are adding to the beginning of the process
                     const firstRoute = selectedProcess.routes[0]
-                    if(isStationLoadStation(firstRoute, station._id)) disabled = false
+                    if (isStationLoadStation(firstRoute, station._id)) disabled = false
                 }
 
-                else if(routeIndex === 0) {
+                else if (routeIndex === 0) {
                     // disable stations already in process
-                    if(isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
+                    if (isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
 
                     const nextRoute = selectedProcess.routes[1]
-                    if(isStationLoadStation(nextRoute, station._id)) disabled = false
+                    if (isStationLoadStation(nextRoute, station._id)) disabled = false
                 }
 
                 else {
                     // disable stations already in process
-                    if(isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
+                    if (isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
 
                     const nextRoute = selectedProcess.routes[routeIndex + 1]
-                    if(isStationLoadStation(nextRoute, station._id)) disabled = false
+                    if (isStationLoadStation(nextRoute, station._id)) disabled = false
                 }
             }
         }
 
         // editing first route
         else {
-            if((selectedTask.load.station && selectedTask.unload.station === null)) {
+            if ((selectedTask.load.station && selectedTask.unload.station === null)) {
                 // don't allow selecting same station for load and unload
-                if(isStationLoadStation(selectedTask, station._id)) disabled = true
+                if (isStationLoadStation(selectedTask, station._id)) disabled = true
             }
         }
     }

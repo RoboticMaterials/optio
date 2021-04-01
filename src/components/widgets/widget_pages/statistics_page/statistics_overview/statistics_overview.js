@@ -28,7 +28,32 @@ import { ResponsiveBar } from '@nivo/bar';
 import { getDateName, getDateFromString, convertArrayToObject } from '../../../../../methods/utils/utils'
 import { getReportAnalytics, getReportEvents } from "../../../../../redux/actions/report_event_actions";
 
-const tempColors = ['#FF4B4B', '#56d5f5', '#50de76', '#f2ae41', '#c7a0fa']
+export const TIME_SPANS = {
+    live: {
+        name: "live",
+        displayName: "Live",
+    },
+    day: {
+        name: "day",
+        displayName: "Time",
+    },
+    week: {
+        name: "week",
+        displayName: "Day"
+    },
+    month: {
+        name: "month",
+        displayName: "Week"
+    },
+    year: {
+        name: "year",
+        displayName: "Month"
+    },
+    all: {
+        name: "all",
+        displayName: "All"
+    }
+}
 
 // TODO: Commented out charts for the time being (See comments that start with TEMP)
 const StatisticsOverview = (props) => {
@@ -192,11 +217,14 @@ const StatisticsOverview = (props) => {
 
         const body = { timespan: newTimeSpan, index: newDateIndex }
         const dataPromise = getStationAnalytics(stationID, body)
-        const reportAnalyticsResponse = await getReportAnalytics(stationID, body)
 
-        if (reportAnalyticsResponse && !(reportAnalyticsResponse instanceof Error)) {
-            setReportData(reportAnalyticsResponse)
-            setIsReportsLoading(false)
+        // If the timespan changes to line, then dont change what the report chart is showing
+        if (newTimeSpan !== 'line') {
+            const reportAnalyticsResponse = await getReportAnalytics(stationID, body)
+            if (reportAnalyticsResponse && !(reportAnalyticsResponse instanceof Error)) {
+                setReportData(reportAnalyticsResponse)
+                setIsReportsLoading(false)
+            }
         }
 
         dataPromise.then(response => {
@@ -257,7 +285,7 @@ const StatisticsOverview = (props) => {
             <div style={{ marginBottom: '1rem', alignItems: "center", display: "flex", flexDirection: "column" }}>
                 {
                     <>
-                        <TimeSpans timespanDisabled={timespanDisabled} color={colors[selector]} setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
+                        <TimeSpans timespanDisabled={timespanDisabled} color={themeContext.schema.charts.solid} setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
 
                         {/* Commented out for now, only need through put bar chart */}
                         {/* {handleGaugeCharts()} */}
@@ -272,40 +300,6 @@ const StatisticsOverview = (props) => {
     const renderDateSelector = () => {
 
         if (throughputData === null) return null
-
-        const throughPut = throughputData.throughPut
-
-        let dateSelectorTitle = ''
-        let date
-        const today = new Date()
-
-        switch (timeSpan) {
-            case 'day':
-                // date = getDateFromString(Object.values(throughPut)[0].x)
-                dateSelectorTitle = today.toDateString()
-                break;
-
-            case 'week':
-                const firstDate = getDateFromString(Object.values(throughPut)[0].x)
-                const lastDate = getDateFromString(Object.values(throughPut)[Object.values(throughPut).length - 1].x)
-                dateSelectorTitle = `${firstDate.toDateString()} - ${lastDate.toDateString()}`
-                break;
-
-            case 'month':
-                date = getDateFromString(Object.values(throughPut)[0].x)
-                const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                dateSelectorTitle = `${months[date.getMonth()]} ${date.getFullYear()}`
-                break;
-
-            case 'year':
-                date = getDateFromString(Object.values(throughPut)[0].x)
-                dateSelectorTitle = `${date.getFullYear()}`
-                break;
-
-            default:
-                break;
-        }
-
 
         return (
             <styled.RowContainer>
@@ -385,7 +379,7 @@ const StatisticsOverview = (props) => {
             >
                 {renderHeader()}
                 <ThroughputChart
-                    throughputData={throughputData}
+                    data={throughputData}
                     isThroughputLoading={isThroughputLoading}
                     timeSpan={timeSpan}
                     loadLineChartData={() => {

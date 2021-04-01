@@ -1,33 +1,36 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
-import { DraggableCore } from "react-draggable";
-import { Container } from 'react-smooth-dnd'
-import { Draggable } from 'react-smooth-dnd';
+import React, { useContext, useEffect, useRef, useState } from 'react'
 
-import * as style from "../lot_sidebars.style"
-import { ThemeContext } from "styled-components";
+// actions
+import {setSelectedLotTemplate} from "../../../../../../../redux/actions/lot_template_actions"
+import {setFieldDragging} from "../../../../../../../redux/actions/card_page_actions"
 
+// components external
+import { DraggableCore } from "react-draggable"
+import { Container, Draggable } from 'react-smooth-dnd'
 
+// components internal
+import FieldComponentMapper from "../../field_component_mapper/field_component_mapper"
+import WidgetButton from "../../../../../../basic/widget_button/widget_button"
+
+// functions external
+import PropTypes from 'prop-types'
+import { useDispatch, useSelector } from 'react-redux'
+import { ThemeContext } from "styled-components"
+
+// logging
 import log from '../../../../../../../logger'
 
-import FieldComponentMapper from "../../field_component_mapper/field_component_mapper";
-import {setFieldDragging} from "../../../../../../../redux/actions/card_page_actions";
-import WidgetButton from "../../../../../../basic/widget_button/widget_button";
-import {TYPES} from "../../../../../../widgets/widget_pages/dashboards_page/dashboards_sidebar/dashboards_sidebar";
-import {setSelectedLotTemplate} from "../../../../../../../redux/actions/lot_template_actions";
-import {uuidv4} from "../../../../../../../methods/utils/utils";
-import * as styled from "../../../../../../basic/form/calendar_field/calendar_field.style";
-import CalendarField from "../../../../../../basic/form/calendar_field/calendar_field";
-import {LOT_EDITOR_SIDEBAR_OPTIONS, SIDE_BAR_MODES} from "../../../../../../../constants/lot_contants";
+// utils
+import {uuidv4} from "../../../../../../../methods/utils/utils"
 
+// constants
+import {LOT_EDITOR_SIDEBAR_OPTIONS, SIDE_BAR_MODES} from "../../../../../../../constants/lot_contants"
+
+// styles
+import * as style from "../lot_sidebars.style"
+
+// logger
 const logger = log.getLogger("LotEditorSidebar")
-
-
-
-
-
-
 
 const LotEditorSidebar = (props) => {
 
@@ -48,7 +51,7 @@ const LotEditorSidebar = (props) => {
     }
 
     // theme
-    const themeContext = useContext(ThemeContext);
+    const themeContext = useContext(ThemeContext)
 
     // actions
     const dispatch = useDispatch()
@@ -59,13 +62,14 @@ const LotEditorSidebar = (props) => {
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates})
     const selectedLotTemplatesId = useSelector(state => {return state.lotTemplatesReducer.selectedLotTemplatesId})
 
-    const [width, setWidth] = useState(window.innerWidth < 2000 ? 450 : 450); // used for tracking sidebar dimensions
-    const [isSmall, setSmall] = useState(testSize(width)); // used for tracking sidebar dimensions
+    const [width, setWidth] = useState(window.innerWidth < 2000 ? 450 : 450) // used for tracking sidebar dimensions
+    const [isSmall, setSmall] = useState(testSize(width)) // used for tracking sidebar dimensions
 
-    const [type, setType] = useState(showFields ? SIDE_BAR_MODES.FIELDS.name : SIDE_BAR_MODES.TEMPLATES.name); // used for tracking sidebar dimensions
+    const [type, setType] = useState(showFields ? SIDE_BAR_MODES.FIELDS.name : SIDE_BAR_MODES.TEMPLATES.name) // used for tracking sidebar dimensions
 
 
     const getFieldTemplates = () => {
+
         return (
             <style.ListContainer>
                 <Container
@@ -104,9 +108,6 @@ const LotEditorSidebar = (props) => {
                         if(isSource) {
                             dispatchSetFieldDragging(null)
                         }
-
-
-
                     }}
                     onDrop={(dropResult,b) => {
                         const {
@@ -136,6 +137,11 @@ const LotEditorSidebar = (props) => {
                         flex: 1,
                         overflowY: "auto",
                         overflowX: "hidden",
+                        // justifyContent: 'center',
+                        alignItems: 'center',
+                        alignContent: 'center',
+                        display: 'flex',
+                        flexDirection: 'column'
                     }}
                 >
                 {
@@ -149,11 +155,21 @@ const LotEditorSidebar = (props) => {
                                 display: "flex",
                                 justifyContent: "center",
                                 alignItems: "center",
+
+                                width: 'fit-content',
+
+                                background: themeContext.bg.secondary,
+                                boxShadow: '0 2px 4px 0px rgba(0, 0, 0, 0.3)',
+                                padding: '1rem',
+                                borderRadius: '0.5rem',
+                                zIndex: 12,
+                                cursor: 'move'
                             }}
                         >
                             <div style={{width: "fit-content"}}>
                                 <FieldComponentMapper
                                     component={value.component}
+                                    usable={false}
                                 />
                             </div>
                         </Draggable>
@@ -268,12 +284,14 @@ const LotEditorSidebar = (props) => {
                 key="sidebar-content"
                 style={{ width: width, minWidth: minWidth }}
             >
+
                 <style.Container>
+                    <style.TitleText>Draggable Input Elements</style.TitleText>
                     {renderButtons()}
 
-                    <style.FooterContainer>
+                    {/* <style.FooterContainer>
                         {renderNavButtons()}
-                    </style.FooterContainer>
+                    </style.FooterContainer> */}
                 </style.Container>
 
                 <DraggableCore key="handle" onDrag={handleDrag} >
@@ -290,7 +308,7 @@ LotEditorSidebar.propTypes = {
     showFields: PropTypes.bool,
     showTemplates: PropTypes.bool,
     showNew: PropTypes.bool,
-};
+}
 
 // Specifies the default values for props:
 LotEditorSidebar.defaultProps = {
@@ -298,6 +316,6 @@ LotEditorSidebar.defaultProps = {
     showTemplates: true,
     showNew: true,
 
-};
+}
 
 export default LotEditorSidebar

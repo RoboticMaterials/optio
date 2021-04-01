@@ -7,7 +7,7 @@ export const Container = styled.div`
   flex-grow: 1;
   overflow: hidden;
   width: 100%;
-// `
+`
 
 export const Header = styled.div`
 	display: flex;

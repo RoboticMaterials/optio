@@ -54,7 +54,7 @@ export const EditButton = styled.div`
 
 export const ConditionText =  styled.p`
     /* background: ${props => props.theme.bg.quinary}; */
-    color: ${props => props.theme.bg.tertiary};
+    color: ${props => props.theme.bg.secondary};
     border-radius: .25rem;
     padding: .375rem .75rem;
     padding-left: 3.5rem;

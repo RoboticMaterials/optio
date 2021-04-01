@@ -260,22 +260,25 @@ const DashboardsSidebar = (props) => {
 
     const renderTypeButtons = () => {
         return (
-            Object.entries(TYPES).map((currEntry, index) => {
-                const currKey = currEntry[0]
-                const currValue = currEntry[1]
-                return (
-                    <WidgetButton
-                        containerStyle={{ marginRight: "1rem" }}
-                        label={currValue.name}
-                        color={themeContext.schema[currKey.toLocaleLowerCase()].solid}
-                        iconClassName={currValue.iconName}
-                        selected={type === currKey}
-                        onClick={() => setType(currKey)}
-                        labelSize={"0.5rem"}
+            <style.RowContainer style={{justifyContent: 'center'}}>
+                <style.DualSelectionButton
+                    style={{borderRadius: '.5rem 0rem 0rem .5rem'}}
+                    onClick={() => setType('ROUTES')}
+                    selected={type === 'ROUTES'}
+                >
+                    Routes
+                </style.DualSelectionButton>
 
-                    />
-                )
-            })
+                <style.DualSelectionButton
+                    style={{borderRadius: '0rem .5rem .5rem 0rem'}}
+                    onClick={() => setType('OPERATIONS')}
+                    selected={type === 'OPERATIONS'}
+
+                >
+                    Operations
+                </style.DualSelectionButton>
+
+            </style.RowContainer>
         )
     }
 
@@ -288,14 +291,20 @@ const DashboardsSidebar = (props) => {
                 style={{ width: width }}
             >
                 <style.Container>
+                    
+
                     <style.ListContainer>
+                        {renderTypeButtons()}
                         {(type === TYPES.ROUTES.key) &&
 
                             <Container
                                 groupName="dashboard-buttons"
-                                getChildPayload={index =>
-                                    availableButtons[index]
-                                }
+                                getChildPayload={index => {
+                                    return {
+                                        ...availableButtons[index],
+                                        name: ""
+                                    }
+                                }}
                             >
                                 {availableButtons.map((currButton, index) => {
 
@@ -304,10 +313,14 @@ const DashboardsSidebar = (props) => {
                                         color: currButtonColor,
                                         task_id: currButtonTaskId,
                                         id: currButtonId,
-                                        type: currButtonType
+                                        type: currButtonType,
+                                        custom_task
                                     } = currButton || {}
+                                    const {
+                                        position: positionId
+                                    } = custom_task || {}
 
-                                    const dashboardContainsTask = currButtonTaskId === 'custom_task' ? false : getDashboardContainsRouteButton({ buttons: existingButtons }, { task_id: currButtonTaskId })
+                                    const dashboardContainsTask = getDashboardContainsRouteButton({ buttons: existingButtons }, { task_id: currButtonTaskId, id: currButtonId, positionId })
                                     return (
                                         <DashboardSidebarButton
                                             key={`dashboard-sidebar-button-${currButtonId}`}
@@ -328,9 +341,12 @@ const DashboardsSidebar = (props) => {
                         {(type === TYPES.OPERATIONS.key) &&
                             <Container
                                 groupName="dashboard-buttons"
-                                getChildPayload={index =>
-                                    availableReportButtons[index]
-                                }
+                                getChildPayload={index => {
+                                    return {
+                                        ...availableReportButtons[index],
+                                        name: ""
+                                    }
+                                }}
                             >
                                 {availableReportButtons.map((button, index) => {
                                     const {
@@ -360,7 +376,7 @@ const DashboardsSidebar = (props) => {
                     </style.ListContainer>
 
                     <style.FooterContainer>
-                        {renderTypeButtons()}
+                        
                     </style.FooterContainer>
                 </style.Container>
 

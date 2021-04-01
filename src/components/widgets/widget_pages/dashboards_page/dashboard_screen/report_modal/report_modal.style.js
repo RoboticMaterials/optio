@@ -69,6 +69,7 @@ export const TextboxDiv = styled.div`
         font-family: ${props => props.theme.font.secondary};
         color: ${props => props.theme.bg.senary};
     }
+
 `;
 
 export const Container = styled(Modal)`
@@ -81,6 +82,8 @@ export const Container = styled(Modal)`
 	bottom: auto;
 	
 	position: absolute;
+    display: flex;
+    justify-content: center;
 	
 	z-index: 50;
 	
@@ -93,6 +96,7 @@ export const Container = styled(Modal)`
 	
 	display: flex;
 	flex-direction: column;
+    box-shadow: ${props => props.theme.cardShadow};
 	
 	color: ${props => props.theme.bg.octonary};
 	border-radius: 1rem;
@@ -117,7 +121,7 @@ export const Header = styled.div`
 	padding: 0;
 	margin: 0;
 	height: 3rem;
-	background: ${props => props.theme.bg.quinary};
+	background: ${props => props.theme.bg.secondary};
 	
 `
 export const Label = styled.span`
@@ -166,7 +170,7 @@ export const BodyContainer = styled.div`
 	justify-content: space-between;
 	overflow: hidden;
 	
-	background: ${props => props.theme.bg.quaternary};
+	background: ${props => props.theme.bg.primary};
 `
 
 export const ButtonForm = styled.div`
@@ -191,7 +195,7 @@ export const IconSelectorContainer = styled.div`
 `
 
 export const ContentContainer = styled.div`
-	background: ${props => props.theme.bg.quinary};
+	background: ${props => props.theme.bg.secondary};
 	border-radius: 1rem;
 	display: flex;
 	flex-direction: column;
@@ -225,7 +229,7 @@ export const RightContentContainer = styled.div`
     justify-content: center;
     background: ${props => props.theme.bg.senary};
     width: 4rem;
-    border-left: 1px solid ${props => props.theme.bg.tertiary};
+    border-left: 1px solid ${props => props.theme.bg.secondary};
     height: 100%;
     // background-color: ${props => props.theme.bg.septenary};
     
@@ -318,7 +322,7 @@ export const AddNewButtonContainer = styled.div`
 	display: flex;
 	justify-content: center;
 	width: 100%;
-	border-bottom:  ${props => props.showBorder && `1px solid` + props.theme.bg.tertiary};
+	border-bottom:  ${props => props.showBorder && `1px solid` + props.theme.bg.secondary};
 `
 
 export const ColorFieldContainer = styled.div`

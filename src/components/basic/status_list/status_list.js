@@ -16,16 +16,18 @@ const StatusList = (props) => {
 		onCanceleClick,
 		onShowMapperClick,
 		onCreateClick,
-		onCreateAllClick
+		onCreateAllClick,
+		displayNames
 	} = props
 
 	return (
 		<styled.Container>
 			<StatusListHeader
-
+				onCanceleClick={onCanceleClick}
 			/>
 
 			<StatusListBody
+				displayNames={displayNames}
 				onItemClick={onItemClick}
 				data={data}
 				onCreateClick={onCreateClick}

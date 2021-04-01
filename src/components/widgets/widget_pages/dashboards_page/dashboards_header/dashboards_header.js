@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 
 // functions external
 import { useSelector } from 'react-redux';
@@ -8,6 +8,9 @@ import { withRouter } from 'react-router-dom';
 import BackButton from '../../../../basic/back_button/back_button';
 import Button from '../../../../basic/button/button';
 import SimpleLot from "../dashboard_screen/simple_lot/simple_lot";
+import ReactTooltip from "react-tooltip";
+
+import uuid from 'uuid'
 
 // hooks internal
 import useWindowSize from '../../../../../hooks/useWindowSize';
@@ -32,7 +35,11 @@ const DashboardsHeader = (props) => {
         page,
         saveDisabled,
         onBack,
+        onLockClick,
+        locked
     } = props
+
+    const [toolTipId, ] = useState(`tooltip-${uuid.v4()}`)
 
     // extract url params
     const { stationID } = props.match.params
@@ -40,6 +47,8 @@ const DashboardsHeader = (props) => {
     const cards = useSelector(state => state.cardsReducer.cards)
     const stations = useSelector(state => state.stationsReducer.stations)
     const positions = useSelector(state => state.positionsReducer.positions)
+
+    const [moreLots, setMoreLots] = useState(false);
 
     const locations = {
         ...positions,
@@ -70,32 +79,36 @@ const DashboardsHeader = (props) => {
 
         if (!!hasLot) {
             return (
-                <style.RowContainer windowWidth={windowWidth}>
-                    <style.LotsTitle>Lots:</style.LotsTitle>
-                    {Object.values(cards)
-                        .filter((card, ind) => {
-                            return getIsCardAtBin(card, location?._id)
-                        })
-                        .map((card) => {
-                            const {
-                                name,
-                                lotNumber,
-                                bins,
-                                _id
-                            } = card || {}
+                <style.LotsContainer moreLots={moreLots}>
+                    <style.RowContainer windowWidth={windowWidth} style={{height: moreLots ? '' : '3.8rem'}}>
+                        <style.LotsTitle>Lots:</style.LotsTitle>
+                        {Object.values(cards)
+                            .filter((card, ind) => {
+                                return getIsCardAtBin(card, location?._id)
+                            })
+                            .map((card) => {
+                                const {
+                                    name,
+                                    lotNumber,
+                                    bins,
+                                    _id
+                                } = card || {}
 
-                            const quantity = getBinQuantity({bins}, location?._id)
+                                const quantity = getBinQuantity({bins}, location?._id)
 
-                            return(
-                                <SimpleLot
-                                    key={_id}
-                                    name={name}
-                                    lotNumber={lotNumber}
-                                    quantity={quantity}
-                                />
-                            )
-                        })}
-                </style.RowContainer>
+                                return(
+                                    <SimpleLot
+                                        key={_id}
+                                        name={name}
+                                        lotNumber={lotNumber}
+                                        quantity={quantity}
+                                    />
+                                )
+                            })}
+
+                    </style.RowContainer>
+                    <style.MoreIcon className='fas fa-ellipsis-h' onClick={() => setMoreLots(!moreLots)}/>
+                </style.LotsContainer>
             )
         }
 
@@ -113,10 +126,25 @@ const DashboardsHeader = (props) => {
 
             {renderLotsTitle}
 
+
             <style.Header>
+                {showBackButton &&
+                      <style.LockIcon
+                          style = {{marginRight: locked ? '1rem' : '.68rem',}}
+                          className= {!locked ? 'fas fa-lock-open' : 'fas fa-lock'}
+                          onClick={onLockClick}
+                          locked = {locked}
+                          data-tip
+                          data-for={toolTipId}
+                        >
+                          <ReactTooltip id={toolTipId}>
+                            <style.LockContainer>Click to toggle the lock. When the lock is enabled the "X" button on the dashsboards screen is hidden</style.LockContainer>
+                          </ReactTooltip>
+                        </style.LockIcon>
+                }
 
                 {showBackButton &&
-                <BackButton style={{ order: '1' }} containerStyle={{ marginTop: '1.8rem' }}
+                <BackButton style={{ order: '1' }} containerStyle={{  }}
                             onClick={onBack}
                 />
                 }
@@ -126,18 +154,20 @@ const DashboardsHeader = (props) => {
                 }
 
                 {showEditButton && !mobileMode &&
-                <Button style={{ order: '3', marginTop: '1.8rem' }}
+                <Button style={{ order: '3', position: 'absolute', right: '0', marginRight: '0' }}
                         onClick={setEditingDashboard}
+                        secondary
                 >
-                    Edit
+                    Edit Dashboard
                 </Button>
                 }
 
                 {showSaveButton &&
                 <>
-                    <Button style={{ order: '3', marginTop: '1.8rem' }}
+                    <Button style={{ order: '3', minWidth: '10rem' }}
                             type='submit'
                             disabled={saveDisabled}
+                            schema="dashboards"
                     >
                         Save
                     </Button>

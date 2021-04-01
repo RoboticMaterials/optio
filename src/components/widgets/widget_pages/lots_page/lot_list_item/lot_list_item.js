@@ -19,9 +19,9 @@ const LotListItem = props => {
 		lotNumber,
 		quantity,
 		dates,
+		description,
 		onClick
 	} = props
-
 	/*
 	* returns display name
 	*
@@ -63,28 +63,35 @@ const LotListItem = props => {
 	return (
 		<styled.ListItemRect>
 			<styled.RowContainer>
-				<styled.ColumnContainer1>
-					<styled.ListSubtitle>{displayNameLabel}:</styled.ListSubtitle>
-					<styled.ListContent>{displayName}</styled.ListContent>
-				</styled.ColumnContainer1>
-
-				<styled.ColumnContainer2>
-					<styled.ListSubtitle>Quantity:</styled.ListSubtitle>
-					<styled.ListContent>{quantity}</styled.ListContent>
-				</styled.ColumnContainer2>
-
-				<styled.ColumnContainer2>
-					<styled.ListSubtitle>End Date:</styled.ListSubtitle>
-					{!!endDateText &&
-					<styled.ListContent>{endDateText}</styled.ListContent>
+				<styled.ColumnContainer>
+					<styled.ListContent style = {{fontWeight: 'bold'}}>{displayName}</styled.ListContent>
+					{!!name &&
+						<styled.TextContent style = {{paddingLeft: '1rem'}}>{formattedLotNumber}</styled.TextContent>
 					}
-				</styled.ColumnContainer2>
-
+				</styled.ColumnContainer>
 				<styled.ListItemIcon
 					className={'fas fa-edit'}
 					onClick = {onClick}
 				/>
 			</styled.RowContainer>
+
+			<styled.ContentRowContainer style = {{backgroundColor: 'white'}}>
+				<styled.TextContent style = {{fontWeight: 'bold'}}>Quantity</styled.TextContent>
+				<styled.TextContent>{quantity}</styled.TextContent>
+			</styled.ContentRowContainer>
+
+			<styled.ContentRowContainer style = {{backgroundColor: 'white'}}>
+				<styled.TextContent style = {{fontWeight: 'bold'}}>Description</styled.TextContent>
+				<styled.TextContent>{description}</styled.TextContent>
+			</styled.ContentRowContainer>
+
+			<styled.ContentRowContainer style = {{backgroundColor: 'white', borderBottomColor: 'transparent'}}>
+				<styled.TextContent style = {{fontWeight: 'bold'}}>End Date</styled.TextContent>
+				{!!endDateText &&
+				<styled.TextContent>{endDateText}</styled.TextContent>
+				}
+			</styled.ContentRowContainer>
+
 		</styled.ListItemRect>
 	)
 }
@@ -93,6 +100,8 @@ LotListItem.propTypes = {
 	name: PropTypes.string,
 	lotNumber: PropTypes.number,
 	quantity: PropTypes.number,
+	description: PropTypes.string,
+
 	dates: PropTypes.array,
 	onClick: PropTypes.func
 }
@@ -101,6 +110,7 @@ LotListItem.defaultProps = {
 	name: "",
 	lotNumber: 0,
 	quantity: 0,
+	description: "",
 	dates: [...BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE],
 	onClick: () => {}
 }

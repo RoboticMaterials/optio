@@ -21,19 +21,22 @@ export const ListItem = styled.div`
     height: 3rem;
     text-overflow: ellipsis;
     justify-content: space-between;
-    background: transparent;
+    background: ${props => props.theme.bg.primary};
     padding: 0rem 1rem;
 
-    border-radius: 0.5rem;
-    border: 0.1rem solid;
-    border-color:  white;
-  
-    // border-color: ${props => props.isNew ? 'blue' : 'white'};
+    flex-grow: 1;
+    width: 100%;
 
-  ${props => props.isNew &&  commonCss.newGlow};
-  ${props => props.edited &&  commonCss.newGlow};
-  ${props => props.error &&  commonCss.errorGlow};
-    
+    border-radius: 0.5rem;
+    border: 0.15rem solid;
+    border-color:  ${props => props.theme.schema['routes'].solid};
+    box-shadow: ${props => props.theme.cardShadow};
+
+    ${props => css`
+      ${props.isNew && commonCss.newGlow};
+      ${props.edited && commonCss.newGlow};
+      ${props.error && commonCss.errorGlow};
+    `}  
 
 `
 
@@ -47,8 +50,8 @@ export const ListItemRect = styled.div`
     cursor: pointer;
     user-select: none;
 
-    border: 0.1rem solid white;
     box-sizing: border-box;
+    
 
     &:hover {
         background: ${props => props.theme.bg.octonary};
@@ -68,7 +71,7 @@ export const ListItemTitle = styled.h1`
     text-overflow: ellipsis;
     margin-right:0.5rem;
     margin-bottom: 0rem;
-    width: 75%;
+    flex-grow: 1;
 `
 
 const disabledCss = css`

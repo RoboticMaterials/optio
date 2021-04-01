@@ -71,6 +71,10 @@ const DashboardScreen = (props) => {
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
     const availableKickOffProcesses = useSelector(state => { return state.dashboardsReducer.kickOffEnabledDashboards[dashboardId] }) || []
     const availableFinishProcesses = useSelector(state => { return state.dashboardsReducer.finishEnabledDashboards[dashboardId] }) || []
+    const stations = useSelector(state => state.stationsReducer.stations)
+    const {
+        name: dashboardName
+    } = currentDashboard || {}
 
     //actions
     const dispatchGetProcesses = () => dispatch(getProcesses())
@@ -81,6 +85,11 @@ const DashboardScreen = (props) => {
     // self contained state
     const [addTaskAlert, setAddTaskAlert] = useState(null);
     const [reportModal, setReportModal] = useState(null);
+    const [displayName, setDisplayName] = useState(dashboardName);
+    const [dashboardStation, setDashboardStation] = useState({});
+    const {
+        name: stationName
+    } = dashboardStation || {}
 
     // actions
     const dispatch = useDispatch()
@@ -102,6 +111,15 @@ const DashboardScreen = (props) => {
 
     const mobileMode = windowWidth < widthBreakPoint;
     const showTaskQueueButton = !mapViewEnabled ? true : mobileMode ? true : false
+
+    useEffect(() => {
+        setDashboardStation(stations[stationID] || {})
+    }, [stations, stationID])
+
+    useEffect(() => {
+        setDisplayName(dashboardName ? dashboardName : `${stationName} Dashboard`)
+
+    }, [dashboardName, stationName])
 
     /**
      * When a dashboard screen is loaded, tell redux that its open
@@ -198,11 +216,6 @@ const DashboardScreen = (props) => {
 
     /**
      * Handles buttons associated with selected dashboard
-     *
-     * If it's a AMR device dashboard, add a extra buttons
-     * The extra buttons are:
-     * 'Send to charge location'
-     * 'Send to Idle Location'
      *
      * If there's a human task in the human task Q (see human_task_queue_actions for more details)
      * and if the the tasks unload location is the dashboards station, then show a unload button
@@ -481,12 +494,11 @@ const DashboardScreen = (props) => {
 
                 onBack={() => { setEditingDashboard(false) }}
             >
-                <pageStyle.Title>{currentDashboard.name}</pageStyle.Title>
+                <pageStyle.Title>{displayName}</pageStyle.Title>
             </DashboardsHeader>
 
             <DashboardButtonList
                 buttons={handleDashboardButtons()}
-                addedTaskAlert={addTaskAlert}
                 onTaskClick={handleTaskClick}
             />
 

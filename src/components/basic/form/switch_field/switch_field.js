@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useField, useFormikContext } from "formik";
 import Switch from 'react-ios-switch';
 import ErrorTooltip from "../error_tooltip/error_tooltip";
 import PropTypes from "prop-types";
 import * as styled from "./switch_field.style";
 import {getMessageFromError} from "../../../../methods/utils/form_utils";
+import { ThemeContext } from "styled-components";
 
 const SwitchField = (props) => {
 
@@ -16,11 +17,14 @@ const SwitchField = (props) => {
         onChange,
         mapOutput,
         mapInput,
+        schema,
         ...rest
     } = props
 
     const { setFieldValue, setFieldTouched } = useFormikContext();
     const [field, meta] = useField(props);
+
+    const themeContext = useContext(ThemeContext);
 
     const {
         value: fieldValue,
@@ -37,18 +41,19 @@ const SwitchField = (props) => {
 
     return (
         <Container
-            style={containerStyle}
+            style={{...containerStyle, transform: 'scale(0.9)'}}
         >
             <Switch
                 checked={mapInput(fieldValue)}
+                onColor={!!schema && !!themeContext.schema[schema] ? themeContext.schema[schema].solid : themeContext.schema.default.solid}
                 {...rest}
                 onChange={val => {
                     if(!touched) setFieldTouched(fieldName, true);
-
                     setFieldValue(fieldName, mapOutput(val))
 
                     onChange && onChange(val)
                 }}
+                style={{...style}}
             />
             {/*<ErrorTooltip*/}
             {/*    visible={hasError}*/}

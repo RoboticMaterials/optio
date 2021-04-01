@@ -13,6 +13,19 @@ body {
 
 }
 
+.signin-page {
+  background: url('./graphics/images/RM_Signin.jpg') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+/* MAKE ALL TEXT THE SAME FONT */
+* {
+  font-family: 'Montserrat';
+}
+
 .dragging-field {
   opacity: .5;
 }
@@ -87,7 +100,7 @@ html, body, #root, #reactapp, .App {
     .hamburger.is-active .hamburger-inner,
     .hamburger.is-active .hamburger-inner::before,
     .hamburger.is-active .hamburger-inner::after {
-      background-color: #fff; }
+      background-color: #FF4B4B; }
 
   .hamburger-box {
     width: 40px;
@@ -102,7 +115,7 @@ html, body, #root, #reactapp, .App {
     .hamburger-inner, .hamburger-inner::before, .hamburger-inner::after {
       width: 30px;
       height: 4px;
-      background-color: #fff;
+      background-color: #FF4B4B;
       border-radius: 4px;
       position: absolute;
       transition-property: transform;

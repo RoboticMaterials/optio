@@ -12,11 +12,11 @@ export const BackSymbol = styled.i`
 
     color: ${props => {
       if (props.active) {
-        return props.theme.bg.tertiary
+        return props.theme.bg.secondary
       } else if (props.hovered) {
         return !!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary
       } else {
-        return props.theme.bg.octonary
+        return !!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary
       }
     }}
 `;
@@ -59,7 +59,7 @@ export const BackButton = styled.button`
         `
       } else {
         return `
-          border: 0.1rem solid ${props.theme.bg.octonary};
+          border: 0.1rem solid ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.fg.primary};
           background: transparent;
         `
       }

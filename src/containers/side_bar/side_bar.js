@@ -42,7 +42,6 @@ const SideBar = (props) => {
         subpage,
         id
     } = params
-
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchSetOpen = (sideBarOpen) => dispatch(setOpen(sideBarOpen))
@@ -69,9 +68,10 @@ const SideBar = (props) => {
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
-
     const history = useHistory()
     const url = useLocation().pathname
+
+    const pageNames = ['locations', 'tasks', 'routes', 'processes', 'lots', 'devices', 'settings',]
 
     const boundToWindowSize = () => {
         const newWidth = Math.min(window.innerWidth, Math.max(360, pageWidth))
@@ -86,7 +86,7 @@ const SideBar = (props) => {
         }
     }, [])
 
-    // Useeffect for open close button, if the button is not active but there is an id in the URL, then the button should be active 
+    // Useeffect for open close button, if the button is not active but there is an id in the URL, then the button should be active
     // If the side bar is not active and there is no id then toggle it off
     useEffect(() => {
         const hamburger = document.querySelector('.hamburger')
@@ -176,7 +176,14 @@ const SideBar = (props) => {
             dispatchSetSelectedStation(null)
             dispatchSetSelectedPosition(null)
             dispatchHoverStationInfo(null)
-        } else {
+        } 
+        // Else handle when the sidebar is closed and clicked to open
+        else {
+
+            // If the url doesnt contain a defined page then switch it back to locations
+            if (!pageNames.includes(page)) {
+                history.push(`/locations`)
+            }
             const newSideBarState = !showSideBar
             setShowSideBar(newSideBarState)
             dispatchSetOpen(newSideBarState)
@@ -246,13 +253,16 @@ const SideBar = (props) => {
     return (
         <>
             <ConfirmDeleteModal
-                isOpen={!!confirmDeleteModal || showConfirmDeleteModal}
+                isOpen={!!confirmDeleteModal || !!showConfirmDeleteModal}
                 title={"Are you sure you want to leave this page? Any changes will not be saved"}
                 button_1_text={"Yes"}
                 button_2_text={"No"}
-                handleClose={() => setConfirmDeleteModal(null)}
+                handleClose={() => {
+                    setConfirmDeleteModal(null)
+                    dispatchSetConfirmDelete(false, null)
+                }}
                 handleOnClick1={() => {
-                    if(showConfirmDeleteModal) {
+                    if (showConfirmDeleteModal) {
                         confirmDeleteCallback()
                     }
                     else {
@@ -270,7 +280,7 @@ const SideBar = (props) => {
             />
 
             <styled.SideBarOpenCloseButton
-                className="hamburger hamburger--slider"
+                className="hamburger hamburger--squeeze"
                 type='button'
                 id='sideBarButton'
                 onClick={() => {
@@ -281,8 +291,8 @@ const SideBar = (props) => {
                 }}
             // showSideBar={showSideBar}
             >
-                <span className='hamburger-box' id='sideBarButton' style={{ display: 'flex', justifyContent: 'center', width: 'auto' }}>
-                    <span className='hamburger-inner' id='sideBarButton' />
+                <span className='hamburger-box' id='sideBarButton' style={{ display: 'flex', justifyContent: 'center', width: 'auto', color: 'red' }}>
+                    <span className='hamburger-inner' id='sideBarButton' style={{ color: 'red' }} />
                 </span>
             </styled.SideBarOpenCloseButton>
 

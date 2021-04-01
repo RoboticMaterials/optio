@@ -1,13 +1,24 @@
 import styled from 'styled-components'
 
+export const Page = styled.div`
+    width: 100%;
+    height: 100%;
+    background-color: white;
+`
+
 export const Container = styled.div`
-    width: 35%;
-    min-width: 20rem;
+    min-width: 35rem;
     position: absolute;
     top: 50%;
-    left: 50%;
-    transform: translate(-50%,-60%);
+    left: ${props => !props.mobileMode && '5rem'};
+    transform: translate(0, -50%);
     border-radius: 10px;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: ${props => !props.mobileMode && '0px 0px 6px 1px rgba(0,0,0,0.1)'};
+    padding: 4rem 6rem;
 `
 
 export const LogoContainer = styled.div`
@@ -17,7 +28,7 @@ export const LogoContainer = styled.div`
     align-items: center;
     justify-content: center;
     position: relative;
-    margin-bottom: 5%;
+    margin-bottom: 8%;
     margin-top: 5%;
 `
 
@@ -80,5 +91,5 @@ export const Button = styled.button`
     border: none;
 
     box-shadow: ${props => !!props.selected ? 'none' : '0 0.05rem 0.1rem 0rem #303030'};
-    background-color: ${props => !!props.selected ? props.theme.bg.tertiary : props.theme.bg.senary}
+    background-color: ${props => !!props.selected ? props.theme.bg.secondary : props.theme.bg.senary}
 `

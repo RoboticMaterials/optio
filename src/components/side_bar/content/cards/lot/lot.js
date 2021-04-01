@@ -21,14 +21,17 @@ import {formatLotNumber} from "../../../../../methods/utils/lot_utils"
 
 // styles
 import * as styled from "./lot.style"
-import LotDateRangeRow from "./lot_date_row/lot_date_row";
+import LotDateRangeRow from "./lot_date_range_row/lot_date_range_row";
 import LotSimpleRow from "./lot_simple_row/lot_simple_row";
+import LotDateRow from "./lot_date_row/lot_date_row";
 
 const Lot = (props) => {
     const {
         name,
+        glow,
+        isFocused,
         highlight,
-        index,
+        stationName,
         totalQuantity,
         lotNumber,
         templateValues,
@@ -74,22 +77,26 @@ const Lot = (props) => {
                 value
             } = currItem
 
+                const key = `${fieldName}+dataType`
+
             const isLast = currIndex === arr.length - 1
 
 
             switch(dataType) {
                 case FIELD_DATA_TYPES.STRING: {
                     return(
-                    <LotSimpleRow
-                        label={fieldName}
-                        value={value}
-                        isLast={isLast}
-                    />
+                        <LotSimpleRow
+                            key={key}
+                            label={fieldName}
+                            value={value}
+                            isLast={isLast}
+                        />
                     )
                 }
                 case FIELD_DATA_TYPES.EMAIL: {
                     return(
                         <LotSimpleRow
+                            key={key}
                             label={fieldName}
                             value={value}
                             isLast={isLast}
@@ -98,12 +105,19 @@ const Lot = (props) => {
                 }
                 case FIELD_DATA_TYPES.DATE: {
                     return(
-                        <div>nope</div>
+                        <LotDateRow
+                            key={key}
+                            label={fieldName}
+                            isLast={isLast}
+                            date={value}
+                        />
+
                     )
                 }
                 case FIELD_DATA_TYPES.DATE_RANGE: {
                     return(
                         <LotDateRangeRow
+                            key={key}
                             label={fieldName}
                             isLast={isLast}
                             dateRange={value}
@@ -113,6 +127,7 @@ const Lot = (props) => {
                 case FIELD_DATA_TYPES.URL: {
                     return(
                         <LotSimpleRow
+                            key={key}
                             label={fieldName}
                             value={value}
                             isLast={isLast}
@@ -122,6 +137,7 @@ const Lot = (props) => {
                 case FIELD_DATA_TYPES.INTEGER: {
                     return(
                         <LotSimpleRow
+                            key={key}
                             label={fieldName}
                             isLast={isLast}
                             value={value}
@@ -136,8 +152,12 @@ const Lot = (props) => {
         return(
             <styled.FlagsContainer
                 style={{
-                    margin: 0,
-                    padding: 0
+                    padding: 0,
+                    margin: '0.5rem 0',
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
+                    width: 'fit-content',
+                    justifyContent: 'flex-start'
                 }}
             >
                 {flags.length > 0 ?
@@ -154,11 +174,12 @@ const Lot = (props) => {
                                     type={"button"}
                                     selected={true}
                                     color={currColor}
-                                    className="fas fa-flag"
+                                    className="fas fa-square"
                                     style={{
-                                        margin: "0 .25rem",
+                                        margin: "0 .55rem",
                                         padding: 0,
-                                        fontSize: "1rem"
+                                        fontSize: "1rem",
+                                        transform: 'scaleX(2)'
                                     }}
                                 />
                             )
@@ -170,46 +191,48 @@ const Lot = (props) => {
                     :
                     <styled.FlagButton
                         type={"button"}
-                        color={"rgb(25,25,25,0.5)"}
                         selected={true}
-                        className="fas fa-flag"
+                        color={'rgba(0, 0, 0, 0.3)'}
+                        className="fas fa-square"
+                        style={{
+                            margin: "0 .55rem",
+                            padding: 0,
+                            fontSize: "1rem",
+                            transform: 'scaleX(2)'
+                        }}
                     />
                 }
             </styled.FlagsContainer>
         )
     }
+
     return(
         <styled.Container
+            glow={glow}
+            isFocused={isFocused}
             highlight={highlight}
             selectable={selectable}
             isSelected={isSelected}
             onClick={onClick}
-            containerStyle={containerStyle}
+            style={containerStyle}
         >
 
             <styled.HeaderBar>
-                <styled.NameContainer>
-                    <styled.CardName>{name ? name : formattedLotNumber}</styled.CardName>
-
-                    {name &&
-                    <styled.LotNumber>{formattedLotNumber}</styled.LotNumber>
-                    }
-                </styled.NameContainer>
-
                 {enableFlagSelector ?
                     <Popup
                         contentStyle={{
-                            background: themeContext.bg.octonary,
-                            width: "fit-content"
+                            background: themeContext.bg.primary,
+                            width: "fit-content",
                         }}
                         arrowStyle={{
-                            color: themeContext.bg.octonary,
+                            color: themeContext.bg.primary,
+                            transform: 'translateX(0rem)'
                         }}
 
                         trigger={open => (
                             renderFlags()
                         )}
-                        position="right center"
+                        position="left center"
                         closeOnDocumentClick
                     >
                         <styled.FlagsContainer>
@@ -227,8 +250,8 @@ const Lot = (props) => {
                                     <styled.FlagButton
                                         color={currColor}
                                         selected={isSelected}
-                                        className="fas fa-flag"
-                                        key={currIndex}
+                                        className={isSelected ? "fas fa-check-square" : "fas fa-square"}
+                                        key={currColorId}
                                         type={"button"}
                                         onClick={(e) => {
                                             e.preventDefault()
@@ -254,22 +277,33 @@ const Lot = (props) => {
                     renderFlags()
                 }
 
+                <styled.CardName>{name ? name : formattedLotNumber}</styled.CardName>
 
+                {name &&
+                    <styled.LotNumber>{formattedLotNumber}</styled.LotNumber>
+                }
 
             </styled.HeaderBar>
             <styled.ContentContainer>
-
-                    {processName &&
-                        <LotSimpleRow
-                            label={"Process"}
-                            value={processName}
-                        />
-                    }
 
                 <LotSimpleRow
                     label={"Quantity"}
                     value={`${count}/${totalQuantity}`}
                 />
+
+                {processName &&
+                    <LotSimpleRow
+                        label={"Process"}
+                        value={processName}
+                    />
+                }
+
+                {stationName &&
+                    <LotSimpleRow
+                        label={"Bin"}
+                        value={stationName}
+                    />
+                }
 
                 {renderTemplateValues()}
             </styled.ContentContainer>
@@ -281,18 +315,22 @@ const Lot = (props) => {
 // Specifies propTypes
 Lot.propTypes = {
     isSelected: PropTypes.bool,
-    selectable: PropTypes.bool
+    selectable: PropTypes.bool,
+    isFocused: PropTypes.bool,
 }
 
 // Specifies the default values for props:
 Lot.defaultProps = {
     isSelected: false,
+    isFocused: false,
     selectable: false,
     flags: [],
     highlight: false,
     enableFlagSelector: true,
     templateValues: [],
-    count: 0
+    count: 0,
+    glow: false,
+    stationName: ""
 }
 
 export default Lot

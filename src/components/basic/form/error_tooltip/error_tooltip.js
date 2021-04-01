@@ -9,6 +9,7 @@ import { uuidv4 } from '../../../../methods/utils/utils'
 // import styles
 import * as styled from './error_tooltip.style';
 import DropDownSearchField from "../drop_down_search_field/drop_down_search_field";
+import theme from '../../../../theme'
 
 const ErrorTooltip = (props) => {
 
@@ -20,7 +21,8 @@ const ErrorTooltip = (props) => {
         className,
         color,
         containerStyle,
-        tooltip
+        tooltip,
+        type
     } = props
 
     // target input for initial display of tooltip
@@ -49,6 +51,8 @@ const ErrorTooltip = (props) => {
         //if you pass a value to array, like this [data] than clearTimeout will run every time this value changes (useEffect re-run)
     )
 
+    // useEffect(() => {console.log('rebuild'); ReactTooltip.rebuild()}, [tooltip])
+
 
     // useEffect(() => {
     //     if (autoFocus) {
@@ -67,7 +71,7 @@ const ErrorTooltip = (props) => {
             {autoFocus && visible &&
                 //wrap in portal to avoid clipping issues
                 <Portal>
-                    <ReactTooltip style={{ zIndex: 20 }} delayShow={250} event={'focus'} eventOff={'blur'} id={id}>
+                    <ReactTooltip style={{ zIndex: 20 }} delayShow={250} event={'focus'} eventOff={'blur'} id={id} effect='solid' type={type}>
                         <span>{text}</span>
                     </ReactTooltip>
                 </Portal>
@@ -75,18 +79,27 @@ const ErrorTooltip = (props) => {
             }
 
             {/* only show on hover after initial display */}
-            {!autoFocus && visible &&
+            {!autoFocus && visible && tooltip &&
+                // NOTE: portal does not allow dynamic content
+                <div>
+                    <ReactTooltip eventOff={'mouseout'} id={id} effect='solid' type={type}>
+                        {text &&
+                            <span>{text}</span>
+                        }
+                        {tooltip && tooltip}
+                    </ReactTooltip>
+                </div>
+            }
+
+            {!autoFocus && visible && !tooltip &&
                 //wrap in portal to avoid clipping issues
                 <Portal>
-                    <ReactTooltip eventOff={'mouseout'} id={id}>
+                    <ReactTooltip eventOff={'mouseout'} id={id} effect='solid' type={type}>
                         {text &&
-                        <span>{text}</span>
-                        }
-                        {tooltip &&
-                        tooltip
+                            <span>{text}</span>
                         }
                     </ReactTooltip>
-                </Portal>
+                </Portal> 
             }
 
             {autoFocus &&
@@ -120,7 +133,8 @@ const ErrorTooltip = (props) => {
 ErrorTooltip.defaultProps = {
     ContainerComponent: styled.IconContainer,
     className: "fas fa-exclamation-triangle",
-    color: '#FF4B4B',
+    color: theme.main.error,
+    type: 'error'
 };
 
 export default React.memo(ErrorTooltip);

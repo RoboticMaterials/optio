@@ -15,14 +15,15 @@ export const WidgetButtonButton = styled.button`
 
     /* margin-top: 0.5rem; */
 
-    box-shadow: 0 0.1rem 0.2rem 0rem #303030;
+    box-shadow: 0 1px 2px 2px rgba(0, 0, 0, 0.1);
 
-    background-color: ${props => props.pageID === props.currentPage ? props.theme.bg.quaternary : props.theme.bg.septenary};
+    // background-color: ${props => props.pageID === props.currentPage ? props.theme.bg.quaternary : props.theme.bg.septenary};
+    background-color: ${props => props.theme.bg.primary};
 
     transition: background-color 0.25s ease, box-shadow 0.1s ease;
 
     &:hover{
-        background-color: ${props => props.theme.bg.senary};
+        background-color: ${props => props.theme.bg.secondary};
     }
 
     &:focus{
@@ -50,9 +51,12 @@ export const WidgetButtonLabel = styled.label`
 export const WidgetButtonText = styled.h4`
     font-size: ${props => props.theme.fontSize.sz6};
     font-family: ${props => props.theme.font.primary};
+    font-weight: bold;
 
     text-align: center;
     align-self:center;
+
+    color: ${props => props.pageID === props.currentPage ? props.theme.fg.primary : props.theme.bg.septenary};
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
 
@@ -76,7 +80,7 @@ export const WidgetButtonIcon = styled.i`
     font-size: 2.2rem;
     margin-bottom:0.3rem;
     align-self:center;
-    color: ${props => props.pageID === props.currentPage ? props.theme.fg.primary : props.theme.bg.primary};
+    color: ${props => props.pageID === props.currentPage ? props.theme.fg.primary : props.theme.bg.septenary};
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
         font-size: 2rem;

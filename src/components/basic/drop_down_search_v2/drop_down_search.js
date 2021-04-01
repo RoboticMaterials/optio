@@ -113,7 +113,6 @@ export class DropDownSearch extends Component {
   }
 
   componentDidMount() {
-
     this.props.portal && this.props.portal.appendChild(this.dropdownRoot);
     window.addEventListener('resize', debounce(this.updateSelectBounds), {passive:true});
     window.addEventListener('scroll', debounce(this.onScroll), {passive:true});
@@ -568,7 +567,8 @@ export class DropDownSearch extends Component {
 
 export const DefaultReactDropdownSelect = styled.div`
 
-    background-color: ${props => props.theme.bg.quinary};
+    background-color: ${props => props.theme.bg.secondary};
+    box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1) !important;
     color: ${props => props.theme.bg.octonary};
 
     font-family: ${props => props.theme.font.primary};
@@ -591,17 +591,16 @@ export const DefaultReactDropdownSelect = styled.div`
     border-bottom: 2px solid transparent;
     border-radius: 0.2rem;
 
-     :focus,
-     :focus-within {
+    :focus, :focus-within {
         color: ${props => props.theme.bg.octonary};
-        background-color: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};
+        background-color: ${props => props.theme.bg.secondary};
         box-shadow: none;
         border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.bg.octonary};
     }
-  
+
   ${props => props.css && props.css};
-  
-  
+
+
 `;
 
 const DefaultContainer = styled.div`

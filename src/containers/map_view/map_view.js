@@ -29,6 +29,7 @@ import Zones from '../../components/map/zones/zones'
 import RightClickMenu from '../../components/map/right_click_menu/right_click_menu'
 import TaskStatistics from '../../components/map/task_statistics/task_statistics'
 import Widgets from '../../components/widgets/widgets'
+import CartWaypoint from '../../components/map/locations/cart_waypoint/cart_waypoint'
 
 import Station from '../../components/map/locations/station/station'
 import Position from '../../components/map/locations/position/position'
@@ -65,6 +66,7 @@ export class MapView extends Component {
 
         this.d3 = {
             translate: [0, 0],
+            naturalDims: { height: 500, width: 500 },
             scale: 1,
             naturalScale: 1,
             boundingClientHeight: 0
@@ -512,7 +514,7 @@ export class MapView extends Component {
                 }
                 stations[station._id] = station
             })
-            this.props.dispatchUpdateStations(stations) // Bulk Update
+            this.props.dispatchUpdateStations(stations, null, this.d3) // Bulk Update
 
             //// Apply the event translation to each position
             Object.values(positions).forEach(position => {
@@ -526,7 +528,7 @@ export class MapView extends Component {
                 // Object.assign(position, { x, y })
                 positions[position._id] = position
             })
-            this.props.dispatchUpdatePositions(positions) // Bulk Update
+            this.props.dispatchUpdatePositions(positions, null, null, this.d3) // Bulk Update
 
             //// Apply the event translation to each mobile device
             Object.values(devices).filter(device => device.device_model == 'MiR100').map(device => {
@@ -750,6 +752,21 @@ export class MapView extends Component {
                         <TaskStatistics d3={this.d3} />
                     }
 
+                    {!!this.props.devices &&
+                        Object.values(this.props.devices).map((device) => {
+                            if (!!device.current_task_queue_id && !!this.props.taskQueue[device.current_task_queue_id] && !!this.props.taskQueue[device.current_task_queue_id].custom_task && !!this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate) {
+                                const [x, y] = convertRealToD3([this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate.pos_x, this.props.taskQueue[device.current_task_queue_id].custom_task.coordinate.pos_y], this.d3)
+
+                                return (
+                                    <CartWaypoint
+                                        x={x}
+                                        y={y}
+                                    />
+                                )
+                            }
+                        })
+                    }
+
                     {/* Widgets are here when not in mobile mode. If mobile mode, then they are in App.js.
                     The reasoning is that the map unmounts when in a widget while in mobile mode (for performance reasons). */}
                     {this.props.hoveringInfo !== null && !this.mobileMode &&
@@ -783,6 +800,8 @@ const mapStateToProps = function (state) {
         positions: state.positionsReducer.positions,
         stations: state.stationsReducer.stations,
         tasks: state.tasksReducer.tasks,
+        taskQueue: state.taskQueueReducer.taskQueue,
+
 
         selectedStation: state.stationsReducer.selectedStation,
         selectedStationChildrenCopy: state.positionsReducer.selectedStationChildrenCopy,

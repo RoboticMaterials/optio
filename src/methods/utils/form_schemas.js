@@ -6,6 +6,7 @@ import { get } from "lodash"
 import { isArray } from "./array_utils";
 import { LOT_TEMPLATES_RESERVED_FIELD_NAMES } from "../../constants/form_constants";
 import {convertCardDate} from "./card_utils";
+import {isEqualCI, isString} from "./string_utils";
 
 const { object, lazy, string, number } = require('yup')
 const mapValues = require('lodash/mapValues')
@@ -13,7 +14,7 @@ const mapValues = require('lodash/mapValues')
 Yup.addMethod(Yup.object, 'startEndDate', function (startPath, endPath, message) {
     return this.test('startEndDate', message, function (value) {
 
-        if(!value) return true
+        if (!value) return true
 
         const {
             path,
@@ -23,8 +24,8 @@ Yup.addMethod(Yup.object, 'startEndDate', function (startPath, endPath, message)
         const startDate = convertCardDate(value[startPath])
         const endDate = convertCardDate(value[endPath])
 
-        if(startDate && endDate) {
-            if(endDate < startDate) {
+        if (startDate && endDate) {
+            if (endDate < startDate) {
                 return this.createError({
                     path: `${path}`,
                     message,
@@ -199,12 +200,10 @@ export const objectAtLocationGoalSchema = Yup.object().shape({
 export const dashboardSchema = Yup.object().shape({
     name: Yup.string()
         .min(1, '1 character minimum.')
-        .max(50, '50 character maximum.')
-        .required('Please enter a name.'),
+        .max(50, '50 character maximum.'),
     buttons: Yup.array().of(
         Yup.object().shape({
-            name: Yup.string()
-                .required('Please enter a name.'),
+            name: Yup.string(),
             // task: Yup.array().of(
             //     Yup.object().shape({
             //         Description: Yup.string()
@@ -225,17 +224,28 @@ export const dashboardSchema = Yup.object().shape({
 });
 
 // returns error if any item in nested array is duplicate
-Yup.addMethod(Yup.object, "unique", function (message, fieldPath) {
+Yup.addMethod(Yup.object, "dopeUnique", function (message, fieldPath, pathToArr) {
     let mapper
     if (fieldPath) mapper = x => get(x, fieldPath)
 
-    return this.test("unique", message, function (item) {
-        const { path, createError, parent } = this
-        var index = path.match(/\[(.*?)\]/);
+    return this.test("dopeUnique", message, function (item) {
+        const { path, createError, parent, options } = this
+        const {
+            context
+        } = options || {}
+        const {
+            [pathToArr]: arr
+        } = context || {}
 
-        if (index) {
-            index = index[1];
-        }
+        let rx = /\[(-?\d+)\]/g
+        const reg2 = /[\[\]']+/g
+
+        var index = path.match(rx);
+        let megaIndex = 0
+        index.forEach((currItem) => {
+
+            megaIndex = megaIndex + parseInt(currItem.replace(reg2,''))
+        })
 
         let compareItem
         if (mapper) compareItem = mapper(item)
@@ -244,18 +254,16 @@ Yup.addMethod(Yup.object, "unique", function (message, fieldPath) {
         let isUnique = true
 
         let currIndex = 0
-        for (const currString of parent) {
-            const mapped = mapper(currString)
-            if (parseInt(currIndex) !== parseInt(index)) {
-
+        for (const currItem of arr.flat()) {
+            if (parseInt(currIndex) !== parseInt(megaIndex)) {
                 if (mapper) {
-                    if (compareItem === mapper(currString)) {
+                    if (isString(compareItem) && isString(mapper(currItem)) && isEqualCI(compareItem.trim(),mapper(currItem).trim())) {
                         isUnique = false
                         return createError({ path: `${path}.${fieldPath}`, message })
                     }
                 }
                 else {
-                    if (item === currString) {
+                    if (isString(item) && isString(currItem) && isEqualCI(item.trim(), currItem.trim())) {
                         isUnique = false
                         return createError({ path: `${path}.${fieldPath}`, message })
                     }
@@ -295,7 +303,7 @@ Yup.addMethod(Yup.array, "nestedUnique", function (message, path) {
             idx = 0
 
             for (const item of sublist) {
-                if (!err && mapper(item) !== set[i]) {
+                if (!err && isEqualCI(mapper(item).trim(), set[i].trim())) {
                     err = this.createError({ path: `fields[${rowIdx}][${idx}].${path}`, message })
                 }
 
@@ -313,7 +321,11 @@ Yup.addMethod(Yup.array, "nestedUnique", function (message, path) {
 Yup.addMethod(Yup.string, "notIn", function (message, arr) {
     return this.test("notIn", message, function (value) {
         const { path, createError } = this;
-        if (arr.includes(value)) return createError({ path, message })
+
+
+        for(const item of arr) {
+            if(isString(value) && isString(item) && isEqualCI(item.trim(), value.trim())) return createError({ path, message })
+        }
         return true
     });
 });
@@ -351,13 +363,13 @@ export const signUpSchema = Yup.object().shape({
     password: Yup.string()
         .required('Please enter a password')
         .matches(
-            /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-            "Must Contain 8 characters, one uppercase, one lowercase, one number and one special character"
+            /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/,
+            "Must Contain 8 characters, one uppercase, one lowercase, and one number"
         ),
 
     confirmPassword: Yup.string()
         .oneOf([Yup.ref('password'), null], 'Passwords must match')
-        .required('Password confirm is required'),
+        .required('Confirm password field cannot be left empty')
 })
 
 export const signInSchema = Yup.object().shape({
@@ -369,6 +381,28 @@ export const signInSchema = Yup.object().shape({
 
 })
 
+export const emailSchema = Yup.object().shape({
+    email: Yup.string()
+        .email()
+        .required('Please enter an email')
+})
+
+export const passwordResetSchema = Yup.object().shape({
+    email: Yup.string()
+        .email()
+        .required('Please enter an email'),
+    verification: Yup.string()
+        .required('Please enter you verification code'),
+    password: Yup.string()
+        .required('Please enter a password')
+        .matches(
+            /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+            "Must Contain 8 characters, one uppercase, one lowercase, one number and one special character"
+        ),
+    checkPassword: Yup.string()
+        .oneOf([Yup.ref('password'), null], 'Passwords must match')
+        .required('Password confirm is required')
+})
 
 export const quantityOneSchema = Yup.object().shape({
     quantity: Yup.number()
@@ -441,9 +475,9 @@ export const LotFormSchema = Yup.object().shape({
                     .notIn("This field name is reserved.", Object.values(LOT_TEMPLATES_RESERVED_FIELD_NAMES))
                     .required('Please enter a name for this field.'),
                 style: Yup.object()
-            })
+            }).dopeUnique("Field names must be unique", "fieldName", "fields")
         )
-    ).nestedUnique('Field names must be unique.', "fieldName"), //message, path
+    ),
     name: Yup.string()
         .min(1, '1 character minimum.')
         .max(50, '50 character maximum.')
@@ -457,7 +491,7 @@ export const templateMapperSchema = Yup.object().shape({
                 .min(1, '1 character minimum.')
                 .max(255, '50 character maximum.')
                 .required('Please enter field name.'),
-        }).unique("Field names must be unique", "fieldName")
+        }).dopeUnique("Field names must be unique", "fieldName", "selectedFieldNames")
     )
 })
 
@@ -616,6 +650,24 @@ Yup.addMethod(Yup.string, 'lessThan', function (input2Path, message) {
     })
 })
 
+// Sees if input1 is less than input2. If so then through error
+Yup.addMethod(Yup.number, 'lessThanInt', function (input2Path, message) {
+    return this.test('lessThanInt', message, function (input1) {
+        const { parent, path, createError } = this
+        const input2 = parent[input2Path]
+
+        if (!input2 || !input1) return true
+        if (input1 < input2) return true
+        else {
+            return this.createError({
+                path: this.path,
+                message: message,
+            })
+        }
+
+    })
+})
+
 export const throughputSchema = Yup.object().shape({
     expectedOutput: Yup.number()
         .required('Required')
@@ -720,4 +772,39 @@ export const throughputSchema = Yup.object().shape({
                 .lessThan("startOfBreak3", 'The end of break cannot be before the start of the break')
         }),
 
+})
+
+
+export const deviceSchema = Yup.object().shape({
+
+    schedules: Yup.array()
+        .of(
+            Yup.object().shape({
+                name: Yup.string().required('Required').nullable(),
+                position: Yup.string().required('Required').nullable(),
+                time: Yup.string().required('Required').nullable()
+            })
+        ),
+
+    charge_level: Yup.object().shape({
+        chargeEnabled: Yup.bool(),
+        min: Yup.number()
+            .lessThanInt("max", 'Min Percent must be less then Max percent')
+            // Only validate when true
+            .when('chargeEnabled', {
+                is: true,
+                then: Yup.number()
+                    .required('Required')
+                    .nullable(),
+            }),
+        max: Yup.number()
+            // Only validate when true
+            .when('chargeEnabled', {
+                is: true,
+                then: Yup.number()
+                    .required('Required')
+                    .nullable(),
+            }),
+
+    }),
 })

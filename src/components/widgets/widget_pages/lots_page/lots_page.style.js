@@ -15,21 +15,11 @@ export const LotsContainer = styled.div`
     justify-content: center;
     padding-bottom:1rem;
 
-    background: ${props => props.theme.bg.quaternary};
+    background: ${props => props.theme.bg.secondary};
 
-    overflow: auto;
 
-    // optionally style scroll bar
-    ::-webkit-scrollbar {
-    }
-    ::-webkit-scrollbar-thumb {
-    }
 
 `
-
-
-
-
 
 
 export const StationName = styled.h1`
@@ -38,8 +28,8 @@ export const StationName = styled.h1`
 `
 
 export const Header = styled.div`
-	  background: ${props => props.theme.bg.quinary};
-  	border-bottom: 1px solid black;
+    background: ${props => props.theme.bg.primary};
+    box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.2);
   	width: 100%;
   	padding: 1rem;
 `
@@ -62,7 +52,16 @@ export const SubtitleContainer = styled.div`
     padding-bottom:.5rem;
     position: relative;
 `
+export const ContentContainer = styled.div`
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    padding-bottom:6rem;
+    overflow: auto;
 
-
-
-
+    // optionally style scroll bar
+    ::-webkit-scrollbar {
+    }
+    ::-webkit-scrollbar-thumb {
+    }
+`

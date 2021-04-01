@@ -1,23 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import ls from 'local-storage'
-import * as styled from './settings.style'
-
-import ContentHeader from '../content_header/content_header'
+import TimezoneSelect from 'react-timezone-select'
 
 // Import Components
 import Textbox from '../../../basic/textbox/textbox'
 import Switch from 'react-ios-switch';
-
 import TimezonePicker, { timezones } from 'react-timezone';
-
 import Button from "../../../basic/button/button";
+import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
+import ContentHeader from '../content_header/content_header'
+import {Timezones} from '../../../../constants/timezone_constants'
+import ConfirmDeleteModal from '../../../basic/modals/confirm_delete_modal/confirm_delete_modal'
+import TaskAddedAlert from "../../../widgets/widget_pages/dashboards_page/dashboard_screen/task_added_alert/task_added_alert";
+import {ADD_TASK_ALERT_TYPE} from "../../../../constants/dashboard_contants";
 
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
+import * as styled from './settings.style'
 
 // Import Actions
 import { postSettings, getSettings } from '../../../../redux/actions/settings_actions'
 import { postLocalSettings, getLocalSettings } from '../../../../redux/actions/local_actions'
+import { putDashboard } from '../../../../redux/actions/dashboards_actions'
+
 
 import { deviceEnabled } from '../../../../redux/actions/settings_actions'
 import { getStatus } from '../../../../redux/actions/status_actions'
@@ -25,8 +29,6 @@ import { setCurrentMap } from '../../../../redux/actions/map_actions'
 
 // Import Utils
 import { isEquivalent } from '../../../../methods/utils/utils'
-import DropDownSearch from "../../../basic/drop_down_search_v2/drop_down_search";
-
 import config from '../../../../settings/config'
 
 const Settings = () => {
@@ -36,7 +38,7 @@ const Settings = () => {
     const dispatchGetSettings = () => dispatch(getSettings())
     const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
     const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
-
+    const dispatchPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard,id))
     const dispatchSetCurrentMap = (map) => dispatch(setCurrentMap(map))
     const dispatchGetStatus = () => dispatch(getStatus())
     const dispatchDeviceEnabled = (bool) => dispatch(deviceEnabled(bool))
@@ -47,6 +49,7 @@ const Settings = () => {
     const mapViewEnabled = useSelector(state => state.localReducer.localSettings.mapViewEnabled)
     const deviceEnabledSetting = serverSettings.deviceEnabled
     const localReducer = useSelector(state => state.localReducer.localSettings)
+    const dashboards = useSelector(state => state.dashboardsReducer.dashboards)
     const {
         currentMap,
         maps
@@ -57,6 +60,11 @@ const Settings = () => {
     const [mapSettingsState, setMapSettingsState] = useState(currentMap)
     const [mirUpdated, setMirUpdated] = useState(false)
     const [devicesEnabled, setDevicesEnabled] = useState(!!deviceEnabledSetting)
+    const [selectedTimezone, setSelectedTimezone] = useState({})
+
+    const [confirmUnlock, setConfirmUnlock] = useState(false)
+    const [confirmLock, setConfirmLock] = useState(false)
+    const [addTaskAlert, setAddTaskAlert] = useState(null);
 
     /**
      *  Sets current settings to state so that changes can be discarded or saved
@@ -64,6 +72,7 @@ const Settings = () => {
     useEffect(() => {
         setServerSettingsState(serverSettings)
         dispatchGetLocalSettings()
+
     }, [])
 
     useEffect(() => {
@@ -92,6 +101,36 @@ const Settings = () => {
 
     }
 
+    const handleLockUnlockDashboards = (locked) => {
+
+      Object.values(dashboards).forEach((dashboard) => {
+        if(dashboard.name!=="MiR_SIM_2 Dashboard"){
+          const newDashboard = {
+            ...dashboard,
+            locked: locked
+          }
+          dispatchPutDashboard(newDashboard, newDashboard._id?.$oid)
+        }
+      })
+
+      if(!locked){
+        setAddTaskAlert({
+            type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+            label: "All Dashboards have been successfully unlocked!",
+        })
+      }
+      else{
+        setAddTaskAlert({
+            type: ADD_TASK_ALERT_TYPE.TASK_ADDED,
+            label: "All Dashboards have been successfully locked!",
+        })
+      }
+
+
+      return setTimeout(() => setAddTaskAlert(null), 2500)
+
+    }
+
     /**
      * Handles updating settings on the device
      * These are device specific settings,
@@ -114,7 +153,6 @@ const Settings = () => {
     // Submits settings to the backend
     const handleSumbitSettings = async () => {
         // Sees if either settings have changed. If the state settigns and redux settings are different, then they've changed
-
         await dispatchPostLocalSettings(localSettingsState)
         const serverChange = isEquivalent(serverSettingsState, serverSettings)
         const mapChange = !isEquivalent(mapSettingsState, currentMap)
@@ -143,56 +181,62 @@ const Settings = () => {
 
     // Handles Time zone (NOT WORKING)
     const TimeZone = () => {
-
+      const selectedMap = maps.find((map) => map._id === mapReducer.currentMap?._id)
 
         return (
-            <styled.SettingContainer>
+          <styled.SettingContainer>
 
-                <styled.Header>Time Zone (NOT WORKING)</styled.Header>
 
-                <TimezonePicker
-                    value='Pacific/Honolulu'
-                    onChange={() => { }}
-                    inputProps={{
-                        placeholder: 'Select Timezone ...',
-                        name: 'timezone',
-                    }}
-                    style={{ width: '100%' }}
+              <styled.SwitchContainerLabel>Select a Timezone</styled.SwitchContainerLabel>
 
-                />
-            </styled.SettingContainer>
 
+              <styled.RowContainer style = {{borderColor: 'transparent'}}>
+                  <DropDownSearch
+                      placeholder="Select Timezone"
+                      label="Select your timezone"
+                      labelField="name"
+                      valueField="label"
+                      options={Timezones}
+                      values={!!serverSettingsState.timezone ? [serverSettingsState.timezone] : []}
+                      dropdownGap={5}
+                      noDataLabel="No matches found"
+                      closeOnSelect="true"
+                      onChange={values => {
+                        handleUpdateServerSettings({timezone: values[0]})
+                      }}
+
+                      className="w-100"
+                  />
+              </styled.RowContainer>
+
+          </styled.SettingContainer>
         )
     }
-
-
 
     const APIAddress = () => {
         //  if(MiRMapEnabled){
         return (
-            <styled.SettingContainer>
+            <styled.SettingContainer >
 
+                <styled.RowContainer style = {{justifyContent: 'start', borderColor: localSettingsState.toggleDevOptions ? "transparent" : "white"}}>
+                    <styled.SwitchContainerLabel>Show Developer Settings</styled.SwitchContainerLabel>
 
-
-                <styled.RowContainer>
-                    <styled.Header>Show Developer Settings</styled.Header>
-`                  <Switch
-                        checked={!!localSettingsState.toggleDevOptions}
-                        onChange={() => {
-                            handleUpdateLocalSettings({ toggleDevOptions: !localSettingsState.toggleDevOptions })
+                    <styled.ChevronIcon
+                        className={!!localSettingsState.toggleDevOptions ? 'fas fa-chevron-up':'fas fa-chevron-down'}
+                        style={{ color: 'black' }}
+                        onClick={() => {
+                          handleUpdateLocalSettings({ toggleDevOptions: !localSettingsState.toggleDevOptions })
                         }}
-                        onColor='red'
-                        style={{ marginRight: '1rem' }}
                     />
 
                 </styled.RowContainer>
 
                 {!!localSettingsState.toggleDevOptions ?
                     <>
+                        <styled.RowContainer style = {{borderColor: localSettingsState.non_local_api ? "transparent" : "white" }}>
 
-                        <styled.Header style={{ fontSize: '1.2rem' }}>Non Local API IP Address</styled.Header>
+                          <styled.SwitchContainerLabel>Enable Non Local API</styled.SwitchContainerLabel>
 
-                        <styled.RowContainer>
                             <Switch
                                 checked={localSettingsState.non_local_api}
                                 onChange={() => {
@@ -201,24 +245,25 @@ const Settings = () => {
                                 onColor='red'
                                 style={{ marginRight: '1rem' }}
                             />
-                            {!!localSettingsState.non_local_api &&
+
+                        </styled.RowContainer>
+
+                        {!!localSettingsState.non_local_api &&
+                          <styled.RowContainer style = {{marginTop: '0rem'}}>
                                 <Textbox
-                                    placeholder="API IP Address"
+                                    placeholder="Enter a Non Local IP..."
                                     value={!!localSettingsState.non_local_api_ip? localSettingsState.non_local_api_ip: ""}
                                     onChange={(event) => {
                                         handleUpdateLocalSettings({ non_local_api_ip: event.target.value })
                                     }}
                                     style={{ width: '100%' }}
-                                // type = 'number'
                                 />
-                            }
+                          </styled.RowContainer>
+                      }
 
-                        </styled.RowContainer>
-
-                        <styled.Header style={{ fontSize: '1.2rem', paddingTop: '2rem' }}>Devices Enabled</styled.Header>
 
                         <styled.RowContainer>
-                            <styled.Header style={{ fontSize: '.8rem', paddingTop: '1rem', paddingRight: '1rem' }}>Disabled</styled.Header>
+                            <styled.SwitchContainerLabel>Enable Devices</styled.SwitchContainerLabel>
                             <Switch
                                 checked={serverSettingsState.deviceEnabled}
                                 onChange={() => {
@@ -231,7 +276,6 @@ const Settings = () => {
                                 onColor='red'
                                 style={{ marginRight: '1rem' }}
                             />
-                            <styled.Header style={{ fontSize: '.8rem', paddingTop: '1rem' }}>Enabled</styled.Header>
                         </styled.RowContainer>
                     </>
                     :
@@ -240,7 +284,7 @@ const Settings = () => {
 
             </styled.SettingContainer>
         )
-        //  }
+        //  }Choose a Map
     }
 
 
@@ -248,22 +292,40 @@ const Settings = () => {
         return (
             <styled.SettingContainer>
 
-
-                <styled.Header>Show Map View</styled.Header>
-
-
-                <styled.RowContainer>
-                    <styled.SwitchContainerLabel>Show List View</styled.SwitchContainerLabel>
+                <styled.RowContainer style = {{marginTop: '2rem'}}>
+                    <styled.SwitchContainerLabel>Enable Map View</styled.SwitchContainerLabel>
                     <Switch
                         onColor='red'
                         checked={!!localSettingsState.mapViewEnabled}
                         onChange={() => {
                             handleUpdateLocalSettings({ mapViewEnabled: !localSettingsState.mapViewEnabled })
                         }}
-                        style={{ margin: "0 2rem 0 2rem" }}
                     />
-                    <styled.SwitchContainerLabel>Show Map View</styled.SwitchContainerLabel>
                 </styled.RowContainer>
+
+            </styled.SettingContainer>
+        )
+    }
+
+    const LockUnlockAllDashboards = () => {
+        return (
+            <styled.SettingContainer>
+            <styled.SwitchContainerLabel>Lock or Unlock Dashboards</styled.SwitchContainerLabel>
+            <styled.RowContainer>
+                <Button
+                  style = {{width: '100%', minHeight: '3rem'}}
+                  schema = {"settings"}
+                  onClick = {()=>setConfirmUnlock(true)}
+                  >Unlock All Dashboards
+                </Button>
+
+                <Button
+                  style = {{width: '100%', minHeight: '3rem'}}
+                  schema = {"settings"}
+                  onClick = {()=>setConfirmLock(true)}
+                  >Lock All Dashboards
+                </Button>
+              </styled.RowContainer>
 
             </styled.SettingContainer>
         )
@@ -275,10 +337,10 @@ const Settings = () => {
             <styled.SettingContainer>
 
 
-                <styled.Header>Current Map</styled.Header>
+                <styled.SwitchContainerLabel>Select a Map</styled.SwitchContainerLabel>
 
 
-                <styled.RowContainer>
+                <styled.RowContainer style = {{borderColor: 'transparent'}}>
                     <DropDownSearch
                         placeholder="Select Map"
                         label="Select the map you would like to use for RMStudio"
@@ -286,14 +348,14 @@ const Settings = () => {
                         valueField="_id"
                         options={maps}
                         values={selectedMap ? [selectedMap] : []}
-                        dropdownGap={5}
+                        dropdownGap={2}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
                         onChange={values => {
                             // update current map
                             setMapSettingsState(values[0])
                             // update current map in local storage
-                            handleUpdateLocalSettings({ currentMapId: values[0]._id })
+                            handleUpdateLocalSettings({ currentMap: values[0]._id })
                         }}
                         className="w-100"
                     />
@@ -334,9 +396,9 @@ const Settings = () => {
 
         }
         return (
-            <styled.SettingContainer style={{display: 'flex', justifyContent: 'center'}}>
+            <styled.SettingContainer style={{display: 'flex', flexGrow: '1', justifyContent: 'center', alignItems: 'flex-end'}}>
 
-                {config.authenticationNeeded && <Button onClick={signOut}> Sign Out </Button>}
+                {config.authenticationNeeded && <Button style={{height: '2rem', flex: 1}} onClick={signOut}> Sign Out </Button>}
 
             </styled.SettingContainer>
         )
@@ -344,11 +406,46 @@ const Settings = () => {
 
     return (
         <styled.SettingsContainer>
+            <ConfirmDeleteModal
+                isOpen={!!confirmLock || !!confirmUnlock}
+                title={!!confirmLock ? "Are you sure you want to lock all dashboards?" : "Are you sure you want to unlock all dashboards?"}
+                button_1_text={"Yes"}
+                button_2_text={"No"}
+                handleClose={()=>{
+                  setConfirmLock(false)
+                  setConfirmUnlock(false)
+                }}
+                handleOnClick1={() => {
+                  if(!!confirmLock){
+                    handleLockUnlockDashboards(true)
+                  }
+                  else{
+                    handleLockUnlockDashboards(false)
+                  }
+                  setConfirmLock(false)
+                  setConfirmUnlock(false)
+
+                }}
+                handleOnClick2={()=>{
+                  setConfirmLock(false)
+                  setConfirmUnlock(false)
+                }}
+            />
+
+            <TaskAddedAlert
+                containerStyle={{
+                    'position': 'absolute'
+                }}
+                {...addTaskAlert}
+                visible={!!addTaskAlert}
+            />
             <ContentHeader content={'settings'} mode={'title'} saveEnabled={true} onClickSave={handleSumbitSettings} />
             {MapViewEnabled()}
             {CurrentMap()}
-            {SignOut()}
+            {TimeZone()}
             {APIAddress()}
+            {LockUnlockAllDashboards()}
+            {SignOut()}
 
             {/* {TimeZone()} */}
         </styled.SettingsContainer>

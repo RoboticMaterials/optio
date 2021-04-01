@@ -21,7 +21,7 @@ export const ProcessOptionsContainer = styled.div`
 
     box-shadow: ${props => props.hasError && "0 0 5px red"};
 
-    background: ${props => props.theme.bg.quinary};
+    background: ${props => props.theme.bg.secondary};
     padding: 1rem;
     border-radius: 1rem;
 
@@ -45,7 +45,7 @@ export const ProcessOptionsContainer = styled.div`
 
     /* Handle */
     ::-webkit-scrollbar-thumb {
-        background: ${props => props.theme.bg.tertiary};
+        background: ${props => props.theme.bg.secondary};
         border-radius: .5rem;
     }
 
@@ -67,7 +67,6 @@ export const ProcessOption = styled.div`
 		cursor: pointer;
 	}
 	
-	text-shadow: 0.05rem 0.05rem 0.2rem #303030;
 	&:hover {
 		cursor: pointer;
 		filter: brightness(140%);
@@ -78,7 +77,7 @@ export const ProcessOption = styled.div`
 		text-shadow: none;
 	}
   
-  	background: ${props => props.theme.bg.senary};
+  	background: ${props => props.theme.bg.tertiary};
 	
   	padding: 1rem;
 	border-radius: 1rem;

@@ -53,8 +53,8 @@ export const ContainerCss = css`
 
   background: ${props => `linear-gradient(180deg, 
                             ${LightenDarkenColor(props.background, 20)} 0%, 
-                            ${props.background} 50%, 
-                            ${LightenDarkenColor(props.background, -20)} 100%)`};
+                            ${props.background} 60%, 
+                            ${LightenDarkenColor(props.background, -15)} 100%)`};
   border-radius: 0.6rem;
 
 
@@ -128,4 +128,5 @@ export const conditionTextCss = css`
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: ${props => props.theme.bg.octonary}
 `

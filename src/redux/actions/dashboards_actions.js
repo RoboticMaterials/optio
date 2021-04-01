@@ -242,14 +242,15 @@ export const addRouteToDashboards = (route) => {
         const newDashboardButton = {
             color: '#bcbcbc',
             id: uuid.v4(),
-            name: routeName,
+            name: "",
             task_id: routeId,
             type: TYPES.ROUTES.key,
         }
 
         if (dashboard === undefined) {
             const defaultDashboard = {
-                name: station.name + ' Dashboard',
+                name: "",
+                locked: false,
                 buttons: [newDashboardButton],
                 station: station._id
             }
