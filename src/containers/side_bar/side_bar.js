@@ -42,7 +42,6 @@ const SideBar = (props) => {
         subpage,
         id
     } = params
-
     const dispatch = useDispatch()
     const dispatchHoverStationInfo = (info) => dispatch(hoverStationInfo(info))
     const dispatchSetOpen = (sideBarOpen) => dispatch(setOpen(sideBarOpen))
@@ -68,7 +67,6 @@ const SideBar = (props) => {
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
-
     const history = useHistory()
     const url = useLocation().pathname
 
@@ -254,11 +252,14 @@ const SideBar = (props) => {
     return (
         <>
             <ConfirmDeleteModal
-                isOpen={!!confirmDeleteModal || showConfirmDeleteModal}
+                isOpen={!!confirmDeleteModal || !!showConfirmDeleteModal}
                 title={"Are you sure you want to leave this page? Any changes will not be saved"}
                 button_1_text={"Yes"}
                 button_2_text={"No"}
-                handleClose={() => setConfirmDeleteModal(null)}
+                handleClose={() => {
+                    setConfirmDeleteModal(null)
+                    dispatchSetConfirmDelete(false, null)
+                }}
                 handleOnClick1={() => {
                     if (showConfirmDeleteModal) {
                         confirmDeleteCallback()

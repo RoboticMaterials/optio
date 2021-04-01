@@ -15,6 +15,7 @@ const BackButton = (props) => {
             onClick={props.onClick}
             schema={props.schema}
             style={{...props.containerStyle}}
+            type = {props.type}
 
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
@@ -34,5 +35,9 @@ const BackButton = (props) => {
         </style.BackButton>
     )
 }
+
+BackButton.defaultProps = {
+    type: "button"
+};
 
 export default BackButton;
