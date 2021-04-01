@@ -65,7 +65,7 @@ const EditLocation = (props) => {
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
-
+    const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
     const positions = useSelector(state => state.positionsReducer.positions)
 
     const devices = useSelector(state => state.devicesReducer.devices)
@@ -74,8 +74,9 @@ const EditLocation = (props) => {
     const deviceEnabled = serverSettings.deviceEnabled
 
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
-    const [newName, setNewName] = useState('')
+    const [confirmExitModal, setConfirmExitModal] = useState(false);
 
+    const [newName, setNewName] = useState('')
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
     const locations = { ...stations, ...positions }
     const LocationTypes = {
@@ -368,6 +369,20 @@ const EditLocation = (props) => {
                     handleClose={() => setConfirmDeleteModal(null)}
                 />
 
+                <ConfirmDeleteModal
+                    isOpen={!!confirmExitModal}
+                    title={"Are you sure you want to go back? Any progress will not be saved"}
+                    button_1_text={"Yes"}
+                    handleOnClick1={() => {
+                        onBack()
+                        setConfirmExitModal(null)
+                        dispatchPageDataChanged(false)
+                    }}
+                    button_2_text={"No"}
+                    handleOnClick2={() => setConfirmExitModal(null)}
+                    handleClose={() => setConfirmExitModal(null)}
+                />
+
                 <Formik
 
                     initialValues={{
@@ -417,7 +432,7 @@ const EditLocation = (props) => {
                                             content={'locations'}
                                             disabled={selectedLocation === null}
                                             mode={'create'}
-                                            onClickBack={() => onBack()}
+                                            onClickBack={pageInfoChanged ? () => setConfirmExitModal(true) : () =>onBack()}
                                         />
                                     </div>
 
@@ -507,9 +522,9 @@ const EditLocation = (props) => {
                                     <div style={{ height: "100%" }}></div>
 
 
-                                    {/* Delete Location Button */}
-                                    <Button type={'submit'} schema={'locations'} onClick={() => { }} >Save Location</Button>
-                                    <Button schema={'locations'} secondary disabled={selectedLocation === null || !!selectedLocation.new} onClick={() => setConfirmDeleteModal(true)} >Delete</Button>
+                                {/* Delete Location Button */}
+                                <Button type={'submit'} schema={'locations'} onClick={() => {}} >Save Location</Button>
+                                <Button schema = {'locations'} secondary disabled = {selectedLocation === null || !!selectedLocation.new} onClick={() => setConfirmDeleteModal(true)} >Delete</Button>
                                 </styled.ContentContainer>
                             </Form>
                         )

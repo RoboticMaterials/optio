@@ -23,6 +23,9 @@ import { deepCopy } from '../../../../../../../methods/utils/utils';
 
 // Import actions
 import { postSettings } from '../../../../../../../redux/actions/settings_actions'
+import { convertData } from '../../../../../../../redux/actions/report_event_actions';
+import { LightenDarkenColor, hexToRGBA } from '../../../../../../../methods/utils/color_utils';
+import { pageDataChanged } from '../../../../../../../redux/actions/sidebar_actions'
 
 const LineThroughputChart = (props) => {
 
@@ -35,11 +38,11 @@ const LineThroughputChart = (props) => {
 
     const dispatch = useDispatch()
     const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
+    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
     const settings = useSelector(state => state.settingsReducer.settings)
 
     const [breaksEnabled, setBreaksEnabled] = useState({})
-
     const shiftDetails = settings.shiftDetails;
 
     // Used for colors in line chart below
@@ -66,13 +69,14 @@ const LineThroughputChart = (props) => {
         }
     }, [settings])
 
+
     /**
     * This converts the incoming data for a line graph
     * IT does a few things
-    * 1) Converts incoming data to have the start and end of the shift 
+    * 1) Converts incoming data to have the start and end of the shift
     * 2) If theres an expected output, it adds thatline
     * 3) if they're breaks, It adds those as well (pretty complex so see comments below)
-    * 
+    *
     * Uses usememo for performance reasons
     */
     const lineDataConverter = useMemo(() => {
@@ -231,7 +235,7 @@ const LineThroughputChart = (props) => {
         convertedData.map((output, ind) => {
             let inExpected = false
 
-            // Go through expected and see if the value is in it 
+            // Go through expected and see if the value is in it
             for (let i = 0; i < expectedOutput.length; i++) {
                 const expOutput = expectedOutput[i]
                 // If the x's are the same, then its in it
@@ -272,7 +276,7 @@ const LineThroughputChart = (props) => {
             expectedOutput.map((output, ind) => {
                 let inExpected = false
 
-                // Go through expected and see if the value is in it 
+                // Go through expected and see if the value is in it
                 for (let i = 0; i < convertedData.length; i++) {
                     const expOutput = convertedData[i]
                     // If the x's are the same, then its in it
@@ -349,8 +353,6 @@ const LineThroughputChart = (props) => {
             switch3,
         } = values
 
-
-
         const shiftSettings = {
             startOfShift: startOfShift,
             endOfShift: endOfShift,
@@ -412,19 +414,19 @@ const LineThroughputChart = (props) => {
             {
                 numberOfBreaks.map((bk, ind) => {
                     const adjustedInd = ind + 1
-        
+
                     // This uses useState
                     // The reasoning behind this, is to be able to enable/disable switches without going through formik submit
                     // This also allows to enable a break, but not effect the graph until submitted
                     const breakEnabled = breaksEnabled[ind]
-        
+
                     const breakName = `Break ${adjustedInd}`
                     const switchName = `switch${adjustedInd}`
                     const breakStart = `startOfBreak${adjustedInd}`
                     const breakEnd = `endOfBreak${adjustedInd}`
                     return (
                         <styled.RowContainer style={{ alignItems: 'center', minWidth: '23rem' }}>
-        
+
                             <styled.RowContainer style={{ width: '100%', marginTop: '.25rem' }}>
                                 <styled.Label>{breakName}</styled.Label>
                                 <Switch
@@ -541,10 +543,13 @@ const LineThroughputChart = (props) => {
                     validateOnMount={false}
                     validateOnBlur={false}
 
-                    onSubmit={async (values, { setSubmitting, setTouched, validateForm }) => {
+                    onSubmit={async (values, { setSubmitting, setTouched, validateForm, resetForm}) => {
+
                         setSubmitting(true)
                         onSubmitShift(values)
                         setSubmitting(false)
+                        setTouched({})
+                        dispatchPageDataChanged(false)
                     }}
                 >
                     {formikProps => {
@@ -554,7 +559,14 @@ const LineThroughputChart = (props) => {
                             setValidationSchema,
                             values,
                             errors,
+                            touched,
+                            initialValues
                         } = formikProps
+
+
+                        if(Object.keys(touched).length>0){
+                          dispatchPageDataChanged(true)
+                        }
 
                         return (
                             <Form
@@ -658,7 +670,7 @@ const LineThroughputChart = (props) => {
                                 {/* <styled.RowContainer>
 
                     </styled.RowContainer> */}
-                                <styled.ChartButton type={'submit'}>Calculate</styled.ChartButton>
+                                <styled.ChartButton type={'submit'}>Calculate and Save</styled.ChartButton>
 
 
                             </Form>
@@ -686,7 +698,7 @@ const LineThroughputChart = (props) => {
                     axisTop={null}
                     axisRight={null}
                     axisBottom={{ format: (value) => convertDateto12h(value)}}
-                    
+
                     axisLeft={{
                         orient: 'left',
                         tickSize: 5,
@@ -739,7 +751,7 @@ const LineThroughputChart = (props) => {
                             ]
                         }]}
                     theme={{
-                        
+
                         textColor: themeContext.bg.octonary,
                         axis: {
                             ticks: {
