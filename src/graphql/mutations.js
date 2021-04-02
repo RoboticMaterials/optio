@@ -2,18 +2,33 @@
 // this is an auto generated file. This will be overwritten
 
 export const manageTaskQueue = /* GraphQL */ `
-  mutation ManageTaskQueue(
-    $id: ID!
-    $task_id: ID!
-    $lot_id: ID
-    $quantity: Int
-  ) {
-    manageTaskQueue(
-      id: $id
-      task_id: $task_id
-      lot_id: $lot_id
-      quantity: $quantity
-    ) {
+  mutation ManageTaskQueue($taskQueueItem: AWSJSON!) {
+    manageTaskQueue(taskQueueItem: $taskQueueItem) {
+      id
+      _id
+      organizationId
+      createdAt
+      updatedAt
+      device_type
+      mission_status
+      owner
+      task_id
+      custom_task
+      dashboard
+      showModal
+      hil_response
+      quantity
+      lot_id
+      start_time
+      end_time
+      hil_station_id
+      hil_message
+    }
+  }
+`;
+export const taskStats = /* GraphQL */ `
+  mutation TaskStats($task_id: ID!) {
+    taskStats(task_id: $task_id) {
       id
       _id
       organizationId

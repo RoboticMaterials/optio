@@ -123,10 +123,7 @@ export async function deleteTaskQueueItem(id, taskQueueItem) {
         await API.graphql({
             query: manageTaskQueue,
             variables: { 
-                id: taskQueueItem.id,
-                quantity: taskQueueItem.quantity,
-                task_id: taskQueueItem.task_id,
-                lot_id: taskQueueItem.lot_id,
+                taskQueueItem: JSON.stringify(taskQueueItem)
             }
         });
 

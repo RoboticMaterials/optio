@@ -30,95 +30,108 @@ const tableNames = {
 const docClient = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = async (event) => {
+	try {
 
-	const taskQueueItem = event.arguments
+		const taskQueueItem = JSON.parse(event.arguments.taskQueueItem)
+		
+		console.log(taskQueueItem )
 
-	const taskParams = {
-		TableName: tableNames.task,
-		Key: {
-			'id': {S: taskQueueItem.task_id}
+		const taskParams = {
+			TableName: tableNames.task,
+			Key: {
+				'id': taskQueueItem.task_id ? taskQueueItem.task_id : ''
+			}
+		};
+
+		const lotParams = {
+			TableName: tableNames.lots,
+			Key: {
+				'id': taskQueueItem.lot_id
+			}
+		};
+		
+		let task = await docClient.get(taskParams).promise();
+		task = task.Item
+		
+		let lot = null
+
+		if(taskQueueItem.lot_id){
+			lot = await docClient.get(lotParams).promise();
+			lot = lot.Item
 		}
-	  };
-
-	const lotParams = {
-		TableName: tableNames.lots,
-		Key: {
-			'id': {S: taskQueueItem.lot_id}
-		}
-	};
-
-	let task = await docClient.scan(taskParams).promise();
-	task = task.Items[0]
-
-	let lot = await docClient.scan(lotParams).promise();
-	lot = lot.Items[0]
-
-	// is there a lot
-	if(lot){
-
-		// are we moving the whole lot?
-		if(taskQueueItem.quantity === task.totalQuantity){
-			// move the whole lot 
-			delete lot.bins[task.load.station]
-
-			lot.bins[task.unload.station] = {
-				count: taskQueueItem.quantity
-			}  
-
-		}else if(lot.bins[task.load.station]){
-			//check how much they want to move and update it accordingly
-			const diff = lot.bins[task.load.station].count - taskQueueItem.quantity
-
-			if(diff === 0){
-
-				// move the res of the lot 
+		
+		// is there a lot
+		if(lot){			
+			// are we moving the whole lot?
+			if(taskQueueItem.quantity === task.totalQuantity){
+				// move the whole lot 
 				delete lot.bins[task.load.station]
 
-				lot.bins[task.unload.station].count = lot.bins[task.unload.station] ? taskQueueItem.quantity + lot.bins[task.unload.station].count : taskQueueItem.quantity
-				
-			}else{
-				lot.bins[task.load.station].count = diff
+				lot.bins[task.unload.station] = {
+					count: taskQueueItem.quantity
+				}  
 
-				if(lot.bins[task.unload.station]){
-					lot.bins[task.unload.station].count +=  taskQueueItem.quantity
+			}else if(lot.bins[task.load.station]){
+				//check how much they want to move and update it accordingly
+				const diff = lot.bins[task.load.station].count - taskQueueItem.quantity
+
+				if(diff === 0){
+					// move the res of the lot 
+					delete lot.bins[task.load.station]
+					
+					if(lot.bins[task.unload.station]){
+						lot.bins[task.unload.station].count = taskQueueItem.quantity + lot.bins[task.unload.station].count
+					}else{
+						lot.bins[task.unload.station] = {
+							count: taskQueueItem.quantity
+						}
+					}
 				}else{
-					lot.bins[task.unload.station] = {
-						count: taskQueueItem.quantity
+					lot.bins[task.load.station].count = diff
+
+					if(lot.bins[task.unload.station]){
+						lot.bins[task.unload.station].count +=  taskQueueItem.quantity
+					}else{
+						lot.bins[task.unload.station] = {
+							count: taskQueueItem.quantity
+						}
 					}
 				}
 			}
-		}
+			
+			// Put the updated lot back in
+			const lotParams = {
+				TableName: tableNames.lots,
+				Item: lot
+				
+			};
 
-		// Put the updated lot back in
-		const lotParams = {
-			TableName: tableNames.lots,
-			Item: {
-				lot
-			}
-		};
-
-		await docClient.update(lotParams).promise();
-
+			await docClient.put(lotParams).promise();
+		}	
+		
 		// put the taskQI in the taskQevents
 		const taskQEventsParams = {
 			TableName: tableNames.taskQueueEvents,
-			Item: {
-				taskQueueItem
-			}
+			Item: taskQueueItem
+			
 		};
 
 		await docClient.put(taskQEventsParams).promise();
-
+		
 		// delete from the TQ
 		const TQParams = {
 			TableName: tableNames.taskQueue,
 			Key: {
-				'id': {S: taskQueueItem.id}
+				'id': taskQueueItem.id
 			}
 		};
 
 		await docClient.delete(TQParams).promise();
-	}	
+	
+	} catch (e) {
+		console.log(e)
+	}
+
 
     return null;
 };

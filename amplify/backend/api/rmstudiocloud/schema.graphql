@@ -387,5 +387,6 @@ type Subscription {
 
 # Analysis Queries
 type Mutation {
-  manageTaskQueue(id: ID!, task_id: ID!, lot_id: ID, quantity: Int): TaskQueue @function(name: "handleTaskQueue-${env}")
+  manageTaskQueue(taskQueueItem: AWSJSON!): TaskQueue @function(name: "handleTaskQueue-${env}")
+  taskStats(task_id: ID!): TaskQueue @function(name: "taskStats-${env}")
 }
