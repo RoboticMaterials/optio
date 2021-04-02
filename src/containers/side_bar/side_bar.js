@@ -158,6 +158,7 @@ const SideBar = (props) => {
 
         if (!!showSideBar) {
             if (!!selectedLocation && !selectedLocation.new) {
+                console.log('QQQQ why??')
                 dispatchSetSelectedStation(null)
                 dispatchSetSelectedPosition(null)
             }
@@ -173,6 +174,7 @@ const SideBar = (props) => {
         // If widget page is active, the toggle the widget page, else toggle the side bar
         if (widgetPageLoaded) {
             history.push('/locations')
+            console.log('QQQQ null')
             dispatchSetSelectedStation(null)
             dispatchSetSelectedPosition(null)
             dispatchHoverStationInfo(null)

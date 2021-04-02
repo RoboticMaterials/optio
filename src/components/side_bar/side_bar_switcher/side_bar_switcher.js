@@ -52,8 +52,8 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    dispatchSetSelectedStation(null)
-                    dispatchSetSelectedPosition(null)
+                    // dispatchSetSelectedStation(null)
+                    // dispatchSetSelectedPosition(null)
                     dispatch(deselectTask())
                     dispatchProcessEditing(false)
                     dispatchTaskEditing(false)
@@ -66,8 +66,8 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    dispatchSetSelectedStation(null)
-                    dispatchSetSelectedPosition(null)
+                    // dispatchSetSelectedStation(null)
+                    // dispatchSetSelectedPosition(null)
                     dispatch(deselectTask())
                     dispatchTaskEditing(false)
                     dispatchProcessEditing(false)
@@ -127,8 +127,8 @@ const SideBarSwitcher = (props) => {
                 setShowSideBarPage={(page) => {
                     dispatch(setMode(page));
                     history.push(`/${page}`)
-                    dispatchSetSelectedStation(null)
-                    dispatchSetSelectedPosition(null)
+                    // dispatchSetSelectedStation(null)
+                    // dispatchSetSelectedPosition(null)
                     dispatch(deselectTask())
                     dispatchTaskEditing(false)
                 }}

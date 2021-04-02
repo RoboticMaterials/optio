@@ -609,7 +609,7 @@ export class MapView extends Component {
                                     this.props.dispatchHoverStationInfo(null)
 
                                     if (!this.props.editingStation || !this.props.editingPosition) {
-                                        this.props.dispatchSetSelectedStation(null)
+                                    this.props.dispatchSetSelectedStation(null)
                                         this.props.dispatchSetSelectedPosition(null)
                                     }
                                 }

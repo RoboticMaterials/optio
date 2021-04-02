@@ -68,10 +68,17 @@ const SideBarButton = (props) => {
                     else {
                         props.setShowSideBarPage(props.mode)
                         setConfirmDeleteModal(null)
-                        dispatchSetEditingPosition(false)
-                        dispatchSetEditingStation(false)
-                        dispatchTaskEditing(false)
-                        dispatchProcessEditing(false)
+
+                        if (!!locationEditing) {
+                            console.log('QQQQ huuuurrrr')
+                            dispatchSetEditingPosition(false)
+                            dispatchSetEditingStation(false)
+                        }
+                        else {
+                            console.log('QQQQ har')
+                            dispatchTaskEditing(false)
+                            dispatchProcessEditing(false)
+                        }
                     }
 
                 }}

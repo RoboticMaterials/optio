@@ -233,11 +233,25 @@ export const setStationAttributes = (id, attr) => {
 }
 
 export const setSelectedStation = (station) => {
+    console.log('QQQQ setting selected station', station)
     return { type: SET_SELECTED_STATION, payload: station }
 }
 
 export const setEditingStation = (bool) => {
     return { type: EDITING_STATION, payload: bool }
+}
+
+export const removeNewStations = () => {
+    const stationsState = store.getState().stationsReducer
+    const stations = stationsState.stations
+
+    Object.values(stations).forEach(station => {
+        if (!!station.new) {
+            return async dispatch => {
+                await dispatch(removeStation(station._id))
+            }
+        }
+    })
 }
 
 

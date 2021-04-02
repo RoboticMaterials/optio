@@ -47,6 +47,7 @@ export default function LocationContent() {
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
+    const editingLocation = !!editingStation ? editingStation: editingPosition
 
     const locations = {
         ...stations,
@@ -60,6 +61,7 @@ export default function LocationContent() {
     }, [])
 
     const onSetSelectedLocation = (id) => {
+        console.log('QQQQ hero', id)
         if (id in stations) {
             dispatchSetSelectedStation(stations[id])
         }
@@ -69,6 +71,7 @@ export default function LocationContent() {
         }
 
         else if (id === null) {
+            console.log('QQQQ null')
             dispatchSetSelectedStation(null)
             dispatchSetSelectedPosition(null)
 
@@ -123,7 +126,7 @@ export default function LocationContent() {
                 }
                 // elements={Object.values(locations)}
                 onMouseEnter={(location) => onSetSelectedLocation(location._id)}
-                onMouseLeave={() => onSetSelectedLocation(null)}
+                onMouseLeave={() => {!editingLocation && onSetSelectedLocation(null)}}
                 onClick={(location) => {
                     console.log('QQQQ Editing Location', location)
                     onEditLocation(location._id)

@@ -29,7 +29,7 @@ import { locationSchema } from '../../../../../methods/utils/form_schemas'
 
 // Import actions
 import { setSelectedPosition, setPositionAttributes, addPosition, deletePosition, setEditingPosition, putPosition, postPosition, setSelectedStationChildrenCopy, removePosition } from '../../../../../redux/actions/positions_actions'
-import { setSelectedStation, setStationAttributes, addStation, deleteStation, setEditingStation, putStation, postStation, removeStation } from '../../../../../redux/actions/stations_actions'
+import { setSelectedStation, setStationAttributes, addStation, deleteStation, setEditingStation, putStation, postStation, removeStation, removeNewStations } from '../../../../../redux/actions/stations_actions'
 import { pageDataChanged } from '../../../../../redux/actions/sidebar_actions'
 
 let saved = false
@@ -49,6 +49,7 @@ const EditLocation = (props) => {
     const dispatchDeleteStation = async (id) => await dispatch(deleteStation(id))
     const dispatchRemoveStation = (id) => dispatch(removeStation(id))
     const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
+    const dispatchRemoveNewStations = () => dispatch(removeNewStations())
 
 
     // Position Dispatches
@@ -75,6 +76,7 @@ const EditLocation = (props) => {
 
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
     const [confirmExitModal, setConfirmExitModal] = useState(false);
+    const [selectedLocationState, setSelectedLocationState] = useState(null)
 
     const [newName, setNewName] = useState('')
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
@@ -85,11 +87,13 @@ const EditLocation = (props) => {
     }
 
     useEffect(() => {
+        console.log('QQQQ selected locaiton on load', selectedLocation)
+        setSelectedLocationState(selectedLocation)
         return () => {
             console.log('QQQQ saved', saved)
             // Changed the comments on this. Cant exactly remember why this was using on back, but I tested and its working
             if (!saved) {
-                onBack()
+                onBack(false, selectedLocationState)
             }
             // dispatchSetEditingStation(false)
             // dispatchSetEditingPosition(false)
@@ -98,6 +102,13 @@ const EditLocation = (props) => {
             // dispatchSetSelectedStationChildrenCopy(null)
         }
     }, [])
+
+    useEffect(() => {
+        console.log('QQQQ selected location effect', selectedLocationState)
+        return () => {
+
+        }
+    }, [selectedLocationState])
 
     /**
      * This function is called when the save button is pressed. The location is POSTED or PUT to the backend.
@@ -173,9 +184,12 @@ const EditLocation = (props) => {
      * Removes Station if new and not a save
      * Sets selected Location to null
      */
-    const onBack = (save) => {
+    const onBack = (save, location) => {
         console.log('QQQQ back', save)
         console.log('QQQQ selected loc in back', deepCopy(selectedLocation))
+        console.log('QQQQ location', deepCopy(selectedLocationState))
+        console.log('QQQQ selected stat', deepCopy(selectedStation))
+        console.log('QQQQ selected pos', deepCopy(selectedPosition))
         // The order of these functions matter
         dispatchSetEditingStation(false)
         dispatchSetEditingPosition(false)
@@ -205,8 +219,22 @@ const EditLocation = (props) => {
             }
         }
 
+        // else if (selectedLocation === null) {
+        //     console.log('QQQQ removing new stations')
+        //     dispatchRemoveNewStations()
+        // }
+
+        // else if(!selectedLocation){
+        //     Object.values(stations).forEach(station => {
+        //         if
+        //     })
+        // }
+
+        console.log('QQQQ null')
         dispatchSetSelectedPosition(null)
         dispatchSetSelectedStation(null)
+
+
     }
 
 
@@ -244,6 +272,8 @@ const EditLocation = (props) => {
         else {
             throw ('Schema Does Not exist')
         }
+
+        setSelectedLocationState(newLocation)
     }
 
     const onLocationNameChange = (e) => {
@@ -356,7 +386,7 @@ const EditLocation = (props) => {
                         // If its a new location just go back (it will remove the location)
                         if (selectedLocation.new) {
                             onBack()
-                        } 
+                        }
                         // Else delete the location
                         else {
                             onDelete()
@@ -431,7 +461,7 @@ const EditLocation = (props) => {
                                             content={'locations'}
                                             disabled={selectedLocation === null}
                                             mode={'create'}
-                                            onClickBack={pageInfoChanged ? () => setConfirmExitModal(true) : () =>onBack()}
+                                            onClickBack={pageInfoChanged ? () => setConfirmExitModal(true) : () => onBack()}
                                         />
                                     </div>
 
@@ -521,9 +551,9 @@ const EditLocation = (props) => {
                                     <div style={{ height: "100%" }}></div>
 
 
-                                {/* Delete Location Button */}
-                                <Button type={'submit'} schema={'locations'} onClick={() => {}} >Save Location</Button>
-                                <Button schema = {'locations'} secondary disabled = {selectedLocation === null || !!selectedLocation.new} onClick={() => setConfirmDeleteModal(true)} >Delete</Button>
+                                    {/* Delete Location Button */}
+                                    <Button type={'submit'} schema={'locations'} onClick={() => { }} >Save Location</Button>
+                                    <Button schema={'locations'} secondary disabled={selectedLocation === null || !!selectedLocation.new} onClick={() => setConfirmDeleteModal(true)} >Delete</Button>
                                 </styled.ContentContainer>
                             </Form>
                         )
