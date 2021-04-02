@@ -1,7 +1,7 @@
 // import external dependencies
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 
 // Import Actions
 import { getMaps } from '../../redux/actions/map_actions'
@@ -112,58 +112,67 @@ const ApiContainer = (props) => {
     const [mapDataInterval, setMapDataInterval] = useState(null)
 
     // Subscriptions
-    const [currentSubscriptions, setCurrentSubscriptions] = useState(null)
+    const [currentSubscriptions, setCurrentSubscriptions] = useState([])
 
     const params = useParams()
+    const history = useHistory()
 
     useEffect(() => {
-        loadInitialData() // initial call to load data when app opens
-
-        // this interval is always on
-        // loads essential info used on every page such as status and taskQueue
+        loadInitialData()
         loadCriticalData()
-
-
-        if(!!mapViewEnabled){
-
-            loadMapData().then((value) => {
-
-                stationSub = value[0]
-
-                positionSub = value[1]
-              });
-            
-        }
-
-
-        return () => {
-            // clear intervals
-            clearInterval(pageDataInterval);
-            clearInterval(criticalDataInterval);
-            //clearInterval(mapDataInterval)
-
-            // Making sure we unsub from both stations and positions
-            stationSub._cleanup()
-            positionSub._cleanup()
-            
-        }
     }, [])
 
 
     useEffect(() => {
-        if (stopAPICalls === true) {
-            clearInterval(criticalDataInterval);
-            clearInterval(pageDataInterval);
-            clearInterval(mapDataInterval);
-            //dispatchStopAPICalls(false)
 
-            // Making sure we unsub from both stations and positions
-            stationSub._cleanup()
-            positionSub._cleanup()
+        subscriptionUpdateFunction()
+
+    }, [params])
+
+
+    const subscriptionUpdateFunction = async () => {
+
+        // unsub from everything
+        if(currentSubscriptions.length){
+            // console.log(currentSubscriptions);
+            currentSubscriptions.forEach(sub => {
+                // console.log(sub);
+                sub._cleanup()
+            });
         }
-    }, [stopAPICalls, currentSubscription])
 
+        let subs
 
+        // sub to the right data source
+        switch (history.location.pathname) {
+            case '/locations':
+                subs = await loadMapData()
+                console.log(subs);
+                setCurrentSubscriptions(subs)
+                break;
+            case '/tasks':
+                subs = await loadTasksData()
+                console.log(subs);
+                setCurrentSubscriptions(subs)
+                break;
+            case '/processes':
+                subs = await loadCardsData()
+                console.log(subs);
+                setCurrentSubscriptions(subs)
+             break;
+            case '/lots/summary':
+                subs = await loadCardsData()
+                console.log(subs);
+                setCurrentSubscriptions(subs)
+                break;
+            default:
+                subs = await loadMapData()
+                console.log(subs);
+                setCurrentSubscriptions(subs)
+                break;
+        }
+
+    }
     useEffect(() => {
 
 
@@ -231,6 +240,8 @@ const ApiContainer = (props) => {
 
     const setDataInterval = async (pageParams) => {
 
+        let sub
+
         let pageName = ''
         const {
             data1,
@@ -239,75 +250,62 @@ const ApiContainer = (props) => {
 
         if (Object.keys(pageParams)[0] === 'sidebar') {
             pageName = pageParams.sidebar
-
-
         } else if (Object.keys(pageParams)[0] === 'stationID') {
-
             // Not the best way to do this, but if the params have a locationId and it's undefined
             // then it's url is just locations and not a widget page
             // This happens in app.js file in the route path.
             if (pageParams.widgetPage === undefined) {
                 pageName = 'locations'
-
             } else {
                 pageName = pageParams.widgetPage
-
             }
-
         }
-
-        // clear current interval
-        clearInterval(pageDataInterval);
 
         // set new interval for specific page
         switch (pageName) {
 
             case 'objects':
-                currentSubscription = await loadObjectsData()
-                setCurrentSubscriptions(currentSubscription)
+                sub = await loadObjectsData()
+                setCurrentSubscriptions(sub)
                 break;
 
             case 'scheduler':
-                setPageDataInterval(setInterval(() => loadSchedulerData(), 10000000))
-                break;
+                loadSchedulerData()
+                break
 
             case 'dashboards':
-                setPageDataInterval(setInterval(() => loadDashboardsData(), 3000))
-                break;
+                loadDashboardsData()
+                break
 
             case 'tasks':
-                currentSubscription = await loadTasksData()
-                setCurrentSubscriptions(currentSubscription)
-                break;
+                sub = await loadTasksData()
+                setCurrentSubscriptions(sub)
+                break
 
             case 'settings':
-                setPageDataInterval(setInterval(() => loadSettingsData(), 10000))
-                break;
+                sub = loadSettingsData()
+                setCurrentSubscriptions(sub)
+                break
 
             case 'lots':
-                // setPageDataInterval(setInterval(() => loadCardsData(), 10000))
-
-                currentSubscription = await loadCardsData()
-                setCurrentSubscriptions(currentSubscription)
-
+                sub = await loadCardsData()
+                setCurrentSubscriptions(sub)
                 break
 
             case 'processes':
                 if (data2 === "lots") {
-                    loadCardsData(data1) // initial call
-                    setPageDataInterval(setInterval(() => loadCardsData(data1), 10000))
+                    loadCardsData(data1)
                 }
                 else if (data1 === "timeline") {
                     loadCardsData() // initial call
-                    setPageDataInterval(setInterval(() => loadCardsData(), 10000))
                 }
                 else if (data1 === "summary") {
-                    loadCardsData() // initial call
-                    setPageDataInterval(setInterval(() => loadCardsData(), 10000))
+                    sub = await loadCardsData() // initial call
+                    setCurrentSubscriptions(sub)
                 }
                 else {
-                    currentSubscription = await loadTasksData()
-                    setCurrentSubscriptions(currentSubscription)
+                    sub = await loadTasksData()
+                    setCurrentSubscriptions(sub)
                 }
 
                 break
@@ -506,7 +504,7 @@ const ApiContainer = (props) => {
             error: error => console.warn(error)
         });
 
-        return objectsSubscription
+        return [objectsSubscription]
     }
 
     /*
@@ -550,7 +548,7 @@ const ApiContainer = (props) => {
             error: error => console.warn(error)
         });
 
-        return tasksSubscription
+        return [tasksSubscription, processesSubscription, objectsSubscription]
     }
 
     /*
@@ -562,7 +560,6 @@ const ApiContainer = (props) => {
     const loadSchedulerData = async () => {
         const schedules = await onGetSchedules();
         const tasks = await onGetTasks();
-
     }
 
     /*
@@ -576,7 +573,6 @@ const ApiContainer = (props) => {
         await onGetCards()
         await onGetTasks()
         await onGetProcesses()
-
     }
 
     /*
@@ -588,7 +584,7 @@ const ApiContainer = (props) => {
     const loadMapData = async () => {
 
         // Subscribe to stations
-        const stationSubscription = API.graphql(
+        const stationSubscription = await API.graphql(
             graphqlOperation(subscriptions.onDeltaStation)
         ).subscribe({
             next: () => { 
@@ -599,7 +595,7 @@ const ApiContainer = (props) => {
         });
 
         // Subscribe to positions
-        const positionSubscription = API.graphql(
+        const positionSubscription = await API.graphql(
             graphqlOperation(subscriptions.onDeltaPosition)
         ).subscribe({
             next: () => { 
@@ -653,7 +649,7 @@ const ApiContainer = (props) => {
         onGetProcesses()
         onGetTasks()
 
-        return cardSubscription
+        return [cardSubscription]
     }
 
     /*
