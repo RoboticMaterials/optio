@@ -14,7 +14,7 @@ export const HilContainer = styled.div`
     left: 50%;
     transform: translate(-50%,-50%);
 
-    z-index: 1000;
+    z-index: 998;
     border-radius: 1rem;
     box-shadow: 0 0.2rem 0.4rem 0rem #303030;
     display: flex;

@@ -1,5 +1,5 @@
 import styled, {css} from "styled-components";
-import {rowCss} from "../../side_bar/content/cards/card_editor/lot_editor.style";
+
 export const DatesContainer = styled.span`
 	display: inline-flex;
 	align-items: center;
@@ -9,8 +9,9 @@ export const DatesContainer = styled.span`
 	border-radius: 0.4rem;
 	width: fit-content;
 	margin: 0;
-	
-	
+
+  
+  
 `
 
 const usableCss = css`
@@ -40,10 +41,6 @@ export const DateItem = styled.div`
     cursor: pointer;
   
   ${props => props.usable ? usableCss : notUsableCss};
-	
-	
-	
-	
 `
 
 export const DateArrow = styled.i`
@@ -66,10 +63,13 @@ export const BodyContainer = styled.div`
   background: ${props => props.theme.bg.primary};
 	padding: 1rem;
   align-self: stretch;
+  z-index: 1001;
   
 	//flex: 1;
 	justify-content: space-between;
   min-height: ${props => props.minHeight};
+
+  
   
 `
 

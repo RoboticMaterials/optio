@@ -34,6 +34,7 @@ import {
 	reactDropdownSelectCss,
 	valueCss
 } from "../lot_bars.style";
+import MultiSelectOptions from "../multi_select_options/multi_select_options";
 
 const ZoneHeader = (props) => {
 
@@ -48,7 +49,12 @@ const ZoneHeader = (props) => {
 		setSortMode,
 		sortMode,
 		selectedFilterOption,
-		setSelectedFilterOption
+		setSelectedFilterOption,
+
+		selectedLots,
+		onDeleteClick,
+		onMoveClick,
+		onClearClick,
 	} = props
 
 	const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
@@ -140,6 +146,7 @@ const ZoneHeader = (props) => {
 	return (
 		<styled.Container>
 
+			<styled.SortFilterContainer>
 			{/* {zone === "summary" &&
 			<styled.ColumnContainer
 				css={columnCss3}
@@ -188,6 +195,7 @@ const ZoneHeader = (props) => {
 			</styled.ColumnContainer>
 			} */}
 
+			<styled.OptionContainer>
 			<LotSortBar
 				sortMode={sortMode}
 				setSortMode={setSortMode}
@@ -198,7 +206,9 @@ const ZoneHeader = (props) => {
 				dropdownCss={dropdownCss}
 				valueCss={valueCss}
 			/>
+			</styled.OptionContainer>
 
+			<styled.OptionContainer>
 			<LotFilterBar
 				lotFilterValue={lotFilterValue}
 				setLotFilterValue={setLotFilterValue}
@@ -211,6 +221,17 @@ const ZoneHeader = (props) => {
 				valueCss={valueCss}
 				reactDropdownSelectCss={reactDropdownSelectCss}
 			/>
+			</styled.OptionContainer>
+			</styled.SortFilterContainer>
+
+			{selectedLots.length > 0 &&
+			<MultiSelectOptions
+				selectedLots={selectedLots}
+				onDeleteClick={onDeleteClick}
+				onMoveClick={onMoveClick}
+				onClearClick={onClearClick}
+			/>
+			}
 		</styled.Container>
 	)
 }

@@ -13,7 +13,8 @@ import PropTypes from "prop-types"
 // styles
 import * as styled from "./calendar_placeholder.style"
 import {immutableSet, isNonEmptyArray} from "../../../methods/utils/array_utils";
-import {dateRangeToStrings, jsDateToString} from "../../../methods/utils/card_utils";
+import {jsDateToString} from "../../../methods/utils/card_utils";
+import CalendarPlaceholderButton from "../calendar_placeholder_button/calendar_placeholder_button";
 
 
 const CalendarPlaceholder = (props) => {
@@ -33,12 +34,13 @@ const CalendarPlaceholder = (props) => {
 		closeOnSelect,
 		minDate,
 		maxDate,
-		// value
+		value,
+		PlaceholderButton,
+		schema
 	} = props
 
 	const [showCalendarPopup, setShowCalendarPopup] = useState(false)
 	const [rangeIndex, setRangeIndex] = useState(null)
-	const [currentVal, setCurrentVal] = useState(selectRange ? [null, null] : null)
 	const [displayName, setDisplayName] = useState(selectRange ? [defaultStartText, defaultEndText] : defaultText)
 
 	const closePopup = () => {
@@ -47,16 +49,17 @@ const CalendarPlaceholder = (props) => {
 	}
 
 	useEffect(() => {
-		if(isNonEmptyArray(currentVal) && currentVal.length === 2) {
+		// value is array
+		if(selectRange) {
 			let tempDisplayName = []
-			if(currentVal[0]) {
-				tempDisplayName[0] = jsDateToString(currentVal[0])
+			if(isNonEmptyArray(value) && value[0]) {
+				tempDisplayName[0] = jsDateToString(value[0])
 			}
 			else {
 				tempDisplayName[0] = defaultStartText
 			}
-			if(currentVal[1]) {
-				tempDisplayName[1] = jsDateToString(currentVal[1])
+			if(isNonEmptyArray(value) && value[1]) {
+				tempDisplayName[1] = jsDateToString(value[1])
 			}
 			else {
 				tempDisplayName[1] = defaultEndText
@@ -64,19 +67,20 @@ const CalendarPlaceholder = (props) => {
 
 			setDisplayName(tempDisplayName)
 		}
-		else if(currentVal) {
-			setDisplayName(jsDateToString(currentVal))
+
+		// value is single value
+		else if(value) {
+			setDisplayName(jsDateToString(value))
 		}
 		else {
 			setDisplayName(defaultText)
 		}
-	}, [currentVal])
+	}, [value])
 
 	const renderCalendar = () => {
 		return(
 			<styled.BodyContainer>
-				<styled.ContentHeader
-					style={{}}>
+				<styled.ContentHeader>
 					<styled.ContentTitle>Select Date</styled.ContentTitle>
 					<i
 						className="fas fa-times"
@@ -87,15 +91,20 @@ const CalendarPlaceholder = (props) => {
 
 				<styled.CalendarContainer>
 					<CalendarComponent
+						value={value}
 						minDate={Number.isInteger(rangeIndex) ? (rangeIndex === 1 ? minDate : null) : minDate}
 						maxDate={Number.isInteger(rangeIndex) ? (rangeIndex === 0 ? maxDate : null) : maxDate}
 						selectRange={false}
 						index={rangeIndex}
 						name={name}
 						onChange={(val) => {
-							let tempCurrVal = Number.isInteger(rangeIndex) ? immutableSet((isNonEmptyArray(currentVal) && currentVal.length > 0) ? currentVal : (BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE, val, rangeIndex) || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE) : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE
-							setCurrentVal(selectRange ? tempCurrVal : val)
-							onChange(val)
+							let tempCurrVal = Number.isInteger(rangeIndex) ?
+								immutableSet((isNonEmptyArray(value) && value.length > 0) ? value
+									: BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE, val, rangeIndex) ||
+								BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE
+
+							// setCurrentVal(selectRange ? tempCurrVal : val)
+							onChange(selectRange ? tempCurrVal : val)
 							closeOnSelect && closePopup()
 						}}
 					/>
@@ -108,33 +117,63 @@ const CalendarPlaceholder = (props) => {
 		<styled.DatesContainer
 			style={containerStyle}
 		>
-			<styled.DateItem
-				usable={usable}
-				onClick={() => {
-					if(usable) {
-						onStartClick()
-						setRangeIndex(0)
-						setShowCalendarPopup(true)
-					}
-				}}
-			>
-				<styled.DateText>{displayName[0]}</styled.DateText>
-			</styled.DateItem>
+			{typeof PlaceholderButton === "object" ?
+				React.cloneElement(PlaceholderButton,{
+					label: displayName[0],
+					usable: usable,
+					index: 0,
+					schema,
+					onClick: () => {
+						if(usable) {
+							onStartClick()
+							setRangeIndex(0)
+							setShowCalendarPopup(true)
+						}}
+				})
+				:
+				<PlaceholderButton
+					schema={schema}
+					usable={usable}
+					onClick={() => {
+						if(usable) {
+							onStartClick()
+							setRangeIndex(0)
+							setShowCalendarPopup(true)
+						}
+					}}
+					label={displayName[0]}
+				/>
+			}
 
 			<styled.DateArrow className="fas fa-arrow-right"></styled.DateArrow>
 
-			<styled.DateItem
-				usable={usable}
-				onClick={() => {
-					if(usable) {
-						onEndClick()
-						setRangeIndex(1)
-						setShowCalendarPopup(true)
-					}
-				}}
-			>
-				<styled.DateText>{displayName[1]}</styled.DateText>
-			</styled.DateItem>
+			{typeof PlaceholderButton === "object" ?
+				React.cloneElement(PlaceholderButton,{
+					label: displayName[1],
+					usable,
+					index: 1,
+					schema,
+					onClick: () => {
+						if(usable) {
+							onEndClick()
+							setRangeIndex(1)
+							setShowCalendarPopup(true)
+						}}
+				})
+				:
+				<PlaceholderButton
+					schema={schema}
+					usable={usable}
+					onClick={() => {
+						if(usable) {
+							onEndClick()
+							setRangeIndex(1)
+							setShowCalendarPopup(true)
+						}
+					}}
+					label={displayName[1]}
+				/>
+			}
 
 			{showCalendarPopup &&
 			<Popup
@@ -148,18 +187,35 @@ const CalendarPlaceholder = (props) => {
 		</styled.DatesContainer>
 	)
 
-	return (
-		<styled.DateItem
-			usable={usable}
-			style={containerStyle}
-			onClick={() => {
-				if(usable) {
-					onClick()
-					setShowCalendarPopup(true)
-				}
-			}}
-		>
-			<styled.DateText>{displayName}</styled.DateText>
+	return(
+		<>
+			{typeof PlaceholderButton === "object" ?
+				React.cloneElement(PlaceholderButton,{
+					label: displayName,
+					usable: usable,
+					containerStyle: containerStyle,
+					schema,
+					onClick: () => {
+						if(usable) {
+							onClick()
+							setShowCalendarPopup(true)
+						}}
+				})
+				:
+				<PlaceholderButton
+					usable={usable}
+					schema={schema}
+					containerStyle={containerStyle}
+					onClick={() => {
+						if(usable) {
+							onClick()
+							setShowCalendarPopup(true)
+						}
+					}}
+					label={displayName}
+				/>
+			}
+
 			{showCalendarPopup &&
 			<Popup
 				open={showCalendarPopup}
@@ -169,13 +225,24 @@ const CalendarPlaceholder = (props) => {
 				{renderCalendar()}
 			</Popup>
 			}
-		</styled.DateItem>
+		</>
 	)
+
+	// if() {
+	// 	return(
+	//
+	// 	)
+	// }
+	//
+	// return(
+	//
+	// )
 }
 
 // Specifies propTypes
 CalendarPlaceholder.propTypes = {
-	closeOnSelect: PropTypes.bool
+	closeOnSelect: PropTypes.bool,
+	PlaceholderButton: PropTypes.elementType
 }
 
 // Specifies the default values for props:
@@ -193,6 +260,7 @@ CalendarPlaceholder.defaultProps = {
 	defaultStartText: "Select Start Date",
 	defaultEndText: "Select End Date",
 	defaultText: "Select Date",
+	PlaceholderButton: CalendarPlaceholderButton
 }
 
 export default CalendarPlaceholder

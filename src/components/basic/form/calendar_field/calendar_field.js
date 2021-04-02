@@ -57,7 +57,7 @@ const CalendarField = ({
 					{...field}
 					{...props}
 					selectRange={selectRange}
-					value={mapInput( (index !== null) ? fieldValue[index] : fieldValue)}
+					value={mapInput( fieldValue)}
 					allowPartialRange
 					minDate={minDate ? minDate : (index !== null && index !== 0) ? currentStartDate : null}
 					maxDate={maxDate ? maxDate : (index !== null && index !== 1) ? currentEndDate : null}
