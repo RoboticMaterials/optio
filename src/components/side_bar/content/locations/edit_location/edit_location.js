@@ -89,7 +89,6 @@ const EditLocation = (props) => {
             console.log('QQQQ saved', saved)
             // Changed the comments on this. Cant exactly remember why this was using on back, but I tested and its working
             if (!saved) {
-                console.log('QQQQ saved', saved)
                 onBack()
             }
             // dispatchSetEditingStation(false)

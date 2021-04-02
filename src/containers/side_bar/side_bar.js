@@ -262,7 +262,8 @@ const SideBar = (props) => {
                     dispatchSetConfirmDelete(false, null)
                 }}
                 handleOnClick1={() => {
-                    if (showConfirmDeleteModal) {
+                        console.log('QQQQ hur')
+                        if (showConfirmDeleteModal) {
                         confirmDeleteCallback()
                     }
                     else {
@@ -274,7 +275,8 @@ const SideBar = (props) => {
                     dispatchSetConfirmDelete(false, null)
                 }}
                 handleOnClick2={() => {
-                    setConfirmDeleteModal(null)
+                        console.log('QQQQ hur')
+                        setConfirmDeleteModal(null)
                     dispatchSetConfirmDelete(false, null)
                 }}
             />

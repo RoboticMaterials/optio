@@ -3,9 +3,10 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useHistory } from 'react-router-dom'
 import * as style from './side_bar_button.style'
 
-import * as locationActions from '../../../redux/actions/locations_actions'
-import * as tasksActions from '../../../redux/actions/tasks_actions'
-import * as processesActions from '../../../redux/actions/processes_actions'
+import { setEditingPosition } from '../../../redux/actions/positions_actions'
+import { setEditingStation } from '../../../redux/actions/stations_actions'
+import { editingTask } from '../../../redux/actions/tasks_actions'
+import { editingProcess } from '../../../redux/actions/processes_actions'
 
 import { pageDataChanged } from '../../../redux/actions/sidebar_actions'
 
@@ -28,9 +29,10 @@ const SideBarButton = (props) => {
     const processEditing = useSelector(state => state.processesReducer.editingProcess)
 
     const dispatch = useDispatch()
-    const onLocationEditing = (props) => dispatch(locationActions.editing(props))
-    const onTaskEditing = (props) => dispatch(tasksActions.editingTask(props))
-    const onProcessEditing = (props) => dispatch(processesActions.editingProcess(props))
+    const dispatchSetEditingPosition = (bool) => dispatch(setEditingPosition(bool))
+    const dispatchSetEditingStation = (bool) => dispatch(setEditingStation(bool))
+    const dispatchTaskEditing = (props) => dispatch(editingTask(props))
+    const dispatchProcessEditing = (props) => dispatch(editingProcess(props))
     const dispatchSetPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
 
@@ -58,16 +60,18 @@ const SideBarButton = (props) => {
                         history.push('/lots/summary')
 
                         setConfirmDeleteModal(null)
-                        onLocationEditing(false)
-                        onTaskEditing(false)
-                        onProcessEditing(false)
+                        dispatchSetEditingPosition(false)
+                        dispatchSetEditingStation(false)
+                        dispatchTaskEditing(false)
+                        dispatchProcessEditing(false)
                     }
                     else {
                         props.setShowSideBarPage(props.mode)
                         setConfirmDeleteModal(null)
-                        onLocationEditing(false)
-                        onTaskEditing(false)
-                        onProcessEditing(false)
+                        dispatchSetEditingPosition(false)
+                        dispatchSetEditingStation(false)
+                        dispatchTaskEditing(false)
+                        dispatchProcessEditing(false)
                     }
 
                 }}
@@ -85,7 +89,7 @@ const SideBarButton = (props) => {
         return (
             <>
                 {handleConfirmationModal()}
-                <style.SideBarButtonWrapper 
+                <style.SideBarButtonWrapper
                     currentMode={currentMode}
                     mode={mode}
                 >
@@ -116,7 +120,7 @@ const SideBarButton = (props) => {
         return (
             <>
                 {handleConfirmationModal()}
-                <style.SideBarButtonWrapper 
+                <style.SideBarButtonWrapper
                     currentMode={currentMode}
                     mode={mode}
                 >
@@ -147,7 +151,7 @@ const SideBarButton = (props) => {
         return (
             <>
                 {handleConfirmationModal()}
-                <style.SideBarButtonWrapper 
+                <style.SideBarButtonWrapper
                     currentMode={currentMode}
                     mode={mode}
                 >
@@ -181,7 +185,7 @@ const SideBarButton = (props) => {
         return (
             <>
                 {handleConfirmationModal()}
-                <style.SideBarButtonWrapper 
+                <style.SideBarButtonWrapper
                     currentMode={currentMode}
                     mode={mode}
                 >
@@ -211,7 +215,7 @@ const SideBarButton = (props) => {
     else if (mode === 'scheduler') {
         return (
             <>
-                <style.SideBarButtonWrapper 
+                <style.SideBarButtonWrapper
                     currentMode={currentMode}
                     mode={mode}
                 >
@@ -242,7 +246,7 @@ const SideBarButton = (props) => {
         return (
             <>
                 {handleConfirmationModal()}
-                <style.SideBarButtonWrapper 
+                <style.SideBarButtonWrapper
                     currentMode={currentMode}
                     mode={mode}
                 >
@@ -273,13 +277,13 @@ const SideBarButton = (props) => {
         return (
             <>
                 {handleConfirmationModal()}
-                <div style={{justifyContent: 'flex-end',  flexGrow: '1'}}/>
-                <style.SideBarButtonWrapper 
+                <div style={{ justifyContent: 'flex-end', flexGrow: '1' }} />
+                <style.SideBarButtonWrapper
                     currentMode={currentMode}
                     mode={mode}
                 >
                     <style.SideBarButtonIcon
-                        
+
                         className={'fas fa-cog'}
                         onClick={() => {
                             if (currentMode === 'lots') {

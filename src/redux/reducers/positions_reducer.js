@@ -156,7 +156,6 @@ const positionsReducer = (state = defaultState, action) => {
             });
 
         case GET_POSITIONS_SUCCESS:
-            console.log('QQQQ action', action.payload)
             const parsedPositions = compareExistingVsIncomingLocations(deepCopy(action.payload), deepCopy(state.positions), state.d3)
 
             return {
