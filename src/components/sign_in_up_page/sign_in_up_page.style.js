@@ -74,8 +74,8 @@ export const NoteText = styled.h4`
 `
 
 export const loaderCSS = css`
-margin: 1rem;
-display: flex;
-align-self: center;
-justify-content: center;
+    margin: 1rem;
+    display: flex;
+    align-self: center;
+    justify-content: center;
 `;

@@ -10,10 +10,17 @@ import Button from '../../basic/button/button'
 import * as styled from "./splash_screen.style"
 
 // import logger
-import logger from '../../../logger.js';
 import { postLocalSettings, getLocalSettings } from "../../../redux/actions/local_actions";
 
+import PropagateLoader from "react-spinners/PropagateLoader";
+import { css } from "@emotion/react";
 
+const loaderCSS = css`
+    margin: 1rem;
+    display: flex;
+    align-self: center;
+    justify-content: center;
+`;
 
 const ToggleMapViewSwitch = (props) => {
     const {
@@ -123,11 +130,7 @@ const SplashScreen = (props) => {
                 <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: "center", flexDirection: "column" }}>
                     <i className={'icon-rmLogo'} style={{ fontSize: '10rem', margin: "3rem", color: '#FF4B4B' }} />
 
-                    {/* <ToggleMapViewSwitch
-                        checked={localSettings.localSettings.mapViewEnabled}
-                        onChange={toggleMapViewEnabled}
-                    /> */}
-
+                    <PropagateLoader color={'red'} loading={true} css={loaderCSS} />
                 </div>
                 :
                 <>
