@@ -77,7 +77,8 @@ const ProcessesContent = () => {
 
     const onCardView = (element) => {
         const currentPath = history.location.pathname
-        history.push(currentPath + '/' + element._id + "/lots")
+        // history.push(currentPath + '/' + element._id + "/lots")
+        history.push(currentPath + '/' + element._id + "/statistics")
     }
 
     if (editing && selectedProcess !== null) { // Editing Mode

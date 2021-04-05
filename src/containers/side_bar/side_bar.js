@@ -17,6 +17,7 @@ import ProcessesContent from '../../components/side_bar/content/processes/proces
 import Settings from '../../components/side_bar/content/settings/settings'
 import ConfirmDeleteModal from '../../components/basic/modals/confirm_delete_modal/confirm_delete_modal'
 import Cards from "../../components/side_bar/content/cards/cards";
+import Statistics from '../../components/side_bar/content/statistics/statistics'
 
 // Import Actions
 import { setEditingStation, setSelectedStation } from '../../redux/actions/stations_actions'
@@ -126,14 +127,14 @@ const SideBar = (props) => {
 
 
         const time = Date.now()
-        if ((page === "processes" || page === "lots") && ((subpage === "lots")) || (id === "timeline") || (id === "summary")) {
+        if ((page === "processes" || page === "lots") && ((subpage === "lots") || (subpage === 'statistics')) || (id === "timeline") || (id === "summary")) {
 
             if (!prevWidth) setPrevWidth(pageWidth) // store previous width to restore when card page is left
             setPageWidth(window.innerWidth)
             dispatchSetWidth(window.innerWidth)
 
         }
-        else if ((((prevSubpage === "lots") || (prevId === "timeline") || (prevId === "summary")) && (prevPage === "processes" || prevPage === "lots")) && ((subpage !== "lots") || (id === "timeline") || (id === "summary"))) {
+        else if ((((prevSubpage === "lots") || (prevSubpage === 'statistics') || (prevId === "timeline") || (prevId === "summary")) && (prevPage === "processes" || prevPage === "lots")) && ((subpage !== "lots") || (id === "timeline") || (id === "summary"))) {
             setPageWidth(prevWidth)
             dispatchSetWidth(prevWidth)
             setPrevWidth(null)
@@ -210,6 +211,9 @@ const SideBar = (props) => {
         case 'processes':
             if (subpage === "lots") {
                 content = <Cards id={id} />
+            }
+            else if (subpage === 'statistics') {
+                content = <Statistics />
             }
             else {
                 content = <ProcessesContent subpage={subpage} id={id} />

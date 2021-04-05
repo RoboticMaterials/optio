@@ -170,7 +170,7 @@ const SideBarButton = (props) => {
                         currentMode={currentMode}
                         mode={mode}
                     >
-                        <style.SideBarButtonText>Lots</style.SideBarButtonText>
+                        <style.SideBarButtonText>Summary</style.SideBarButtonText>
                     </style.SideBarButtonIcon>
                 </style.SideBarButtonWrapper>
             </>
