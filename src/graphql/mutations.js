@@ -528,16 +528,12 @@ export const createCard = /* GraphQL */ `
       createdAt
       updatedAt
       bins
-      dates
-      description
       flags
       lotNumber
       lotTemplateId
       name
       process_id
-      totalQuantity
-      processName
-      count
+      templateValues
     }
   }
 `;
@@ -553,16 +549,12 @@ export const updateCard = /* GraphQL */ `
       createdAt
       updatedAt
       bins
-      dates
-      description
       flags
       lotNumber
       lotTemplateId
       name
       process_id
-      totalQuantity
-      processName
-      count
+      templateValues
     }
   }
 `;
@@ -578,16 +570,12 @@ export const deleteCard = /* GraphQL */ `
       createdAt
       updatedAt
       bins
-      dates
-      description
       flags
       lotNumber
       lotTemplateId
       name
       process_id
-      totalQuantity
-      processName
-      count
+      templateValues
     }
   }
 `;

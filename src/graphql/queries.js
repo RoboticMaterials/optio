@@ -578,16 +578,12 @@ export const cardsByOrgId = /* GraphQL */ `
         createdAt
         updatedAt
         bins
-        dates
-        description
         flags
         lotNumber
         lotTemplateId
         name
         process_id
-        totalQuantity
-        processName
-        count
+        templateValues
       }
       nextToken
     }
@@ -615,16 +611,12 @@ export const getCardById = /* GraphQL */ `
         createdAt
         updatedAt
         bins
-        dates
-        description
         flags
         lotNumber
         lotTemplateId
         name
         process_id
-        totalQuantity
-        processName
-        count
+        templateValues
       }
       nextToken
     }

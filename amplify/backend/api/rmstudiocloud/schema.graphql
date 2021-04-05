@@ -175,16 +175,12 @@ updatedAt: AWSDateTime
 
   # Data
   bins: AWSJSON!
-  dates: AWSJSON!
-  description: String!
   flags: AWSJSON!
   lotNumber: Int!
   lotTemplateId: String!
   name: String!
   process_id: String!
-  totalQuantity: Int
-  processName: String
-  count: Int
+  templateValues: AWSJSON!
 }
 
 type Settings 

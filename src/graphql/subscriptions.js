@@ -109,16 +109,12 @@ export const onDeltaCard = /* GraphQL */ `
       createdAt
       updatedAt
       bins
-      dates
-      description
       flags
       lotNumber
       lotTemplateId
       name
       process_id
-      totalQuantity
-      processName
-      count
+      templateValues
     }
   }
 `;
@@ -595,16 +591,12 @@ export const onCreateCard = /* GraphQL */ `
       createdAt
       updatedAt
       bins
-      dates
-      description
       flags
       lotNumber
       lotTemplateId
       name
       process_id
-      totalQuantity
-      processName
-      count
+      templateValues
     }
   }
 `;
@@ -617,16 +609,12 @@ export const onUpdateCard = /* GraphQL */ `
       createdAt
       updatedAt
       bins
-      dates
-      description
       flags
       lotNumber
       lotTemplateId
       name
       process_id
-      totalQuantity
-      processName
-      count
+      templateValues
     }
   }
 `;
@@ -639,16 +627,12 @@ export const onDeleteCard = /* GraphQL */ `
       createdAt
       updatedAt
       bins
-      dates
-      description
       flags
       lotNumber
       lotTemplateId
       name
       process_id
-      totalQuantity
-      processName
-      count
+      templateValues
     }
   }
 `;
