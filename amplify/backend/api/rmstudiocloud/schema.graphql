@@ -317,8 +317,8 @@ type TaskQueueEvents
   # IDs
   id: ID!
   organizationId: ID!
-createdAt: AWSDateTime
-updatedAt: AWSDateTime
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
   
   # Data
   device_type: String!
@@ -388,5 +388,5 @@ type Subscription {
 # Analysis Queries
 type Mutation {
   manageTaskQueue(taskQueueItem: AWSJSON!): TaskQueue @function(name: "handleTaskQueue-${env}")
-  taskStats(task_id: ID!): TaskQueue @function(name: "taskStats-${env}")
+  taskStats(task_id: ID, organizationId: String!): TaskQueue @function(name: "taskStats-${env}")
 }

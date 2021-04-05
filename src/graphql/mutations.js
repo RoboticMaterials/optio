@@ -27,8 +27,8 @@ export const manageTaskQueue = /* GraphQL */ `
   }
 `;
 export const taskStats = /* GraphQL */ `
-  mutation TaskStats($task_id: ID!) {
-    taskStats(task_id: $task_id) {
+  mutation TaskStats($task_id: ID, $organizationId: String!) {
+    taskStats(task_id: $task_id, organizationId: $organizationId) {
       id
       _id
       organizationId
