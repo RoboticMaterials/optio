@@ -8,6 +8,7 @@ import RotateButton from "../../../../basic/rotate_button/rotate_button"
 import PropTypes from 'prop-types'
 import {ThemeContext} from "styled-components"
 import {useSelector} from "react-redux"
+import { isMobile } from "react-device-detect"
 
 // styles
 import * as styled from "../zone_header/zone_header.style"
@@ -32,7 +33,7 @@ const LotSortBar = (props) => {
     const lotTemplates = useSelector(state => {return state.lotTemplatesReducer.lotTemplates}) || {}
 
     const [lotSortOptions, setLotSortOptions] = useState([...Object.values(LOT_SORT_OPTIONS)])
-    const [open, setOpen] = useState(false)
+    const [open, setOpen] = useState(isMobile ? false : true)
 
     useEffect(() => {
         const templateFields = getAllTemplateFields()

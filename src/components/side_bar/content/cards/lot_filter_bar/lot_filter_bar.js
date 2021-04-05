@@ -17,6 +17,7 @@ import {BASIC_FIELD_DEFAULTS} from "../../../../../constants/form_constants"
 import PropTypes from 'prop-types'
 import {ThemeContext} from "styled-components"
 import {useSelector} from "react-redux"
+import { isMobile } from "react-device-detect"
 
 // utils
 import {immutableDelete, immutableReplace, isArray, isNonEmptyArray} from "../../../../../methods/utils/array_utils"
@@ -26,6 +27,7 @@ import {getAllTemplateFields} from "../../../../../methods/utils/lot_utils"
 import * as styled from "../zone_header/zone_header.style"
 import AdvancedCalendarPlaceholderButton
     , {FILTER_DATE_OPTIONS} from "../../../../basic/advanced_calendar_placeholder_button/advanced_calendar_placeholder_button"
+import {newPositionTemplate} from "../../../../../constants/position_constants";
 
 const VALUE_MODES = {
     TEXT_BOX: "TEXT_BOX",
@@ -52,7 +54,7 @@ const LotFilterBar = (props) => {
 
     // component state
     const [lotFilterOptions, setLotFilterOptions] = useState([...Object.values(LOT_FILTER_OPTIONS)])    // array of options for field to filter by
-    const [open, setOpen] = useState(shouldFocusLotFilter) // is filter options open ?
+    const [open, setOpen] = useState(isMobile ? shouldFocusLotFilter : true) // is filter options open ?
     const [valueMode, setValueMode] = useState()      // used as var in switch statement to control what component to render for entering filter value (ex: use a textbox for strings, calendar picker for dates)
 
     /*
@@ -173,7 +175,7 @@ const LotFilterBar = (props) => {
                     </styled.OptionContainer>
 
                     <styled.OptionContainer>
-                        { // render value component dependig on mode
+                        { // render different component for entering value depending on value type
                             {
                                 [VALUE_MODES.FLAGS]:
                                     <div
@@ -302,6 +304,39 @@ const LotFilterBar = (props) => {
 
                                                 // if it doesn't exist, add it
                                                 if(optionIndex === -1) {
+                                                    const equalsIndex = prevOptions.indexOf(FILTER_DATE_OPTIONS.EQUAL)
+                                                    if(equalsIndex !== -1) {
+                                                        /*
+                                                            if we are adding the "greater than" condition
+                                                                check if less than condition already exists
+                                                                remove it if it does, as having less than, equal to, and greater than would include everything, which is pointless
+                                                        */
+                                                        if(option === FILTER_DATE_OPTIONS.GREATER_THAN) {
+                                                            const lessThanIndex = prevOptions.indexOf(FILTER_DATE_OPTIONS.LESS_THAN)
+                                                            if(lessThanIndex !== -1) {
+                                                                newOptions = immutableDelete(newOptions, lessThanIndex)
+                                                            }
+                                                        }
+
+                                                        /*
+                                                            if we are adding the "less than" condition
+                                                                check if greater than condition already exists
+                                                                remove it if it does, as having less than, equal to, and greater than would include everything, which is pointless
+                                                         */
+                                                        else if(option === FILTER_DATE_OPTIONS.LESS_THAN) {
+                                                            const greaterThanIndex = prevOptions.indexOf(FILTER_DATE_OPTIONS.GREATER_THAN)
+                                                            if(greaterThanIndex !== -1) {
+                                                                newOptions = immutableDelete(newOptions, greaterThanIndex)
+                                                            }
+                                                        }
+                                                    }
+                                                    else {
+                                                        // if we are adding equals condition, and the current number of conditions is one less than the max, adding the equals will have all conditions, which does not filtering, so remove one
+                                                        if(prevOptions.length === Object.values(FILTER_DATE_OPTIONS).length - 1) {
+                                                            newOptions = immutableDelete(newOptions, 0)
+                                                        }
+                                                    }
+
                                                     newOptions.push(option)
                                                 }
                                                 // if it does, remove it
@@ -358,6 +393,39 @@ const LotFilterBar = (props) => {
 
                                                 // if it doesn't exist, add it
                                                 if(optionIndex === -1) {
+                                                    const equalsIndex = prevOptions.indexOf(FILTER_DATE_OPTIONS.EQUAL)
+                                                    if(equalsIndex !== -1) {
+                                                        /*
+                                                            if we are adding the "greater than" condition
+                                                                check if less than condition already exists
+                                                                remove it if it does, as having less than, equal to, and greater than would include everything, which is pointless
+                                                        */
+                                                        if(option === FILTER_DATE_OPTIONS.GREATER_THAN) {
+                                                            const lessThanIndex = prevOptions.indexOf(FILTER_DATE_OPTIONS.LESS_THAN)
+                                                            if(lessThanIndex !== -1) {
+                                                                newOptions = immutableDelete(newOptions, lessThanIndex)
+                                                            }
+                                                        }
+
+                                                        /*
+                                                            if we are adding the "less than" condition
+                                                                check if greater than condition already exists
+                                                                remove it if it does, as having less than, equal to, and greater than would include everything, which is pointless
+                                                         */
+                                                        else if(option === FILTER_DATE_OPTIONS.LESS_THAN) {
+                                                            const greaterThanIndex = prevOptions.indexOf(FILTER_DATE_OPTIONS.GREATER_THAN)
+                                                            if(greaterThanIndex !== -1) {
+                                                                newOptions = immutableDelete(newOptions, greaterThanIndex)
+                                                            }
+                                                        }
+                                                    }
+                                                    else {
+                                                        // if we are adding equals condition, and the current number of conditions is one less than the max, adding the equals will have all conditions, which does not filtering, so remove one
+                                                        if(prevOptions.length === Object.values(FILTER_DATE_OPTIONS).length - 1) {
+                                                            newOptions = immutableDelete(newOptions, 0)
+                                                        }
+                                                    }
+
                                                     newOptions.push(option)
                                                 }
 
