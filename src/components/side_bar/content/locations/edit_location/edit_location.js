@@ -35,6 +35,7 @@ import { pageDataChanged } from '../../../../../redux/actions/sidebar_actions'
 const EditLocation = (props) => {
     const dispatch = useDispatch()
     let selectedLocationRef = useRef()
+    let selectedStationChildrenCopyRef = useRef()
 
     // Station Dispatches
     const dispatchSetSelectedStation = (station) => dispatch(setSelectedStation(station))
@@ -94,12 +95,15 @@ const EditLocation = (props) => {
     }, [])
 
 
+    // These 2 useEffects use refs for onBack()
+    // Since onback is called in the return statement of the usseffect that runs when the component mounts, it keeps in memory the current state on load (redux, useState, etc...)
+    // So this ref will pass in the actual state vs the old state that the useEffect has
     useEffect(() => {
         selectedLocationRef.current = selectedLocation
-        return () => {
-
-        }
     }, [selectedLocation])
+    useEffect(() => {
+        selectedStationChildrenCopyRef.current = selectedStationChildrenCopy
+    }, [selectedStationChildrenCopy])
 
     /**
      * This function is called when the save button is pressed. The location is POSTED or PUT to the backend.
@@ -181,8 +185,8 @@ const EditLocation = (props) => {
         dispatchSetEditingPosition(false)
 
         // If theres a children copy check the children
-        if (!!selectedStationChildrenCopy) {
-            Object.values(selectedStationChildrenCopy).forEach(child => {
+        if (!!selectedStationChildrenCopyRef.current) {
+            Object.values(selectedStationChildrenCopyRef.current).forEach(child => {
                 // If it's a new child remove the position
                 if (!!child.new) {
 
