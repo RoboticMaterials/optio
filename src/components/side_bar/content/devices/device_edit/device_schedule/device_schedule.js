@@ -88,9 +88,13 @@ const DeviceSchedule = (props) => {
                                         />
                                     </styled.RowContainer>
 
-                                    <styled.RowContainer style={{ margin: '.2rem' }}>
-                                        {renderDaySelector(schedule.id, ind)}
-                                    </styled.RowContainer>
+                                    <styled.ColumnContainer>
+                                        <styled.DayOfTheWeekText>Days On</styled.DayOfTheWeekText>
+                                        <styled.RowContainer style={{ margin: '.2rem', width:'100%' }}>
+                                            {renderDaySelector(schedule.id, ind)}
+                                        </styled.RowContainer>
+
+                                    </styled.ColumnContainer>
 
                                     <styled.RowContainer style={{ marginTop: '.5rem' }}>
                                         <DropDownSearchField
@@ -130,8 +134,9 @@ const DeviceSchedule = (props) => {
                                             format={'hh:mm a'}
                                             autocomplete={"off"}
                                             allowEmpty={false}
-                                            defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
-                                            defaultValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                                            // defaultOpenValue={moment().set({ 'hour': 1, 'minute': 0 })}
+                                            // defaultValue={moment().set({ 'hour': 12, 'minute': 10 })}
+                                            // defaultValue={moment().format()}
                                         />
 
                                     </styled.RowContainer>
