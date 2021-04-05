@@ -105,23 +105,26 @@ export default function cardsReducer(state = defaultState, action) {
       }
 
     case GET + CARD_HISTORY + SUCCESS:
-      return {
-        ...state,
-        cardHistories: {...state.cardHistories, [action.payload.cardHistory.card_id]: action.payload.cardHistory},
-        pending: false,
+      {
+        return {
+          ...state,
+          cardHistories: {...state.cardHistories, [action.payload.cardId]: action.payload.cardHistory},
+          pending: false,
+        }
       }
+      
 
     case POST + CARD_HISTORY + SUCCESS:
       return {
         ...state,
-        cardHistories: {...state.cardHistories, [action.payload.cardHistory.card_id]: action.payload.cardHistory},
+        cardHistories: {...state.cardHistories, [action.payload.cardHistory.cardId]: action.payload.cardHistory},
         pending: false,
       }
 
     case PUT + CARD_HISTORY + SUCCESS:
       return {
         ...state,
-        cardHistories: {...state.cardHistories, [action.payload.cardHistory.card_id]: action.payload.cardHistory},
+        cardHistories: {...state.cardHistories, [action.payload.cardHistory.cardId]: action.payload.cardHistory},
         pending: false,
       }
 

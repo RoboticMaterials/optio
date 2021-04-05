@@ -652,6 +652,45 @@ export const onDeleteCard = /* GraphQL */ `
     }
   }
 `;
+export const onCreateCardEvent = /* GraphQL */ `
+  subscription OnCreateCardEvent {
+    onCreateCardEvent {
+      id
+      organizationId
+      cardId
+      userId
+      createdAt
+      updatedAt
+      delta
+    }
+  }
+`;
+export const onUpdateCardEvent = /* GraphQL */ `
+  subscription OnUpdateCardEvent {
+    onUpdateCardEvent {
+      id
+      organizationId
+      cardId
+      userId
+      createdAt
+      updatedAt
+      delta
+    }
+  }
+`;
+export const onDeleteCardEvent = /* GraphQL */ `
+  subscription OnDeleteCardEvent {
+    onDeleteCardEvent {
+      id
+      organizationId
+      cardId
+      userId
+      createdAt
+      updatedAt
+      delta
+    }
+  }
+`;
 export const onCreateSettings = /* GraphQL */ `
   subscription OnCreateSettings {
     onCreateSettings {

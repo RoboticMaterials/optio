@@ -14,7 +14,7 @@ import { API, Auth } from 'aws-amplify'
 
 import { usersbyId } from '../graphql/queries'
  
- export default async function getUserOrgId() {
+export default async function getUserOrgId() {
     
     try {
         // get current signed in user
@@ -27,6 +27,44 @@ import { usersbyId } from '../graphql/queries'
         })
 
         return data.data.UsersbyId.items[0].organizationId
+
+    } catch (error) {
+        console.log(error)
+    }
+ }
+
+ export async function getUserId() {
+    
+    try {
+        // get current signed in user
+        const user = await Auth.currentAuthenticatedUser();
+
+        // get user from the database
+        const data = await API.graphql({
+            query: usersbyId,
+            variables: { id: user.attributes.sub }
+        })
+
+        return data.data.UsersbyId.items[0].id
+
+    } catch (error) {
+        console.log(error)
+    }
+ }
+
+ export async function getUserById() {
+    
+    try {
+        // get current signed in user
+        const user = await Auth.currentAuthenticatedUser();
+
+        // get user from the database
+        const data = await API.graphql({
+            query: usersbyId,
+            variables: { id: user.attributes.sub }
+        })
+
+        return data.data.UsersbyId.items[0].id
 
     } catch (error) {
         console.log(error)
