@@ -58,7 +58,6 @@ const EditLocation = (props) => {
     const dispatchDeletePosition = async (id) => dispatch(deletePosition(id))
     const dispatchPutPosition = async (position) => await dispatch(putPosition(position))
     const dispatchPostPosition = async (position) => await dispatch(postPosition(position))
-    const dispatchRemovePosition = (id) => dispatch(removePosition(id))
 
     const stations = useSelector(state => state.stationsReducer.stations)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
@@ -189,9 +188,7 @@ const EditLocation = (props) => {
             Object.values(selectedStationChildrenCopyRef.current).forEach(child => {
                 // If it's a new child remove the position
                 if (!!child.new) {
-
-                    dispatchRemovePosition(child._id)
-
+                    dispatchDeletePosition(child._id)
                 }
             })
         }
@@ -204,7 +201,7 @@ const EditLocation = (props) => {
             }
 
             else if (selectedLocationRef.current.schema === 'position') {
-                dispatchRemovePosition(selectedLocationRef.current._id)
+                dispatchDeletePosition(selectedLocationRef.current._id)
             }
         }
 
