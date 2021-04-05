@@ -272,7 +272,7 @@ const FormComponent = (props) => {
 		// if doesn't contain values for current object, set initialValues
 		setFieldValue(lotTemplateId, getInitialValues(lotTemplate, {
 			templateValues: {
-				...card.templateValues,
+				...card?.templateValues,
 				...templateValues
 			}
 		}))

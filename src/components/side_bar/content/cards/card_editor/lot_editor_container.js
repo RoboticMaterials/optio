@@ -248,6 +248,9 @@ const LotEditorContainer = (props) => {
     * This function handles the logic for when the create button in the paste form is clicked
     * */
     const handlePasteFormCreateClick = (payload) => {
+        console.log("handlePasteFormCreateClick payload",payload)
+        console.log("handlePasteFormCreateClick payload",payload)
+        console.log("handlePasteFormCreateClick payload",payload)
         setMappedValues(payload)				// set mapped values to payload provided from paste form
         setPasteMapperHidden(true)		// hide paste form
         setShowPasteMapper(false)			// don't render paste form
@@ -794,14 +797,8 @@ const LotEditorContainer = (props) => {
                     }}
 
                     table={pasteTable}
-                    // onPreviewClick={(payload) => {
-                    // 	// setShowPasteMapper(false)
-                    // 	// setShowProcessSelector(true)
-                    // 	setMappedValues(payload)
-                    // 	setSelectedIndex(0)
-                    // 	setPasteMapperHidden(true)
-                    // }}
                     onCreateClick={(payload) => {
+                        console.log("onCreateClick payload",payload)
                         handlePasteFormCreateClick(payload)
                     }}
                 />
