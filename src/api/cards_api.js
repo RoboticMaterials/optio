@@ -40,13 +40,16 @@ export async function getCards() {
         let GQLdata = []
 
         res.data.CardsByOrgId.items.forEach(card => {
+            console.log("card",card)
             GQLdata.push( {
                 ...card,
+                templateValues: JSON.parse(card.templateValues),
                 bins: JSON.parse(card.bins),
-                dates: JSON.parse(card.dates),
                 flags: JSON.parse(card.flags)
             })
         });
+
+        console.log("GQLdata",GQLdata)
         
         return GQLdata;
     } catch (error) {
@@ -72,8 +75,8 @@ export async function getCard(cardId) {
             return {
                 ...res.data.CardsByOrgId.items[0],
                 bins: JSON.parse(res.data.CardsByOrgId.items[0].bins),
-                dates: JSON.parse(res.data.CardsByOrgId.items[0].dates),
-                flags: JSON.parse(res.data.CardsByOrgId.items[0].flags)
+                flags: JSON.parse(res.data.CardsByOrgId.items[0].flags),
+                templateValues: JSON.parse(res.data.CardsByOrgId.items[0].templateValues),
             };
         }else{
             return null
@@ -99,8 +102,8 @@ export async function postCard(card) {
 
         const input = {
             ...card,
+            templateValues: JSON.stringify(card.templateValues),
             bins: JSON.stringify(card.bins),
-            dates: JSON.stringify(card.dates),
             flags: JSON.stringify(card.flags),
             _id: fakeID,
             id: fakeID,
@@ -155,6 +158,7 @@ export async function getProcessCards(processId) {
         let GQLdata = []
 
         res.data.CardsByOrgId.items.forEach(card => {
+            console.log("getProcessCards card",card)
             GQLdata.push( {
                 ...card,
                 bins: JSON.parse(card.bins),
@@ -162,6 +166,8 @@ export async function getProcessCards(processId) {
                 flags: JSON.parse(card.flags)
             })
         });
+
+        console.log("getProcessCards GQLdata",GQLdata)
 
         return GQLdata;
 
@@ -194,8 +200,8 @@ export async function putCard(card, ID) {
         const input = {
             ...card,
             bins: JSON.stringify(card.bins),
-            dates: JSON.stringify(card.dates),
-            flags: JSON.stringify(card.flags)
+            flags: JSON.stringify(card.flags),
+            templateValues: JSON.stringify(card.templateValues),
         }
 
         if(ID){

@@ -226,6 +226,8 @@ export const getLotTemplateData = (lotTemplateId, lot) => {
 
 	let templateValues = []
 
+	console.log("getLotTemplateData",lot)
+
 	if(isArray(lotTemplate.fields)) {
 		lotTemplate.fields.forEach((currRow) => {
 
@@ -236,7 +238,7 @@ export const getLotTemplateData = (lotTemplateId, lot) => {
 						fieldName
 					} = currItem
 
-					const lotValue = lot[fieldName]
+					const lotValue = lot.templateValues[fieldName]
 					templateValues.push({
 						dataType,
 						fieldName,

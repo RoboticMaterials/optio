@@ -270,7 +270,12 @@ const FormComponent = (props) => {
 		} = values || {}
 
 		// if doesn't contain values for current object, set initialValues
-		setFieldValue(lotTemplateId, getInitialValues(lotTemplate, templateValues))
+		setFieldValue(lotTemplateId, getInitialValues(lotTemplate, {
+			templateValues: {
+				...card.templateValues,
+				...templateValues
+			}
+		}))
 
 	}, [lotTemplateId, lotTemplate])
 
@@ -588,6 +593,7 @@ const FormComponent = (props) => {
 								const {
 									[lotTemplateId]: templateValues
 								} = values || {}
+
 								// get field value
 								const {
 									[fieldName]: fieldValue
@@ -1261,7 +1267,7 @@ const LotEditor = (props) => {
 						validateOnBlur={true}
 						onSubmit={()=>{}} // this is necessary
 
-						// enableReinitialize={true} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
+						enableReinitialize={false} // leave false, otherwise values will be reset when new data is fetched for editing an existing item
 					>
 						{formikProps => {
 							const {
@@ -1313,7 +1319,7 @@ const LotEditor = (props) => {
 											flags: isObject(card) ? (card.flags || []) : [],
 											process_id: card.process_id,
 											lotTemplateId,
-											...templateValues
+											templateValues
 										}
 
 										/*
@@ -1394,7 +1400,7 @@ const LotEditor = (props) => {
 											flags: isObject(card) ? (card.flags || []) : [],
 											process_id: isObject(card) ? (card.process_id || processId) : (processId),
 											lotTemplateId,
-											...templateValues,
+											templateValues,
 											lotNumber
 										}
 
@@ -1410,7 +1416,7 @@ const LotEditor = (props) => {
 											flags: [],
 											process_id: processId ? processId : selectedProcessId,
 											lotTemplateId,
-											...templateValues,
+											templateValues,
 											lotNumber
 										}
 

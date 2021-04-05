@@ -85,7 +85,7 @@ export const convertCardDate = (cardDate) => {
 	* extracts initial values from the current lot and maps them to the template parameter
 	* */
 export const getInitialValues = (lotTemplate, card) => {
-
+	console.log("getInitialValues card",card)
 	let initialValues = {} // initialize to empty object
 
 	// make sure lotTemplate is object to avoid errors
@@ -112,8 +112,8 @@ export const getInitialValues = (lotTemplate, card) => {
 				// if card already has a value, use it. Otherwise, use appropriate default value for field type
 				switch(component) {
 					case FIELD_COMPONENT_NAMES.TEXT_BOX: {
-						initialValues[fieldName] = isObject(card) ?
-							(card[fieldName] || BASIC_FIELD_DEFAULTS.TEXT_FIELD)
+						initialValues[fieldName] = (isObject(card) && isObject(card.templateValues)) ?
+							(card.templateValues[fieldName] || BASIC_FIELD_DEFAULTS.TEXT_FIELD)
 							:
 							isObject(initialValues) ?
 								(initialValues[fieldName] || BASIC_FIELD_DEFAULTS.TEXT_FIELD)
@@ -123,8 +123,8 @@ export const getInitialValues = (lotTemplate, card) => {
 					}
 
 					case FIELD_COMPONENT_NAMES.TEXT_BOX_BIG: {
-						initialValues[fieldName] = isObject(card) ?
-							(card[fieldName] || BASIC_FIELD_DEFAULTS.TEXT_FIELD)
+						initialValues[fieldName] = (isObject(card) && isObject(card.templateValues)) ?
+							(card.templateValues[fieldName] || BASIC_FIELD_DEFAULTS.TEXT_FIELD)
 							:
 							isObject(initialValues) ?
 								(initialValues[fieldName] || BASIC_FIELD_DEFAULTS.TEXT_FIELD)
@@ -134,8 +134,8 @@ export const getInitialValues = (lotTemplate, card) => {
 					}
 
 					case FIELD_COMPONENT_NAMES.CALENDAR_SINGLE: {
-						initialValues[fieldName] = isObject(card) ?
-							((isValidDateString(card[fieldName]) ? new Date(card[fieldName]) : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD) || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD)
+						initialValues[fieldName] = (isObject(card) && isObject(card.templateValues)) ?
+							((isValidDateString(card.templateValues[fieldName]) ? new Date(card.templateValues[fieldName]) : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD) || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD)
 							:
 							isObject(initialValues) ?
 								((isValidDateString(initialValues[fieldName]) ? new Date(initialValues[fieldName]) : BASIC_FIELD_DEFAULTS.CALENDAR_FIELD) || BASIC_FIELD_DEFAULTS.CALENDAR_FIELD)
@@ -145,9 +145,10 @@ export const getInitialValues = (lotTemplate, card) => {
 					}
 
 					case FIELD_COMPONENT_NAMES.CALENDAR_START_END: {
+						console.log("date range", card)
 						let updatedValues = [...BASIC_FIELD_DEFAULTS.CALENDAR_FIELD_RANGE]
-						if(isObject(card) && isArray(card[fieldName])) {
-							const val = card[fieldName]
+						if((isObject(card) && isObject(card.templateValues)) && isArray(card.templateValues[fieldName])) {
+							const val = card.templateValues[fieldName]
 							if(val.length > 0 && val[0] !== null) {
 								updatedValues[0] = new Date(val[0])
 							}
@@ -161,8 +162,8 @@ export const getInitialValues = (lotTemplate, card) => {
 					}
 
 					case FIELD_COMPONENT_NAMES.NUMBER_INPUT: {
-						initialValues[fieldName] = isObject(card) ?
-							(card[fieldName] || BASIC_FIELD_DEFAULTS.NUMBER_FIELD)
+						initialValues[fieldName] = (isObject(card) && isObject(card.templateValues)) ?
+							(card.templateValues[fieldName] || BASIC_FIELD_DEFAULTS.NUMBER_FIELD)
 							:
 							isObject(initialValues) ?
 								(initialValues[fieldName] || BASIC_FIELD_DEFAULTS.NUMBER_FIELD)
@@ -178,6 +179,7 @@ export const getInitialValues = (lotTemplate, card) => {
 
 	}
 
+	console.log("initialValues",initialValues)
 	return initialValues
 }
 
