@@ -45,7 +45,12 @@ const StationColumns = (props) => {
 
     return (
         <styled.RowContainer>
+            <styled.ProcessName>{processes[processId].name}</styled.ProcessName>
+
+        <styled.ChartsContainer>
+
             {renderStationColumn()}
+        </styled.ChartsContainer>
         </styled.RowContainer>
     )
 }

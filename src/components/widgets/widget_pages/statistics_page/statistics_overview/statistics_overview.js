@@ -11,7 +11,6 @@ import ThroughputChart from './charts/throughput_chart/throughput_chart'
 import ReportChart from './charts/report_chart'
 
 // Import Components
-import TimeSpans from './timespans/timespans'
 import DataSelector from './data_selector/data_selector.js'
 import ApexGaugeChart from './apex_gauge_chart'
 import DaySelector from '../../../../basic/day_selector/day_selector'
@@ -363,6 +362,7 @@ const StatisticsOverview = (props) => {
                     data={throughputData}
                     isThroughputLoading={isThroughputLoading}
                     timeSpan={timeSpan}
+                    isWidget={true}
                     loadLineChartData={() => {
                         onTimeSpan('line', dateIndex)
                     }}

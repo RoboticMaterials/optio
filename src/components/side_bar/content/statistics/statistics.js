@@ -111,19 +111,21 @@ const Statistics = () => {
     return (
         <styled.Container>
             <styled.HeaderBar>
-                <TimeSpaneSelector
-                    // timespanDisabled={timespanDisabled}
-                    setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)}
-                    timeSpan={timeSpan}
-                />
-                <DaySelector
-                    date={date}
-                    dateIndex={dateIndex}
-                    loading={isThroughputLoading}
-                    onChange={(newIndex) => {
-                        onTimeSpan(timeSpan, newIndex)
-                    }}
-                />
+                <styled.HeaderSection style={{marginLeft: '2rem'}}>
+                    <TimeSpaneSelector
+                        // timespanDisabled={timespanDisabled}
+                        setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)}
+                        timeSpan={timeSpan}
+                    />
+                    <DaySelector
+                        date={date}
+                        dateIndex={dateIndex}
+                        loading={isThroughputLoading}
+                        onChange={(newIndex) => {
+                            onTimeSpan(timeSpan, newIndex)
+                        }}
+                    />
+                </styled.HeaderSection>
             </styled.HeaderBar>
             {renderStationColumns()}
         </styled.Container>

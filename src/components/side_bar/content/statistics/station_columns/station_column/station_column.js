@@ -24,6 +24,7 @@ const StationColumn = (props) => {
 
     const [throughputData, setThroughputData] = useState(null)
     const [isThroughputLoading, setIsThroughputLoading] = useState(false)
+    const [collapsed, setCollapsed] = useState(false)
 
     const currentStation = stations[stationId] || {}
 
@@ -85,24 +86,40 @@ const StationColumn = (props) => {
 
 
     return (
-        <styled.StationColumnContainer>
-            <p>{currentStation.name}</p>
-            <ThroughputChart
-                data={throughputData}
-                isThroughputLoading={isThroughputLoading}
-                timeSpan={timeSpan}
-                loadLineChartData={() => {
-                    onChangeChartType('line', dateIndex)
-                }}
-                loadBarChartData={() => {
-                    onChangeChartType('day', dateIndex)
 
-                }}
-                disableTimeSpan={(bool) => {
-                    // setTimespanDisabled(bool)
-                }}
-            />
-        </styled.StationColumnContainer>
+        collapsed ?
+            <styled.StationColumnHeader>
+                <styled.StationTitle>{currentStation.name}</styled.StationTitle>
+            </styled.StationColumnHeader>
+            :
+            <styled.StationColumnContainer >
+                <styled.StationColumnHeader>
+                    <styled.CollapseIcon
+                        className="fa fa-chevron-down"
+                        aria-hidden="true"
+                        onClick={() => setCollapsed(true)} />
+                    <styled.StationTitle>{currentStation.name}</styled.StationTitle>
+                </styled.StationColumnHeader >
+                <ThroughputChart
+                    data={throughputData}
+                    isWidget={false}
+                    isThroughputLoading={isThroughputLoading}
+                    timeSpan={timeSpan}
+                    loadLineChartData={() => {
+                        onChangeChartType('line', dateIndex)
+                    }}
+                    loadBarChartData={() => {
+                        onChangeChartType('day', dateIndex)
+
+                    }}
+                    disableTimeSpan={(bool) => {
+                        // setTimespanDisabled(bool)
+                    }}
+                />
+            </styled.StationColumnContainer >
+
+
+
     )
 }
 

@@ -7,7 +7,7 @@ export const RowContainer = styled.div`
     justify-content: space-between;
 
     // width: 100%;
-    min-width: 15rem;
+    min-width: 25rem;
     max-width: 45rem;
 `
 

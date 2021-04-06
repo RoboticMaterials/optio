@@ -8,6 +8,8 @@ export const Container = styled.div`
     /* border-bottom: 0.02rem solid white; */
     z-index: 1;
     margin-bottom: 1rem;
+    display: flex;
+    justify-content:center;
 
 
 `;

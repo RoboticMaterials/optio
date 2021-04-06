@@ -12,10 +12,10 @@ import { getStationAnalytics } from '../../../../../../../redux/actions/stations
 
 // Import Charts
 import BarChart from '../../../chart_types/bar_chart'
-import {useSelector} from "react-redux";
-import {isObject} from "../../../../../../../methods/utils/object_utils";
-import {capitalizeFirstLetter} from "../../../../../../../methods/utils/string_utils";
-import {TIME_SPANS} from "../../statistics_overview";
+import { useSelector } from "react-redux";
+import { isObject } from "../../../../../../../methods/utils/object_utils";
+import { capitalizeFirstLetter } from "../../../../../../../methods/utils/string_utils";
+import { TIME_SPANS } from "../../statistics_overview";
 
 const minHeight = 0
 
@@ -30,6 +30,7 @@ const ThroughputChart = (props) => {
         loadLineChartData,
         loadBarChartData,
         disableTimeSpan,
+        isWidget,
     } = props
 
     // redux state
@@ -48,14 +49,14 @@ const ThroughputChart = (props) => {
         let tempFilteredData = []
         let deletedObjKeys = []
 
-        if(showBar) {
+        if (showBar) {
             data?.throughPut.forEach((currItem) => {
                 const {
                     lable,
                     ...objectIds
                 } = currItem || {}
 
-                let updatedItem = {lable}   // used for changing keys from object ids to object names, keep label the same
+                let updatedItem = { lable }   // used for changing keys from object ids to object names, keep label the same
 
                 Object.entries(objectIds)
                     .filter((currEntry) => {
@@ -68,7 +69,7 @@ const ThroughputChart = (props) => {
                         const [currKey, currVal] = currEntry
 
                         // for null key, set default name and use value. This is for objectless routes
-                        if(currKey === null || currKey === "null") {
+                        if (currKey === null || currKey === "null") {
 
                             // default name
                             const currObjectName = "No Object"
@@ -86,7 +87,7 @@ const ThroughputChart = (props) => {
                             const currObject = objects[currKey]
 
                             // object with id was found
-                            if(isObject(currObject)) {
+                            if (isObject(currObject)) {
 
                                 // get object name
                                 const {
@@ -108,7 +109,7 @@ const ThroughputChart = (props) => {
                             // object with id was NOT found
                             else {
                                 // if this id isn't already in deletedObjs array, add it
-                                if(!deletedObjKeys.includes(currKey)) {
+                                if (!deletedObjKeys.includes(currKey)) {
                                     deletedObjKeys.push(currKey)
                                 }
 
@@ -158,35 +159,37 @@ const ThroughputChart = (props) => {
         <styled.SinglePlotContainer
             minHeight={minHeight}
         >
-            <styled.PlotHeader>
-                <styled.PlotTitle>Throughput</styled.PlotTitle>
-                {/* <styled.ChartButton onClick={() => setShowBar(!showBar)} >Compare Expected output</styled.ChartButton> */}
+            {isWidget &&
+                <styled.PlotHeader>
+                    <styled.PlotTitle>Throughput</styled.PlotTitle>
+                    {/* <styled.ChartButton onClick={() => setShowBar(!showBar)} >Compare Expected output</styled.ChartButton> */}
 
-                {(timeSpan === 'day' || timeSpan === 'line') &&
-                    <>
-                        <styled.ChartTypeButton
-                            style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
-                            onClick={() => {
-                                setShowBar(true)
-                                loadBarChartData()
-                            }}
-                            selected={showBar}
-                        >
-                            Bar
+                    {(timeSpan === 'day' || timeSpan === 'line') &&
+                        <>
+                            <styled.ChartTypeButton
+                                style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
+                                onClick={() => {
+                                    setShowBar(true)
+                                    loadBarChartData()
+                                }}
+                                selected={showBar}
+                            >
+                                Bar
                         </styled.ChartTypeButton>
-                        <styled.ChartTypeButton
-                            style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
-                            onClick={() => {
-                                setShowBar(false)
-                                loadLineChartData()
-                            }}
-                            selected={!showBar}
-                        >
-                            Line
-                </styled.ChartTypeButton>
-                    </>
-                }
-            </styled.PlotHeader>
+                            <styled.ChartTypeButton
+                                style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
+                                onClick={() => {
+                                    setShowBar(false)
+                                    loadLineChartData()
+                                }}
+                                selected={!showBar}
+                            >
+                                Line
+                        </styled.ChartTypeButton>
+                        </>
+                    }
+                </styled.PlotHeader>
+            }
 
             {isThroughputLoading ?
                 <styled.PlotContainer>
