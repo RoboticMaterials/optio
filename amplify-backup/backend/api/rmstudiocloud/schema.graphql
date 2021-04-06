@@ -181,6 +181,7 @@ type Card
   lotTemplateId: String!
   name: String!
   process_id: String!
+
 }
 
 type CardEvent
