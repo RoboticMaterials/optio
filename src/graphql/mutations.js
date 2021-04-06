@@ -601,6 +601,7 @@ export const createCardEvent = /* GraphQL */ `
       organizationId
       cardId
       userId
+      username
       createdAt
       updatedAt
       delta
@@ -617,6 +618,7 @@ export const updateCardEvent = /* GraphQL */ `
       organizationId
       cardId
       userId
+      username
       createdAt
       updatedAt
       delta
@@ -633,6 +635,7 @@ export const deleteCardEvent = /* GraphQL */ `
       organizationId
       cardId
       userId
+      username
       createdAt
       updatedAt
       delta

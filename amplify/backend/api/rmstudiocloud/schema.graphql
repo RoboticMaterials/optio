@@ -198,6 +198,7 @@ type CardEvent
   organizationId: ID!
   cardId: ID!
   userId: ID
+  username: String
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
 

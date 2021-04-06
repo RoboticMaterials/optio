@@ -52,6 +52,25 @@ export default async function getUserOrgId() {
     }
  }
 
+ export async function getUser() {
+    
+    try {
+        // get current signed in user
+        const user = await Auth.currentAuthenticatedUser();
+
+        // get user from the database
+        const data = await API.graphql({
+            query: usersbyId,
+            variables: { id: user.attributes.sub }
+        })
+
+        return data.data.UsersbyId.items[0]
+
+    } catch (error) {
+        console.log(error)
+    }
+ }
+
  export async function getUserById() {
     
     try {

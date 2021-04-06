@@ -22,7 +22,7 @@ import { getCardById } from '../graphql/queries'
 import { deleteCard as deleteCardByID } from '../graphql/mutations'
 
 // to get user org id
-import getUserOrgId, {getUserId} from './user_api'
+import getUserOrgId, {getUser} from './user_api'
 
 // For creating a card
 import { uuidv4 } from '../methods/utils/utils'
@@ -206,11 +206,14 @@ export async function putCard(card, ID) {
                                         return result;
                                     }, {});
 
+        const user = await getUser()
+
         const eventInput = {
             delta: JSON.stringify(difference),
             cardId: ID,
             organizationId: oldCard.organizationId,
-            userId: await getUserId()
+            userId: user.id,
+            username: user.username
         }
 
         const input = {

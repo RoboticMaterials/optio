@@ -415,6 +415,7 @@ export const cardsEventsByOrgId = /* GraphQL */ `
         organizationId
         cardId
         userId
+        username
         createdAt
         updatedAt
         delta
