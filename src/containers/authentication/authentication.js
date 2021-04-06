@@ -1,100 +1,159 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-
-import { CognitoUser, CognitoUserPool, CognitoRefreshToken, CognitoUserSession } from 'amazon-cognito-identity-js'
-
-import * as styled from './authentication.style'
+import { useDispatch } from 'react-redux'
+import { useHistory, useParams } from 'react-router-dom'
 
 // Import components
 import SignInUpPage from '../../components/sign_in_up_page/sign_in_up_page'
+import ForgotPassword from '../../components/forgotPassword/forgotPassword'
+import { Link } from 'react-router-dom'
+import * as styled from './authentication.style'
 
-import { postCognitoUserSession } from '../../redux/actions/authentication_actions'
+// Authentication
+import configData from '../../settings/config'
+import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
+
+// Import actions
+import { postLocalSettings, getLocalSettings } from '../../redux/actions/local_actions'
+
 
 /**
  * After the APIs have been loaded in the api_container this container is loaded
  * It checks to see if the user has already signed in based on whether or not a refresh token exists in cookies
- * If there is a token, it uses that to get a new JWT and uses that to make sure the session is valid, no reason to sign in if there's a valid session. 
- * If the refresh token is expired, you have to sign in again
- * If there is no token, the user either has to sign in or sign up 
- * Authenticated props is used for telling APP.js the user is authenticated
- * 
- * TODO: Should show loading when there is a refresh token and its being used to get new JWT credntials
- * TODO: Styling updates
- * TODO: Forgot password
- * TODO: Add HTTPS connection to server which allows for the use of a secure cookie. Increases security a lot 
- * @param {authenticated} props 
+ * @param {mobileMode} props
  */
 const Authentication = (props) => {
 
     const {
-        authenticated
+        mobileMode
     } = props
 
-    const dispatch = useDispatch()
-    const onCognitoUserSession = (JWT) => dispatch(postCognitoUserSession(JWT))
+    const history = useHistory()
+    const params = useParams()
 
-    const refreshToken = useSelector(state => state.authenticationReducer.refreshToken)
-    const cognitoUserSession = useSelector(state => state.authenticationReducer.cognitoUserSession)
+    const dispatch = useDispatch()
 
     const [signIn, setSignIn] = useState(true)
+    const [forgotPassword, setForgotPassword] = useState(false)
+
+    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const dispatchGetLocalSettings = () => dispatch(getLocalSettings())
+
+    useEffect(() => {
+        handleInitialLoad()
+    }, [])
+
+    useEffect(() => {
+        if(history.location.pathname === '/'){
+            setSignIn(true)
+            setForgotPassword(false)
+        }else if(history.location.pathname === '/forgot-password'){
+            setForgotPassword(true)
+        }else if(history.location.pathname === '/create-account'){
+            setSignIn(false)
+            setForgotPassword(false)
+        }
+    }, [params])
+
+    const handleSignInChange = (value) => {
+        setSignIn(value)
+    }
 
     const handleInitialLoad = () => {
+        // Check to see if we want authentication *** Dev ONLY ***
+        const localSettingsPromise = dispatchGetLocalSettings()
+        localSettingsPromise.then(response =>{
 
-        // Information assembled for the request
-        const poolData = {
-            UserPoolId: 'us-east-2_YFnCIb6qJ',
-            ClientId: '4dghjc830130pdnr9aecshpc13',
-        }
-        const userPool = new CognitoUserPool(poolData)
-        const userData = {
-            Username: 'kalervo@roboticmaterials.com',
-            Pool: userPool,
-        }
-        const cognitoUser = new CognitoUser(userData);
+            if (!configData.authenticationNeeded) {
 
+                dispatchPostLocalSettings({
+                    ...response,
+                    authenticated: 'no'
+                })
 
+            } else {
+                var poolData = {
+                    UserPoolId: configData.UserPoolId,
+                    ClientId: configData.ClientId,
+                };
 
-        // Gets new tokens if access token is not valid
-        // .refreshSession requies an instance of the CognitioRefreshToken class not just the refresh token sting
-        const token = new CognitoRefreshToken({ RefreshToken: refreshToken })
-        cognitoUser.refreshSession(token, (err, session) => {
-            console.log('QQQQ', err, session)
+                var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+                var cognitoUser = userPool.getCurrentUser();
 
-            // If the session has succesfully been refreshed then verrify
-            if (!!session) {
-                console.log('QQQQ Valid session ', session.isValid())
-                const verrified = onCognitoUserSession(session)
+                if (cognitoUser != null) {
+                    cognitoUser.getSession(function (err, session) {
+                        if (err) {
+                            alert(err.message || JSON.stringify(err));
+                            return;
+                        }
 
-                // If verrified, then no need to sign in or sign up
-                if (verrified) {
-                    authenticated()
+                        if (session.isValid()) {
+                            dispatchPostLocalSettings({
+                                ...response,
+                                authenticated:true,
+                            })
+                        }
+                    });
                 }
             }
         })
-        return (
-            <styled.Container>
+    }
+
+    return (
+        <styled.Page className={mobileMode ? '' : 'signin-page'}>
+            <styled.Container mobileMode={mobileMode}>
 
                 <styled.LogoContainer>
                     <styled.LogoIcon className='icon-rmLogo' />
                     <styled.LogoSubtitle> Studio</styled.LogoSubtitle>
                 </styled.LogoContainer>
-
-                <styled.SignInUpToggleContainer>
-                    <styled.SignInToggleButton onClick={() => setSignIn(true)}>Sign In</styled.SignInToggleButton>
-                    <styled.SignUpToggleButton onClick={() => setSignIn(false)}>Sign Up</styled.SignUpToggleButton>
-                </styled.SignInUpToggleContainer>
-
+            
+                { !forgotPassword &&
                 <styled.SignInUpContainer>
 
-                    <SignInUpPage signIn={signIn} />
+                    <SignInUpPage
+                        signIn={signIn}
+                        onChange={handleSignInChange} />
 
                 </styled.SignInUpContainer>
-            </styled.Container>
-        )
-    }
+                }
 
-    return (
-        handleInitialLoad()
+                { forgotPassword &&
+                <styled.SignInUpContainer>
+
+                    <ForgotPassword />
+
+                </styled.SignInUpContainer>
+                }
+
+                <styled.LogoContainer>
+                
+                {!forgotPassword && 
+                <div>
+
+                    <Link to="/forgot-password">Forgot Password? </Link>
+                    
+                    <Link to="/login" style={{
+                        marginLeft: '.5rem', 
+                        marginRight: '.5rem',
+                        textDecoration: 'none',
+                        cursor: 'default'
+                        }}> • </Link>
+
+                    {signIn &&
+                        <Link to="/create-account"> Create an account </Link>
+                    }
+
+                    {!signIn &&
+                        <Link to="/"> Sign in </Link>
+                    }
+
+                </div>
+                }
+
+                </styled.LogoContainer>
+                
+            </styled.Container>
+        </styled.Page>
     )
 
 }

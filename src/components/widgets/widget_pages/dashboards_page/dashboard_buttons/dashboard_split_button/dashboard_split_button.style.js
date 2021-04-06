@@ -72,7 +72,7 @@ export const RobotButton = styled.div`
 export const HumanButton = styled.button`
     ${ButtonStyle};
     flex: 1;
-    border-left: 1px solid ${props => props.theme.bg.tertiary};
+    border-left: 1px solid ${props => props.theme.bg.secondary};
     background: ${props => `linear-gradient(180deg, 
                             ${LightenDarkenColor(props.background, -40)} 0%, 
                             ${LightenDarkenColor(props.background, -50)} 50%, 
@@ -80,24 +80,36 @@ export const HumanButton = styled.button`
 `
 
 export const Container = styled.button`
-  ${ContainerCss};
-  
-  // flex layout
-  flex-direction: row;
-	
-  // padding
-  padding: 0;
+    ${ContainerCss};
+    
+    // flex layout
+    flex-direction: row;
+    
+    box-shadow: 0 9px 2px -4px ${props => LightenDarkenColor(props.theme.bg.secondary,  -50)}; 
+    height: 4rem; 
+    // line-height: 4rem; 
+    margin-bottom: 1rem; 
+    flex-grow: 1;
+
+    padding: 0;
+    padding-left: 0.5rem;
   
 
 `
 
 export const ConditionText = styled.span`
-    ${conditionTextCss};
-    
-    height: fit-content;
-    display: inline-flex;
-    align-items:center;
-    padding: 0;
-    margin: 0;
-    height: 1.25rem;
+${conditionTextCss};
+
+flex-grow: 1;
+`
+
+export const IconContainer = styled.div`
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 10.75rem;
 `

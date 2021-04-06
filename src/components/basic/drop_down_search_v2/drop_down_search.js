@@ -32,6 +32,7 @@ export class DropDownSearch extends Component {
     options: PropTypes.array.isRequired,
     keepOpen: PropTypes.bool,
     showSelectedBox: PropTypes.bool,
+    fixedHeight: PropTypes.bool,
     dropdownGap: PropTypes.number,
     multi: PropTypes.bool,
     placeholder: PropTypes.string,
@@ -76,7 +77,13 @@ export class DropDownSearch extends Component {
       values: props.values,
       search: '',
       selectBounds: {},
-      cursor: null
+      cursor: null,
+      dropdownSize: {
+        offsetWidth: 0,
+        offsetHeight: 0,
+        offsetLeft: 0,
+        offsetTop: 0,
+      }
     };
 
     this.methods = {
@@ -101,11 +108,11 @@ export class DropDownSearch extends Component {
     };
 
     this.select = React.createRef();
+    this.dropdownRef = React.createRef()
     this.dropdownRoot = typeof document !== 'undefined' && document.createElement('div');
   }
 
   componentDidMount() {
-
     this.props.portal && this.props.portal.appendChild(this.dropdownRoot);
     window.addEventListener('resize', debounce(this.updateSelectBounds), {passive:true});
     window.addEventListener('scroll', debounce(this.onScroll), {passive:true});
@@ -155,7 +162,44 @@ export class DropDownSearch extends Component {
     if (prevState.values !== this.state.values && !this.props.fillable && this.state.values.length) {
       this.clearAll();
     }
+
+    // if dropdown ref has current value
+    if(this.dropdownRef.current && !this.props.fixedHeight) {
+      // get height
+      let offsetHeight = this.dropdownRef.current.offsetHeight;
+
+      // check if state offsetHeight does not match current offsetHeight
+      if(offsetHeight !== this.state.dropdownSize.offsetHeight) {
+        let offsetWidth  = this.dropdownRef.current.offsetWidth;
+        let offsetTop  = this.dropdownRef.current.offsetTop;
+        let offsetLeft  = this.dropdownRef.current.offsetLeft;
+
+        // update state
+        this.setState({
+          dropdownSize: {
+            offsetWidth,
+            offsetHeight,
+            offsetLeft,
+            offsetTop,
+          },
+        });
+      }
+    }
+    // if dropdownRef doesn't have current value, and offsetHeight isn't already 0, set it to zero
+    else if(this.state.dropdownSize.offsetHeight !== 0 ) {
+      // update state
+      this.setState({
+        dropdownSize: {
+          offsetWidth: 0,
+          offsetHeight: 0,
+          offsetLeft: 0,
+          offsetTop: 0,
+        },
+      });
+    }
   }
+
+
 
   componentWillUnmount() {
     this.props.portal && this.props.portal.removeChild(this.dropdownRoot);
@@ -437,11 +481,13 @@ export class DropDownSearch extends Component {
   renderDropdown = (ItemComponent) =>
     this.props.portal ? (
       ReactDOM.createPortal(
-        <Dropdown ItemComponent={ItemComponent} DropDownComponent={this.props.DropDownComponent} props={this.props} state={this.state} methods={this.methods} />,
+        <Dropdown dropdownRef={this.dropdownRef} ItemComponent={ItemComponent} DropDownComponent={this.props.DropDownComponent}
+        props={this.props} state={this.state} methods={this.methods} onMouseEnter = {(item) => this.props.onMouseEnter(item)} onMouseLeave = {(item) => this.props.onMouseLeave(item)} />,
         this.dropdownRoot
       )
     ) : (
-        <Dropdown ItemComponent={ItemComponent} TextComponent={this.props.TextComponent} DropDownComponent={this.props.DropDownComponent} props={this.props} state={this.state} methods={this.methods} />
+        <Dropdown dropdownRef={this.dropdownRef} ItemComponent={ItemComponent} TextComponent={this.props.TextComponent} DropDownComponent={this.props.DropDownComponent}
+         props={this.props} state={this.state} methods={this.methods} onMouseEnter = {(item) => this.props.onMouseEnter} onMouseLeave = {(item) => this.props.onMouseLeave} />
       );
 
   createNew = (item) => {
@@ -460,9 +506,10 @@ export class DropDownSearch extends Component {
     const { ItemComponent, ReactDropdownSelect, Container } = this.props;
 
     return (
-      <Container className={this.props.className}>
+      <Container css={this.props.containerCss} className={this.props.className} style={!this.props.fixedHeight ? {paddingBottom: this.state.dropdownSize.offsetHeight} : {}}>
         <ClickOutside ClickOutsideComponent={this.props.ClickOutsideComponent} onClickOutside={(event) => this.dropDown('close', event)}>
           <ReactDropdownSelect
+            css={this.props.reactDropdownSelectCss}
             onKeyDown={this.handleKeyDown}
             onClick={(event) => this.dropDown('open', event)}
             // onFocus={(event) => this.dropDown('open', event)}
@@ -520,7 +567,8 @@ export class DropDownSearch extends Component {
 
 export const DefaultReactDropdownSelect = styled.div`
 
-    background-color: ${props => props.theme.bg.quinary};
+    background-color: ${props => props.theme.bg.secondary};
+    box-shadow: 0 0.1rem 0.2rem 0rem rgba(0,0,0,0.1) !important;
     color: ${props => props.theme.bg.octonary};
 
     font-family: ${props => props.theme.font.primary};
@@ -543,17 +591,20 @@ export const DefaultReactDropdownSelect = styled.div`
     border-bottom: 2px solid transparent;
     border-radius: 0.2rem;
 
-    :focus,
-    :focus-within {
+    :focus, :focus-within {
         color: ${props => props.theme.bg.octonary};
-        background-color: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};
+        background-color: ${props => props.theme.bg.secondary};
         box-shadow: none;
         border-bottom: 2px solid ${props => !!props.schema ? props.theme.schema[props.schema].solid : props.theme.bg.octonary};
     }
+
+  ${props => props.css && props.css};
+
+
 `;
 
 const DefaultContainer = styled.div`
-
+  ${props => props.css && props.css};
 `;
 
 DropDownSearch.defaultProps = {
@@ -568,6 +619,7 @@ DropDownSearch.defaultProps = {
   sortBy: null,
   clearable: false,
   searchable: true,
+  fixedHeight: true,
   dropdownHandle: true,
   separator: false,
   keepOpen: undefined,
@@ -607,6 +659,8 @@ DropDownSearch.defaultProps = {
   Container: DefaultContainer,
   fillable: true,
   schema: null,
+  onMouseEnter: () => {},
+  onMouseLeave: () => {},
 };
 
 

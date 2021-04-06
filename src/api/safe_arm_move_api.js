@@ -12,7 +12,10 @@ export async function postSafeArmMove(poseId) {
     const response = await axios({
       method: 'post',
       url: apiIPAddress() + operator,
-      data: {pose_id: poseId}
+      data: {pose_id: poseId},
+      headers:{
+        'X-API-Key': '123456',
+      }
     });
 
     // Success

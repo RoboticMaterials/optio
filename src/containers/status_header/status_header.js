@@ -44,7 +44,7 @@ const StatusHeader = (props) => {
     const toggle = useSelector(state => state.notificationsReducer.toggleNotificationTaskQueue)
     const isSideBarOpen = useSelector(state => state.sidebarReducer.open)
     const taskQueueOpen = useSelector(state => state.taskQueueReducer.taskQueueOpen)
-
+    const showConfirmDeleteModal = useSelector(state => state.sidebarReducer.showConfirmDeleteModal)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const serverSettings = useSelector(state => state.settingsReducer.settings)
     const deviceEnabled = serverSettings.deviceEnabled
@@ -116,9 +116,9 @@ const StatusHeader = (props) => {
                 M0,0
                 L0,40
                 L${isSideBarOpen && !widgetPage ? sideBarWidth : leftMargin},40
-                C${isSideBarOpen && !widgetPage ? sideBarWidth + x / 2 : leftMargin + x / 2},40 ${isSideBarOpen && !widgetPage ? sideBarWidth + x / 2 : leftMargin + x / 2},${mergeHeight} ${isSideBarOpen && !widgetPage ? sideBarWidth + x : leftMargin + x},${mergeHeight}
-                L${pageWidth - (taskQueueOpen ? rightCurvePoint : rightMargin) - x},${mergeHeight}
-                C${pageWidth - (taskQueueOpen ? rightCurvePoint : rightMargin) - x / 2},${mergeHeight} ${taskQueueOpen ? `${pageWidth - rightCurvePoint},${mergeHeight}` : `${pageWidth - rightMargin - x / 2},40`} ${pageWidth - (taskQueueOpen ? rightCurvePoint : rightMargin)},40
+                C${isSideBarOpen && !widgetPage ? sideBarWidth + x / 2 : leftMargin + x / 2},40 ${isSideBarOpen && !widgetPage ? sideBarWidth + x / 2 : leftMargin + x / 2},${Math.min(mergeHeight, 40)} ${isSideBarOpen && !widgetPage ? sideBarWidth + x : leftMargin + x},${Math.min(mergeHeight, 40)}
+                L${pageWidth - (taskQueueOpen ? rightCurvePoint : rightMargin) - x},${Math.min(mergeHeight, 40)}
+                C${pageWidth - (taskQueueOpen ? rightCurvePoint : rightMargin) - x / 2},${Math.min(mergeHeight, 40)} ${taskQueueOpen ? `${pageWidth - rightCurvePoint},${Math.min(mergeHeight, 40)}` : `${pageWidth - rightMargin - x / 2},40`} ${pageWidth - (taskQueueOpen ? rightCurvePoint : rightMargin)},40
                 L${pageWidth},40
                 L${pageWidth},0
                 Z
@@ -335,15 +335,26 @@ const StatusHeader = (props) => {
                     left: '0',
                     top: '0',
                     right: '0',
-                    height: '4rem',
+                    height: '5rem',
                     zIndex: '1',
                 }}>
                 <svg
-                    fill={hexToRGBA(theme.bg.septenary, 0.97)}
-                    viewBox={`0 0 ${window.innerWidth} 40`}
+                    fill={hexToRGBA(theme.bg.secondary, 0.97)}
+                    viewBox={`0 0 ${window.innerWidth} 50`}
                     width='100%' height='100%' preserveAspectRatio="none"
                 >
-                    <path style={{ backdropFilter: 'blur(3px)' }} d={statusBarPath} />
+                    <filter id="dropshadow" height="130%">
+                        <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+                        <feOffset dx="0" dy="1" result="offsetblur"/>
+                        <feComponentTransfer>
+                            <feFuncA type="linear" slope="0.3"/>
+                        </feComponentTransfer>
+                        <feMerge>
+                            <feMergeNode/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                    <path style={{ backdropFilter: 'blur(3px)', filter:'url(#dropshadow)' }} d={statusBarPath} />
                 </svg>
 
             </div>

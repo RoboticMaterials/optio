@@ -12,7 +12,7 @@ import {
 	setSelectedTask
 } from "../../../../../redux/actions/tasks_actions";
 import {
-	deleteProcesses,
+	deleteProcess, deleteProcessClean,
 	postProcesses,
 	putProcesses,
 	setSelectedProcess
@@ -20,6 +20,7 @@ import {
 import * as taskActions from "../../../../../redux/actions/tasks_actions";
 import {isObject} from "../../../../../methods/utils/object_utils";
 import {isArray} from "../../../../../methods/utils/array_utils";
+import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions"
 
 const ProcessForm = (props) => {
 
@@ -39,13 +40,16 @@ const ProcessForm = (props) => {
 	const dispatchPutRouteClean = (task, ID) => dispatch(putRouteClean(task, ID))
 
 	const dispatchSetSelectedProcess = (process) => dispatch(setSelectedProcess(process))
-	const dispatchDeleteProcess = async (ID) => await dispatch(deleteProcesses(ID))
+	const dispatchDeleteProcessClean = async (ID) => await dispatch(deleteProcessClean(ID))
 	const dispatchDeleteRouteClean = (routeId) => dispatch(deleteRouteClean(routeId))
 	const dispatchSaveFormRoute = async (formRoute) => await dispatch(saveFormRoute(formRoute))
+	const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
 	const tasks = useSelector(state => state.tasksReducer.tasks)
 	const selectedProcess = useSelector(state => state.processesReducer.selectedProcess)
 	const objects = useSelector(state => state.objectsReducer.objects)
+	const currentMap = useSelector(state => state.mapReducer.currentMap)
+	const editing = useSelector(state => state.processesReducer.editingProcess)
 
 	useEffect(() => {
 		return () => {
@@ -76,7 +80,8 @@ const ProcessForm = (props) => {
 		if (remainingValues.new) {
 			await dispatchPostProcess({
 				...remainingValues,
-				routes: mappedRoutes
+				routes: mappedRoutes,
+				map_id: currentMap._id,
 			})
 		}
 
@@ -84,7 +89,8 @@ const ProcessForm = (props) => {
 		else {
 			await dispatchPutProcess({
 				...remainingValues,
-				routes: mappedRoutes
+				routes: mappedRoutes,
+				map_id: currentMap._id,
 			})
 		}
 
@@ -135,7 +141,7 @@ const ProcessForm = (props) => {
 			})
 		}
 
-		await dispatchDeleteProcess(selectedProcess._id)
+		await dispatchDeleteProcessClean(selectedProcess._id)
 
 		dispatchSetSelectedTask(null)
 		dispatchSetSelectedProcess(null)
@@ -144,7 +150,7 @@ const ProcessForm = (props) => {
 
 	const handleDeleteWithoutRoutes = async () => {
 
-		await dispatchDeleteProcess(selectedProcess._id)
+		await dispatchDeleteProcessClean(selectedProcess._id)
 
 		dispatchSetSelectedTask(null)
 		dispatchSetSelectedProcess(null)
@@ -200,7 +206,8 @@ const ProcessForm = (props) => {
 				broken: selectedProcess ? selectedProcess.broken : false,
 				_id: selectedProcess ? selectedProcess._id : uuid.v4(),
 				new: selectedProcess.new,
-				newRoute: null
+				newRoute: null,
+				map_id: currentMap._id,
 			}}
 
 			// validation control
@@ -237,9 +244,13 @@ const ProcessForm = (props) => {
 					submitForm,
 					setTouched,
 					resetForm,
-					setFieldValue
+					setFieldValue,
+					touched
 				} = formikProps
 
+				if(Object.keys(touched).length!==0 && !editing){
+					dispatchPageDataChanged(true)
+				}
 
 				return(
 					<ProcessField

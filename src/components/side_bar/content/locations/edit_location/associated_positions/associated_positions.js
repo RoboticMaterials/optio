@@ -18,6 +18,7 @@ import { setStationAttributes } from '../../../../../../redux/actions/stations_a
 import { setPositionAttributes, deletePosition, addPosition, postPosition, setSelectedStationChildrenCopy } from '../../../../../../redux/actions/positions_actions'
 import * as positionActions from '../../../../../../redux/actions/positions_actions'
 import { deleteTask } from '../../../../../../redux/actions/tasks_actions'
+import { pageDataChanged } from '../../../../../../redux/actions/sidebar_actions'
 import { deepCopy } from '../../../../../../methods/utils/utils'
 
 // Import Constants
@@ -36,7 +37,7 @@ export default function Positions(props) {
     const dispatchAddPosition = (position) => dispatch(addPosition(position))
     const disptachPostPosition = (position) => dispatch(postPosition(position))
     const dispatchSetSelectedStationChildrenCopy = (positions) => dispatch(setSelectedStationChildrenCopy(positions))
-
+    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(true))
     const dispatchSetStationAttributes = (id, attr) => dispatch(setStationAttributes(id, attr))
 
     const positions = useSelector(state => state.positionsReducer.positions)
@@ -46,6 +47,8 @@ export default function Positions(props) {
     const currentMap = useSelector(state => state.mapReducer.currentMap)
     const MiRMapEnabled = useSelector(state => state.localReducer.localSettings.MiRMapEnabled)
     const selectedStationChildrenCopy = useSelector(state => state.positionsReducer.selectedStationChildrenCopy)
+    const serverSettings = useSelector(state => state.settingsReducer.settings)
+    const deviceEnabled = serverSettings.deviceEnabled
 
     const [editingIndex, setEditingIndex] = useState(null)
     const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
@@ -69,7 +72,7 @@ export default function Positions(props) {
             return Object.values(selectedStationChildrenCopy).map((position, i) => {
                 if (position.type === positionType) {
                     return (
-                        <styled.PositionListItem background={PositionTypes[positionType].color} key={`associatecd_pos_${i}`}>
+                        <styled.PositionListItem key={`associatecd_pos_${i}`}>
 
 
                             <MinusButton
@@ -78,15 +81,18 @@ export default function Positions(props) {
                                     setDeletingIndex(i)
                                     setDeletingPosition(position)
                                 }}
+                                style={{color: PositionTypes[positionType].color}}
                             />
                             <Textbox
                                 style={{ flex: '1' }}
+                                textboxContainerStyle={{flex: '1', marginLeft: '0.3rem'}}
                                 schema="locations"
                                 focus={i == editingIndex}
                                 // defaultValue={position.name}
                                 value={position.name}
                                 onChange={(e) => {
                                     setEditingIndex(i)
+                                    dispatchPageDataChanged(true)
                                     dispatch(positionActions.setPositionAttributes(position._id, { name: e.target.value }))
                                 }}
 
@@ -95,7 +101,7 @@ export default function Positions(props) {
 
                             {/* If not a human position, then add ability to use cart location */}
                             {position.type !== 'human_position' &&
-                                <styled.CartIcon className='icon-cart' onClick={() => handleSetChildPositionToCartCoords(position)} />
+                                <styled.CartIcon className='icon-cart' onClick={() => handleSetChildPositionToCartCoords(position)} style={{color: PositionTypes[positionType].color}}/>
                             }
 
                             {/* Commenting out for now, not working with constent updating */}
@@ -117,7 +123,7 @@ export default function Positions(props) {
 
         // const newPositionName = selectedStation.name + ' ' + (selectedStation.children.filter((position) => positions[position].type === type).length + 1)
         const newPositionName = `${type === 'cart_position' ? 'Cart Position' : 'Shelf Position'}` + ' ' + (selectedStation.children.filter((position) => positions[position].type === type).length + 1)
-        
+
         const newPositionType = type
 
         const newPosition = newPositionTemplate(newPositionName, newPositionType, selectedStation._id, currentMap._id)
@@ -165,14 +171,15 @@ export default function Positions(props) {
                         }
                         }
                     >
+                        <styled.LocationTypeLabel>
+                            {positionName}
+                        </styled.LocationTypeLabel>
 
                         <styled.LocationTypeGraphic fill={PositionTypes[positionType].color} stroke={PositionTypes[positionType].color} id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
                             {PositionTypes[positionType].svgPath}
                         </styled.LocationTypeGraphic>
 
-                        <styled.LocationTypeLabel>
-                            {positionName}
-                        </styled.LocationTypeLabel>
+
 
                     </styled.NewPositionCard>
                 </styled.Card>
@@ -200,7 +207,7 @@ export default function Positions(props) {
 
             {/* Cards for dragging a new position onto the map */}
 
-            {!!MiRMapEnabled &&
+            {!!deviceEnabled &&
                 <>
                     <styled.CardContainer>
                         {renderPositionCards()}

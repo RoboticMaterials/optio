@@ -12,6 +12,9 @@ export async function getLot(lotId) {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + operator + "/" + lotId,
+            headers: {
+                'X-API-Key': '123456',
+            }
         });
         // Success 🎉
         const data = response.data;
@@ -51,7 +54,10 @@ export async function getLots() {
     try {
         const response = await axios({
             method: 'get',
-            url: apiIPAddress() + operator,
+            url: apiIPAddress() + operator, 
+            headers: {
+                'X-API-Key': '123456',
+            },
         });
         // Success 🎉
         const data = response.data;
@@ -93,6 +99,9 @@ export async function getProcessLots(processId) {
         const response = await axios({
             method: 'get',
             url: apiIPAddress() + "processes/" + processId + "/lots",
+        headers:{
+            'X-API-Key': '123456',
+        }
         });
         // Success 🎉
         const data = response.data;
@@ -135,6 +144,7 @@ export async function deleteLot(ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Accept': 'application/json',
+                'X-API-Key': '123456',
             },
         });
 
@@ -178,6 +188,7 @@ export async function postLot(lot) {
             url: apiIPAddress() + operator,
             headers: {
                 'Content-Type': 'application/json',
+                'X-API-Key': '123456',
                 'Accept': 'application/json'
             },
             data: lot
@@ -226,6 +237,7 @@ export async function putLot(lot, ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Content-Type': 'application/json',
+                'X-API-Key': '123456',
                 'Accept': 'text/html'
             },
             data: JSON.stringify(lot)

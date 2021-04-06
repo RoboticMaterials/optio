@@ -34,7 +34,7 @@ export const HilContainer = styled.div`
 export const HilInputContainer = styled.div`
     display: flex;
     flex-direction: row;
-    margin-bottom: 3rem;
+    margin-bottom: 1rem;
     margin-top: 1rem;
 `
 
@@ -190,7 +190,7 @@ export const SubtitleContainer = styled.div`
 
 export const FooterContainer = styled.div`
     background: ${props => props.theme.bg.septenary};
-    border-top: 1px solid ${props => props.theme.bg.tertiary};
+    border-top: 1px solid ${props => props.theme.bg.secondary};
     width: 100%;
     display: flex;
     justify-content: center;
@@ -340,7 +340,7 @@ export const Header = styled.div`
     flex-direction: row;
     width: 100%;
     background: ${props => props.theme.bg.septenary};
-    border-bottom: 1px solid ${props => props.theme.bg.tertiary};
+    border-bottom: 1px solid ${props => props.theme.bg.secondary};
     align-items: center;
     justify-content: space-around;
     align-items: center;
@@ -354,6 +354,16 @@ export const HeaderMainContent = styled.div`
     justify-content: center;
     align-items: center;
     margin-bottom: 1rem;
+`
+
+export const SortFilterContainer = styled.div`
+   
+    //align-self: stretch;
+    //overflow: hidden;
+    //width: 40rem;
+    //min-width: 10rem;
+    //max-width: 50%;
+
 `
 
 
@@ -389,6 +399,7 @@ export const HilButton = styled.button`
     padding: 0rem 3rem;
     align-items: center;
     justify-content: center;
+    ${props => props.disabled && "filter: grayscale(80%)"};
 
 
 `

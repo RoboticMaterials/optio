@@ -1,20 +1,24 @@
-import React, {useEffect, useState} from "react"
+import React, {useEffect, useState, memo} from "react"
 
-// components
+// components internal
 import StationsColumn from "../columns/station_column/station_column"
 import LotQueue from "../columns/lot_queue/lot_queue"
 import FinishColumn from "../columns/finish_column/finish_column"
 
-// external functions
+// functions external
 import {useDispatch, useSelector} from "react-redux"
 import PropTypes from "prop-types"
-import {SortableContainer} from "react-sortable-hoc"
 
-// actions
-import {setDataPage} from "../../../../../redux/actions/api_actions"
+// utils
+import {getLotTotalQuantity, getMatchesFilter} from "../../../../../methods/utils/lot_utils";
+import {getLoadStationId, getUnloadStationId} from "../../../../../methods/utils/route_utils";
 
 // styles
 import * as styled from "./card_zone.style"
+import {isObject} from "../../../../../methods/utils/object_utils";
+import {isArray} from "../../../../../methods/utils/array_utils";
+import {LOT_FILTER_OPTIONS, SORT_DIRECTIONS} from "../../../../../constants/lot_contants";
+
 
 const CardZone = ((props) => {
 
@@ -26,140 +30,160 @@ const CardZone = ((props) => {
 		showCardEditor,
 		maxHeight,
 		lotFilterValue,
-		sortMode
+		selectedFilterOption,
+		sortMode,
+		sortDirection,
+		selectedCards,
+		setSelectedCards,
+		handleAddLotClick,
 	} = props
 
 	// redux state
 	const currentProcess = useSelector(state => { return state.processesReducer.processes[processId] }) || {}
 	const routes = useSelector(state => { return state.tasksReducer.tasks })
-	const cards = useSelector(state => { return state.cardsReducer.processCards[processId] }) || []
+	const processCards = useSelector(state => { return state.cardsReducer.processCards }) || {}
 	const stations = useSelector(state => { return state.stationsReducer.stations })
-	const draggedLotInfo = useSelector(state => { return state.cardPageReducer.draggedLotInfo })
+	const draggedLotInfo = useSelector(state => { return state.cardPageReducer.droppedLotInfo })
 	const {
 		lotId: draggingLotId = "",
 		binId: draggingBinId = ""
 	} = draggedLotInfo || {}
 
-
-
-	// console.log("draggedLotInfo",draggedLotInfo)
-
+	// component state
 	const [cardsSorted, setCardsSorted] = useState({})
+	const [bins, setBins] = useState({})
 	const [queue, setQueue] = useState([])
 	const [finished, setFinished] = useState([])
+	const [cards, setCards] = useState({})
+	const {
+		name: processName = ""
+	} = currentProcess || {}
 
-	// const onSetDataPage = (page) => setDataPage(page)
-	//
-	// useEffect(() => {
-	//
-	// 	onSetDataPage("CardZone")
-	//
-	// 	return () => {
-	// 		// remove page
-	// 		onSetDataPage(null)
-	// 	}
-	// }, [])
+	// const [cardsSorted, setCardsSorted] = useState({})
+	// const [queue, setQueue] = useState([])
+	// const [finished, setFinished] = useState([])
+
+	useEffect(() => {
+		setCards(processCards[processId] || {})
+	}, [processCards])
 
 	// need to loop through the process's routes first and get all station ids involved in the process
 	// this must be done first in order to avoid showing lots that are in stations that are no longer a part of the process
+	useEffect(() => {
+		let prevLoadStationId		// tracks previous load station id when looping through routes
+		let prevUnloadStationId		// tracks previous unload station id when looping through routes
+		let tempBins = {}	// temp var for storing sorted cards
 
-	var prevLoadStationId		// tracks previous load station id when looping through routes
-	var prevUnloadStationId		// tracks previous unload station id when looping through routes
-	var tempCardsSorted = {}	// temp var for storing sorted cards
+		// loop through routes, get load / unload station id and create entry in tempCardsSorted for each station
+		currentProcess.routes && currentProcess.routes.forEach((currRouteId, index) => {
 
-	// loop through routes, get load / unload station id and create entry in tempCardsSorted for each station
-	currentProcess.routes && currentProcess.routes.forEach((currRouteId, index) => {
+			// get current route and load / unload station ids
+			const currRoute = routes[currRouteId]
+			const loadStationId = getLoadStationId(currRoute)
+			const unloadStationId = getUnloadStationId(currRoute)
 
-		// get current route and load / unload station ids
-		const currRoute = routes[currRouteId]
-		const loadStationId = currRoute?.load?.station
-		const unloadStationId = currRoute?.unload?.station
+			// only add loadStation entry if the previous unload wasn't identical (in order to avoid duplicates)
+			if (prevUnloadStationId !== loadStationId) {
 
-		// only add loadStation entry if the previous unload wasn't identical (in order to avoid duplicates)
-		if (prevUnloadStationId !== loadStationId) {
+				// add entry in tempCardsSorted
+				tempBins[loadStationId] = {
+					station_id: loadStationId,
+					cards: []
+				}
+			}
 
 			// add entry in tempCardsSorted
-			tempCardsSorted[loadStationId] = {
-				station_id: loadStationId,
+			tempBins[unloadStationId] = {
+				station_id: unloadStationId,
 				cards: []
 			}
-		}
 
-		// add entry in tempCardsSorted
-		tempCardsSorted[unloadStationId] = {
-			station_id: unloadStationId,
-			cards: []
-		}
+			// update prevLoadStationId and prevUnloadStationId
+			prevLoadStationId = loadStationId
+			prevUnloadStationId = unloadStationId
+		})
 
-		// update prevLoadStationId and prevUnloadStationId
-		prevLoadStationId = loadStationId
-		prevUnloadStationId = unloadStationId
-	})
+		setBins(tempBins)
+
+	}, [currentProcess, routes])
+
 
 	// now that the object keys have been made, loop through the process's cards and add them to the correct bins
+	useEffect(() => {
+		let tempQueue = []		// temp var for storing queue lots
+		let tempFinished = []	// temp var for storing finished lots
+		let tempCardsSorted = {...bins}
 
-	var tempQueue = []		// temp var for storing queue lots
-	var tempFinished = []	// temp var for storing finished lots
+		Object.values(cards).forEach((card) => {
 
-	Object.values(cards).forEach((card) => {
+			// extract lot attributes
+			const {
+				bins: cardBins,
+				_id,
+				...rest
+			} = card
 
-		// extract card attributes
-		const {
-			bins,
-			_id,
-			...rest
-		} = card
+			const totalQuantity = getLotTotalQuantity(card)
 
-		const matchesFilter = card.name.toLowerCase().includes(lotFilterValue.toLowerCase())
+			const matchesFilter = getMatchesFilter(card, lotFilterValue, selectedFilterOption)
 
-		if(card.bins && matchesFilter) {
+			if(cardBins && matchesFilter) {
 
-			// loop through this lot's bins
-			Object.entries(card.bins).forEach((binEntry) => {
+				// loop through this lot's bins
+				Object.entries(cardBins).forEach((binEntry) => {
 
-				// get bin attributes
-				const binId = binEntry[0]
-				const binValue = binEntry[1]
-				const {
-					count
-				} = binValue
+					// get bin attributes
+					const binId = binEntry[0]
+					const binValue = binEntry[1]
+					const {
+						count
+					} = binValue
 
-				// don't render card being dragged - prevents flicker bug after drop
-				if((binId === draggingBinId) && (_id === draggingLotId)) return
+					// don't render lot being dragged - prevents flicker bug after drop
+					if((binId === draggingBinId) && (_id === draggingLotId)) return
 
-				// if there is an entry in tempCardsSorted with key matching {binId}, add the card to this bin
-				if(tempCardsSorted[binId]) {
-					tempCardsSorted[binId].cards.push({
+					const lotItem = {
 						...rest,
+						totalQuantity,
 						binId,
 						count,
-						cardId: _id
-					})
-				}
+						cardId: _id,
+						processName
+					}
 
-				// if {binId} is queue, add the card to the queue
-				else if(binId === "QUEUE") {
-					tempQueue.push({
-						...rest,
-						count,
-						binId,
-						cardId: _id
-					})
-				}
+					// if there is an entry in tempCardsSorted with key matching {binId}, add the lot to this bin
+					if(bins[binId]) {
+						// tempCardsSorted[binId].cards.push(lotItem)
+						const currentObj = isObject(tempCardsSorted[binId]) ? tempCardsSorted[binId] : {}
+						const existingCards = (isArray(currentObj.cards)) ? currentObj.cards : []
 
-				// if the {binId} is finish, add the card to the finished column
-				else if(binId === "FINISH") {
-					tempFinished.push({
-						...rest,
-						count,
-						binId,
-						cardId: _id
-					})
-				}
+						tempCardsSorted = {
+							...tempCardsSorted,
+							[binId]: {
+								...currentObj,
+								cards: [...existingCards, lotItem]
+							}
+						}
+					}
 
-			})
-		}
-	})
+					// if {binId} is queue, add the lot to the queue
+					else if(binId === "QUEUE") {
+						tempQueue.push(lotItem)
+					}
+
+					// if the {binId} is finish, add the lot to the finished column
+					else if(binId === "FINISH") {
+						tempFinished.push(lotItem)
+					}
+
+				})
+			}
+		})
+
+		setCardsSorted(tempCardsSorted)
+		setQueue(tempQueue)
+		setFinished(tempFinished)
+	}, [bins, cards, lotFilterValue, selectedFilterOption, draggingBinId, draggingLotId])
 
 	/*
 	* Renders a {StationColumn} for each entry in {cardsSorted}
@@ -168,7 +192,7 @@ const CardZone = ((props) => {
 	const renderStationColumns = () => {
 
 		// loop through each entry in {cardsSorted} and return a {StationsColumn}
-		return Object.values(tempCardsSorted).map((obj, index) => {
+		return Object.values(cardsSorted).map((obj, index) => {
 
 			// extract attributes of current bin
 			const {
@@ -185,7 +209,10 @@ const CardZone = ((props) => {
 
 			return (
 				<StationsColumn
+					setSelectedCards={setSelectedCards}
+					selectedCards={selectedCards}
 					sortMode={sortMode}
+					sortDirection={sortDirection}
 					maxHeight={maxHeight}
 					key={station_id + index}
 					id={route_id+"+"+station_id}
@@ -194,40 +221,47 @@ const CardZone = ((props) => {
 					processId={processId}
 					route_id={route_id}
 					cards={cardsArr}
-					handleCardClick={handleCardClick}
+					onCardClick={handleCardClick}
 				/>
 			)
 		})
 	}
 
 	return(
-		<styled.Container>
+		<styled.Container style={{background: 'white'}}>
 			<LotQueue
+				setSelectedCards={setSelectedCards}
+				selectedCards={selectedCards}
 				key={"QUEUE"}
 				sortMode={sortMode}
+				sortDirection={sortDirection}
 				maxHeight={maxHeight}
 				station_id={"QUEUE"}
 				setShowCardEditor={setShowCardEditor}
 				showCardEditor={showCardEditor}
 				stationName={"Queue"}
 				processId={processId}
-				cards={tempQueue}
-				handleCardClick={handleCardClick}
+				cards={queue}
+				onCardClick={handleCardClick}
+				onAddLotClick={() => handleAddLotClick(processId)}
 			/>
 
 			{renderStationColumns()}
 
 			<FinishColumn
+				setSelectedCards={setSelectedCards}
+				selectedCards={selectedCards}
 				key={"FINISH"}
 				sortMode={sortMode}
+				sortDirection={sortDirection}
 				maxHeight={maxHeight}
 				station_id={"FINISH"}
 				setShowCardEditor={setShowCardEditor}
 				showCardEditor={showCardEditor}
 				stationName={"Finished"}
 				processId={processId}
-				cards={tempFinished}
-				handleCardClick={handleCardClick}
+				cards={finished}
+				onCardClick={handleCardClick}
 			/>
 		</styled.Container>
 	)
@@ -240,7 +274,7 @@ CardZone.propTypes = {
 	processId: PropTypes.string,
 	lotFilterValue: PropTypes.string,
 	showCardEditor: PropTypes.bool,
-	maxHeight: PropTypes.number
+	maxHeight: PropTypes.string
 }
 
 // Specifies the default values for props:
@@ -250,8 +284,11 @@ CardZone.defaultProps = {
 	setShowCardEditor: () => {},
 	showCardEditor: false,
 	maxHeight: "30rem",
-	lotFilterValue: ""
+	lotFilterValue: "",
+	selectedFilterOption: LOT_FILTER_OPTIONS.name,
+	sortMode: LOT_FILTER_OPTIONS.name,
+	sortDirection: SORT_DIRECTIONS.ASCENDING,
 }
 
-export default CardZone
+export default memo(CardZone)
 

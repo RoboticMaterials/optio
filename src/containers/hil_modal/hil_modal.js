@@ -5,6 +5,8 @@ import { useParams, useHistory } from 'react-router-dom'
 // Import Components
 import HILModals from '../../components/hil_modals/hil_modals'
 import HILSuccess from '../../components/hil_modals/hil_modals_content/hil_success'
+import { deepCopy } from '../../methods/utils/utils';
+import { setShowModalId } from '../../redux/actions/task_queue_actions'
 
 const HILModal = () => {
 
@@ -14,6 +16,7 @@ const HILModal = () => {
     // Adds HIL timer to taskQueueReducer so it can be used in other areas such as status_header
     const onSetHilTimers = (timers) => dispatch({ type: 'HIL_TIMERS', payload: timers })
     const onSetActiveHilDashboards = (active) => dispatch({ type: 'ACTIVE_HIL_DASHBOARDS', payload: active })
+    const onSetShowModalId = (id) => dispatch(setShowModalId(id))
 
     let status = useSelector(state => { return state.statusReducer.status })
     const dashboards = useSelector(state => { return state.dashboardsReducer.dashboards })
@@ -27,57 +30,49 @@ const HILModal = () => {
     const devices = useSelector(state => state.devicesReducer.devices)
     let selectedTask = useSelector(state => state.tasksReducer.selectedTask)
     const localHumanTask = useSelector(state => state.taskQueueReducer.localHumanTask)
+    const showModalId = useSelector(state => state.taskQueueReducer.showModalID)
     const [statusTimerIntervals, setStatusTimerIntervals] = useState({})
-
     const dashboardID = params.dashboardID
     const stationID = params.stationID
-
     const deviceDashboard = !!devices ? !!devices[stationID] : false
     /**
      * Handles any task that should be displaying a HIL
      * useMemo for performance reasons, should only rerender if taskQueue changes and dashbaordID params
      */
     const handleHilsInTaskQueue = useMemo(() => {
-
         // Handles if a task queue item was clicked and displays that item
-        if (!!taskQueueItemClicked && taskQueue[taskQueueItemClicked] && !!taskQueue[taskQueueItemClicked].hil_station_id) {
+        if (!!taskQueueItemClicked && !!taskQueue[taskQueueItemClicked]) {
 
             const item = taskQueue[taskQueueItemClicked]
+            const type = item.device_type
             const hilType = tasks[item.task_id].type
 
-            return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item} />
-        }
-
-        else {
-            if (!!taskQueueItemClicked && !!taskQueue[taskQueueItemClicked]) {
-
-                const item = taskQueue[taskQueueItemClicked]
-                const type = item.device_type
-                const hilType = tasks[item.task_id].type
-
-                // Sets the HIL Message, the reason why it would undefined is that its a human load task
-                // Since a human load task needs to immediatly show, its immediatly put into the task Q vs telling the backend to put it into the task Q
-                // since it doesnt come from the backend, there's no hil message in the task Q Item
-                let hilMessage = item.hil_message
-                if (!hilMessage) {
-                    hilMessage = tasks[item.task_id].load.instructions
-                }
-
-                if (type === 'human') {
-
-                    return <HILModals hilMessage={hilMessage} hilType={hilType} taskQuantity={item.quantity} taskQueueID={taskQueueItemClicked} item={item} />
-                }
+            // Sets the HIL Message, the reason why it would undefined is that its a human load task
+            // Since a human load task needs to immediatly show, its immediatly put into the task Q vs telling the backend to put it into the task Q
+            // since it doesnt come from the backend, there's no hil message in the task Q Item
+            let hilMessage = item.hil_message
+            if (!hilMessage) {
+                hilMessage = tasks[item.task_id].load.instructions
             }
+
+            if (type === 'human') {
+                onSetShowModalId(item._id)
+            }
+
+            else if (!!taskQueue[taskQueueItemClicked].hil_station_id) {
+                onSetShowModalId(item._id)
+            }
+
+            //else {return null}
         }
 
         // Used to hide the HIL if success was clicked. (See HIL_Modals)
         if (hilResponse === 'load') {
             return <HILSuccess />
         }
-        if (hilResponse === 'unload') return 
+        if (hilResponse === 'unload') return
 
-        return Object.values(taskQueue).map((item) => {
-
+        return Object.values(taskQueue).forEach((item) => {
             const id = item._id
 
             // If the task queue item has a HIL and it's corresponding dashboard id is not in the activeHILDasbaords list then display HIL.
@@ -98,24 +93,20 @@ const HILModal = () => {
                             [dashboard]: id,
                         })
                     }
-
                 })
 
                 // If active hils matches the dashboard selected (found in params) then display hil
                 // if (dashboardID === item.hil_station_id && !dashboards[dashboardID].unsubcribedHILS.includes(item.hil.taskID)) {
-                if (Object.keys(activeHilDashboards).includes(dashboardID)) {
-                    const hilType = tasks[item.task_id].type
-
-                    return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={id} item={item} key={id} />
+                if (Object.keys(activeHilDashboards).includes(dashboardID) && !showModalId) {
+                    onSetShowModalId(item._id)
                 }
 
                 // If a device dashboard, then show all associated HILs
                 else if (deviceDashboard) {
-                    const hilType = tasks[item.task_id].type
-                    return <HILModals hilMessage={item.hil_message} hilType={hilType} taskQuantity={item.quantity} taskQueueID={id} item={item} />
+                    onSetShowModalId(item._id)
                 }
                 else {
-                    return null
+                    //return null
                 }
             }
 
@@ -129,16 +120,50 @@ const HILModal = () => {
                     hilMessage = tasks[item.task_id].load.instructions
                 }
                 if (item.hil_response !== false) {
-                    return <HILModals hilMessage={hilMessage} hilType={'push'} taskQuantity={item.quantity} taskQueueID={id} item={item} />
+                    onSetShowModalId(item._id)
                 }
 
+            }
 
+            // If there is a modal ID, but the corresponding Task Q item either doesnt have a station id (the task q item is in between load and unload) or the task q item doesnt exits anymore
+            // Then remove the modal id and close the hil
+            // Keep in mind that there is a useEffect in hil_modals that has a return statement that deletes the active hil dashboard from the activeHilDashboarsd object
+            // Thats why Its not done here
+            else if (!!showModalId && (!taskQueue[showModalId] || taskQueue[showModalId].hil_station_id === null)) {
+                onSetShowModalId(null)
             }
 
         })
 
     }, [taskQueue, dashboardID, taskQueueItemClicked, hilResponse, localHumanTask])
 
+
+    const renderHIL = useMemo(() => {
+        if (showModalId !== null && !!taskQueue && Object.values(taskQueue).length > 0 && taskQueue[showModalId] !== undefined) {
+            const item = taskQueue[showModalId]
+            let hilMessage = item.hil_message
+
+            const task = tasks[item.task_id]
+            const hilType = task.type
+            if (item.device_type === 'human') {
+                const loadStation = stations[task.load.station]
+                // If its the load station includes the task q item dashboard, then its a load hil, show load isntructions
+                if (loadStation.dashboards.includes(item.dashboard)) {
+                    hilMessage = task.load.instructions
+                }
+                // Else unload messsage
+                else {
+                    hilMessage = task.unload.instructions
+
+                }
+            }
+            return <HILModals hilMessage={hilMessage} hilType={hilType} taskQuantity={item.quantity} taskQueueID={item._id} item={item} />
+        }
+        else {
+            return null
+        }
+
+    },[taskQueue])
 
     /**
      * Handles HIL timers and adds them to Redux
@@ -153,7 +178,7 @@ const HILModal = () => {
      */
     const handleHILTimers = useMemo(() => {
 
-        Object.keys(taskQueue).map((id, ind) => {
+        Object.keys(taskQueue).forEach((id, ind) => {
 
             const item = taskQueue[id]
 
@@ -194,7 +219,7 @@ const HILModal = () => {
                             // Can change the timer interval
                             biasedTimer = biasedTimer - timerInterval
 
-                            // Add the timer to redux
+                            // Add the timer to r{edux
                             onSetHilTimers({
                                 ...hilTimers,
                                 [item._id]: biasedTimer.toFixed(0),
@@ -231,33 +256,37 @@ const HILModal = () => {
 
             // If the task queue item does not have a station id but has a timer running, that means the timer should stop
             else if (!item.hil_station_id && !!statusTimerIntervals[id]) {
-                if (!!statusTimerIntervals[id]) {
 
-                    // Deletes the dashboard id from active list for the hil that has been responded too
-                    onSetActiveHilDashboards(delete (activeHilDashboards[item.hil_station_id]))
+                const activeHilCopy = deepCopy(activeHilDashboards)
 
-                    // Clear the interval which is stored in state and delete that ID from state
-                    clearInterval(statusTimerIntervals[id])
-                    delete statusTimerIntervals[id]
-                    setStatusTimerIntervals({
-                        ...statusTimerIntervals,
-                    })
+                Object.keys(activeHilDashboards).forEach((dash) => {
+                    if (activeHilDashboards[dash] === id) {
+                        delete (activeHilCopy[dash])
+                    }
+                })
 
-                    // Update redux
-                    delete hilTimers[item._id]
-                    onSetHilTimers({
-                        ...hilTimers,
-                    })
-                }
+                // Deletes the dashboard id from active list for the hil that has been responded too
+                onSetActiveHilDashboards(activeHilCopy)
 
+                // Clear the interval which is stored in state and delete that ID from state
+                clearInterval(statusTimerIntervals[id])
+                delete statusTimerIntervals[id]
+                setStatusTimerIntervals({
+                    ...statusTimerIntervals,
+                })
+
+                // Update redux
+                delete hilTimers[item._id]
+                onSetHilTimers({
+                    ...hilTimers,
+                })
             }
-
         })
 
         // If the length of intervals is greater then 0 check to make sure the ascoiated task q item is still in task q
         if (Object.keys(statusTimerIntervals).length > 0) {
 
-            Object.keys(statusTimerIntervals).map((id, ind) => {
+            Object.keys(statusTimerIntervals).forEach((id, ind) => {
 
                 // If Item is not in task q, end the interval
                 if (!taskQueue[id]) {
@@ -276,7 +305,7 @@ const HILModal = () => {
 
         let hilRemoved = true
 
-        Object.keys(taskQueue).map((id, ind) => {
+        Object.keys(taskQueue).forEach((id, ind) => {
             const item = taskQueue[id]
 
         })
@@ -284,10 +313,11 @@ const HILModal = () => {
     }
 
     return (
+
         <>
-            {/* <HILModals status={status.hil}/> */}
             {handleHilsInTaskQueue}
             {handleHILTimers}
+            {renderHIL}
         </>
     )
 }

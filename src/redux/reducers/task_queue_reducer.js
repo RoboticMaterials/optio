@@ -1,41 +1,25 @@
 import {
-    GET_TASK_QUEUE,
-    TASK_QUEUE,
     TASK_QUEUE_ALL,
     TASK_QUEUE_ITEM,
     GET_TASK_QUEUE_STARTED,
     GET_TASK_QUEUE_SUCCESS,
     GET_TASK_QUEUE_FAILURE,
 
-    GET_TASK_QUEUE_ITEM,
-    GET_TASK_QUEUE_ITEM_STARTED,
-    GET_TASK_QUEUE_ITEM_SUCCESS,
-    GET_TASK_QUEUE_ITEM_FAILURE,
-
-    POST_TASK_QUEUE,
     POST_TASK_QUEUE_STARTED,
     POST_TASK_QUEUE_SUCCESS,
     POST_TASK_QUEUE_FAILURE,
 
-    PUT_TASK_QUEUE,
     PUT_TASK_QUEUE_STARTED,
     PUT_TASK_QUEUE_SUCCESS,
     PUT_TASK_QUEUE_FAILURE,
 
-    DELETE_TASK_QUEUE,
-    DELETE_TASK_QUEUE_STARTED,
-    DELETE_TASK_QUEUE_SUCCESS,
-    DELETE_TASK_QUEUE_FAILURE,
-
     TASK_QUEUE_OPEN,
-    INCREMENT_GET_DATA_FAILURE_COUNT
+    INCREMENT_GET_DATA_FAILURE_COUNT,
+    SET_SHOW_MODAL_ID,
 } from '../types/task_queue_types';
 
 import {
-    GET_,
-    POST_,
     DELETE_,
-    PUT_,
 
     _STARTED,
     _SUCCESS,
@@ -54,12 +38,12 @@ const defaultState = {
     activeHilDashboards: {},
     localHumanTask: null,
     taskQueueOpen: false,
-    getFailureCount: 1
+    getFailureCount: 1,
+    showModalID: null
 };
 
 export default function taskQueueReducer(state = defaultState, action) {
     let taskQueue = {}
-
     switch (action.type) {
 
         /**
@@ -103,11 +87,23 @@ export default function taskQueueReducer(state = defaultState, action) {
         // get
         // ***************
         case GET_TASK_QUEUE_SUCCESS:
-            if (action.payload === undefined) {
-                action.payload = {}
-            }
+
+          let taskQueue = {}
+
+          if (action.payload === undefined) {
+              taskQueue = {}
+          }
+          else taskQueue = Object.assign(taskQueue, action.payload)
+
+
+        Object.values(taskQueue).forEach((item)=> {
+          if(item.hil_response===false){
+            delete taskQueue[item._id]
+          }
+        })
+
             return Object.assign({}, state, {
-                taskQueue: action.payload,
+                taskQueue: taskQueue,
                 pending: false
             });
 
@@ -159,20 +155,19 @@ export default function taskQueueReducer(state = defaultState, action) {
                 _id: { $oid: action.payload.ID }
 
             })
-
             let forceUpdate = {}
 
             forceUpdate = Object.assign(forceUpdate, updatedTaskQ)
 
-            return {
-                ...state,
-                taskQueue: {
-                    ...state.taskQueue,
-                    [action.payload.ID]: forceUpdate,
-                },
-                error: '',
-                pending: false,
-            }
+              return {
+                  ...state,
+                  taskQueue: {
+                      ...state.taskQueue,
+                      [action.payload.ID]: forceUpdate,
+                  },
+                  error: '',
+                  pending: false,
+              }
 
         case PUT_TASK_QUEUE_FAILURE:
             return Object.assign({}, state, {
@@ -239,6 +234,13 @@ export default function taskQueueReducer(state = defaultState, action) {
                 ...state,
                 getFailureCount: state.getFailureCount + 1,
             }
+
+        case SET_SHOW_MODAL_ID:
+            return {
+              ...state,
+              showModalID: action.payload,
+            }
+
         // ~~~~~~~~~~~~~~~
 
         default:

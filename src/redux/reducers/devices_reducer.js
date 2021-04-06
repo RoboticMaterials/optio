@@ -32,8 +32,6 @@ const defaultState = {
 const devicesReducer = (state = defaultState, action) => {
     let devicesClone = {}
     let currentDevice = ''
-    let updatedDeviceIndex = ''
-    let index = ''
 
     // ======================================== //
     //                                          //

@@ -1,6 +1,7 @@
 //This API is used to handle calls to the local storage
 
 import logger from '../logger'
+import ls from 'local-storage'
 import {
     BrowserView,
     MobileView,
@@ -8,8 +9,6 @@ import {
     isMobile
 } from "react-device-detect";
 import {defaultLocalSettings} from "../constants/local_settings_constants";
-
-
 
 const log = logger.getLogger('LocalStorage')
 
@@ -32,27 +31,27 @@ export async function postLoggers(settings) {
     return loggerConfig;
 }
 
-export const postLocalSettings = async (settings) => {
 
-    // NOTE: localStorage.setItem returns undefined, so can't use this return value for anything
-    const localSettings = localStorage.setItem("local-settings-config", JSON.stringify(settings))
-    return localSettings
+export const postLocalSettings = async (settings) => {
+  const locStorage = ls.set("localSettings", JSON.stringify(settings));
+  return locStorage
+}
+
+
+export const getLocalSettings = async () => {
+  const localSettings = ls.get("localSettings");
+
+  if (localSettings !== null) {
+      const locSettings = JSON.parse(localSettings);
+      return locSettings;
+  }
+  else {
+    await postLocalSettings(defaultLocalSettings)
+    return defaultLocalSettings
+  }
+
 }
 
 export const deleteLocalSettings = async () => {
-    localStorage.removeItem("local-settings-config")
-    
-}
-
-export const getLocalSettings = async () => {
-    let localSettings = localStorage.getItem("local-settings-config");
-    if (localSettings) {
-        localSettings = JSON.parse(localSettings);
-        return localSettings;
-    }
-    // Posts settigns to the backend if there's nothing there
-    else {
-        const settings = await postLocalSettings(defaultLocalSettings)
-        return defaultLocalSettings
-    }
+    localStorage.removeItem("local-settings-config");
 }

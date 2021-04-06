@@ -4,11 +4,6 @@ import {
     GET_TASKS_SUCCESS,
     GET_TASKS_FAILURE,
 
-    GET_TASK,
-    GET_TASK_STARTED,
-    GET_TASK_SUCCESS,
-    GET_TASK_FAILURE,
-
     POST_TASK,
     POST_TASK_STARTED,
     POST_TASK_SUCCESS,
@@ -30,29 +25,28 @@ import {
     UPDATE_TASKS,
     REMOVE_TASK,
     SET_TASK_ATTRIBUTES,
-    VALIDATE_TASK,
     SELECT_TASK,
     SET_SELECTED_TASK,
     DESELECT_TASK,
     EDITING_TASK, REMOVE_TASKS,
+    SET_SELECTED_HOVERING_TASK,
 
 } from '../types/tasks_types'
 
 import { deepCopy } from '../../methods/utils/utils';
-import {isObject} from "../../methods/utils/object_utils";
+import { isObject } from "../../methods/utils/object_utils";
 
 
 const defaultState = {
     tasks: {},
     selectedTask: null,
+    selectedHoveringTask: null,
 
     error: {},
     pending: false
 };
 
 export default function tasksReducer(state = defaultState, action) {
-    let index = ''
-    let taskID = ''
     let tasksCopy = {};
 
     switch (action.type) {
@@ -234,14 +228,14 @@ export default function tasksReducer(state = defaultState, action) {
 
             return {
                 ...state,
-                tasks: {...remainingTasks},         // keep all tasks but the one to remove
+                tasks: { ...remainingTasks },         // keep all tasks but the one to remove
             }
         }
 
         case REMOVE_TASKS: {
 
 
-            let temp = {...state.tasks}
+            let temp = { ...state.tasks }
 
             action.payload.ids.forEach((currId) => {
                 const {
@@ -254,48 +248,48 @@ export default function tasksReducer(state = defaultState, action) {
 
             return {
                 ...state,
-                tasks: {...temp},         // keep all tasks but the one to remove
+                tasks: { ...temp },         // keep all tasks but the one to remove
             }
         }
 
 
         case SET_TASK_ATTRIBUTES: {
-                var newState
+            var newState
 
-                if (isObject(state.selectedTask) && state.selectedTask._id === action.payload.id) {
-                    newState = {
-                        ...state,
-                        tasks: state.tasks[action.payload.id] ?
-                            {
-                                ...state.tasks,
-                                [action.payload.id]: {...state.tasks[action.payload.id], ...action.payload.attr},
-                            }
-                        :
-                            {
-                                ...state.tasks
-                            },
-                        selectedTask: {
-                            ...state.selectedTask,
-                            ...action.payload.attr
+            if (isObject(state.selectedTask) && state.selectedTask._id === action.payload.id) {
+                newState = {
+                    ...state,
+                    tasks: state.tasks[action.payload.id] ?
+                        {
+                            ...state.tasks,
+                            [action.payload.id]: { ...state.tasks[action.payload.id], ...action.payload.attr },
                         }
-                    }
-                } else {
-                    newState = {
-                        ...state,
-                        tasks: state.tasks[action.payload.id] ? {
-                                ...state.tasks,
-                                [action.payload.id]: {...state.tasks[action.payload.id], ...action.payload.attr},
-                            }
                         :
-                            {
-                                ...state.tasks
-                            }
+                        {
+                            ...state.tasks
+                        },
+                    selectedTask: {
+                        ...state.selectedTask,
+                        ...action.payload.attr
                     }
                 }
-
-                return newState
-
+            } else {
+                newState = {
+                    ...state,
+                    tasks: state.tasks[action.payload.id] ? {
+                        ...state.tasks,
+                        [action.payload.id]: { ...state.tasks[action.payload.id], ...action.payload.attr },
+                    }
+                        :
+                        {
+                            ...state.tasks
+                        }
+                }
             }
+
+            return newState
+
+        }
 
 
         case SELECT_TASK:
@@ -310,17 +304,23 @@ export default function tasksReducer(state = defaultState, action) {
                 selectedTask: action.payload.task
             }
 
+        case SET_SELECTED_HOVERING_TASK:
+            return {
+                ...state,
+                selectedHoveringTask: action.payload.task
+            }
+
         case DESELECT_TASK:
             return {
                 ...state,
                 selectedTask: null,
             }
 
-            case EDITING_TASK:
-                return {
-                    ...state,
-                    editingTask: action.payload,
-                }
+        case EDITING_TASK:
+            return {
+                ...state,
+                editingTask: action.payload,
+            }
         default:
             return state;
     }

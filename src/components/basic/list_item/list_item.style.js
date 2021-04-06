@@ -4,7 +4,7 @@ export const Container = styled.div`
     width: 100;
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid ${props => props.theme.bg.secondary};
+    border-bottom: 1px solid ${props => props.theme.bg.tertiary};
 
     position: relative;
     display: flex;

@@ -1,25 +1,25 @@
-import React, { useContext, useEffect, useState, useMemo } from "react";
-import { useDispatch, useSelector } from 'react-redux'
-import { useParams, useHistory } from 'react-router-dom'
+import React, { useState, useMemo } from 'react';
 
-// import components
-import BounceButton from "../../../../basic/bounce_button/bounce_button";
-import BackButton from '../../../../basic/back_button/back_button'
-import Button from '../../../../basic/button/button'
+// functions external
+import { useSelector } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
-// Import hooks
-import useWindowSize from '../../../../../hooks/useWindowSize'
+// components internal
+import BackButton from '../../../../basic/back_button/back_button';
+import Button from '../../../../basic/button/button';
+import SimpleLot from "../dashboard_screen/simple_lot/simple_lot";
+import ReactTooltip from "react-tooltip";
 
-// import external funcations
-import { ThemeContext } from "styled-components";
-import { withRouter } from "react-router-dom";
-import { getCards } from "../../../../../redux/actions/card_actions";
+import uuid from 'uuid'
 
+// hooks internal
+import useWindowSize from '../../../../../hooks/useWindowSize';
 
-// import constants
-import { PAGES } from "../../../../../constants/dashboard_contants";
+// utils
+import {getBinQuantity, getIsCardAtBin} from "../../../../../methods/utils/lot_utils";
 
-import * as style from "./dashboards_header.style";
+// styles
+import * as style from './dashboards_header.style';
 
 const widthBreakPoint = 1000;
 
@@ -31,26 +31,24 @@ const DashboardsHeader = (props) => {
         showBackButton,
         showEditButton,
         showSaveButton,
-        showSidebar,
-        setShowSidebar,
         setEditingDashboard,
         page,
-
         saveDisabled,
         onBack,
-        onDelete
+        onLockClick,
+        locked
     } = props
 
-    const themeContext = useContext(ThemeContext);
+    const [toolTipId, ] = useState(`tooltip-${uuid.v4()}`)
 
     // extract url params
-    const { stationID, dashboardID, editing } = props.match.params
-    const dispatch = useDispatch()
-    const onGetCards = () => dispatch(getCards())
+    const { stationID } = props.match.params
 
     const cards = useSelector(state => state.cardsReducer.cards)
     const stations = useSelector(state => state.stationsReducer.stations)
     const positions = useSelector(state => state.positionsReducer.positions)
+
+    const [moreLots, setMoreLots] = useState(false);
 
     const locations = {
         ...positions,
@@ -58,17 +56,9 @@ const DashboardsHeader = (props) => {
     }
 
     const location = locations[stationID]
-
-    const [slice, setSlice] = useState(null)
     const size = useWindowSize()
     const windowWidth = size.width
     const mobileMode = windowWidth < widthBreakPoint;
-
-
-    // goes to main dashboards page
-    const goToMainPage = () => {
-        props.history.push(`/locations/${stationID}/dashboards`)
-    }
 
     /**
      * Renders Lots that are are the station
@@ -89,18 +79,36 @@ const DashboardsHeader = (props) => {
 
         if (!!hasLot) {
             return (
-                <style.RowContainer windowWidth={windowWidth}>
-                    <style.LotsTitle>Lots:</style.LotsTitle>
-                    {Object.values(cards).map((card, ind) =>
-                        <>
-                            {!!card.bins[location._id] &&
+                <style.LotsContainer moreLots={moreLots}>
+                    <style.RowContainer windowWidth={windowWidth} style={{height: moreLots ? '' : '3.8rem'}}>
+                        <style.LotsTitle>Lots:</style.LotsTitle>
+                        {Object.values(cards)
+                            .filter((card, ind) => {
+                                return getIsCardAtBin(card, location?._id)
+                            })
+                            .map((card) => {
+                                const {
+                                    name,
+                                    lotNumber,
+                                    bins,
+                                    _id
+                                } = card || {}
 
-                                <style.LotItem>{card.name + ' (' + card.bins[location._id].count + ')'}</style.LotItem>
-                            }
-                        </>
+                                const quantity = getBinQuantity({bins}, location?._id)
 
-                    )}
-                </style.RowContainer>
+                                return(
+                                    <SimpleLot
+                                        key={_id}
+                                        name={name}
+                                        lotNumber={lotNumber}
+                                        quantity={quantity}
+                                    />
+                                )
+                            })}
+
+                    </style.RowContainer>
+                    <style.MoreIcon className='fas fa-ellipsis-h' onClick={() => setMoreLots(!moreLots)}/>
+                </style.LotsContainer>
             )
         }
 
@@ -118,44 +126,61 @@ const DashboardsHeader = (props) => {
 
             {renderLotsTitle}
 
+
             <style.Header>
+                {showBackButton &&
+                      <style.LockIcon
+                          style = {{marginRight: locked ? '1rem' : '.68rem',}}
+                          className= {!locked ? 'fas fa-lock-open' : 'fas fa-lock'}
+                          onClick={onLockClick}
+                          locked = {locked}
+                          data-tip
+                          data-for={toolTipId}
+                        >
+                          <ReactTooltip id={toolTipId}>
+                            <style.LockContainer>Click to toggle the lock. When the lock is enabled the "X" button on the dashsboards screen is hidden</style.LockContainer>
+                          </ReactTooltip>
+                        </style.LockIcon>
+                }
 
                 {showBackButton &&
-                    <BackButton style={{ order: '1' }} containerStyle={{ marginTop: '1.8rem' }}
-                        onClick={onBack}
-                    />
+                <BackButton style={{ order: '1' }} containerStyle={{  }}
+                            onClick={onBack}
+                />
                 }
 
                 {showTitle &&
-                    <style.Title style={{ order: '2' }}>{page}</style.Title>
+                <style.Title style={{ order: '2' }}>{page}</style.Title>
                 }
 
                 {showEditButton && !mobileMode &&
-                    <Button style={{ order: '3', marginTop: '1.8rem' }}
+                <Button style={{ order: '3', position: 'absolute', right: '0', marginRight: '0' }}
                         onClick={setEditingDashboard}
-                    >
-                        Edit
-  				</Button>
+                        secondary
+                >
+                    Edit Dashboard
+                </Button>
                 }
 
                 {showSaveButton &&
-                    <>
-                        <Button style={{ order: '3', marginTop: '1.8rem' }}
-                            type="submit"
+                <>
+                    <Button style={{ order: '3', minWidth: '10rem' }}
+                            type='submit'
                             disabled={saveDisabled}
-                        >
-                            Save
-  				</Button>
+                            schema="dashboards"
+                    >
+                        Save
+                    </Button>
 
-                        {/* Comment out for now since locations only have one dashboard, so you should not be able to delete the only dashboard */}
-                        {/* <Button
+                    {/* Comment out for now since locations only have one dashboard, so you should not be able to delete the only dashboard */}
+                    {/* <Button
                           schema={'delete'}
                           style={{ order: '4', marginTop: '1.8rem', marginLeft: '2rem' }}
                           onClick={onDelete}
                       >
                           Delete
                       </Button> */}
-                    </>
+                </>
                 }
 
                 {children}

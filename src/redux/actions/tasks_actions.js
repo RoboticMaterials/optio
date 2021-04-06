@@ -1,25 +1,16 @@
 import {
-    GET_TASKS,
     GET_TASKS_STARTED,
     GET_TASKS_SUCCESS,
     GET_TASKS_FAILURE,
 
-    GET_TASK,
-    GET_TASK_STARTED,
-    GET_TASK_SUCCESS,
-    GET_TASK_FAILURE,
-
-    POST_TASK,
     POST_TASK_STARTED,
     POST_TASK_SUCCESS,
     POST_TASK_FAILURE,
 
-    PUT_TASK,
     PUT_TASK_STARTED,
     PUT_TASK_SUCCESS,
     PUT_TASK_FAILURE,
 
-    DELETE_TASK,
     DELETE_TASK_STARTED,
     DELETE_TASK_SUCCESS,
     DELETE_TASK_FAILURE,
@@ -35,15 +26,12 @@ import {
     DESELECT_TASK,
     EDITING_TASK,
     REMOVE_TASKS,
+    SET_SELECTED_HOVERING_TASK,
 } from '../types/tasks_types'
 
 import { deepCopy } from '../../methods/utils/utils';
 
 import * as api from '../../api/tasks_api'
-import * as dashboardActions from "./dashboards_actions";
-import {getRouteProcesses} from "../../methods/utils/route_utils";
-import {willRouteDeleteBreakProcess} from "../../methods/utils/processes_utils";
-import {useSelector} from "react-redux";
 import * as processesActions from "./processes_actions";
 import * as dashboardsActions from "./dashboards_actions";
 
@@ -71,6 +59,7 @@ export const getTasks = () => {
             const normalizedTasks = {}
             tasks.map((task) => {
                 normalizedTasks[task._id] = task
+                return task
             })
 
             return onSuccess(normalizedTasks);
@@ -198,7 +187,7 @@ export const deleteTask = (ID) => {
 
         try {
             onStart();
-            const removeTask = await api.deleteTask(ID);
+            await api.deleteTask(ID);
             return onSuccess(ID)
         } catch (error) {
             return onError(error)
@@ -272,7 +261,6 @@ export const saveFormRoute = (formRoute) => {
             obj = {},
             ...remainingRoute
         } = formRoute
-
         // get objectId
         const {
             _id: objectId
@@ -332,6 +320,10 @@ export const selectTask = (id) => {
 
 export const setSelectedTask = (task) => {
     return { type: SET_SELECTED_TASK, payload: { task }}
+}
+
+export const setSelectedHoveringTask = (task) => {
+    return { type: SET_SELECTED_HOVERING_TASK, payload: { task }}
 }
 
 export const deselectTask = () => {

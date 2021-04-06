@@ -51,8 +51,9 @@ export const ListItem = styled.div`
     border-radius: 0.5rem;
     border: 0.1rem solid;
     border-color: ${props => props.error ? 'red' : 'white'};
-  
-    // border-color: ${props => props.isNew ? 'blue' : 'white'};
+
+    box-shadow: ${props => props.theme.cardShadow};
+    // cursor: pointer;
 
   ${props => props.isNew &&  commonCss.newGlow};
 
@@ -80,7 +81,7 @@ export const ListItemRect = styled.div`
 
 `
 export const LocationTypeGraphic = styled.svg`
-    height: 1.5rem;
+    height: 2rem;
 `
 export const ListItemTitle = styled.h1`
 
@@ -97,14 +98,15 @@ export const ListItemTitle = styled.h1`
     margin-right:0.5rem;
     margin-bottom: 0rem;
     width: 75%;
+
+    flex-grow: 1;
+    margin-left: 1rem;
 `
 
 export const ListItemIcon = styled.i`
 
     font-size: 1.3rem;
     color: lightgreen;
-
-
 
     &:hover {
         cursor: pointer;
@@ -115,7 +117,8 @@ export const ListItemIcon = styled.i`
 export const ListItemIconContainer = styled.div`
     position: relative;
     display: flex;
-    width: 10%;
+
+    flex-grow: 0;
 `
 
 export const ErrorContainer = styled.div`

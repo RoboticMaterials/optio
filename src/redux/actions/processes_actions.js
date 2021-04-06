@@ -29,7 +29,10 @@ import { deepCopy } from '../../methods/utils/utils'
 import {putDashboard} from "./dashboards_actions";
 import {getRouteProcesses} from "../../methods/utils/route_utils";
 import {willRouteDeleteBreakProcess} from "../../methods/utils/processes_utils";
+import * as dashboardsActions from "./dashboards_actions";
+import {deleteTask} from "./tasks_actions";
 
+import * as cardActions from "./card_actions";
 
 export const getProcesses = () => {
     return async dispatch => {
@@ -119,7 +122,9 @@ export const putProcesses = (process) => {
         }
     }
 }
-export const deleteProcesses = (ID) => {
+
+
+export const deleteProcess = (ID) => {
     return async dispatch => {
         function onStart() {
             dispatch({ type: DELETE_PROCESSES_STARTED });
@@ -135,13 +140,26 @@ export const deleteProcesses = (ID) => {
 
         try {
             onStart();
-            const removeProcesses = await api.deleteProcesses(ID);
+            const removeProcesses = await api.deleteProcess(ID);
             return onSuccess(ID)
         } catch (error) {
             return onError(error)
         }
     }
 }
+
+// delete CLEAN
+// ******************************
+export const deleteProcessClean = (processId) => {
+    return async (dispatch, getState) => {
+
+        // remove route from all dashboards
+        await dispatch(cardActions.deleteProcessCards(processId))
+
+        await dispatch(deleteProcess(processId))
+    }
+}
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // deletes all buttons with routeId from all dashboards
 // ******************************
@@ -154,8 +172,6 @@ export const removeRouteFromAllProcesses = (routeId) => {
 
         // get all processes that contain routeId
         const routeProcesses = getRouteProcesses(routeId)
-
-        console.log("removeRouteFromAllProcesses routeProcesses",routeProcesses)
 
         // loop through each of these processes, check if removing the route will break the process, then remove the route
         for (const currProcess of routeProcesses) {
@@ -193,7 +209,7 @@ export const editingProcess = (bool) => {
 /**
  * This is to tell the map that you are fixing a process vs adding a new route to the process
  * It will force you to select a location that is tied with the location before the process breaks
- * @param {bool} bool 
+ * @param {bool} bool
  */
 export const setFixingProcess = (bool) => {
     return { type: 'SET_FIXING_PROCESS', payload: bool }

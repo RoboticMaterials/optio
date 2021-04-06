@@ -10,8 +10,9 @@ export const FooterContainer = styled.div`
 	overflow-x: scroll;
 	overflow-y: hidden;
 	padding: 1rem;
-	border-top: 1px solid ${props => props.theme.bg.quaternary};
-	background: ${props => props.theme.bg.tertiary + "B1"};
+	background: ${props => props.theme.bg.secondary + "B1"};
+
+    justify-content: center;
 `
 
 // export const
@@ -37,10 +38,12 @@ export const Container = styled.div`
     flex-direction: column;
     // justify-content: flex-start;
     align-items: center;
+    justify-content: center;
+    align-content: center;
     z-index: 1;
 
     flex: 1;
-    background: ${props => LightenDarkenColor(props.theme.bg.quaternary, 20)};
+    background: ${props => props.theme.bg.tertiary};
     
 `
 
@@ -54,11 +57,10 @@ export const ListContainer = styled.div`
     width: 100%;
     height: 100%;
     max-height: 100%;
-    padding-top: 3rem;
+    padding-top: 2rem;
 
     padding-left: 2rem;
     padding-right: 2rem;
-    
     
     display: flex;
     flex-direction: column;
@@ -69,7 +71,7 @@ export const ListContainer = styled.div`
     overflow-x: hidden;
     z-index: 1;
     
-    background: ${props => LightenDarkenColor(props.theme.bg.quaternary, 20)};
+    background: ${props => props.theme.bg.primary};
     
     
     // hide scroll bar
@@ -99,9 +101,21 @@ export const HandleContainer = styled.div`
 
 export const HandleIcon = styled.div`
     width: 10px;
-    background: ${props => props.theme.bg.septenary};
+    background: ${props => props.theme.fg.primary};
     height: 3rem;
      border-radius: .25rem;
+`
+
+export const ButtonContainer = styled.div`
+	diplay: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+`
+
+export const ButtonExistsText = styled.span`
+	font-size: ${props => props.theme.fontSize.sz3};
+  	color: white;
+  text-align: center;
 `
 
 // NEW SIDEBAR STUFF
@@ -113,7 +127,6 @@ export const SidebarWrapper = styled.div`
     align-items: stretch;
     flex-flow: row nowrap;
     flex-direction: row;
-    width: 100%;
     flex-grow: 0;
     z-index: 1;
 
@@ -131,7 +144,7 @@ export const SidebarContent = styled.div`
     // background: ${props => props.theme.bg.primary};
     z-index: 1;
 
-    border-right: 8px solid ${props => LightenDarkenColor(props.theme.bg.quinary,20)};
+    border-right: 8px solid ${props => props.theme.bg.tertiary};
     
 `
 
@@ -151,7 +164,7 @@ export const ResizeHandle = styled.div`
     cursor: ew-resize;
     width: 4px;
     height: 30px;
-    background: ${props => props.theme.bg.octonary};
+    background: ${props => props.theme.schema.dashboards.solid};
     border-radius: 8px;
     text-align: center;
     z-index: 2;
@@ -159,4 +172,38 @@ export const ResizeHandle = styled.div`
     display: flex;
     align-items: center ;
 
+`
+
+export const RowContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 2rem;
+`
+
+
+export const DualSelectionButton = styled.button`
+    font-size: 1rem;
+    width: 8rem;
+    border: none;
+    font-family: ${props => props.theme.font.primary};
+
+    color: ${props => props.selected ? props.theme.bg.octonary : props.theme.bg.quinary};
+
+    background-color: ${props => props.selected ? props.theme.schema.dashboards.solid : props.theme.bg.tertiary};
+
+    transition: background-color 0.25s ease, box-shadow 0.1s ease;
+
+    &:focus{
+        outline: 0 !important
+    }
+
+    &:active{
+        box-shadow: none;
+    }
+
+    &:hover{
+        //background-color: ${props => props.theme.bg.quaternary};
+    }
 `

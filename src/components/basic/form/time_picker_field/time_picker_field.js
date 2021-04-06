@@ -1,7 +1,7 @@
 // import external modules
 import React from "react";
 import { useField, useFormikContext } from "formik";
-import TimePicker from 'rc-time-picker';
+import TimePicker from './time_picker';
 import moment from 'moment';
 import 'rc-time-picker/assets/index.css';
 
@@ -46,10 +46,10 @@ const TimePickerField = (props) => {
 	const errorMessage = getMessageFromError(error);
 
 	return (
-			// <Container
-			// 	style={containerStyle}
-			// >
-				<styled.TimePickerComponent
+			<Container
+				style={containerStyle}
+			>
+				<TimePicker
 					{...style}
 					{...field}
 					{...rest}
@@ -65,12 +65,12 @@ const TimePickerField = (props) => {
 						onChange && onChange(val)
 					}}
 				/>
-			// 	<ErrorTooltip
-			// 		visible={hasError}
-			// 		text={errorMessage}
-			// 		ContainerComponent={ErrorContainerComponent}
-			// 	/>
-			// </Container>
+				<ErrorTooltip
+					visible={hasError}
+					text={errorMessage}
+					ContainerComponent={ErrorContainerComponent}
+				/>
+			</Container>
 	)
 }
 
@@ -92,8 +92,8 @@ TimePickerField.defaultProps = {
 	containerStyle: {},
 	style: {},
 	onChange: () => {},
-	mapOutput: () => {},
-	mapInput: () => {},
+	mapOutput: val => val,
+	mapInput: val => val,
 };
 
 export default TimePickerField;

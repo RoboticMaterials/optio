@@ -20,6 +20,7 @@ import posesReducer from './poses_reducer';
 import requestStatusReducer from './request_status_reducer';
 import taskAnalysisReducer from './task_analysis_reducer'
 import mapReducer from './map_reducer'
+import lotTemplatesReducer from './lot_templates_reducer'
 import sidebarReducer from './sidebar_reducer'
 import widgetReducer from './widget_reducer'
 import devicesReducer from './devices_reducer'
@@ -30,12 +31,13 @@ import processesReducer from './processes_reducer'
 import reportEventsReducer from './report_events_reducer'
 import cardsReducer from './cards_reducer'
 import lotsReducer from './lots_reducer'
-import testReducer from './test_reducer'
 import cardPageReducer from "./card_page_reducer"
+
 // TEST
 
 export default combineReducers({
     cardPageReducer,
+    lotTemplatesReducer,
     apiReducer,
     reportEventsReducer,
     cardsReducer,

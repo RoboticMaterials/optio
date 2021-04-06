@@ -25,6 +25,35 @@ export const ZoneContainer = styled.div`
     display: flex;
     align-items: center;
     
+    background: ${props => props.theme.bg.primary};
+    box-shadow: ${props => props.theme.cardShadow};
+    margin: 1.5rem;
+    border-radius: 0.5rem;
+
+    overflow-x: scroll;
+
+    /* Let's get this party started */
+    ::-webkit-scrollbar {
+        height: 8px;
+    }
+    /* Track */
+    ::-webkit-scrollbar-track {
+        -webkit-background: rgba(0,0,0,0.1);
+        -webkit-border-radius: 10px;
+        border-radius: 10px;
+        &:hover {
+            background: rgba(0,0,0,0.1);
+        }
+    }
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        -webkit-border-radius: 10px;
+        border-radius: 10px;
+        background: rgba(0, 0, 0, 0.2);
+    }
+    ::-webkit-scrollbar-thumb:window-inactive {
+        // background: rgba(255,255,255,0.2);
+    }
 `
 
 export const ProcessName = styled.h3`
@@ -32,7 +61,7 @@ export const ProcessName = styled.h3`
     margin: 0;
     margin: 0 2rem;
     font-size: ${props => props.theme.fontSize.sz3};
-    color: white;
+    color: ${props => props.theme.schema.lots.solid};
     text-align: center;
     width: 5rem;
     min-width: 8rem;

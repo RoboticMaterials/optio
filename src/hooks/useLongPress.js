@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from "react";
 
 const useLongPress = (
 	onLongPress,
+	onLongPressEnd,
 	onClick,
 	{ shouldPreventDefault = true, delay = 300, minRate } = {}
 ) => {
@@ -28,6 +29,7 @@ const useLongPress = (
 	const clear = useCallback(
 		(event, shouldTriggerClick = true) => {
 			timeout.current && clearTimeout(timeout.current);
+			onLongPressEnd()
 			shouldTriggerClick && !longPressTriggered && onClick();
 			setLongPressTriggered(false);
 			if (shouldPreventDefault && target.current) {

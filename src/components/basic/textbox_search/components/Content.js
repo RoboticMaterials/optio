@@ -19,7 +19,7 @@ const Content = ({ props, state, methods, ContentComponent, InputComponent }) =>
       {props.contentRenderer ? (
         props.contentRenderer({ props, state, methods })
       ) : (
-        
+
         <React.Fragment>
           <Input InputComponent={InputComponent} props={props} methods={methods} state={state} />
         </React.Fragment>
@@ -38,7 +38,8 @@ export const Value = styled.div`
 
 export const DefaultContentComponent = styled.div`
   position: relative;
-  
+  background: white;
+
   display: flex;
   flex-grow: 1;
   // flex-wrap: nowrap;

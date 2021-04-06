@@ -10,6 +10,9 @@ export async function getSkillTemplates() {
     const response = await axios({
       method: 'get',
       url: apiIPAddress() + operator,
+      headers:{
+        'X-API-Key': '123456',
+      }
     });
     // Success 🎉
     const data = response.data;
@@ -51,7 +54,8 @@ export async function postSkillTemplate(condition) {
       url: apiIPAddress() + operator,
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'X-API-Key': '123456',
       },
       data: JSON.stringify(condition)
   });

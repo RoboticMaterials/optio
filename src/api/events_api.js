@@ -11,7 +11,10 @@ export async function getEvents() {
     try {
         const response = await axios({
             method: 'get',
-            url: apiIPAddress() + operator,
+            url: apiIPAddress() + operator, 
+            headers: {
+                'X-API-Key': '123456',
+            },
         });
         // Success 🎉
         const data = response.data;
@@ -53,6 +56,7 @@ export async function deleteEvents(ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Accept': 'application/json',
+                'X-API-Key': '123456',
             },
         });
 
@@ -96,6 +100,7 @@ export async function postEvents(events) {
             url: apiIPAddress() + operator,
             headers: {
                 'Content-Type': 'application/json',
+                'X-API-Key': '123456',
                 'Accept': 'application/json'
             },
             data: events
@@ -145,6 +150,7 @@ export async function putEvents(event, ID) {
             url: apiIPAddress() + operator + '/' + ID,
             headers: {
                 'Content-Type': 'application/json',
+                'X-API-Key': '123456',
                 'Accept': 'text/html'
             },
             data: event

@@ -2,24 +2,26 @@ import axios from 'axios';
 import * as log from 'loglevel';
 
 import { apiIPAddress } from '../settings/settings'
-const operator = 'data_stream'
 
-const logger = log.getLogger('Positions_Api', "Position");
+const operator = 'data_stream'
 
 export async function getDataStream() {
     try {
         const response = await axios({
-            method: 'get',
+            method: 'GET',
             url: apiIPAddress() + operator,
+            headers: {
+                'X-API-Key': '123456',
+                'Access-Control-Allow-Origin': '*'
+            },
+            timeout: 3000
         });
+
         // Success 🎉
         const data = response.data;
         const dataJson = JSON.parse(data)
         return dataJson;
-
-
     } catch (error) {
-
         // Error 😨
         if (error.response) {
             /*

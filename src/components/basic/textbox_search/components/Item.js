@@ -55,6 +55,8 @@ class Item extends Component {
               {getByPath(item, props.labelField)} {item.disabled && <ins>{props.disabledLabel}</ins>}
             </TextComponent>
 
+
+
             {props.showButton && !!props.onDetailsClick &&
               <ButtonComponent className='fas fa-ellipsis-h'
                   onClick={(e) => {
@@ -83,12 +85,15 @@ Item.propTypes = {
 export const DefaultItemComponent = styled.span`
 
   padding: .5rem 1rem .5rem calc(1rem - 5px);
+  margin-top: 1rem;
   cursor: pointer;
   white-space: nowrap;
   display: flex;
   justify-content: space-between;
   font-family: ${props => props.theme.font.primary};
   font-size: ${props => props.theme.fontSize.sz3};
+  background-color: white;
+  color: black;
 
   border-left: 5px solid transparent;
 
@@ -98,7 +103,7 @@ export const DefaultItemComponent = styled.span`
 
   :hover,
   :focus {
-    background: ${props => LightenDarkenColor(props.theme.bg.quinary, 10)};
+    background: #D3D3D3;
     outline: none;
   }
 
@@ -110,7 +115,7 @@ export const DefaultItemComponent = styled.span`
     `
     : `
       background: ${!!props.schema ? hexToRGBA(props.theme.schema[props.schema].solid, 0.1) : hexToRGBA(props.theme.bg.senary, 0.1)};
-      color: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.bg.senary};
+      color: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.bg.primary};
       border-color: ${!!props.schema ? props.theme.schema[props.schema].solid : props.theme.bg.senary};
     `}
   }
@@ -118,8 +123,8 @@ export const DefaultItemComponent = styled.span`
   ${({ disabled }) =>
     disabled
       ? `
-    background: ${props => props.theme.bg.secondary};
-    color: ${props => props.theme.bg.tertiary};
+    background: ${props => props.theme.bg.tertiary};
+    color: ${props => props.theme.bg.secondary};
 
     ins {
       text-decoration: none;

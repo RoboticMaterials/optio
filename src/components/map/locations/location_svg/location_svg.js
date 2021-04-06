@@ -5,6 +5,7 @@ import * as styled from './location_svg.style'
 // Import Constants
 import { StationTypes } from '../../../../constants/station_constants'
 import { PositionTypes } from '../../../../constants/position_constants'
+import PropTypes from "prop-types";
 
 const LocationSvg = (props) => {
 
@@ -48,7 +49,7 @@ const LocationSvg = (props) => {
             onMouseLeave={() => {
                 handleMouseLeave()
             }}
-            transform={`translate(${location.x},${location.y}) rotate(${location.rotation}) scale(${d3.scale / d3.imgResolution})`}
+            transform={`translate(${location.x},${location.y}) rotate(${-location.rotation}) scale(${d3.scale / d3.imgResolution})`}
         >
             <defs>
 
@@ -96,16 +97,15 @@ const LocationSvg = (props) => {
                 }
             </g>
 
-            <g
+            <styled.TranslateGroup
                 className={`${rd3tClassName}-trans`}
-                style={{ cursor: "pointer" }}
                 onMouseEnter={() => {
                     handleMouseEnter()
                 }}
                 onMouseDown={() => handleTranslating(true)}
                 onMouseUp={() => handleTranslating(false)}
-
-                transform={location.type === 'device' && 'scale(.07) translate(-180,-140)'}
+                // Devices and shelf positions require their own transforms
+                transform={location.type === 'device' ? 'scale(.07) translate(-180,-140)' : location.type === 'shelf_position' ? 'rotate(90)' : ''}
             >
 
                 <svg id={`${rd3tClassName}-${schema}`} x="-10" y="-10" width="20" height="20" viewBox="0 0 400 400" style={{ filter: shouldGlow ? 'url(#glow2)' : 'none' }}>
@@ -113,11 +113,27 @@ const LocationSvg = (props) => {
                 </svg>
 
 
-            </g>
+            </styled.TranslateGroup>
 
 
         </styled.WorkstationGroup>
     )
+}
+
+LocationSvg.propTypes = {
+    handleMouseEnter: PropTypes.func,
+    handleMouseLeave: PropTypes.func,
+    handleMouseDown: PropTypes.func,
+    handleTranslating: PropTypes.func,
+    handleRotating: PropTypes.func,
+}
+
+LocationSvg.defaultProps = {
+    handleMouseEnter: () => {},
+    handleMouseLeave: () => {},
+    handleMouseDown: () => {},
+    handleTranslating: () => {},
+    handleRotating: () => {},
 }
 
 export default LocationSvg

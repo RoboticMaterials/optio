@@ -38,23 +38,41 @@ export const InfoText = styled.span`
 `
 
 export const SectionContainer = styled.div`
-    border-bottom: 0.1rem solid ${props => props.theme.bg.septenary};
-    margin-bottom: 1rem;
-  	border-top: ${props => props.showTopBorder && `0.1rem solid ${props.theme.bg.septenary}`};
-  	margin-top: ${props => props.showTopBorder && `1rem`};
-  
-  	width: 100%;
-  
-  	padding: 1rem .5rem;
-  	//flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  	
+	margin-bottom: 1rem;
+	margin-top: 0.5rem;
+	width: 100%;
+
+  position: relative;
+	display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  align-content: flex-end;
+  align-items: stretch;
+  justify-content: center;
+
+	overflow-y: auto;
+	overflow-x: hidden;
+
+  // box-shadow: ${props => props.theme.cardShadow};
+  background: ${props => props.theme.bg.secondary};
+  border-radius: 0.4rem;
 `
 
 export const TaskContainer = styled.div`
-    background-color: ${props => props.theme.bg.tertiary};
-    border-radius: 1rem;
-  overflow: auto;
+    background-color: ${props => props.theme.bg.secondary};
+    border-radius: 0.4rem;
+    overflow: auto;
+    // box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.1);
+    scrollbar-color: light;
+    scrollbar-width: thin;
+    min-height: 80%;
+`
 
+export const SVGText = styled.text`
+  font-family: ${props => props.theme.font.primary};
+  font-size: 1rem;
+  width: 4rem;
+  font-weight: 500;
+  transform-origin: center;
 `

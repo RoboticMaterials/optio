@@ -1,15 +1,6 @@
 import {
-  GET,
-  POST,
-  DELETE,
   PUT
 } from '../types/prefixes';
-
-import {
-  STARTED,
-  SUCCESS,
-  FAILURE
-} from '../types/suffixes'
 
 import {
   JUNK

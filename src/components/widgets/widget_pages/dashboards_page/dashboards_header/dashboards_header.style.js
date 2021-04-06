@@ -7,16 +7,17 @@ export const Header = styled.div`
     display: flex;
 
     flex-direction: row;
-    // align-items: center;
-    justify-content: flex-start;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 
-    margin: 0rem 5rem 0rem 5rem;
+    width: calc(90% - 1rem);
+    margin: 0 calc(5% + 0.5rem) 0 calc(5% + 0.5rem);
 
     height: 6rem;
     max-height: 6rem;
     min-height: 6rem;
     line-height: 6rem;
-
 `
 
 export const Title = styled.h2`
@@ -35,6 +36,8 @@ export const Title = styled.h2`
     }
     user-select: none;
 
+    position: absolute;
+
     pointer-events: none;
     white-space: nowrap;
     overflow: hidden;
@@ -44,10 +47,34 @@ export const Title = styled.h2`
 export const LotsTitle = styled.h2`
     color: ${props => props.theme.bg.octonary};
     font-family: ${props => props.theme.font.primary};
-    font-size: 1rem;
+    font-size: 1.5rem;
     padding-right:1rem;
     padding-top:0.4rem;
 
+`
+
+export const LockContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0.2rem;
+
+    font-family: ${props => props.theme.font.primary};
+    font-size: ${props => props.theme.fontSize.sz5};
+    font-weight: 100;
+
+`
+
+export const MoreIcon = styled.i`
+    font-size: 1.3rem;
+    color: ${props => props.theme.bg.quinary};
+    cursor: pointer;
+    margin-top: 1.8rem;
+`
+export const LockIcon = styled.i`
+    font-size: 1.3rem;
+    color: ${props => props.theme.bg.quinary};
+    cursor: pointer;
+    margin-top: 0.4rem;
 `
 
 export const SidebarButton = styled(AssignmentOutlinedIcon)`
@@ -61,20 +88,29 @@ export const SidebarButton = styled(AssignmentOutlinedIcon)`
     background: transparent;
 `
 
+export const LotsContainer = styled.div`
+    margin-right: calc(5% + 0.5rem);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    height: ${props => props.moreLots ? '' : '3.8rem'};
+    transition: height 0.5s;
+`
 
 export const RowContainer = styled.div`
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     justify-content: flex-start;
 
     margin-left:2rem;
+    margin-right:2rem;
     padding-top:1rem;
     padding-right:2rem;
     padding-bottom: 1rem;
-    width: 100%;
-    height: 3rem;
-    overflow:hidden;
+    width: 90%;
+    // height: 3.5rem;
+    overflow: hidden;
     flex-wrap: wrap;
 
 
@@ -83,6 +119,8 @@ export const RowContainer = styled.div`
         margin-left: 2rem;
         margin-right: 2rem;
     }
+
+    transition: height 0.5s;
 `
 
 export const ColumnContainer = styled.div`
@@ -102,28 +140,6 @@ export const Dots = styled.div`
     text-overflow: ellipsis;
 
     padding-top: .2rem;
-
-
-`
-
-export const LotItem = styled.div`
-    align-items: center;
-    justify-content: center;
-    height: 1.7rem;
-    color: white;
-
-    white-space: nowrap;
-
-    width: auto;
-    background: transparent;
-
-    padding-right:.5rem;
-    padding-left:.5rem;
-    margin-right:.5rem;
-
-    border-radius: 0.5rem;
-    border: 0.1rem solid;
-    border-color: ${props => props.error ? 'red' : 'white'};
 
 
 `

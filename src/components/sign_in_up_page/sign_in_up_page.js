@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 
+import {useHistory} from 'react-router-dom'
+
 import { useDispatch, useSelector } from 'react-redux'
 
 import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js'
@@ -13,11 +15,16 @@ import { signInSchema, signUpSchema } from '../../methods/utils/form_schemas'
 import TextField from '../basic/form/text_field/text_field'
 import Textbox from '../basic/textbox/textbox'
 
-// Import actions
-import { postRefreshToken } from '../../redux/actions/authentication_actions'
+import * as styled from './sign_in_up_page.style'
 
-// Import API DELETE THIS ONCE FINISHED
-import { getRefreshToken } from '../../api/authentication_api'
+import {loaderCSS} from './sign_in_up_page.style'
+
+import PropagateLoader from "react-spinners/PropagateLoader";
+
+// Import actions
+import { postLocalSettings, getLocalSettings, } from '../../redux/actions/local_actions'
+
+import configData from '../../settings/config'
 
 /**
  * This page handles both sign in and sign up for RMStudio
@@ -25,31 +32,60 @@ import { getRefreshToken } from '../../api/authentication_api'
  */
 const SignInUpPage = (props) => {
 
+    // Hooks
+    const dispatch = useDispatch()
+    const history = useHistory()
+
+    // Dispatches
+    const dispatchPostLocalSettings = (settings) => dispatch(postLocalSettings(settings))
+    const dispatchGetLocalSettings = (settings) => dispatch(getLocalSettings(settings))
+
+    const localReducer = useSelector(state => state.localReducer.localSettings)
+
+    // Check to see if we want authentication *** Dev ONLY ***
+    if (!configData.authenticationNeeded) {
+        const localSettingsPromise = dispatchGetLocalSettings()
+        localSettingsPromise.then(response => {
+            dispatchPostLocalSettings({
+                ...response,
+                authenticated: 'no',
+                //non_local_api_ip: window.location.hostname,
+                //non_local_api: true,
+            })
+        })
+
+    }
+
     // signIn prop is passed from authentication container to tell this page to show sign in or sign up components
     const {
         signIn
     } = props
 
-    const dispatch = useDispatch()
-    const onRefreshToken = (token, expiration) => dispatch(postRefreshToken(token, expiration))
-    
-    const refreshToken = useSelector(state => state.authenticationReducer.refreshToken)
-
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
+    const [errorText, setErrorText] = useState('')
 
-    // Handles submit to AWS cognito based on whether it's a sign in or sign up
-    const handleSubmit = async (values) => {
+    const [capsLock, setCapsLock] = useState(false)
+    const [loading, setLoading] = useState(false)
+
+    function handleSignInChange(event) {
+        // Here, we invoke the callback with the new value
+        props.onChange(event);
+    }
+
+    const handleSubmit = (values) => {
 
         const {
             email,
-            password
+            password,
+            confirmPassword
         } = values
 
         // User pool data for AWS Cognito
         const poolData = {
-            UserPoolId: 'us-east-2_YFnCIb6qJ',
-            ClientId: '4dghjc830130pdnr9aecshpc13',
+            UserPoolId: configData.UserPoolId,
+            ClientId: configData.ClientId,
         }
 
         const userPool = new CognitoUserPool(poolData)
@@ -75,56 +111,75 @@ const SignInUpPage = (props) => {
             cognitoUser.authenticateUser(authenticationDetails, {
 
                 onSuccess: function (result) {
-                    console.log('QQQQ Success', typeof(result), result)
-                    // const accessToken = result.getAccessToken().getJwtToken();
+                    dispatchPostLocalSettings({
+                        ...localReducer,
+                        authenticated: result.accessToken.payload.username,
+                        non_local_api_ip: window.location.hostname,
+                        non_local_api: true,
+                        refreshToken: true
+                    })
 
-                    const returnedRefreshToken = result.getRefreshToken().getToken()
 
-                    onRefreshToken(returnedRefreshToken)
-
-                    /* Use the idToken for Logins Map when Federating User Pools with identity pools or when passing through an Authorization Header to an API Gateway Authorizer */
-                    const idToken = result.idToken.jwtToken;
                 },
 
                 onFailure: function (err) {
-                    console.log('QQQQ Error', err)
+                    setErrorText(err.message)
+                    setLoading(false)
                 },
 
             });
-        }
-
-        // Else it must be a sign up so run these functions
-        else {
-            userPool.signUp(email, password, [], null, (err, data) => {
-                if (err) console.log('QQQQ Error', err)
-                else console.log('QQQQ Success', data)
-            });
+        } else {
+            if (password === confirmPassword) {
+                userPool.signUp(email, password, [], null, (err, data) => {
+                    if (err) {
+                        if (err.message === 'Invalid version. Version should be 1') {
+                            setErrorText('Invalid email. Please use a valid email.')
+                            setLoading(false)
+                        } else {
+                            setErrorText(err.message)
+                            setLoading(false)
+                        }
+                    } else {
+                        setErrorText('You have successfully signed up! Please check you email for a verification link.')
+                        history.push('/')
+                        handleSignInChange(true)
+                        setLoading(false)
+                    }
+                });
+            } else {
+                setErrorText('Passwords must match!')
+                setLoading(false)
+            }
         }
     }
-
 
     return (
         <Formik
             initialValues={{
                 email: email,
                 password: password,
-                confirmPassword: password,
+                confirmPassword: confirmPassword,
             }}
             initialTouched={{
                 email: true,
                 password: true,
                 confirmPassword: true,
             }}
-            validateOnChange={true}
-            validateOnMount={true}
-            validateOnBlur={true}
+
+            validateOnBlur={false}
+            validateOnChange={false}
+
             // Chooses what schema to use based on whether it's a sign in or sign up
-            // TODO: The schemas are not 100% working as of 9/14/2020. Need to figure out regex for passwords
             validationSchema={signIn ? signInSchema : signUpSchema}
 
+            onChange={() => {
+                console.log('changing');
+              }}
+
             onSubmit={async (values, { setSubmitting }) => {
-                console.log('QQQQ Submiting', values)
+
                 setSubmitting(true)
+                setLoading(true)
 
                 await handleSubmit(values)
 
@@ -135,66 +190,80 @@ const SignInUpPage = (props) => {
             {(formikProps) => {
 
                 return (
-                    <Form>
-                        <TextField
-                            name={"email"}
-                            textStyle={{ fontWeight: 'Bold' }}
-                            placeholder='Enter Email'
-                            type='text'
-                            InputComponent={Textbox}
-                            inputProps={{
-                                style: {
-                                    fontSize: '1.2rem',
-                                    fontWeight: '600',
-                                    textAlign: 'center',
-                                    marginBottom: '.5rem',
-                                    marginTop: '0',
+                    <Form
+                        onKeyDown={
+                            (keyEvent) => {
+                                if(keyEvent.keyCode === 20 || Event.KEY === "CapsLock") {
+                                    setCapsLock(!capsLock)
                                 }
-                            }}
-                        />
-
-                        <TextField
-                            name={"password"}
-                            textStyle={{ fontWeight: 'Bold' }}
-                            placeholder='Enter Password'
-                            type='text'
-                            InputComponent={Textbox}
-                            inputProps={{
-                                style: {
-                                    fontSize: '1.2rem',
-                                    fontWeight: '600',
-                                    textAlign: 'center',
-                                    marginTop: '0',
-                                    marginBottom: '.5rem',
+                                else {
+                                    if (keyEvent.getModifierState("CapsLock")) {
+                                        setCapsLock(true)
+                                    } else {
+                                        setCapsLock(false)
+                                    }
                                 }
-                            }}
-                        />
-
-                        {/* If sign in hasn't been selected show a confirm password for sign up */}
-                        {!signIn &&
+                            }
+                        }
+                    >
+                        <styled.Container>
+                            <styled.ErrorText>
+                                {errorText}
+                            </styled.ErrorText>
                             <TextField
-                                name={"confirmPassword"}
-                                // disabled={dashboard.name === 'Robot Screen'}
-                                textStyle={{ fontWeight: 'Bold' }}
-                                placeholder='Enter Password'
+                                name={"email"}
+                                placeholder='Enter Email'
                                 type='text'
                                 InputComponent={Textbox}
-                                inputProps={{
-                                    style: {
-                                        fontSize: '1.2rem',
-                                        fontWeight: '600',
-                                        textAlign: 'center',
-                                        marginBottom: '.5rem',
-                                        marginTop: '0',
-                                    }
+                                style={{
+                                    marginBottom: '.5em',
+                                    width: '25rem'
                                 }}
                             />
 
+                            <div style={{display: 'flex', flexDirection: 'row'}}>
+                                {capsLock && <styled.CapsIconContainer><styled.CapsIcon className="fas fa-arrow-alt-circle-up" /></styled.CapsIconContainer>}
+                                <TextField
+                                    name={"password"}
+                                    placeholder='Enter Password'
+                                    type='password'
+                                    InputComponent={Textbox}
+                                    style={{
+                                        marginBottom: '.5rem',
+                                        flexGrow: 1
+                                    }}
+                                />
+                            </div>
 
-                        }
+                            {/* If sign in hasn't been selected show a confirm password for sign up */}
+                            {!signIn &&
+                                <TextField
+                                    name={"confirmPassword"}
+                                    placeholder='Enter Password'
+                                    type='password'
+                                    InputComponent={Textbox}
+                                    style={{
+                                        marginBottom: '.5rem',
+                                        width: '25rem'
+                                    }}
+                                />
+                            }
 
+                            {!signIn &&
+                                <styled.NoteText>
+                                    Note: Your password must be 8 charaters long and contain 1 upper case letter, 1 lower case letter, and 1 number
+                                </styled.NoteText>
+                            }
 
-                        <button type="submit">{signIn ? 'Sign In' : 'Sign Up'}</button>
+                            {!loading &&
+                                <styled.Button isSignIn={signIn} type="submit">{signIn ? 'Sign In' : 'Sign Up'}</styled.Button>
+                            }
+
+                            {loading &&
+                                <PropagateLoader color={'red'} loading={true} css={loaderCSS} />
+                            }
+
+                        </styled.Container>
                     </Form>
                 )
             }}

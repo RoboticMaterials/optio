@@ -16,6 +16,7 @@ import { postDashboard, dashboardOpen } from '../../../redux/actions/dashboards_
 
 import { deepCopy } from '../../../methods/utils/utils'
 import { handlePostTaskQueue } from "../../../redux/actions/task_queue_actions";
+import * as sidebarActions from "../../../redux/actions/sidebar_actions";
 
 
 
@@ -43,12 +44,13 @@ const WidgetButton = (props) => {
     const dispatchPutStation = (station, ID) => dispatch(putStation(station, ID))
     const dispatchRemovePosition = (id) => dispatch(removePosition(id))
     const dispatchSetSelectedPosition = (position) => dispatch(setSelectedPosition(position))
+    const dispatchSetConfirmDelete = (show, callback) => dispatch(sidebarActions.setConfirmDelete(show, callback))
 
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
     const showSideBar = useSelector(state => state.sidebarReducer.open)
+    const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
     const stations = useSelector(state => state.stationsReducer.stations)
-
     const dashboardID = params.dashboardID
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
@@ -64,13 +66,28 @@ const WidgetButton = (props) => {
                 break;
 
             case 'dashboards':
-                onDashboardClick()
+                if(pageInfoChanged) {
+                    dispatchSetConfirmDelete(true, onDashboardClick)
+                }
+                else {
+                    onDashboardClick()
+                }
                 break;
 
             default:
-                history.push('/locations/' + id + '/' + type)
+                if(pageInfoChanged) {
+                    dispatchSetConfirmDelete(true, onDefaultClick)
+                }
+                else {
+                    onDefaultClick()
+                }
+
                 break;
         }
+    }
+
+    const onDefaultClick = () => {
+        history.push('/locations/' + id + '/' + type)
     }
 
     // Handles  if the widget button clicked was a cart
@@ -140,6 +157,7 @@ const WidgetButton = (props) => {
             // dashboardInfo
             let defaultDashboard = {
                 name: selectedLocation.name + ' Dashboard',
+                locked: false,
                 buttons: [],
                 station: selectedLocation._id
             }
@@ -168,10 +186,6 @@ const WidgetButton = (props) => {
     return (
         <styled.WidgetButtonButton
             onClick={() => {
-                if (showSideBar && !widgetPage) {
-                    const hamburger = document.querySelector('.hamburger')
-                    hamburger.classList.toggle('is-active')
-                }
 
                 handleOnClick()
 
@@ -185,18 +199,18 @@ const WidgetButton = (props) => {
                 type === 'cancel' ?
                     <>
                         <styled.WidgetButtonIcon className="fas fa-times" pageID={type} currentPage={currentPage} />
-                        <styled.WidgetButtonText>{"Cancel"}</styled.WidgetButtonText>
+                        <styled.WidgetButtonText pageID={type} currentPage={currentPage}>{"Cancel"}</styled.WidgetButtonText>
                     </>
                     :
                     type === 'lots' ?
                         <>
                             <styled.WidgetButtonIcon className="far fa-clone" pageID={type} currentPage={currentPage} />
-                            <styled.WidgetButtonText>{label}</styled.WidgetButtonText>
+                            <styled.WidgetButtonText pageID={type} currentPage={currentPage}>{label}</styled.WidgetButtonText>
                         </>
                         :
                         <>
                             <styled.WidgetButtonIcon style={{ fontSize: type === 'cart' && '1.2rem', paddingTop: type === 'cart' && '.8rem' }} className={"icon-" + type} pageID={type} currentPage={currentPage} />
-                            <styled.WidgetButtonText>{label}</styled.WidgetButtonText>
+                            <styled.WidgetButtonText pageID={type} currentPage={currentPage}>{label}</styled.WidgetButtonText>
                         </>
             }
             {/* <styled.ButtonText>{props.type}</styled.ButtonText> */}

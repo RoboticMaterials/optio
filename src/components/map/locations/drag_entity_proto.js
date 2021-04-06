@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import * as d3 from 'd3'
 
 
@@ -41,9 +41,9 @@ const DragEntityProto = (props) => {
         // NOTE: Im not sure why the 160 offset is neccessary. I think it might have to do with the way the menu/status bar
         // is layered.
         let angle
-        if (event.sourceEvent.type == "mousemove") {    // Computer
+        if (event.sourceEvent.type === "mousemove") {    // Computer
             angle = Math.atan2(event.sourceEvent.clientY - location.y, event.sourceEvent.clientX - location.x) * 180 / Math.PI
-        } else if (event.sourceEvent.type == "touchmove") { // Tablet
+        } else if (event.sourceEvent.type === "touchmove") { // Tablet
             angle = Math.atan2(event.sourceEvent.touches[0].clientY - location.y, event.sourceEvent.touches[0].clientX - location.x) * 180 / Math.PI
         }
 
@@ -60,8 +60,16 @@ const DragEntityProto = (props) => {
             deltaRotation = Math.round(deltaRotation / 10) * 10
         }
 
+
+        // Final Rotation
+        let rotation = originalRotation - deltaRotation
+        // If rotation goes negative, then add 360 to the number to get irs positive variant
+        if(rotation < 0){
+            rotation = rotation + 360
+        }
+        
         // Callback passed from props to set the appropriate location atttribute
-        handleRotate(originalRotation + deltaRotation)
+        handleRotate(rotation)
     }
 
     const rotateEnd = () => {
@@ -77,9 +85,9 @@ const DragEntityProto = (props) => {
 
         // Set the translation based on the event
         let translation = []
-        if (event.sourceEvent.type == "mousemove") {    // Computer
+        if (event.sourceEvent.type === "mousemove") {    // Computer
             translation = [event.sourceEvent.clientX, event.sourceEvent.clientY]
-        } else if (event.sourceEvent.type == "touchmove") { // Tablet
+        } else if (event.sourceEvent.type === "touchmove") { // Tablet
             translation = [event.sourceEvent.touches[0].clientX, event.sourceEvent.touches[0].clientY]
         }
 

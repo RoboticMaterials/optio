@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useContext } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 // Import Styles
@@ -22,6 +22,7 @@ import DropDownSearchField from "../../../../../basic/form/drop_down_search_fiel
 import {isArray} from "../../../../../../methods/utils/array_utils";
 import {isString} from "../../../../../../methods/utils/string_utils";
 import {isObject} from "../../../../../../methods/utils/object_utils";
+import { ThemeContext } from 'styled-components';
 
 
 const LoadUnloadFields = (props) => {
@@ -29,7 +30,8 @@ const LoadUnloadFields = (props) => {
     const {
         fieldParent,
         setFieldValue,
-        values
+        values,
+        isProcess
     } = props
 
     const dispatch = useDispatch()
@@ -40,6 +42,7 @@ const LoadUnloadFields = (props) => {
     const sounds = useSelector(state => state.soundsReducer.sounds)
     const stations = useSelector(state => state.stationsReducer.stations)
 
+    const themeContext = useContext(ThemeContext)
 
     // This handles if any position of a route is a human position, then it cant be done by a robot
     let humanLocation = false
@@ -96,47 +99,11 @@ const LoadUnloadFields = (props) => {
             {/*    </>*/}
             {/*}*/}
 
+            <styled.Card dark={isProcess}>
 
+            <styled.RowContainer>
 
-            <styled.RowContainer style={{ marginTop: '2rem' }}>
-
-                <styled.Header style={{ marginTop: '0rem',marginRight: ".5rem" }}>Load</styled.Header>
-
-                {!humanLocation &&
-
-                    <styled.RowContainer style={{ justifyContent: 'flex-end', alignItems: 'baseline',  }}>
-                        <styled.HelpText style={{ fontSize: '1rem', marginRight: '.5rem' }}>TimeOut: </styled.HelpText>
-
-                        <TimePickerField
-                            mapInput={(value) => {
-                                if(value) {
-                                    const splitVal = value.split(':')
-                                    return moment().set({ 'minute': splitVal[0], 'second': splitVal[1] })
-                                }
-                            }}
-                            mapOutput={(value) => {
-                                return value.format("mm:ss")
-                            }}
-                            name={fieldParent ? `${fieldParent}.load.timeout` : "load.timeout"}
-                            style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
-                            showHour={false}
-                            className="xxx"
-                            autocomplete={"off"}
-                            allowEmpty={false}
-                            defaultOpenValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
-                            defaultValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
-                            onChange={(time) => {
-                                dispatchSetSelectedTask({
-                                    ...selectedTask,
-                                    load: {
-                                        ...selectedTask.load,
-                                        timeout: time.format("mm:ss")
-                                    }
-                                })
-                            }}
-                        />
-                    </styled.RowContainer>
-                }
+                    <styled.Header style={{ marginTop: '0rem',marginRight: ".5rem", fontSize: '1.2rem' }}>Load</styled.Header>
 
             </styled.RowContainer>
 
@@ -146,11 +113,49 @@ const LoadUnloadFields = (props) => {
                 focus={!!selectedTask && selectedTask.type == null}
                 lines={2}
                 InputComponent={Textbox}
+                inputStyle={!isProcess ? {background: themeContext.bg.primary} : {}}
             />
 
+            {!humanLocation &&
+
+            <div style={{ display: "flex", flexDirection: "row", marginTop: "0.5rem" }}>
+                <styled.Label>Timeout: </styled.Label>
+
+                <TimePickerField
+                    mapInput={(value) => {
+                        if(value) {
+                            const splitVal = value.split(':')
+                            return moment().set({ 'minute': splitVal[0], 'second': splitVal[1] })
+                        }
+                    }}
+                    mapOutput={(value) => {
+                        return value.format("mm:ss")
+                    }}
+                    name={fieldParent ? `${fieldParent}.load.timeout` : "load.timeout"}
+                    style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
+                    showHour={false}
+                    schema={'tasks'}
+                    className="xxx"
+                    autocomplete={"off"}
+                    allowEmpty={false}
+                    defaultOpenValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
+                    defaultValue={!!selectedTask.load.timeout ? moment().set({ 'minute': selectedTask.load.timeout.split(':')[0], 'second': selectedTask.load.timeout.split(':')[1] }) : moment().set({ 'minute': 1, 'second': 0 })}
+                    onChange={(time) => {
+                        dispatchSetSelectedTask({
+                            ...selectedTask,
+                            load: {
+                                ...selectedTask.load,
+                                timeout: time.format("mm:ss")
+                            }
+                        })
+                    }}
+                />
+            </div>
+            }
+
             {!isOnlyHumanTask(selectedTask) &&
-                <div style={{ display: "flex", flexDirection: "row", marginTop: "0.5rem" }}>
-                    <styled.Label>Sound </styled.Label>
+                <div style={{ display: "flex", flexDirection: "row", marginTop: "0rem" }}>
+                    <styled.Label>Sound: </styled.Label>
                     <DropDownSearchField
                         name={fieldParent ? `${fieldParent}.load.sound` : "load.sound"}
                         placeholder="Select Sound"
@@ -170,7 +175,8 @@ const LoadUnloadFields = (props) => {
                             return output
                         }}
                         // values={!!selectedTask.load.sound ? [sounds[selectedTask.load.sound]] : []}
-                        dropdownGap={5}
+                        dropdownGap={2}
+                        style={!isProcess ? {background: themeContext.bg.primary} : {}}
                         noDataLabel="No matches found"
                         closeOnSelect="true"
                         className="w-100"
@@ -178,29 +184,45 @@ const LoadUnloadFields = (props) => {
                 </div>
             }
 
-            {/* If its a human task, then the task can also be defined as a handoff.
+            </styled.Card>
+
+            <styled.Card dark={isProcess}>
+                {/* If its a human task, then the task can also be defined as a handoff.
                     A handoff does not require unload confirmation.
                 */}
-            {!isMiRTask(selectedTask) &&
-                <styled.ContentContainer style={{ paddingBottom: '0rem' }}>
-                    <styled.RowContainer>
-                        <styled.Label style={{ marginBottom: '0rem' }}>Confirm Unload?</styled.Label>
-                        <SwitchField
-                            mapInput={(val)=>!val}
-                            mapOutput={(val)=>!val}
-                            name={fieldParent ? `${fieldParent}.handoff` : "handoff"}
-                            onColor='red'
-                            containerStyle={{ marginRight: '1rem' }}
-                        />
-                    </styled.RowContainer>
-                    <styled.HelpText>Do you want to track transit time? This will display a Unload Button at the Unload Station</styled.HelpText>
-                </styled.ContentContainer>
-            }
+                {isHumanTask(selectedTask) &&
+                    <styled.ContentContainer style={{ paddingBottom: '0rem' }}>
+                        <styled.RowContainer>
+                            <styled.Label style={{ marginBottom: '0rem' }}>
+                                {"Confirm Unload?"}
+                            </styled.Label>
+
+                            <SwitchField
+                                mapInput={(val)=>!val}
+                                mapOutput={(val)=>!val}
+                                name={fieldParent ? `${fieldParent}.handoff` : "handoff"}
+                                onColor='red'
+                                containerStyle={{ marginRight: '1rem' }}
+                            />
+                        </styled.RowContainer>
+                        <styled.HelpText>
+                            Tracks transit time by requiring button to be pressed at Unload Location
+                        </styled.HelpText>
+
+                        {isMiRTask(selectedTask) &&
+                            <styled.HelpText>
+                                (Not used when executed by a robot)
+                            </styled.HelpText>
+                        }
+
+                    </styled.ContentContainer>
+                }
+            </styled.Card>
 
             {/* Hides the unload field if its a handoff task */}
-            {!values.handoff &&
+            {(!values.handoff || isMiRTask(selectedTask)) &&
 
-                <>
+                <styled.Card dark={isProcess}>
                     <styled.Header>Unload</styled.Header>
                     <TextField
                         name={fieldParent ? `${fieldParent}.unload.instructions` : "unload.instructions"}
@@ -208,6 +230,7 @@ const LoadUnloadFields = (props) => {
                         focus={!!selectedTask && selectedTask.type == null}
                         lines={2}
                         InputComponent={Textbox}
+                        inputStyle={!isProcess ? {background: themeContext.bg.primary} : {}}
                     />
 
                     {/* If its a human task, then you shouldnt require people to make noises. I personally would though...  */}
@@ -222,7 +245,7 @@ const LoadUnloadFields = (props) => {
                                 labelField="name"
                                 valueField="name"
                                 options={Object.values(sounds)}
-                                dropdownGap={5}
+                                dropdownGap={2}
                                 noDataLabel="No matches found"
                                 closeOnSelect="true"
                                 mapInput={(val)=>{
@@ -238,11 +261,15 @@ const LoadUnloadFields = (props) => {
                                 }}
                                 className="w-100"
                                 schema="tasks"
+                                style={!isProcess ? {background: themeContext.bg.primary} : {}}
                             />
                         </div>
                     }
-                </>
+                </styled.Card>
             }
+            
+
+            
 
 
             {/* {selectedTask.device_type === 'MiR_100' &&
@@ -255,7 +282,7 @@ const LoadUnloadFields = (props) => {
                             valueField="name"
                             options={Object.values(positions)}
                             values={!!selectedTask.idle_location ? [positions[selectedTask.idle_location]] : []}
-                            dropdownGap={5}
+                            dropdownGap={2}
                             noDataLabel="No matches found"
                             closeOnSelect="true"
                             onChange={values => {

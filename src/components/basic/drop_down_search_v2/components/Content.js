@@ -33,7 +33,7 @@ const Content = ({ props, state, methods, ContentComponent, InputComponent }) =>
                 />
               ))
             : state.values &&
-              state.values.length > 0 && <Value>{getByPath(state.values[0], props.labelField)}</Value>
+              state.values.length > 0 && <Value valueCss={props.valueCss}>{getByPath(state.values[0], props.labelField)}</Value>
             }
           <Input  InputComponent={InputComponent} props={{...props, filled:state.values.length}} methods={methods} state={state} />
         </OptionsContainer>
@@ -82,6 +82,8 @@ export const Value = styled.div`
   line-height: 1.8rem;
   font-size: ${props => props.theme.fontSize.sz3};
   width: 100%;
+    
+${props => props.valueCss && props.valueCss};
 `
 
 export const OptionsContainer = styled.div`
@@ -89,12 +91,17 @@ export const OptionsContainer = styled.div`
     height: 100%;
     margin-right: 1rem;
     display: inline-flex;
+    align-items: center;
     overflow-y: hidden;
     overflow-x: ${props => props.multi ? "auto" : "hidden"};
     
     word-break: ${props => !props.multi && "break-all"};
     white-space: ${props => !props.multi && "nowrap"};
     text-overflow: ${props => !props.multi && "ellipsis"};
+
+    ::-webkit-scrollbar {
+        display: none;
+    }
     
 `
 

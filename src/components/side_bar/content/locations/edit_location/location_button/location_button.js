@@ -9,12 +9,27 @@ const LocationButton = (props) => {
     const {
         type,
         isSelected,
-        handleAddLocation
+        handleAddLocation,
+        schema
     } = props
 
     const LocationTypes = {
         ...StationTypes,
         ...PositionTypes
+    }
+
+    function formatString(string) {
+        if (string === 'cart_position') {
+            string = 'cart'
+        } else if (string === 'shelf_position') {
+            string = 'shelf'
+        } else if (string === 'human') {
+            string = 'Work Station'
+        }
+
+
+        string = string.replace('_', ' ')
+        return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
     return (
@@ -24,15 +39,14 @@ const LocationButton = (props) => {
                 isNotSelected={!!isSelected && isSelected !== type}
                 id={`location-type-button-${type}`}
                 onMouseDown={async e => {
-
                     handleAddLocation(type)
-
                 }}
-
                 isSelected={isSelected}
-                style={{ cursor: 'grab' }}
-            >
+                schema={schema}
+            >   
+                <styled.LocationTypeLabel>{formatString(type)}</styled.LocationTypeLabel>
                 <styled.LocationTypeGraphic
+                    
                     fill={LocationTypes[type].color}
                     isNotSelected={!!isSelected && isSelected !== type}
                     stroke={LocationTypes[type].color}
@@ -40,6 +54,7 @@ const LocationButton = (props) => {
                 >
                     {LocationTypes[type].svgPath}
                 </styled.LocationTypeGraphic>
+                
             </styled.LocationTypeButton>
         </>
 
