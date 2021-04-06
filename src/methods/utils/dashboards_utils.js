@@ -6,6 +6,42 @@ import {
 import {isArray, isNonEmptyArray} from "./array_utils";
 import {DASHBOARD_BUTTON_COLORS} from "../../constants/dashboard_contants";
 import uuid from 'uuid'
+import {
+    CUSTOM_CHARGE_TASK_ID,
+    CUSTOM_IDLE_TASK_ID,
+    CUSTOM_IDLE_TASK_NAME,
+    CUSTOM_TASK_ID
+} from "../../constants/route_constants";
+
+export const getChargeButton = ({name: positionName, _id: positionId}) => {
+    return {
+        name: positionName,
+        color: '#FFFF4B',
+        task_id: 'custom_task',
+        custom_task: {
+            'type': 'position_move',
+            'position': positionId,
+            'device_type': 'MiR_100',
+        },
+        deviceType: 'MiR_100',
+        id: CUSTOM_CHARGE_TASK_ID
+    }
+}
+
+export const getIdleButton = ({idle_location: idleLocationId}) => {
+    return {
+        name: CUSTOM_IDLE_TASK_NAME,
+        color: '#FF4B4B',
+        task_id: 'custom_task',
+        custom_task: {
+            'type': 'position_move',
+            'position': idleLocationId,
+            'device_type': 'MiR_100',
+        },
+        deviceType: 'MiR_100',
+        id: CUSTOM_IDLE_TASK_ID
+    }
+}
 
 export const postToDashboards = (dashboardName) => {
     // Requires: buttonID, param, type, buttonName, dashboardName
@@ -77,7 +113,7 @@ export const handleAvailableTasks = (tasks, station) => {
         // If the device has an idle location, add a button for it
         if (!!station.idle_location) {
             const idleButton = {
-                'name': 'Send to Idle Location',
+                'name': CUSTOM_IDLE_TASK_NAME,
                 'color': '#FF4B4B',
                 'task_id': 'custom_task',
                 'custom_task': {
@@ -105,7 +141,7 @@ export const handleAvailableTasks = (tasks, station) => {
                         'device_type': 'MiR_100',
                     },
                     'deviceType': 'MiR_100',
-                    'id': `custom_task_charge_${ind}`
+                    'id': `custom_task_charge`
                 }
                 availableTasks.push(chargeButton)
             }
@@ -170,13 +206,31 @@ export const getIsFinishEnabled = (availableProcessIds) => {
     return isNonEmptyArray(availableProcessIds)
 }
 
-export const getDashboardContainsRouteButton = ({buttons: existingDashboardButtons}, {task_id: currButtonTaskId}) => {
+export const getDashboardContainsRouteButton = ({buttons: existingDashboardButtons}, {task_id: currButtonTaskId, id: buttonId, positionId}) => {
     for(const existingDashboardButton of existingDashboardButtons) {
         const {
-            task_id: existingButtonTaskId = ""
+            task_id: existingButtonTaskId = "",
+            id: existingButtonId,
+            custom_task
         } = existingDashboardButton || {}
 
-        if(existingButtonTaskId === currButtonTaskId) {
+        const {
+            position: existingPositionId
+        } = custom_task || {}
+
+        if(currButtonTaskId === CUSTOM_TASK_ID) {
+            if(buttonId === CUSTOM_IDLE_TASK_ID) {
+                if(existingButtonId === buttonId) {
+                    return true
+                }
+            }
+            else if(buttonId === CUSTOM_CHARGE_TASK_ID) {
+                if(existingButtonId === buttonId && positionId === existingPositionId) {
+                    return true
+                }
+            }
+        }
+        else if(existingButtonTaskId === currButtonTaskId) {
             return true // quit looping
         }
     }

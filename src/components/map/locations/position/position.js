@@ -383,7 +383,9 @@ function Position(props) {
 
     const onMouseDown = () => {
         if (!disabled) onSetPositionTask()
+        if(selectedPosition?.schema!=="temporary_position"){
         dispatchPageDataChanged(true)
+      }
     }
 
     const onTranslating = (bool) => {

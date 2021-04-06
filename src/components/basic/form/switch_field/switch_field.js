@@ -49,7 +49,6 @@ const SwitchField = (props) => {
                 {...rest}
                 onChange={val => {
                     if(!touched) setFieldTouched(fieldName, true);
-
                     setFieldValue(fieldName, mapOutput(val))
 
                     onChange && onChange(val)

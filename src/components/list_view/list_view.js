@@ -219,7 +219,7 @@ const ListView = (props) => {
             }
 
 
-                <styled.Title schema={CURRENT_SCREEN.schema}>{title}</styled.Title>
+                <styled.Title schema={CURRENT_SCREEN.schema} style = {{userSelect:"none"}}>{title}</styled.Title>
                 {handleTaskQueueStatus()}
 
                 {!!deviceEnabled &&

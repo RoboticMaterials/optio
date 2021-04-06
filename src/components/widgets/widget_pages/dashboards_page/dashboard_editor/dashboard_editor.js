@@ -31,6 +31,7 @@ import { randomHash } from "../../../../../methods/utils/utils";
 import { putDashboard, deleteDashboard, postDashboard } from '../../../../../redux/actions/dashboards_actions'
 import { postTaskQueue } from '../../../../../redux/actions/task_queue_actions'
 import { putStation } from '../../../../../redux/actions/stations_actions'
+import { pageDataChanged } from "../../../../../redux/actions/sidebar_actions";
 
 import { dashboardSchema } from "../../../../../methods/utils/form_schemas";
 
@@ -61,11 +62,18 @@ const DashboardEditor = (props) => {
     const onPutStation = async (station, ID) => await dispatch(putStation(station, ID))
     const onPutDashboard = (dashboard, id) => dispatch(putDashboard(dashboard, id))
     const onPostDashboard = (dashboard) => dispatch(postDashboard(dashboard))
-
+    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
 
     const stations = useSelector(state => state.stationsReducer.stations)
 
     const [sidebarWidth, setSidebarWidth] = useState(window.innerWidth < 2000 ? 400 : 700)
+
+    useEffect(() => {
+      return () => {
+        dispatchPageDataChanged(false)
+      }
+    }, []);
+
    /*
     * Returns initialValues object for Formik
     */
@@ -222,7 +230,7 @@ const DashboardEditor = (props) => {
                         formikProps.setFieldValue("buttons", shiftedButtonsCopy)
                     } else { // New button
                         if (addedIndex !== null) {
-                            payload.id = randomHash()
+                            // payload.id = randomHash()
                             buttonsCopy.splice(addedIndex, 0, payload)
                             formikProps.setFieldValue("buttons", buttonsCopy)
                         }

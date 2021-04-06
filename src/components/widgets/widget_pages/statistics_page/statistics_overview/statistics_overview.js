@@ -301,40 +301,6 @@ const StatisticsOverview = (props) => {
 
         if (throughputData === null) return null
 
-        const throughPut = throughputData.throughPut
-
-        let dateSelectorTitle = ''
-        let date
-        const today = new Date()
-
-        switch (timeSpan) {
-            case 'day':
-                // date = getDateFromString(Object.values(throughPut)[0].x)
-                dateSelectorTitle = today.toDateString()
-                break;
-
-            case 'week':
-                const firstDate = getDateFromString(Object.values(throughPut)[0].lable)
-                const lastDate = getDateFromString(Object.values(throughPut)[Object.values(throughPut).length - 1].lable)
-                dateSelectorTitle = `${firstDate.toDateString()} - ${lastDate.toDateString()}`
-                break;
-
-            case 'month':
-                date = getDateFromString(Object.values(throughPut)[0].lable)
-                const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                dateSelectorTitle = `${months[date.getMonth()]} ${date.getFullYear()}`
-                break;
-
-            case 'year':
-                date = getDateFromString(Object.values(throughPut)[0].lable)
-                dateSelectorTitle = `${date.getFullYear()}`
-                break;
-
-            default:
-                break;
-        }
-
-
         return (
             <styled.RowContainer>
                 <styled.DateSelectorIcon

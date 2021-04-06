@@ -72,7 +72,7 @@ export const ConnectionButton = styled.button`
     margin-bottom: 1rem;
     border: none;
     border-radius: .5rem;
-    background-color: ${props => props.theme.bg.octonary};
+    background-color: ${props => props.theme.bg.secondary};
     display: flex;
     align-items: center;
     justify-content: space-between;

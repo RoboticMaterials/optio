@@ -51,7 +51,6 @@ const WidgetButton = (props) => {
     const showSideBar = useSelector(state => state.sidebarReducer.open)
     const pageInfoChanged = useSelector(state => state.sidebarReducer.pageDataChanged)
     const stations = useSelector(state => state.stationsReducer.stations)
-
     const dashboardID = params.dashboardID
 
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
