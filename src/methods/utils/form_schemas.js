@@ -363,7 +363,7 @@ export const signUpSchema = Yup.object().shape({
     password: Yup.string()
         .required('Please enter a password')
         .matches(
-            /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/,
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$\-!%*#?&]{8,}$/,
             "Must Contain 8 characters, one uppercase, one lowercase, and one number"
         ),
 
@@ -396,7 +396,7 @@ export const passwordResetSchema = Yup.object().shape({
     password: Yup.string()
         .required('Please enter a password')
         .matches(
-            /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$\-!%*#?&]{8,}$/,
             "Must Contain 8 characters, one uppercase, one lowercase, one number and one special character"
         ),
     checkPassword: Yup.string()

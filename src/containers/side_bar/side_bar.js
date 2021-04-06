@@ -66,7 +66,6 @@ const SideBar = (props) => {
     const confirmDeleteCallback = useSelector(state => state.sidebarReducer.confirmDeleteCallback)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
     const selectedPosition = useSelector(state => state.positionsReducer.selectedPosition)
-
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
     const history = useHistory()
     const url = useLocation().pathname
@@ -176,7 +175,7 @@ const SideBar = (props) => {
             dispatchSetSelectedStation(null)
             dispatchSetSelectedPosition(null)
             dispatchHoverStationInfo(null)
-        } 
+        }
         // Else handle when the sidebar is closed and clicked to open
         else {
 
