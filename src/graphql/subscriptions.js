@@ -355,6 +355,51 @@ export const onDeleteStation = /* GraphQL */ `
     }
   }
 `;
+export const onCreateStationEvent = /* GraphQL */ `
+  subscription OnCreateStationEvent {
+    onCreateStationEvent {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      object
+      outgoing
+      quantity
+      station
+      time
+    }
+  }
+`;
+export const onUpdateStationEvent = /* GraphQL */ `
+  subscription OnUpdateStationEvent {
+    onUpdateStationEvent {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      object
+      outgoing
+      quantity
+      station
+      time
+    }
+  }
+`;
+export const onDeleteStationEvent = /* GraphQL */ `
+  subscription OnDeleteStationEvent {
+    onDeleteStationEvent {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      object
+      outgoing
+      quantity
+      station
+      time
+    }
+  }
+`;
 export const onCreatePosition = /* GraphQL */ `
   subscription OnCreatePosition {
     onCreatePosition {

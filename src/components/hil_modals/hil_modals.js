@@ -45,6 +45,7 @@ import {
     valueCss
 } from "../side_bar/content/cards/lot_bars.style";
 import SortFilterContainer from "../side_bar/content/cards/sort_filter_container/sort_filter_container";
+import postStationEvent from '../../api/stationEventsAPI';
 
 
 /**
@@ -452,6 +453,8 @@ const HILModals = (props) => {
         setTimeout(() => disptachHILResponse(''), 2000)
 
         await dispatchPutTaskQueue({...newItem, _id: ID}, ID)
+
+        await postStationEvent(newItem)
     }
 
     // Posts HIL Postpone to API

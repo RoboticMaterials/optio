@@ -42,7 +42,9 @@ type Organization
 
 type Station
   @model(queries: null)
-  @auth(rules: [{ allow: private }])
+  @auth(rules: [
+    { allow: private }
+    ])
   @key(name: "StationsByOrgId", fields: ["organizationId"], queryField: "StationsByOrgId" )
 {
   # IDs
@@ -64,6 +66,27 @@ type Station
   map_id: String!
   children: AWSJSON!
   dashboards: AWSJSON!
+}
+
+type StationEvent
+  @model #(queries: null, subscriptions: null)
+  @auth(rules: [
+    { allow: private }
+    ])
+  @key(name: "StationEventsByOrgId", fields: ["organizationId"], queryField: "StationEventsByOrgId" )
+{
+  # IDs
+  id: ID!
+  organizationId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+
+  # Data
+  object: String
+  outgoing: Boolean!
+  quantity: Int!
+  station: String!
+  time: String!
 }
 
 type Position
@@ -371,6 +394,14 @@ type Dashboard
   data: AWSJSON!
 }
 
+type StationStatsData 
+{
+  stationId: String!
+  organizationId: String!
+  date: String!
+  throughPut: AWSJSON!
+}
+
 # Subs
 type Subscription {
   onDeltaStation: Station
@@ -407,4 +438,5 @@ type Subscription {
 type Mutation {
   manageTaskQueue(taskQueueItem: AWSJSON!): TaskQueue @function(name: "handleTaskQueue-${env}")
   taskStats(task_id: ID, organizationId: String!): TaskQueue @function(name: "taskStats-${env}")
+  stationStats(station_id: ID!, timeSpan: String!, index: Int!, sortKey: String): StationStatsData @function(name: "stationStats-${env}")
 }

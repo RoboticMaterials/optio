@@ -65,9 +65,6 @@ exports.handler = async (event) => {
 		items.forEach(task => {
 
 			let ex_time = task['end_time'] - task['start_time']
-
-			console.log('start', task.start_time);
-			console.log('stop', task.end_time);
 			
 			time_sum += ex_time
 	
