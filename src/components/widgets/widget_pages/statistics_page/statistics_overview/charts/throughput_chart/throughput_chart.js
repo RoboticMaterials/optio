@@ -5,7 +5,7 @@ import * as styled from '../charts.style'
 import { ThemeContext } from 'styled-components';
 
 // Import components
-import LineThroughputChart from './line_throughput_chart'
+import LineThroughputChart from './line_throughput_chart/line_throughput_chart'
 
 // Import Actions
 import { getStationAnalytics } from '../../../../../../../redux/actions/stations_actions'

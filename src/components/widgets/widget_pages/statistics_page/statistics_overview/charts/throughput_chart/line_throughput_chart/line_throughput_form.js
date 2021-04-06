@@ -3,7 +3,111 @@ import { useDispatch, useSelector } from 'react-redux'
 import moment from 'moment';
 import { Formik, Form } from 'formik'
 
-const LineThroughputForm = () => {
+// Import Components
+import TextField from '../../../../../../../basic/form/text_field/text_field.js'
+import Textbox from '../../../../../../../basic/textbox/textbox'
+import TimePickerField from '../../../../../../../basic/form/time_picker_field/time_picker_field'
+import Switch from '../../../../../../../basic/form/switch_field/switch_field'
+
+// Import Styles
+import * as styled from '../../charts.style'
+
+// Import utils
+import { throughputSchema } from '../../../../../../../../methods/utils/form_schemas'
+import { convert12hto24h } from '../../../../../../../../methods/utils/time_utils'
+
+// Import actions
+import { postSettings } from '../../../../../../../../redux/actions/settings_actions'
+import { pageDataChanged } from '../../../../../../../../redux/actions/sidebar_actions'
+
+const LineThroughputForm = (props) => {
+
+    const {
+        themeContext,
+    } = props
+
+    const dispatch = useDispatch()
+    const dispatchPostSettings = (settings) => dispatch(postSettings(settings))
+    const dispatchPageDataChanged = (bool) => dispatch(pageDataChanged(bool))
+
+    const settings = useSelector(state => state.settingsReducer.settings)
+
+    const [breaksEnabled, setBreaksEnabled] = useState({})
+    const shiftDetails = settings.shiftDetails;
+
+    // Used for colors in line chart below
+    const colors = { Actual: themeContext.schema.charts.solid, Expected: 'rgba(84, 170, 255, 0.4)' }
+
+    // Settings local state here because enabled breaks needs to access breaks outside of formik
+    // See the Switch below for more details
+    useEffect(() => {
+
+        // If there's shift details
+        if (!!settings.shiftDetails) {
+            let enabledBreaks = {}
+            Object.keys(settings.shiftDetails.breaks).forEach((br, ind) => {
+                const enabled = settings.shiftDetails.breaks[br].enabled
+                const breakString = `break${ind}`
+                enabledBreaks[ind] = enabled
+            })
+            setBreaksEnabled(enabledBreaks)
+        }
+        else {
+            setBreaksEnabled(null)
+        }
+        return () => {
+        }
+    }, [settings])
+
+    // Submits the shift details to the backend via settings
+    const onSubmitShift = (values) => {
+
+        let {
+            startOfShift,
+            endOfShift,
+            expectedOutput,
+            startOfBreak1,
+            endOfBreak1,
+            switch1,
+            startOfBreak2,
+            endOfBreak2,
+            switch2,
+            startOfBreak3,
+            endOfBreak3,
+            switch3,
+        } = values
+
+        const shiftSettings = {
+            startOfShift: startOfShift,
+            endOfShift: endOfShift,
+            expectedOutput: expectedOutput,
+            breaks: {
+                break1: {
+                    enabled: switch1,
+                    startOfBreak: startOfBreak1,
+                    endOfBreak: endOfBreak1,
+                },
+                break2: {
+                    ...shiftDetails.breaks.break2,
+                    enabled: switch2,
+                    startOfBreak: startOfBreak2,
+                    endOfBreak: endOfBreak2,
+                },
+                break3: {
+                    enabled: switch3,
+                    startOfBreak: startOfBreak3,
+                    endOfBreak: endOfBreak3,
+                },
+            },
+        }
+
+        dispatchPostSettings({
+            ...settings,
+            shiftDetails: shiftSettings,
+        })
+
+
+    }
 
     const renderBreaks = useMemo(() => {
 
