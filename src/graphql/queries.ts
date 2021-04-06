@@ -344,12 +344,24 @@ export const cardsByOrgId = /* GraphQL */ `
         createdAt
         updatedAt
         bins
+<<<<<<< HEAD
         flags
         templateValues
+=======
+        dates
+        description
+        flags
+>>>>>>> cloud-development
         lotNumber
         lotTemplateId
         name
         process_id
+<<<<<<< HEAD
+=======
+        totalQuantity
+        processName
+        count
+>>>>>>> cloud-development
       }
       nextToken
     }
@@ -377,12 +389,24 @@ export const getCardById = /* GraphQL */ `
         createdAt
         updatedAt
         bins
+<<<<<<< HEAD
         flags
         templateValues
+=======
+        dates
+        description
+        flags
+>>>>>>> cloud-development
         lotNumber
         lotTemplateId
         name
         process_id
+<<<<<<< HEAD
+=======
+        totalQuantity
+        processName
+        count
+>>>>>>> cloud-development
       }
       nextToken
     }
@@ -408,6 +432,10 @@ export const cardsEventsByOrgId = /* GraphQL */ `
         organizationId
         cardId
         userId
+<<<<<<< HEAD
+=======
+        username
+>>>>>>> cloud-development
         createdAt
         updatedAt
         delta

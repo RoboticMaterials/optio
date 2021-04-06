@@ -56,7 +56,7 @@ const ObjectEditor = (props) => {
                   containerStyle={{borderColor: theme.main.schema['objects'].solid }}
                   schema = {'objects'}
                   onClick = {onBackClick}
-                  
+
                 />
                 {!editingObject ?
                   <styled.ListItemTitle style = {{fontSize:'1.2rem', paddingLeft:'.5rem', width: '75%'}}>Pick Object</styled.ListItemTitle>

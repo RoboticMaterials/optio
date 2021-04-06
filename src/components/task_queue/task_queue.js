@@ -58,8 +58,8 @@ const TaskQueueMenu = (props) => {
                 // skip if associated task isn't found
                 if (task) {
 
-                    // If task is a handoff, don't show in task q
-                    if (task.handoff === true) return
+                    // If task is a handoff and not a device, don't show in task q
+                    if (task.handoff === true && queueItem?.device_type !== 'MiR_100') return
 
                     queueItemClone.task = task;
                     queueItemClone.name = task.name;

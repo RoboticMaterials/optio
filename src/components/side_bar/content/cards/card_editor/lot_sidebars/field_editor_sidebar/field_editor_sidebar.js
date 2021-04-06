@@ -163,6 +163,7 @@ const LotEditorSidebar = (props) => {
                                 padding: '1rem',
                                 borderRadius: '0.5rem',
                                 zIndex: 12,
+                                cursor: 'move'
                             }}
                         >
                             <div style={{width: "fit-content"}}>
@@ -283,7 +284,7 @@ const LotEditorSidebar = (props) => {
                 key="sidebar-content"
                 style={{ width: width, minWidth: minWidth }}
             >
-                
+
                 <style.Container>
                     <style.TitleText>Draggable Input Elements</style.TitleText>
                     {renderButtons()}

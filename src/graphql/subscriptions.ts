@@ -110,12 +110,24 @@ export const onDeltaCard = /* GraphQL */ `
       createdAt
       updatedAt
       bins
+<<<<<<< HEAD
       flags
       templateValues
+=======
+      dates
+      description
+      flags
+>>>>>>> cloud-development
       lotNumber
       lotTemplateId
       name
       process_id
+<<<<<<< HEAD
+=======
+      totalQuantity
+      processName
+      count
+>>>>>>> cloud-development
     }
   }
 `;
@@ -592,12 +604,24 @@ export const onCreateCard = /* GraphQL */ `
       createdAt
       updatedAt
       bins
+<<<<<<< HEAD
       flags
       templateValues
+=======
+      dates
+      description
+      flags
+>>>>>>> cloud-development
       lotNumber
       lotTemplateId
       name
       process_id
+<<<<<<< HEAD
+=======
+      totalQuantity
+      processName
+      count
+>>>>>>> cloud-development
     }
   }
 `;
@@ -610,12 +634,24 @@ export const onUpdateCard = /* GraphQL */ `
       createdAt
       updatedAt
       bins
+<<<<<<< HEAD
       flags
       templateValues
+=======
+      dates
+      description
+      flags
+>>>>>>> cloud-development
       lotNumber
       lotTemplateId
       name
       process_id
+<<<<<<< HEAD
+=======
+      totalQuantity
+      processName
+      count
+>>>>>>> cloud-development
     }
   }
 `;
@@ -628,12 +664,24 @@ export const onDeleteCard = /* GraphQL */ `
       createdAt
       updatedAt
       bins
+<<<<<<< HEAD
       flags
       templateValues
+=======
+      dates
+      description
+      flags
+>>>>>>> cloud-development
       lotNumber
       lotTemplateId
       name
       process_id
+<<<<<<< HEAD
+=======
+      totalQuantity
+      processName
+      count
+>>>>>>> cloud-development
     }
   }
 `;
@@ -644,6 +692,10 @@ export const onCreateCardEvent = /* GraphQL */ `
       organizationId
       cardId
       userId
+<<<<<<< HEAD
+=======
+      username
+>>>>>>> cloud-development
       createdAt
       updatedAt
       delta
@@ -657,6 +709,10 @@ export const onUpdateCardEvent = /* GraphQL */ `
       organizationId
       cardId
       userId
+<<<<<<< HEAD
+=======
+      username
+>>>>>>> cloud-development
       createdAt
       updatedAt
       delta
@@ -670,6 +726,10 @@ export const onDeleteCardEvent = /* GraphQL */ `
       organizationId
       cardId
       userId
+<<<<<<< HEAD
+=======
+      username
+>>>>>>> cloud-development
       createdAt
       updatedAt
       delta
