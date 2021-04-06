@@ -4,10 +4,11 @@ export const PositionsContainer = styled.div`
     position: relative;
     display: flex;
     flex-direction: column;
-    height: 100%;
 
     user-select: none;
-
+    justify-content: flex-start;
+    align-content: flex-start;
+    flex-grow: 1;
 `
 
 export const Label = styled.h1`
@@ -86,6 +87,7 @@ export const NewPositionCard = styled.div`
     cursor: grab;
     &:active {
         cursor: grabbing;
+        background: transparent;
     }
 
     cursor: url(https://ssl.gstatic.com/ui/v1/icons/mail/images/2/openhand.cur), grab;
