@@ -35,9 +35,6 @@ const LineThroughputForm = (props) => {
     const [breaksEnabled, setBreaksEnabled] = useState({})
     const shiftDetails = settings.shiftDetails;
 
-    // Used for colors in line chart below
-    const colors = { Actual: themeContext.schema.charts.solid, Expected: 'rgba(84, 170, 255, 0.4)' }
-
     // Settings local state here because enabled breaks needs to access breaks outside of formik
     // See the Switch below for more details
     useEffect(() => {

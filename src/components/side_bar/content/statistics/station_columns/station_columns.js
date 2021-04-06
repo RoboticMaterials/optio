@@ -14,7 +14,10 @@ import { getProcessStations } from '../../../../../methods/utils/processes_utils
 const StationColumns = (props) => {
 
     const {
-        processId
+        processId,
+        setDateTitle,
+        dateIndex,
+        timeSpan,
     } = props || {}
 
     const processes = useSelector(state => state.processesReducer.processes)
@@ -28,7 +31,13 @@ const StationColumns = (props) => {
         return Object.keys(processStations).map((stationId) => {
             console.log('QQQQ station id', stationId)
             return (
-                <StationColumn stationId={stationId} />
+                <StationColumn
+                    key={stationId}
+                    dateIndex={dateIndex}
+                    timeSpan={timeSpan}
+                    stationId={stationId}
+                    setDateTitle={(title => setDateTitle(title))}
+                />
             )
         })
 

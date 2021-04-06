@@ -14,9 +14,8 @@ import ReportChart from './charts/report_chart'
 import TimeSpans from './timespans/timespans'
 import DataSelector from './data_selector/data_selector.js'
 import ApexGaugeChart from './apex_gauge_chart'
-
-// Import Utils
-import { convertEpochTo12h } from '../../../../../methods/utils/time_utils'
+import DaySelector from '../../../../basic/day_selector/day_selector'
+import TimeSpanSelector from '../../../../basic/timespan_selector/time_span_selector'
 
 // Import Actions
 import { getStationAnalytics } from '../../../../../redux/actions/stations_actions'
@@ -285,8 +284,11 @@ const StatisticsOverview = (props) => {
             <div style={{ marginBottom: '1rem', alignItems: "center", display: "flex", flexDirection: "column" }}>
                 {
                     <>
-                        <TimeSpans timespanDisabled={timespanDisabled} color={themeContext.schema.charts.solid} setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)} timeSpan={timeSpan}></TimeSpans>
-
+                        <TimeSpanSelector
+                            timespanDisabled={timespanDisabled}
+                            setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)}
+                            timeSpan={timeSpan}
+                        />
                         {/* Commented out for now, only need through put bar chart */}
                         {/* {handleGaugeCharts()} */}
                     </>
@@ -302,35 +304,14 @@ const StatisticsOverview = (props) => {
         if (throughputData === null) return null
 
         return (
-            <styled.RowContainer>
-                <styled.DateSelectorIcon
-                    className='fas fa-chevron-left'
-                    onClick={() => {
-                        const index = dateIndex + 1
-                        onTimeSpan(timeSpan, index)
-                    }}
-                />
-                {isThroughputLoading ?
-                    <styled.LoadingIcon className="fas fa-circle-notch fa-spin" />
-                    :
-                    <styled.DateSelectorTitle>{throughputData.date_title}</styled.DateSelectorTitle>
-
-                }
-
-                {/* If the current dateIndex is 0, then have a blank icon that does nothing. Can't go to the future now can we dummy */}
-                {dateIndex !== 0 ?
-                    <styled.DateSelectorIcon
-                        className='fas fa-chevron-right'
-                        onClick={() => {
-                            const index = dateIndex - 1
-                            onTimeSpan(timeSpan, index)
-                        }}
-                    />
-                    :
-                    <styled.DateSelectorIcon />
-
-                }
-            </styled.RowContainer>
+            <DaySelector
+                date={throughputData.date_title}
+                dateIndex={dateIndex}
+                loading={isThroughputLoading}
+                onChange={(newIndex) => {
+                    onTimeSpan(timeSpan, newIndex)
+                }}
+            />
         )
 
     }
