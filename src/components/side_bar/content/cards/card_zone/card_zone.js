@@ -143,12 +143,8 @@ const CardZone = ((props) => {
 					if((binId === draggingBinId) && (_id === draggingLotId)) return
 
 					const lotItem = {
-						...rest,
-						totalQuantity,
+						...card,
 						binId,
-						count,
-						cardId: _id,
-						processName
 					}
 
 					// if there is an entry in tempCardsSorted with key matching {binId}, add the lot to this bin

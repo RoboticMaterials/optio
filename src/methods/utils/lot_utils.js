@@ -11,6 +11,7 @@ import store from '../../redux/store/index'
 import lotTemplatesReducer from "../../redux/reducers/lot_templates_reducer";
 import {toIntegerOrZero} from "./number_utils";
 import {useSelector} from "react-redux";
+import {getFieldValueFromPath} from "./card_utils";
 
 export const getDisplayName = (lotTemplate, fieldName, fallback) => {
 	let returnVal
@@ -80,9 +81,12 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
 					dataType,		//"STRING"
 					label,			//"Skew (String)"
 					fieldName,
+					fieldPath
 				} = filterMode || {}
 
-				if(lot[fieldName] !== undefined) {
+				const fieldValue = getFieldValueFromPath(lot, fieldPath, fieldName)
+
+				if(fieldValue !== undefined) {
 					if(!filterValue) return true
 
 					switch(dataType) {
@@ -103,10 +107,10 @@ export const getMatchesFilter = (lot, filterValue, filterMode) => {
 							return true
 						}
 						case FIELD_DATA_TYPES.STRING: {
-							return lot[fieldName].toLowerCase().includes((filterValue || "").toLowerCase())
+							return fieldValue.toLowerCase().includes((filterValue || "").toLowerCase())
 						}
 						case FIELD_DATA_TYPES.INTEGER: {
-							return toIntegerOrZero(lot[fieldName]) === toIntegerOrZero(filterValue)
+							return toIntegerOrZero(fieldValue) === toIntegerOrZero(filterValue)
 						}
 						default: {
 							// unknown dateType, return true
@@ -194,7 +198,8 @@ export const getAllTemplateFields = () => {
 					label: fieldName,
 					dataType,
 					component,
-					fieldName
+					fieldName,
+					fieldPath: "templateValues"
 				}
 
 				let alreadyExists = false
@@ -225,8 +230,6 @@ export const getLotTemplateData = (lotTemplateId, lot) => {
 	const lotTemplate = lotTemplateId === BASIC_LOT_TEMPLATE_ID ? BASIC_LOT_TEMPLATE : (lotTemplates[lotTemplateId] || {})
 
 	let templateValues = []
-
-	console.log("getLotTemplateData",lot)
 
 	if(isArray(lotTemplate.fields)) {
 		lotTemplate.fields.forEach((currRow) => {

@@ -16,7 +16,7 @@ import 'reactjs-popup/dist/index.css'
 import {FIELD_DATA_TYPES, FLAG_OPTIONS} from "../../../../../constants/lot_contants"
 
 // utils
-import {immutableDelete, immutableReplace, isArray} from "../../../../../methods/utils/array_utils"
+import {immutableDelete, immutableReplace, isArray, isNonEmptyArray} from "../../../../../methods/utils/array_utils"
 import {formatLotNumber} from "../../../../../methods/utils/lot_utils"
 
 // styles
@@ -47,6 +47,8 @@ const Lot = (props) => {
         flags,
         processName
     } = props
+
+    console.log("flagsflagsflags",flags)
 
     const themeContext = useContext(ThemeContext)
 
@@ -160,7 +162,7 @@ const Lot = (props) => {
                     justifyContent: 'flex-start'
                 }}
             >
-                {flags.length > 0 ?
+                {isNonEmptyArray(flags) ?
                     <>
                         {flags.map((currFlagId) => {
                             const flagOption = FLAG_OPTIONS[currFlagId]

@@ -429,9 +429,10 @@ const LotEditorContainer = (props) => {
                 const submitItem = {
                     name: newName,
                     bins: newBins,
+                    flags: [],
                     process_id: newProcessId,
                     lotTemplateId: lotTemplateId,
-                    ...templateValues,
+                    templateValues,
                     lotNumber: index //collectionCount + index
                 }
 
@@ -798,7 +799,6 @@ const LotEditorContainer = (props) => {
 
                     table={pasteTable}
                     onCreateClick={(payload) => {
-                        console.log("onCreateClick payload",payload)
                         handlePasteFormCreateClick(payload)
                     }}
                 />

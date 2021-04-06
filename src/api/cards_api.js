@@ -162,7 +162,7 @@ export async function getProcessCards(processId) {
             GQLdata.push( {
                 ...card,
                 bins: JSON.parse(card.bins),
-                dates: JSON.parse(card.dates),
+                templateValues: JSON.parse(card.templateValues),
                 flags: JSON.parse(card.flags)
             })
         });
@@ -197,20 +197,34 @@ export async function deleteCard(ID) {
 export async function putCard(card, ID) {
     try {
 
+        const {
+            id,
+            _id,
+            organizationId,
+            createdAt,
+            updatedAt,
+            bins,
+            flags,
+            templateValues,
+            lotNumber,
+            lotTemplateId,
+            name,
+            process_id
+        } = card || {}
+
         const input = {
-            ...card,
-            bins: JSON.stringify(card.bins),
-            flags: JSON.stringify(card.flags),
-            templateValues: JSON.stringify(card.templateValues),
+            id: ID,
+            _id,
+            organizationId,
+            bins: JSON.stringify(bins),
+            flags: JSON.stringify(flags),
+            templateValues: JSON.stringify(templateValues),
+            lotNumber,
+            lotTemplateId,
+            name,
+            process_id
         }
 
-        if(ID){
-            input.id = ID
-        }
-
-        delete input.createdAt
-        delete input.updatedAt
-        
         const dataJson = await API.graphql({
             query: updateCard,
             variables: { input: input }

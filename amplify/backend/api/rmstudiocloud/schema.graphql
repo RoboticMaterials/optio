@@ -12,8 +12,8 @@ type User
 {
   id: ID!
   organizationId: ID!
-createdAt: AWSDateTime
-updatedAt: AWSDateTime
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
   username: String!
   organization: Organization @connection(fields: ["organizationId"])
 }
@@ -28,8 +28,8 @@ type Organization
 {
   id: ID!
   organizationId: ID!
-createdAt: AWSDateTime
-updatedAt: AWSDateTime
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
   name: String!
   key: String!
   users: [User] @connection(keyName: "UsersbyOrg", fields: ["organizationId"])
@@ -49,8 +49,8 @@ type Station
   id: ID!
   _id: String!
   organizationId: ID!
-createdAt: AWSDateTime
-updatedAt: AWSDateTime
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
 
   # Data
   name: String!
@@ -75,8 +75,8 @@ type Position
   id: ID!
   _id: String!
   organizationId: ID!
-createdAt: AWSDateTime
-updatedAt: AWSDateTime
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
   
   # Data
   change_key: String!
@@ -102,8 +102,8 @@ type Task
   id: ID!
   _id: String!
   organizationId: ID!
-createdAt: AWSDateTime
-updatedAt: AWSDateTime
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
 
   # Data
   device_types: AWSJSON!
@@ -129,8 +129,8 @@ type Process
   id: ID!
   _id: String!
   organizationId: ID!
-createdAt: AWSDateTime
-updatedAt: AWSDateTime
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
   
   # Data
   name: String!
@@ -148,8 +148,8 @@ type Object
   id: ID!
   _id: String!
   organizationId: ID!
-createdAt: AWSDateTime
-updatedAt: AWSDateTime
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
   
   # Data
   description: String!
@@ -170,21 +170,40 @@ type Card
   id: ID!
   _id: ID!
   organizationId: ID!
-createdAt: AWSDateTime
-updatedAt: AWSDateTime
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
 
   # Data
   bins: AWSJSON!
   flags: AWSJSON!
+  templateValues: AWSJSON!
   lotNumber: Int!
   lotTemplateId: String!
   name: String!
   process_id: String!
-  templateValues: AWSJSON!
+
+}
+
+type CardEvent
+  @model(queries: null)
+  @auth(rules: [{ allow: private }])
+  @key(name: "CardsEventsByOrgId", fields: ["organizationId"], queryField: "CardsEventsByOrgId" )
+  # @key(name: "getCardById", fields: ["id"], queryField: "getCardById" )
+{
+  # IDs
+  id: ID!
+  organizationId: ID!
+  cardId: ID!
+  userId: ID
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+
+  # Data
+  delta: AWSJSON!
 }
 
 type Settings 
-  @model
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "SettingsByOrgId", fields: ["organizationId"], queryField: "SettingsByOrgId" )
 {
@@ -192,8 +211,8 @@ type Settings
   id: ID!
   _id: String
   organizationId: ID!
-createdAt: AWSDateTime
-updatedAt: AWSDateTime
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
 
   MiRMapEnabled: Boolean
   accessToken: String
@@ -211,17 +230,16 @@ updatedAt: AWSDateTime
 }
 
 type LotTemplate 
-  @model
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "LotTemplatesByOrgId", fields: ["organizationId"], queryField: "LotTemplatesByOrgId" )
 {
-
   # IDs
   id: ID!
   _id: String
   organizationId: ID!
-createdAt: AWSDateTime
-updatedAt: AWSDateTime
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
 
   # Data
   name: String!
@@ -239,8 +257,8 @@ type Device
   id: ID!
   _id: String!
   organizationId: ID!
-createdAt: AWSDateTime
-updatedAt: AWSDateTime
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
   
   # Data
   battery_percentage: Int!
@@ -266,8 +284,8 @@ type Status
   id: ID!
   _id: String!
   organizationId: ID!
-createdAt: AWSDateTime
-updatedAt: AWSDateTime
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
   
   # Data
   active_map: Boolean
@@ -276,7 +294,7 @@ updatedAt: AWSDateTime
 }
 
 type TaskQueue 
-  @model
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "TaskQueueByOrgId", fields: ["organizationId"], queryField: "TaskQueueByOrgId" )
 {
@@ -284,8 +302,8 @@ type TaskQueue
   id: ID!
   _id: String!
   organizationId: ID!
-createdAt: AWSDateTime
-updatedAt: AWSDateTime
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
   
   # Data
   device_type: String!
@@ -306,7 +324,7 @@ updatedAt: AWSDateTime
 }
 
 type TaskQueueEvents
-  @model
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   # @key(name: "TaskQueueByOrgId", fields: ["organizationId"], queryField: "TaskQueueByOrgId" )
 {
@@ -335,15 +353,15 @@ type TaskQueueEvents
 }
 
 type Dashboard 
-  @model
+  @model(queries: null)
   @auth(rules: [{ allow: private }])
   @key(name: "DashboardsByOrgId", fields: ["organizationId"], queryField: "DashboardsByOrgId" )
 {
   # IDs
   id: ID!
   organizationId: ID!
-createdAt: AWSDateTime
-updatedAt: AWSDateTime
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
   
   # Data
   data: AWSJSON!
@@ -351,34 +369,34 @@ updatedAt: AWSDateTime
 
 # Subs
 type Subscription {
-    onDeltaStation: Station
-      @aws_subscribe(mutations: ["createStation","updateStation","deleteStation"])
+  onDeltaStation: Station
+    @aws_subscribe(mutations: ["createStation","updateStation","deleteStation"])
 
-    onDeltaPosition: Position
-      @aws_subscribe(mutations: ["createPosition","updatePosition","deletePosition"])
+  onDeltaPosition: Position
+    @aws_subscribe(mutations: ["createPosition","updatePosition","deletePosition"])
 
-    onDeltaTask: Task
-      @aws_subscribe(mutations: ["createTask","updateTask","deleteTask"])
+  onDeltaTask: Task
+    @aws_subscribe(mutations: ["createTask","updateTask","deleteTask"])
 
-    onDeltaProcess: Process
-      @aws_subscribe(mutations: ["createProcess","updateProcess","deleteProcess"])
+  onDeltaProcess: Process
+    @aws_subscribe(mutations: ["createProcess","updateProcess","deleteProcess"])
 
-    onDeltaObject: Object
-      @aws_subscribe(mutations: ["createObject","updateObject","deleteObject"])
+  onDeltaObject: Object
+    @aws_subscribe(mutations: ["createObject","updateObject","deleteObject"])
 
-    onDeltaCard: Card
-      @aws_subscribe(mutations: ["createCard","updateCard","deleteCard"])
+  onDeltaCard: Card
+    @aws_subscribe(mutations: ["createCard","updateCard","deleteCard"])
 
-    ## Data Stream Subscriptions  
+  ## Data Stream Subscriptions  
 
-    onDeltaDevice: Device
-      @aws_subscribe(mutations: ["createDevice","updateDevice","deleteDevice"])
+  onDeltaDevice: Device
+    @aws_subscribe(mutations: ["createDevice","updateDevice","deleteDevice"])
 
-    onDeltaStatus: Status
-      @aws_subscribe(mutations: ["createStatus","updateStatus","deleteStatus"])
+  onDeltaStatus: Status
+    @aws_subscribe(mutations: ["createStatus","updateStatus","deleteStatus"])
 
-    onDeltaTaskQueue: TaskQueue
-      @aws_subscribe(mutations: ["createTaskQueue","updateTaskQueue"])
+  onDeltaTaskQueue: TaskQueue
+    @aws_subscribe(mutations: ["createTaskQueue","updateTaskQueue"])
 }
 
 # Analysis Queries

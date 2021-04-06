@@ -37,6 +37,19 @@ export const FIELD_COMPONENT_NAMES = {
 	CALENDAR_START_END: "CALENDAR_START_END",
 }
 
+export const LOT_NON_TEMPLATE_FIELDS = {
+	id: "id",
+	organizationId: "organizationId",
+	createdAt: "createdAt",
+	updatedAt: "updatedAt",
+	bins: "bins",
+	flags: "flags",
+	lotNumber: "lotNumber",
+	lotTemplateId: "lotTemplateId",
+	name: "name",
+	process_id: "process_id",
+}
+
 export const FIELD_DATA_TYPES = {
 	STRING: "STRING",
 	EMAIL: "EMAIL",
