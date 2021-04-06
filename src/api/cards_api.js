@@ -17,15 +17,17 @@ import { API } from 'aws-amplify'
 
 // import the GraphQL queries, mutations and subscriptions
 import { cardsByOrgId } from '../graphql/queries'
-import { createCard, updateCard } from '../graphql/mutations'
+import { createCard, createCardEvent, updateCard } from '../graphql/mutations'
 import { getCardById } from '../graphql/queries'
 import { deleteCard as deleteCardByID } from '../graphql/mutations'
 
 // to get user org id
-import getUserOrgId from './user_api'
+import getUserOrgId, {getUser} from './user_api'
 
 // For creating a card
 import { uuidv4 } from '../methods/utils/utils'
+
+import * as _ from 'lodash'
 
 export async function getCards() {
     try {
@@ -206,6 +208,29 @@ export async function putCard(card, ID) {
             process_id
         } = card || {}
 
+        const oldCard = await getCard(ID)
+
+        // get all the keyts possible
+        var allkeys = _.union(_.keys(card), _.keys(oldCard))
+
+        // find the difference betweenall the keys
+        var difference = _.reduce(allkeys, function (result, key) {
+            if ( !_.isEqual(card[key], oldCard[key]) ) {
+                result[key] = {new: card[key], old: oldCard[key]}
+            }
+            return result;
+        }, {});
+
+        const user = await getUser()
+
+        const eventInput = {
+            delta: JSON.stringify(difference),
+            cardId: ID,
+            organizationId: oldCard.organizationId,
+            userId: user.id,
+            username: user.username
+        }
+
         const input = {
             id: ID,
             _id,
@@ -222,6 +247,11 @@ export async function putCard(card, ID) {
         const dataJson = await API.graphql({
             query: updateCard,
             variables: { input: input }
+        })
+
+        await API.graphql({
+            query: createCardEvent,
+            variables: { input: eventInput }
         })
 
         return dataJson.data.updateCard;

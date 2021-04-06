@@ -484,6 +484,8 @@ const FormComponent = (props) => {
 			events = []
 		} = cardHistory || {}
 
+		const cardsToBeRendered = cardHistory ? cardHistory : events
+
 		return(
 			<styled.BodyContainer>
 				<styled.ContentHeader style={{}}>
@@ -492,14 +494,13 @@ const FormComponent = (props) => {
 
 
 				<styled.HistoryBodyContainer>
-					{events.map((currEvent) => {
-						const {
-							name,
-							description,
-							username,
-							data,
-							date: {$date: date}
-						} = currEvent
+					{cardsToBeRendered.map((currEvent) => {
+
+						const 	name = '',
+								username = currEvent.username ? currEvent.username : 'No User',
+								data = JSON.parse(currEvent.delta),
+								date = currEvent.createdAt
+						
 
 						var jsDate = new Date(date);
 						var currentDate = new Date();

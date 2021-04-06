@@ -579,6 +579,57 @@ export const deleteCard = /* GraphQL */ `
     }
   }
 `;
+export const createCardEvent = /* GraphQL */ `
+  mutation CreateCardEvent(
+    $input: CreateCardEventInput!
+    $condition: ModelCardEventConditionInput
+  ) {
+    createCardEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      cardId
+      userId
+      username
+      createdAt
+      updatedAt
+      delta
+    }
+  }
+`;
+export const updateCardEvent = /* GraphQL */ `
+  mutation UpdateCardEvent(
+    $input: UpdateCardEventInput!
+    $condition: ModelCardEventConditionInput
+  ) {
+    updateCardEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      cardId
+      userId
+      username
+      createdAt
+      updatedAt
+      delta
+    }
+  }
+`;
+export const deleteCardEvent = /* GraphQL */ `
+  mutation DeleteCardEvent(
+    $input: DeleteCardEventInput!
+    $condition: ModelCardEventConditionInput
+  ) {
+    deleteCardEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      cardId
+      userId
+      username
+      createdAt
+      updatedAt
+      delta
+    }
+  }
+`;
 export const createSettings = /* GraphQL */ `
   mutation CreateSettings(
     $input: CreateSettingsInput!

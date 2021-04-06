@@ -1,241 +1,6 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const getSettings = /* GraphQL */ `
-  query GetSettings($id: ID!) {
-    getSettings(id: $id) {
-      id
-      _id
-      organizationId
-      createdAt
-      updatedAt
-      MiRMapEnabled
-      accessToken
-      authenticated
-      currentMapId
-      deviceEnabled
-      loggers
-      mapViewEnabled
-      non_local_api
-      non_local_api_ip
-      refreshToken
-      shiftDetails
-      toggleDevOptions
-      timezone
-    }
-  }
-`;
-export const listSettingss = /* GraphQL */ `
-  query ListSettingss(
-    $filter: ModelSettingsFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listSettingss(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        _id
-        organizationId
-        createdAt
-        updatedAt
-        MiRMapEnabled
-        accessToken
-        authenticated
-        currentMapId
-        deviceEnabled
-        loggers
-        mapViewEnabled
-        non_local_api
-        non_local_api_ip
-        refreshToken
-        shiftDetails
-        toggleDevOptions
-        timezone
-      }
-      nextToken
-    }
-  }
-`;
-export const getLotTemplate = /* GraphQL */ `
-  query GetLotTemplate($id: ID!) {
-    getLotTemplate(id: $id) {
-      id
-      _id
-      organizationId
-      createdAt
-      updatedAt
-      name
-      displayNames
-      fields
-    }
-  }
-`;
-export const listLotTemplates = /* GraphQL */ `
-  query ListLotTemplates(
-    $filter: ModelLotTemplateFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listLotTemplates(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        _id
-        organizationId
-        createdAt
-        updatedAt
-        name
-        displayNames
-        fields
-      }
-      nextToken
-    }
-  }
-`;
-export const getTaskQueue = /* GraphQL */ `
-  query GetTaskQueue($id: ID!) {
-    getTaskQueue(id: $id) {
-      id
-      _id
-      organizationId
-      createdAt
-      updatedAt
-      device_type
-      mission_status
-      owner
-      task_id
-      custom_task
-      dashboard
-      showModal
-      hil_response
-      quantity
-      lot_id
-      start_time
-      end_time
-      hil_station_id
-      hil_message
-    }
-  }
-`;
-export const listTaskQueues = /* GraphQL */ `
-  query ListTaskQueues(
-    $filter: ModelTaskQueueFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listTaskQueues(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        _id
-        organizationId
-        createdAt
-        updatedAt
-        device_type
-        mission_status
-        owner
-        task_id
-        custom_task
-        dashboard
-        showModal
-        hil_response
-        quantity
-        lot_id
-        start_time
-        end_time
-        hil_station_id
-        hil_message
-      }
-      nextToken
-    }
-  }
-`;
-export const getTaskQueueEvents = /* GraphQL */ `
-  query GetTaskQueueEvents($id: ID!) {
-    getTaskQueueEvents(id: $id) {
-      id
-      organizationId
-      createdAt
-      updatedAt
-      device_type
-      mission_status
-      owner
-      task_id
-      custom_task
-      dashboard
-      showModal
-      hil_response
-      quantity
-      lot_id
-      start_time
-      end_time
-      hil_station_id
-      hil_message
-    }
-  }
-`;
-export const listTaskQueueEventss = /* GraphQL */ `
-  query ListTaskQueueEventss(
-    $filter: ModelTaskQueueEventsFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listTaskQueueEventss(
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-    ) {
-      items {
-        id
-        organizationId
-        createdAt
-        updatedAt
-        device_type
-        mission_status
-        owner
-        task_id
-        custom_task
-        dashboard
-        showModal
-        hil_response
-        quantity
-        lot_id
-        start_time
-        end_time
-        hil_station_id
-        hil_message
-      }
-      nextToken
-    }
-  }
-`;
-export const getDashboard = /* GraphQL */ `
-  query GetDashboard($id: ID!) {
-    getDashboard(id: $id) {
-      id
-      organizationId
-      createdAt
-      updatedAt
-      data
-    }
-  }
-`;
-export const listDashboards = /* GraphQL */ `
-  query ListDashboards(
-    $filter: ModelDashboardFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listDashboards(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        organizationId
-        createdAt
-        updatedAt
-        data
-      }
-      nextToken
-    }
-  }
-`;
 export const usersbyOrg = /* GraphQL */ `
   query UsersbyOrg(
     $organizationId: ID
@@ -617,6 +382,35 @@ export const getCardById = /* GraphQL */ `
         name
         process_id
         templateValues
+      }
+      nextToken
+    }
+  }
+`;
+export const cardsEventsByOrgId = /* GraphQL */ `
+  query CardsEventsByOrgId(
+    $organizationId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelCardEventFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    CardsEventsByOrgId(
+      organizationId: $organizationId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        organizationId
+        cardId
+        userId
+        username
+        createdAt
+        updatedAt
+        delta
       }
       nextToken
     }
