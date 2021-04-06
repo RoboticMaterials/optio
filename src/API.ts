@@ -581,24 +581,12 @@ export type CreateCardInput = {
   createdAt?: string | null,
   updatedAt?: string | null,
   bins: string,
-<<<<<<< HEAD
   flags: string,
   templateValues: string,
-=======
-  dates: string,
-  description: string,
-  flags: string,
->>>>>>> cloud-development
   lotNumber: number,
   lotTemplateId: string,
   name: string,
   process_id: string,
-<<<<<<< HEAD
-=======
-  totalQuantity?: number | null,
-  processName?: string | null,
-  count?: number | null,
->>>>>>> cloud-development
 };
 
 export type ModelCardConditionInput = {
@@ -607,24 +595,12 @@ export type ModelCardConditionInput = {
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
   bins?: ModelStringInput | null,
-<<<<<<< HEAD
   flags?: ModelStringInput | null,
   templateValues?: ModelStringInput | null,
-=======
-  dates?: ModelStringInput | null,
-  description?: ModelStringInput | null,
-  flags?: ModelStringInput | null,
->>>>>>> cloud-development
   lotNumber?: ModelIntInput | null,
   lotTemplateId?: ModelStringInput | null,
   name?: ModelStringInput | null,
   process_id?: ModelStringInput | null,
-<<<<<<< HEAD
-=======
-  totalQuantity?: ModelIntInput | null,
-  processName?: ModelStringInput | null,
-  count?: ModelIntInput | null,
->>>>>>> cloud-development
   and?: Array< ModelCardConditionInput | null > | null,
   or?: Array< ModelCardConditionInput | null > | null,
   not?: ModelCardConditionInput | null,
@@ -638,24 +614,12 @@ export type Card = {
   createdAt?: string | null,
   updatedAt?: string | null,
   bins?: string,
-<<<<<<< HEAD
   flags?: string,
   templateValues?: string,
-=======
-  dates?: string,
-  description?: string,
-  flags?: string,
->>>>>>> cloud-development
   lotNumber?: number,
   lotTemplateId?: string,
   name?: string,
   process_id?: string,
-<<<<<<< HEAD
-=======
-  totalQuantity?: number | null,
-  processName?: string | null,
-  count?: number | null,
->>>>>>> cloud-development
 };
 
 export type UpdateCardInput = {
@@ -665,24 +629,12 @@ export type UpdateCardInput = {
   createdAt?: string | null,
   updatedAt?: string | null,
   bins?: string | null,
-<<<<<<< HEAD
   flags?: string | null,
   templateValues?: string | null,
-=======
-  dates?: string | null,
-  description?: string | null,
-  flags?: string | null,
->>>>>>> cloud-development
   lotNumber?: number | null,
   lotTemplateId?: string | null,
   name?: string | null,
   process_id?: string | null,
-<<<<<<< HEAD
-=======
-  totalQuantity?: number | null,
-  processName?: string | null,
-  count?: number | null,
->>>>>>> cloud-development
 };
 
 export type DeleteCardInput = {
@@ -694,10 +646,7 @@ export type CreateCardEventInput = {
   organizationId: string,
   cardId: string,
   userId?: string | null,
-<<<<<<< HEAD
-=======
   username?: string | null,
->>>>>>> cloud-development
   createdAt?: string | null,
   updatedAt?: string | null,
   delta: string,
@@ -707,10 +656,7 @@ export type ModelCardEventConditionInput = {
   organizationId?: ModelIDInput | null,
   cardId?: ModelIDInput | null,
   userId?: ModelIDInput | null,
-<<<<<<< HEAD
-=======
   username?: ModelStringInput | null,
->>>>>>> cloud-development
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
   delta?: ModelStringInput | null,
@@ -725,10 +671,7 @@ export type CardEvent = {
   organizationId?: string,
   cardId?: string,
   userId?: string | null,
-<<<<<<< HEAD
-=======
   username?: string | null,
->>>>>>> cloud-development
   createdAt?: string | null,
   updatedAt?: string | null,
   delta?: string,
@@ -739,10 +682,7 @@ export type UpdateCardEventInput = {
   organizationId?: string | null,
   cardId?: string | null,
   userId?: string | null,
-<<<<<<< HEAD
-=======
   username?: string | null,
->>>>>>> cloud-development
   createdAt?: string | null,
   updatedAt?: string | null,
   delta?: string | null,
@@ -1405,24 +1345,12 @@ export type ModelCardFilterInput = {
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
   bins?: ModelStringInput | null,
-<<<<<<< HEAD
   flags?: ModelStringInput | null,
   templateValues?: ModelStringInput | null,
-=======
-  dates?: ModelStringInput | null,
-  description?: ModelStringInput | null,
-  flags?: ModelStringInput | null,
->>>>>>> cloud-development
   lotNumber?: ModelIntInput | null,
   lotTemplateId?: ModelStringInput | null,
   name?: ModelStringInput | null,
   process_id?: ModelStringInput | null,
-<<<<<<< HEAD
-=======
-  totalQuantity?: ModelIntInput | null,
-  processName?: ModelStringInput | null,
-  count?: ModelIntInput | null,
->>>>>>> cloud-development
   and?: Array< ModelCardFilterInput | null > | null,
   or?: Array< ModelCardFilterInput | null > | null,
   not?: ModelCardFilterInput | null,
@@ -1439,10 +1367,7 @@ export type ModelCardEventFilterInput = {
   organizationId?: ModelIDInput | null,
   cardId?: ModelIDInput | null,
   userId?: ModelIDInput | null,
-<<<<<<< HEAD
-=======
   username?: ModelStringInput | null,
->>>>>>> cloud-development
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
   delta?: ModelStringInput | null,
@@ -2190,24 +2115,12 @@ export type CreateCardMutation = {
     createdAt?: string | null,
     updatedAt?: string | null,
     bins: string,
-<<<<<<< HEAD
     flags: string,
     templateValues: string,
-=======
-    dates: string,
-    description: string,
-    flags: string,
->>>>>>> cloud-development
     lotNumber: number,
     lotTemplateId: string,
     name: string,
     process_id: string,
-<<<<<<< HEAD
-=======
-    totalQuantity?: number | null,
-    processName?: string | null,
-    count?: number | null,
->>>>>>> cloud-development
   } | null,
 };
 
@@ -2225,24 +2138,12 @@ export type UpdateCardMutation = {
     createdAt?: string | null,
     updatedAt?: string | null,
     bins: string,
-<<<<<<< HEAD
     flags: string,
     templateValues: string,
-=======
-    dates: string,
-    description: string,
-    flags: string,
->>>>>>> cloud-development
     lotNumber: number,
     lotTemplateId: string,
     name: string,
     process_id: string,
-<<<<<<< HEAD
-=======
-    totalQuantity?: number | null,
-    processName?: string | null,
-    count?: number | null,
->>>>>>> cloud-development
   } | null,
 };
 
@@ -2260,24 +2161,12 @@ export type DeleteCardMutation = {
     createdAt?: string | null,
     updatedAt?: string | null,
     bins: string,
-<<<<<<< HEAD
     flags: string,
     templateValues: string,
-=======
-    dates: string,
-    description: string,
-    flags: string,
->>>>>>> cloud-development
     lotNumber: number,
     lotTemplateId: string,
     name: string,
     process_id: string,
-<<<<<<< HEAD
-=======
-    totalQuantity?: number | null,
-    processName?: string | null,
-    count?: number | null,
->>>>>>> cloud-development
   } | null,
 };
 
@@ -2293,10 +2182,7 @@ export type CreateCardEventMutation = {
     organizationId: string,
     cardId: string,
     userId?: string | null,
-<<<<<<< HEAD
-=======
     username?: string | null,
->>>>>>> cloud-development
     createdAt?: string | null,
     updatedAt?: string | null,
     delta: string,
@@ -2315,10 +2201,7 @@ export type UpdateCardEventMutation = {
     organizationId: string,
     cardId: string,
     userId?: string | null,
-<<<<<<< HEAD
-=======
     username?: string | null,
->>>>>>> cloud-development
     createdAt?: string | null,
     updatedAt?: string | null,
     delta: string,
@@ -2337,10 +2220,7 @@ export type DeleteCardEventMutation = {
     organizationId: string,
     cardId: string,
     userId?: string | null,
-<<<<<<< HEAD
-=======
     username?: string | null,
->>>>>>> cloud-development
     createdAt?: string | null,
     updatedAt?: string | null,
     delta: string,
@@ -3166,24 +3046,12 @@ export type CardsByOrgIdQuery = {
       createdAt?: string | null,
       updatedAt?: string | null,
       bins: string,
-<<<<<<< HEAD
       flags: string,
       templateValues: string,
-=======
-      dates: string,
-      description: string,
-      flags: string,
->>>>>>> cloud-development
       lotNumber: number,
       lotTemplateId: string,
       name: string,
       process_id: string,
-<<<<<<< HEAD
-=======
-      totalQuantity?: number | null,
-      processName?: string | null,
-      count?: number | null,
->>>>>>> cloud-development
     } | null > | null,
     nextToken?: string | null,
   } | null,
@@ -3208,24 +3076,12 @@ export type GetCardByIdQuery = {
       createdAt?: string | null,
       updatedAt?: string | null,
       bins: string,
-<<<<<<< HEAD
       flags: string,
       templateValues: string,
-=======
-      dates: string,
-      description: string,
-      flags: string,
->>>>>>> cloud-development
       lotNumber: number,
       lotTemplateId: string,
       name: string,
       process_id: string,
-<<<<<<< HEAD
-=======
-      totalQuantity?: number | null,
-      processName?: string | null,
-      count?: number | null,
->>>>>>> cloud-development
     } | null > | null,
     nextToken?: string | null,
   } | null,
@@ -3248,10 +3104,7 @@ export type CardsEventsByOrgIdQuery = {
       organizationId: string,
       cardId: string,
       userId?: string | null,
-<<<<<<< HEAD
-=======
       username?: string | null,
->>>>>>> cloud-development
       createdAt?: string | null,
       updatedAt?: string | null,
       delta: string,
@@ -3551,24 +3404,12 @@ export type OnDeltaCardSubscription = {
     createdAt?: string | null,
     updatedAt?: string | null,
     bins: string,
-<<<<<<< HEAD
     flags: string,
     templateValues: string,
-=======
-    dates: string,
-    description: string,
-    flags: string,
->>>>>>> cloud-development
     lotNumber: number,
     lotTemplateId: string,
     name: string,
     process_id: string,
-<<<<<<< HEAD
-=======
-    totalQuantity?: number | null,
-    processName?: string | null,
-    count?: number | null,
->>>>>>> cloud-development
   } | null,
 };
 
@@ -4051,24 +3892,12 @@ export type OnCreateCardSubscription = {
     createdAt?: string | null,
     updatedAt?: string | null,
     bins: string,
-<<<<<<< HEAD
     flags: string,
     templateValues: string,
-=======
-    dates: string,
-    description: string,
-    flags: string,
->>>>>>> cloud-development
     lotNumber: number,
     lotTemplateId: string,
     name: string,
     process_id: string,
-<<<<<<< HEAD
-=======
-    totalQuantity?: number | null,
-    processName?: string | null,
-    count?: number | null,
->>>>>>> cloud-development
   } | null,
 };
 
@@ -4081,24 +3910,12 @@ export type OnUpdateCardSubscription = {
     createdAt?: string | null,
     updatedAt?: string | null,
     bins: string,
-<<<<<<< HEAD
     flags: string,
     templateValues: string,
-=======
-    dates: string,
-    description: string,
-    flags: string,
->>>>>>> cloud-development
     lotNumber: number,
     lotTemplateId: string,
     name: string,
     process_id: string,
-<<<<<<< HEAD
-=======
-    totalQuantity?: number | null,
-    processName?: string | null,
-    count?: number | null,
->>>>>>> cloud-development
   } | null,
 };
 
@@ -4111,24 +3928,12 @@ export type OnDeleteCardSubscription = {
     createdAt?: string | null,
     updatedAt?: string | null,
     bins: string,
-<<<<<<< HEAD
     flags: string,
     templateValues: string,
-=======
-    dates: string,
-    description: string,
-    flags: string,
->>>>>>> cloud-development
     lotNumber: number,
     lotTemplateId: string,
     name: string,
     process_id: string,
-<<<<<<< HEAD
-=======
-    totalQuantity?: number | null,
-    processName?: string | null,
-    count?: number | null,
->>>>>>> cloud-development
   } | null,
 };
 
@@ -4139,10 +3944,7 @@ export type OnCreateCardEventSubscription = {
     organizationId: string,
     cardId: string,
     userId?: string | null,
-<<<<<<< HEAD
-=======
     username?: string | null,
->>>>>>> cloud-development
     createdAt?: string | null,
     updatedAt?: string | null,
     delta: string,
@@ -4156,10 +3958,7 @@ export type OnUpdateCardEventSubscription = {
     organizationId: string,
     cardId: string,
     userId?: string | null,
-<<<<<<< HEAD
-=======
     username?: string | null,
->>>>>>> cloud-development
     createdAt?: string | null,
     updatedAt?: string | null,
     delta: string,
@@ -4173,10 +3972,7 @@ export type OnDeleteCardEventSubscription = {
     organizationId: string,
     cardId: string,
     userId?: string | null,
-<<<<<<< HEAD
-=======
     username?: string | null,
->>>>>>> cloud-development
     createdAt?: string | null,
     updatedAt?: string | null,
     delta: string,

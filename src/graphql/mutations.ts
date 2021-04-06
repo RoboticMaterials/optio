@@ -529,24 +529,12 @@ export const createCard = /* GraphQL */ `
       createdAt
       updatedAt
       bins
-<<<<<<< HEAD
       flags
       templateValues
-=======
-      dates
-      description
-      flags
->>>>>>> cloud-development
       lotNumber
       lotTemplateId
       name
       process_id
-<<<<<<< HEAD
-=======
-      totalQuantity
-      processName
-      count
->>>>>>> cloud-development
     }
   }
 `;
@@ -562,24 +550,12 @@ export const updateCard = /* GraphQL */ `
       createdAt
       updatedAt
       bins
-<<<<<<< HEAD
       flags
       templateValues
-=======
-      dates
-      description
-      flags
->>>>>>> cloud-development
       lotNumber
       lotTemplateId
       name
       process_id
-<<<<<<< HEAD
-=======
-      totalQuantity
-      processName
-      count
->>>>>>> cloud-development
     }
   }
 `;
@@ -595,24 +571,12 @@ export const deleteCard = /* GraphQL */ `
       createdAt
       updatedAt
       bins
-<<<<<<< HEAD
       flags
       templateValues
-=======
-      dates
-      description
-      flags
->>>>>>> cloud-development
       lotNumber
       lotTemplateId
       name
       process_id
-<<<<<<< HEAD
-=======
-      totalQuantity
-      processName
-      count
->>>>>>> cloud-development
     }
   }
 `;
@@ -626,10 +590,7 @@ export const createCardEvent = /* GraphQL */ `
       organizationId
       cardId
       userId
-<<<<<<< HEAD
-=======
       username
->>>>>>> cloud-development
       createdAt
       updatedAt
       delta
@@ -646,10 +607,7 @@ export const updateCardEvent = /* GraphQL */ `
       organizationId
       cardId
       userId
-<<<<<<< HEAD
-=======
       username
->>>>>>> cloud-development
       createdAt
       updatedAt
       delta
@@ -666,10 +624,7 @@ export const deleteCardEvent = /* GraphQL */ `
       organizationId
       cardId
       userId
-<<<<<<< HEAD
-=======
       username
->>>>>>> cloud-development
       createdAt
       updatedAt
       delta

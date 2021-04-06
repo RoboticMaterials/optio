@@ -195,24 +195,6 @@ type CardEvent
   organizationId: ID!
   cardId: ID!
   userId: ID
-  createdAt: AWSDateTime
-  updatedAt: AWSDateTime
-
-  # Data
-  delta: AWSJSON!
-}
-
-type CardEvent
-  @model(queries: null)
-  @auth(rules: [{ allow: private }])
-  @key(name: "CardsEventsByOrgId", fields: ["organizationId"], queryField: "CardsEventsByOrgId" )
-  # @key(name: "getCardById", fields: ["id"], queryField: "getCardById" )
-{
-  # IDs
-  id: ID!
-  organizationId: ID!
-  cardId: ID!
-  userId: ID
   username: String
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
