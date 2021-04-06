@@ -40,7 +40,6 @@ export async function getCards() {
         let GQLdata = []
 
         res.data.CardsByOrgId.items.forEach(card => {
-            console.log("card",card)
             GQLdata.push( {
                 ...card,
                 templateValues: JSON.parse(card.templateValues),
@@ -49,8 +48,6 @@ export async function getCards() {
             })
         });
 
-        console.log("GQLdata",GQLdata)
-        
         return GQLdata;
     } catch (error) {
         // Error 😨
@@ -158,7 +155,6 @@ export async function getProcessCards(processId) {
         let GQLdata = []
 
         res.data.CardsByOrgId.items.forEach(card => {
-            console.log("getProcessCards card",card)
             GQLdata.push( {
                 ...card,
                 bins: JSON.parse(card.bins),
@@ -166,8 +162,6 @@ export async function getProcessCards(processId) {
                 flags: JSON.parse(card.flags)
             })
         });
-
-        console.log("getProcessCards GQLdata",GQLdata)
 
         return GQLdata;
 

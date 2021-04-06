@@ -48,8 +48,6 @@ const Lot = (props) => {
         processName
     } = props
 
-    console.log("flagsflagsflags",flags)
-
     const themeContext = useContext(ThemeContext)
 
     // actions
