@@ -44,12 +44,12 @@ export async function getCards() {
         res.data.CardsByOrgId.items.forEach(card => {
             GQLdata.push( {
                 ...card,
+                templateValues: JSON.parse(card.templateValues),
                 bins: JSON.parse(card.bins),
-                dates: JSON.parse(card.dates),
                 flags: JSON.parse(card.flags)
             })
         });
-        
+
         return GQLdata;
     } catch (error) {
         // Error 😨
@@ -74,8 +74,8 @@ export async function getCard(cardId) {
             return {
                 ...res.data.CardsByOrgId.items[0],
                 bins: JSON.parse(res.data.CardsByOrgId.items[0].bins),
-                dates: JSON.parse(res.data.CardsByOrgId.items[0].dates),
-                flags: JSON.parse(res.data.CardsByOrgId.items[0].flags)
+                flags: JSON.parse(res.data.CardsByOrgId.items[0].flags),
+                templateValues: JSON.parse(res.data.CardsByOrgId.items[0].templateValues),
             };
         }else{
             return null
@@ -101,8 +101,8 @@ export async function postCard(card) {
 
         const input = {
             ...card,
+            templateValues: JSON.stringify(card.templateValues),
             bins: JSON.stringify(card.bins),
-            dates: JSON.stringify(card.dates),
             flags: JSON.stringify(card.flags),
             id: fakeID,
             organizationId: userOrgId
@@ -159,7 +159,7 @@ export async function getProcessCards(processId) {
             GQLdata.push( {
                 ...card,
                 bins: JSON.parse(card.bins),
-                dates: JSON.parse(card.dates),
+                templateValues: JSON.parse(card.templateValues),
                 flags: JSON.parse(card.flags)
             })
         });
@@ -192,6 +192,21 @@ export async function deleteCard(ID) {
 export async function putCard(card, ID) {
     try {
 
+        const {
+            id,
+            _id,
+            organizationId,
+            createdAt,
+            updatedAt,
+            bins,
+            flags,
+            templateValues,
+            lotNumber,
+            lotTemplateId,
+            name,
+            process_id
+        } = card || {}
+
         const oldCard = await getCard(ID)
 
         // get all the keyts possible
@@ -199,11 +214,11 @@ export async function putCard(card, ID) {
 
         // find the difference betweenall the keys
         var difference = _.reduce(allkeys, function (result, key) {
-                                    if ( !_.isEqual(card[key], oldCard[key]) ) {
-                                            result[key] = {new: card[key], old: oldCard[key]}
-                                        }
-                                        return result;
-                                    }, {});
+            if ( !_.isEqual(card[key], oldCard[key]) ) {
+                result[key] = {new: card[key], old: oldCard[key]}
+            }
+            return result;
+        }, {});
 
         const user = await getUser()
 
@@ -216,19 +231,18 @@ export async function putCard(card, ID) {
         }
 
         const input = {
-            ...card,
-            bins: JSON.stringify(card.bins),
-            dates: JSON.stringify(card.dates),
-            flags: JSON.stringify(card.flags)
+            id: ID,
+            _id,
+            organizationId,
+            bins: JSON.stringify(bins),
+            flags: JSON.stringify(flags),
+            templateValues: JSON.stringify(templateValues),
+            lotNumber,
+            lotTemplateId,
+            name,
+            process_id
         }
 
-        if(ID){
-            input.id = ID
-        }
-
-        delete input.createdAt
-        delete input.updatedAt
-        
         const dataJson = await API.graphql({
             query: updateCard,
             variables: { input: input }

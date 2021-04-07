@@ -143,6 +143,7 @@ export async function putLotTemplate(lotTemplate, ID) {
 
         const input = {
             ...lotTemplate,
+            id: ID,
             displayNames: JSON.stringify(lotTemplate.displayNames),
             fields: JSON.stringify(lotTemplate.fields),
         }

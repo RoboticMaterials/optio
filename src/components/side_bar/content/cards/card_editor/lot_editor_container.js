@@ -427,8 +427,9 @@ const LotEditorContainer = (props) => {
                     name: newName,
                     bins: newBins,
                     processId: newProcessId,
+                    flags: [],
                     lotTemplateId: lotTemplateId,
-                    ...templateValues,
+                    templateValues,
                     lotNumber: index //collectionCount + index
                 }
 
@@ -794,13 +795,6 @@ const LotEditorContainer = (props) => {
                     }}
 
                     table={pasteTable}
-                    // onPreviewClick={(payload) => {
-                    // 	// setShowPasteMapper(false)
-                    // 	// setShowProcessSelector(true)
-                    // 	setMappedValues(payload)
-                    // 	setSelectedIndex(0)
-                    // 	setPasteMapperHidden(true)
-                    // }}
                     onCreateClick={(payload) => {
                         handlePasteFormCreateClick(payload)
                     }}

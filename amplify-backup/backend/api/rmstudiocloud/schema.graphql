@@ -47,6 +47,7 @@ type Station
 {
   # IDs
   id: ID!
+  _id: String!
   organizationId: ID!
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
@@ -60,7 +61,7 @@ type Station
   rotation: Int!
   x: Float!
   y: Float!
-  mapId: String!
+  map_id: String!
   children: AWSJSON!
   dashboards: AWSJSON!
 }
@@ -72,13 +73,14 @@ type Position
 {
   # IDs
   id: ID!
+  _id: String!
   organizationId: ID!
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
   
   # Data
   change_key: String!
-  mapId: String!
+  map_id: String!
   name: String!
   parent: String
   pos_x: Float
@@ -98,6 +100,7 @@ type Task
 {
   # IDs
   id: ID!
+  _id: String!
   organizationId: ID!
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
@@ -106,7 +109,7 @@ type Task
   device_types: AWSJSON!
   handoff: Boolean!
   load: AWSJSON!
-  mapId: String!
+  map_id: String!
   name: String!
   processes: AWSJSON!
   quantity: Int!
@@ -124,6 +127,7 @@ type Process
 {
   # IDs
   id: ID!
+  _id: String!
   organizationId: ID!
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
@@ -132,7 +136,7 @@ type Process
   name: String!
   broken: Int
   routes: AWSJSON!
-  mapId: String
+  map_id: String
 }
 
 type Object 
@@ -142,13 +146,14 @@ type Object
 {
   # IDs
   id: ID!
+  _id: String!
   organizationId: ID!
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
   
   # Data
   description: String!
-  mapId: String!
+  map_id: String!
   modelName: String!
   name: String!
   dimensions: String
@@ -163,6 +168,7 @@ type Card
 {
   # IDs
   id: ID!
+  _id: ID!
   organizationId: ID!
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
@@ -174,7 +180,8 @@ type Card
   lotNumber: Int!
   lotTemplateId: String!
   name: String!
-  processId: String!
+  process_id: String!
+
 }
 
 type CardEvent
@@ -203,6 +210,7 @@ type Settings
 {
   # IDs
   id: ID!
+  _id: String
   organizationId: ID!
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
@@ -229,6 +237,7 @@ type LotTemplate
 {
   # IDs
   id: ID!
+  _id: String
   organizationId: ID!
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
@@ -247,6 +256,7 @@ type Device
 {
   # IDs
   id: ID!
+  _id: String!
   organizationId: ID!
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
@@ -260,7 +270,7 @@ type Device
   device_name: String!
   distance_to_next_target: Int!
   idle_location: String!
-  mapId: String!
+  map_id: String!
   position: AWSJSON!
   shelf_attached: Int!
   state_text: String!
@@ -273,6 +283,7 @@ type Status
 {
   # IDs
   id: ID!
+  _id: String!
   organizationId: ID!
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
@@ -290,6 +301,7 @@ type TaskQueue
 {
   # IDs
   id: ID!
+  _id: String!
   organizationId: ID!
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
@@ -298,13 +310,13 @@ type TaskQueue
   device_type: String!
   mission_status: String
   owner: String
-  taskId: String!
+  task_id: String!
   custom_task: AWSJSON
   dashboard: String
   showModal: Boolean
   hil_response: Boolean
   quantity: Int
-  lotId: String
+  lot_id: String
   start_time: AWSTimestamp
   end_time: AWSTimestamp
 
@@ -327,13 +339,13 @@ type TaskQueueEvents
   device_type: String!
   mission_status: String
   owner: String
-  taskId: String!
+  task_id: String!
   custom_task: AWSJSON
   dashboard: String
   showModal: Boolean
   hil_response: Boolean
   quantity: Int
-  lotId: String
+  lot_id: String
   start_time: AWSTimestamp
   end_time: AWSTimestamp
 
@@ -391,5 +403,5 @@ type Subscription {
 # Analysis Queries
 type Mutation {
   manageTaskQueue(taskQueueItem: AWSJSON!): TaskQueue @function(name: "handleTaskQueue-${env}")
-  taskStats(taskId: ID, organizationId: String!): TaskQueue @function(name: "taskStats-${env}")
+  taskStats(task_id: ID, organizationId: String!): TaskQueue @function(name: "taskStats-${env}")
 }
