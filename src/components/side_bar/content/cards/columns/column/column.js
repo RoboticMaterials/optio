@@ -72,7 +72,7 @@ const Column = ((props) => {
 			} = currLot || {}
 
 			tempNumberOfLots = parseInt(tempNumberOfLots) + 1
-			tempLotQuantitySummation = parseInt(tempLotQuantitySummation) + parseInt(getBinQuantity(currLot, station_id))
+			tempLotQuantitySummation = parseInt(tempLotQuantitySummation) + parseInt(getBinQuantity(currLot, stationId))
 		})
 
 		setNumberOfLots(tempNumberOfLots)
