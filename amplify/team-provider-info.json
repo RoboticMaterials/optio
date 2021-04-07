@@ -19,11 +19,11 @@
       "function": {
         "handleTaskQueue": {
           "deploymentBucketName": "amplify-rmstudiocloud-dev-112632-deployment",
-          "s3Key": "amplify-builds/handleTaskQueue-63355445733450704e32-build.zip"
+          "s3Key": "amplify-builds/handleTaskQueue-364a542f31326d45652b-build.zip"
         },
         "taskStats": {
           "deploymentBucketName": "amplify-rmstudiocloud-dev-112632-deployment",
-          "s3Key": "amplify-builds/taskStats-7377613342506e525568-build.zip"
+          "s3Key": "amplify-builds/taskStats-77646535787954364957-build.zip"
         },
         "stationStats": {
           "deploymentBucketName": "amplify-rmstudiocloud-dev-112632-deployment",
