@@ -80,7 +80,7 @@ export const getCards = () =>  async (dispatch) => {
         // make request
         const cards = await api.getCards();
 
-        const cardsObj = convertArrayToObject(cards, "_id")
+        const cardsObj = convertArrayToObject(cards, "id")
 
         // format response
         // const normalizedSchedules = normalize(schedules, schedulesSchema);
@@ -115,7 +115,7 @@ export const getProcessCards = (processId) =>  async (dispatch) => {
         // make request
         const cards = await api.getProcessCards(processId);
 
-        const cardsObj = convertArrayToObject(cards, "_id")
+        const cardsObj = convertArrayToObject(cards, "id")
 
         // return payload for redux
         return {
@@ -145,7 +145,7 @@ export const postCard = (card) =>  async dispatch => {
 
         return {
             card: createdCard,
-            processId: card.process_id
+            processId: card.processId
         };
     }
     //
@@ -203,7 +203,7 @@ export const putCard = (card, cardID) => async dispatch => {
         //
         return {
             card: response,
-            processId: card.process_id
+            processId: card.processId
         };
     }
 
@@ -229,7 +229,7 @@ export const putCardAttributes = (attributes, cardId) => async (dispatch, getSta
 
             return {
                 card: response,
-                processId: response.process_id
+                processId: response.processId
             };
         }
 

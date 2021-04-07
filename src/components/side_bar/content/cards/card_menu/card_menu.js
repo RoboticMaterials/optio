@@ -51,7 +51,7 @@ const CardMenu = (props) => {
 				values={currentProcess ? [currentProcess] : []}
 				options={processes}
 				onChange={values => {
-					const processId = values[0]?._id
+					const processId = values[0]?.id
 					const currentPath = history.location.pathname
 					// if(processId) history.push(currentPath + '/' + processId + "/lot")
 					// history.push ('./../' + processId + "/lot")
@@ -60,7 +60,7 @@ const CardMenu = (props) => {
 				}}
 				pattern={null}
 				labelField={'name'}
-				valueField={"_id"}
+				valueField={"id"}
 				onDropdownOpen={() => {
 				}}
 			/>

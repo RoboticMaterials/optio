@@ -17,7 +17,7 @@ export default function cardsReducer(state = defaultState, action) {
     case PUT + JUNK:
       return {
         ...state,
-        junkData: {...state.junkData, [action.payload.junkData._id]: action.payload.junkData},
+        junkData: {...state.junkData, [action.payload.junkData.id]: action.payload.junkData},
       }
 
     default:

@@ -52,7 +52,7 @@ const LotsPage = (props) => {
 
     useEffect(() => {
         for (let i = 0; i < Object.values(cards).length; i++) {
-            if (!!Object.values(cards)[i].bins[location._id]) {
+            if (!!Object.values(cards)[i].bins[location.id]) {
                 setLotsPresent(true)
                 break
             }
@@ -115,12 +115,12 @@ const LotsPage = (props) => {
 
             {Object.values(cards)
                 .filter((card, ind) => {
-                    return getIsCardAtBin(card, location?._id)
+                    return getIsCardAtBin(card, location?.id)
                 })
                 .map((card, ind) => {
                     const {
-                        _id: currCardId,
-                        process_id: currCardProcessId
+                        id: currCardId,
+                        processId: currCardProcessId
                     } = card || {}
 
                     return <LotContainer
@@ -129,7 +129,7 @@ const LotsPage = (props) => {
                         enableFlagSelector={false}
                         key={currCardId}
                         onClick={() => {
-                            openEditor(currCardId, currCardProcessId, location._id)
+                            openEditor(currCardId, currCardProcessId, location.id)
                         }}
                         containerStyle={{
                             marginBottom: "0.5rem",

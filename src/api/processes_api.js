@@ -104,7 +104,7 @@ export async function postProcesses(process) {
     input = {
       ...process,
       organizationId: userOrgId,
-      id: process._id,
+      id: process.id,
       routes: JSON.stringify(process.routes)
     }
   
@@ -152,7 +152,7 @@ export async function putProcesses(process, ID) {
    
     input = {
       ...process,
-      id: process._id,
+      id: process.id,
       routes: JSON.stringify(process.routes)
     }
   

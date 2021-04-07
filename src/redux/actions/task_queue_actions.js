@@ -196,8 +196,8 @@ export const handlePostTaskQueue = (props) => {
 
             await dispatch(postTaskQueue(
                 {
-                    _id: uuid.v4(), dashboardID,
-                    "task_id": Id,
+                    id: uuid.v4(), dashboardID,
+                    "taskId": Id,
                     'custom_task': custom,
                     "device_type": deviceType
                 }
@@ -209,7 +209,7 @@ export const handlePostTaskQueue = (props) => {
             if (!!taskQueue) {
                 Object.values(taskQueue).map((item) => {
                     // If its in the Q and not a handoff, then alert the user saying its already there
-                    if (item.task_id === Id 
+                    if (item.taskId === Id
                         // && !tasks[item.task_id].handoff 
                         // && item.device_type === deviceType
                         ) inQueue = true
@@ -224,19 +224,19 @@ export const handlePostTaskQueue = (props) => {
                 if (deviceType === 'human') {
 
                     const postTask = {
-                        _id: uuid.v4(),
+                        id: uuid.v4(),
                         "device_type": deviceType,
-                        "task_id": Id,
+                        "taskId": Id,
                         dashboard: dashboardID,
                         hil_response: null,
                         showModal: null,
                     }
-                    await dispatch({ type: 'LOCAL_HUMAN_TASK', payload: postTask._id })
+                    await dispatch({ type: 'LOCAL_HUMAN_TASK', payload: postTask.id })
                     const postToQueue = dispatch(postTaskQueue(postTask))
 
                     if (fromSideBar) {
                         postToQueue.then(item => {
-                            const id = item?._id
+                            const id = item?.id
                             dispatch({ type: 'TASK_QUEUE_ITEM_CLICKED', payload: id })
                         })
                     }
@@ -245,9 +245,9 @@ export const handlePostTaskQueue = (props) => {
                 else {
                     await dispatch(postTaskQueue(
                         {
-                            _id: uuid.v4(),
+                            id: uuid.v4(),
                             "device_type": deviceType,
-                            "task_id": Id,
+                            "taskId": Id,
                         })
                     )
                 }

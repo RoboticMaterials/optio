@@ -86,8 +86,7 @@ export async function postStation(station) {
       pos_y: parseFloat(station.pos_y),
       x: parseFloat(station.x),
       y: parseFloat(station.y),
-      _id: station._id.toString(),
-      id: station._id
+      id: station.id
     }
 
     delete input.neame
@@ -129,6 +128,8 @@ export async function putStation(station, ID) {
       query: updateStation,
       variables: { input: input }
     })
+
+    console.log("put dashbaord dataJson",dataJson)
 
     return dataJson;
   } catch (error) {

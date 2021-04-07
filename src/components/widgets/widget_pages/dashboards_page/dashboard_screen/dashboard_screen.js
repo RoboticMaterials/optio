@@ -153,7 +153,7 @@ const DashboardScreen = (props) => {
 
         buttons.forEach(async (currButton) => {
             const {
-                task_id,
+                taskId,
                 type
             } = currButton
 
@@ -178,7 +178,7 @@ const DashboardScreen = (props) => {
                 }
             }
             // Dont add duplicate buttons, delete if they're are any
-            else if (task_id && task_id !== 'custom_task' && taskIds.includes(task_id)) {
+            else if (taskId && taskId !== 'custom_task' && taskIds.includes(taskId)) {
                 const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
                 if (index !== -1) {
                     updatedButtons = immutableDelete(updatedButtons, index)
@@ -187,7 +187,7 @@ const DashboardScreen = (props) => {
             }
 
             // If task does not exist, delete task
-            else if (task_id && task_id !== 'custom_task' && !(isObject(tasks[task_id]))) {
+            else if (taskId && taskId !== 'custom_task' && !(isObject(tasks[taskId]))) {
                 const index = updatedButtons.findIndex((btn) => btn.id === currButton.id)
                 if (index !== -1) {
                     updatedButtons = immutableDelete(updatedButtons, index)
@@ -195,7 +195,7 @@ const DashboardScreen = (props) => {
                 madeUpdate = true
             }
 
-            taskIds.push(task_id)
+            taskIds.push(taskId)
         })
 
         if (madeUpdate) {
@@ -229,13 +229,13 @@ const DashboardScreen = (props) => {
         // filter out buttons with missing task
         let filteredButtons = buttons.filter(async (currButton) => {
             const {
-                task_id,
+                taskId,
                 type
             } = currButton
 
             // Dont add duplicate buttons, delete if they're are any
-            if (task_id && taskIds.includes(task_id) && task_id !== 'custom_task') {
-                logger.error(`Button with duplicate task_id found in dashboard. {dashboardId: ${dashboardID}, task_id:${task_id}`)
+            if (taskId && taskIds.includes(taskId) && taskId !== 'custom_task') {
+                logger.error(`Button with duplicate taskId found in dashboard. {dashboardId: ${dashboardID}, taskId:${taskId}`)
                 return false // don't add duplicate tasks
             }
 
@@ -243,12 +243,12 @@ const DashboardScreen = (props) => {
             if (!!currButton.custom_task) return true
 
             // If task does not exist, delete task
-            else if (task_id && !(tasks[task_id])) {
+            else if (taskId && !(tasks[taskId])) {
                 logger.error('Task does not exist! Hiding button from dashboard')
                 return false
             }
 
-            taskIds.push(task_id)
+            taskIds.push(taskId)
             return true
         })
 
@@ -264,7 +264,7 @@ const DashboardScreen = (props) => {
                         {
                             'name': item.hil_message,
                             'color': '#90eaa8',
-                            'task_id': 'hil_success',
+                            'taskId': 'hil_success',
                             'custom_task': {
                                 ...item
                             },
@@ -408,9 +408,9 @@ const DashboardScreen = (props) => {
             // quantity: quantity,
         }
 
-        const ID = deepCopy(item._id)
+        const ID = deepCopy(item.id)
 
-        delete newItem._id
+        delete newItem.id
         delete newItem.dashboard
 
         // This is used to make the tap of the HIL button respond quickly

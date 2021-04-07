@@ -186,7 +186,7 @@ export const getAllTemplateFields = () => {
 					dataType,		//"DATE_RANGE"
 					fieldName,		//"dates"
 					key,			//1
-					_id,			//1
+					id,			//1
 				} = currField || {}
 
 				const item = {

@@ -45,7 +45,7 @@ const SummaryZone = ((props) => {
 				// extract process attributes
 				const {
 					name: processName,
-					_id: processId
+					id: processId
 				} = currProcess
 
 				// return a CardZone wrapped with a styled container and any additional elements

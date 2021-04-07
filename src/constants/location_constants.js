@@ -7,7 +7,7 @@ export const LocationDefaultAttributes = {
     rotation: 0,
     x: 0,
     y: 0,
-    _id: '',
-    map_id: null,
+    id: '',
+    mapId: null,
     temp: true
 }

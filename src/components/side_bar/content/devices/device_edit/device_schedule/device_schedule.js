@@ -99,13 +99,13 @@ const DeviceSchedule = (props) => {
                                             placeholder="Select Position"
                                             pattern={null}
                                             labelField={'name'}
-                                            valueField={"_id"}
+                                            valueField={"id"}
                                             options={Object.values(positions)}
                                             mapInput={(val) => {
                                                 return [positions[val]]
                                             }}
                                             mapOutput={(val) => {
-                                                return val[0]._id
+                                                return val[0].id
                                             }}
                                         />
                                         <TimePickerField

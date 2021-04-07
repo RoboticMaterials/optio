@@ -36,18 +36,18 @@ export default function cardsReducer(state = defaultState, action) {
     case GET + CARD + SUCCESS:
       return {
         ...state,
-        cards: {...state.cards, [action.payload.card._id]: action.payload.card},
+        cards: {...state.cards, [action.payload.card.id]: action.payload.card},
         pending: false,
       }
 
     case GET + CARDS + SUCCESS:
 
       Object.values(action.payload.cards).forEach((card,index) => {
-        if(processCards[card.process_id]) {
-          processCards[card.process_id][card._id] = card
+        if(processCards[card.processId]) {
+          processCards[card.processId][card.id] = card
         } else {
-          processCards[card.process_id] = {
-            [card._id]: card
+          processCards[card.processId] = {
+            [card.id]: card
           }
         }
 
@@ -71,9 +71,9 @@ export default function cardsReducer(state = defaultState, action) {
     case PUT + CARD + SUCCESS:
       return {
         ...state,
-        cards: {...state.cards, [action.payload.card._id]: action.payload.card},
+        cards: {...state.cards, [action.payload.card.id]: action.payload.card},
         processCards: {...state.processCards, [action.payload.processId]: {
-            ...state.processCards[action.payload.processId], [action.payload.card._id]: action.payload.card
+            ...state.processCards[action.payload.processId], [action.payload.card.id]: action.payload.card
           }},
         pending: false,
       }
@@ -81,9 +81,9 @@ export default function cardsReducer(state = defaultState, action) {
     case POST + CARD + SUCCESS:
       return {
         ...state,
-        cards: {...state.cards, [action.payload.card._id]: action.payload.card},
+        cards: {...state.cards, [action.payload.card.id]: action.payload.card},
         processCards: {...state.processCards, [action.payload.processId]: {
-            ...state.processCards[action.payload.processId], [action.payload.card._id]: action.payload.card
+            ...state.processCards[action.payload.processId], [action.payload.card.id]: action.payload.card
           }},
         pending: false,
       }

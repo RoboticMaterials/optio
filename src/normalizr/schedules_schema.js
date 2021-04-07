@@ -12,16 +12,16 @@ export const scheduleSchema = new schema.Entity(
   // options
   {
     idAttribute: (value, parent, key) => {
-      return value._id
+      return value.id
     },
 
     // processStrategy
     processStrategy: (value, parent, key) => {
       return {
-        _id: {
-          $oid: value._id ? value._id : null
+        id: {
+          $oid: value.id ? value.id : null
         },
-        id: value._id ? value._id : null,
+        id: value.id ? value.id : null,
         name: value.name ? value.name : '',
 
         days_on: value.days_on ? value.days_on : {
@@ -36,7 +36,7 @@ export const scheduleSchema = new schema.Entity(
 
         interval_on:  value.interval_on ? value.interval_on : false,
         time_interval: value.time_interval ? value.time_interval : null,
-        map_id: value.map_id ? value.map_id : null,
+        mapId: value.mapId ? value.mapId : null,
 
         schedule_on: value.schedule_on ? value.schedule_on : false,
         start_time: value.start_time ? value.start_time : null,
@@ -44,7 +44,7 @@ export const scheduleSchema = new schema.Entity(
         stop_time_on: value.stop_time_on ? value.stop_time_on : false,
         stop_time: value.stop_time ? value.stop_time : null,
 
-        task_id: value.task_id ? value.task_id : null,
+        taskId: value.taskId ? value.taskId : null,
       };
     }
   },

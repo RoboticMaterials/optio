@@ -67,7 +67,7 @@ const ObjectColumns = (props) => {
 
                         handleObjectLinkPoints({
                             unload: true,
-                            id: currentObject._id,
+                            id: currentObject.id,
                             x: x,
                             y: y,
                         })
@@ -112,7 +112,7 @@ const ObjectColumns = (props) => {
 
                         handleObjectLinkPoints({
                             unload: false,
-                            id: currentObject._id,
+                            id: currentObject.id,
                             x: x,
                             y: y,
                         })

@@ -78,14 +78,14 @@ function Station(props) {
     // Used to allow translating/rotation
     let isSelected = false
     // Set selected if there is a selected postion that is this position and no selected task
-    if (!!selectedStation && selectedStation._id === station._id && !selectedTask && !!editingStation) isSelected = true
+    if (!!selectedStation && selectedStation.id === station.id && !selectedTask && !!editingStation) isSelected = true
 
     let disabled = false
     // Disable if the selected station is not this station
-    if (!!selectedStation && selectedStation._id !== station._id) disabled = true
+    if (!!selectedStation && selectedStation.id !== station.id) disabled = true
 
     // Disable if theres a selected position and the station's children dont contain that position
-    else if (!!selectedPosition && !station.children.includes(selectedPosition._id)) disabled = true
+    else if (!!selectedPosition && !station.children.includes(selectedPosition.id)) disabled = true
 
     // Disables while making task (IE no unload station) and not fixing a process
     else if (!!selectedTask && selectedTask?.load?.station !== null && selectedTask?.unload?.station === null && !fixingProcess) {
@@ -95,7 +95,7 @@ function Station(props) {
         // Disable station if the selected task load position is a position (cant go from station to position or vice versa)
         else if (!!positions[selectedTask?.load?.position]) disabled = true
         // Disable station if its the load station. Cant make a task to itself
-        else if (selectedTask.load.station === station._id) disabled = true
+        else if (selectedTask.load.station === station.id) disabled = true
 
         // Disables when adding a task to the beginning of a process. 
         // To tell if a task is being added to the beginning of a process is when the task has a temp insert index at 0
@@ -103,13 +103,13 @@ function Station(props) {
             // Find the station at the beginning of process
             const firstStation = selectedProcess.routes[0].load.station
 
-            if (station._id !== firstStation && selectedTask.load.station !== null) disabled = true
+            if (station.id !== firstStation && selectedTask.load.station !== null) disabled = true
         }
 
         // Disable making a task to this station if it is already used in the process and its not adding to the beginnig of the process
         else if (!!selectedProcess) {
             const processesStations = getProcessStationsWhileEditing(selectedProcess, tasks)
-            if (processesStations.includes(station._id) && selectedTask?.temp?.insertIndex !== 0) disabled = true
+            if (processesStations.includes(station.id) && selectedTask?.temp?.insertIndex !== 0) disabled = true
         }
     }
 
@@ -123,21 +123,21 @@ function Station(props) {
 
             // must start at unload station of route before the break
             const routeBeforeBreak = selectedProcess.routes[selectedProcess.broken - 1]
-            if (!isStationUnloadStation(routeBeforeBreak, station._id)) disabled = true
+            if (!isStationUnloadStation(routeBeforeBreak, station.id)) disabled = true
         }
 
         // setting unload
         else if (!routeEnd) {
 
             // can't pick same station for load and unload
-            if (isStationLoadStation(selectedTask, station._id)) disabled = true
+            if (isStationLoadStation(selectedTask, station.id)) disabled = true
 
             // disable stations already in process
-            if (isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
+            if (isStationInRoutes(selectedProcess.routes, station.id)) disabled = true
 
             // always allow picking load station of route after the break, as this would fix the break
             const routeAfterBreak = selectedProcess.routes[selectedProcess.broken] || {}
-            if (isStationLoadStation(routeAfterBreak, station._id)) disabled = false
+            if (isStationLoadStation(routeAfterBreak, station.id)) disabled = false
         }
     }
 
@@ -153,7 +153,7 @@ function Station(props) {
         } = temp || {}
 
         if (selectedProcess.routes.length > 0) {
-            const routeIndex = getRouteIndexInRoutes(selectedProcess.routes.map((currProcess) => currProcess._id), selectedTask?._id)
+            const routeIndex = getRouteIndexInRoutes(selectedProcess.routes.map((currProcess) => currProcess.id), selectedTask?.id)
 
             // setting load station
             if (!routeStart || (routeStart && routeEnd)) {
@@ -161,19 +161,19 @@ function Station(props) {
                 // adding to beginning
                 if (insertIndex === 0) {
                     // disable is station is already in process
-                    if (isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
+                    if (isStationInRoutes(selectedProcess.routes, station.id)) disabled = true
                 }
 
 
                 else if (routeIndex === 0) {
-                    if (isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
-                    if (isStationLoadStation(selectedTask, station._id)) disabled = false
+                    if (isStationInRoutes(selectedProcess.routes, station.id)) disabled = true
+                    if (isStationLoadStation(selectedTask, station.id)) disabled = false
                 }
 
                 else {
                     // must select unload station of previous route
-                    const previousRoute = getPreviousRoute(selectedProcess.routes, selectedTask._id)
-                    if (!isStationUnloadStation(previousRoute, station._id)) disabled = true
+                    const previousRoute = getPreviousRoute(selectedProcess.routes, selectedTask.id)
+                    if (!isStationUnloadStation(previousRoute, station.id)) disabled = true
                 }
             }
 
@@ -183,30 +183,30 @@ function Station(props) {
                 if (insertIndex === 0) {
 
                     // disable stations already in process
-                    if (isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
+                    if (isStationInRoutes(selectedProcess.routes, station.id)) disabled = true
 
                     // don't allow selecting same station for load and unload
-                    if (isStationLoadStation(selectedTask, station._id)) disabled = true
+                    if (isStationLoadStation(selectedTask, station.id)) disabled = true
 
                     // always allow selecting load station of first route, as we are adding to the beginning of the process
                     const firstRoute = selectedProcess.routes[0]
-                    if (isStationLoadStation(firstRoute, station._id)) disabled = false
+                    if (isStationLoadStation(firstRoute, station.id)) disabled = false
                 }
 
                 else if (routeIndex === 0) {
                     // disable stations already in process
-                    if (isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
+                    if (isStationInRoutes(selectedProcess.routes, station.id)) disabled = true
 
                     const nextRoute = selectedProcess.routes[1]
-                    if (isStationLoadStation(nextRoute, station._id)) disabled = false
+                    if (isStationLoadStation(nextRoute, station.id)) disabled = false
                 }
 
                 else {
                     // disable stations already in process
-                    if (isStationInRoutes(selectedProcess.routes, station._id)) disabled = true
+                    if (isStationInRoutes(selectedProcess.routes, station.id)) disabled = true
 
                     const nextRoute = selectedProcess.routes[routeIndex + 1]
-                    if (isStationLoadStation(nextRoute, station._id)) disabled = false
+                    if (isStationLoadStation(nextRoute, station.id)) disabled = false
                 }
             }
         }
@@ -215,7 +215,7 @@ function Station(props) {
         else {
             if ((selectedTask.load.station && selectedTask.unload.station === null)) {
                 // don't allow selecting same station for load and unload
-                if (isStationLoadStation(selectedTask, station._id)) disabled = true
+                if (isStationLoadStation(selectedTask, station.id)) disabled = true
             }
         }
     }
@@ -224,7 +224,7 @@ function Station(props) {
 
     let highlight = false
     // Set selected to true if the selected task inculdes the station
-    if (!!selectedTask && (selectedTask.load.station === station._id || selectedTask.unload.station === station._id)) highlight = true
+    if (!!selectedTask && (selectedTask.load.station === station.id || selectedTask.unload.station === station.id)) highlight = true
 
     // Set Color
     let color = StationTypes[station.type].color
@@ -259,7 +259,7 @@ function Station(props) {
     * and the URL (params) container a widget page then the widget page should be showing
     */
     useEffect(() => {
-        if (params.stationID !== undefined && params.stationID === props.station._id && !!params.widgetPage) {
+        if (params.stationID !== undefined && params.stationID === props.station.id && !!params.widgetPage) {
             dispatchHoverStationInfo(handleWidgetHover())
         }
     }, [])
@@ -276,7 +276,7 @@ function Station(props) {
     const onWidgetPageOpen = () => {
         // If widget page is open, hovering is false and the open widget page stations id matches the station ID, set it to true so
         // that the widget page doesn't disappear when mouse goes out of page
-        if (!!params.widgetPage && !hovering && params.stationID === station._id) {
+        if (!!params.widgetPage && !hovering && params.stationID === station.id) {
             setHovering(true)
             dispatchHoverStationInfo(handleWidgetHover())
 
@@ -313,14 +313,14 @@ function Station(props) {
                 handoff = true
 
                 // Since it's a station, set both the position and station to the station ID
-                unload.position = station._id
-                unload.station = station._id
+                unload.position = station.id
+                unload.station = station.id
 
                 // If it's a warehouse and the load station has been selected, then the task type has to be a push
                 // You can only push to a ware house
                 type = station.type === 'warehouse' ? 'push' : type
 
-                dispatchSetTaskAttributes(selectedTask._id, { unload, type, handoff })
+                dispatchSetTaskAttributes(selectedTask.id, { unload, type, handoff })
             }
 
             // Otherwise assign the load position and clear the unload position (to define a new unload)
@@ -334,8 +334,8 @@ function Station(props) {
                 handoff = true
 
                 // Since it's a station, set both the position and station to the station ID
-                load.position = station._id
-                load.station = station._id
+                load.position = station.id
+                load.station = station.id
 
                 // If it's a warehouse and the load position has not been selected then the task type is a pull
                 // You can only pull from a ware house
@@ -343,7 +343,7 @@ function Station(props) {
 
                 unload.position = null
                 unload.station = null
-                dispatchSetTaskAttributes(selectedTask._id, { load, unload, type, handoff })
+                dispatchSetTaskAttributes(selectedTask.id, { load, unload, type, handoff })
             }
         }
     }
@@ -380,7 +380,7 @@ function Station(props) {
 
 
     return (
-        <React.Fragment key={`frag-loc-${station._id}`}>
+        <React.Fragment key={`frag-loc-${station.id}`}>
             <LocationSvg
                 location={station}
                 rd3tClassName={rd3tClassName}
@@ -406,11 +406,11 @@ function Station(props) {
                 rd3tClassName={rd3tClassName}
                 d3={() => d3()}
 
-                handleRotate={(rotation) => { dispatchSetStationAttributes(station._id, { rotation }) }}
-                handleTranslate={({ x, y }) => dispatchSetStationAttributes(station._id, { x, y })}
+                handleRotate={(rotation) => { dispatchSetStationAttributes(station.id, { rotation }) }}
+                handleTranslate={({ x, y }) => dispatchSetStationAttributes(station.id, { x, y })}
                 handleTranslateEnd={({ x, y }) => {
                     const pos = convertD3ToReal([x, y], props.d3)
-                    dispatchSetStationAttributes(station._id, { pos_x: pos[0], pos_y: pos[1] })
+                    dispatchSetStationAttributes(station.id, { pos_x: pos[0], pos_y: pos[1] })
                 }}
 
                 handleEnableDrag={() => {

@@ -51,10 +51,10 @@ const TaskStatistics = (props) => {
             if (editingStation === true || editingPosition === true || (taskEditing && location.pathname === '/tasks')) return null
 
 
-        const selectedTaskAnalysis = !!task ? tasksAnalysis[task._id]: null
+        const selectedTaskAnalysis = !!task ? tasksAnalysis[task.id]: null
         const startPos = task.device_types[0] == 'human' && task.load.position == task.load.station ? stations[task.load.position] : positions[task.load.position]
         const endPos = task.device_types[0] == 'human' && task.unload.position == task.unload.station ? stations[task.unload.position] : positions[task.unload.position]
-        const routeProcesses = getRouteProcesses(task._id)
+        const routeProcesses = getRouteProcesses(task.id)
 
 
             if (task === null || positions === null || startPos === undefined || endPos === undefined) return null

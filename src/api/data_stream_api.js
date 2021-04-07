@@ -20,7 +20,7 @@ export async function getDataStream() {
         let dataJson = {
             devices: [],
             status: {
-                _id: {$oid: "60528738e9e8f989ea8fb0b4"},
+                id: {$oid: "60528738e9e8f989ea8fb0b4"},
                 active_map: null,
                 mir_connection: "connected",
                 pause_status: false

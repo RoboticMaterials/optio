@@ -75,7 +75,7 @@ const eventsReducer = (state = defaultState, action) => {
 
             eventsClone = deepCopy(state.events)
 
-            eventsClone[action.payload._id.$oid] = action.payload
+            eventsClone[action.payload.id.$oid] = action.payload
 
             return {
                 ...state,
@@ -110,7 +110,7 @@ const eventsReducer = (state = defaultState, action) => {
 
             eventsClone = deepCopy(state.events)
 
-            eventsClone[currentEvent._id.$oid] = currentEvent
+            eventsClone[currentEvent.id.$oid] = currentEvent
 
             return {
                 ...state,

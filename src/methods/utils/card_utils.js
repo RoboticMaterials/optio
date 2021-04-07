@@ -102,7 +102,7 @@ export const getInitialValues = (lotTemplate, card) => {
 				// extract properties of currItem
 				const {
 					fieldName,
-					_id: fieldId,
+					id: fieldId,
 					component,
 					key
 				} = currItem || {}
@@ -198,7 +198,7 @@ export const convertExcelToLot = (excel, lotTemplate, processId) => {
 		name: payloadName,	// extract reserved fields
 		bins,				// extract reserved fields
 		processId: selectedProcessId,			// extract reserved fields
-		_id,				// extract reserved fields
+		id,				// extract reserved fields
 		quantity,			// extract reserved fields
 		...remainingPayload
 	} = excel
@@ -207,8 +207,8 @@ export const convertExcelToLot = (excel, lotTemplate, processId) => {
 		name: payloadName ? payloadName : "",
 		bins: bins ? bins : defaultBins,
 		processId: selectedProcessId ? selectedProcessId : (processId ? processId : null),	// if currentLot has processId, use it. Otherwise if form has value, use it. Otherwise set to null
-		_id,
-		[lotTemplate._id]: {
+		id,
+		[lotTemplate.id]: {
 			...getInitialValues(lotTemplate),
 			...remainingPayload
 		}

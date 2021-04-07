@@ -29,13 +29,13 @@ const FooterContent = (props) => {
 					{stationsAttributes.map((currStation, currIndex) => {
 						const {
 							name,
-							_id
+							id
 						} = currStation
 
-						const isSelected = selectedStationId === _id
+						const isSelected = selectedStationId === id
 						const greyed = selectedStationId !== null && !isSelected
 
-						if(_id !== BIN_IDS.FINISH && _id !== BIN_IDS.QUEUE) {
+						if(id !== BIN_IDS.FINISH && id !== BIN_IDS.QUEUE) {
 							const locationTypes = {
 								...StationTypes,
 								...PositionTypes
@@ -47,12 +47,12 @@ const FooterContent = (props) => {
 							return(
 								<styled.StationContainer
 									isSelected={isSelected}
-									key={_id}
+									key={id}
 									style={{
 
 									}}
 									onClick={() => {
-										setSelectedStationId(_id)
+										setSelectedStationId(id)
 									}}
 								>
 									<styled.StationName>{name}</styled.StationName>
@@ -72,12 +72,12 @@ const FooterContent = (props) => {
 							return(
 								<styled.StationContainer
 									isSelected={isSelected}
-									key={_id}
+									key={id}
 									style={{
 
 									}}
 									onClick={() => {
-										setSelectedStationId(_id)
+										setSelectedStationId(id)
 									}}
 								>
 									<styled.StationName>{name}</styled.StationName>
@@ -88,8 +88,8 @@ const FooterContent = (props) => {
 									>
 										<styled.StationButton
 											isSelected={isSelected}
-											className={_id === BIN_IDS.QUEUE ? BIN_THEMES.QUEUE.ICON : BIN_THEMES.FINISH.ICON}
-											color={_id === BIN_IDS.QUEUE ? BIN_THEMES.QUEUE.COLOR : BIN_THEMES.FINISH.COLOR}
+											className={id === BIN_IDS.QUEUE ? BIN_THEMES.QUEUE.ICON : BIN_THEMES.FINISH.ICON}
+											color={id === BIN_IDS.QUEUE ? BIN_THEMES.QUEUE.COLOR : BIN_THEMES.FINISH.COLOR}
 
 										/>
 									</styled.StationSvgContainer>

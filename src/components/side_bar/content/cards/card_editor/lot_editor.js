@@ -113,7 +113,7 @@ const FormComponent = (props) => {
 	} = props
 
 	const {
-		_id: cardId
+		id: cardId
 	} = values || {}
 
 	const formMode = cardId ? FORM_MODES.UPDATE : FORM_MODES.CREATE
@@ -282,7 +282,7 @@ const FormComponent = (props) => {
 			setFinalProcessOptions(processOptions)
 		}
 		else if(isArray(processesArray)) {
-			setFinalProcessOptions(processesArray.map((currProcess) => currProcess._id))
+			setFinalProcessOptions(processesArray.map((currProcess) => currProcess.id))
 		}
 		else {
 			setFinalProcessOptions([])
@@ -346,10 +346,10 @@ const FormComponent = (props) => {
 		// get destination options for move
 		// the destination options include
 		const destinationOptions = [...Object.values(stations).filter((currStation) => {
-			if((currStation._id !== binId) && processStationIds[currStation._id]) return true
+			if((currStation.id !== binId) && processStationIds[currStation.id]) return true
 		})]
-		if(binId !== "QUEUE") destinationOptions.unshift({name: "Queue", _id: "QUEUE"}) // add queue
-		if(binId !== "FINISH") destinationOptions.push({name: "Finished", _id: "FINISH"}) // add finished
+		if(binId !== "QUEUE") destinationOptions.unshift({name: "Queue", id: "QUEUE"}) // add queue
+		if(binId !== "FINISH") destinationOptions.push({name: "Finished", id: "FINISH"}) // add finished
 
 		const maxValue = bins[binId]?.count || 0
 
@@ -385,7 +385,7 @@ const FormComponent = (props) => {
 							name="moveLocation"
 							labelField={'name'}
 							options={destinationOptions}
-							valueField={"_id"}
+							valueField={"id"}
 							fixedHeight={false}
 						/>
 					</div>
@@ -518,10 +518,10 @@ const FormComponent = (props) => {
 							...modifiedData
 						} = data
 
-						// handle route_id change
-						if(Object.keys(modifiedData).includes("route_id")) {
+						// handle routeId change
+						if(Object.keys(modifiedData).includes("routeId")) {
 							const {
-								route_id: {
+								routeId: {
 									new: newRouteId,
 									old: oldRouteId
 								},
@@ -588,7 +588,7 @@ const FormComponent = (props) => {
 
 							{currRow.map((currItem, currItemIndex) => {
 								const {
-									_id: dropContainerId,
+									id: dropContainerId,
 									component,
 									fieldName
 								} = currItem || {}
@@ -1244,7 +1244,7 @@ const LotEditor = (props) => {
 					<Formik
 						innerRef={formRef}
 						initialValues={{
-							_id: card ? card._id : null,
+							id: card ? card.id : null,
 							processId: processId,
 							moveCount: 0,
 							moveLocation: [],
@@ -1294,7 +1294,7 @@ const LotEditor = (props) => {
 								let requestResult
 
 								const {
-									_id,
+									id,
 									name,
 									changed,
 									new: isNew,
@@ -1315,7 +1315,7 @@ const LotEditor = (props) => {
 											bins,
 											lotNumber,
 											flags: isObject(card) ? (card.flags || []) : [],
-											process_id: card.process_id,
+											processId: card.processId,
 											lotTemplateId,
 											...templateValues
 										}
@@ -1332,7 +1332,7 @@ const LotEditor = (props) => {
 										// get count and location info for move from form values
 										const {
 											name: moveName,
-											_id: destinationBinId,
+											id: destinationBinId,
 										} = moveLocation[0]
 
 										// extract destination, current, and remaining bins
@@ -1383,26 +1383,26 @@ const LotEditor = (props) => {
 										}
 
 										// update card
-										requestResult = onPutCard(submitItem, values._id)
+										requestResult = onPutCard(submitItem, values.id)
 
 									}
 								}
 
 								else {
 									// update (PUT)
-									if(values._id) {
+									if(values.id) {
 
 										var submitItem = {
 											name,
 											bins,
 											flags: isObject(card) ? (card.flags || []) : [],
-											process_id: isObject(card) ? (card.process_id || processId) : (processId),
+											processId: isObject(card) ? (card.processId || processId) : (processId),
 											lotTemplateId,
 											...templateValues,
 											lotNumber
 										}
 
-										requestResult = onPutCard(submitItem, values._id)
+										requestResult = onPutCard(submitItem, values.id)
 									}
 
 									// create (POST)
@@ -1412,7 +1412,7 @@ const LotEditor = (props) => {
 											name,
 											bins,
 											flags: [],
-											process_id: processId ? processId : selectedProcessId,
+											processId: processId ? processId : selectedProcessId,
 											lotTemplateId,
 											...templateValues,
 											lotNumber
@@ -1423,10 +1423,10 @@ const LotEditor = (props) => {
 
 										if(!(requestResult instanceof Error)) {
 											const {
-												_id = null
+												id = null
 											} = requestResult || {}
 
-											setFieldValue("_id", _id)
+											setFieldValue("id", id)
 										}
 										else {
 											console.error("requestResult error",requestResult)

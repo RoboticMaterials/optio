@@ -73,7 +73,7 @@ const SummaryCardZone = (props) => {
 
 
 			<CardZone
-				processId={currProcess._id}
+				processId={currProcess.id}
 				handleCardClick={handleCardClick}
 			/>
 		</styled.CardZoneContainer>

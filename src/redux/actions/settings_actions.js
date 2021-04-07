@@ -59,7 +59,7 @@ export const postSettings = (settings) => {
 
         try {
             onStart();
-            delete settings._id
+            delete settings.id
             const newSettings = await api.postSettings(settings);
             return onSuccess(newSettings)
         } catch (error) {
@@ -84,7 +84,7 @@ export const putSettings = (settings) => {
 
         try {
             onStart();
-            delete settings._id
+            delete settings.id
             const newSettings = await api.putSettings(settings);
             return onSuccess(newSettings)
         } catch (error) {

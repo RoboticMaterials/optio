@@ -34,7 +34,7 @@ export async function getLotTemplate(id) {
             query: lotTemplatesByOrgId,
             variables: { 
                 organizationId: userOrgId,
-                filter: {_id: {eq: id}} 
+                filter: {id: {eq: id}}
             }
           })
 
@@ -115,7 +115,6 @@ export async function postLotTemplate(lotTemplate) {
             ...lotTemplate,
             displayNames: JSON.stringify(lotTemplate.displayNames),
             fields: JSON.stringify(lotTemplate.fields),
-            _id: fakeID,
             id: fakeID,
             organizationId: userOrgId
         }

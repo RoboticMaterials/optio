@@ -72,7 +72,7 @@ export const getPositions = () => {
             // Filter out entry positions
             Object.values(normalizedPositions).map((pos) => {
                 if (pos.type === 'shelf_entry_position' || pos.type === "charger_entry_position") {
-                    delete normalizedPositions[pos._id]
+                    delete normalizedPositions[pos.id]
                 }
             })
 
@@ -103,8 +103,8 @@ export const postPosition = (position) => {
 
         try {
             onStart();
-            if (!('_id' in position)) {
-                position._id = uuid.v4()
+            if (!('id' in position)) {
+                position.id = uuid.v4()
             }
 
             // Was used for a bug that didnt exist
@@ -151,7 +151,7 @@ export const putPosition = (position) => {
 
             // Tells the backend that a position has changed
             if (positionCopy.change_key !== 'deleted') positionCopy.change_key = 'changed'
-            const updatePosition = await api.putPosition(positionCopy, positionCopy._id);
+            const updatePosition = await api.putPosition(positionCopy, positionCopy.id);
             return onSuccess(updatePosition)
         } catch (error) {
             return onError(error)
@@ -187,7 +187,7 @@ export const deletePosition = (id, stationDelete) => {
                 // Tells the backend that a position has been deleted
                 positionCopy.change_key = 'deleted'
                 const updatePosition = await dispatch(putPosition(positionCopy))
-                return onSuccess(positionCopy._id)
+                return onSuccess(positionCopy.id)
             }
             else {
                 return
@@ -252,11 +252,11 @@ const onDeletePosition = (id, stationDelete) => {
             // If there is an associated parent station
             if (!!selectedStation) {
                 // Remove the position from the list of children
-                const positionIndex = selectedStation.children.indexOf(position._id)
+                const positionIndex = selectedStation.children.indexOf(position.id)
                 if (!!position.new) {
                     let children = deepCopy(selectedStation.children)
                     children.splice(positionIndex, 1)
-                    dispatch(setStationAttributes(selectedStation._id, { children }))
+                    dispatch(setStationAttributes(selectedStation.id, { children }))
 
                 }
 
@@ -264,7 +264,7 @@ const onDeletePosition = (id, stationDelete) => {
                 else {
                     let children = deepCopy(selectedStation.children)
                     children.splice(positionIndex, 1)
-                    dispatch(setStationAttributes(selectedStation._id, { children }))
+                    dispatch(setStationAttributes(selectedStation.id, { children }))
 
                     // This goes through and finds any nwe children that might be in the chidlren array
                     // If the child is new, delete it from the array
@@ -295,7 +295,7 @@ const onDeletePosition = (id, stationDelete) => {
         if (!!positionsState.selectedStationChildrenCopy) {
             // Update the ChildrenCopy
             let copyOfCopy = deepCopy(positionsState.selectedStationChildrenCopy)
-            delete copyOfCopy[position._id]
+            delete copyOfCopy[position.id]
             dispatch(setSelectedStationChildrenCopy(
                 copyOfCopy
             ))
@@ -305,7 +305,7 @@ const onDeletePosition = (id, stationDelete) => {
         // If the position is new, just remove it from the local station
         // Since the position is new, it does not exist in the backend and there can't be any associated tasks
         if (!!position.new) {
-            dispatch(removePosition(position._id))
+            dispatch(removePosition(position.id))
             return null
         }
 
@@ -315,18 +315,18 @@ const onDeletePosition = (id, stationDelete) => {
 
             // Sees if any tasks are associated with the position and delete them
             Object.values(tasks).filter(task => {
-                return task.load.position == position._id || task.unload.position == position._id
+                return task.load.position == position.id || task.unload.position == position.id
             }).forEach(async relevantTask => {
-                await dispatch(deleteTask(relevantTask._id))
+                await dispatch(deleteTask(relevantTask.id))
             })
 
             const devices = devicesState.devices
             // See if the position belonged as an idle location for a device
             Object.values(devices).filter(device => {
-                return !!device.idle_location && device.idle_location === position._id
+                return !!device.idle_location && device.idle_location === position.id
             }).forEach(async relevantDevice => {
                 relevantDevice.idle_location = null
-                await dispatch(putDevices(relevantDevice, relevantDevice._id))
+                await dispatch(putDevices(relevantDevice, relevantDevice.id))
             })
 
 

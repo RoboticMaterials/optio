@@ -67,7 +67,7 @@ const ScheduleList = (props) => {
 
         // toggle schedule items schedule_on property
         const submitItem = {
-            task_id: scheduleItem.task_id,
+            taskId: scheduleItem.taskId,
             days_on: scheduleItem.days_on,
             interval_on: scheduleItem.interval_on,
             name: scheduleItem.name,
@@ -85,7 +85,7 @@ const ScheduleList = (props) => {
     * renders the task list
     * */
     const renderTasks = () => {
-        let fullSchedulesArr = Object.values(schedules).filter((item) => item.map_id === currentMap._id)
+        let fullSchedulesArr = Object.values(schedules).filter((item) => item.mapId === currentMap.id)
         return (
             <styled.TaskListContainer>
                 {fullSchedulesArr.length > 0 ?
@@ -98,10 +98,10 @@ const ScheduleList = (props) => {
                             start_time,
                             stop_time,
                             stop_time_on,
-                            task_id,
+                            taskId,
                             time_interval,
                             next_time,
-                            _id: {$oid: id}
+                            id: {$oid: id}
                         } = item
 
                         // initialize empty error object
@@ -110,8 +110,8 @@ const ScheduleList = (props) => {
                         logger.log("renderTasks item",item)
 
                         // const id = item._id
-                        const selectedTask = task_id ? tasks[task_id] : {};
-                        const taskIsDeleted = task_id === 'TASK DELETED';
+                        const selectedTask = taskId ? tasks[taskId] : {};
+                        const taskIsDeleted = taskId === 'TASK DELETED';
 
                         // check for taskName error
                         if(!selectedTask?.name) error.taskName = "Task not found"
@@ -141,7 +141,7 @@ const ScheduleList = (props) => {
                                 time_interval={time_interval}
                                 onSwitchPress={handleSwitchPress}
                                 onClick={openSchedule}
-                                disabled={taskIsDeleted || (item.task_id === 'TEMP_NEW_SCHEDULE_ID') || (item.task_id === 'DEFAULT_TASK_ID')}
+                                disabled={taskIsDeleted || (item.taskId === 'TEMP_NEW_SCHEDULE_ID') || (item.taskId === 'DEFAULT_TASK_ID')}
                                 error={error}
                                 next_time={next_time}
                             />
@@ -159,7 +159,7 @@ const ScheduleList = (props) => {
     }
 
     const handleNextExecution = () => {
-        let fullSchedulesArr = Object.values(schedules).filter((item) => item.map_id === currentMap._id)
+        let fullSchedulesArr = Object.values(schedules).filter((item) => item.mapId === currentMap.id)
         const minutesPerDay = 1440
         let currentTime = Number(((moment(moment(), 'HH:mm:ss')).format('HH')) * 60) + Number((moment(moment(), 'HH:mm:ss')).format('mm'))
         logger.log('nexttime')

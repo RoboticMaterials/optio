@@ -196,7 +196,7 @@ export const removeRouteFromAllDashboards = (routeId) => {
             ).forEach(currDashboard => {
                 var currButtons = [...currDashboard.buttons]
 
-                currButtons = currButtons.filter(button => button.task_id !== routeId)
+                currButtons = currButtons.filter(button => button.taskId !== routeId)
 
                 // update dashboard
                 dispatch(putDashboard({
@@ -221,7 +221,7 @@ export const addRouteToDashboards = (route) => {
         const stations = state.stationsReducer.stations || {}
 
         const {
-            _id: routeId,
+            id: routeId,
             type: routeType,
             name: routeName
         } = route
@@ -238,11 +238,14 @@ export const addRouteToDashboards = (route) => {
         const station = stations[stationId] || getDefaultStation()
         const dashboard = dashboards[station.dashboards[0]]
 
+        console.log("dashboard",dashboard)
+        console.log("station",station)
+
         const newDashboardButton = {
             color: '#bcbcbc',
             id: uuid.v4(),
             name: route.name,
-            task_id: route._id,
+            taskId: route.id,
             type: TYPES.ROUTES.key,
         }
 
@@ -267,7 +270,7 @@ export const addRouteToDashboards = (route) => {
         else {
             // see if button for task already exists
             const buttonIndex = dashboard.buttons.findIndex((currButton) => {
-                return currButton.task_id === route.id
+                return currButton.taskId === route.id
             })
 
             // only add button if it isn't already in the dashboard
@@ -326,7 +329,7 @@ export const removeRouteFromWrongDashboards = (route) => {
                 // loop through each button and check if the button needs to be removed
                 const filteredButtons = currDashboardButtons.filter((currButton, currButtonIndex) => {
                     const {
-                        task_id: currRouteId
+                        taskId: currRouteId
                     } = currButton
 
                     return(currRouteId !== routeId) // if dashboard isn't at the right station for the route, filter out buttons for this route

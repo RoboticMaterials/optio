@@ -112,7 +112,7 @@ export const PositionTypes = {
 
 }
 
-export const newPositionTemplate = (name, type, parent, map_id) => {
+export const newPositionTemplate = (name, type, parent, mapId) => {
 
     return {
         name: name,
@@ -126,7 +126,7 @@ export const newPositionTemplate = (name, type, parent, map_id) => {
         x: 0,
         y: 0,
         parent: parent,
-        _id: uuid.v4(),
-        map_id: map_id
+        id: uuid.v4(),
+        mapId: mapId
     }
 }

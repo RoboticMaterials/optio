@@ -6,20 +6,19 @@ export const manageTaskQueue = /* GraphQL */ `
   mutation ManageTaskQueue($taskQueueItem: AWSJSON!) {
     manageTaskQueue(taskQueueItem: $taskQueueItem) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
       device_type
       mission_status
       owner
-      task_id
+      taskId
       custom_task
       dashboard
       showModal
       hil_response
       quantity
-      lot_id
+      lotId
       start_time
       end_time
       hil_station_id
@@ -28,23 +27,22 @@ export const manageTaskQueue = /* GraphQL */ `
   }
 `;
 export const taskStats = /* GraphQL */ `
-  mutation TaskStats($task_id: ID, $organizationId: String!) {
-    taskStats(task_id: $task_id, organizationId: $organizationId) {
+  mutation TaskStats($taskId: ID, $organizationId: String!) {
+    taskStats(taskId: $taskId, organizationId: $organizationId) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
       device_type
       mission_status
       owner
-      task_id
+      taskId
       custom_task
       dashboard
       showModal
       hil_response
       quantity
-      lot_id
+      lotId
       start_time
       end_time
       hil_station_id
@@ -182,7 +180,6 @@ export const createStation = /* GraphQL */ `
   ) {
     createStation(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
@@ -194,7 +191,7 @@ export const createStation = /* GraphQL */ `
       rotation
       x
       y
-      map_id
+      mapId
       children
       dashboards
     }
@@ -207,7 +204,6 @@ export const updateStation = /* GraphQL */ `
   ) {
     updateStation(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
@@ -219,7 +215,7 @@ export const updateStation = /* GraphQL */ `
       rotation
       x
       y
-      map_id
+      mapId
       children
       dashboards
     }
@@ -232,7 +228,6 @@ export const deleteStation = /* GraphQL */ `
   ) {
     deleteStation(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
@@ -244,7 +239,7 @@ export const deleteStation = /* GraphQL */ `
       rotation
       x
       y
-      map_id
+      mapId
       children
       dashboards
     }
@@ -257,12 +252,11 @@ export const createPosition = /* GraphQL */ `
   ) {
     createPosition(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
       change_key
-      map_id
+      mapId
       name
       parent
       pos_x
@@ -282,12 +276,11 @@ export const updatePosition = /* GraphQL */ `
   ) {
     updatePosition(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
       change_key
-      map_id
+      mapId
       name
       parent
       pos_x
@@ -307,12 +300,11 @@ export const deletePosition = /* GraphQL */ `
   ) {
     deletePosition(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
       change_key
-      map_id
+      mapId
       name
       parent
       pos_x
@@ -332,14 +324,13 @@ export const createTask = /* GraphQL */ `
   ) {
     createTask(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
       device_types
       handoff
       load
-      map_id
+      mapId
       name
       processes
       quantity
@@ -358,14 +349,13 @@ export const updateTask = /* GraphQL */ `
   ) {
     updateTask(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
       device_types
       handoff
       load
-      map_id
+      mapId
       name
       processes
       quantity
@@ -384,14 +374,13 @@ export const deleteTask = /* GraphQL */ `
   ) {
     deleteTask(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
       device_types
       handoff
       load
-      map_id
+      mapId
       name
       processes
       quantity
@@ -410,14 +399,13 @@ export const createProcess = /* GraphQL */ `
   ) {
     createProcess(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
       name
       broken
       routes
-      map_id
+      mapId
     }
   }
 `;
@@ -428,14 +416,13 @@ export const updateProcess = /* GraphQL */ `
   ) {
     updateProcess(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
       name
       broken
       routes
-      map_id
+      mapId
     }
   }
 `;
@@ -446,14 +433,13 @@ export const deleteProcess = /* GraphQL */ `
   ) {
     deleteProcess(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
       name
       broken
       routes
-      map_id
+      mapId
     }
   }
 `;
@@ -464,12 +450,11 @@ export const createObject = /* GraphQL */ `
   ) {
     createObject(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
       description
-      map_id
+      mapId
       modelName
       name
       dimensions
@@ -484,12 +469,11 @@ export const updateObject = /* GraphQL */ `
   ) {
     updateObject(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
       description
-      map_id
+      mapId
       modelName
       name
       dimensions
@@ -504,12 +488,11 @@ export const deleteObject = /* GraphQL */ `
   ) {
     deleteObject(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
       description
-      map_id
+      mapId
       modelName
       name
       dimensions
@@ -524,7 +507,6 @@ export const createCard = /* GraphQL */ `
   ) {
     createCard(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
@@ -535,7 +517,7 @@ export const createCard = /* GraphQL */ `
       lotNumber
       lotTemplateId
       name
-      process_id
+      processId
       totalQuantity
       processName
       count
@@ -549,7 +531,6 @@ export const updateCard = /* GraphQL */ `
   ) {
     updateCard(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
@@ -560,7 +541,7 @@ export const updateCard = /* GraphQL */ `
       lotNumber
       lotTemplateId
       name
-      process_id
+      processId
       totalQuantity
       processName
       count
@@ -574,7 +555,6 @@ export const deleteCard = /* GraphQL */ `
   ) {
     deleteCard(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
@@ -585,7 +565,7 @@ export const deleteCard = /* GraphQL */ `
       lotNumber
       lotTemplateId
       name
-      process_id
+      processId
       totalQuantity
       processName
       count
@@ -650,7 +630,6 @@ export const createSettings = /* GraphQL */ `
   ) {
     createSettings(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
@@ -677,7 +656,6 @@ export const updateSettings = /* GraphQL */ `
   ) {
     updateSettings(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
@@ -704,7 +682,6 @@ export const deleteSettings = /* GraphQL */ `
   ) {
     deleteSettings(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
@@ -731,7 +708,6 @@ export const createLotTemplate = /* GraphQL */ `
   ) {
     createLotTemplate(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
@@ -748,7 +724,6 @@ export const updateLotTemplate = /* GraphQL */ `
   ) {
     updateLotTemplate(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
@@ -765,7 +740,6 @@ export const deleteLotTemplate = /* GraphQL */ `
   ) {
     deleteLotTemplate(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
@@ -782,7 +756,6 @@ export const createDevice = /* GraphQL */ `
   ) {
     createDevice(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
@@ -794,7 +767,7 @@ export const createDevice = /* GraphQL */ `
       device_name
       distance_to_next_target
       idle_location
-      map_id
+      mapId
       position
       shelf_attached
       state_text
@@ -808,7 +781,6 @@ export const updateDevice = /* GraphQL */ `
   ) {
     updateDevice(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
@@ -820,7 +792,7 @@ export const updateDevice = /* GraphQL */ `
       device_name
       distance_to_next_target
       idle_location
-      map_id
+      mapId
       position
       shelf_attached
       state_text
@@ -834,7 +806,6 @@ export const deleteDevice = /* GraphQL */ `
   ) {
     deleteDevice(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
@@ -846,7 +817,7 @@ export const deleteDevice = /* GraphQL */ `
       device_name
       distance_to_next_target
       idle_location
-      map_id
+      mapId
       position
       shelf_attached
       state_text
@@ -860,7 +831,6 @@ export const createStatus = /* GraphQL */ `
   ) {
     createStatus(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
@@ -877,7 +847,6 @@ export const updateStatus = /* GraphQL */ `
   ) {
     updateStatus(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
@@ -894,7 +863,6 @@ export const deleteStatus = /* GraphQL */ `
   ) {
     deleteStatus(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
@@ -911,20 +879,19 @@ export const createTaskQueue = /* GraphQL */ `
   ) {
     createTaskQueue(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
       device_type
       mission_status
       owner
-      task_id
+      taskId
       custom_task
       dashboard
       showModal
       hil_response
       quantity
-      lot_id
+      lotId
       start_time
       end_time
       hil_station_id
@@ -939,20 +906,19 @@ export const updateTaskQueue = /* GraphQL */ `
   ) {
     updateTaskQueue(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
       device_type
       mission_status
       owner
-      task_id
+      taskId
       custom_task
       dashboard
       showModal
       hil_response
       quantity
-      lot_id
+      lotId
       start_time
       end_time
       hil_station_id
@@ -967,20 +933,19 @@ export const deleteTaskQueue = /* GraphQL */ `
   ) {
     deleteTaskQueue(input: $input, condition: $condition) {
       id
-      _id
       organizationId
       createdAt
       updatedAt
       device_type
       mission_status
       owner
-      task_id
+      taskId
       custom_task
       dashboard
       showModal
       hil_response
       quantity
-      lot_id
+      lotId
       start_time
       end_time
       hil_station_id
@@ -1001,13 +966,13 @@ export const createTaskQueueEvents = /* GraphQL */ `
       device_type
       mission_status
       owner
-      task_id
+      taskId
       custom_task
       dashboard
       showModal
       hil_response
       quantity
-      lot_id
+      lotId
       start_time
       end_time
       hil_station_id
@@ -1028,13 +993,13 @@ export const updateTaskQueueEvents = /* GraphQL */ `
       device_type
       mission_status
       owner
-      task_id
+      taskId
       custom_task
       dashboard
       showModal
       hil_response
       quantity
-      lot_id
+      lotId
       start_time
       end_time
       hil_station_id
@@ -1055,13 +1020,13 @@ export const deleteTaskQueueEvents = /* GraphQL */ `
       device_type
       mission_status
       owner
-      task_id
+      taskId
       custom_task
       dashboard
       showModal
       hil_response
       quantity
-      lot_id
+      lotId
       start_time
       end_time
       hil_station_id

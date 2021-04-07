@@ -61,7 +61,7 @@ export async function deleteDevices(ID) {
         query: devicesByOrgId,
         variables:{
             organizationId: userOrgId,
-            filter: {_id: {eq: ID}}
+            filter: {id: {eq: ID}}
         }
         })
 

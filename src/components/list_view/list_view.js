@@ -112,7 +112,7 @@ const ListView = (props) => {
 
 
     const onLocationClick = (item) => {
-        history.push('/locations/' + item._id + '/' + "dashboards")
+        history.push('/locations/' + item.id + '/' + "dashboards")
         setShowDashboards(true)
     }
 
@@ -141,7 +141,7 @@ const ListView = (props) => {
             if (!!item.owner) {
 
                 // If the station is a device and the task q owner is that device then show the status
-                if (!!devices[params.stationID] && item.owner === devices[params.stationID]._id) {
+                if (!!devices[params.stationID] && item.owner === devices[params.stationID].id) {
 
                     let locationName = ''
 

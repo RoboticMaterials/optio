@@ -38,7 +38,7 @@ const DashboardEditorButtonRenderer = SortableContainer((props) => {
                         color: buttonColor,
                         id: buttonId,
                         name: buttonName,
-                        task_id: buttonTaskId,
+                        taskId: buttonTaskId,
                         type: buttonType,
                         custom_task: customTask
                     } = button || {}

@@ -42,7 +42,7 @@ function Position(props) {
 
 
     const {
-        _id: positionId
+        id: positionId
     } = position
 
     const [hovering, setHovering] = useState(false)
@@ -79,7 +79,7 @@ function Position(props) {
     // Set selected if the positon is part of a stations children copy and no selected task
     if (!!selectedStationChildrenCopy && (positionId in selectedStationChildrenCopy) && !selectedTask) isSelected = true
     // Set selected if there is a selected postion that is this position and no selected task
-    else if (!!selectedPosition && selectedPosition._id === positionId && !selectedTask) isSelected = true
+    else if (!!selectedPosition && selectedPosition.id === positionId && !selectedTask) isSelected = true
     // Set selected if the position is a temp right click
     else if (position.schema === 'temporary_position') isSelected = true
 
@@ -87,7 +87,7 @@ function Position(props) {
     let disabled = false
 
     // Disable if the selectedPosition is not this position
-    if (!!selectedPosition && selectedPosition._id !== positionId) disabled = true
+    if (!!selectedPosition && selectedPosition.id !== positionId) disabled = true
 
     // Disable if making a task and this position does not have a parent
     else if (!!selectedTask && !position.parent) disabled = true
@@ -106,7 +106,7 @@ function Position(props) {
         // Disable position if the selected task load position is a station (cant go from station to position or vice versa)
         else if (!!stations[selectedTask?.load?.position]) disabled = true
         // Disable position if its the load position. Cant make a task to itself
-        else if (selectedTask.load.position === position._id) disabled = true
+        else if (selectedTask.load.position === position.id) disabled = true
 
         // Disables when adding a task to the beginning of a process. 
         // To tell if a task is being added to the beginning of a process is when the task has a temp insert index at 0 and the process contains more then 1 route
@@ -181,7 +181,7 @@ function Position(props) {
 
             // not first route
             if (selectedProcess.routes.length > 0) {
-                const routeIndex = getRouteIndexInRoutes(selectedProcess.routes.map((currProcess) => currProcess._id), selectedTask?._id)
+                const routeIndex = getRouteIndexInRoutes(selectedProcess.routes.map((currProcess) => currProcess.id), selectedTask?.id)
 
                 // setting load (or both have been set)
                 if (!routeStart || (routeStart && routeEnd)) {
@@ -199,7 +199,7 @@ function Position(props) {
 
                     else {
                         // must start at position at unload station of previous route
-                        const previousRoute = getPreviousRoute(selectedProcess.routes, selectedTask._id)
+                        const previousRoute = getPreviousRoute(selectedProcess.routes, selectedTask.id)
                         disabled = !isPositionAtUnloadStation(previousRoute, positionId)
                     }
                 }
@@ -337,7 +337,7 @@ function Position(props) {
                 } else {
                     type = 'push'
                 }
-                dispatchSetTaskAttributes(selectedTask._id, { unload, type })
+                dispatchSetTaskAttributes(selectedTask.id, { unload, type })
             } else { // Otherwise assign the load position and clear the unload position (to define a new unload)
                 let load = deepCopy(selectedTask.load)
                 let unload = deepCopy(selectedTask.unload)
@@ -350,7 +350,7 @@ function Position(props) {
                 }
                 unload.position = null
                 unload.station = null
-                dispatchSetTaskAttributes(selectedTask._id, { load, unload, type })
+                dispatchSetTaskAttributes(selectedTask.id, { load, unload, type })
             }
         }
     }

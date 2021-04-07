@@ -56,22 +56,22 @@ export const compareExistingVsIncomingLocations = (incomingLocations, existingLo
     Object.values(existingLocations).forEach(existingLocation => {
 
         // If the location exists in the backend and frontend, take the new locations, but assign local x and y
-        if (existingLocation._id in incomingLocations) {
+        if (existingLocation.id in incomingLocations) {
 
-            const incomingLocation = incomingLocations[existingLocation._id]
+            const incomingLocation = incomingLocations[existingLocation.id]
             if ((incomingLocation.pos_x !== existingLocation.pos_x) || (incomingLocation.pos_y !== existingLocation.pos_y)) {
                 let [x, y] = convertRealToD3([incomingLocation.pos_x, incomingLocation.pos_y], d3)
-                Object.assign(incomingLocations[existingLocation._id], { x: x, y: y })
+                Object.assign(incomingLocations[existingLocation.id], { x: x, y: y })
 
             } else {
-                Object.assign(incomingLocations[existingLocation._id], { x: existingLocation.x, y: existingLocation.y })
+                Object.assign(incomingLocations[existingLocation.id], { x: existingLocation.x, y: existingLocation.y })
             }
 
         }
 
         // If the existing location is  new then make sure to pass it in
         else if (existingLocation.new == true) {
-            incomingLocations[existingLocation._id] = existingLocation
+            incomingLocations[existingLocation.id] = existingLocation
         }
 
     })
@@ -81,15 +81,15 @@ export const compareExistingVsIncomingLocations = (incomingLocations, existingLo
 
         // Handles deleted Positions on the backend
         if (!!incomingLocation.change_key && incomingLocation.change_key === 'deleted') {
-            delete incomingLocations[incomingLocation._id]
+            delete incomingLocations[incomingLocation.id]
         }
 
         // If the incoming location is not in existing location, its a new location so convert its pos into local d3 state
-        if (Object.values(existingLocations).length > 0 && !(incomingLocation._id in existingLocations) && incomingLocation.change_key !== 'deleted') {
+        if (Object.values(existingLocations).length > 0 && !(incomingLocation.id in existingLocations) && incomingLocation.change_key !== 'deleted') {
             let x, y
             // If it's a new station, make sure to update it's coords to d3 coords on the local map
             [x, y] = convertRealToD3([incomingLocation.pos_x, incomingLocation.pos_y], d3)
-            Object.assign(incomingLocations[incomingLocation._id], { x: x, y: y })
+            Object.assign(incomingLocations[incomingLocation.id], { x: x, y: y })
         }
     })
 

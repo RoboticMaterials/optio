@@ -52,10 +52,10 @@ export const isBrokenProcess = (routes) => {
 export const willRouteDeleteBreakProcess = (routes, routeId) => {
 
     // if not first or last route
-    if (routeId !== routes[routes.length - 1]._id && routeId !== routes[0]._id) {
+    if (routeId !== routes[routes.length - 1].id && routeId !== routes[0].id) {
 
         const copyProcessRoutes = deepCopy(routes)
-        const index = copyProcessRoutes.findIndex((currRoute) => currRoute._id === routeId)
+        const index = copyProcessRoutes.findIndex((currRoute) => currRoute.id === routeId)
         copyProcessRoutes.splice(index, 1)
 
         return isBrokenProcess(copyProcessRoutes)
@@ -208,7 +208,7 @@ export const getPreviousRoute = (processRoutes, currentRouteId) => {
 
     const currentRouteindex = processRoutes.findIndex((currItem) => {
         if (isObject(currItem)) {
-            return currItem._id === currentRouteId
+            return currItem.id === currentRouteId
         }
         else {
             return currItem === currentRouteId

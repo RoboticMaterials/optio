@@ -76,7 +76,7 @@ export async function postTaskQueue(taskQueueItem) {
         const input = {
             ...taskQueueItem,
             organizationId: orgId,
-            id: taskQueueItem._id
+            id: taskQueueItem.id
         }
 
         const dataJson = await API.graphql({

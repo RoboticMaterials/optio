@@ -19,11 +19,11 @@ logger.setLevel("silent")
 
 // some hard coded values for now
 // Set this to use a specific peer id instead of a random one
-var our_default_id;
-var our_id;
-var peer_id = 5555
-var ws_server = "10.1.10.6";
-var ws_port;
+var ourDefaultId;
+var ourId;
+var peerId = 5555
+var wsServer = "10.1.10.6";
+var wsPort;
 
 const CONNECTION_MAX_ATTEMPTS = 1000
 
@@ -48,11 +48,11 @@ const getOurId = () => {
 }
 
 // Fetch the peer id to use
-our_id = our_default_id || getOurId()
+ourId = ourDefaultId || getOurId()
 
-ws_port = ws_port || '8443';
+wsPort = wsPort || '8443';
 
-const ws_url = 'ws://' + ws_server + ':' + ws_port
+const ws_url = 'ws://' + wsServer + ':' + wsPort
 
 var client;
 
@@ -71,7 +71,7 @@ const ViewerPage = () => {
     const [showStreamInfo, setShowStreamInfo] = useState(true)
 
     useEffect(() => {
-        client = reconnectingWebRTCSocket(ws_url, getOurId(), peer_id)
+        client = reconnectingWebRTCSocket(ws_url, getOurId(), peerId)
         client.addRemoteTrackListener(setStreams);
         client.onStateChange(setIsConnected);
         client.addErrorListener(setError);
@@ -93,7 +93,7 @@ const ViewerPage = () => {
     // Set the station and device if there is a associated device
      const station = locaitons[params.stationID]
      let device = {}
-     if(!!station.device_id) device = devices[station.device_id]
+     if(!!station.deviceId) device = devices[station.deviceId]
 
 
 
@@ -135,8 +135,8 @@ const ViewerPage = () => {
                 <StreamInfo
                     status={status}
                     error={error}
-                    outID={our_id}
-                    peerID={peer_id}
+                    outID={ourId}
+                    peerID={peerId}
                     loading={!streamConnected}
                     streams={streams}
                 />

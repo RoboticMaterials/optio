@@ -127,7 +127,6 @@ export const stationsByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
         createdAt
         updatedAt
@@ -139,7 +138,7 @@ export const stationsByOrgId = /* GraphQL */ `
         rotation
         x
         y
-        map_id
+        mapId
         children
         dashboards
       }
@@ -164,12 +163,11 @@ export const positionsByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
         createdAt
         updatedAt
         change_key
-        map_id
+        mapId
         name
         parent
         pos_x
@@ -201,14 +199,13 @@ export const tasksByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
         createdAt
         updatedAt
         device_types
         handoff
         load
-        map_id
+        mapId
         name
         processes
         quantity
@@ -239,14 +236,13 @@ export const taskById = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
         createdAt
         updatedAt
         device_types
         handoff
         load
-        map_id
+        mapId
         name
         processes
         quantity
@@ -277,14 +273,13 @@ export const processesByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
         createdAt
         updatedAt
         name
         broken
         routes
-        map_id
+        mapId
       }
       nextToken
     }
@@ -307,12 +302,11 @@ export const objectsByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
         createdAt
         updatedAt
         description
-        map_id
+        mapId
         modelName
         name
         dimensions
@@ -339,7 +333,6 @@ export const cardsByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
         createdAt
         updatedAt
@@ -350,7 +343,7 @@ export const cardsByOrgId = /* GraphQL */ `
         lotNumber
         lotTemplateId
         name
-        process_id
+        processId
         totalQuantity
         processName
         count
@@ -376,7 +369,6 @@ export const getCardById = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
         createdAt
         updatedAt
@@ -387,7 +379,7 @@ export const getCardById = /* GraphQL */ `
         lotNumber
         lotTemplateId
         name
-        process_id
+        processId
         totalQuantity
         processName
         count
@@ -442,7 +434,6 @@ export const settingsByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
         createdAt
         updatedAt
@@ -481,7 +472,6 @@ export const lotTemplatesByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
         createdAt
         updatedAt
@@ -510,7 +500,6 @@ export const devicesByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
         createdAt
         updatedAt
@@ -522,7 +511,7 @@ export const devicesByOrgId = /* GraphQL */ `
         device_name
         distance_to_next_target
         idle_location
-        map_id
+        mapId
         position
         shelf_attached
         state_text
@@ -548,7 +537,6 @@ export const statusByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
         createdAt
         updatedAt
@@ -577,20 +565,19 @@ export const taskQueueByOrgId = /* GraphQL */ `
     ) {
       items {
         id
-        _id
         organizationId
         createdAt
         updatedAt
         device_type
         mission_status
         owner
-        task_id
+        taskId
         custom_task
         dashboard
         showModal
         hil_response
         quantity
-        lot_id
+        lotId
         start_time
         end_time
         hil_station_id

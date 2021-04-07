@@ -61,22 +61,22 @@ const DashboardAddTask = (props) => {
     const handleAddTask = async (props) => {
         // new task dictionary
         let newTask = {
-            "_id": "",
+            "id": "",
             "name": "",
             "color": "#BCBCBC",
-            "task_id": "",
+            "taskId": "",
             "task_name": "",
         }
 
         // Populate ID with current information
         newTask.name = props[0].Description
-        newTask.task_id = props[0].task_id
+        newTask.taskId = props[0].taskId
         newTask.task_name = props[0].Description
 
         let currentDashboard = deepCopy(currentDashboard)
 
         const id = randomHash()
-        newTask._id = id
+        newTask.id = id
         currentDashboard.buttons.push(newTask)
 
         onSelectedDashboard(currentDashboard)

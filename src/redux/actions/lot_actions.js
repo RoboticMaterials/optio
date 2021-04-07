@@ -74,7 +74,7 @@ export const getLots = () =>  async (dispatch) => {
         // make request
         const lots = await api.getLots();
 
-        const lotsObj = convertArrayToObject(lots, "_id")
+        const lotsObj = convertArrayToObject(lots, "id")
 
         // format response
         // const normalizedSchedules = normalize(schedules, schedulesSchema);
@@ -141,7 +141,7 @@ export const postLot = (lot) =>  async dispatch => {
 
         return {
             lot: createdLot,
-            processId: lot.process_id
+            processId: lot.processId
         };
     }
     //
@@ -184,7 +184,7 @@ export const putLot = (lot, lotId) => async dispatch => {
         //
         return {
             lot: response,
-            processId: lot.process_id
+            processId: lot.processId
         };
     }
 

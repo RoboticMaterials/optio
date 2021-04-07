@@ -87,14 +87,14 @@ const CardZone = ((props) => {
 
 				// add entry in tempCardsSorted
 				tempBins[loadStationId] = {
-					station_id: loadStationId,
+					stationId: loadStationId,
 					cards: []
 				}
 			}
 
 			// add entry in tempCardsSorted
 			tempBins[unloadStationId] = {
-				station_id: unloadStationId,
+				stationId: unloadStationId,
 				cards: []
 			}
 
@@ -119,7 +119,7 @@ const CardZone = ((props) => {
 			// extract lot attributes
 			const {
 				bins: cardBins,
-				_id,
+				id,
 				...rest
 			} = card
 
@@ -140,14 +140,14 @@ const CardZone = ((props) => {
 					} = binValue
 
 					// don't render lot being dragged - prevents flicker bug after drop
-					if((binId === draggingBinId) && (_id === draggingLotId)) return
+					if((binId === draggingBinId) && (id === draggingLotId)) return
 
 					const lotItem = {
 						...rest,
 						totalQuantity,
 						binId,
 						count,
-						cardId: _id,
+						cardId: id,
 						processName
 					}
 
@@ -196,13 +196,13 @@ const CardZone = ((props) => {
 
 			// extract attributes of current bin
 			const {
-				station_id,
-				route_id,
+				stationId,
+				routeId,
 				cards: cardsArr
 			} = obj
 
-			// get current station attributes from {station_id} and redux state
-			const currStation = stations[station_id]
+			// get current station attributes from {stationId} and redux state
+			const currStation = stations[stationId]
 			const {
 				name: stationName
 			} = currStation || {}
@@ -214,12 +214,12 @@ const CardZone = ((props) => {
 					sortMode={sortMode}
 					sortDirection={sortDirection}
 					maxHeight={maxHeight}
-					key={station_id + index}
-					id={route_id+"+"+station_id}
-					station_id={station_id}
+					key={stationId + index}
+					id={routeId+"+"+stationId}
+					stationId={stationId}
 					stationName={stationName}
 					processId={processId}
-					route_id={route_id}
+					routeId={routeId}
 					cards={cardsArr}
 					onCardClick={handleCardClick}
 				/>
@@ -236,7 +236,7 @@ const CardZone = ((props) => {
 				sortMode={sortMode}
 				sortDirection={sortDirection}
 				maxHeight={maxHeight}
-				station_id={"QUEUE"}
+				stationId={"QUEUE"}
 				setShowCardEditor={setShowCardEditor}
 				showCardEditor={showCardEditor}
 				stationName={"Queue"}
@@ -255,7 +255,7 @@ const CardZone = ((props) => {
 				sortMode={sortMode}
 				sortDirection={sortDirection}
 				maxHeight={maxHeight}
-				station_id={"FINISH"}
+				stationId={"FINISH"}
 				setShowCardEditor={setShowCardEditor}
 				showCardEditor={showCardEditor}
 				stationName={"Finished"}

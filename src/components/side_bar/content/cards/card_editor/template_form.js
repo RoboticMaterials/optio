@@ -460,7 +460,7 @@ const LotCreatorForm = (props) => {
 				} = response || {}
 
 				const {
-					_id: createdLotTemplateId,
+					id: createdLotTemplateId,
 				} = createdLotTemplate || {}
 
 				dispatchSetSelectedLotTemplate(createdLotTemplateId)

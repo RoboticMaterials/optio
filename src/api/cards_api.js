@@ -66,7 +66,7 @@ export async function getCard(cardId) {
             query: cardsByOrgId,
             variables:{
                 organizationId: userOrgId,
-                filter: {_id: {eq: cardId}}
+                filter: {id: {eq: cardId}}
             }
         })
 
@@ -104,7 +104,6 @@ export async function postCard(card) {
             bins: JSON.stringify(card.bins),
             dates: JSON.stringify(card.dates),
             flags: JSON.stringify(card.flags),
-            _id: fakeID,
             id: fakeID,
             organizationId: userOrgId
         }
