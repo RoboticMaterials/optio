@@ -86,7 +86,7 @@ type StationEvent
   outgoing: Boolean!
   quantity: Int!
   station: String!
-  time: String!
+  time: AWSTimestamp!
 }
 
 type Position

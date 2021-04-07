@@ -27,7 +27,7 @@
         },
         "stationStats": {
           "deploymentBucketName": "amplify-rmstudiocloud-dev-112632-deployment",
-          "s3Key": "amplify-builds/stationStats-424e61393878776e5a44-build.zip"
+          "s3Key": "amplify-builds/stationStats-6b7754756f513462334d-build.zip"
         }
       }
     }

@@ -135,7 +135,9 @@ const ApiContainer = (props) => {
         // unsub from everything
         if(currentSubscriptions.length){
             currentSubscriptions.forEach(sub => {
-                sub._cleanup()
+                if(sub._state !== 'closed'){
+                    sub._cleanup()
+                }                
             });
         }
 

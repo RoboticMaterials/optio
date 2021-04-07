@@ -24,6 +24,8 @@ import { getTask } from './tasks_api'
 
 export default async function postStationEvent(stationData) {
     try {
+        console.log(stationData);
+
         const userOrgId = await getUserOrgId()
 
         const task = await getTask(stationData.task_id)
@@ -34,10 +36,8 @@ export default async function postStationEvent(stationData) {
             outgoing: true,
             quantity: stationData.quantity,
             station: task.load.station,
-            time: Math.round(Date.now() / 1000).toString()
+            time: Math.round(Date.now() / 1000)
         }
-
-        console.log(input);
         
         const dataJson = await API.graphql({
             query: createStationEvent,

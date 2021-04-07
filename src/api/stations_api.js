@@ -23,7 +23,7 @@ import { API } from 'aws-amplify'
 
 // import the GraphQL queries, mutations and subscriptions
 import { stationsByOrgId } from '../graphql/queries'
-import { createStation, updateStation } from '../graphql/mutations'
+import { createStation, updateStation, stationStats } from '../graphql/mutations'
 import { deleteStation as deleteStationByID } from '../graphql/mutations'
 
 export async function getStations() {
@@ -139,25 +139,26 @@ export async function putStation(station, ID) {
 
 export async function getStationAnalytics(id, timeSpan) {
   try {
-    const response = await axios({
-      method: "PUT",
-      url: apiIPAddress() + "stations/" + id + "/analysis",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": "123456",
-        "Accept": "text/html",
-        "Access-Control-Allow-Origin": "*",
-      },
-      // A timespan is {time_span: 'day', index: 0}
-      data: timeSpan,
-    });
-    // Success 🎉
-    const data = response.data;
-    const dataJson = JSON.parse(data);
 
-    console.log(dataJson);
-    
-    return dataJson;
+    console.log(id, timeSpan);
+
+    const dataJ = await API.graphql({
+      query: stationStats,
+      variables: { 
+          station_id: id,
+          timeSpan: timeSpan.timespan, 
+          index: timeSpan.index
+      }
+    })
+
+    let data = {
+      throughPut: JSON.parse(dataJ.data.stationStats.throughPut),
+      date_title: dataJ.data.stationStats.date
+    }
+
+    // Success 🎉
+
+    return data;
   } catch (error) {
     // Error 😨
     errorLog(error)

@@ -80,6 +80,7 @@ def get_stats(station_id, info,  output=False):
     return data
 
 def create_data(station_id, start_utc, end_utc, labels, output=False):
+
     # Create bins for data
     bins = np.linspace(start_utc, end_utc, len(labels)+1)
 
@@ -93,22 +94,36 @@ def create_data(station_id, start_utc, end_utc, labels, output=False):
     # TODO only fetch data from time frame to make scalable
     df = pd.DataFrame(list(events_data))
 
+    df.time = df.time.astype(float)
+
     if len(df) > 0:
         df = df.set_index('time')
+
+        print(df)
+        print(start_utc)
+
         # Crop data
         df = df[start_utc : end_utc]
+
+        
+
         # Find unique ids
         unique_ids = df[start_utc : end_utc]['object'].unique()
         # Bin data for each unique id
         data_dict = {}
+
         for object_id in unique_ids:
             if object_id is None:
                 df_1 = df[df['object'].isnull().values]
             else:
                 df_1 = df[df['object'] == object_id]
+
+            
             times = df_1.index.repeat(df_1['quantity'])
             data, edges = np.histogram(times, bins)
             data_dict[object_id] = data
+
+            print(times)
             
             # Output graph
             if len(times) > -1 and output:
@@ -156,7 +171,7 @@ def calc_day_stats(station_id,  index, output=False):
 
 
     rtn_data = create_data(station_id, start_utc, end_utc, labels, output=output)
-    
+
     return rtn_data, date_title
 
 def calc_day_line_stats(station_id, index=0):
@@ -170,6 +185,8 @@ def calc_day_line_stats(station_id, index=0):
 
     # Get station events
     events = list(events_data)
+
+    print(events)
     num_of_events = len(events)
     
     # Split list to outgoing events
@@ -191,7 +208,7 @@ def calc_day_line_stats(station_id, index=0):
     rtn_data = []
     for event in events:
         if start_utc < event['time'] and event['time'] < end_utc:
-            rtn_data.append({'x':event['time'], 'y':event['quantity']})
+            rtn_data.append({'x': float(event['time']), 'y': int(event['quantity']) })
 
     return rtn_data, date_title
 
