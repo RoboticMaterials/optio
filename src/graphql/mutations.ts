@@ -27,8 +27,8 @@ export const manageTaskQueue = /* GraphQL */ `
   }
 `;
 export const taskStats = /* GraphQL */ `
-  mutation TaskStats($taskId: ID, $organizationId: String!) {
-    taskStats(taskId: $taskId, organizationId: $organizationId) {
+  mutation TaskStats($task_id: ID, $organizationId: String!) {
+    taskStats(task_id: $task_id, organizationId: $organizationId) {
       id
       organizationId
       createdAt
@@ -47,6 +47,26 @@ export const taskStats = /* GraphQL */ `
       end_time
       hil_station_id
       hil_message
+    }
+  }
+`;
+export const stationStats = /* GraphQL */ `
+  mutation StationStats(
+    $station_id: ID!
+    $timeSpan: String!
+    $index: Int!
+    $sortKey: String
+  ) {
+    stationStats(
+      station_id: $station_id
+      timeSpan: $timeSpan
+      index: $index
+      sortKey: $sortKey
+    ) {
+      stationId
+      organizationId
+      date
+      throughPut
     }
   }
 `;
@@ -242,6 +262,60 @@ export const deleteStation = /* GraphQL */ `
       mapId
       children
       dashboards
+    }
+  }
+`;
+export const createStationEvent = /* GraphQL */ `
+  mutation CreateStationEvent(
+    $input: CreateStationEventInput!
+    $condition: ModelStationEventConditionInput
+  ) {
+    createStationEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      object
+      outgoing
+      quantity
+      station
+      time
+    }
+  }
+`;
+export const updateStationEvent = /* GraphQL */ `
+  mutation UpdateStationEvent(
+    $input: UpdateStationEventInput!
+    $condition: ModelStationEventConditionInput
+  ) {
+    updateStationEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      object
+      outgoing
+      quantity
+      station
+      time
+    }
+  }
+`;
+export const deleteStationEvent = /* GraphQL */ `
+  mutation DeleteStationEvent(
+    $input: DeleteStationEventInput!
+    $condition: ModelStationEventConditionInput
+  ) {
+    deleteStationEvent(input: $input, condition: $condition) {
+      id
+      organizationId
+      createdAt
+      updatedAt
+      object
+      outgoing
+      quantity
+      station
+      time
     }
   }
 `;

@@ -24,6 +24,14 @@ export type TaskQueue = {
   hil_message?: string | null,
 };
 
+export type StationStatsData = {
+  __typename: "StationStatsData",
+  stationId?: string,
+  organizationId?: string,
+  date?: string,
+  throughPut?: string,
+};
+
 export type CreateUserInput = {
   id?: string | null,
   organizationId: string,
@@ -274,6 +282,68 @@ export type DeleteStationInput = {
   id?: string | null,
 };
 
+export type CreateStationEventInput = {
+  id?: string | null,
+  organizationId: string,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  object?: string | null,
+  outgoing: boolean,
+  quantity: number,
+  station: string,
+  time: number,
+};
+
+export type ModelStationEventConditionInput = {
+  organizationId?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  object?: ModelStringInput | null,
+  outgoing?: ModelBooleanInput | null,
+  quantity?: ModelIntInput | null,
+  station?: ModelStringInput | null,
+  time?: ModelIntInput | null,
+  and?: Array< ModelStationEventConditionInput | null > | null,
+  or?: Array< ModelStationEventConditionInput | null > | null,
+  not?: ModelStationEventConditionInput | null,
+};
+
+export type ModelBooleanInput = {
+  ne?: boolean | null,
+  eq?: boolean | null,
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
+};
+
+export type StationEvent = {
+  __typename: "StationEvent",
+  id?: string,
+  organizationId?: string,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  object?: string | null,
+  outgoing?: boolean,
+  quantity?: number,
+  station?: string,
+  time?: number,
+};
+
+export type UpdateStationEventInput = {
+  id: string,
+  organizationId?: string | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  object?: string | null,
+  outgoing?: boolean | null,
+  quantity?: number | null,
+  station?: string | null,
+  time?: number | null,
+};
+
+export type DeleteStationEventInput = {
+  id?: string | null,
+};
+
 export type CreatePositionInput = {
   id?: string | null,
   organizationId: string,
@@ -391,13 +461,6 @@ export type ModelTaskConditionInput = {
   and?: Array< ModelTaskConditionInput | null > | null,
   or?: Array< ModelTaskConditionInput | null > | null,
   not?: ModelTaskConditionInput | null,
-};
-
-export type ModelBooleanInput = {
-  ne?: boolean | null,
-  eq?: boolean | null,
-  attributeExists?: boolean | null,
-  attributeType?: ModelAttributeTypes | null,
 };
 
 export type Task = {
@@ -1130,6 +1193,27 @@ export type DeleteDashboardInput = {
   id?: string | null,
 };
 
+export type ModelStationEventFilterInput = {
+  id?: ModelIDInput | null,
+  organizationId?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  object?: ModelStringInput | null,
+  outgoing?: ModelBooleanInput | null,
+  quantity?: ModelIntInput | null,
+  station?: ModelStringInput | null,
+  time?: ModelIntInput | null,
+  and?: Array< ModelStationEventFilterInput | null > | null,
+  or?: Array< ModelStationEventFilterInput | null > | null,
+  not?: ModelStationEventFilterInput | null,
+};
+
+export type ModelStationEventConnection = {
+  __typename: "ModelStationEventConnection",
+  items?:  Array<StationEvent | null > | null,
+  nextToken?: string | null,
+};
+
 export enum ModelSortDirection {
   ASC = "ASC",
   DESC = "DESC",
@@ -1503,7 +1587,7 @@ export type ManageTaskQueueMutation = {
 };
 
 export type TaskStatsMutationVariables = {
-  taskId?: string | null,
+  task_id?: string | null,
   organizationId?: string,
 };
 
@@ -1528,6 +1612,23 @@ export type TaskStatsMutation = {
     end_time?: number | null,
     hil_station_id?: string | null,
     hil_message?: string | null,
+  } | null,
+};
+
+export type StationStatsMutationVariables = {
+  station_id?: string,
+  timeSpan?: string,
+  index?: number,
+  sortKey?: string | null,
+};
+
+export type StationStatsMutation = {
+  stationStats?:  {
+    __typename: "StationStatsData",
+    stationId: string,
+    organizationId: string,
+    date: string,
+    throughPut: string,
   } | null,
 };
 
@@ -1747,6 +1848,66 @@ export type DeleteStationMutation = {
     mapId: string,
     children: string,
     dashboards: string,
+  } | null,
+};
+
+export type CreateStationEventMutationVariables = {
+  input?: CreateStationEventInput,
+  condition?: ModelStationEventConditionInput | null,
+};
+
+export type CreateStationEventMutation = {
+  createStationEvent?:  {
+    __typename: "StationEvent",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    object?: string | null,
+    outgoing: boolean,
+    quantity: number,
+    station: string,
+    time: number,
+  } | null,
+};
+
+export type UpdateStationEventMutationVariables = {
+  input?: UpdateStationEventInput,
+  condition?: ModelStationEventConditionInput | null,
+};
+
+export type UpdateStationEventMutation = {
+  updateStationEvent?:  {
+    __typename: "StationEvent",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    object?: string | null,
+    outgoing: boolean,
+    quantity: number,
+    station: string,
+    time: number,
+  } | null,
+};
+
+export type DeleteStationEventMutationVariables = {
+  input?: DeleteStationEventInput,
+  condition?: ModelStationEventConditionInput | null,
+};
+
+export type DeleteStationEventMutation = {
+  deleteStationEvent?:  {
+    __typename: "StationEvent",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    object?: string | null,
+    outgoing: boolean,
+    quantity: number,
+    station: string,
+    time: number,
   } | null,
 };
 
@@ -2647,6 +2808,50 @@ export type DeleteDashboardMutation = {
   } | null,
 };
 
+export type GetStationEventQueryVariables = {
+  id?: string,
+};
+
+export type GetStationEventQuery = {
+  getStationEvent?:  {
+    __typename: "StationEvent",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    object?: string | null,
+    outgoing: boolean,
+    quantity: number,
+    station: string,
+    time: number,
+  } | null,
+};
+
+export type ListStationEventsQueryVariables = {
+  filter?: ModelStationEventFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListStationEventsQuery = {
+  listStationEvents?:  {
+    __typename: "ModelStationEventConnection",
+    items?:  Array< {
+      __typename: "StationEvent",
+      id: string,
+      organizationId: string,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      object?: string | null,
+      outgoing: boolean,
+      quantity: number,
+      station: string,
+      time: number,
+    } | null > | null,
+    nextToken?: string | null,
+  } | null,
+};
+
 export type UsersbyOrgQueryVariables = {
   organizationId?: string | null,
   sortDirection?: ModelSortDirection | null,
@@ -2771,6 +2976,33 @@ export type StationsByOrgIdQuery = {
       mapId: string,
       children: string,
       dashboards: string,
+    } | null > | null,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type StationEventsByOrgIdQueryVariables = {
+  organizationId?: string | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelStationEventFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type StationEventsByOrgIdQuery = {
+  StationEventsByOrgId?:  {
+    __typename: "ModelStationEventConnection",
+    items?:  Array< {
+      __typename: "StationEvent",
+      id: string,
+      organizationId: string,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      object?: string | null,
+      outgoing: boolean,
+      quantity: number,
+      station: string,
+      time: number,
     } | null > | null,
     nextToken?: string | null,
   } | null,
@@ -3534,6 +3766,51 @@ export type OnDeleteStationSubscription = {
     mapId: string,
     children: string,
     dashboards: string,
+  } | null,
+};
+
+export type OnCreateStationEventSubscription = {
+  onCreateStationEvent?:  {
+    __typename: "StationEvent",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    object?: string | null,
+    outgoing: boolean,
+    quantity: number,
+    station: string,
+    time: number,
+  } | null,
+};
+
+export type OnUpdateStationEventSubscription = {
+  onUpdateStationEvent?:  {
+    __typename: "StationEvent",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    object?: string | null,
+    outgoing: boolean,
+    quantity: number,
+    station: string,
+    time: number,
+  } | null,
+};
+
+export type OnDeleteStationEventSubscription = {
+  onDeleteStationEvent?:  {
+    __typename: "StationEvent",
+    id: string,
+    organizationId: string,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    object?: string | null,
+    outgoing: boolean,
+    quantity: number,
+    station: string,
+    time: number,
   } | null,
 };
 
