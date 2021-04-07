@@ -104,6 +104,7 @@ export const ChartButton = styled.button`
 export const RowContainer = styled.div`
     ${commonCss.rowContainer};
     justify-content: space-around;
+    position: relative;
     
 `
 
@@ -179,4 +180,11 @@ export const BreakLabel = styled.label`
   font-size: ${props => props.theme.fontSize.sz4};
   font-family: ${props => props.theme.font.primary};
   color: ${props => props.theme.bg.senary};
+`
+
+export const FormIcon = styled.i`
+    position: absolute;
+    right: 1rem;
+    top: .25rem;
+    font-size: 1.25rem;
 `

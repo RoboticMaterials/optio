@@ -12,22 +12,18 @@ export const RowContainer = styled.div`
     border-radius: 0.5rem;
     margin: 1.5rem;
     box-shadow: ${props => props.theme.cardShadow};
-    align-items: center;
+    /* align-items: center; */
+    overflow-y: scroll;
 `
 
 export const ProcessName = styled.h3`
     padding: 0;
-    margin: 0;
-    margin: 0 2rem;
+    margin: 1rem;
     font-size: ${props => props.theme.fontSize.sz3};
     color: ${props => props.theme.schema.lots.solid};
-    text-align: center;
-    width: 5rem;
-    min-width: 8rem;
-    
+    /* text-align: center; */
+    width: 20rem;
+    /* min-width: 8rem; */
     overflow: hidden;
-   text-overflow: ellipsis;
-   display: -webkit-box;
-   -webkit-line-clamp: 2; /* number of lines to show */
-   -webkit-box-orient: vertical;
+    text-overflow: clip;
 `

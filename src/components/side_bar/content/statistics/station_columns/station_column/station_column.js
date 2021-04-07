@@ -48,23 +48,8 @@ const StationColumn = (props) => {
         const dataPromise = getStationAnalytics(stationId, body)
         dataPromise.then(response => {
             if (response === undefined) return
-            setThroughputData(response)
-            setDateTitle(response.date_title)
-        })
-
-    }, [timeSpan, dateIndex])
-
-    // This function is similar to 'onTimeSpan' which is found in statistics_overview
-    const onChangeChartType = (newTimeSpan, newDateIndex) => {
-
-        const body = { timespan: newTimeSpan, index: newDateIndex }
-        const dataPromise = getStationAnalytics(stationId, body)
-
-        dataPromise.then(response => {
-
-            if (response === undefined) return setIsThroughputLoading(false)
             // Convert Throughput
-            if (newTimeSpan === 'line') {
+            if (timeSpan === 'line') {
                 let convertedThroughput = []
                 response.throughPut.forEach((dataPoint) => {
                     // Round Epoch time and multiply by 1000 to match front end times
@@ -79,18 +64,23 @@ const StationColumn = (props) => {
             }
 
             setThroughputData(response)
-            setIsThroughputLoading(false)
+            setDateTitle(response.date_title)
         })
 
-    }
-
+    }, [timeSpan, dateIndex])
 
     return (
 
         collapsed ?
-            <styled.StationColumnHeader>
-                <styled.StationTitle>{currentStation.name}</styled.StationTitle>
-            </styled.StationColumnHeader>
+            <styled.StationCollapsedContainer>
+                <styled.CollapseIcon
+                    className="fa fa-chevron-right"
+                    aria-hidden="true"
+                    onClick={() => setCollapsed(false)} />
+                <styled.StationTitle rotated={true}>
+                    {currentStation.name}
+                </styled.StationTitle>
+            </styled.StationCollapsedContainer >
             :
             <styled.StationColumnContainer >
                 <styled.StationColumnHeader>
@@ -105,13 +95,6 @@ const StationColumn = (props) => {
                     isWidget={false}
                     isThroughputLoading={isThroughputLoading}
                     timeSpan={timeSpan}
-                    loadLineChartData={() => {
-                        onChangeChartType('line', dateIndex)
-                    }}
-                    loadBarChartData={() => {
-                        onChangeChartType('day', dateIndex)
-
-                    }}
                     disableTimeSpan={(bool) => {
                         // setTimespanDisabled(bool)
                     }}

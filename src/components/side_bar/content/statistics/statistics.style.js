@@ -14,6 +14,8 @@ export const HeaderBar = styled.div`
     width: 100%;
     height: 5rem;
     background-color: ${props => props.theme.bg.primary};
+    display: flex;
+    flex-direction: row;
 `
 
 export const HeaderSection = styled.div`

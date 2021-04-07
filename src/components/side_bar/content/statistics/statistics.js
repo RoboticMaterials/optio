@@ -27,7 +27,6 @@ const Statistics = () => {
     const [dateIndex, setDateIndex] = useState(0)
     const [isThroughputLoading, setIsThroughputLoading] = useState(false)
     const [timeSpan, setTimeSpan] = useState('day')
-    const [format, setFormat] = useState('%m-%d %H:%M')
     const [date, setDate] = useState('')
 
     // useEffect(() => {
@@ -57,28 +56,25 @@ const Statistics = () => {
         // switch (timeSpan(/^(.*?)(?=\[|$)/)) {
         switch (newTimeSpan) {
             case 'live':
-                setFormat('%I:%M:%S %p')
                 setTimeSpan('live')
                 break
             case 'day':
-                setFormat('%I:%M %p')
                 setTimeSpan('day')
                 break
             case 'week':
-                setFormat('%m-%d %I:%M %p')
                 setTimeSpan('week')
                 break
             case 'month':
-                setFormat('%m-%d')
                 setTimeSpan('month')
                 break
             case 'year':
-                setFormat('%Y-%m-%d')
                 setTimeSpan('year')
                 break
             case 'all':
-                setFormat('%Y-%m-%d')
                 setTimeSpan('all')
+                break
+            case 'line':
+                setTimeSpan('line')
                 break
         }
     }
@@ -111,7 +107,7 @@ const Statistics = () => {
     return (
         <styled.Container>
             <styled.HeaderBar>
-                <styled.HeaderSection style={{marginLeft: '2rem'}}>
+                <styled.HeaderSection style={{ marginLeft: '2rem' }}>
                     <TimeSpaneSelector
                         // timespanDisabled={timespanDisabled}
                         setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)}
@@ -125,6 +121,10 @@ const Statistics = () => {
                             onTimeSpan(timeSpan, newIndex)
                         }}
                     />
+                </styled.HeaderSection>
+                <styled.HeaderSection style={{ marginLeft: '2rem' }}>
+                        <button onClick={() => onTimeSpan('day', dateIndex)}>Bar</button>
+                        <button onClick={() => onTimeSpan('line', dateIndex)}>Line</button>
                 </styled.HeaderSection>
             </styled.HeaderBar>
             {renderStationColumns()}

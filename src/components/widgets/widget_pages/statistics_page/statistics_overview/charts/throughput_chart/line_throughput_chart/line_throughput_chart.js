@@ -26,6 +26,7 @@ const LineThroughputChart = (props) => {
     const settings = useSelector(state => state.settingsReducer.settings)
 
     const [breaksEnabled, setBreaksEnabled] = useState({})
+    const [showForm, setShowForm] = useState(false)
     const shiftDetails = settings.shiftDetails;
 
     // Used for colors in line chart below
@@ -294,7 +295,7 @@ const LineThroughputChart = (props) => {
         },
         ]
         return lineData
-    }, [shiftDetails])
+    }, [shiftDetails, data])
 
 
     const renderResponsiveLine = useMemo(() => {
@@ -407,14 +408,16 @@ const LineThroughputChart = (props) => {
         <styled.RowContainer>
             {breaksEnabled !== null &&
                 <>
-                    {/* {renderForm()} */}
-                    <div style={{ flexGrow: '3' }}>
-                        <LineThroughputForm themeContext={themeContext} />
-                    </div>
                     {renderResponsiveLine}
+                    {showForm &&
+                        <div style={{ flexGrow: '3' }}>
+                            <LineThroughputForm themeContext={themeContext} />
+                        </div>
+                    }
+                    <styled.FormIcon onClick={() => setShowForm(!showForm)} className="fas fa-cog" />
                 </>
-
             }
+
         </styled.RowContainer >
     )
 

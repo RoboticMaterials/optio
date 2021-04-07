@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext, memo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 
 // Import Styles
@@ -25,11 +25,9 @@ const StationColumns = (props) => {
     const stations = useSelector(state => state.stationsReducer.stations)
 
 
-    const renderStationColumn = () => {
+    const renderStationColumn = useMemo(() => {
         const processStations = getProcessStations(processes[processId], routes)
-        console.log('QQQQ current process', processStations)
         return Object.keys(processStations).map((stationId) => {
-            console.log('QQQQ station id', stationId)
             return (
                 <StationColumn
                     key={stationId}
@@ -41,16 +39,16 @@ const StationColumns = (props) => {
             )
         })
 
-    }
+    }, [dateIndex, timeSpan])
 
     return (
         <styled.RowContainer>
             <styled.ProcessName>{processes[processId].name}</styled.ProcessName>
 
-        <styled.ChartsContainer>
+            <styled.ChartsContainer>
 
-            {renderStationColumn()}
-        </styled.ChartsContainer>
+                {renderStationColumn}
+            </styled.ChartsContainer>
         </styled.RowContainer>
     )
 }

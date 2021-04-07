@@ -142,10 +142,11 @@ const ThroughputChart = (props) => {
 
         }
         else {
+            console.log('QQQQ setting line data')
             setLineData(data.throughPut)
             setThroughputData([])
         }
-    }, [data])
+    }, [data, showBar])
 
     useEffect(() => {
         if (showBar) {
@@ -154,6 +155,15 @@ const ThroughputChart = (props) => {
             disableTimeSpan(true)
         }
     }, [showBar])
+
+    // UseEffect for when to show a line chart or a bar chart
+    useEffect(() => {
+        if (timeSpan === 'line') {
+            setShowBar(false)
+        } else {
+            setShowBar(true)
+        }
+    }, [timeSpan])
 
     return (
         <styled.SinglePlotContainer
@@ -169,7 +179,6 @@ const ThroughputChart = (props) => {
                             <styled.ChartTypeButton
                                 style={{ borderRadius: '.5rem 0rem 0rem .5rem' }}
                                 onClick={() => {
-                                    setShowBar(true)
                                     loadBarChartData()
                                 }}
                                 selected={showBar}
@@ -179,7 +188,6 @@ const ThroughputChart = (props) => {
                             <styled.ChartTypeButton
                                 style={{ borderRadius: '0rem .5rem .5rem 0rem' }}
                                 onClick={() => {
-                                    setShowBar(false)
                                     loadLineChartData()
                                 }}
                                 selected={!showBar}
