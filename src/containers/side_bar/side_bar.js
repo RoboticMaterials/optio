@@ -71,7 +71,7 @@ const SideBar = (props) => {
     const history = useHistory()
     const url = useLocation().pathname
 
-    const pageNames = ['locations', 'tasks', 'routes', 'processes', 'lots', 'devices', 'settings',]
+    const pageNames = ['locations', 'tasks', 'routes', 'processes', 'lots', 'devices', 'settings', 'statistics']
 
     const boundToWindowSize = () => {
         const newWidth = Math.min(window.innerWidth, Math.max(360, pageWidth))
@@ -127,14 +127,14 @@ const SideBar = (props) => {
 
 
         const time = Date.now()
-        if ((page === "processes" || page === "lots") && ((subpage === "lots") || (subpage === 'statistics')) || (id === "timeline") || (id === "summary")) {
+        if ((page === "processes" || page === "lots" || page === "statistics") && ((subpage === "lots") || (subpage === 'statistics')) || (id === "timeline") || (id === "summary")) {
 
             if (!prevWidth) setPrevWidth(pageWidth) // store previous width to restore when card page is left
             setPageWidth(window.innerWidth)
             dispatchSetWidth(window.innerWidth)
 
         }
-        else if ((((prevSubpage === "lots") || (prevSubpage === 'statistics') || (prevId === "timeline") || (prevId === "summary")) && (prevPage === "processes" || prevPage === "lots")) && ((subpage !== "lots") || (id === "timeline") || (id === "summary"))) {
+        else if ((((prevSubpage === "lots") || (prevSubpage === 'statistics') || (prevId === "timeline") || (prevId === "summary")) && (prevPage === "processes" || prevPage === "lots" || prevPage === "statistics")) && ((subpage !== "lots") || (id === "timeline") || (id === "summary"))) {
             setPageWidth(prevWidth)
             dispatchSetWidth(prevWidth)
             setPrevWidth(null)
@@ -241,6 +241,11 @@ const SideBar = (props) => {
 
         case 'settings':
             content = <Settings />
+            break
+
+        case 'statistics':
+            console.log('QQQQ should be showing stats')
+            content = <Statistics />
             break
 
         default:

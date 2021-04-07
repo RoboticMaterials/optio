@@ -234,6 +234,7 @@ const LineThroughputChart = (props) => {
         })
 
         if (expectedOutput.length > 0) {
+
             // Do the same to converted
             expectedOutput.map((output, ind) => {
                 let inExpected = false

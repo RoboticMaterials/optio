@@ -24,3 +24,11 @@ export const HeaderSection = styled.div`
     flex-direction: column;
     justify-content: center;
 `
+
+export const StationColumnsContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background-color: ${props => props.theme.bg.secondary};
+    overflow-y: auto;
+`

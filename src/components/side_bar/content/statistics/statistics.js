@@ -7,13 +7,14 @@ import * as styled from './statistics.style'
 
 // Import Components 
 import StationColumns from './station_columns/station_columns'
+import Header from '../cards/summary_header/summary_header'
 
 // Import Basic Components
 import DaySelector from '../../../basic/day_selector/day_selector'
 import TimeSpaneSelector from '../../../basic/timespan_selector/time_span_selector'
 
 const Statistics = () => {
-
+    console.log('QQQQ HAR')
 
     let params = useParams()
     const {
@@ -89,12 +90,19 @@ const Statistics = () => {
         }
         // Else push all processes
         else {
+            console.log('QQQQ rendering a lot of processes')
+            Object.keys(processes).forEach(processId => {
+                processesToRender.push(processId)
+            });
 
         }
+
+        console.log('QQQQ rendering array', processesToRender)
 
         return processesToRender.map((processId) => {
             return (
                 <StationColumns
+                    key={processId}
                     processId={processId}
                     setDateTitle={(title) => setDate(title)}
                     dateIndex={dateIndex}
@@ -106,12 +114,16 @@ const Statistics = () => {
 
     return (
         <styled.Container>
+            <Header
+                title={'Statistics Summary'}
+            />
             <styled.HeaderBar>
                 <styled.HeaderSection style={{ marginLeft: '2rem' }}>
                     <TimeSpaneSelector
                         // timespanDisabled={timespanDisabled}
                         setTimeSpan={(timeSpan) => onTimeSpan(timeSpan, 0)}
                         timeSpan={timeSpan}
+                        timespanDisabled={timeSpan === 'line'}
                     />
                     <DaySelector
                         date={date}
@@ -123,11 +135,14 @@ const Statistics = () => {
                     />
                 </styled.HeaderSection>
                 <styled.HeaderSection style={{ marginLeft: '2rem' }}>
-                        <button onClick={() => onTimeSpan('day', dateIndex)}>Bar</button>
-                        <button onClick={() => onTimeSpan('line', dateIndex)}>Line</button>
+                    <button onClick={() => onTimeSpan('day', dateIndex)}>Bar</button>
+                    <button onClick={() => onTimeSpan('line', dateIndex)}>Line</button>
+                    <button onClick={() => {onTimeSpan('reports', dateIndex)}}>Reports</button>
                 </styled.HeaderSection>
             </styled.HeaderBar>
-            {renderStationColumns()}
+            <styled.StationColumnsContainer>
+                {renderStationColumns()}
+            </styled.StationColumnsContainer>
         </styled.Container>
     )
 

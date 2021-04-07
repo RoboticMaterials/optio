@@ -162,7 +162,7 @@ const BarChart = (props) => {
                 // tickPadding: layout === "horizontal" ? 10 : -40,
                 // translateY: -25
                 legendOffset: 60,
-                tickRotation: 0,
+                tickRotation: 45,
                 legend: '',
                 fontSize: "8rem",
                 legendPosition: 'middle',

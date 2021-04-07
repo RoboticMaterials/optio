@@ -225,7 +225,7 @@ const ThroughputChart = (props) => {
 
                             axisBottom={{
                                 legend: TIME_SPANS[timeSpan]?.displayName || TIME_SPANS.day.displayName,
-                                tickRotation: 0,
+                                tickRotation: 45,
                             }}
                             axisLeft={{
                                 enable: true,

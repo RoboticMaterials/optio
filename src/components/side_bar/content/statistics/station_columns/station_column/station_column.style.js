@@ -7,7 +7,7 @@ export const StationColumnContainer = styled.div`
     width: fit-content;
     margin: 1rem;
     border-radius: .5rem;
-    background-color: ${props => props.theme.bg.secondary};
+    background-color: ${props => props.theme.bg.primary};
     max-width: 100rem;
 `
 

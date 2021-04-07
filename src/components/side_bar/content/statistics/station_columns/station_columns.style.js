@@ -13,7 +13,7 @@ export const RowContainer = styled.div`
     margin: 1.5rem;
     box-shadow: ${props => props.theme.cardShadow};
     /* align-items: center; */
-    overflow-y: scroll;
+    /* overflow-y: scroll; */
 `
 
 export const ProcessName = styled.h3`
