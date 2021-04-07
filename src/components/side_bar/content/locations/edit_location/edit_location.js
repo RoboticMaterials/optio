@@ -467,7 +467,6 @@ const EditLocation = (props) => {
                                             'marginTop': '0',
                                         }}
                                     />
-                                </div>
 
                                 <TextField
                                     name={"locationName"}
