@@ -30,6 +30,12 @@ import pytz
 # set time zone
 tz = pytz.timezone('America/Denver')
 
+# create dynamo class
+dynamodb = boto3.resource('dynamodb', region_name=os.environ['REGION'])
+
+# table def parameters of events for stations
+table = dynamodb.Table(os.environ['API_RMSTUDIOCLOUD_STATIONEVENTTABLE_NAME'])
+
 def handler(event, context):
 
     # define varibles coming from putside this function
@@ -44,11 +50,9 @@ def handler(event, context):
 
     station_id = arguments['station_id']
 
-    events_data = get_events_data(env, arguments)
-
     output = False
 
-    calculated_data = get_stats(station_id, info, events_data, output)
+    calculated_data = get_stats(station_id, info,  output)
 
     return {
         'date': calculated_data['date_title'],
@@ -57,41 +61,33 @@ def handler(event, context):
         'throughPut': calculated_data['throughPut']
     }
 
-def get_events_data(env, arguments):
-     # query the tables
-    dynamodb = boto3.resource('dynamodb', region_name=env['REGION'])
-
-    # station query
-    table = dynamodb.Table(env['API_RMSTUDIOCLOUD_STATIONEVENTTABLE_NAME'])
-
-
-    station_events_response = table.scan(
-        FilterExpression=Key('station').eq(arguments['station_id'])
-    )
-
-    return station_events_response['Items']
-
 # Analytics functions
-def get_stats(station_id, info, events_data, output=False):
+def get_stats(station_id, info,  output=False):
 
     data = {}
 
     if info['timespan'] == 'day':
-        data['throughPut'], data['date_title'] = calc_day_stats(station_id, events_data, index=info['index'], output=output)
+        data['throughPut'], data['date_title'] = calc_day_stats(station_id,  index=info['index'], output=output)
     elif info['timespan'] == 'line':
-        data['throughPut'], data['date_title'] = calc_day_line_stats(station_id, events_data, index=info['index'])
+        data['throughPut'], data['date_title'] = calc_day_line_stats(station_id,  index=info['index'])
     elif info['timespan'] == 'week':
-        data['throughPut'], data['date_title'] = calc_week_stats(station_id, events_data, index=info['index'], output=output)
+        data['throughPut'], data['date_title'] = calc_week_stats(station_id,  index=info['index'], output=output)
     elif info['timespan'] == 'month':
-        data['throughPut'], data['date_title'] = calc_6_week_stats(station_id, events_data, index=info['index'], output=output)
+        data['throughPut'], data['date_title'] = calc_6_week_stats(station_id,  index=info['index'], output=output)
     else:
-        data['throughPut'], data['date_title'] = calc_year_stats(station_id, events_data, index=info['index'], output=output)
+        data['throughPut'], data['date_title'] = calc_year_stats(station_id,  index=info['index'], output=output)
     
     return data
 
-def create_data(station_id, start_utc, end_utc, labels, output=False, events_data=[]):
+def create_data(station_id, start_utc, end_utc, labels, output=False):
     # Create bins for data
     bins = np.linspace(start_utc, end_utc, len(labels)+1)
+
+    station_events_response = table.scan(
+        FilterExpression=Key('station').eq(station_id)
+    )
+
+    events_data = station_events_response['Items']
 
     # Fetch data
     # TODO only fetch data from time frame to make scalable
@@ -134,7 +130,7 @@ def create_data(station_id, start_utc, end_utc, labels, output=False, events_dat
         
     return rtn_data
 
-def calc_day_stats(station_id, events_data, index, output=False):
+def calc_day_stats(station_id,  index, output=False):
     current_dt = datetime.datetime.now(tz)
     start_of_today = current_dt.replace(hour=0, minute=0, second=0, microsecond=0)
     start_of_time_frame = start_of_today + datetime.timedelta(days=-index, hours=0, minutes=0, seconds=0, microseconds=0)
@@ -159,18 +155,22 @@ def calc_day_stats(station_id, events_data, index, output=False):
 
 
 
-    rtn_data = create_data(station_id, start_utc, end_utc, labels, output=output, events_data=events_data)
+    rtn_data = create_data(station_id, start_utc, end_utc, labels, output=output)
     
     return rtn_data, date_title
 
-def calc_day_line_stats(station_id, events_data, index=0):
-    # Get station info
-    # station = db.stations.find_one({'_id':station_id})
+def calc_day_line_stats(station_id, index=0):
+    # scan and filter data
+    station_events_response = table.scan(
+        FilterExpression=Key('station').eq(station_id)
+    )
+
+    # Pull data out
+    events_data = station_events_response['Items']
 
     # Get station events
     events = list(events_data)
     num_of_events = len(events)
-#     print('Number of events:', num_of_events)
     
     # Split list to outgoing events
     outgoing_events = []
@@ -196,7 +196,7 @@ def calc_day_line_stats(station_id, events_data, index=0):
     return rtn_data, date_title
 
 
-def calc_week_stats(station_id, events_data, index, output=False):
+def calc_week_stats(station_id, index, output=False):
     current_dt = datetime.datetime.now(tz)
     start_of_today = current_dt.replace(hour=0, minute=0, second=0, microsecond=0)
     start_of_week = start_of_today + datetime.timedelta(days=-start_of_today.weekday())
@@ -215,12 +215,12 @@ def calc_week_stats(station_id, events_data, index, output=False):
         print('End', end_of_time_frame)
         print('Title', date_title)
 
-    rtn_data = create_data(station_id, start_utc, end_utc, labels, output=output, events_data=events_data)
+    rtn_data = create_data(station_id, start_utc, end_utc, labels, output=output)
     
     return rtn_data, date_title
 
 
-def calc_6_week_stats(station_id, events_data, index=0, output=False):
+def calc_6_week_stats(station_id, index=0, output=False):
     current_dt = datetime.datetime.now(tz)
     start_of_today = current_dt.replace(hour=0, minute=0, second=0, microsecond=0)
     start_of_6_weeks = start_of_today + datetime.timedelta(weeks=-5, days=-start_of_today.weekday())
@@ -246,11 +246,11 @@ def calc_6_week_stats(station_id, events_data, index=0, output=False):
         print('End', end_of_time_frame)
         print('Title', date_title)
 
-    rtn_data = create_data(station_id, start_utc, end_utc, labels, output=output, events_data=events_data)
+    rtn_data = create_data(station_id, start_utc, end_utc, labels, output=output)
     
     return rtn_data, date_title
 
-def calc_year_stats(station_id, events_data, index=0, output=False):
+def calc_year_stats(station_id, index=0, output=False):
     year = datetime.datetime.now(tz).year - index
     date_title = year
 
@@ -268,6 +268,6 @@ def calc_year_stats(station_id, events_data, index=0, output=False):
         print('End', end_of_time_frame)
         print('Title', date_title)
 
-    rtn_data = create_data(station_id, start_utc, end_utc, labels, output=output, events_data=events_data)
+    rtn_data = create_data(station_id, start_utc, end_utc, labels, output=output)
     
     return rtn_data, date_title
