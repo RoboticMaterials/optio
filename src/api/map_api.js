@@ -25,8 +25,6 @@ export async function getMaps() {
     const data = response.data;
     const dataJson = JSON.parse(data);
 
-    console.log("get maps dataJson",dataJson)
-    console.log("get maps apiIPAddress",apiIPAddress())
     return dataJson;
 
 

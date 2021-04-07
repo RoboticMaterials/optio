@@ -10,6 +10,7 @@ import getUserOrgId from './user_api'
 import { processesByOrgId } from '../graphql/queries';
 import { createProcess, updateProcess } from '../graphql/mutations';
 import { deleteProcess as deleteProcessByID } from '../graphql/mutations';
+import errorLog from "./errorLogging";
 
 export async function getProcesses() {
   try {
@@ -31,33 +32,13 @@ export async function getProcesses() {
         GQLdata.push( {
           ...process,
           routes: JSON.parse(process.routes),
+          broken: JSON.parse(process.broken),
         })
     });
 
     return GQLdata;
   } catch (error) {
-    // Error 😨
-    if (error.response) {
-      /*
-       * The request was made and the server responded with a
-       * status code that falls out of the range of 2xx
-       */
-
-      log.debug("error.response.data", error.response.data);
-      log.debug("error.response.status", error.response.status);
-      log.debug("error.response.headers", error.response.headers);
-    } else if (error.request) {
-      /*
-       * The request was made but no response was received, `error.request`
-       * is an instance of XMLHttpRequest in the browser and an instance
-       * of http.ClientRequest in Node.js
-       */
-      log.debug("error.request", error.request);
-    } else {
-      // Something happened in setting up the request and triggered an Error
-      log.debug("error.message", error.message);
-    }
-    log.debug("error", error);
+    errorLog(error)
   }
 }
 
@@ -71,27 +52,7 @@ export async function deleteProcess(ID) {
 
     return 'All Deleted';
   } catch (error) {
-    // Error 😨
-    if (error.response) {
-      /*
-       * The request was made and the server responded with a
-       * status code that falls out of the range of 2xx
-       */
-      log.debug("error.response.data", error.response.data);
-      log.debug("error.response.status", error.response.status);
-      log.debug("error.response.headers", error.response.headers);
-    } else if (error.request) {
-      /*
-       * The request was made but no response was received, `error.request`
-       * is an instance of XMLHttpRequest in the browser and an instance
-       * of http.ClientRequest in Node.js
-       */
-      log.debug("error.request", error.request);
-    } else {
-      // Something happened in setting up the request and triggered an Error
-      log.debug("error.message", error.message);
-    }
-    log.debug("error", error);
+    errorLog(error)
   }
 }
 
@@ -105,7 +66,8 @@ export async function postProcesses(process) {
       ...process,
       organizationId: userOrgId,
       id: process.id,
-      routes: JSON.stringify(process.routes)
+      routes: JSON.stringify(process.routes),
+      broken: JSON.stringify(process.broken),
     }
   
     delete input.neame
@@ -117,45 +79,27 @@ export async function postProcesses(process) {
 
     dataJSON = {
       ...dataJSON.data.createProcess,
-      routes: JSON.parse(dataJSON.data.createProcess.routes)
+      routes: JSON.parse(dataJSON.data.createProcess.routes),
+      broken: JSON.parse(dataJSON.data.createProcess.broken),
     }
 
     return dataJSON;
   } catch (error) {
-    // Error 😨
-    if (error.response) {
-      /*
-       * The request was made and the server responded with a
-       * status code that falls out of the range of 2xx
-       */
-      log.debug("error.response.data", error.response.data);
-      log.debug("error.response.status", error.response.status);
-      log.debug("error.response.headers", error.response.headers);
-    } else if (error.request) {
-      /*
-       * The request was made but no response was received, `error.request`
-       * is an instance of XMLHttpRequest in the browser and an instance
-       * of http.ClientRequest in Node.js
-       */
-      log.debug("error.request", error.request);
-    } else {
-      // Something happened in setting up the request and triggered an Error
-      log.debug("error.message", error.message);
-    }
-    log.debug("error", error);
+    errorLog(error)
   }
 }
 
 export async function putProcesses(process, ID) {
   try {
     let input = process
-   
+
     input = {
       ...process,
       id: process.id,
-      routes: JSON.stringify(process.routes)
+      routes: JSON.stringify(process.routes),
+      broken: JSON.stringify(process.broken),
     }
-  
+
     let dataJSON = await API.graphql({
       query: updateProcess,
       variables: { input: input }
@@ -163,31 +107,12 @@ export async function putProcesses(process, ID) {
 
     dataJSON = {
         ...dataJSON.data.updateProcess,
-        routes: JSON.parse(dataJSON.data.updateProcess.routes)
-    }  
+        routes: JSON.parse(dataJSON.data.updateProcess.routes),
+        broken: JSON.parse(dataJSON.data.updateProcess.broken),
+    }
 
     return dataJSON;
   } catch (error) {
-    // Error 😨
-    if (error.response) {
-      /*
-       * The request was made and the server responded with a
-       * status code that falls out of the range of 2xx
-       */
-      log.debug("error.response.data", error.response.data);
-      log.debug("error.response.status", error.response.status);
-      log.debug("error.response.headers", error.response.headers);
-    } else if (error.request) {
-      /*
-       * The request was made but no response was received, `error.request`
-       * is an instance of XMLHttpRequest in the browser and an instance
-       * of http.ClientRequest in Node.js
-       */
-      log.debug("error.request", error.request);
-    } else {
-      // Something happened in setting up the request and triggered an Error
-      log.debug("error.message", error.message);
-    }
-    log.debug("error", error);
+    errorLog(error)
   }
 }

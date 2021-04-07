@@ -100,7 +100,7 @@ const Column = ((props) => {
 	const shouldAcceptDrop = (sourceContainerOptions, payload) => {
 		const {
 			binId,
-			cardId,
+			id: cardId,
 			processId: oldProcessId,
 			...remainingPayload
 		} = payload
@@ -121,7 +121,7 @@ const Column = ((props) => {
 	const getSelectedIndex = (lotId, binId) => {
 		return selectedCards.findIndex((currLot) => {
 			const {
-				cardId: currLotId,
+				id: currLotId,
 				binId: currBinId
 			} = currLot
 
@@ -158,7 +158,7 @@ const Column = ((props) => {
 	const getIsLastSelected = (lotId) => {
 		const lastSelected = getLastSelected() || {}
 		const {
-			cardId: currLotId,
+			id: currLotId,
 		} = lastSelected
 
 		return lotId === currLotId
@@ -167,12 +167,12 @@ const Column = ((props) => {
 	const getBetweenSelected = (lotId) => {
 		const lastSelected = getLastSelected() || {}
 		const {
-			cardId: lastSelectedLotId,
+			id: lastSelectedLotId,
 		} = lastSelected
 
 		const selectedIndex = cards.findIndex((currLot) => {
 			const {
-				cardId: currLotId,
+				id: currLotId,
 				binId: currBinId
 			} = currLot
 
@@ -181,7 +181,7 @@ const Column = ((props) => {
 
 		const existingIndex = cards.findIndex((currLot) => {
 			const {
-				cardId: currLotId,
+				id: currLotId,
 				binId: currBinId
 			} = currLot
 
@@ -313,7 +313,7 @@ const Column = ((props) => {
 						if(isSource) {
 							const {
 								binId,
-								cardId
+								id: cardId
 							} = payload
 
 							dispatchSetDraggingLotId(cardId)

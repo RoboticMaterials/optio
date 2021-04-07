@@ -130,7 +130,7 @@ type Process
   
   # Data
   name: String!
-  broken: Int
+  broken: AWSJSON!
   routes: AWSJSON!
   mapId: String
 }

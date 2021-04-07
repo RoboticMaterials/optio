@@ -31,8 +31,6 @@ import * as _ from 'lodash'
 
 export async function getCards() {
     try {
-
-        console.log("get shit")
         const userOrgId = await getUserOrgId()
 
         const res = await API.graphql({
@@ -50,8 +48,6 @@ export async function getCards() {
                 flags: JSON.parse(card.flags)
             })
         });
-
-        console.log("get cards ", GQLdata)
 
         return GQLdata;
     } catch (error) {

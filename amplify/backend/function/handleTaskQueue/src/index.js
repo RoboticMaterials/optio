@@ -32,21 +32,25 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 exports.handler = async (event) => {
 	try {
 
-		const taskQueueItem = JSON.parse(event.arguments.taskQueueItem)
+		console.log("handleerrrrr event" ,event)
+		console.log("handleerrrrr event.arguments.taskQueueItem" ,event.arguments.taskQueueItem)
+
+
+		const taskQueueItem = event.arguments.taskQueueItem
 		
 		console.log(taskQueueItem )
 
 		const taskParams = {
 			TableName: tableNames.task,
 			Key: {
-				'id': taskQueueItem.task_id ? taskQueueItem.task_id : ''
+				'id': taskQueueItem.taskId ? taskQueueItem.taskId : ''
 			}
 		};
 
 		const lotParams = {
 			TableName: tableNames.lots,
 			Key: {
-				'id': taskQueueItem.lot_id
+				'id': taskQueueItem.lotId
 			}
 		};
 		
@@ -55,7 +59,7 @@ exports.handler = async (event) => {
 		
 		let lot = null
 
-		if(taskQueueItem.lot_id){
+		if(taskQueueItem.lotId){
 			lot = await docClient.get(lotParams).promise();
 			lot = lot.Item
 		}

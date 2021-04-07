@@ -118,7 +118,7 @@ const MoveMultipleLotsModal = (props) => {
 
 				{lotsToRender.map((currItem) => {
 					const {
-						cardId = "",
+						id: cardId = "",
 						processId = "",
 						binId = ""
 					} = currItem || {}
@@ -164,7 +164,7 @@ const MoveMultipleLotsModal = (props) => {
 			let index = 0
 			for(const currItem of lotsToRender) {
 				const {
-					cardId = "",
+					id: cardId = "",
 					binId = ""
 				} = currItem || {}
 

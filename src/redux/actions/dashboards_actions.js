@@ -238,9 +238,6 @@ export const addRouteToDashboards = (route) => {
         const station = stations[stationId] || getDefaultStation()
         const dashboard = dashboards[station.dashboards[0]]
 
-        console.log("dashboard",dashboard)
-        console.log("station",station)
-
         const newDashboardButton = {
             color: '#bcbcbc',
             id: uuid.v4(),
