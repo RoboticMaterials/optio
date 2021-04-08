@@ -37,7 +37,8 @@ const NewButtonForm = (props) => {
     const {
         cancel,
         dashboard,
-        buttonId,
+        dashboardButtonId,
+        reportButtonId,
         editing
     } = props
 
@@ -47,7 +48,7 @@ const NewButtonForm = (props) => {
     const dispatch = useDispatch()
     const dispatchPutDashboard = (dashboardCopy, dashboardId) => dispatch(putDashboard(dashboardCopy, dashboardId))
 
-    const editingButton = report_buttons.find((currButton) => currButton._id === buttonId)
+    const editingButton = report_buttons.find((currButton) => currButton._id === reportButtonId)
     const _id = editingButton?._id
     const description = editingButton?.description
     const iconClassName = editingButton?.iconClassName
@@ -81,6 +82,7 @@ const NewButtonForm = (props) => {
                                 description,
                                 iconClassName,
                                 color,
+                                dashboardButtonId,
                                 label
                             }
                         }
@@ -106,6 +108,7 @@ const NewButtonForm = (props) => {
                             description,
                             iconClassName,
                             color,
+                            dashboardButtonId,
                             label
                         }
                     ]
@@ -351,7 +354,8 @@ const ReportModal = (props) => {
         title,
         close,
         dashboard,
-        onSubmit
+        onSubmit,
+        dashboardButtonId
     } = props
 
     // get current buttons, default to empty array
@@ -368,7 +372,7 @@ const ReportModal = (props) => {
     const [addingNew, setAddingNew] = useState(false) // edit button form
     const [editing, setEditing] = useState(noButtons)  // default editing to true if there are currently no buttons
     const [sending, setSending] = useState(false) // sending report
-    const [buttonId, setButtonId] = useState(null) // button being edited
+    const [reportButtonId, setReportButtonId] = useState(null) // button being edited
     const [submitting, setSubmitting] = useState(false)
 
     const reportEvents = useSelector(state => { return state.reportEventsReducer.reportEvents })
@@ -442,10 +446,11 @@ const ReportModal = (props) => {
                         cancel={() => {
                             setAddingNew(false)
                             setSending(false)
-                            setButtonId(null)
+                            setReportButtonId(null)
                         }}
                         dashboard={dashboard}
-                        buttonId={buttonId}
+                        dashboardButtonId={dashboardButtonId}
+                        reportButtonId={reportButtonId}
                         editing={editing}
                     />
                     :
@@ -469,7 +474,15 @@ const ReportModal = (props) => {
                             {!noButtons &&
                                 <styled.ReportButtonsContainer>
 
-                                    {report_buttons.map((currReportButton, ind) => {
+                                    {report_buttons
+                                        .filter((currReportButton) => {
+                                            const {
+                                                dashboardButtonId: reportButtonDashboardButtonId
+                                            } = currReportButton || {}
+
+                                            return dashboardButtonId === reportButtonDashboardButtonId
+                                        })
+                                        .map((currReportButton, ind) => {
 
                                         const description = currReportButton?.description || ""
                                         const label = currReportButton?.label
@@ -486,7 +499,7 @@ const ReportModal = (props) => {
                                                 onClick={() => {
                                                     if (editing) {
                                                         setAddingNew(true)
-                                                        setButtonId(_id)
+                                                        setReportButtonId(_id)
                                                     }
                                                     else {
                                                         // setSending(true)
