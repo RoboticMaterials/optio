@@ -10,8 +10,10 @@ import NumberField from "../../../../../basic/form/number_field/number_field";
 import {isArray} from "../../../../../../methods/utils/array_utils";
 import {jsDateToObjDate, jsDateToString} from "../../../../../../methods/utils/card_utils";
 import {FIELD_COMPONENT_NAMES} from "../../../../../../constants/lot_contants";
-import {CALENDAR_FIELD_MODES} from "../../../../../basic/form/calendar_field/calendar_field";
+import CalendarField, {CALENDAR_FIELD_MODES} from "../../../../../basic/form/calendar_field/calendar_field";
 import { LightenDarkenColor } from '../../../../../../methods/utils/color_utils'
+import Calendar from "../../../../../basic/calendar/calendar";
+import CalendarButtonField from "../../../../../basic/form/calendar_button_field/calendar_button_field";
 
 const FieldComponentMapper = (props) => {
 	const {
@@ -162,41 +164,25 @@ const FieldComponentMapper = (props) => {
 						:
 						fieldName && <styled.Label>{fieldName}:</styled.Label>
 					}
+
+					{preview ?
 						<CalendarPlaceholder
 							usable={usable}
 							containerStyle={{width: "8rem", cursor: 'default', userSelect: 'none'}}
-							calendarContent={props.calendarContent}
-							setShowCalendarPopup={props.setShowCalendarPopup}
-							showCalendarPopup={props.showCalendarPopup}
-							onClick={() => {return onCalendarClick(CALENDAR_FIELD_MODES.SINGLE)}}
-							text={dateText ? dateText : "Select Date"}
 						/>
+						:
+						<CalendarButtonField
+							name={fieldName}
+							usable={usable}
+							containerStyle={{width: "8rem", cursor: 'default', userSelect: 'none'}}
+						/>
+					}
+
 
 				</styled.Container>
 			)
 		}
 		case FIELD_COMPONENT_NAMES.CALENDAR_START_END: {
-			let startDate, endDate
-			if(isArray(value) && value.length > 0) {
-				startDate = jsDateToObjDate(value[0])
-
-				if(value.length > 1) {
-					endDate = jsDateToObjDate(value[1])
-				}
-
-			}
-
-			const {
-				year: startYear,
-				month: startMonth,
-				day: startDay
-			} = startDate || {}
-			const {
-				year: endYear,
-				month: endMonth,
-				day: endDay
-			} = endDate || {}
-
 			return(
 				<styled.Container
 					style={{
@@ -210,17 +196,20 @@ const FieldComponentMapper = (props) => {
 						:
 						fieldName && <styled.Label>{fieldName}:</styled.Label>
 					}
-						<CalendarPlaceholder
+
+					{preview ?
+					<CalendarPlaceholder
+						usable={usable}
+						selectRange={true}
+					/>
+						:
+						<CalendarButtonField
+							name={fieldName}
 							usable={usable}
-							calendarContent={props.calendarContent}
-							setShowCalendarPopup={props.setShowCalendarPopup}
-							showCalendarPopup={props.showCalendarPopup}
 							selectRange={true}
-							startText={(startDay && startMonth && startYear) ? `${startMonth}/${startDay}/${startYear}` : "Select Start Date"}
-							endText={(endDay && endMonth && endYear) ? `${endMonth}/${endDay}/${endYear}` : "Select End Date"}
-							onEndClick={() => onCalendarClick(CALENDAR_FIELD_MODES.END)}
-							onStartClick={() => onCalendarClick(CALENDAR_FIELD_MODES.START)}
 						/>
+					}
+
 
 				</styled.Container>
 			)

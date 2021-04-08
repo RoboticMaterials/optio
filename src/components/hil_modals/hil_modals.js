@@ -1037,6 +1037,7 @@ const HILModals = (props) => {
                     </styled.HeaderMainContent>
 
                     <SortFilterContainer
+                        lotFilterValue={lotFilterValue}
                         sortMode={sortMode}
                         setSortMode={setSortMode}
                         sortDirection={sortDirection}
