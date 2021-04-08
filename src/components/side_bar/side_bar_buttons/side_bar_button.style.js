@@ -3,8 +3,8 @@ import { hexToRGBA, LightenDarkenColor } from '../../../methods/utils/color_util
 
 export const SideBarButtonWrapper = styled.div`
 
-    // background-color: ${props => props.mode==props.currentMode && props.theme.bg.primary};
-    // box-shadow: ${props => props.mode==props.currentMode && '0px 5px 15px 8px rgba(0,0,0,0.05)'};
+    // background-color: ${props => props.mode == props.currentMode && props.theme.bg.primary};
+    // box-shadow: ${props => props.mode == props.currentMode && '0px 5px 15px 8px rgba(0,0,0,0.05)'};
 
     width: 5rem;
     height: 5rem;
@@ -21,22 +21,28 @@ export const SideBarButtonIcon = styled.i`
     flex-direction:column;
     align-items: center;
 
-    
-
+    /* THIS METHOD OF USING GRADIENTS DOES NOT WORK ON SAFARI */
     // You cant stack a color on a gradient, but you CAN stack a gradient on a gradient
-    background: ${props => props.mode==props.currentMode ? 
-        props.theme.schema[props.mode].gradient 
-        : 
+    /* background: ${props => props.mode == props.currentMode ?
+        props.theme.schema[props.mode].solid
+        :
         props.theme.bg.quaternary};
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-text-fill-color: transparent; */
+
+
+    color: ${props => props.mode == props.currentMode ?
+        props.theme.schema[props.mode].solid
+        :
+        props.theme.bg.quaternary};;
 
     transition: color 0.15s ease;
 
     &:hover{
-        background: ${props => `linear-gradient(rgba(255,255,255,0.2),rgba(255,255,255,0.2)), `+props.theme.schema[props.mode].gradient};
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        /* background: ${props => `linear-gradient(rgba(255,255,255,0.2),rgba(255,255,255,0.2)), ` + props.theme.schema[props.mode].gradient}; */
+        /* -webkit-background-clip: text; */
+        /* -webkit-text-fill-color: transparent; */
+        color:${props => props.theme.schema[props.mode].solid};
     }
 
     @media (max-width: ${props => props.theme.widthBreakpoint.tablet}){
