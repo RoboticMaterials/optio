@@ -245,7 +245,8 @@ const ProcessForm = (props) => {
 					setTouched,
 					resetForm,
 					setFieldValue,
-					touched
+					touched,
+					initialValues
 				} = formikProps
 
 				if(Object.keys(touched).length!==0 && !editing){
@@ -271,6 +272,7 @@ const ProcessForm = (props) => {
 						onDelete={handleDelete}
 						formikProps={formikProps}
 						toggleEditingProcess={toggleEditingProcess}
+						initialValues = {initialValues}
 					/>
 				)
 			}}

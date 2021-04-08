@@ -61,6 +61,7 @@ export const ProcessField = (props) => {
     const {
         errors,
         values,
+        initialValues,
         touched,
         isSubmitting,
         setFieldValue,
@@ -197,7 +198,6 @@ export const ProcessField = (props) => {
             setFieldValue("broken", isBrokenProcess(updatedRoutes))
             setEditingTask(false)
         }
-
         // not a new route
         else {
             // get data for route being edited
@@ -313,10 +313,15 @@ export const ProcessField = (props) => {
         // clear newRoute and selectedTask
         setFieldValue("newRoute", null)
         await dispatchSetSelectedTask(null)
-        setEditingTask(false)
+         setEditingTask(false)
 
         // run validation
         validateForm()
+    }
+
+    const handleOnBackRouteReset = ()=> {
+      let updatedRoutes = [...initialValues.routes]
+      setFieldValue("routes", updatedRoutes)
     }
 
     const handleDeleteRoute = async (routeId) => {
@@ -391,7 +396,6 @@ export const ProcessField = (props) => {
 
     // Maps through the list of existing routes
     const renderRoutes = (routes) => {
-
         return routes.filter((currRoute, currIndex) => {
 
             if (currRoute === undefined) {
@@ -689,7 +693,10 @@ export const ProcessField = (props) => {
                             isNew={editingTask === "newRoute"}
                             onRemove={handleRemoveRoute}
                             onDelete={handleDeleteRoute}
-                            onBackClick={handleTaskBack}
+                            onBackClick={()=>{
+                              handleTaskBack()
+                              handleOnBackRouteReset()
+                            }}
                             onSave={handleAddTask}
                             fieldParent={editingTask}
                             shift={shift}
