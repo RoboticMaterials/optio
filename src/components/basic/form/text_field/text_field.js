@@ -59,7 +59,11 @@ const TextField = ({
     const hasError = touched && error
     const hasWarning = touched && warning
 
-
+    useEffect(() => {
+        return ()=> {
+          dispatchPageDataChanged(false)
+        }
+    }, [])
 
     useChange(setFieldValue)
 
