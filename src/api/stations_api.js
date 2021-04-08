@@ -66,8 +66,6 @@ export async function deleteStation(ID) {
         const data = response.data;
         const dataJson = JSON.parse(data)
 
-        console.log(dataJson)
-
         return dataJson
 
     } catch (error) {

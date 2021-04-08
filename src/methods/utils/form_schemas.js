@@ -242,10 +242,15 @@ Yup.addMethod(Yup.object, "dopeUnique", function (message, fieldPath, pathToArr)
 
         var index = path.match(rx);
         let megaIndex = 0
-        index.forEach((currItem) => {
+        const last = index.pop()
 
-            megaIndex = megaIndex + parseInt(currItem.replace(reg2,''))
+        index.forEach((currItem) => {
+            const parsedIndex = parseInt(currItem.replace(reg2,''))
+            for(let i = 0; i < parsedIndex; i++) {
+                megaIndex = megaIndex + arr[i].length
+            }
         })
+        megaIndex = megaIndex + parseInt(last.replace(reg2,''))
 
         let compareItem
         if (mapper) compareItem = mapper(item)
@@ -254,6 +259,7 @@ Yup.addMethod(Yup.object, "dopeUnique", function (message, fieldPath, pathToArr)
         let isUnique = true
 
         let currIndex = 0
+
         for (const currItem of arr.flat()) {
             if (parseInt(currIndex) !== parseInt(megaIndex)) {
                 if (mapper) {

@@ -469,23 +469,6 @@ const EditLocation = (props) => {
                                         }}
                                     />
 
-                                <TextField
-                                    name={"locationName"}
-                                    changed={() => handlePageDataChange()}
-                                    textStyle={{ fontWeight: 'Bold', 'fontSize': '3rem' }}
-                                    placeholder='Enter Location Name'
-                                    type='text'
-                                    label='Location Name'
-                                    schema='locations'
-                                    InputComponent={Textbox}
-                                    style={{
-                                        'fontSize': '1.2rem',
-                                        'fontWeight': '600',
-                                        'marginBottom': '.5rem',
-                                        'marginTop': '0',
-                                    }}
-                                />
-
                                 {/* Location Type */}
                                 <styled.DefaultTypesContainer>
 
