@@ -204,7 +204,9 @@
           ]
         },
         "Runtime": "python3.8",
-        "Layers": [],
+        "Layers": [
+          "arn:aws:lambda:us-east-2:571361296658:layer:stats-layer:1"
+        ],
         "Timeout": "25"
       }
     },

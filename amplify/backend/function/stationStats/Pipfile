@@ -4,11 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-boto3 = "*"
-pandas = "*"
-numpy = "*"
-datetime = "*"
-pytz = "*"
 
 [dev-packages]
 

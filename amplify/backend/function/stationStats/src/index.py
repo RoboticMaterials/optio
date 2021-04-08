@@ -62,7 +62,7 @@ def handler(event, context):
     }
 
 # Analytics functions
-def get_stats(station_id, info,  output=False):
+def get_stats(station_id, info, output=False):
 
     data = {}
 
@@ -97,15 +97,11 @@ def create_data(station_id, start_utc, end_utc, labels, output=False):
     df.time = df.time.astype(float)
 
     if len(df) > 0:
-        df = df.set_index('time')
 
-        print(df)
-        print(start_utc)
+        df = df.set_index('time')
 
         # Crop data
         df = df[start_utc : end_utc]
-
-        
 
         # Find unique ids
         unique_ids = df[start_utc : end_utc]['object'].unique()
@@ -118,12 +114,9 @@ def create_data(station_id, start_utc, end_utc, labels, output=False):
             else:
                 df_1 = df[df['object'] == object_id]
 
-            
             times = df_1.index.repeat(df_1['quantity'])
             data, edges = np.histogram(times, bins)
             data_dict[object_id] = data
-
-            print(times)
             
             # Output graph
             if len(times) > -1 and output:
@@ -168,8 +161,6 @@ def calc_day_stats(station_id,  index, output=False):
         print('End', end_of_time_frame)
         print('Title', date_title)
 
-
-
     rtn_data = create_data(station_id, start_utc, end_utc, labels, output=output)
 
     return rtn_data, date_title
@@ -186,7 +177,6 @@ def calc_day_line_stats(station_id, index=0):
     # Get station events
     events = list(events_data)
 
-    print(events)
     num_of_events = len(events)
     
     # Split list to outgoing events
