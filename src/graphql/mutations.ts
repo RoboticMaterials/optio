@@ -27,8 +27,8 @@ export const manageTaskQueue = /* GraphQL */ `
   }
 `;
 export const taskStats = /* GraphQL */ `
-  mutation TaskStats($task_id: ID, $organizationId: String!) {
-    taskStats(task_id: $task_id, organizationId: $organizationId) {
+  mutation TaskStats($taskId: ID, $organizationId: String!) {
+    taskStats(taskId: $taskId, organizationId: $organizationId) {
       id
       organizationId
       createdAt
@@ -52,13 +52,13 @@ export const taskStats = /* GraphQL */ `
 `;
 export const stationStats = /* GraphQL */ `
   mutation StationStats(
-    $station_id: ID!
+    $stationId: ID!
     $timeSpan: String!
     $index: Int!
     $sortKey: String
   ) {
     stationStats(
-      station_id: $station_id
+      stationId: $stationId
       timeSpan: $timeSpan
       index: $index
       sortKey: $sortKey
@@ -1015,12 +1015,12 @@ export const deleteTaskQueue = /* GraphQL */ `
     }
   }
 `;
-export const createTaskQueueEvents = /* GraphQL */ `
-  mutation CreateTaskQueueEvents(
-    $input: CreateTaskQueueEventsInput!
-    $condition: ModelTaskQueueEventsConditionInput
+export const createTaskQueueEventsTaskQueueEvents = /* GraphQL */ `
+  mutation CreateTaskQueueEventsTaskQueueEvents(
+    $input: CreateTaskQueueEventsTaskQueueEventsInput!
+    $condition: ModelTaskQueueEventsTaskQueueEventsConditionInput
   ) {
-    createTaskQueueEvents(input: $input, condition: $condition) {
+    createTaskQueueEventsTaskQueueEvents(input: $input, condition: $condition) {
       id
       organizationId
       createdAt
@@ -1042,12 +1042,12 @@ export const createTaskQueueEvents = /* GraphQL */ `
     }
   }
 `;
-export const updateTaskQueueEvents = /* GraphQL */ `
-  mutation UpdateTaskQueueEvents(
-    $input: UpdateTaskQueueEventsInput!
-    $condition: ModelTaskQueueEventsConditionInput
+export const updateTaskQueueEventsTaskQueueEvents = /* GraphQL */ `
+  mutation UpdateTaskQueueEventsTaskQueueEvents(
+    $input: UpdateTaskQueueEventsTaskQueueEventsInput!
+    $condition: ModelTaskQueueEventsTaskQueueEventsConditionInput
   ) {
-    updateTaskQueueEvents(input: $input, condition: $condition) {
+    updateTaskQueueEventsTaskQueueEvents(input: $input, condition: $condition) {
       id
       organizationId
       createdAt
@@ -1069,12 +1069,12 @@ export const updateTaskQueueEvents = /* GraphQL */ `
     }
   }
 `;
-export const deleteTaskQueueEvents = /* GraphQL */ `
-  mutation DeleteTaskQueueEvents(
-    $input: DeleteTaskQueueEventsInput!
-    $condition: ModelTaskQueueEventsConditionInput
+export const deleteTaskQueueEventsTaskQueueEvents = /* GraphQL */ `
+  mutation DeleteTaskQueueEventsTaskQueueEvents(
+    $input: DeleteTaskQueueEventsTaskQueueEventsInput!
+    $condition: ModelTaskQueueEventsTaskQueueEventsConditionInput
   ) {
-    deleteTaskQueueEvents(input: $input, condition: $condition) {
+    deleteTaskQueueEventsTaskQueueEvents(input: $input, condition: $condition) {
       id
       organizationId
       createdAt

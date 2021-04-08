@@ -1063,7 +1063,7 @@ export type DeleteTaskQueueInput = {
   id?: string | null,
 };
 
-export type CreateTaskQueueEventsInput = {
+export type CreateTaskQueueEventsTaskQueueEventsInput = {
   id?: string | null,
   organizationId: string,
   createdAt?: string | null,
@@ -1084,7 +1084,7 @@ export type CreateTaskQueueEventsInput = {
   hil_message?: string | null,
 };
 
-export type ModelTaskQueueEventsConditionInput = {
+export type ModelTaskQueueEventsTaskQueueEventsConditionInput = {
   organizationId?: ModelIDInput | null,
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
@@ -1102,13 +1102,13 @@ export type ModelTaskQueueEventsConditionInput = {
   end_time?: ModelIntInput | null,
   hil_station_id?: ModelStringInput | null,
   hil_message?: ModelStringInput | null,
-  and?: Array< ModelTaskQueueEventsConditionInput | null > | null,
-  or?: Array< ModelTaskQueueEventsConditionInput | null > | null,
-  not?: ModelTaskQueueEventsConditionInput | null,
+  and?: Array< ModelTaskQueueEventsTaskQueueEventsConditionInput | null > | null,
+  or?: Array< ModelTaskQueueEventsTaskQueueEventsConditionInput | null > | null,
+  not?: ModelTaskQueueEventsTaskQueueEventsConditionInput | null,
 };
 
-export type TaskQueueEvents = {
-  __typename: "TaskQueueEvents",
+export type TaskQueueEventsTaskQueueEvents = {
+  __typename: "TaskQueueEventsTaskQueueEvents",
   id?: string,
   organizationId?: string,
   createdAt?: string | null,
@@ -1129,7 +1129,7 @@ export type TaskQueueEvents = {
   hil_message?: string | null,
 };
 
-export type UpdateTaskQueueEventsInput = {
+export type UpdateTaskQueueEventsTaskQueueEventsInput = {
   id: string,
   organizationId?: string | null,
   createdAt?: string | null,
@@ -1150,7 +1150,7 @@ export type UpdateTaskQueueEventsInput = {
   hil_message?: string | null,
 };
 
-export type DeleteTaskQueueEventsInput = {
+export type DeleteTaskQueueEventsTaskQueueEventsInput = {
   id?: string | null,
 };
 
@@ -1587,7 +1587,7 @@ export type ManageTaskQueueMutation = {
 };
 
 export type TaskStatsMutationVariables = {
-  task_id?: string | null,
+  taskId?: string | null,
   organizationId?: string,
 };
 
@@ -1616,7 +1616,7 @@ export type TaskStatsMutation = {
 };
 
 export type StationStatsMutationVariables = {
-  station_id?: string,
+  stationId?: string,
   timeSpan?: string,
   index?: number,
   sortKey?: string | null,
@@ -2673,14 +2673,14 @@ export type DeleteTaskQueueMutation = {
   } | null,
 };
 
-export type CreateTaskQueueEventsMutationVariables = {
-  input?: CreateTaskQueueEventsInput,
-  condition?: ModelTaskQueueEventsConditionInput | null,
+export type CreateTaskQueueEventsTaskQueueEventsMutationVariables = {
+  input?: CreateTaskQueueEventsTaskQueueEventsInput,
+  condition?: ModelTaskQueueEventsTaskQueueEventsConditionInput | null,
 };
 
-export type CreateTaskQueueEventsMutation = {
-  createTaskQueueEvents?:  {
-    __typename: "TaskQueueEvents",
+export type CreateTaskQueueEventsTaskQueueEventsMutation = {
+  createTaskQueueEventsTaskQueueEvents?:  {
+    __typename: "TaskQueueEventsTaskQueueEvents",
     id: string,
     organizationId: string,
     createdAt?: string | null,
@@ -2702,14 +2702,14 @@ export type CreateTaskQueueEventsMutation = {
   } | null,
 };
 
-export type UpdateTaskQueueEventsMutationVariables = {
-  input?: UpdateTaskQueueEventsInput,
-  condition?: ModelTaskQueueEventsConditionInput | null,
+export type UpdateTaskQueueEventsTaskQueueEventsMutationVariables = {
+  input?: UpdateTaskQueueEventsTaskQueueEventsInput,
+  condition?: ModelTaskQueueEventsTaskQueueEventsConditionInput | null,
 };
 
-export type UpdateTaskQueueEventsMutation = {
-  updateTaskQueueEvents?:  {
-    __typename: "TaskQueueEvents",
+export type UpdateTaskQueueEventsTaskQueueEventsMutation = {
+  updateTaskQueueEventsTaskQueueEvents?:  {
+    __typename: "TaskQueueEventsTaskQueueEvents",
     id: string,
     organizationId: string,
     createdAt?: string | null,
@@ -2731,14 +2731,14 @@ export type UpdateTaskQueueEventsMutation = {
   } | null,
 };
 
-export type DeleteTaskQueueEventsMutationVariables = {
-  input?: DeleteTaskQueueEventsInput,
-  condition?: ModelTaskQueueEventsConditionInput | null,
+export type DeleteTaskQueueEventsTaskQueueEventsMutationVariables = {
+  input?: DeleteTaskQueueEventsTaskQueueEventsInput,
+  condition?: ModelTaskQueueEventsTaskQueueEventsConditionInput | null,
 };
 
-export type DeleteTaskQueueEventsMutation = {
-  deleteTaskQueueEvents?:  {
-    __typename: "TaskQueueEvents",
+export type DeleteTaskQueueEventsTaskQueueEventsMutation = {
+  deleteTaskQueueEventsTaskQueueEvents?:  {
+    __typename: "TaskQueueEventsTaskQueueEvents",
     id: string,
     organizationId: string,
     createdAt?: string | null,
@@ -4411,9 +4411,9 @@ export type OnDeleteTaskQueueSubscription = {
   } | null,
 };
 
-export type OnCreateTaskQueueEventsSubscription = {
-  onCreateTaskQueueEvents?:  {
-    __typename: "TaskQueueEvents",
+export type OnCreateTaskQueueEventsTaskQueueEventsSubscription = {
+  onCreateTaskQueueEventsTaskQueueEvents?:  {
+    __typename: "TaskQueueEventsTaskQueueEvents",
     id: string,
     organizationId: string,
     createdAt?: string | null,
@@ -4435,9 +4435,9 @@ export type OnCreateTaskQueueEventsSubscription = {
   } | null,
 };
 
-export type OnUpdateTaskQueueEventsSubscription = {
-  onUpdateTaskQueueEvents?:  {
-    __typename: "TaskQueueEvents",
+export type OnUpdateTaskQueueEventsTaskQueueEventsSubscription = {
+  onUpdateTaskQueueEventsTaskQueueEvents?:  {
+    __typename: "TaskQueueEventsTaskQueueEvents",
     id: string,
     organizationId: string,
     createdAt?: string | null,
@@ -4459,9 +4459,9 @@ export type OnUpdateTaskQueueEventsSubscription = {
   } | null,
 };
 
-export type OnDeleteTaskQueueEventsSubscription = {
-  onDeleteTaskQueueEvents?:  {
-    __typename: "TaskQueueEvents",
+export type OnDeleteTaskQueueEventsTaskQueueEventsSubscription = {
+  onDeleteTaskQueueEventsTaskQueueEvents?:  {
+    __typename: "TaskQueueEventsTaskQueueEvents",
     id: string,
     organizationId: string,
     createdAt?: string | null,

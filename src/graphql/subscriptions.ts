@@ -982,9 +982,9 @@ export const onDeleteTaskQueue = /* GraphQL */ `
     }
   }
 `;
-export const onCreateTaskQueueEvents = /* GraphQL */ `
-  subscription OnCreateTaskQueueEvents {
-    onCreateTaskQueueEvents {
+export const onCreateTaskQueueEventsTaskQueueEvents = /* GraphQL */ `
+  subscription OnCreateTaskQueueEventsTaskQueueEvents {
+    onCreateTaskQueueEventsTaskQueueEvents {
       id
       organizationId
       createdAt
@@ -1006,9 +1006,9 @@ export const onCreateTaskQueueEvents = /* GraphQL */ `
     }
   }
 `;
-export const onUpdateTaskQueueEvents = /* GraphQL */ `
-  subscription OnUpdateTaskQueueEvents {
-    onUpdateTaskQueueEvents {
+export const onUpdateTaskQueueEventsTaskQueueEvents = /* GraphQL */ `
+  subscription OnUpdateTaskQueueEventsTaskQueueEvents {
+    onUpdateTaskQueueEventsTaskQueueEvents {
       id
       organizationId
       createdAt
@@ -1030,9 +1030,9 @@ export const onUpdateTaskQueueEvents = /* GraphQL */ `
     }
   }
 `;
-export const onDeleteTaskQueueEvents = /* GraphQL */ `
-  subscription OnDeleteTaskQueueEvents {
-    onDeleteTaskQueueEvents {
+export const onDeleteTaskQueueEventsTaskQueueEvents = /* GraphQL */ `
+  subscription OnDeleteTaskQueueEventsTaskQueueEvents {
+    onDeleteTaskQueueEventsTaskQueueEvents {
       id
       organizationId
       createdAt

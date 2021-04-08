@@ -27,12 +27,15 @@ const tableNames = {
 	taskQueue: process.env.API_RMSTUDIOCLOUD_TASKQUEUETABLE_NAME
 }
 
-const docClient = new AWS.DynamoDB.DocumentClient();
+// const docClient = new AWS.DynamoDB.DocumentClient();
+
+const docClient = new AWS.DynamoDB.DocumentClient({
+	endpoint: process.env.DDB_ENDPOINT,
+});
 
 exports.handler = async (event) => {
 	try {
-
-		const taskQueueItem = JSON.parse(event.arguments.taskQueueItem)
+		const taskQueueItem = event.arguments.taskQueueItem
 
 		const taskParams = {
 			TableName: tableNames.task,
@@ -47,10 +50,10 @@ exports.handler = async (event) => {
 				'id': taskQueueItem.lotId
 			}
 		};
-		
+
 		let task = await docClient.get(taskParams).promise();
 		task = task.Item
-		
+
 		let lot = null
 
 		if(taskQueueItem.lotId){

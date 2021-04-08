@@ -335,7 +335,7 @@ type TaskQueue
   hil_message: String
 }
 
-type TaskQueueEvents
+type TaskQueueEventsTaskQueueEvents
   @model(queries: null)
   @auth(rules: [{ allow: private }])
   # @key(name: "TaskQueueByOrgId", fields: ["organizationId"], queryField: "TaskQueueByOrgId" )
@@ -422,6 +422,6 @@ type Subscription {
 # Analysis Queries
 type Mutation {
   manageTaskQueue(taskQueueItem: AWSJSON!): TaskQueue @function(name: "handleTaskQueue-${env}")
-  taskStats(task_id: ID, organizationId: String!): TaskQueue @function(name: "taskStats-${env}")
-  stationStats(station_id: ID!, timeSpan: String!, index: Int!, sortKey: String): StationStatsData @function(name: "stationStats-${env}")
+  taskStats(taskId: ID, organizationId: String!): TaskQueue @function(name: "taskStats-${env}")
+  stationStats(stationId: ID!, timeSpan: String!, index: Int!, sortKey: String): StationStatsData @function(name: "stationStats-${env}")
 }
