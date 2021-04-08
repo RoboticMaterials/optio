@@ -366,16 +366,21 @@ const ReportModal = (props) => {
     const onPostReportEvent = (reportEvent) => dispatch(postReportEvent(reportEvent))
     const onPutReportEvent = (id, reportEvent) => dispatch(putReportEvent(id, reportEvent))
 
-    // boolean - true if no buttons, false otherwise
-    const noButtons = report_buttons.length === 0
-
+    const [noButtons, setNoButtons] = useState(true)
     const [addingNew, setAddingNew] = useState(false) // edit button form
-    const [editing, setEditing] = useState(noButtons)  // default editing to true if there are currently no buttons
+    const [editing, setEditing] = useState(false)  // default editing to true if there are currently no buttons
     const [sending, setSending] = useState(false) // sending report
     const [reportButtonId, setReportButtonId] = useState(null) // button being edited
     const [submitting, setSubmitting] = useState(false)
+    const [didInitialCheckForButtons, setDidInitialCheckForButtons] = useState(false)
+    useEffect(() => {
+        setNoButtons(report_buttons.filter(currButton => currButton.dashboardButtonId === dashboardButtonId).length === 0)
+        setDidInitialCheckForButtons(true)
+    }, [report_buttons])
 
-    const reportEvents = useSelector(state => { return state.reportEventsReducer.reportEvents })
+    useEffect(() => {
+        if(noButtons && didInitialCheckForButtons) setEditing(true)
+    }, [noButtons, didInitialCheckForButtons])
 
     const sendReport = async (button) => {
         setSubmitting(true)
