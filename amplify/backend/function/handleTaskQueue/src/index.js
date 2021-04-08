@@ -32,10 +32,8 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 exports.handler = async (event) => {
 	try {
 
-		const taskQueueItem = JSON.parse(event.arguments.taskQueueItem)
+		const taskQueueItem = event.arguments.taskQueueItem
 		
-		console.log(taskQueueItem )
-
 		const taskParams = {
 			TableName: tableNames.task,
 			Key: {

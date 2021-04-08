@@ -17,21 +17,29 @@ import json
 import os
 from pprint import pprint
 
-import boto3
+from boto3 import resource
 from boto3.dynamodb.conditions import Key
 
 # Analysis Imports
-import pandas as pd
-import numpy as np
+from pandas import DataFrame
+
+from numpy import linspace
+
+from numpy import histogram
+
+from decimal import Decimal
+
 import time
 import datetime 
-import pytz
+
+from pytz import timezone
 
 # set time zone
-tz = pytz.timezone('America/Denver')
+tz = timezone('America/Denver')
 
 # create dynamo class
-dynamodb = boto3.resource('dynamodb', region_name=os.environ['REGION'])
+# i turned off certificate verification but we should turn it back on when we find a solution
+dynamodb = resource('dynamodb', region_name=os.environ['REGION'], verify=False)
 
 # table def parameters of events for stations
 table = dynamodb.Table(os.environ['API_RMSTUDIOCLOUD_STATIONEVENTTABLE_NAME'])
@@ -81,30 +89,26 @@ def get_stats(station_id, info, output=False):
 
 def create_data(station_id, start_utc, end_utc, labels, output=False):
 
-    # Create bins for data
-    bins = np.linspace(start_utc, end_utc, len(labels)+1)
-
     station_events_response = table.scan(
-        FilterExpression=Key('station').eq(station_id)
+        FilterExpression=Key('station').eq(station_id) & Key('time').gt(Decimal(start_utc)) & Key('time').lt(Decimal(end_utc))
     )
 
     events_data = station_events_response['Items']
 
     # Fetch data
     # TODO only fetch data from time frame to make scalable
-    df = pd.DataFrame(list(events_data))
+    df = DataFrame(list(events_data))
 
     df.time = df.time.astype(float)
 
     if len(df) > 0:
 
-        df = df.set_index('time')
-
-        # Crop data
-        df = df[start_utc : end_utc]
+        # Create bins for data
+        bins = linspace(0, len(df)-1, len(labels)+1)
 
         # Find unique ids
-        unique_ids = df[start_utc : end_utc]['object'].unique()
+        unique_ids = df[0 : len(df)-1]['object'].unique()
+
         # Bin data for each unique id
         data_dict = {}
 
@@ -115,7 +119,9 @@ def create_data(station_id, start_utc, end_utc, labels, output=False):
                 df_1 = df[df['object'] == object_id]
 
             times = df_1.index.repeat(df_1['quantity'])
-            data, edges = np.histogram(times, bins)
+
+            data, edges = histogram(times, bins)
+
             data_dict[object_id] = data
             
             # Output graph
