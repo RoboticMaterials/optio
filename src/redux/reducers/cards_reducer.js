@@ -2,7 +2,7 @@ import {
   GET,
   POST,
   DELETE,
-  PUT
+  PUT, SET
 } from '../types/prefixes';
 
 import {
@@ -16,6 +16,7 @@ import {
   PROCESS_CARDS,
   SHOW_EDITOR, SHOW_FORM_EDITOR
 } from '../types/data_types'
+import {createActionType} from "../actions/redux_utils";
 
 const defaultState = {
 
@@ -33,6 +34,18 @@ export default function cardsReducer(state = defaultState, action) {
   let processCards = {}
 
   switch (action.type) {
+
+    case createActionType([SET, CARD, SUCCESS]): {
+      return {
+        ...state,
+        cards: {...state.cards, [action.payload.id]: {...action.payload}},
+        processCards: {...state.processCards, [action.payload.processId]: {
+            ...state.processCards[action.payload.processId], [action.payload.id]: {...action.payload}
+          }},
+        pending: false,
+      }
+    }
+
     case GET + CARD + SUCCESS:
       return {
         ...state,

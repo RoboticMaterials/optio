@@ -33,12 +33,14 @@ import SplashScreen from "../../components/misc/splash_screen/splash_screen";
 
 // import utils
 import { isEquivalent, deepCopy } from '../../methods/utils/utils'
-import { getCards, getProcessCards, putCard } from "../../redux/actions/card_actions";
+import {getCards, getProcessCards, putCard, setCard} from "../../redux/actions/card_actions";
 
 // Amplify and GQL
 import { API, graphqlOperation } from 'aws-amplify';
 import * as subscriptions from '../../graphql/subscriptions';
 import { manageTaskQueue } from '../../graphql/mutations';
+import {getSubscriptionData, getSubscriptionName, streamlinedSubscription} from "../../methods/utils/api_utils";
+import {parseLot} from "../../methods/utils/data_utils";
 
 const ApiContainer = (props) => {
 
@@ -64,6 +66,7 @@ const ApiContainer = (props) => {
     const onGetProcessCards = (processId) => dispatch(getProcessCards(processId))
     // const dispatchGetLots = () => dispatch(getLots())
     const onGetCards = () => dispatch(getCards())
+    const dispatchSetCard = (card) => dispatch(setCard(card))
     const onPutCard = (card) => dispatch(putCard(card))
 
     const onPutTaskQueue = async (item, id) => await dispatch(putTaskQueue(item, id))
@@ -124,51 +127,6 @@ const ApiContainer = (props) => {
 
 
     useEffect(() => {
-
-        subscriptionUpdateFunction()
-
-    }, [params])
-
-
-    const subscriptionUpdateFunction = async () => {
-
-        // unsub from everything
-        if(currentSubscriptions.length){
-            currentSubscriptions.forEach(sub => {
-                sub._cleanup()
-            });
-        }
-
-        let subs
-
-        // sub to the right data source
-        switch (history.location.pathname) {
-            case '/locations':
-                subs = await loadMapData()
-                setCurrentSubscriptions(subs)
-                break;
-            case '/tasks':
-                subs = await loadTasksData()
-                setCurrentSubscriptions(subs)
-                break;
-            case '/processes':
-                subs = await loadCardsData()
-                setCurrentSubscriptions(subs)
-             break;
-            case '/lots/summary':
-                subs = await loadCardsData()
-                setCurrentSubscriptions(subs)
-                break;
-            default:
-                subs = await loadMapData()
-                setCurrentSubscriptions(subs)
-                break;
-        }
-
-    }
-    useEffect(() => {
-
-
         // once MiR map is enabled, it's always enabled, so only need to do check if it isn't enabled
         if (!MiRMapEnabled) {
             let containsMirCart = false
@@ -203,15 +161,9 @@ const ApiContainer = (props) => {
             updateCurrentPage();
         }
 
-    })
+    }, [stopAPICalls, params])
 
     const updateCurrentPage = () => {
-
-        // Unsubscribe for page switch
-        // if(currentSubscriptions){
-        //     currentSubscriptions._cleanup()
-        // }
-
         const currentPageRouter = params
 
         // If the current page state and actual current page are different, then the page has changed so the data interval should change
@@ -232,8 +184,16 @@ const ApiContainer = (props) => {
      */
 
     const setDataInterval = async (pageParams) => {
+        console.log("setDataInterval")
 
-        let sub
+        // unsub from everything
+        if(currentSubscriptions.length){
+            currentSubscriptions.forEach(sub => {
+                sub._cleanup()
+            });
+        }
+
+        let subs = []
 
         let pageName = ''
         const {
@@ -254,64 +214,79 @@ const ApiContainer = (props) => {
             }
         }
 
+        console.log("setDataInterval pageName",pageName)
         // set new interval for specific page
         switch (pageName) {
 
-            case 'objects':
-                sub = await loadObjectsData()
-                setCurrentSubscriptions(sub)
+            case 'objects': {
+                subs = await loadObjectsData()
+                setCurrentSubscriptions(subs)
                 break;
+            }
 
-            case 'scheduler':
+            case 'scheduler': {
                 loadSchedulerData()
                 break
+            }
 
-            case 'dashboards':
+            case 'dashboards': {
                 loadDashboardsData()
                 break
+            }
 
-            case 'tasks':
-                sub = await loadTasksData()
-                setCurrentSubscriptions(sub)
+            case 'locations': {
+                subs = await loadMapData()
+                setCurrentSubscriptions(subs)
+                break;
+            }
+
+            case 'tasks': {
+                subs = await loadTasksData()
+                setCurrentSubscriptions(subs)
                 break
+            }
 
-            case 'settings':
-                sub = loadSettingsData()
-                setCurrentSubscriptions(sub)
+            case 'settings': {
+                subs = loadSettingsData()
+                setCurrentSubscriptions(subs)
                 break
+            }
 
-            case 'lots':
-                sub = await loadCardsData()
-                setCurrentSubscriptions(sub)
+            case 'lots': {
+                console.log("yoooo setting sub")
+                subs = await loadCardsData()
+                setCurrentSubscriptions(subs)
                 break
+            }
 
-            case 'processes':
+            case 'processes': {
+                // process lots
                 if (data2 === "lots") {
-                    loadCardsData(data1)
+                    subs = await loadCardsData()
+                    setCurrentSubscriptions(subs)
+                    break;
                 }
-                else if (data1 === "timeline") {
-                    loadCardsData() // initial call
-                }
-                else if (data1 === "summary") {
-                    sub = await loadCardsData() // initial call
-                    setCurrentSubscriptions(sub)
-                }
+                // process
                 else {
-                    sub = await loadTasksData()
-                    setCurrentSubscriptions(sub)
+                    subs = await loadTasksData()
+                    setCurrentSubscriptions(subs)
+                    break
                 }
 
                 break
+            }
 
-            case 'more':
+            case 'more': {
                 setPageDataInterval(setInterval(() => loadMoreData(), 10000))
-                // pageDataInterval = ;
                 break;
+            }
 
-            default:
+            default: {
+                subs = await loadMapData()
+                setCurrentSubscriptions(subs)
                 break;
+            }
         }
-
     }
 
     const loadInitialData = async () => {
@@ -628,16 +603,7 @@ const ApiContainer = (props) => {
             onGetCards()
         }
 
-        // Subscribe to stations
-        const cardSubscription = API.graphql(
-            graphqlOperation(subscriptions.onDeltaCard)
-        ).subscribe({
-            next: () => { 
-                // run get stations
-                onGetCards() 
-        },
-            error: error => console.warn(error)
-        });
+        const cardSubscription = streamlinedSubscription(subscriptions.onDeltaCard, dispatchSetCard, parseLot)
 
         onGetProcesses()
         onGetTasks()

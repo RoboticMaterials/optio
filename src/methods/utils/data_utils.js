@@ -2,6 +2,15 @@ import { uuidv4 } from './utils';
 
 import { timeStringRegex, oidRegex } from './regex_utils';
 
+export const parseLot = (lot) => {
+  return {
+    ...lot,
+    templateValues: JSON.parse(lot.templateValues),
+    bins: JSON.parse(lot.bins),
+    flags: JSON.parse(lot.flags)
+  }
+}
+
 export function formatScheduleItem(scheduleItem) {
   scheduleItem.id = scheduleItem.id.$oid;
   if(!scheduleItem.name) scheduleItem.name = "a";
