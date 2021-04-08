@@ -251,6 +251,10 @@ const ApiContainer = (props) => {
                 setPageDataInterval(setInterval(() => loadDashboardsData(), 3000))
                 break;
 
+            case 'locations':
+                setPageDataInterval(setInterval(() => loadLocationsData(), 5000))
+                break
+
             case 'tasks':
                 setPageDataInterval(setInterval(() => loadTasksData(), 10000))
                 break;
@@ -288,6 +292,9 @@ const ApiContainer = (props) => {
                 break;
 
             default:
+                if(!mapViewEnabled) {
+                    setPageDataInterval(setInterval(() => loadListViewData(), 5000))
+                }
                 break;
         }
 
@@ -390,6 +397,16 @@ const ApiContainer = (props) => {
         const tasks = await onGetTasks()
         const processes = await onGetProcesses()
         const objects = await onGetObjects()
+    }
+
+    const loadLocationsData = () => {
+        onGetDashboards()
+        onGetStations()
+    }
+
+    const loadListViewData = () => {
+        onGetStations()
+        onGetDashboards()
     }
 
     /*
