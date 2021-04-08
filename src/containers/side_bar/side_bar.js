@@ -69,7 +69,6 @@ const SideBar = (props) => {
     const selectedLocation = !!selectedStation ? selectedStation : selectedPosition
     const history = useHistory()
     const url = useLocation().pathname
-
     const pageNames = ['locations', 'tasks', 'routes', 'processes', 'lots', 'devices', 'settings',]
 
     const boundToWindowSize = () => {

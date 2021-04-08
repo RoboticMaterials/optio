@@ -35,7 +35,7 @@ const ConfirmDeleteModal = (props) => {
             style={{
                 overlay: {
                     zIndex: 500,
-                    backgroundColor: 'rgba(0, 0, 0, 0.4)' 
+                    backgroundColor: 'rgba(0, 0, 0, 0.4)'
                 },
                 content: {
 
@@ -55,7 +55,7 @@ const ConfirmDeleteModal = (props) => {
                 This action cannot be undone
 
                 <styled.ButtonForm>
-                    
+
                     <Button
                         tertiary
                         style={{minWidth: '10rem'}}

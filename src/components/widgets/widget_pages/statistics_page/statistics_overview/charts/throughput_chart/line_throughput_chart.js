@@ -563,8 +563,7 @@ const LineThroughputChart = (props) => {
                             initialValues
                         } = formikProps
 
-
-                        if(Object.keys(touched).length>0){
+                        if(JSON.stringify(initialValues)!==JSON.stringify(values) && Object.keys(touched).length>0){
                           dispatchPageDataChanged(true)
                         }
 
@@ -633,7 +632,8 @@ const LineThroughputChart = (props) => {
                                             style={{ flex: '0 0 7rem', display: 'flex', flexWrap: 'wrap', textAlign: 'center', backgroundColor: '#6c6e78' }}
                                             showHour={true}
                                             showSecond={false}
-                                            className="xxx"
+                                            className="xxx"                                            focus = {true}
+
                                             use12Hours
                                             format={'hh:mm a'}
                                             autocomplete={"off"}
