@@ -58,6 +58,7 @@ const EditLocation = (props) => {
     const dispatchDeletePosition = async (id) => dispatch(deletePosition(id))
     const dispatchPutPosition = async (position) => await dispatch(putPosition(position))
     const dispatchPostPosition = async (position) => await dispatch(postPosition(position))
+    const dispatchRemovePosition = (id) => dispatch(removePosition(id))
 
     const stations = useSelector(state => state.stationsReducer.stations)
     const selectedStation = useSelector(state => state.stationsReducer.selectedStation)
@@ -467,7 +468,6 @@ const EditLocation = (props) => {
                                             'marginTop': '0',
                                         }}
                                     />
-                                </div>
 
                                 <TextField
                                     name={"locationName"}
